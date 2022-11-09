@@ -63,7 +63,7 @@ const styles = theme => ({
     },
     smallAvatar: {
         width: theme.spacing(3),
-        height: theme.spacing(3)
+        height: theme.spacing(3),
     },
     button: {
         padding: '5px'
@@ -71,41 +71,41 @@ const styles = theme => ({
     enabled: {
         color: green[400],
         '&:hover': {
-            backgroundColor: green[200]
-        }
+            backgroundColor: green[200],
+        },
     },
     disabled: {
         color: red[400],
         '&:hover': {
-            backgroundColor: red[200]
-        }
+            backgroundColor: red[200],
+        },
     },
     hide: {
-        visibility: 'hidden'
+        visibility: 'hidden',
     },
     state: {
         width: theme.spacing(2),
         height: theme.spacing(2),
-        borderRadius: '100%'
+        borderRadius: '100%',
     },
     green: {
-        backgroundColor: green[700]
+        backgroundColor: green[700],
     },
     red: {
-        backgroundColor: red[700]
+        backgroundColor: red[700],
     },
     grey: {
-        backgroundColor: grey[700]
+        backgroundColor: grey[700],
     },
     blue: {
-        backgroundColor: blue[700]
+        backgroundColor: blue[700],
     },
     transparent: {
         color: 'transparent',
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
     },
     paper: {
-        height: '100%'
+        height: '100%',
     },
     iframe: {
         height: '100%',
@@ -114,25 +114,25 @@ const styles = theme => ({
         color: '#000',
         borderRadius: 4,
         boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
-        border: '0px solid #888'
+        border: '0px solid #888',
     },
     silly: {
 
     },
     debug: {
-        backgroundColor: grey[700]
+        backgroundColor: grey[700],
     },
     info: {
-        backgroundColor: blue[700]
+        backgroundColor: blue[700],
     },
     warn: {
-        backgroundColor: amber[700]
+        backgroundColor: amber[700],
     },
     error: {
-        backgroundColor: red[700]
+        backgroundColor: red[700],
     },
     grow: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     tableRender: {
         tableLayout: 'fixed',
@@ -140,8 +140,8 @@ const styles = theme => ({
         '& td': {
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
-        }
+            textOverflow: 'ellipsis',
+        },
     },
     cards: {
         display: 'flex',
@@ -152,15 +152,15 @@ const styles = theme => ({
         width: 24,
         height: 24,
         objectFit: 'fill',
-        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-539deg) brightness(99%) contrast(97%)'
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-539deg) brightness(99%) contrast(97%)',
     },
     contrast0: {
-        filter: 'contrast(0%)'
+        filter: 'contrast(0%)',
     },
     compactButtons: {
         display: 'inline-block',
         borderRadius: 4,
-        border: '1px gray dotted'
+        border: '1px gray dotted',
     },
     okSymbol: {
         width: 20,
@@ -180,14 +180,14 @@ const styles = theme => ({
         width: 24,
         height: 24,
         filter: theme.palette.mode === 'dark' ? 'brightness(0) invert(1)' : 'grayscale(100%)',
-        opacity: theme.palette.mode === 'dark' ? 1 : 0.8
+        opacity: theme.palette.mode === 'dark' ? 1 : 0.8,
     },
     primary: {
-        filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)'
+        filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)',
     },
     filterActive: {
-        color: theme.palette.primary.main
-    }
+        color: theme.palette.primary.main,
+    },
 });
 
 // every tab should get their data itself from server
@@ -198,7 +198,7 @@ class Instances extends Component {
         let expandedFolder = [];
         if ((window._localStorage || window.localStorage).getItem('Instances.expandedFolder')) {
             try {
-                expandedFolder = JSON.parse((window._localStorage || window.localStorage).getItem('Instances.expandedFolder'))
+                expandedFolder = JSON.parse((window._localStorage || window.localStorage).getItem('Instances.expandedFolder'));
             } catch (e) {
 
             }
@@ -232,7 +232,7 @@ class Instances extends Component {
 
             expandedFolder,
 
-            //filter
+            // filter
             filterMode: (window._localStorage || window.localStorage).getItem('Instances.filterMode') ?
                 (window._localStorage || window.localStorage).getItem('Instances.filterMode') === 'null' ?
                     null :
@@ -252,7 +252,7 @@ class Instances extends Component {
             log: { onlyExpert: true },
             ramLimit: { onlyExpert: true },
             events: { onlyExpert: true },
-            ram: { onlyExpert: false }
+            ram: { onlyExpert: false },
         };
 
         this.promises = {};
@@ -311,7 +311,7 @@ class Instances extends Component {
 
         const newState = {
             dialog: location.dialog,
-            dialogProp: location.id
+            dialogProp: location.id,
         };
 
         if (props.expertMode !== state.expertMode) {
@@ -345,7 +345,7 @@ class Instances extends Component {
                 continue;
             }
             if (inst.common.enabled && inst.common.mode === 'daemon') {
-                memRssId = inst._id + '.memRss';
+                memRssId = `${inst._id}.memRss`;
                 this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
                 const m = this.states[memRssId];
                 mem += m ? m.val : 0;
@@ -460,9 +460,9 @@ class Instances extends Component {
             formatted[obj._id] = instance;
         }
 
-        console.log('getInstances: ' + (Date.now() - start));
+        console.log(`getInstances: ${Date.now() - start}`);
 
-        if (this.state.deleting && !formatted['system.adapter.' + this.state.deleting]) {
+        if (this.state.deleting && !formatted[`system.adapter.${this.state.deleting}`]) {
             newState.deleting = null;
         }
 
@@ -504,7 +504,7 @@ class Instances extends Component {
             onlyCurrentHost,
             playArrow,
             viewMode,
-            viewCategory
+            viewCategory,
         });
     }
 
@@ -521,9 +521,8 @@ class Instances extends Component {
             );
             this.adapters = _adapters || []
             this.states = states || [];
-
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
 
         if (!this.states) {
@@ -565,7 +564,7 @@ class Instances extends Component {
         func.call(this.props.socket, 'system.adapter.*.memRss', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.outputCount', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.logLevel', this.onStateChange);
-        //func('system.host.*', this.onStateChange);
+        // func('system.host.*', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskFree', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskSize', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskWarning', this.onStateChange);
@@ -596,11 +595,11 @@ class Instances extends Component {
         let status = mode === 'daemon' ? 'green' : 'blue';
 
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
-            const alive = this.states[obj._id + '.alive'];
-            const connected = this.states[obj._id + '.connected'];
-            const connection = this.states[(obj._id).replace('system.adapter.', '') + '.info.connection'];
+            const alive = this.states[`${obj._id}.alive`];
+            const connected = this.states[`${obj._id}.connected`];
+            const connection = this.states[`${(obj._id).replace('system.adapter.', '')}.info.connection`];
             if (common.webExtension && obj.native.webInstance) {
-                const extension = this.states[(obj._id).replace('system.adapter.', '') + '.info.extension'];
+                const extension = this.states[`${(obj._id).replace('system.adapter.', '')}.info.extension`];
                 if (extension) {
                     return extension.val ? 'green' : 'red';
                 }
@@ -689,8 +688,8 @@ class Instances extends Component {
     }
 
     getInputOutput = id => {
-        const stateInput = this.states[id + '.inputCount'];
-        const stateOutput = this.states[id + '.outputCount'];
+        const stateInput = this.states[`${id}.inputCount`];
+        const stateOutput = this.states[`${id}.outputCount`];
         return {
             stateInput: stateInput?.val ? stateInput.val : 0,
             stateOutput: stateOutput?.val ? stateOutput.val : 0
@@ -790,15 +789,15 @@ class Instances extends Component {
         if (logOnTheFlyValue) {
             this.props.socket.setState(`system.adapter.${instance.id}.logLevel`, value);
         } else {
-            this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
+            this.extendObject(`system.adapter.${instance.id}`, { common: { loglevel: value } });
         }
     };
 
     setSchedule = (instance, value) => {
         if (value) {
-            this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
+            this.extendObject(`system.adapter.${instance.id}`, { common: { schedule: value } });
         } else {
-            this.props.socket.getObject('system.adapter.' + instance.id)
+            this.props.socket.getObject(`system.adapter.${instance.id}`)
                 .then(obj => {
                     if (obj.common.schedule !== '') {
                         obj.common.schedule = '';
@@ -834,10 +833,10 @@ class Instances extends Component {
     };
 
     setHost = (instance, value) =>
-        this.extendObject('system.adapter.' + instance.id, { common: { host: value } });
+        this.extendObject(`system.adapter.${instance.id}`, { common: { host: value } });
 
     setCompactGroup = (instance, value) => {
-        this.extendObject('system.adapter.' + instance.id, {
+        this.extendObject(`system.adapter.${instance.id}`, {
             common: {
                 compactGroup: value === 'controller' ? 0 :
                     value === 'default' ? 1 : parseInt(value, 10)
@@ -944,7 +943,7 @@ class Instances extends Component {
             filterCompactGroup: 'All',
             filterMode: null,
             filterStatus: null,
-            filterText: ''
+            filterText: '',
         };
 
         (window._localStorage || window.localStorage).removeItem('instances.filter');
@@ -1006,7 +1005,7 @@ class Instances extends Component {
                         lang={this.props.lang}
                         themeType={this.props.themeType}
                         item={item}
-                    />
+                    />,
                 };
             } else {
                 return {
@@ -1047,7 +1046,7 @@ class Instances extends Component {
                         lang={this.props.lang}
                         themeType={this.props.themeType}
                         item={item}
-                    />
+                    />,
                 };
             }
         });
@@ -1102,7 +1101,7 @@ class Instances extends Component {
                             }
                         }
                         (window._localStorage || window.localStorage).setItem('Instances.expandedFolder', JSON.stringify(expandedFolder));
-                        this.setState({expandedFolder});
+                        this.setState({ expandedFolder });
                     }}
                 >
                     {list.filter(({ category }) => category === name).map(({ render }) => render)}
@@ -1113,20 +1112,20 @@ class Instances extends Component {
     }
 
     onExpandRow = panel => {
-        this.setState(prevState => ({expanded: prevState.expanded !== panel ? panel : null}));
+        this.setState(prevState => ({ expanded: prevState.expanded !== panel ? panel : null }));
     }
 
     async getHostsData() {
         this.props.socket.getHostInfo(this.state.currentHost, false, 10000)
             .catch(error => {
                 if (!error.toString().includes('May not read')) {
-                    window.alert('Cannot read host information: ' + error);
+                    window.alert(`Cannot read host information: ${error}`);
                 }
                 return {};
             })
             .then(hostData => {
                 this._cacheList = null;
-                this.setState({ hostData })
+                this.setState({ hostData });
             });
 
         let memState;
@@ -1306,7 +1305,7 @@ class Instances extends Component {
                         'Showed only running instances' :
                         'Showed only stopped instances')}>
                     <IconButton size="large" onClick={() => this.changeStartedStopped(this.state.playArrow)}>
-                        <PlayArrowIcon style={this.state.playArrow === 2 ? {color: 'red'} : null}
+                        <PlayArrowIcon style={this.state.playArrow === 2 ? { color: 'red' } : null}
                                        color={this.state.playArrow && this.state.playArrow < 2 ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
@@ -1359,21 +1358,19 @@ class Instances extends Component {
                     defaultValue={this.state.filterText}
                     onChange={event => this.handleFilterChange(event)}
                     InputProps={{
-                        endAdornment: (
-                            this.state.filterText ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => {
-                                        this.inputRef.current.value = '';
-                                        this._cacheList = null;
-                                        this.setState({ filterText: '' });
-                                        (window._localStorage || window.localStorage).setItem('instances.filter', '');
-                                    }}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null
-                        ),
+                        endAdornment: this.state.filterText ? <InputAdornment position="end">
+                            <IconButton
+                                size="small"
+                                onClick={() => {
+                                    this.inputRef.current.value = '';
+                                    this._cacheList = null;
+                                    this.setState({ filterText: '' });
+                                    (window._localStorage || window.localStorage).setItem('instances.filter', '');
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </InputAdornment> : null,
                     }}
                 />
                 <div className={classes.grow} />

@@ -1,7 +1,6 @@
 import { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@mui/styles';
-import clsx from 'clsx';
+import { withStyles } from '@mui/styles';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
@@ -26,7 +25,7 @@ import {
     TitleComponent,
     TimelineComponent,
 } from 'echarts/components';
-import {SVGRenderer} from 'echarts/renderers';
+import { SVGRenderer } from 'echarts/renderers';
 
 import frLocale from 'date-fns/locale/fr';
 import ruLocale from 'date-fns/locale/ru';
@@ -44,7 +43,7 @@ import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 // icons
-import {FaChartLine as SplitLineIcon} from 'react-icons/fa';
+import { FaChartLine as SplitLineIcon } from 'react-icons/fa';
 import EchartsIcon from '../../assets/echarts.png';
 
 echarts.use([TimelineComponent, ToolboxComponent, TitleComponent, TooltipComponent, GridComponent, LineChart, SVGRenderer]);
@@ -1026,18 +1025,14 @@ class ObjectChart extends Component {
         if (this.chartValues) {
             return <ReactEchartsCore
                 ref={e => this.echartsReact = e}
-                echarts={ echarts }
-                option={ this.getOption() }
-                notMerge={ true }
-                lazyUpdate={ true }
-                theme={ this.props.themeType === 'dark' ? 'dark' : '' }
-                style={{ height: this.state.chartHeight + 'px', width: '100%' }}
+                echarts={echarts}
+                option={this.getOption()}
+                notMerge
+                lazyUpdate
+                theme={this.props.themeType === 'dark' ? 'dark' : ''}
+                style={{ height: `${this.state.chartHeight}px`, width: '100%' }}
                 opts={{ renderer: 'svg' }}
-                onEvents={ {
-                    rendered: e => {
-                        this.installEventHandlers();
-                    }
-                }}
+                onEvents={{ rendered: () => this.installEventHandlers() }}
             />;
         } else {
             return <LinearProgress/>;
@@ -1086,16 +1081,16 @@ class ObjectChart extends Component {
 
     openEcharts() {
         const args = [
-            'id=' + window.encodeURIComponent(this.props.obj._id),
-            'instance=' + window.encodeURIComponent(this.state.historyInstance),
+            `id=${window.encodeURIComponent(this.props.obj._id)}`,
+            `instance=${window.encodeURIComponent(this.state.historyInstance)}`,
             'menuOpened=false',
         ];
 
         if (this.state.relativeRange === 'absolute') {
-            args.push('start=' + this.chart.min);
-            args.push('end=' + this.chart.max);
+            args.push(`start=${this.chart.min}`);
+            args.push(`end=${this.chart.max}`);
         } else {
-            args.push('range=' + this.state.relativeRange);
+            args.push(`range=${this.state.relativeRange}`);
         }
 
         window.open(`${window.location.protocol}//${window.location.host}/adapter/echarts/tab.html#${args.join('&')}`, 'echarts');
@@ -1109,8 +1104,8 @@ class ObjectChart extends Component {
         const classes = this.props.classes;
 
         return <Toolbar>
-            {!this.props.historyInstance && <FormControl variant="standard" className={ classes.selectHistoryControl }>
-                <InputLabel>{ this.props.t('History instance') }</InputLabel>
+            {!this.props.historyInstance && <FormControl variant="standard" className={classes.selectHistoryControl}>
+                <InputLabel>{this.props.t('History instance')}</InputLabel>
                 <Select
                     variant="standard"
                     value={ this.state.historyInstance }
@@ -1119,31 +1114,31 @@ class ObjectChart extends Component {
                         this.setState({ historyInstance: e.target.value });
                     }}
                 >
-                    { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && classes.notAliveInstance )}>{ it.id }</MenuItem>) }
+                    { this.state.historyInstances.map(it => <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{it.id}</MenuItem>) }
                 </Select>
             </FormControl>}
-            <FormControl variant="standard" className={ classes.selectRelativeTime }>
-                <InputLabel>{ this.props.t('Relative') }</InputLabel>
+            <FormControl variant="standard" className={classes.selectRelativeTime}>
+                <InputLabel>{this.props.t('Relative')}</InputLabel>
                 <Select
                     variant="standard"
                     ref={ this.rangeRef }
                     value={ this.state.relativeRange }
                     onChange={ e => this.setRelativeInterval(e.target.value) }
                 >
-                    <MenuItem key={ 'custom' } value={ 'absolute' } className={ classes.customRange }>{ this.props.t('custom range') }</MenuItem>
-                    <MenuItem key={ '1'  } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
-                    <MenuItem key={ '2'  } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
-                    <MenuItem key={ '3'  } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>
-                    <MenuItem key={ '4'  } value={ 'day' }         >{ this.props.t('this day') }</MenuItem>
-                    <MenuItem key={ '5'  } value={ 24 * 60 }       >{ this.props.t('last 24 hours') }</MenuItem>
-                    <MenuItem key={ '6'  } value={ 'week' }        >{ this.props.t('this week') }</MenuItem>
-                    <MenuItem key={ '7'  } value={ 24 * 60 * 7 }   >{ this.props.t('last week') }</MenuItem>
-                    <MenuItem key={ '8'  } value={ '2weeks' }      >{ this.props.t('this 2 weeks') }</MenuItem>
-                    <MenuItem key={ '9'  } value={ 24 * 60 * 14 }  >{ this.props.t('last 2 weeks') }</MenuItem>
-                    <MenuItem key={ '10' } value={ 'month' }       >{ this.props.t('this month') }</MenuItem>
-                    <MenuItem key={ '11' } value={ 30 * 24 * 60 }  >{ this.props.t('last 30 days') }</MenuItem>
-                    <MenuItem key={ '12' } value={ 'year' }        >{ this.props.t('this year') }</MenuItem>
-                    <MenuItem key={ '13' } value={ '12months' }    >{ this.props.t('last 12 months') }</MenuItem>
+                    <MenuItem key="custom" value="absolute" className={classes.customRange}>{this.props.t('custom range')}</MenuItem>
+                    <MenuItem key="1"  value={10}           >{this.props.t('last 10 minutes')}</MenuItem>
+                    <MenuItem key="2"  value={30}           >{this.props.t('last 30 minutes')}</MenuItem>
+                    <MenuItem key="3"  value={60}           >{this.props.t('last hour')}</MenuItem>
+                    <MenuItem key="4"  value="day"          >{this.props.t('this day')}</MenuItem>
+                    <MenuItem key="5"  value={24 * 60}      >{this.props.t('last 24 hours')}</MenuItem>
+                    <MenuItem key="6"  value="week"         >{this.props.t('this week')}</MenuItem>
+                    <MenuItem key="7"  value={24 * 60 * 7}  >{this.props.t('last week')}</MenuItem>
+                    <MenuItem key="8"  value="2weeks"       >{this.props.t('this 2 weeks')}</MenuItem>
+                    <MenuItem key="9"  value={24 * 60 * 14} >{this.props.t('last 2 weeks')}</MenuItem>
+                    <MenuItem key="10" value="month"        >{this.props.t('this month')}</MenuItem>
+                    <MenuItem key="11" value={30 * 24 * 60} >{this.props.t('last 30 days')}</MenuItem>
+                    <MenuItem key="12" value="year"         >{this.props.t('this year')}</MenuItem>
+                    <MenuItem key="13" value="12months"     >{this.props.t('last 12 months')}</MenuItem>
                 </Select>
             </FormControl>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
@@ -1218,23 +1213,25 @@ class ObjectChart extends Component {
                     (window._localStorage || window.localStorage).setItem('App.splitLine', this.state.splitLine ? 'false' : 'true');
                     this.setState({splitLine: !this.state.splitLine});
                 }}
-                className={ classes.splitLineButton }
+                className={classes.splitLineButton}
             >
-                <SplitLineIcon className={ classes.splitLineButtonIcon } />
-                { this.props.t('Show lines') }
+                <SplitLineIcon className={classes.splitLineButtonIcon} />
+                {this.props.t('Show lines')}
             </Fab>
         </Toolbar>;
     }
 
     render() {
         if (!this.state.historyInstances && !this.state.defaultHistory) {
-            return <LinearProgress/>;
+            return <LinearProgress />;
         }
 
-        return <Paper className={ this.props.classes.paper }>
-            { this.renderToolbar() }
-            <div ref={ this.divRef } className={clsx(this.props.classes.chart, this.props.noToolbar ? this.props.classes.chartWithoutToolbar : this.props.classes.chartWithToolbar) }>
-                { this.renderChart() }
+        return <Paper className={this.props.classes.paper }>
+            {this.renderToolbar()}
+            <div
+                ref={this.divRef} className={Utils.clsx(this.props.classes.chart, this.props.noToolbar ? this.props.classes.chartWithoutToolbar : this.props.classes.chartWithToolbar)}
+            >
+                {this.renderChart()}
             </div>
         </Paper>;
     }
