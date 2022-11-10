@@ -288,7 +288,6 @@ const styles = theme => ({
 
     },
     cellCopyButton: {
-        // color: 'white',
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
         top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
@@ -721,6 +720,11 @@ const styles = theme => ({
             borderLeftStyle: 'solid',
         },
     },
+    invertedBackground: {
+        backgroundColor: theme.palette.mode  === 'dark' ? '#9a9a9a' : '#565656',
+        padding: '0 3px',
+        borderRadius: 2,
+    },
 });
 
 function generateFile(filename, obj) {
@@ -786,7 +790,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
             }
         }
         if (aIcon.startsWith('data:image/svg')) {
-            src = <SVG src={aIcon} width={28} height={28} />;
+            src = <SVG className="iconOwn" src={aIcon} width={28} height={28} />;
         } else {
             src = aIcon;
         }
@@ -825,7 +829,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                     }
                 } else if (cIcon.startsWith('data:image/svg')) {
                     // if base 64 image
-                    src = <SVG src={cIcon} width={28} height={28} />;
+                    src = <SVG className="iconOwn" src={cIcon} width={28} height={28} />;
                 } else {
                     src = cIcon;
                 }
@@ -4294,9 +4298,14 @@ class ObjectBrowser extends Component {
             ) : null;
 
         let checkColor = common?.color;
-        let invertBackground = 'none';
+        let invertBackground = undefined;
         if (checkColor && !this.state.selected.includes(id)) {
-            invertBackground = Utils.invertColor(checkColor, true);
+            let background = this.props.themeName === 'dark' ? '#1f1f1f' : (this.props.themeName === 'blue' ? '#222a2e' : '#FFFFFF');
+            const distance = Utils.colorDistance(checkColor, background);
+            // console.log(`Distance: ${checkColor} - ${background} = ${distance}`);
+            if (distance < 1000) {
+                invertBackground = this.props.themeType === 'dark' ? '#9a9a9a' : '#565656';
+            }
         }
         if (!checkColor || this.state.selected.includes(id)) {
             checkColor = 'inherit';
@@ -4403,8 +4412,8 @@ class ObjectBrowser extends Component {
                     container
                     alignItems="center"
                     style={{
-                        color: checkColor,
-                        background: invertBackground,
+                        // color: checkColor,
+                        // background: invertBackground,
                     }}
                 >
                     {checkbox}
@@ -4413,9 +4422,8 @@ class ObjectBrowser extends Component {
                 <Grid
                     item
                     title={id}
-                    className={classes.cellIdSpan}
+                    className={Utils.clsx(classes.cellIdSpan, invertBackground && classes.invertedBackground)}
                     style={{
-                        background: invertBackground,
                         color: id === 'system' ?
                             COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER :
                                 checkColor),
@@ -4425,13 +4433,7 @@ class ObjectBrowser extends Component {
                     {alias}
                     {icons}
                 </Grid>
-                <div
-                    style={{
-                        color: checkColor,
-                        background: invertBackground,
-                    }}
-                    className={classes.grow}
-                />
+                <div className={classes.grow} />
                 <Grid
                     item
                     container
@@ -4439,7 +4441,7 @@ class ObjectBrowser extends Component {
                 >
                     {iconItem}
                 </Grid>
-                <div style={{ color: checkColor }}>
+                <div>
                     <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={e => this.onCopy(e, id)} />
                 </div>
             </Grid>
