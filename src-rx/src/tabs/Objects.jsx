@@ -44,9 +44,7 @@ const styles = theme => ({
     }
 });
 class Objects extends Component {
-
     constructor(props) {
-
         super(props);
 
         this.dialogName = 'AdminObjects';
@@ -89,12 +87,12 @@ class Objects extends Component {
         if (withChildren) {
             this.props.socket.delObjects(id, true)
                 .then(() => this.setState({ toast: this.t('All deleted') }))
-                .catch(e => window.alert('Cannot delete object: ' + e));
+                .catch(e => window.alert(`Cannot delete object: ${e}`));
 
             this.setState({ deleteObjectShow: null });
         } else {
             this.props.socket.delObject(id, false)
-                .catch(e => window.alert('Cannot delete object: ' + e));
+                .catch(e => window.alert(`Cannot delete object: ${e}`));
             this.setState({ deleteObjectShow: null })
         }
     }
@@ -149,9 +147,34 @@ class Objects extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    {this.state.deleteObjectShow.hasChildren ? <Button variant="contained" color="grey" classes={{label: this.props.classes.buttonText}} onClick={() => this.onDelete(true)} startIcon={<IconDeleteAll className={this.props.classes.buttonAll} />}>{this.t('Delete with children')}</Button> : null}
-                    {this.state.deleteObjectShow.exists ? <Button variant="contained" classes={{label: this.props.classes.buttonText}} onClick={() => this.onDelete(false)} color="primary" startIcon={<IconDeleteOne />} autoFocus>{this.t('Delete one item')}</Button> : null}
-                    <Button variant="contained" color="grey" onClick={() => this.setState({ deleteObjectShow: null })} startIcon={<IconCancel />}>{this.t('ra_Cancel')}</Button>
+                    {this.state.deleteObjectShow.hasChildren ?
+                        <Button
+                            variant="contained"
+                            color="grey"
+                            classes={{ label: this.props.classes.buttonText }}
+                            onClick={() => this.onDelete(true)}
+                            startIcon={<IconDeleteAll className={this.props.classes.buttonAll} />}
+                        >
+                            {this.t('Delete with children', this.state.deleteObjectShow.childrenCount)}
+                        </Button> : null}
+                    {this.state.deleteObjectShow.exists ?
+                        <Button
+                            variant="contained"
+                            classes={{ label: this.props.classes.buttonText }}
+                            onClick={() => this.onDelete(false)}
+                            color="primary" startIcon={<IconDeleteOne />}
+                            autoFocus
+                        >
+                            {this.t('Delete one item')}
+                        </Button> : null}
+                    <Button
+                        variant="contained"
+                        color="grey"
+                        onClick={() => this.setState({ deleteObjectShow: null })}
+                        startIcon={<IconCancel />}
+                    >
+                        {this.t('ra_Cancel')}
+                    </Button>
                 </DialogActions>
             </Dialog>;
         }
@@ -185,8 +208,8 @@ class Objects extends Component {
                 objectBrowserViewFile={ObjectViewFileDialog}
                 router={Router}
                 enableStateValueEdit={true}
-                onObjectDelete={(id, hasChildren, exists) =>
-                    this.setState({ deleteObjectShow: { id, hasChildren, exists } })}
+                onObjectDelete={(id, hasChildren, exists, childrenCount) =>
+                    this.setState({ deleteObjectShow: { id, hasChildren, exists, childrenCount } })}
                 onFilterChanged={filterConfig => {
                     this.filters = filterConfig;
                     (window._localStorage || window.localStorage).setItem(`${this.dialogName || 'App'}.filters`, JSON.stringify(filterConfig));

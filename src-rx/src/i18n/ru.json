@@ -1188,7 +1188,7 @@
   "Change color theme": "Изменить цветовую тему",
   "Change current host": "Изменить текущий хост",
   "Discovery devices": "Устройства обнаружения",
-  "Delete with children": "Удалить все элементы",
+  "Delete with children": "Удалить все элементы (%s объектов)",
   "Delete one item": "Удалить один элемент",
   "Delete object(s)": "Удалить объект(ы)",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "Когда включено, экземпляры адаптера могут запускаться в одном или нескольких процессах для экономии использования оперативной памяти.",
@@ -1516,5 +1516,7 @@
   "Restore repository list to default": "Восстановить список репозиториев по умолчанию",
   "Active": "Активно",
   "Drag and drop to reorder": "Перетащите, чтобы изменить порядок",
-  "Flag will be automatically detected as repository will be read for the first time": "Флаг будет автоматически обнаружен, так как репозиторий будет прочитан в первый раз"
+  "Flag will be automatically detected as repository will be read for the first time": "Флаг будет автоматически обнаружен, так как репозиторий будет прочитан в первый раз",
+  "Create a copy of this object": "Создать копию этого объекта",
+  "common_delete_tip": "Если вы хотите удалить некоторые атрибуты в «common», вы должны установить его в «null»"
 }

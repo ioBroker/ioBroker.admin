@@ -1184,7 +1184,7 @@
   "Change color theme": "Change color theme",
   "Change current host": "Change current host",
   "Discovery devices": "Find devices and services",
-  "Delete with children": "Delete with child objects",
+  "Delete with children": "Delete with child objects  (%s objects)",
   "Delete one item": "Delete this object",
   "Delete object(s)": "Delete object(s)",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "When enabled adapter instances can run in one or few processes to save RAM usage.",
@@ -1516,5 +1516,7 @@
   "Restore repository list to default": "Restore repository list to default",
   "Active": "Active",
   "Drag and drop to reorder": "Drag and drop to reorder",
-  "Flag will be automatically detected as repository will be read for the first time": "Flag will be automatically detected as repository will be read for the first time"
+  "Flag will be automatically detected as repository will be read for the first time": "Flag will be automatically detected as repository will be read for the first time",
+  "Create a copy of this object": "Create a copy of this object",
+  "common_delete_tip": "If you want delete some attributes in \"common\" you must set it to \"null\""
 }

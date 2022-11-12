@@ -1184,7 +1184,7 @@
   "Change color theme": "更改颜色主题",
   "Change current host": "更改当前主机",
   "Discovery devices": "发现设备",
-  "Delete with children": "与孩子一起删除",
+  "Delete with children": "删除子对象（%s 个对象）",
   "Delete one item": "删除一项",
   "Delete object(s)": "删除对象",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "启用后，适配器实例可以在一个或几个进程中运行以节省RAM使用量。",
@@ -1516,5 +1516,7 @@
   "Restore repository list to default": "将存储库列表恢复为默认值",
   "Active": "积极的",
   "Drag and drop to reorder": "拖放以重新排序",
-  "Flag will be automatically detected as repository will be read for the first time": "标记将被自动检测为第一次读取存储库"
+  "Flag will be automatically detected as repository will be read for the first time": "标记将被自动检测为第一次读取存储库",
+  "Create a copy of this object": "创建此对象的副本",
+  "common_delete_tip": "如果要删除“common”中的某些属性，则必须将其设置为“null”"
 }

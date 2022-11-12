@@ -1184,7 +1184,7 @@
   "Change color theme": "Mudar o tema da cor",
   "Change current host": "Mudar o host atual",
   "Discovery devices": "Dispositivos de descoberta",
-  "Delete with children": "Excluir com filhos",
+  "Delete with children": "Excluir com objetos filho (objetos %s)",
   "Delete one item": "Excluir um item",
   "Delete object(s)": "Excluir objeto(s)",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "Quando ativadas, as instâncias do adaptador podem ser executadas em um ou poucos processos para economizar o uso de RAM.",
@@ -1516,5 +1516,7 @@
   "Restore repository list to default": "Restaurar a lista de repositórios para o padrão",
   "Active": "Ativo",
   "Drag and drop to reorder": "Arraste e solte para reordenar",
-  "Flag will be automatically detected as repository will be read for the first time": "O sinalizador será detectado automaticamente, pois o repositório será lido pela primeira vez"
+  "Flag will be automatically detected as repository will be read for the first time": "O sinalizador será detectado automaticamente, pois o repositório será lido pela primeira vez",
+  "Create a copy of this object": "Criar uma cópia deste objeto",
+  "common_delete_tip": "Se você quiser excluir alguns atributos em \"common\" você deve defini-lo como \"null\""
 }

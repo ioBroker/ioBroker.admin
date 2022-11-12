@@ -292,7 +292,7 @@
   "Delete object": "Видалити об'єкт",
   "Delete object(s)": "Видалити об'єкт(и)",
   "Delete one item": "Видалити цей об'єкт",
-  "Delete with children": "Видалити з дочірніми об'єктами",
+  "Delete with children": "Видалити з дочірніми об’єктами (%s об’єктів)",
   "Denmark": "Данія",
   "Description": "опис",
   "Detected slow connection!": "Виявлено повільне з'єднання!",
@@ -1516,5 +1516,7 @@
   "write": "писати",
   "write operation": "писати",
   "wrongPassword": "Неправильне ім'я користувача або пароль",
-  "yesterday": "вчора"
+  "yesterday": "вчора",
+  "Create a copy of this object": "Створіть копію цього об'єкта",
+  "common_delete_tip": "якщо ви хочете видалити деякі атрибути в \"common\", ви повинні встановити для нього значення \"null\""
 }

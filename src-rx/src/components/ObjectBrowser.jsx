@@ -3546,7 +3546,22 @@ class ObjectBrowser extends Component {
                     size="small"
                     aria-label="delete"
                     title={this.texts.deleteObject}
-                    onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), false)}
+                    onClick={() => {
+                        // calculate number of children
+                        const keys = Object.keys(this.objects);
+                        keys.sort();
+                        let count = 0;
+                        const start = `${id}.`;
+                        for (let i = 0; i < keys.length; i++) {
+                            if (keys[i].startsWith(start)) {
+                                count++;
+                            } else if (keys[i] > start) {
+                                break;
+                            }
+                        }
+
+                        this.props.onObjectDelete(id, !!(item.children && item.children.length), false, count + 1);
+                    }}
                 >
                     <IconDelete className={classes.cellButtonsButtonIcon} />
                 </IconButton> : null}
@@ -3586,7 +3601,20 @@ class ObjectBrowser extends Component {
                 className={classes.cellButtonsButton}
                 size="small"
                 aria-label="delete"
-                onClick={() => this.props.onObjectDelete(id, !!item.children?.length, !item.data.obj.common?.dontDelete)}
+                onClick={() => {
+                    const keys = Object.keys(this.objects);
+                    keys.sort();
+                    let count = 0;
+                    const start = `${id}.`;
+                    for (let i = 0; i < keys.length; i++) {
+                        if (keys[i].startsWith(start)) {
+                            count++;
+                        } else if (keys[i] > start) {
+                            break;
+                        }
+                    }
+                    this.props.onObjectDelete(id, !!item.children?.length, !item.data.obj.common?.dontDelete, count);
+                }}
                 title={this.texts.deleteObject}
             >
                 <IconDelete className={classes.cellButtonsButtonIcon} />
@@ -5209,7 +5237,7 @@ ObjectBrowser.propTypes = {
     objectEditOfAccessControl: PropTypes.bool, // Access Control
     modalNewObject: PropTypes.func,     // modal add object
     modalEditOfAccessControl: PropTypes.func, // modal Edit Of Access Control
-    onObjectDelete: PropTypes.func,     // optional function (id, hasChildren, objectExists) {  }
+    onObjectDelete: PropTypes.func,     // optional function (id, hasChildren, objectExists, childrenCount+1) {  }
     customFilter: PropTypes.object,     // optional
                                         // `{common: {custom: true}}` - show only objects with some custom settings
                                         // `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)

@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-min-noconflict/mode-json';
@@ -28,7 +28,7 @@ import IconButton from '@mui/material/IconButton';
 import IconClose from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
-import {FaClipboard as IconCopyClipboard} from 'react-icons/fa';
+import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 import IconCopy from '@mui/icons-material/FileCopy';
 import IconFx from '@iobroker/adapter-react-v5/icons/IconFx';
 
@@ -36,7 +36,7 @@ import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import I18n from '@iobroker/adapter-react-v5/i18n';
 import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
-import {FormControl, InputLabel, MenuItem, Select, Tooltip, Autocomplete} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, Tooltip, Autocomplete } from '@mui/material';
 import UploadImage from '../UploadImage';
 
 const styles = theme => ({
@@ -55,7 +55,7 @@ const styles = theme => ({
         fontStyle: 'italic',
     },
     dialog: {
-        height: 'calc(100% - 64px)'
+        height: 'calc(100% - 64px)',
     },
     aliasIdEdit: {
         width: 400 - 32,
@@ -65,11 +65,11 @@ const styles = theme => ({
         marginLeft: theme.spacing(1),
     },
     funcDivEdit: {
-        width: '100%'
+        width: '100%',
     },
     funcEditName: {
         display: 'inline-block',
-        width: 85
+        width: 85,
     },
     funcEdit: {
         width: 400,
@@ -83,31 +83,31 @@ const styles = theme => ({
     },
     commonTabWrapper: {
         flexFlow: 'wrap',
-        display: 'flex'
+        display: 'flex',
     },
     commonWrapper: {
         width: 500,
-        minWidth: 300
+        minWidth: 300,
     },
     flexDrop: {
         width: '100%',
         maxWidth: 500,
         margin: 'auto',
-        display: 'flex'
+        display: 'flex',
     },
     marginBlock: {
-        marginTop: 20
+        marginTop: 20,
     },
     buttonAdd: {
-        minWidth: 150
+        minWidth: 150,
     },
     textField: {
-        width: '100%'
+        width: '100%',
     },
     flex: {
         display: 'flex',
         '& > div': {
-            marginRight: theme.spacing(1)
+            marginRight: theme.spacing(1),
         },
     },
     close: {
@@ -119,7 +119,7 @@ const styles = theme => ({
         top: 20,
         transition: 'all 0.6s ease',
         '&:hover': {
-            transform: 'rotate(90deg)'
+            transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
@@ -128,7 +128,7 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)'
+            transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
@@ -137,34 +137,37 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)'
+            transform: 'rotate(-45deg)',
         },
     },
     color: {
-        width: 70
+        width: 70,
     },
     buttonRemoveWrapper: {
         position: 'absolute',
         zIndex: 222,
-        right: 0
+        right: 0,
     },
     tabsPadding: {
-        padding: '0px 24px'
+        padding: '0px 24px',
     },
     '@media screen and (max-width: 465px)': {
         wrapperButton: {
             '& *': {
-                fontSize: 10
-            }
+                fontSize: 10,
+            },
         },
     },
     '@media screen and (max-width: 380px)': {
         wrapperButton: {
             '& *': {
-                fontSize: 9
-            }
+                fontSize: 9,
+            },
         },
     },
+    commonDeleteTip: {
+        color: '#fa4a4a',
+    }
 });
 
 class ObjectBrowserEditObject extends Component {
@@ -172,7 +175,7 @@ class ObjectBrowserEditObject extends Component {
         super(props);
 
         const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
-        let tab = (window._localStorage || window.localStorage).getItem((this.props.dialogName || 'App') + '.editTab') || 'object';
+        let tab = (window._localStorage || window.localStorage).getItem(`${this.props.dialogName || 'App'}.editTab`) || 'object';
 
         // select another tab if alias not present
         if (tab === 'alias' && !withAlias) {
@@ -234,7 +237,7 @@ class ObjectBrowserEditObject extends Component {
                             return result !== null && typeof result !== finalType ?
                                 this.props.t('Type of result is not as expected: %s', finalType) : '';
                         } catch (e) {
-                            return this.props.t('Cannot execute function') + ': ' + e.toString();
+                            return `${this.props.t('Cannot execute function')}: ${e.toString()}`;
                         }
                     }
                 }
@@ -287,12 +290,23 @@ class ObjectBrowserEditObject extends Component {
         const newState = { text: value };
         if (json) {
             newState.changed = this.originalObj !== JSON.stringify(json, null, 2);
+
+            // check if some common attributes are deleted
+            newState.showCommonDeleteMessage = false;
+            const originalObj = JSON.parse(this.originalObj);
+            json.common && Object.keys(originalObj.common || {}).forEach(attr => {
+                if (json.common[attr] === undefined) {
+                    newState.showCommonDeleteMessage = true;
+                }
+            });
+
             if (this.state.error) {
                 newState.error = false;
             }
             newState.readError = this.checkFunction(json.common?.alias?.read, false);
             newState.writeError = this.checkFunction(json.common?.alias?.write, true);
         } else {
+            newState.showCommonDeleteMessage = false;
             newState.error = true;
         }
         this.setState(newState, () => cb && cb());
@@ -340,7 +354,7 @@ class ObjectBrowserEditObject extends Component {
             className={this.props.classes.tabsPadding}
             value={this.state.tab}
             onChange={(e, tab) => {
-                (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.editTab', tab);
+                (window._localStorage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.editTab`, tab);
 
                 if (tab === 'object') {
                     try {
@@ -358,7 +372,7 @@ class ObjectBrowserEditObject extends Component {
                             obj.common.step = parseFloat(obj.common.step);
                             changed = true;
                         }
-                        changed && this.setState({text: JSON.stringify(obj, null, 2)});
+                        changed && this.setState({ text: JSON.stringify(obj, null, 2) });
                     } catch (e) {
                         // ignore
                     }
@@ -367,10 +381,10 @@ class ObjectBrowserEditObject extends Component {
                 this.setState({ tab });
             }}
         >
-            <Tab value="common" label={this.props.t('Common')}/>
-            <Tab value="object" label={this.props.t('Object data')}/>
+            <Tab value="common" label={this.props.t('Common')} />
+            <Tab value="object" label={this.props.t('Object data')} />
             {this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' &&
-                <Tab value="alias" label={this.props.t('Alias')}/>}
+                <Tab value="alias" label={this.props.t('Alias')} />}
         </Tabs>;
     }
 
@@ -392,7 +406,7 @@ class ObjectBrowserEditObject extends Component {
                 id = json.common?.alias?.id?.write || '';
             }
         } catch (error) {
-            console.error('Cannot parse ' + this.state.text);
+            console.error(`Cannot parse ${this.state.text}`);
         }
 
         return <DialogSelectID
@@ -404,7 +418,7 @@ class ObjectBrowserEditObject extends Component {
             dialogName="aliasesEdit"
             title={`${this.props.t('Select for')} ${this.props.obj._id}`}
             selected={id}
-            statesOnly={true}
+            statesOnly
             onOk={id => {
                 const selectRead = this.state.selectRead;
                 const selectWrite = this.state.selectWrite;
@@ -682,7 +696,7 @@ class ObjectBrowserEditObject extends Component {
                             maxSize={10 * 1024}
                             icon={iconPath}
                             removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
-                            onChange={(base64) => this.setCommonItem(json, 'icon', base64)}
+                            onChange={base64 => this.setCommonItem(json, 'icon', base64)}
                             t={t}
                         />
                         {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
@@ -726,8 +740,14 @@ class ObjectBrowserEditObject extends Component {
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
                             endAdornment: json.common?.alias?.id ?
-                                <InputAdornment position="end"><IconButton size="large"
-                                                                           onClick={() => this.setAliasItem(json, 'id', '')}><IconClose/></IconButton></InputAdornment> : null,
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        size="large"
+                                        onClick={() => this.setAliasItem(json, 'id', '')}
+                                    >
+                                        <IconClose />
+                                    </IconButton>
+                                </InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id', e.target.value)}
                         margin="normal"
@@ -735,7 +755,7 @@ class ObjectBrowserEditObject extends Component {
                     <Fab
                         className={this.props.classes.button}
                         size="small"
-                        onClick={() => this.setState({selectId: true, selectRead: false, selectWrite: false})}>...</Fab>
+                        onClick={() => this.setState({ selectId: true, selectRead: false, selectWrite: false })}>...</Fab>
                 </Grid> : null}
 
                 {typeof json.common?.alias?.id === 'object' ? <Grid item>
@@ -746,8 +766,14 @@ class ObjectBrowserEditObject extends Component {
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
                             endAdornment: json.common?.alias?.id?.read ?
-                                <InputAdornment position="end"><IconButton size="large"
-                                                                           onClick={() => this.setAliasItem(json, 'id.read', '')}><IconClose/></IconButton></InputAdornment> : null,
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        size="large"
+                                        onClick={() => this.setAliasItem(json, 'id.read', '')}
+                                    >
+                                        <IconClose/>
+                                    </IconButton>
+                                </InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id.read', e.target.value)}
                         margin="normal"
@@ -755,7 +781,7 @@ class ObjectBrowserEditObject extends Component {
                     <Fab
                         className={this.props.classes.button}
                         size="small"
-                        onClick={() => this.setState({selectId: false, selectRead: true, selectWrite: false})}>...</Fab>
+                        onClick={() => this.setState({ selectId: false, selectRead: true, selectWrite: false })}>...</Fab>
                 </Grid> : null}
 
                 {typeof json.common?.alias?.id === 'object' ? <Grid item>
@@ -766,8 +792,14 @@ class ObjectBrowserEditObject extends Component {
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
                             endAdornment: json.common?.alias?.id?.write ?
-                                <InputAdornment position="end"><IconButton size="large"
-                                                                           onClick={() => this.setAliasItem(json, 'id.write', '')}><IconClose/></IconButton></InputAdornment> : null,
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        size="large"
+                                        onClick={() => this.setAliasItem(json, 'id.write', '')}
+                                    >
+                                        <IconClose />
+                                    </IconButton>
+                                </InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id.write', e.target.value)}
                         margin="normal"
@@ -775,7 +807,7 @@ class ObjectBrowserEditObject extends Component {
                     <Fab
                         className={this.props.classes.button}
                         size="small"
-                        onClick={() => this.setState({selectId: false, selectRead: false, selectWrite: true})}>...</Fab>
+                        onClick={() => this.setState({ selectId: false, selectRead: false, selectWrite: true })}>...</Fab>
                 </Grid> : null}
                 <Grid item className={this.props.classes.marginTop}>
                     <FormControlLabel
@@ -809,13 +841,19 @@ class ObjectBrowserEditObject extends Component {
                             error={!!this.state.readError}
                             InputProps={{
                                 endAdornment: json.common?.alias?.read ?
-                                    <InputAdornment position="end"><IconButton size="large"
-                                                                               onClick={() => this.setAliasItem(json, 'read', '')}><IconClose/></IconButton></InputAdornment> : null,
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="large"
+                                            onClick={() => this.setAliasItem(json, 'read', '')}
+                                        >
+                                            <IconClose />
+                                        </IconButton>
+                                    </InputAdornment> : null,
                                 startAdornment: <InputAdornment position="start"><IconFx
-                                    className={this.props.classes.funcIcon}/></InputAdornment>,
+                                    className={this.props.classes.funcIcon} /></InputAdornment>,
                             }}
                             onChange={e => this.setAliasItem(json, 'read', e.target.value)}
-                            helperText={this.state.readError || (this.props.t('JS function like') + ' "val / 5 + 21"')}
+                            helperText={this.state.readError || (`${this.props.t('JS function like')} "val / 5 + 21"`)}
                             margin="normal"
                         />
                     </Grid> : null}
@@ -826,12 +864,18 @@ class ObjectBrowserEditObject extends Component {
                             label={this.props.t('Write converter')}
                             error={!!this.state.writeError}
                             value={json.common?.alias?.write || 'val'}
-                            helperText={this.state.writeError || (this.props.t('JS function like') + ' "(val - 21) * 5"')}
+                            helperText={this.state.writeError || (`${this.props.t('JS function like')} "(val - 21) * 5"`)}
                             className={this.props.classes.funcEdit}
                             InputProps={{
                                 endAdornment: json.common?.alias?.write ?
-                                    <InputAdornment position="end"><IconButton size="large"
-                                                                               onClick={() => this.setAliasItem(json, 'write', '')}><IconClose/></IconButton></InputAdornment> : null,
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="large"
+                                            onClick={() => this.setAliasItem(json, 'write', '')}
+                                        >
+                                            <IconClose />
+                                        </IconButton>
+                                    </InputAdornment> : null,
                                 startAdornment: <InputAdornment position="start"><IconFx
                                     className={this.props.classes.funcIcon}/></InputAdornment>,
                             }}
@@ -867,7 +911,7 @@ class ObjectBrowserEditObject extends Component {
             return null;
         } else {
             return <Dialog
-                open={true}
+                open={!0}
                 maxWidth="md"
                 fullWidth
                 onClose={() => this.setState({ showCopyDialog: false })}
@@ -882,18 +926,18 @@ class ObjectBrowserEditObject extends Component {
                         value={this.state.newId}
                         onKeyDown={e => {
                             if (e.keyCode === 13 && !this.props.objects[this.state.newId]) {
-                                this.setState({showCopyDialog: ''});
+                                this.setState({ showCopyDialog: '' });
                                 this.onClone(this.state.showCopyDialog, this.state.newId);
                             }
                         }}
-                        onChange={e => this.setState({newId: e.target.value})}
+                        onChange={e => this.setState({ newId: e.target.value })}
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button
                         disabled={!!this.props.objects[this.state.newId]}
                         onClick={() => {
-                            this.setState({showCopyDialog: ''});
+                            this.setState({ showCopyDialog: '' });
                             this.onClone(this.state.showCopyDialog, this.state.newId);
                         }}
                         color="primary"
@@ -903,8 +947,8 @@ class ObjectBrowserEditObject extends Component {
                     </Button>
                     <Button
                         color="grey"
-                        onClick={() => this.setState({showCopyDialog: ''})}
-                        startIcon={<IconClose/>}
+                        onClick={() => this.setState({ showCopyDialog: '' })}
+                        startIcon={<IconClose />}
                     >
                         {this.props.t('Cancel')}
                     </Button>
@@ -918,7 +962,7 @@ class ObjectBrowserEditObject extends Component {
 
         return <Dialog
             classes={{paper: this.props.classes.dialog}}
-            open={true}
+            open={!0}
             maxWidth="lg"
             fullWidth={this.state.type !== 'number' && this.state.type !== 'boolean'}
             fullScreen={false}
@@ -949,10 +993,11 @@ class ObjectBrowserEditObject extends Component {
                             setOptions={{
                                 enableBasicAutocompletion: true,
                                 enableLiveAutocompletion: true,
-                                enableSnippets: true
+                                enableSnippets: true,
                             }}
-                            editorProps={{$blockScrolling: true}}
+                            editorProps={{ $blockScrolling: true }}
                         />
+                        {this.state.showCommonDeleteMessage ? <div className={this.props.classes.commonDeleteTip}>{I18n.t('common_delete_tip')}</div> : null}
                     </div>
                     : null
                 }
@@ -965,29 +1010,29 @@ class ObjectBrowserEditObject extends Component {
             <DialogActions className={this.props.classes.wrapperButton}>
                 <Button
                     color="grey"
-                    onClick={() => this.setState({showCopyDialog: this.props.obj._id, newId: this.props.obj._id})}
+                    onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
                     disabled={this.state.error || this.state.changed}
                     title={this.props.t('Create a copy of this object')}
-                ><IconCopy/></Button>
-                <div style={{ flexGrow: 1 }}/>
+                ><IconCopy /></Button>
+                <div style={{ flexGrow: 1 }} />
                 {this.state.tab === 'object' && <Button
                     color="grey"
                     onClick={e => this.onCopy(e)}
                     disabled={this.state.error}
                     title={this.isMobile ? this.props.t('Copy into clipboard') : ''}
-                    startIcon={<IconCopyClipboard/>}
+                    startIcon={<IconCopyClipboard />}
                 >{this.isMobile ? null : this.props.t('Copy into clipboard')}</Button>}
                 <Button
                     variant="contained"
                     disabled={this.state.error || !this.state.changed}
                     onClick={() => this.onUpdate()}
-                    startIcon={<IconCheck/>}
+                    startIcon={<IconCheck />}
                     color="primary">{this.props.t('Write')}</Button>
                 <Button
                     color="grey"
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    startIcon={<IconClose/>}
+                    startIcon={<IconClose />}
                 >{this.props.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
