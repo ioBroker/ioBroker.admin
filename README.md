@@ -116,6 +116,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+* (bluefox) Added `useNative` option to `sendTo` JSON Config component
+
 ### 6.2.23 (2022-10-12)
 * (Apollon77) Prepare for future js-controller versions
 * (bluefox) Corrected deletion of objects

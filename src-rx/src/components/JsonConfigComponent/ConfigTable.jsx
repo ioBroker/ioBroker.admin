@@ -156,11 +156,9 @@ class ConfigTable extends ConfigGeneric {
             value = [];
         }
 
-        const visibleValue = value.map((_, i) => i);
-
         this.setState({
             value,
-            visibleValue,
+            visibleValue: null,
             orderBy: /*this.props.schema.items.length ? this.props.schema.items[0].attr : */'',
             order: 'asc',
             iteration: 0,
@@ -344,16 +342,11 @@ class ConfigTable extends ConfigGeneric {
 
     onDelete = index => () => {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
-        let visibleValue = JSON.parse(JSON.stringify(this.state.visibleValue));
         newValue.splice(index, 1);
-        const pos = visibleValue.indexOf(index);
-        if (pos !== -1) {
-            visibleValue.splice(pos, 1);
-            visibleValue = visibleValue.map(i => i > index ? i - 1 : i);
-        }
 
-        this.setState({ value: newValue, visibleValue, iteration: this.state.iteration + 10000 }, () =>
-            this.onChangeWrapper(newValue));
+        this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () =>
+            this.applyFilter(false, null, () =>
+                this.onChangeWrapper(newValue)));
     };
 
     onChangeWrapper = (newValue, updateVisible = false) => {
@@ -379,8 +372,6 @@ class ConfigTable extends ConfigGeneric {
     onAdd = () => {
         const { schema } = this.props;
         const newValue = JSON.parse(JSON.stringify(this.state.value));
-        const visibleValue = JSON.parse(JSON.stringify(this.state.visibleValue));
-
         const newItem = schema.items && schema.items.reduce((accumulator, currentValue) => {
             let defaultValue;
             if (currentValue.defaultFunc) {
@@ -398,17 +389,18 @@ class ConfigTable extends ConfigGeneric {
         }, {});
 
         newValue.push(newItem);
-        visibleValue.push(newValue.length - 1);
 
-        this.setState({ value: newValue, visibleValue }, () =>
-            this.onChangeWrapper(newValue));
+        this.setState({ value: newValue }, () =>
+            this.applyFilter(false, null, () =>
+                this.onChangeWrapper(newValue)));
     }
 
     isAnyFilterSet() {
         return Object.keys(this.filterRefs).find(attr => this.filterRefs[attr].current?.children[0].children[0].value);
     }
 
-    applyFilter = (clear = false, value = this.state.value) => {
+    applyFilter = (clear, value, cb) => {
+        value = value || this.state.value;
         let visibleValue = value.map((_, i) => i);
         Object.keys(this.filterRefs).forEach(attr => {
             let valueInputRef = this.filterRefs[attr].current?.children[0].children[0].value;
@@ -420,36 +412,51 @@ class ConfigTable extends ConfigGeneric {
             }
         });
 
+        if (visibleValue.length === value.length) {
+            visibleValue = null;
+        }
+
+        if (visibleValue === null && this.state.visibleValue === null) {
+            cb && cb();
+            return;
+        }
+
         if (JSON.stringify(visibleValue) !== JSON.stringify(this.state.visibleValue)) {
-            this.setState({ visibleValue });
+            this.setState({ visibleValue }, () => cb && cb());
+        } else {
+            cb && cb();
         }
     }
 
     onMoveUp(idx) {
-        const value = JSON.parse(JSON.stringify(this.state.value));
-        const item = value[idx];
-        value.splice(idx, 1);
-        value.splice(idx - 1, 0, item);
-        this.setState({ value, iteration: this.state.iteration + 10000 }, () =>
-            this.onChangeWrapper(value));
+        const newValue = JSON.parse(JSON.stringify(this.state.value));
+        const item = newValue[idx];
+        newValue.splice(idx, 1);
+        newValue.splice(idx - 1, 0, item);
+        this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () =>
+            this.applyFilter(false, null, () =>
+                this.onChangeWrapper(newValue)));
     }
 
     onMoveDown(idx) {
-        const value = JSON.parse(JSON.stringify(this.state.value));
-        const item = value[idx];
-        value.splice(idx, 1);
-        value.splice(idx + 1, 0, item);
-        this.setState({ value, iteration: this.state.iteration + 10000 }, () =>
-            this.onChangeWrapper(value));
+        const newValue = JSON.parse(JSON.stringify(this.state.value));
+        const item = newValue[idx];
+        newValue.splice(idx, 1);
+        newValue.splice(idx + 1, 0, item);
+        this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () =>
+            this.applyFilter(false, null, () =>
+                this.onChangeWrapper(newValue)));
     }
 
     renderItem(error, disabled, defaultValue) {
         const { classes, schema } = this.props;
-        const { value, visibleValue } = this.state;
+        let { value, visibleValue } = this.state;
 
         if (!value) {
             return null;
         }
+
+        visibleValue = visibleValue || value.map((_, i) => i);
 
         const doAnyFilterSet = this.isAnyFilterSet();
 
@@ -471,10 +478,10 @@ class ConfigTable extends ConfigGeneric {
                         {visibleValue.map((idx, i) =>
                             <TableRow
                                 hover
-                                key={idx + '_' + i}
+                                key={`${idx}_${i}`}
                             >
                                 {schema.items && schema.items.map(headCell =>
-                                    <TableCell key={headCell.attr + '_' + idx} align="left">
+                                    <TableCell key={`${headCell.attr}_${idx}`} align="left">
                                         {this.itemTable(headCell.attr, value[idx], idx)}
                                     </TableCell>
                                 )}

@@ -12,7 +12,7 @@ import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
         width: '100%'
     }

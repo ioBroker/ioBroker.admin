@@ -816,13 +816,13 @@ class Instances extends Component {
     }
 
     setCompact = instance =>
-        this.extendObject('system.adapter.' + instance.id, { common: { runAsCompactMode: !this.isCompact(instance.obj) } });
+        this.extendObject(`system.adapter.${instance.id}`, { common: { runAsCompactMode: !this.isCompact(instance.obj) } });
 
     setRestartSchedule = (instance, value) => {
         if (value) {
-            this.extendObject('system.adapter.' + instance.id, { common: { restartSchedule: value } });
+            this.extendObject(`system.adapter.${instance.id}`, { common: { restartSchedule: value } });
         } else {
-            this.props.socket.getObject('system.adapter.' + instance.id)
+            this.props.socket.getObject(`system.adapter.${instance.id}`)
                 .then(obj => {
                     if (obj.common.restartSchedule !== '') {
                         obj.common.restartSchedule = '';

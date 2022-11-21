@@ -12,6 +12,7 @@ import IconWeb from '@mui/icons-material/Public';
 import IconWarning from '@mui/icons-material/Warning';
 import IconError from '@mui/icons-material/Error';
 import IconInfo from '@mui/icons-material/Info';
+import IconSearch from '@mui/icons-material/Search';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -43,6 +44,8 @@ class ConfigStaticText extends ConfigGeneric {
             icon = <IconError />;
         } else if (this.props.schema.icon === 'info') {
             icon = <IconInfo />;
+        } else if (this.props.schema.icon === 'search') {
+            icon = <IconSearch />;
         } else if (this.props.schema.icon) {
             icon = <Icon src={this.props.schema.icon} />;
         }

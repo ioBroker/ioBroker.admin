@@ -244,7 +244,7 @@ class ConfigGeneric extends Component {
         />;
     }
 
-    onChange(attr, newValue) {
+    onChange(attr, newValue, cb) {
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
 
@@ -333,13 +333,15 @@ class ConfigGeneric extends Component {
             }
 
             if (this.props.custom) {
-                this.props.onChange(attr, newValue);
+                this.props.onChange(attr, newValue, () => cb && cb());
 
                 changed && changed.length && changed.forEach((_attr,  i) =>
                     setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, _attr)), i * 50));
             } else {
-                this.props.onChange(data, undefined, () =>
-                    changed.length && this.props.forceUpdate(changed, data));
+                this.props.onChange(data, undefined, () => {
+                    changed.length && this.props.forceUpdate(changed, data);
+                    cb && cb();
+                });
             }
         }
     }

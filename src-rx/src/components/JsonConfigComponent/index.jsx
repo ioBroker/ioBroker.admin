@@ -106,7 +106,7 @@ class JsonConfigComponent extends Component {
         }
     }
 
-    onCommandRunning = commandRunning => this.setState( {commandRunning});
+    onCommandRunning = commandRunning => this.setState( { commandRunning });
 
     readSettings() {
         if ((this.props.custom || this.props.common) && this.props.data) {
