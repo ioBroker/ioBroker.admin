@@ -4,7 +4,7 @@
 npm install <GitHub URL>
 cd node_modules/iobroker.admin
 npm install
-gulp
+npm run build
 iobroker upload admin
 ```
 
