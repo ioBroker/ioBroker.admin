@@ -287,6 +287,18 @@ const styles = theme => ({
     cellIdIconOwn: {
 
     },
+    cellIdTooltip: {
+        fontSize: 14,
+    },
+    cellIdTooltipLink: {
+        color: "#7ec2fd",
+        "&:hover": {
+            color: "#7ec2fd"
+        },
+        "&:visited": {
+            color: "#7ec2fd"
+        }
+    },
     cellCopyButton: {
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
@@ -4406,6 +4418,31 @@ class ObjectBrowser extends Component {
 
         const q = checkVisibleObjectType ? Utils.quality2text(this.states[id]?.q || 0).join(', ') : null;
 
+        const getIdFieldTooltip = (data) => {
+            if (data?.obj?.common?.desc && data.obj.common.desc !== '') {
+                let tooltip = '';
+
+                if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc[this.props.lang] !== undefined) {
+                    tooltip = data.obj.common.desc[this.props.lang];
+                } else if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc['en'] !== undefined) {
+                    tooltip = data.obj.common.desc['en'];
+                } else if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc[this.props.lang] === undefined) {
+                    return data.id;
+                } else {
+                    tooltip = data.obj.common.desc;
+                }
+
+                if (tooltip?.startsWith("http")) {
+                    return <a className={Utils.clsx(this.props.classes.cellIdTooltipLink)} href={tooltip}
+                              target="_blank" rel="noreferrer">{tooltip}</a>;
+                }
+
+                return <span className={Utils.clsx(this.props.classes.cellIdTooltip)}>{tooltip}</span>;
+
+            }
+            return data.id;
+        };
+
         return <Grid
             container
             direction="row"
@@ -4453,6 +4490,11 @@ class ObjectBrowser extends Component {
                 </Grid>
                 <Grid
                     item
+                    component={() => (
+                        <Tooltip title={getIdFieldTooltip(item.data)}>
+                            <div>{item.data.name}</div>
+                        </Tooltip>
+                    )}
                     title={id}
                     className={Utils.clsx(classes.cellIdSpan, invertBackground && classes.invertedBackground)}
                     style={{
