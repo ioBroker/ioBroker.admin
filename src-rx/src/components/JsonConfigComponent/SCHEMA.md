@@ -22,6 +22,8 @@ Possible types:
   - `maxLength` - max length of text in field
   - `readOnly` - read only field
   - `trim` - default is true. Set this attribute to `false` if trim is not desired.
+  - `minRows` - default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row.  
+  - `maxRows` - max rows of textarea. Used only if `minRows` > 1.  
 
 - `number`
   - `min` - minimal value

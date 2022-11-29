@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import { Autocomplete, TextField } from '@mui/material';
+import {
+    Autocomplete,
+    TextField,
+    TextareaAutosize,
+    FormControlLabel,
+} from '@mui/material';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
 
@@ -11,6 +16,14 @@ import ConfigGeneric from './ConfigGeneric';
 const styles = theme => ({
     indeterminate: {
         opacity: 0.5
+    },
+    label: {
+        width: '100%',
+        fontSize: 16,
+    },
+    helper: {
+        width: '100%',
+        fontSize: 12,
     }
 });
 
@@ -80,25 +93,55 @@ class ConfigText extends ConfigGeneric {
                 />}
             />;
         } else {
-            return <TextField
-                variant="standard"
-                fullWidth
-                value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
-                error={!!error}
-                disabled={!!disabled}
-                inputProps={{
-                    maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                    readOnly: this.props.schema.readOnly || false,
-                }}
-                onChange={e => {
-                    const value = e.target.value;
-                    this.setState({ value, oldValue: this.state.value }, () =>
-                        this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
-                }}
-                placeholder={this.getText(this.props.schema.placeholder)}
-                label={this.getText(this.props.schema.label)}
-                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-            />;
+            if (this.props.schema.minRows > 1) {
+                const helper = this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation);
+                return <div style={{ width: '100%' }}>
+                    {this.props.schema.label ? <div className={this.props.classes.label}>{this.getText(this.props.schema.label)}</div> : null}
+                    <TextareaAutosize
+                        variant="standard"
+                        style={{
+                            width: '100%',
+                            resize: 'vertical',
+                        }}
+                        minRows={this.props.schema.minRows}
+                        maxRows={this.props.schema.maxRows}
+                        value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
+                        error={!!error}
+                        disabled={!!disabled}
+                        inputProps={{
+                            maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                            readOnly: this.props.schema.readOnly || false,
+                        }}
+                        onChange={e => {
+                            const value = e.target.value;
+                            this.setState({value, oldValue: this.state.value}, () =>
+                                this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
+                        }}
+                        placeholder={this.getText(this.props.schema.placeholder)}
+                    />
+                    {helper ? <div className={this.props.classes.helper}>{helper}</div> : null}
+                </div>
+            } else {
+                return <TextField
+                    variant="standard"
+                    fullWidth
+                    value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
+                    error={!!error}
+                    disabled={!!disabled}
+                    inputProps={{
+                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                        readOnly: this.props.schema.readOnly || false,
+                    }}
+                    onChange={e => {
+                        const value = e.target.value;
+                        this.setState({ value, oldValue: this.state.value }, () =>
+                            this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
+                    }}
+                    placeholder={this.getText(this.props.schema.placeholder)}
+                    label={this.getText(this.props.schema.label)}
+                    helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+                />;
+            }
         }
     }
 }

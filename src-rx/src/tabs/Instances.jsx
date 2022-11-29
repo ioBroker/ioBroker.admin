@@ -276,7 +276,7 @@ class Instances extends Component {
         }
 
         return this.wordCache[word];
-    }
+    };
 
     async componentDidMount() {
         this.props.instancesWorker.registerHandler(this.getInstances);
@@ -473,7 +473,7 @@ class Instances extends Component {
 
         this._cacheList = null;
         this.setState(newState);
-    }
+    };
 
     getParamsLocalAndPanel = async () => {
         const compact = await this.props.socket.readBaseSettings(this.state.currentHost)
@@ -506,7 +506,7 @@ class Instances extends Component {
             viewMode,
             viewCategory,
         });
-    }
+    };
 
     async getData(update) {
         try {
@@ -576,11 +576,11 @@ class Instances extends Component {
     extendObject = (id, data) => {
         return this.props.socket.extendObject(id, data)
             .catch(error => window.alert(error));
-    }
+    };
 
     openConfig = instance => {
         Router.doNavigate('tab-instances', 'config', instance);
-    }
+    };
 
     // returns:
     // grey   - daemon / disabled
@@ -616,36 +616,36 @@ class Instances extends Component {
         }
 
         return status;
-    }
+    };
 
     isRunning = obj => {
         return obj?.common?.onlyWWW || obj?.common?.enabled;
-    }
+    };
 
     isCompactGroup = obj => {
         return obj?.common?.compactGroup || null;
-    }
+    };
 
     isCompact = obj => {
         return obj?.common?.runAsCompactMode || false;
-    }
+    };
 
     isCompactGroupCheck = id => {
         const obj = this.adapters.find(({ _id }) => _id === `system.adapter.${id}`);
         return obj?.common?.compact || false;
-    }
+    };
 
     getSentrySettings = obj => {
         return !!obj?.common?.plugins?.sentry || false;
-    }
+    };
 
     isSentry = obj => {
         return (!!obj?.common?.plugins?.sentry && !obj?.common?.disableDataReporting) || false;
-    }
+    };
 
     getSchedule = obj => {
         return obj?.common?.schedule ? obj.common.schedule : '';
-    }
+    };
 
     getName = obj => {
         if (!obj || !obj.common) {
@@ -664,28 +664,28 @@ class Instances extends Component {
                 return obj.common.title || '';
             }
         }
-    }
+    };
 
     isModeSchedule = obj => {
         return (obj?.common?.mode && obj?.common?.mode === 'schedule') || false;
-    }
+    };
 
     getMemoryLimitMB = obj => {
         return obj?.common?.memoryLimitMB;
-    }
+    };
 
     getInstanceHost = obj => {
         return obj?.common?.host;
-    }
+    };
 
     getRestartSchedule = obj => {
         return obj?.common?.restartSchedule ? obj.common.restartSchedule : '';
-    }
+    };
 
     getMemory = id => {
         const state = this.states[id + '.memRss'];
         return state ? state?.val : 0;
-    }
+    };
 
     getInputOutput = id => {
         const stateInput = this.states[`${id}.inputCount`];
@@ -694,22 +694,22 @@ class Instances extends Component {
             stateInput: stateInput?.val ? stateInput.val : 0,
             stateOutput: stateOutput?.val ? stateOutput.val : 0
         }
-    }
+    };
 
     isAlive = id => {
         const state = this.states[id + '.alive'];
         return state ? state.val : false;
-    }
+    };
 
     isConnectedToHost = id => {
         const state = this.states[id + '.connected'];
         return state ? state.val : false;
-    }
+    };
 
     isConnected = id => {
         const instance = this.state.instances[id];
         return this.states[instance.id + '.info.connection'] ? this.states[instance.id + '.info.connection'].val : null;
-    }
+    };
 
     getHeaders() {
         const headers = [];
