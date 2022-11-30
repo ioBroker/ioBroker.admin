@@ -4,8 +4,8 @@ import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField, FormControl } from '@mui/material';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import I18n from './wrapper/i18n';
+import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 

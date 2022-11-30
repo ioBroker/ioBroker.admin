@@ -1,7 +1,6 @@
 import { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
-import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
 
 import { Button } from '@mui/material';
 import { Card } from '@mui/material';
@@ -21,11 +20,12 @@ import EditIcon from '@mui/icons-material/Create';
 import ErrorIcon from '@mui/icons-material/Error';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@iobroker/adapter-react-v5/icons/IconCopy';
 
 import blue from '@mui/material/colors/blue';
 import grey from '@mui/material/colors/grey';
 import { red } from '@mui/material/colors';
+
+import { Utils, IconCopy as SaveIcon } from '@iobroker/adapter-react-v5';
 
 import CameraIntroDialog from '../dialogs/CameraIntroDialog';
 
@@ -476,7 +476,7 @@ class IntroCard extends Component {
                                     </Typography>
                                     <div>
                                         <IconButton size="small" onClick={() => {
-                                            copy(this.props.getHostDescriptionAll()[1], {
+                                            Utils.copy(this.props.getHostDescriptionAll()[1], {
                                                 format: 'text/plain'
                                             });
                                             this.props.openSnackBarFunc();

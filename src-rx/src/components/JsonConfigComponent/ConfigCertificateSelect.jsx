@@ -9,7 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import ConfigGeneric from './ConfigGeneric';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import I18n from './wrapper/i18n';
 
 const styles = theme => ({
     fullWidth: {

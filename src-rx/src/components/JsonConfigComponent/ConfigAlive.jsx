@@ -4,8 +4,8 @@ import { withStyles } from '@mui/styles';
 
 import ConfigGeneric from './ConfigGeneric';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import I18n from './wrapper/i18n';
+import Utils from './wrapper/Components/Utils';
 
 const styles = theme => ({
     root: {
@@ -27,7 +27,7 @@ class ConfigAlive extends ConfigGeneric {
     }
 
     getInstance() {
-        let instance = this.props.schema.instance || (this.props.adapterName + '.' + this.props.instance);
+        let instance = this.props.schema.instance || (`${this.props.adapterName}.${this.props.instance}`);
         if (instance.includes('${')) {
             instance = this.getPattern(instance);
         }

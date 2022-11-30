@@ -6,7 +6,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { Button, TextField } from '@mui/material';
 
-import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
+import DialogSelectID from './wrapper/Dialogs/SelectID';
 
 import ConfigGeneric from './ConfigGeneric';
 

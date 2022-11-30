@@ -8,7 +8,6 @@
  **/
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
-import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
 import withStyles from '@mui/styles/withStyles';
 import SVG from 'react-inlinesvg';
 
@@ -3467,7 +3466,7 @@ class ObjectBrowser extends Component {
     onCopy(e, text) {
         e.stopPropagation();
         e.preventDefault();
-        copy(text, null);
+        Utils.copy(text, null);
         if (text.length < 50) {
             this.setState({ toast: this.props.t('ra_Copied %s', text) });
         } else {

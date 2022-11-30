@@ -5,8 +5,8 @@ import { withStyles } from '@mui/styles';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 
-import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
-import CopyIcon from '@iobroker/adapter-react-v5/icons/IconCopy';
+import Utils from './wrapper/Components/Utils';
+import CopyIcon from './wrapper/icons/IconCopy';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -76,7 +76,7 @@ class ConfigTextSendTo extends ConfigGeneric {
                         <IconButton
                             size="small"
                             onClick={e => {
-                                copy(this.state.text);
+                                Utils.copy(this.state.text);
                                 window.alert('Copied');
                             }}>
                             <CopyIcon/>

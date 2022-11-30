@@ -7,7 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import { Button } from '@mui/material';
 
 import ConfigGeneric from './ConfigGeneric';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import I18n from './wrapper/i18n';
 import CustomModal from '../CustomModal';
 
 import AceEditor from 'react-ace';

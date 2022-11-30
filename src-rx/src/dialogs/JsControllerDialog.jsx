@@ -16,9 +16,8 @@ import { makeStyles } from '@mui/styles';
 
 import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';
-import copy from 'copy-to-clipboard';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 let node = null;
 
@@ -185,7 +184,7 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
     };
 */
     const copyTextToClipboard = text => {
-        copy(text);
+        Utils.copy(text);
         window.alert(I18n.t('Copied'));
 
         /*if (!navigator.clipboard) {

@@ -8,8 +8,8 @@ import IconButton from '@mui/material/IconButton';
 
 import ConfigGeneric from './ConfigGeneric';
 
-import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
-import CopyIcon from '@iobroker/adapter-react-v5/icons/IconCopy';
+import Utils from './wrapper/Components/Utils';
+import CopyIcon from './wrapper/icons/IconCopy';
 
 const styles = theme => ({
 });
@@ -25,7 +25,7 @@ class ConfigPattern extends ConfigGeneric {
                     <IconButton
                         size="small"
                         onClick={e => {
-                            copy(this.getPattern(this.props.schema.pattern));
+                            Utils.copy(this.getPattern(this.props.schema.pattern));
                             window.alert('Copied');
                         }}>
                         <CopyIcon/>

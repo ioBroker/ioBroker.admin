@@ -5,7 +5,7 @@
  *
  **/
 import React from 'react';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { Utils as _Utils, I18n } from '@iobroker/adapter-react-v5';
 
 const NAMESPACE    = 'material';
 const days         = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -941,15 +941,9 @@ class Utils {
      * @param {Event} [e]
      */
     static copyToClipboard(text, e) {
-        const el = window.document.createElement('textarea');
-        el.value = text;
-        window.document.body.appendChild(el);
-        el.select();
-        window.document.execCommand('copy');
-        window.document.body.removeChild(el);
-        console.log(text);
         e && e.stopPropagation();
-        e && e.preventDefault();
+        e && e.preventDefault()
+        return _Utils.copy(text);
     }
 
     /**

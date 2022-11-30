@@ -30,12 +30,13 @@ import IconCheck from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
 import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 import IconCopy from '@mui/icons-material/FileCopy';
-import IconFx from '@iobroker/adapter-react-v5/icons/IconFx';
 
-import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
+import {
+    Utils,
+    I18n,
+    SelectID as DialogSelectID,
+    IconFx,
+} from '@iobroker/adapter-react-v5';
 import { FormControl, InputLabel, MenuItem, Select, Tooltip, Autocomplete } from '@mui/material';
 import UploadImage from '../UploadImage';
 
@@ -890,9 +891,7 @@ class ObjectBrowserEditObject extends Component {
     }
 
     onCopy(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        copy(this.state.text);
+        Utils.copy(this.state.text, e);
         window.alert(this.props.t('ra_Copied'));
     }
 

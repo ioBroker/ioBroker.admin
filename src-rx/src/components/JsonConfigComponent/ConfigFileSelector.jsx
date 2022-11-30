@@ -22,13 +22,13 @@ import IconText from '@mui/icons-material/Article';
 import IconCode from '@mui/icons-material/Code';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import Utils from './wrapper/Components/Utils';
+import I18n from './wrapper/i18n';
+import ConfirmDialog from './wrapper/Dialogs/Confirm';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
         width: '100%'
     },

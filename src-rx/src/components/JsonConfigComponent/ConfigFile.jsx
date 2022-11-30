@@ -11,7 +11,7 @@ import IconVideo from '@mui/icons-material/Videocam';
 import IconCode from '@mui/icons-material/Code';
 import IconPlay from '@mui/icons-material/PlayArrow';
 
-import FileSelectDialog from '@iobroker/adapter-react-v5/Dialogs/FileSelect';
+import SelectFileDialog from './wrapper/Dialogs/SelectFile';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigFileSelector from './ConfigFileSelector';
@@ -108,7 +108,7 @@ class ConfigFile extends ConfigGeneric {
         if (!this.state.showFileBrowser) {
             return null;
         } else {
-            return <FileSelectDialog
+            return <SelectFileDialog
                 imagePrefix={this.props.imagePrefix}
                 socket={this.props.socket}
                 selected={this.state.value}

@@ -4,7 +4,7 @@ import { withStyles } from '@mui/styles';
 
 import LinearProgress from '@mui/material/LinearProgress';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import I18n from './wrapper/i18n';
 
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';

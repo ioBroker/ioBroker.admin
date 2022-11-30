@@ -12,10 +12,11 @@ import IconSend from '@mui/icons-material/Send';
 import IconWeb from '@mui/icons-material/Public';
 import IconSearch from '@mui/icons-material/Search';
 
-import { I18n, Icon } from '@iobroker/adapter-react-v5';
-import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
-import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import I18n from './wrapper/i18n';
+import Icon from './wrapper/Components/Icon';
+import DialogError from './wrapper/Dialogs/Error';
+import DialogMessage from './wrapper/Dialogs/Message';
+import DialogConfirm from './wrapper/Dialogs/Confirm';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -263,7 +264,7 @@ class ConfigSendto extends ConfigGeneric {
             icon = <IconInfo />;
         }
 
-        return <ConfirmDialog
+        return <DialogConfirm
             title={ this.getText(confirm.title) || I18n.t('ra_Please confirm') }
             text={ this.getText(confirm.text) }
             ok={ this.getText(confirm.ok) || I18n.t('ra_Ok') }

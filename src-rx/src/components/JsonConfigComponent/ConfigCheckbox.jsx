@@ -8,7 +8,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 
 import ConfigGeneric from './ConfigGeneric';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import I18n from './wrapper/i18n';
 
 const styles = theme => ({
     error: {

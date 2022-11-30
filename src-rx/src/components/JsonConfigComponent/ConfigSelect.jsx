@@ -8,7 +8,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import I18n from './wrapper/i18n';
+import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 

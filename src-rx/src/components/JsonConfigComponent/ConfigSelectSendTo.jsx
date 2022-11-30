@@ -14,7 +14,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 

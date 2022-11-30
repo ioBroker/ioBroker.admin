@@ -14,7 +14,7 @@ import DownIcon from '@mui/icons-material/ArrowDownward';
 import IconFilterOn from '@mui/icons-material/FilterAlt';
 import IconFilterOff from '@mui/icons-material/FilterAltOff';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';

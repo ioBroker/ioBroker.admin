@@ -13,10 +13,8 @@ import {
 
 import IconSend from '@mui/icons-material/Send';
 
-import {
-    I18n,
-    Error as DialogError,
-} from '@iobroker/adapter-react-v5';
+import I18n from './wrapper/i18n';
+import DialogError from './wrapper/Dialogs/Error';
 
 import ConfigGeneric from './ConfigGeneric';
 

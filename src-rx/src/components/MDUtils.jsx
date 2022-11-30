@@ -5,7 +5,7 @@
  *
  **/
 //import React from 'react';
-import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
+import { Utils } from '@iobroker/adapter-react-v5';
 
 class MDUtils {
     static text2link(text) {
@@ -88,9 +88,7 @@ class MDUtils {
     }
 
     static onCopy(e, text) {
-        copy(text);
-        e && e.stopPropagation();
-        e && e.preventDefault();
+        Utils.copy(text, e);
     }
 
     static decorateText(text, header, path) {

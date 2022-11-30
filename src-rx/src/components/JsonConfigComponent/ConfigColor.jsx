@@ -9,8 +9,8 @@ import Dialog from '@mui/material/Dialog';
 
 import ClearIcon from '@mui/icons-material/Close';
 
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import ColorPicker from '@iobroker/adapter-react-v5/Components/ColorPicker';
+import Utils from './wrapper/Components/Utils';
+import ColorPicker from './wrapper/Components/ColorPicker';
 
 import ConfigGeneric from './ConfigGeneric';
 
