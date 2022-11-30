@@ -116,7 +116,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
 * (bluefox) Added `useNative` option to `sendTo` JSON Config component
+* (bluefox) Added `checkLicense` and `uuid` components to JSON Config
 
 ### 6.2.23 (2022-10-12)
 * (Apollon77) Prepare for future js-controller versions

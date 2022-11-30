@@ -325,7 +325,7 @@ class JsonConfigComponent extends Component {
         } else if (item.type === 'panel' || !item.type) {
             return <ConfigPanel
                 index={1000}
-                isParentTab={true}
+                isParentTab
                 onCommandRunning={this.onCommandRunning}
                 commandRunning={this.state.commandRunning}
                 socket={this.props.socket}

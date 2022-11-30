@@ -16,6 +16,7 @@ import ConfigAutocomplete from './ConfigAutocomplete';
 import ConfigAutocompleteSendTo from './ConfigAutocompleteSendTo';
 import ConfigCRON from './ConfigCRON';
 import ConfigCertificateSelect from './ConfigCertificateSelect';
+import ConfigCheckLicense from './ConfigCheckLicense';
 import ConfigCheckbox from './ConfigCheckbox';
 import ConfigChip from './ConfigChip';
 import ConfigColor from './ConfigColor';
@@ -49,6 +50,7 @@ import ConfigText from './ConfigText';
 import ConfigTextSendTo from './ConfigTextSendTo';
 import ConfigTimePicker from './ConfigTimePicker';
 import ConfigTopic from './ConfigTopic';
+import ConfigUUID from './ConfigUUID';
 import ConfigUser from './ConfigUser';
 
 const components = {
@@ -57,6 +59,7 @@ const components = {
     autocompleteSendTo: ConfigAutocompleteSendTo,
     certificate: ConfigCertificateSelect,
     checkbox: ConfigCheckbox,
+    checkLicense: ConfigCheckLicense,
     chip: ConfigChip, // deprecated. Use "chips"
     chips: ConfigChip,
     color: ConfigColor,
@@ -93,6 +96,7 @@ const components = {
     textSendTo: ConfigTextSendTo,
     timePicker: ConfigTimePicker,
     topic: ConfigTopic,
+    uuid: ConfigUUID,
     user: ConfigUser,
 };
 

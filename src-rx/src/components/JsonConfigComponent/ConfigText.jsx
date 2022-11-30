@@ -23,6 +23,11 @@ const styles = theme => ({
     helper: {
         width: '100%',
         fontSize: 12,
+    },
+    error: {
+        width: '100%',
+        fontSize: 12,
+        color: '#FF0000',
     }
 });
 
@@ -101,16 +106,14 @@ class ConfigText extends ConfigGeneric {
                         style={{
                             width: '100%',
                             resize: 'vertical',
+                            backgroundColor: this.props.themeType === 'dark' ? '#363636' : '#cccccc',
+                            color: this.props.themeType === 'dark' ? '#fff' : '#111',
                         }}
                         minRows={this.props.schema.minRows}
                         maxRows={this.props.schema.maxRows}
                         value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
-                        error={!!error}
                         disabled={!!disabled}
-                        inputProps={{
-                            maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                            readOnly: this.props.schema.readOnly || false,
-                        }}
+                        readOnly={this.props.schema.readOnly || false}
                         onChange={e => {
                             const value = e.target.value;
                             this.setState({value, oldValue: this.state.value}, () =>
@@ -118,7 +121,7 @@ class ConfigText extends ConfigGeneric {
                         }}
                         placeholder={this.getText(this.props.schema.placeholder)}
                     />
-                    {helper ? <div className={this.props.classes.helper}>{helper}</div> : null}
+                    {helper || error ? <div className={error ? this.props.classes.error : this.props.classes.helper}>{error || helper}</div> : null}
                 </div>
             } else {
                 return <TextField

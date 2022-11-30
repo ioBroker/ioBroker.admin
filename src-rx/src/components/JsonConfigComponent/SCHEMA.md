@@ -294,6 +294,12 @@ adapter.on('message', obj => {
   - `divider` - divider between latitude and longitude. Default ","
   - `autoInit` - init field with current coordinates if empty
 
+- `checkLicense` - Very special component to check the license online. It's required exactly `license` and `useLicenseManager` properties in native.
+  - `uuid` - Check UUID
+  - `version` - Check version
+
+- `uuid` - Show iobroker UUID
+
 ## Common attributes of controls
 All types could have:
 - `sm` - width in 1/12 of screen on small screen

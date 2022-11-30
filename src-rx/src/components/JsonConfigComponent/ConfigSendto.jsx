@@ -148,7 +148,7 @@ class ConfigSendto extends ConfigGeneric {
 
     renderErrorDialog() {
         if (this.state._error) {
-            return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({_error: ''})} />;
+            return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({ _error: '' })} />;
         } else {
             return null;
         }
@@ -156,7 +156,7 @@ class ConfigSendto extends ConfigGeneric {
 
     renderMessageDialog() {
         if (this.state._message) {
-            return <DialogMessage text={this.state._message} classes={undefined} onClose={() => this.setState({ _error: '' })} />;
+            return <DialogMessage text={this.state._message} classes={undefined} onClose={() => this.setState({ _message: '' })} />;
         } else {
             return null;
         }
@@ -246,7 +246,7 @@ class ConfigSendto extends ConfigGeneric {
             .then(() => {
                 this.props.onCommandRunning(false);
                 this.setState({ running: false });
-            })
+            });
     }
 
     renderConfirmDialog() {

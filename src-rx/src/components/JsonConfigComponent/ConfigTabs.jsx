@@ -62,7 +62,7 @@ class ConfigTabs extends ConfigGeneric {
                 })}
             </Tabs>
             {<ConfigPanel
-                isParentTab={true}
+                isParentTab
                 key={this.state.tab}
                 index={1001}
                 arrayIndex={this.props.arrayIndex}

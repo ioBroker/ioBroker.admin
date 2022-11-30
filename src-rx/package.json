@@ -7,7 +7,7 @@
         "@babel/plugin-proposal-decorators": "^7.20.0",
         "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
         "@fnando/sparkline": "^0.3.10",
-        "@iobroker/adapter-react-v5": "^3.3.0",
+        "@iobroker/adapter-react-v5": "^3.4.2",
         "@iobroker/admin-component-easy-access": "^0.3.2",
         "@iobroker/socket-client": "^1.1.14",
         "@mui/icons-material": "^5.10.6",
@@ -55,7 +55,15 @@
         "react-showdown": "^2.3.1",
         "react-sortable-hoc": "^2.0.0",
         "copy-to-clipboard": "^3.3.2",
-        "semver": "^7.3.8"
+        "semver": "^7.3.8",
+        "@craco/craco": "^6.4.5",
+        "craco-esbuild": "^0.5.2",
+        "craco-module-federation": "^1.1.0",
+        "@honkhonk/vite-plugin-svgr": "^1.1.0",
+        "@originjs/vite-plugin-commonjs": "^1.0.3",
+        "@dilesoft/vite-plugin-federation-dynamic": "^1.1.9",
+        "eslint": "^8.25.0",
+        "eslint-config-react-app": "^7.0.1"
     },
     "homepage": ".",
     "scripts": {
@@ -88,15 +96,5 @@
                 "loose": true
             }
         ]
-    ],
-    "devDependencies": {
-        "@craco/craco": "^6.4.5",
-        "craco-esbuild": "^0.5.2",
-        "craco-module-federation": "^1.1.0",
-        "@honkhonk/vite-plugin-svgr": "^1.1.0",
-        "@originjs/vite-plugin-commonjs": "^1.0.3",
-        "@dilesoft/vite-plugin-federation-dynamic": "^1.1.9",
-        "eslint": "^8.25.0",
-        "eslint-config-react-app": "^7.0.1"
-    }
+    ]
 }
