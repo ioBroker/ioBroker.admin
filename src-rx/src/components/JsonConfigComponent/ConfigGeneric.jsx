@@ -426,7 +426,7 @@ class ConfigGeneric extends Component {
     renderHelp(text, link, noTranslation) {
         if (!link) {
             text = this.getText(text, noTranslation) || '';
-            if (text && text.includes('<a ')) {
+            if (text && (text.includes('<a ') || text.includes('<br') || text.includes('<b>') || text.includes('<i>'))) {
                 return Utils.renderTextWithA(text);
             } else {
                 return text;

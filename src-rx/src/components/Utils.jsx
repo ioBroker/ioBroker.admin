@@ -42,7 +42,6 @@ const SIGNATURES = {
     Qk1: 'bmp',
     AAABAA: 'ico' // 00 00 01 00 according to https://en.wikipedia.org/wiki/List_of_file_signatures
 };
-
 class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
@@ -655,7 +654,7 @@ class Utils {
      * @param {string} text
      * @returns {string | JSX.Element[]}
      */
-    static renderTextWithA(text) {
+    static (text) {
         let m = text.match(/<a [^<]+<\/a>|<br\/?>/);
         if (m) {
             const result = [];

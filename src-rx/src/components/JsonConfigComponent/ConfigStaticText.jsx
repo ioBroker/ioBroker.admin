@@ -13,6 +13,7 @@ import IconInfo from '@mui/icons-material/Info';
 import IconSearch from '@mui/icons-material/Search';
 
 import Icon from './wrapper/Components/Icon';
+import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -71,6 +72,11 @@ class ConfigStaticText extends ConfigGeneric {
                 {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}
             </Button>
         } else {
+            let text = this.getText(this.props.schema.text || this.props.schema.label);
+            if (text && (text.includes('<a ') || text.includes('<br') || text.includes('<b>') || text.includes('<i>'))) {
+                text = Utils.renderTextWithA(text);
+            }
+
             return <span
                 className={this.props.schema.href ? this.props.classes.link : ''}
                 onClick={this.props.schema.href ? () => {
@@ -78,7 +84,7 @@ class ConfigStaticText extends ConfigGeneric {
                     const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
                     href && window.open(href, '_blank');
                 } : null}>
-                {this.getText(this.props.schema.text || this.props.schema.label)}
+                {text}
             </span>;
         }
     }
