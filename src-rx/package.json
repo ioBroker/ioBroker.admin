@@ -30,7 +30,7 @@
         "echarts": "^5.4.0",
         "echarts-for-react": "^3.0.2",
         "json5": "^2.2.1",
-        "leaflet": "^1.9.2",
+        "leaflet": "^1.9.3",
         "leaflet-geosearch": "^3.7.0",
         "lodash": "^4.17.21",
         "moment": "^2.29.4",
