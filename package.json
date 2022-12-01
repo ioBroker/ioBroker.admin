@@ -45,7 +45,7 @@
     "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@iobroker/testing": "^4.1.0",
-    "chai": "^4.3.6",
+    "chai": "^4.3.7",
     "del": "^6.1.1",
     "eslint": "^8.26.0",
     "gulp": "^4.0.2",
