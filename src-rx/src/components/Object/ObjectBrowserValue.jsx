@@ -321,8 +321,8 @@ class ObjectBrowserValue extends Component {
                     <InputLabel>{ this.props.t('Value') }</InputLabel>
                     <Select
                         variant="standard"
-                        defaultValue={ this.propsValue }
-                        onChange={ e => this.value = e.target.value }
+                        defaultValue={this.propsValue}
+                        onChange={e => this.value = e.target.value}
                     >
                         {Object.keys(this.props.states).map((key, i) => <MenuItem key={i} value={key}>{this.props.states[key]}</MenuItem>)}
                     </Select>
@@ -421,12 +421,12 @@ class ObjectBrowserValue extends Component {
                                         </FormControl>*/
                                         <Typography component="div">
                                             <Grid component="label" container alignItems="center" spacing={1}>
-                                                <Grid item style={{marginRight: 10}}>{this.props.t('Value')}:</Grid>
+                                                <Grid item style={{ marginRight: 10 }}>{this.props.t('Value')}:</Grid>
                                                 <Grid item>FALSE</Grid>
                                                 <Grid item>
                                                     <AntSwitch
                                                         autoFocus
-                                                        defaultChecked={ !!this.propsValue }
+                                                        defaultChecked={this.propsValue === 'null' || this.propsValue === 'undefined' ? false : !!this.propsValue}
                                                         onKeyUp={e => e.keyCode === 13 && this.onUpdate(e) }
                                                         onChange={e => this.value = e.target.checked}
                                                     />
