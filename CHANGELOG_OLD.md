@@ -1,6 +1,14 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+
+## 6.2.19 (2022-08-27)
+* (bluefox) Corrected some issues
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.2.18 (2022-08-24)
 * (bluefox) Corrected GUI bugs on custom settings
 
