@@ -1072,6 +1072,37 @@ function getSystemIcon(objects, id, k, imagePrefix) {
     return icon || null;
 }
 
+function getIdFieldTooltip(data, classes, lang) {
+    if (data?.obj?.common?.desc && data.obj.common.desc !== '') {
+        let tooltip = '';
+
+        if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc[lang] !== undefined) {
+            tooltip = data.obj.common.desc[lang];
+        } else if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc['en'] !== undefined) {
+            tooltip = data.obj.common.desc['en'];
+        } else if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc[lang] === undefined) {
+            return data.id;
+        } else {
+            tooltip = data.obj.common.desc;
+        }
+
+        if (tooltip?.startsWith('http')) {
+            return <a
+                className={Utils.clsx(classes.cellIdTooltipLink)}
+                href={tooltip}
+                target="_blank"
+                rel="noreferrer"
+            >
+                {tooltip}
+            </a>;
+        }
+
+        return <span className={Utils.clsx(classes.cellIdTooltip)}>{tooltip}</span>;
+    }
+
+    return data.id;
+}
+
 function buildTree(objects, options) {
     options = options || {};
     const imagePrefix = options.imagePrefix || '.';
@@ -4350,9 +4381,15 @@ class ObjectBrowser extends Component {
                 invertBackground = this.props.themeType === 'dark' ? '#9a9a9a' : '#565656';
             }
         }
+        if (id === 'system') {
+            checkColor = COLOR_NAME_SYSTEM;
+        } else if (id === 'system.adapter') {
+            checkColor = COLOR_NAME_SYSTEM_ADAPTER;
+        } else
         if (!checkColor || this.state.selected.includes(id)) {
             checkColor = 'inherit';
         }
+
         const icons = [];
 
         if (common?.statusStates) {
@@ -4417,31 +4454,6 @@ class ObjectBrowser extends Component {
 
         const q = checkVisibleObjectType ? Utils.quality2text(this.states[id]?.q || 0).join(', ') : null;
 
-        const getIdFieldTooltip = (data) => {
-            if (data?.obj?.common?.desc && data.obj.common.desc !== '') {
-                let tooltip = '';
-
-                if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc[this.props.lang] !== undefined) {
-                    tooltip = data.obj.common.desc[this.props.lang];
-                } else if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc['en'] !== undefined) {
-                    tooltip = data.obj.common.desc['en'];
-                } else if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc[this.props.lang] === undefined) {
-                    return data.id;
-                } else {
-                    tooltip = data.obj.common.desc;
-                }
-
-                if (tooltip?.startsWith("http")) {
-                    return <a className={Utils.clsx(this.props.classes.cellIdTooltipLink)} href={tooltip}
-                              target="_blank" rel="noreferrer">{tooltip}</a>;
-                }
-
-                return <span className={Utils.clsx(this.props.classes.cellIdTooltip)}>{tooltip}</span>;
-
-            }
-            return data.id;
-        };
-
         return <Grid
             container
             direction="row"
@@ -4489,20 +4501,10 @@ class ObjectBrowser extends Component {
                 </Grid>
                 <Grid
                     item
-                    component={() => (
-                        <Tooltip title={getIdFieldTooltip(item.data)}>
-                            <div>{item.data.name}</div>
-                        </Tooltip>
-                    )}
-                    title={id}
+                    style={{ color: checkColor }}
                     className={Utils.clsx(classes.cellIdSpan, invertBackground && classes.invertedBackground)}
-                    style={{
-                        color: id === 'system' ?
-                            COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER :
-                                checkColor),
-                    }}
                 >
-                    {item.data.name}
+                    <Tooltip title={getIdFieldTooltip(item.data, this.props.classes, this.props.lang)}><div>{item.data.name}</div></Tooltip>
                     {alias}
                     {icons}
                 </Grid>
