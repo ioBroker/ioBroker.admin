@@ -497,15 +497,15 @@ class ObjectBrowserEditObject extends Component {
         try {
             const json = JSON.parse(this.state.text);
             const stateTypeArray = [
-                'boolean',
-                'json',
-                'string',
-                'number',
-                'multistate',
-                'file',
-                'object',
                 'array',
-                'mixed'
+                'boolean',
+                'file',
+                'json',
+                'mixed',
+                'multistate',
+                'number',
+                'object',
+                'string',
             ];
             const disabled = false;
             const { classes, t, roleArray, obj } = this.props;
