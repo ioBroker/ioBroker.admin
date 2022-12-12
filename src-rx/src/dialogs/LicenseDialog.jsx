@@ -16,19 +16,19 @@ import { I18n } from '@iobroker/adapter-react-v5';
 
 let node = null;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
-        display: 'flex'
+        display: 'flex',
     },
     paper: {
-        maxWidth: 1000
+        maxWidth: 1000,
     },
     overflowHidden: {
         display: 'flex',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     pre: {
         overflow: 'auto',
@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 10,
     }
 }));
+
 const LicenseDialog = ({ url, cb, theme }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
@@ -45,11 +46,12 @@ const LicenseDialog = ({ url, cb, theme }) => {
 
     useEffect(() => {
         setLoading(true);
+        setText('');
         fetch(url)
             .then(el => el.text())
-            .then(el => {
+            .then(text => {
                 setLoading(false);
-                setText(el);
+                setText(text);
             })
             .catch(() => setLoading(false));
     }, [url]);

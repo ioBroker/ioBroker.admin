@@ -46,6 +46,7 @@ const versionChanged = [
 
 const ignoreErrors = [
     'removeChild',                         // ignore errors that happen by changing the version
+    'Loading chunk',                       // ignore errors that happen by changing the version
     'getWidth',                            // echarts error
     'safari-extension',                    // ignore safari extension errors
     'this.animation',                      // echarts error

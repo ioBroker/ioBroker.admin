@@ -1243,17 +1243,33 @@ class Adapters extends Component {
                 rating={adapter.rating}
                 onSetRating={() =>
                     this.setState({ showSetRating: { adapter: value, version: installed && installed.version, rating: adapter.rating}})}
-                onAddInstance={() =>
+                onAddInstance={() => {
+                    let url = adapter.extIcon || adapter.icon || '';
+                    if (url.includes('/main')) {
+                        url = `${url.split('/main')[0]}/main/LICENSE`;
+                    } else {
+                        url = `${url.split('/master')[0]}/master/LICENSE`;
+                    }
+
                     licenseDialogFunc(adapter.license === 'MIT', this.props.theme, async result =>
-                        result && await this.addInstance(value), (adapter.extIcon || adapter.icon || '').split('/master')[0] + '/master/LICENSE')
-                }
+                        result && await this.addInstance(value), url);
+                }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
                 onInfo={() => this.openInfoDialog(value)}
-                //onRebuild={() => this.rebuild(value)}
+                // onRebuild={() => this.rebuild(value)}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                onUpload={() => licenseDialogFunc(adapter.license === 'MIT', this.props.theme, result =>
-                    result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                onUpload={() => {
+                    let url = adapter.extIcon || adapter.icon || '';
+                    if (url.includes('/main')) {
+                        url = `${url.split('/main')[0]}/main/LICENSE`;
+                    } else {
+                        url = `${url.split('/master')[0]}/master/LICENSE`;
+                    }
+
+                    licenseDialogFunc(adapter.license === 'MIT', this.props.theme, result =>
+                        result && this.upload(value), url)
+                }}
                 allowAdapterDelete={this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true}
                 allowAdapterInstall={this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true}
                 allowAdapterUpdate={this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true}
@@ -1514,10 +1530,14 @@ class Adapters extends Component {
         }
 
         if (!this.cache.listOfVisibleAdapter.length) {
-            return !this.state.update && <div style={{
-                margin: 20,
-                fontSize: 26
-            }}>{this.props.t('all items are filtered out')}</div>;
+            return !this.state.update && <div
+                style={{
+                    margin: 20,
+                    fontSize: 26,
+                }}
+            >
+                {this.props.t('all items are filtered out')}
+            </div>;
         } else {
             return this.cache.listOfVisibleAdapter.map(value => {
                 const adapter   = this.state.repository[value];
@@ -1557,16 +1577,33 @@ class Adapters extends Component {
                     rating={adapter.rating}
                     onSetRating={() =>
                         this.setState({ showSetRating: { adapter: value, version: installed && installed.version, rating: adapter.rating}})}
-                    onAddInstance={() =>
+                    onAddInstance={() => {
+                        let url = adapter.extIcon || adapter.icon || '';
+                        if (url.includes('/main')) {
+                            url = `${url.split('/main')[0]}/main/LICENSE`;
+                        } else {
+                            url = `${url.split('/master')[0]}/master/LICENSE`;
+                        }
+
                         licenseDialogFunc(adapter.license === 'MIT', this.props.theme, async result =>
-                            result && await this.addInstance(value), (adapter.extIcon || adapter.icon || '').split('/master')[0] + '/master/LICENSE')}//
+                            result && await this.addInstance(value), url);
+                    }}
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
                     onInfo={() => this.openInfoDialog(value)}
-                    //onRebuild={() => this.rebuild(value)}
+                    // onRebuild={() => this.rebuild(value)}
                     onUpdate={() => this.openUpdateDialog(value)}
                     openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                    onUpload={() => licenseDialogFunc(adapter.license === 'MIT', this.props.theme, result =>
-                        result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                    onUpload={() => {
+                        let url = adapter.extIcon || adapter.icon || '';
+                        if (url.includes('/main')) {
+                            url = `${url.split('/main')[0]}/main/LICENSE`;
+                        } else {
+                            url = `${url.split('/master')[0]}/master/LICENSE`;
+                        }
+
+                        licenseDialogFunc(adapter.license === 'MIT', this.props.theme, result =>
+                            result && this.upload(value), url);
+                    }}
                     allowAdapterDelete={this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true}
                     allowAdapterInstall={this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true}
                     allowAdapterUpdate={this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true}

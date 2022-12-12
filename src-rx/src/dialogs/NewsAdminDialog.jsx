@@ -226,7 +226,9 @@ export const checkMessages = function (messages, lastMessageId, context) {
                     'class': message.class,
                     icon: message.icon,
                     created: message.created,
-                    link: message.link
+                    link: message.link,
+                    linkTitle: message.linkTitle,
+                    img: message.img,
                 });
             }
         }
@@ -286,7 +288,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
     }
 
     const link = newsArr[indexArr].link;
-    let linkTitle = newsArr[indexArr].linktTitle;
+    let linkTitle = newsArr[indexArr].linkTitle;
     if (linkTitle && typeof linkTitle === 'object') {
         linkTitle = linkTitle[lang] || linkTitle.en;
     }
@@ -308,10 +310,10 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
                         {newsArr[indexArr]?.img &&
                             <CardMedia className={classes.img2} component="img" image={newsArr[indexArr].img} />}
                         <Typography
-                            style={themeType === 'dark' ? { color: 'black' } : null}
                             variant="body2"
-                            component="p">
-                            {Utils.renderTextWithA(text)}
+                            component="p"
+                        >
+                            {Utils.renderTextWithA(text.replace(/\n/g, '<br/>'))}
                         </Typography>
                         {newsArr[indexArr]?.link &&
                             <Button
@@ -320,7 +322,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
                                 onClick={() => window.open(newsArr[indexArr].link, '_blank')}
                                 color="primary"
                             >
-                                {newsArr[indexArr].linkTitle ? newsArr[indexArr].linkTitle[lang] ? newsArr[indexArr].linkTitle[lang] : newsArr[indexArr].linkTitle : I18n.t('Link')}
+                                {linkTitle || I18n.t('Link')}
                             </Button>}
                     </div>
                 </div>
@@ -334,7 +336,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
                             frame && frame.focus();
                         }}
                         color="secondary"
-                        startIcon={<WorldIcon/>}
+                        startIcon={<WorldIcon />}
                     >
                         {linkTitle || I18n.t('Show more info')}
                     </Button> : null

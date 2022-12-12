@@ -570,7 +570,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     }, params => {
                         setInstancesInputsParams(params);
                         cb();
-                    })
+                    });
                 } else {
                     cb();
                 }

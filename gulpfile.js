@@ -44,14 +44,14 @@ function npmInstall() {
 }
 
 function build() {
-    fs.writeFileSync(src + 'public/lib/js/sparkline.js',     fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js'));
-    fs.writeFileSync(src + 'public/lib/js/sparkline.js.map', fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js.map'));
+    fs.writeFileSync(src + 'public/lib/js/sparkline.js',     fs.readFileSync(`${src}node_modules/@fnando/sparkline/dist/sparkline.js`));
+    fs.writeFileSync(src + 'public/lib/js/sparkline.js.map', fs.readFileSync(`${src}node_modules/@fnando/sparkline/dist/sparkline.js.map`));
 
-    let ace = __dirname + '/src-rx/node_modules/ace-builds/src-min-noconflict/';
-    fs.writeFileSync(__dirname + '/src-rx/public/lib/js/ace/worker-json.js', fs.readFileSync(ace + 'worker-json.js'));
+    let ace = `${__dirname}/src-rx/node_modules/ace-builds/src-min-noconflict/`;
+    fs.writeFileSync(`${__dirname}/src-rx/public/lib/js/ace/worker-json.js`, fs.readFileSync(`${ace}worker-json.js`));
 
-    const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
-    const data    = JSON.parse(fs.readFileSync(src + 'package.json').toString('utf8'));
+    const version = JSON.parse(fs.readFileSync(`${__dirname}/package.json`).toString('utf8')).version;
+    const data    = JSON.parse(fs.readFileSync(`${src}package.json`).toString('utf8'));
 
     data.version = version;
 
@@ -65,14 +65,14 @@ function build() {
 
         console.log(options.cwd);
 
-        let script = src + 'node_modules/@craco/craco/bin/craco.js';
+        let script = `${src}node_modules/@craco/craco/dist/bin/craco.js`;
         if (!fs.existsSync(script)) {
-            script = __dirname + '/node_modules/@craco/craco/bin/craco.js';
+            script = `${__dirname}/node_modules/@craco/craco/dist/bin/craco.js`;
         }
 
         if (!fs.existsSync(script)) {
-            console.error('Cannot find execution file: ' + script);
-            reject('Cannot find execution file: ' + script);
+            console.error(`Cannot find execution file: ${script}`);
+            reject(`Cannot find execution file: ${script}`);
         } else {
             const cmd = `node --max-old-space-size=8192 ${script} build`;
             const child = cp.exec(cmd, { cwd: src });
@@ -83,7 +83,7 @@ function build() {
             child.on('exit', (code /* , signal */) => {
                 // code 1 is strange error that cannot be explained. Everything is installed but error :(
                 if (code && code !== 1) {
-                    reject('Cannot install: ' + code);
+                    reject(`Cannot install: ${code}`);
                 } else {
                     console.log(`"${cmd} in ${src} finished.`);
                     // command succeeded

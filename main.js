@@ -594,7 +594,7 @@ function updateNews() {
     adapter.timerNews = null;
 
     checkNodeJsVersion()
-        .catch(e => adapter.log.warn('Cannot check node.js versions: ' + e));
+        .catch(e => adapter.log.warn(`Cannot check node.js versions: ${e}`));
 
     let oldEtag;
     let newNews;
@@ -634,9 +634,18 @@ function updateNews() {
             return adapter.getStateAsync('info.newsLastId');
         })
         .then(lastState => {
+            // find time of last ID
+            let time = '';
+            if (lastState && lastState.val) {
+                const item = oldNews.find(item => item.id === lastState.val);
+                if (item) {
+                    time = item.created;
+                }
+            }
+
             // add all IDs newer than last seen
             newNews.forEach(item => {
-                if (!lastState || !lastState.val || item.created > lastState.val) {
+                if (!lastState || !time || item.created > time) {
                     if (!oldNews.find(it => it.created === item.created)) {
                         oldNews.push(item);
                     }
@@ -675,7 +684,7 @@ function main(adapter) {
 
     adapter.config.defaultUser = adapter.config.defaultUser || 'admin';
     if (!adapter.config.defaultUser.match(/^system\.user\./)) {
-        adapter.config.defaultUser = 'system.user.' + adapter.config.defaultUser;
+        adapter.config.defaultUser = `system.user.${adapter.config.defaultUser}`;
     }
 
     if (adapter.config.secure) {
@@ -712,7 +721,7 @@ function main(adapter) {
     adapter.getObjectAsync('info.connected')
         .then(obj => {
             if (!obj) {
-                let packageJson = JSON.parse(fs.readFileSync(__dirname + '/io-package.json').toString('utf8'));
+                let packageJson = JSON.parse(fs.readFileSync(`${__dirname}/io-package.json`).toString('utf8'));
                 const obj = packageJson.instanceObjects.find(o => o._id === 'info.connected');
                 if (obj) {
                     return adapter.setObjectAsync(obj._id, obj);
@@ -731,7 +740,7 @@ function validateUserData0() {
     adapter.getForeignObject('0_userdata.0', (err, obj) => {
         if (!obj) {
             try {
-                let io = fs.readFileSync(utils.controllerDir + '/io-package.json').toString('utf8');
+                let io = fs.readFileSync(`${utils.controllerDir}/io-package.json`).toString('utf8');
                 io = JSON.parse(io);
                 if (io.objects) {
                     const userData = io.objects.find(obj => obj._id === '0_userdata.0');
