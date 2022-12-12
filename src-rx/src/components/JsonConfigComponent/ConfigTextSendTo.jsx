@@ -76,7 +76,7 @@ class ConfigTextSendTo extends ConfigGeneric {
                         <IconButton
                             size="small"
                             onClick={e => {
-                                Utils.copy(this.state.text);
+                                Utils.copyToClipboard(this.state.text);
                                 window.alert('Copied');
                             }}>
                             <CopyIcon/>

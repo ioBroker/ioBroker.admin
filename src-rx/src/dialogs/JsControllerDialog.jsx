@@ -184,7 +184,7 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
     };
 */
     const copyTextToClipboard = text => {
-        Utils.copy(text);
+        Utils.copyToClipboard(text);
         window.alert(I18n.t('Copied'));
 
         /*if (!navigator.clipboard) {

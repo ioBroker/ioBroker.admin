@@ -3478,7 +3478,7 @@ class ObjectBrowser extends Component {
     onCopy(e, text) {
         e.stopPropagation();
         e.preventDefault();
-        Utils.copy(text, null);
+        Utils.copyToClipboard(text, null);
         if (text.length < 50) {
             this.setState({ toast: this.props.t('ra_Copied %s', text) });
         } else {

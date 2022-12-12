@@ -942,7 +942,7 @@ class Utils {
     static copyToClipboard(text, e) {
         e && e.stopPropagation();
         e && e.preventDefault()
-        return _Utils.copy(text);
+        return _Utils.copyToClipboard(text);
     }
 
     /**

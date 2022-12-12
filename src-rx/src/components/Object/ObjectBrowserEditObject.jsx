@@ -892,7 +892,7 @@ class ObjectBrowserEditObject extends Component {
     }
 
     onCopy(e) {
-        Utils.copy(this.state.text, e);
+        Utils.copyToClipboard(this.state.text, e);
         window.alert(this.props.t('ra_Copied'));
     }
 

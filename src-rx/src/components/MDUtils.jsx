@@ -88,7 +88,7 @@ class MDUtils {
     }
 
     static onCopy(e, text) {
-        Utils.copy(text, e);
+        Utils.copyToClipboard(text, e);
     }
 
     static decorateText(text, header, path) {

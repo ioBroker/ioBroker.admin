@@ -25,7 +25,7 @@ class ConfigPattern extends ConfigGeneric {
                     <IconButton
                         size="small"
                         onClick={e => {
-                            Utils.copy(this.getPattern(this.props.schema.pattern));
+                            Utils.copyToClipboard(this.getPattern(this.props.schema.pattern));
                             window.alert('Copied');
                         }}>
                         <CopyIcon/>

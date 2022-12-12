@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.3.0",
+    "version": "6.3.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,7 +18,7 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "6.3.0": {
+      "6.3.1": {
         "en": "Added `useNative` option to `sendTo` JSON Config component\nAdded `checkLicense` and `uuid` components to JSON Config\nCorrected the news handler",
         "de": "Option „useNative“ zur JSON-Konfigurationskomponente „sendTo“ hinzugefügt\n`checkLicense`- und `uuid`-Komponenten zu JSON Config hinzugefügt\nDer Newshandler wurde korrigiert",
         "ru": "Добавлен параметр `useNative` в компонент конфигурации JSON `sendTo`\nДобавлены компоненты `checkLicense` и `uuid` в JSON Config\nИсправлен обработчик новостей",
