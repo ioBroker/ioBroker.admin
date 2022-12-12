@@ -504,6 +504,7 @@ class ObjectBrowserEditObject extends Component {
                 'multistate',
                 'file',
                 'object',
+                'array',
                 'mixed'
             ];
             const disabled = false;
