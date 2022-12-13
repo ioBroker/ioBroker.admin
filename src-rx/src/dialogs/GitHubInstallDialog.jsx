@@ -125,39 +125,45 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
     const [currentTab, setCurrentTab] = useState((window._localStorage || window.localStorage).getItem('App.gitTab') || 'npm');
 
     // eslint-disable-next-line array-callback-return
-    const list = useCallback(() =>
-        categories
+    const list = useCallback(() => {
+        const adapters = categories
             .map(category => category.adapters)
-            .sort()
             .flat()
-            .map(el => {
-                const adapter = repository[el];
-                if (!adapter?.controller) {
-                    const parts = (adapter.extIcon || adapter.meta || adapter.readme || '').toString().split('/');
+            .sort()
 
-                    let name = adapter?.name;
-                    if (!name) {
-                        name = adapter.titleLang;
-                        if (name && typeof name === 'object') {
-                            name = name[I18n.getLanguage()] || name.en;
-                        } else {
-                            name = adapter.title || el;
-                        }
+        return adapters
+                .map((el, i) => {
+                    if (i && adapters[i - 1] === el) {
+                        return null;
                     }
+                    const adapter = repository[el];
+                    if (!adapter?.controller) {
+                        const parts = (adapter.extIcon || adapter.meta || adapter.readme || '').toString().split('/');
 
-                    return {
-                        value: `${el}/${parts[3]}`,
-                        name: `${name} [${parts[3]}]`,
-                        icon: adapter.extIcon || adapter.icon,
-                        nogit: !!adapter.nogit
-                    };
-                } else {
-                    return null;
-                }
-            })
-            .filter(it => it)
-            .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0),
-        [categories, repository]);
+                        let name = adapter?.name;
+                        if (!name) {
+                            name = adapter.titleLang;
+                            if (name && typeof name === 'object') {
+                                name = name[I18n.getLanguage()] || name.en;
+                            } else {
+                                name = adapter.title || el;
+                            }
+                        }
+
+                        return {
+                            value: `${el}/${parts[3]}`,
+                            name: `${name} [${parts[3]}]`,
+                            icon: adapter.extIcon || adapter.icon,
+                            nogit: !!adapter.nogit,
+                            title: el,
+                        };
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(it => it)
+                .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+    }, [categories, repository]);
 
     const closeInit = () => {
         setAutocompleteValue(null);
@@ -231,7 +237,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             value={autocompleteValue}
                             onChange={(_, newValue) => setAutocompleteValue(newValue)}
                             options={_list}
-                            getOptionLabel={option => option.name}
+                            getOptionLabel={option => <span title={option.title}>{option.name}</span>}
                             renderInput={params => {
                                 const _params = {...params};
                                 _params.InputProps = _params.InputProps || {};
