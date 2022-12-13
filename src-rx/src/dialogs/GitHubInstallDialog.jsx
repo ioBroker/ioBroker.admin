@@ -134,10 +134,21 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                 const adapter = repository[el];
                 if (!adapter?.controller) {
                     const parts = (adapter.extIcon || adapter.meta || adapter.readme || '').toString().split('/');
+
+                    let name = adapter?.name;
+                    if (!name) {
+                        name = adapter.titleLang;
+                        if (name && typeof name === 'object') {
+                            name = name[I18n.getLanguage()] || name.en;
+                        } else {
+                            name = adapter.title || el;
+                        }
+                    }
+
                     return {
-                        value: el + '/' + parts[3],
-                        name: `${adapter?.name} [${parts[3]}]`,
-                        icon: adapter.extIcon,
+                        value: `${el}/${parts[3]}`,
+                        name: `${name} [${parts[3]}]`,
+                        icon: adapter.extIcon || adapter.icon,
                         nogit: !!adapter.nogit
                     };
                 } else {
