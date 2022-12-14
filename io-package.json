@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.3.2",
+    "version": "6.3.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.3.3": {
+        "en": "Corrected icons in object browser",
+        "de": "Korrigierte Icons im Objektbrowser",
+        "ru": "Исправлены иконки в браузере объекта",
+        "pt": "Ícones corrigidos no navegador de objetos",
+        "nl": "Vertaling:",
+        "fr": "Icônes corrigées dans le navigateur objet",
+        "it": "Le icone corrette nel browser degli oggetti",
+        "es": "Iconos corregidos en el navegador de objetos",
+        "pl": "Ikony w przeglądarce obiektowej",
+        "uk": "Виправлені іконки в браузері об'єктів",
+        "zh-cn": "物品包件中的修饰"
+      },
       "6.3.2": {
         "en": "Added `useNative` option to `sendTo` JSON Config component\nAdded `checkLicense` and `uuid` components to JSON Config\nCorrected the news handler",
         "de": "Option „useNative“ zur JSON-Konfigurationskomponente „sendTo“ hinzugefügt\n`checkLicense`- und `uuid`-Komponenten zu JSON Config hinzugefügt\nDer Newshandler wurde korrigiert",
@@ -91,30 +104,6 @@
         "es": "Corregidos algunos problemas",
         "pl": "Wyprawa",
         "zh-cn": "处理一些问题"
-      },
-      "6.2.18": {
-        "en": "Corrected GUI bugs on custom settings\n",
-        "de": "Korrigierte GUI Fehler auf benutzerdefinierten Einstellungen\n",
-        "ru": "Исправлены ошибки GUI на настройках\n",
-        "pt": "Corrigido bugs GUI em configurações personalizadas\n",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:\n",
-        "fr": "Correction des bugs GUI sur les paramètres personnalisés\n",
-        "it": "Corretti bug GUI sulle impostazioni personalizzate\n",
-        "es": "Errores corregidos de GUI en ajustes personalizados\n",
-        "pl": "Oczywiście korygowane błędy GUI na temat zwyczajowych ustawień\n",
-        "zh-cn": "A. 对古伊人的习惯环境的更正\n"
-      },
-      "6.2.17": {
-        "en": "Corrected GUI bug on intro tab",
-        "de": "Korrigiert GUI Bug auf Intro Tab",
-        "ru": "Исправлена ошибка GUI на вкладке intro",
-        "pt": "Bug GUI corrigido na guia intro",
-        "nl": "Vertaling:",
-        "fr": "Correction du bug GUI sur l'onglet intro",
-        "it": "Corretto bug GUI sulla scheda intro",
-        "es": "Corregido error GUI en la pestaña de entrada",
-        "pl": "Wprowadzimy błąd GUI w internecie",
-        "zh-cn": "对古伊布图的更正"
       }
     },
     "desc": {

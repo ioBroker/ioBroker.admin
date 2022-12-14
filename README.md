@@ -116,7 +116,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.3.3 (2022-12-14)
 * (bluefox) Corrected icons in object browser
 
 ### 6.3.2 (2022-12-12)
@@ -133,9 +133,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.2.21 (2022-09-05)
 * (bluefox) Corrected small JSON config issue
-
-### 6.2.20 (2022-08-29)
-* (bluefox) Corrected GUI issues
 
 ## License
 The MIT License (MIT)
