@@ -116,6 +116,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected icons in object browser
+
 ### 6.3.2 (2022-12-12)
 * (bluefox) Added `useNative` option to `sendTo` JSON Config component
 * (bluefox) Added `checkLicense` and `uuid` components to JSON Config

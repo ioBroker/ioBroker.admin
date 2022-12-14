@@ -803,11 +803,12 @@ function getSelectIdIcon(objects, id, imagePrefix) {
             } else {
                 return null; // '<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
-        }
-        if (aIcon.startsWith('data:image/svg')) {
-            src = <SVG className="iconOwn" src={aIcon} width={28} height={28} />;
         } else {
-            src = aIcon;
+            if (aIcon.startsWith('data:image/svg')) {
+                src = <SVG className="iconOwn" src={aIcon} width={28} height={28} />;
+            } else {
+                src = aIcon;
+            }
         }
     } else {
         const common = objects[id] && objects[id].common;
@@ -1875,7 +1876,7 @@ class ObjectBrowser extends Component {
                     if (props.length >= 1) {
                         console.error('more than one type does not supported! Use filterFunc instead');
                     }
-                    return props.socket.getObjectView(null, null, props.types[0]);
+                    return props.socket.getObjectViewSystem(props.types[0], null, null);
                 }
                 return !objects['system.config'] ? props.socket.getObject('system.config')
                     .then(obj => ({ 'system.config': obj })) : Promise.resolve(null);
