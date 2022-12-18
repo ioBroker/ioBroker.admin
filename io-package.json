@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.3.3",
+    "version": "6.3.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.3.4": {
+        "en": "Corrected crashes in object browser",
+        "de": "Korrigierte Abstürze im Objektbrowser",
+        "ru": "Исправлены сбои в браузере объектов",
+        "pt": "Falhas corrigidas no navegador de objetos",
+        "nl": "Vertaling:",
+        "fr": "Accidents corrigés dans le navigateur objet",
+        "it": "Crash corretti nel browser degli oggetti",
+        "es": "Estrecho corregido en el navegador objeto",
+        "pl": "Poprawki w przeglądarce obiektowej",
+        "uk": "Виправлені аварійні випадки в браузері об'єкта",
+        "zh-cn": "投机中的伤员"
+      },
       "6.3.3": {
         "en": "Corrected icons in object browser",
         "de": "Korrigierte Icons im Objektbrowser",
@@ -92,18 +105,6 @@
         "es": "Cuestiones de interfaz geográfica corregidas",
         "pl": "Wymagania GUI",
         "zh-cn": "A. 纠正古伊人的问题"
-      },
-      "6.2.19": {
-        "en": "Corrected some issues",
-        "de": "Einige Probleme behoben",
-        "ru": "Исправлены некоторые вопросы",
-        "pt": "Corrigido alguns problemas",
-        "nl": "Vertaling:",
-        "fr": "Correction de certaines questions",
-        "it": "Corretto alcuni problemi",
-        "es": "Corregidos algunos problemas",
-        "pl": "Wyprawa",
-        "zh-cn": "处理一些问题"
       }
     },
     "desc": {
