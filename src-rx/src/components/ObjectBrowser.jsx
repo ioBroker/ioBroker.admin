@@ -68,6 +68,7 @@ import LooksOneIcon from '@mui/icons-material/LooksOne';
 import PressButtonIcon from '@mui/icons-material/RoomService';
 import IconError from '@mui/icons-material/Error';
 import IconDisconnected from '@mui/icons-material/WifiOff';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
 
 import IconExpert from '@iobroker/adapter-react-v5/icons/IconExpert';
 import IconAdapter from '@iobroker/adapter-react-v5/icons/IconAdapter';
@@ -335,6 +336,17 @@ const styles = theme => ({
         '&:hover .copyButton': {
             display: 'block',
         },
+    },
+    cellNameWithDesc: {
+        lineHeight: 'normal',
+    },
+    cellNameDivDiv: {
+
+    },
+    cellDescription: {
+        fontSize: 10,
+        opacity: 0.5,
+        fontStyle: 'italic',
     },
     cellIdAlias: {
         fontStyle: 'italic',
@@ -1073,35 +1085,43 @@ function getSystemIcon(objects, id, k, imagePrefix) {
     return icon || null;
 }
 
-function getIdFieldTooltip(data, classes, lang) {
-    if (data?.obj?.common?.desc && data.obj.common.desc !== '') {
+function getObjectTooltip(data, lang) {
+    if (!data) {
+        return null;
+    }
+    if (data.obj?.common?.desc) {
         let tooltip = '';
 
-        if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc[lang] !== undefined) {
-            tooltip = data.obj.common.desc[lang];
-        } else if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc['en'] !== undefined) {
-            tooltip = data.obj.common.desc['en'];
-        } else if (typeof data?.obj?.common?.desc === 'object' && data.obj.common.desc[lang] === undefined) {
-            return data.id;
+        if (typeof data.obj.common.desc === 'object') {
+            tooltip = data.obj.common.desc[lang] || data.obj.common.desc.en;
         } else {
             tooltip = data.obj.common.desc;
         }
-
-        if (tooltip?.startsWith('http')) {
-            return <a
-                className={Utils.clsx(classes.cellIdTooltipLink)}
-                href={tooltip}
-                target="_blank"
-                rel="noreferrer"
-            >
-                {tooltip}
-            </a>;
+        if (!tooltip) {
+            return null;
         }
 
-        return <span className={Utils.clsx(classes.cellIdTooltip)}>{tooltip}</span>;
+        return tooltip.toString();
     }
 
-    return data.id;
+    return null;
+}
+
+
+function getIdFieldTooltip(data, classes, lang) {
+    const tooltip = getObjectTooltip(data, lang);
+    if (tooltip?.startsWith('http')) {
+        return <a
+            className={Utils.clsx(classes.cellIdTooltipLink)}
+            href={tooltip}
+            target="_blank"
+            rel="noreferrer"
+        >
+            {tooltip}
+        </a>;
+    } else {
+        return <span className={Utils.clsx(classes.cellIdTooltip)}>{tooltip || data.id || ''}</span>;
+    }
 }
 
 function buildTree(objects, options) {
@@ -1764,7 +1784,6 @@ class ObjectBrowser extends Component {
             expandAllVisible: false,
             expanded,
             toast: '',
-            lang: props.lang,
             scrollBarWidth: 16,
             customDialog,
             editObjectDialog: '',
@@ -1782,6 +1801,7 @@ class ObjectBrowser extends Component {
             customColumnDialogValueChanged: false,
             showExportDialog: false,
             linesEnabled: (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.lines`) === 'true',
+            showDescription: (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.desc`) !== 'false',
         };
 
         this.edit = {};
@@ -1963,7 +1983,7 @@ class ObjectBrowser extends Component {
                 this.lastAppliedFilter = null;
 
                 // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, props.customFilter, props.types)) {
+                if (node && !applyFilter(node, this.state.filter, this.props.lang, this.objects, null, null, props.customFilter, props.types)) {
                     // reset filter
                     this.setState({ filter: { ...DEFAULT_FILTER }, columnsForAdmin }, () => {
                         this.setState({ loaded: true, updating: false }, () =>
@@ -2015,7 +2035,7 @@ class ObjectBrowser extends Component {
         if (this.state.selected && this.state.selected.length) {
             (window._localStorage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.objectSelected`, JSON.stringify(this.lastSelectedItems));
 
-            const name = this.lastSelectedItems.length === 1 ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.state.lang }) : '';
+            const name = this.lastSelectedItems.length === 1 ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.props.lang }) : '';
             this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
         } else {
             (window._localStorage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.objectSelected`, '');
@@ -2243,7 +2263,7 @@ class ObjectBrowser extends Component {
     */
 
     /**
-     * Renders the columns selector.
+     * Renders the columns' selector.
      * @returns {JSX.Element | null}
      */
     renderColumnsSelectorDialog() {
@@ -3413,6 +3433,18 @@ class ObjectBrowser extends Component {
                     </IconButton>
                 </Tooltip>}
 
+                {<Tooltip title={this.props.t('ra_Show/Hide object descriptions')}>
+                    <IconButton
+                        onClick={() => {
+                            (window._localStorage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.desc`, this.state.showDescription ? 'false' : 'true');
+                            this.setState({ showDescription: !this.state.showDescription })
+                        }}
+                        size="large"
+                    >
+                        <TextFieldsIcon color={this.state.showDescription ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>}
+
                 {this.props.objectAddBoolean ?
                     <Tooltip title={this.toolTipObjectCreating()}>
                         <div>
@@ -4271,14 +4303,14 @@ class ObjectBrowser extends Component {
 
         const paddingLeft = this.levelPadding * item.data.level;
 
-        if (item.data.lang !== this.state.lang) {
-            const { rooms, per } = findRoomsForObject(this.info, id, this.state.lang);
+        if (item.data.lang !== this.props.lang) {
+            const { rooms, per } = findRoomsForObject(this.info, id, this.props.lang);
             item.data.rooms = rooms.join(', ');
             item.data.per = per;
-            const { funcs, pef } = findFunctionsForObject(this.info, id, this.state.lang);
+            const { funcs, pef } = findFunctionsForObject(this.info, id, this.props.lang);
             item.data.funcs = funcs.join(', ');
             item.data.pef = pef;
-            item.data.lang = this.state.lang;
+            item.data.lang = this.props.lang;
         }
 
         const checkbox =
@@ -4455,6 +4487,19 @@ class ObjectBrowser extends Component {
 
         const q = checkVisibleObjectType ? Utils.quality2text(this.states[id]?.q || 0).join(', ') : null;
 
+        let name = item.data?.title || '';
+        let useDesc;
+        if (this.state.showDescription) {
+            useDesc = getObjectTooltip(item.data, this.props.lang);
+            if (useDesc) {
+                name = [
+                    <div key="name" className={classes.cellNameDivDiv}>{name}</div>,
+                    <div key="desc" className={classes.cellDescription}>{useDesc}</div>,
+                ];
+                useDesc = !!useDesc;
+            }
+        }
+
         return <Grid
             container
             direction="row"
@@ -4522,8 +4567,8 @@ class ObjectBrowser extends Component {
                 </div>
             </Grid>
 
-            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>
-                {(item.data?.title) || ''}
+            {this.columnsVisibility.name ? <div className={Utils.clsx(classes.cellName, useDesc && classes.cellNameWithDesc)} style={{ width: this.columnsVisibility.name }}>
+                {name}
                 {item.data?.title ? <div style={{ color: checkColor }}>
                     <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={e => this.onCopy(e, item.data.title)} />
                 </div> : null}
@@ -5183,7 +5228,7 @@ class ObjectBrowser extends Component {
         if (this.lastAppliedFilter !== jsonFilter && this.objects && this.root) {
             const counter = { count: 0 };
 
-            applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter, this.props.customFilter, this.props.types);
+            applyFilter(this.root, this.state.filter, this.props.lang, this.objects, null, counter, this.props.customFilter, this.props.types);
 
             if (counter.count < 500 && !this.state.expandAllVisible) {
                 setTimeout(() => this.setState({ expandAllVisible: true }));

@@ -116,6 +116,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected crashes in object browser
+
 ### 6.3.3 (2022-12-14)
 * (bluefox) Corrected icons in object browser
 
