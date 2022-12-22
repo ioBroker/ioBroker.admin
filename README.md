@@ -116,6 +116,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected reading of node.js version
+
 ### 6.3.4 (2022-12-18)
 * (bluefox) Corrected crashes in object browser
 
