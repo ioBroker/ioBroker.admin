@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.3.4",
+    "version": "6.3.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.3.5": {
+        "en": "Corrected reading of node.js version",
+        "de": "Korrigiertes Lesen von node.js-Version",
+        "ru": "Исправлено чтение версии node.js",
+        "pt": "Leitura correta da versão node.js",
+        "nl": "Vertaling:",
+        "fr": "Lecture corrigée de la version node.js",
+        "it": "Lettura corretta della versione node.js",
+        "es": "Lectura corregida de node.js versión",
+        "pl": "Poprawne odczytywanie wersji węzła.js",
+        "uk": "Виправлено читання версії node.js",
+        "zh-cn": "更正"
+      },
       "6.3.4": {
         "en": "Corrected crashes in object browser",
         "de": "Korrigierte Abstürze im Objektbrowser",
@@ -93,18 +106,6 @@
         "es": "Corregido pequeño número de configuración JSON",
         "pl": "Kwalifikacja małego JSON",
         "zh-cn": "小企业家协会"
-      },
-      "6.2.20": {
-        "en": "Corrected GUI issues",
-        "de": "Korrigierte GUI-Ausgaben",
-        "ru": "Исправлены проблемы с GUI",
-        "pt": "Problemas de GUI corrigidos",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:",
-        "fr": "Problèmes d'interface utilisateur corrigés",
-        "it": "Problemi di GUI corretti",
-        "es": "Cuestiones de interfaz geográfica corregidas",
-        "pl": "Wymagania GUI",
-        "zh-cn": "A. 纠正古伊人的问题"
       }
     },
     "desc": {
