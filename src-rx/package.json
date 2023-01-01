@@ -34,7 +34,7 @@
         "leaflet-geosearch": "^3.7.0",
         "lodash": "^4.17.21",
         "moment": "^2.29.4",
-        "ol": "^7.1.0",
+        "ol": "^7.2.2",
         "prop-types": "^15.8.1",
         "react": "^18.2.0",
         "react-ace": "^10.1.0",
