@@ -192,6 +192,13 @@ class ConfigSendto extends ConfigGeneric {
                 _originIp,
             }
         }
+        let timeout;
+        if (this.props.schema.timeout) {
+            timeout = setTimeout(() => {
+                this.props.onCommandRunning(false);
+                this.setState({ _error: I18n.t('ra_Request timed out'), running: false });
+            }, parseInt(this.props.schema.timeout, 10) || 10000);
+        }
 
         this.props.socket.sendTo(
             `${this.props.adapterName}.${this.props.instance}`,
@@ -199,15 +206,19 @@ class ConfigSendto extends ConfigGeneric {
             data
         )
             .then(response => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
                 if (response?.error) {
                     if (this.props.schema.error && this.props.schema.error[response.error]) {
                         let error = this.getText(this.props.schema.error[response.error]);
                         if (response.args) {
                             response.args.forEach(arg => error = error.replace('%s', arg));
                         }
-                        this.setState({_error: error});
+                        this.setState({ _error: error });
                     } else {
-                        this.setState({_error: response.error ? I18n.t(response.error) : I18n.t('ra_Error')});
+                        this.setState({ _error: response.error ? I18n.t(response.error) : I18n.t('ra_Error') });
                     }
                 } else {
                     if (response?.openUrl && this.props.schema.openUrl) {

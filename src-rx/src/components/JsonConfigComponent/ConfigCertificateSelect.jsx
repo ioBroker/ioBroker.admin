@@ -54,7 +54,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
         const item = this.state.selectOptions?.find(item => item.value === this.state.value);
 
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
-            <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
+            {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
                 error={!!error}

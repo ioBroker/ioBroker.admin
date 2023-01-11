@@ -12,53 +12,53 @@ import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
-        width: '100%'
-    }
+        width: '100%',
+    },
 });
 
 const LANGUAGES =[
     {
         value: 'en',
-        label: 'English'
+        label: 'English',
     },
     {
         value: 'de',
-        label: 'Deutsch'
+        label: 'Deutsch',
     },
     {
         value: 'ru',
-        label: 'русский'
+        label: 'русский',
     },
     {
         value: 'pt',
-        label: 'Portugues'
+        label: 'Portugues',
     },
     {
         value: 'nl',
-        label: 'Nederlands'
+        label: 'Nederlands',
     },
     {
         value: 'fr',
-        label: 'français'
+        label: 'français',
     },
     {
         value: 'it',
-        label: 'Italiano'
+        label: 'Italiano',
     },
     {
         value: 'es',
-        label: 'Espanol'
+        label: 'Espanol',
     },
     {
         value: 'pl',
-        label: 'Polski'
+        label: 'Polski',
     },
     {
         value: 'zh-ch',
-        label: '简体中文'
-    }
+        label: '简体中文',
+    },
 ];
 
 class ConfigLanguage extends ConfigGeneric {
@@ -81,7 +81,7 @@ class ConfigLanguage extends ConfigGeneric {
         const item = this.state.selectOptions?.find(item => item.value === this.state.value || (!item.value && !this.state.value));
 
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
-            <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
+            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
                 error={!!error}

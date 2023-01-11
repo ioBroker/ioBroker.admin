@@ -30,16 +30,16 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = () => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     fullWidthOneButton: {
-        width: 'calc(100% - 42px)'
+        width: 'calc(100% - 42px)',
     },
     fullWidthTwoButtons: {
-        width: 'calc(100% - 84px)'
+        width: 'calc(100% - 84px)',
     },
     fullWidthThreeButtons: {
-        width: 'calc(100% - 126x)'
+        width: 'calc(100% - 126x)',
     },
     dropZone: {
         width: '100%',
@@ -56,16 +56,14 @@ const styles = () => ({
         width: '100%',
         height: '100%',
     },
-
     uploadDiv: {
         position: 'relative',
         width: '100%',
     },
     uploadDivDragging: {
         opacity: 1,
-        background: 'rgba(128,255,128,0.1)'
+        background: 'rgba(128,255,128,0.1)',
     },
-
     uploadCenterDiv: {
         margin: 5,
         border: '3px dashed grey',
@@ -73,7 +71,7 @@ const styles = () => ({
         width: '100%',
         height: '100%',
         position: 'absolute',
-        display: 'flex'
+        display: 'flex',
     },
     uploadCenterIcon: {
         paddingTop: 10,
@@ -93,15 +91,14 @@ const styles = () => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
-
+        justifyContent: 'center',
     },
     disabledOpacity: {
         opacity: 0.3,
-        cursor: 'default'
+        cursor: 'default',
     },
     error: {
-        border: '2px solid red'
+        border: '2px solid red',
     },
     deleteButton: {
 
@@ -111,7 +108,7 @@ const styles = () => ({
         width: 40,
         display: 'inline-block',
         marginRight: 8,
-    }
+    },
 });
 
 const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp'];
@@ -369,17 +366,15 @@ class ConfigFileSelector extends ConfigGeneric {
 
         const element = <div className={this.props.classes.fullWidth}>
             <FormControl variant="standard" style={{width: `calc(100% - ${buttons * 42}px)`}}>
-                <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
+                {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
                 <Select
                     variant="standard"
                     error={!!error}
                     disabled={!!disabled}
                     value={this.state.value || '_'}
-                    renderValue={val => {
-                        return <>{this.getIcon(item)}<span>{item?.label || ''}</span></>
-                    }}
+                    renderValue={() => <>{this.getIcon(item)}<span>{item?.label || ''}</span></>}
                     onChange={e => {
-                        this.setState({value: e.target.value === '_' ? '' : e.target.value}, () =>
+                        this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () =>
                             this.onChange(this.props.attr, this.state.value));
                     }}
                 >
@@ -388,8 +383,11 @@ class ConfigFileSelector extends ConfigGeneric {
                             <ListItemIcon>{this.getIcon(item)}</ListItemIcon>
                             <ListItemText>{item.label}</ListItemText>
                             {this.props.schema.delete && item.value ?
-                                <IconButton className={this.props.classes.deleteButton} size="small"
-                                            onClick={() => this.setState({deleteFile: item.value})}><IconDelete/></IconButton> : null}
+                                <IconButton
+                                    className={this.props.classes.deleteButton}
+                                    size="small"
+                                    onClick={() => this.setState({ deleteFile: item.value })}><IconDelete/>
+                                </IconButton> : null}
                         </MenuItem>;
                     })}
                 </Select>

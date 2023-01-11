@@ -14,15 +14,15 @@ import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     icon: {
         width: 16,
         height: 16,
-        marginRight: 8
-    }
+        marginRight: 8,
+    },
 });
 
 class ConfigUser extends ConfigGeneric {
@@ -55,7 +55,7 @@ class ConfigUser extends ConfigGeneric {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
         return <FormControl variant="standard" className={this.props.classes.fullWidth}>
-            <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
+            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
                 error={!!error}

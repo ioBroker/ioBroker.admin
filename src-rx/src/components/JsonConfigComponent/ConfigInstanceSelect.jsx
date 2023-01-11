@@ -53,14 +53,16 @@ class ConfigInstanceSelect extends ConfigGeneric {
                     }
                 });
 
-                selectOptions.unshift({ label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE });
+                if (this.props.schema.allowDeactivate !== false) {
+                    selectOptions.unshift({ label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE });
+                }
                 if (this.props.schema.all) {
                     selectOptions.unshift({ label: I18n.t('sch_all'), value: '*' });
                 }
 
                 this.setState({ value: value || '', selectOptions });
 
-                await this.props.socket.subscribeObject(`system.adapter.${adapter ? adapter + '.' : ''}*`, this.onInstancesUpdate);
+                await this.props.socket.subscribeObject(`system.adapter.${adapter ? `${adapter}.` : ''}*`, this.onInstancesUpdate);
             });
     }
 

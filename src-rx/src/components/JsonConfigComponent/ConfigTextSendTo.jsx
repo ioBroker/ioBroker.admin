@@ -31,7 +31,7 @@ class ConfigTextSendTo extends ConfigGeneric {
                 try {
                     data = JSON.parse(data);
                 } catch (e) {
-                    console.error('Cannot parse json data: ' + data);
+                    console.error(`Cannot parse json data: ${data}`);
                 }
             }
 
@@ -40,7 +40,7 @@ class ConfigTextSendTo extends ConfigGeneric {
             }
 
             this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
-                .then(text => this.setState({text: text || '', context: this.getContext()}));
+                .then(text => this.setState({ text: text || '', context: this.getContext() }));
         }
     }
 

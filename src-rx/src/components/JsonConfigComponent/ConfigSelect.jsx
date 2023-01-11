@@ -64,7 +64,7 @@ class ConfigSelect extends ConfigGeneric {
             className={Utils.clsx(this.props.classes.fullWidth, this.props.arrayIndex !== undefined && this.props.classes.noMargin)}
             id={`jsonSelect_${this.props.schema.attr}_${this.props.index || this.props.index === 0 ? this.props.index : ''}`}
         >
-            <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
+            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
                 error={!!error}
@@ -72,7 +72,7 @@ class ConfigSelect extends ConfigGeneric {
                 value={this.state.value || '_'}
                 renderValue={val => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
-                    this.setState({value: e.target.value === '_' ? '' : e.target.value}, () => {
+                    this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () => {
                         if (this.state.value === ConfigGeneric.DIFFERENT_VALUE) {
                             this.onChange(this.props.attr, this.initialValue);
                         } else {

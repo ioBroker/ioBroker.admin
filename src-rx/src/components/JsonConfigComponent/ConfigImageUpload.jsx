@@ -58,7 +58,7 @@ class ConfigImageUpload extends ConfigGeneric {
     renderItem(error, disabled, defaultValue) {
         // eslint-disable-next-line
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
-            <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
+            {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <UploadImage
                 error={!!error}
                 disabled={disabled}

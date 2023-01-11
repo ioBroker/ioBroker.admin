@@ -50,9 +50,11 @@ Possible types:
 
 - `room` - Select room from `enum.room` (With color and icon) - (only Admin6)
   - `short` - no `enum.rooms.`
+  - `allowDeactivate` - allow to let room empty
 
 - `func` - Select function from `enum.func` (With color and icon) - (only Admin6)
   - `short` - no `enum.func.`
+  - `allowDeactivate` - allow to let functionality empty
 
 - `select` 
   - `options` - `[{label: {en: "option 1"}, value: 1}, ...]`
@@ -141,6 +143,7 @@ Possible types:
     - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`. You can use `base64` icons. (Request via issue if you need more icons)
     - `useNative` - if adapter returns result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration.
     - `showProcess` - Show spinner while request is in progress
+    - `timeout` - timeout for request in ms. Default: none.
 
 - `setState` - button that set instance's state
     - `id` - 'info.test'

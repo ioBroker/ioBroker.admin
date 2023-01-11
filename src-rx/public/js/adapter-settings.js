@@ -1052,7 +1052,7 @@ function getState(id, callback) {
 function getEnums(_enum, callback) {
     socket.emit('getObjectView', 'system', 'enum', {startkey: 'enum.' + _enum, endkey: 'enum.' + _enum + '.\u9999'}, function (err, res) {
         if (!err && res) {
-            var _res   = {};
+            var _res = {};
             for (var i = 0; i < res.rows.length; i++) {
                 if (res.rows[i].id !== 'enum.' + _enum) {
                     _res[res.rows[i].id] = res.rows[i].value;

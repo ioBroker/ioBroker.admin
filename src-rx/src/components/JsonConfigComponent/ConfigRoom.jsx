@@ -28,6 +28,11 @@ class ConfigFunc extends ConfigGeneric {
             .then(enums => {
                 const selectOptions = Object.keys(enums)
                     .map(id => ({ value: this.props.schema.short ? id.replace('enum.rooms.', '') : id, label: this.getText(enums[id].common.name), obj: enums[id]}));
+
+                if (this.props.schema.allowDeactivate !== false) {
+                    selectOptions.unshift({ label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE });
+                }
+
                 this.setState({ value, selectOptions });
             });
     }
@@ -43,21 +48,21 @@ class ConfigFunc extends ConfigGeneric {
             variant="standard"
             className={this.props.classes.fullWidth}
         >
-            <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
+            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
                 error={!!error}
                 disabled={!!disabled}
                 value={this.state.value || '_'}
-                renderValue={val => item ? <TextWithIcon value={item.obj} themeType={this.props.themeType} lang={I18n.getLanguage()}/> : ''}
+                renderValue={() => item ? (item.obj ? <TextWithIcon value={item.obj} themeType={this.props.themeType} lang={I18n.getLanguage()} /> : item.label) : ''}
                 onChange={e => {
-                    this.setState({value: e.target.value === '_' ? '' : e.target.value}, () =>
+                    this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () =>
                         this.onChange(this.props.attr, this.state.value));
                 }}
             >
                 {this.state.selectOptions.map(item =>
-                    <MenuItem key={item.value} value={item.value} style={item.value === ConfigGeneric.DIFFERENT_VALUE ? {opacity: 0.5} : {}}>
-                        <TextWithIcon value={item.obj} themeType={this.props.themeType} lang={I18n.getLanguage()}/>
+                    <MenuItem key={item.value} value={item.value} style={item.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}>
+                        {item.obj ? <TextWithIcon value={item.obj} themeType={this.props.themeType} lang={I18n.getLanguage()} /> : item.label}
                     </MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}

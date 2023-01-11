@@ -38,7 +38,7 @@ class ConfigCRON extends ConfigGeneric {
         const { value, showDialog } = this.state;
 
         return <FormControl className={classes.fullWidth} variant="standard">
-            <InputLabel shrink>{this.getText(schema.label)}</InputLabel>
+            {schema.label ? <InputLabel shrink>{this.getText(schema.label)}</InputLabel> : null}
             <div className={classes.flex}>
                 <TextField
                     variant="standard"
