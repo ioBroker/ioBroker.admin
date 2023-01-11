@@ -27,8 +27,8 @@ const styles = () => ({
     icon: {
         width: 24,
         height: 24,
-        marginRight: 4
-    }
+        marginRight: 4,
+    },
 });
 
 function ip2int(ip) {
@@ -124,7 +124,6 @@ function findNetworkAddressOfHost(obj, localIp) {
     return hostIp;
 }
 
-
 class ConfigSendto extends ConfigGeneric {
     async componentDidMount() {
         super.componentDidMount();
@@ -175,7 +174,7 @@ class ConfigSendto extends ConfigGeneric {
             data = this.getPattern(this.props.schema.jsonData, {
                 _origin,
                 _originIp,
-                ...this.props.data
+                ...this.props.data,
             });
             try {
                 data = JSON.parse(data);
@@ -190,7 +189,7 @@ class ConfigSendto extends ConfigGeneric {
             data = {
                 _origin,
                 _originIp,
-            }
+            };
         }
         let timeout;
         if (this.props.schema.timeout) {
@@ -276,13 +275,13 @@ class ConfigSendto extends ConfigGeneric {
         }
 
         return <DialogConfirm
-            title={ this.getText(confirm.title) || I18n.t('ra_Please confirm') }
-            text={ this.getText(confirm.text) }
-            ok={ this.getText(confirm.ok) || I18n.t('ra_Ok') }
-            cancel={ this.getText(confirm.cancel) || I18n.t('ra_Cancel') }
+            title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
+            text={this.getText(confirm.text)}
+            ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
+            cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
             icon={icon}
             onClose={isOk =>
-                this.setState({ confirmDialog: false}, () =>
+                this.setState({ confirmDialog: false }, () =>
                     isOk && this._onClick())
             }
         />;
@@ -319,10 +318,11 @@ class ConfigSendto extends ConfigGeneric {
                 variant={this.props.schema.variant || undefined}
                 color={this.props.schema.color || 'grey'}
                 className={this.props.classes.fullWidth}
-                disabled={disabled}
+                disabled={disabled || !this.props.alive}
                 startIcon={icon}
+                title={this.props.alive ? this.getText(this.props.schema.title) || '' : I18n.t('ra_Instance is not alive')}
                 onClick={() => {
-                    if (this.props.schema.confirm) {
+                    if (this.props.schema.confirm) {Do
                         this.setState({ confirmDialog: true });
                     } else {
                         this._onClick();
