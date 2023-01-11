@@ -322,7 +322,7 @@ class ConfigSendto extends ConfigGeneric {
                 startIcon={icon}
                 title={this.props.alive ? this.getText(this.props.schema.title) || '' : I18n.t('ra_Instance is not alive')}
                 onClick={() => {
-                    if (this.props.schema.confirm) {Do
+                    if (this.props.schema.confirm) {
                         this.setState({ confirmDialog: true });
                     } else {
                         this._onClick();
