@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { withStyles } from '@mui/styles';
 
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
+import { Utils } from '@iobroker/adapter-react-v5';
 
 import {
     Avatar,
@@ -216,7 +216,7 @@ class AdapterRow extends Component {
         if (isCategory) {
             return <TableRow
                 hover={false}
-                className={clsx(classes.category, this.props.hidden && classes.displayNone)}
+                className={Utils.clsx(classes.category, this.props.hidden && classes.displayNone)}
             >
                 <TableCell>
                     <Grid container spacing={1} alignItems="center" className={classes.name}>
@@ -231,7 +231,7 @@ class AdapterRow extends Component {
                     </Grid>
                 </TableCell>
                 <TableCell onClick={this.props.onToggle}>
-                    <div className={clsx(classes.nameDiv, classes.categoryName)}>
+                    <div className={Utils.clsx(classes.nameDiv, classes.categoryName)}>
                         <MaterialDynamicIcon objIconBool iconName={categoryName} className={classes.marginRight5} />
                         {name}
                     </div>
@@ -268,7 +268,7 @@ class AdapterRow extends Component {
                                 <div>{name}</div>
                                 {!versionDate ? <div
                                     onClick={onSetRating ? () => onSetRating() : undefined}
-                                    className={clsx(classes.rating, onSetRating && classes.ratingSet)}
+                                    className={Utils.clsx(classes.rating, onSetRating && classes.ratingSet)}
                                     title={rating?.title}
                                 >
                                     <Rating
@@ -319,7 +319,7 @@ class AdapterRow extends Component {
                     </div>
                 </TableCell>
                 <TableCell>{installedVersion && this.renderVersion()}</TableCell>
-                <TableCell className={clsx({
+                <TableCell className={Utils.clsx({
                     [classes.updateAvailable]: updateAvailable && rightDependencies,
                     [classes.wrongDependencies]: !rightDependencies
                 })}>

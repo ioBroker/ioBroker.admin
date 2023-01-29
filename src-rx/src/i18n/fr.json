@@ -1518,5 +1518,6 @@
   "Drag and drop to reorder": "Glisser-déposer pour réorganiser",
   "Flag will be automatically detected as repository will be read for the first time": "L'indicateur sera automatiquement détecté car le référentiel sera lu pour la première fois",
   "Create a copy of this object": "Créer une copie de cet objet",
-  "common_delete_tip": "Si vous souhaitez supprimer certains attributs dans \"common\", vous devez le définir sur \"null\""
+  "common_delete_tip": "Si vous souhaitez supprimer certains attributs dans \"common\", vous devez le définir sur \"null\"",
+  "temporary log level": "Niveau de journalisation temporaire"
 }

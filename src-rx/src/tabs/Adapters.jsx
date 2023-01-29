@@ -2,7 +2,6 @@
 import React, { Component, Fragment, createRef } from 'react';
 import semver from 'semver';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -61,6 +60,7 @@ import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 import RatingDialog from '../dialogs/RatingDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import IsVisible from '../components/IsVisible';
+import Utils from '../components/Utils'; // adapter-react-v5/Components/Utils';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -114,62 +114,62 @@ const styles = theme => ({
         }
     },
     hidden: {
-        visibility: 'hidden'
+        visibility: 'hidden',
     },
     name: {
         flexWrap: 'nowrap',
-        width: WIDTHS.name
+        width: WIDTHS.name,
     },
     emptyBlock: {
         flexWrap: 'nowrap',
-        width: WIDTHS.emptyBlock
+        width: WIDTHS.emptyBlock,
     },
     description: {
-        width: `calc(100% - ${SUM}px)`
+        width: `calc(100% - ${SUM}px)`,
     },
     keywords: {
 
     },
     connectionType: {
-        width: WIDTHS.connectionType
+        width: WIDTHS.connectionType,
     },
     installed: {
-        width: WIDTHS.installed
+        width: WIDTHS.installed,
     },
     available: {
         width: WIDTHS.available,
-        paddingRight: 6
+        paddingRight: 6,
     },
     update: {
         width: WIDTHS.update,
-        padding: 0
+        padding: 0,
     },
     license: {
-        width: WIDTHS.license
+        width: WIDTHS.license,
     },
     install: {
-        width: WIDTHS.install
+        width: WIDTHS.install,
     },
     green: {
-        color: green[500]
+        color: green[500],
     },
     blue: {
-        color: blue[700]
+        color: blue[700],
     },
     category: {
         backgroundColor: theme.palette.background.default,
     },
     grow: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     updateAvailable: {
-        color: green[700]
+        color: green[700],
     },
     tabContainer: {
-        overflow: 'auto'
+        overflow: 'auto',
     },
     containerVersion: {
-        borderBottom: 0
+        borderBottom: 0,
     },
     currentVersion: {
         display: 'flex',
@@ -180,36 +180,36 @@ const styles = theme => ({
         cursor: 'pointer',
         '&:hover': {
             background: '#c0c0c045',
-        }
+        },
     },
     updateAllButton: {
-        position: 'relative'
+        position: 'relative',
     },
     updateAllIcon: {
         position: 'absolute',
         top: 15,
         left: 15,
         opacity: 0.4,
-        color: theme.palette.mode === 'dark' ? '#aad5ff' : '#007fff'
+        color: theme.palette.mode === 'dark' ? '#aad5ff' : '#007fff',
     },
     counters: {
         marginRight: 10,
         minWidth: 120,
         display: 'flex',
         '& div': {
-            marginLeft: 3
-        }
+            marginLeft: 3,
+        },
     },
     visible: {
-        opacity: 0
+        opacity: 0,
     },
     infoAdapters: {
         fontSize: 10,
         color: theme.palette.mode === 'dark' ? '#9c9c9c' : '#333',
-        cursor: 'pointer'
+        cursor: 'pointer',
     },
     greenText: {
-        color: '#00a005d1'
+        color: '#00a005d1',
     },
     rating: {
         marginBottom: 20,
@@ -222,13 +222,13 @@ const styles = theme => ({
         color: '#000',
         fontSize: 14,
         padding: '2px 8px',
-        borderRadius: 5
+        borderRadius: 5,
     },
     viewModeDiv: {
         display: 'flex',
         flexFlow: 'wrap',
         overflow: 'auto',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
 });
 
@@ -1923,7 +1923,7 @@ class Adapters extends Component {
                 <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.statistics">
                     <Hidden only={['xs', 'sm']} >
                         <div className={classes.infoAdapters} onClick={() => this.setState({ showStatistics: true })}>
-                            <div className={clsx(classes.counters, classes.greenText)}>{this.t('Selected adapters')}<div ref={this.countRef} /></div>
+                            <div className={Utils.clsx(classes.counters, classes.greenText)}>{this.t('Selected adapters')}<div ref={this.countRef} /></div>
                             <div className={classes.counters}>{this.t('Total adapters')}:<div>{this.allAdapters}</div></div>
                             <div className={classes.counters}>{this.t('Installed adapters')}:<div>{this.installedAdapters}</div></div>
                             <div className={classes.counters}>{this.t('Last month updated adapters')}:<div>{this.recentUpdatedAdapters}</div></div>
@@ -1934,7 +1934,7 @@ class Adapters extends Component {
             {this.state.viewMode && this.props.systemConfig && this.props.systemConfig.common && <TabContent>
                 {!stableRepo ?
                     <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', repoName)}</div> : null}
-                <TableContainer className={clsx(classes.container, !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight)}>
+                <TableContainer className={Utils.clsx(classes.container, !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight)}>
                     <Table stickyHeader size="small" className={classes.table}>
                         <TableHead>
                             <TableRow>

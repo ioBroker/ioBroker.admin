@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import clsx from 'clsx';
 import ReactMarkdown from 'react-markdown'
 
 import Button from '@mui/material/Button';
@@ -29,14 +28,14 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         overflow: 'auto',
-        padding: 10
+        padding: 10,
     },
     paper: {
-        maxWidth: 1000
+        maxWidth: 1000,
     },
     overflowHidden: {
         display: 'flex',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     // pre: {
     //     overflow: 'auto',
@@ -46,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     h1: {
         fontWeight: 500,
         fontSize: 35,
-        margin: '10px 0'
+        margin: '10px 0',
     },
     h2: {
         padding: '10px 7px',
@@ -54,7 +53,7 @@ const useStyles = makeStyles(theme => ({
         fontWeight: 300,
         borderRadius: 3,
         background: '#4dabf5',
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
     h22: {
         padding: 0,
@@ -63,57 +62,56 @@ const useStyles = makeStyles(theme => ({
         fontWeight: 300,
         borderRadius: 3,
         background: '#4dabf5',
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
     standardText: {
         fontSize: 15,
         margin: '10px 0',
         '& > a': {
             textDecoration: 'none',
-            color: '#1e88e5'
-        }
+            color: '#1e88e5',
+        },
     },
     standardTextSmall: {
         fontSize: 12,
-        color: 'black'
+        color: 'black',
     },
     standardTextSmall2: {
-        fontSize: 12
+        fontSize: 12,
     },
     silver: {
         color: 'silver',
         '& > a': {
             textDecoration: 'none',
-            color: '#1e88e5'
-        }
+            color: '#1e88e5',
+        },
     },
     pre: {
         whiteSpace: 'pre-wrap',
         background: '#e4e3e3',
         padding: 10,
         borderRadius: 3,
-        position: 'relative'
+        position: 'relative',
     },
     copyButton: {
         color: 'black',
         position: 'absolute',
         right: 10,
-        top: 4
+        top: 4,
     },
     comment: {
-        color: '#00000078'
+        color: '#00000078',
     },
     accordionSummary:{
         background: '#4dabf5',
         borderRadius: 3,
-        '& .MuiAccordionSummary-content':{
-            margin:0
-        }
-
+        '& .MuiAccordionSummary-content': {
+            margin: 0,
+        },
     },
     accordionDetails:{
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     code: {
         backgroundColor: theme.palette.mode === 'dark' ? '#123456' : '#93bbe7',
@@ -122,7 +120,7 @@ const useStyles = makeStyles(theme => ({
     copyButtonSmall: {
         width: 31,
         height: 16,
-    }
+    },
 }));
 
 function removeChapter(text, remove, mustContain) {
@@ -213,8 +211,8 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
                             } else {
                                 _readme = removeChapter(_readme, 'windows', 'linux');
                             }
-                            _readme = _readme.replace(/cd \/opt\/iobroker/g, 'cd ' + _location)
-                            _readme = _readme.replace(/cd C:\\iobroker/g, 'cd ' + _location)
+                            _readme = _readme.replace(/cd \/opt\/iobroker/g, `cd ${_location}`)
+                            _readme = _readme.replace(/cd C:\\iobroker/g, `cd ${_location}`)
                             _readme = _readme.replace(/x\.y\.z/g, version)
                             _readme = _readme.split('<!-- copy');
                             const parts = [];
@@ -228,10 +226,10 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
                                     }
                                     button = button.replace(/^\n\r/, '').replace(/^\n/, '');
                                     if (small) {
-                                        parts.push(<IconButton key={'b' + parts.length} onClick={() => copyTextToClipboard(button)}><IconCopy /></IconButton>);
+                                        parts.push(<IconButton key={`b${parts.length}`} onClick={() => copyTextToClipboard(button)}><IconCopy /></IconButton>);
                                     } else {
                                         parts.push(<Button
-                                            key={'b' + parts.length}
+                                            key={`b${parts.length}`}
                                             variant="contained"
                                             onClick={() => copyTextToClipboard(button)}
                                             startIcon={<IconCopy />}
@@ -241,7 +239,7 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
                                 } else {
                                     parts.push(chapter);
                                 }
-                            })
+                            });
 
                             setReadme(parts);
                         });
@@ -256,7 +254,7 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
     }
 
     const renderReadme = () => <>{readme.map((text, i) => typeof text === 'object' ? text : <ReactMarkdown
-        key={'t_' + i}
+        key={`t_${i}`}
         components={{
             em: ({node, ...props}) => <IconButton className={classes.copyButtonSmall} onClick={() => copyTextToClipboard(props.children[0])}><IconCopy /></IconButton>,
             // eslint-disable-next-line jsx-a11y/anchor-has-content
@@ -296,13 +294,13 @@ iob start`
                             <div className={classes.standardTextSmall}>iob upgrade self</div>
                             <div className={classes.standardTextSmall}>iob start</div>
                         </pre>
-            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
-            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('If the upgrade command displays Access Rights / Permission errors, then please use the install fixer')}</div>
+            <div className={Utils.clsx(classes.standardTextSmall2)}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
+            <div className={Utils.clsx(classes.standardTextSmall2)}>{I18n.t('If the upgrade command displays Access Rights / Permission errors, then please use the install fixer')}</div>
             <pre className={classes.pre}>
                             <IconButton
                                 size="small"
                                 onClick={() => {
-                                    window.alert(I18n.t('Copied'))
+                                    window.alert(I18n.t('Copied'));
                                     copyTextToClipboard(`curl -sL https://iobroker.net/fix.sh | bash -`);
                                 }}
                                 className={classes.copyButton}
@@ -311,7 +309,7 @@ iob start`
                             </IconButton>
                             <div className={classes.standardTextSmall}>curl -sL https://iobroker.net/fix.sh | bash -</div>
                         </pre>
-            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('to fix these issues and upgrade command run again.')}</div>
+            <div className={Utils.clsx(classes.standardTextSmall2)}>{I18n.t('to fix these issues and upgrade command run again.')}</div>
 
             <h2 className={classes.h2}>{I18n.t('Linux/macOS (manually installed)')}</h2>
             <div className={classes.standardText}>{I18n.t('A manual installation usually takes place under root as user and therefore a "sudo" is necessary before the commands.')}</div>
@@ -342,8 +340,8 @@ iob start
                             <div className={classes.standardTextSmall}>iob start</div>
                         </pre>
 
-            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
-            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('If the upgrade command displays permissions / permissions errors, fix them. Sometimes "sudo" is not enough and you have to run the installation as a real root (previously simply sudo su -).')}</div>
+            <div className={Utils.clsx(classes.standardTextSmall2)}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
+            <div className={Utils.clsx(classes.standardTextSmall2)}>{I18n.t('If the upgrade command displays permissions / permissions errors, fix them. Sometimes "sudo" is not enough and you have to run the installation as a real root (previously simply sudo su -).')}</div>
         </>}
         {os === 'win32' && <>
             <h2 className={classes.h2}>{I18n.t('Windows')}</h2>
@@ -378,7 +376,7 @@ iob upgrade self
                             <div className={classes.standardTextSmall}>iob update</div>
                             <div className={classes.standardTextSmall}>iob upgrade self</div>
                         </pre>
-            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('Start ioBroker service or reboot computer, then ioBroker should restart and you can be sure that all the old processes were finished.')}</div>
+            <div className={Utils.clsx(classes.standardTextSmall2)}>{I18n.t('Start ioBroker service or reboot computer, then ioBroker should restart and you can be sure that all the old processes were finished.')}</div>
         </>}
         <Accordion style={{ paddingTop: 14 }}>
             <AccordionSummary
@@ -423,7 +421,7 @@ sudo -u iobroker -H npm install iobroker.js-controller`
     return <ThemeProvider theme={theme}>
         <Dialog
             onClose={onClose}
-            open={true}
+            open={!0}
             classes={{ paper: classes.paper }}
         >
             <DialogTitle>{I18n.t('js-controller upgrade instructions')}</DialogTitle>

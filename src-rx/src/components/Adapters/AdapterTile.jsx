@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
 import Rating from '@mui/material/Rating';
@@ -21,6 +20,8 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RemoveIcon from '@mui/icons-material/Remove';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { amber } from '@mui/material/colors';
+
+import { Utils } from '@iobroker/adapter-react-v5';
 
 import sentryIcon from '../../assets/sentry.svg';
 import IsVisible from '../IsVisible';
@@ -301,8 +302,8 @@ const AdapterTile = ({
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
 
-    return <Card className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
+    return <Card className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}>
+        {(openCollapse || focused) && <div className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent className={classes.cardContent}>
                 <div className={classes.cardContentDiv}>
                     <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
@@ -386,7 +387,7 @@ const AdapterTile = ({
                 </div>
             </div>
         </div>}
-        <div className={clsx(classes.imageBlock,
+        <div className={Utils.clsx(classes.imageBlock,
             installedVersion ? classes.installed : '',
             installedVersion && installedVersion !== version && updateAvailable ? classes.update : '')}
         >
@@ -396,11 +397,11 @@ const AdapterTile = ({
                 src={image || 'img/no-image.png'}
                 image={image || 'img/no-image.png'}
             />
-            <div className={clsx(classes.adapter, (stat || versionDate) && classes.adapterWithAgo)}>{adapter}</div>
+            <div className={Utils.clsx(classes.adapter, (stat || versionDate) && classes.adapterWithAgo)}>{adapter}</div>
             <div className={classes.versionDate}>{stat || versionDate}</div>
             {!stat && !versionDate && allowAdapterRating !== false ? <div
                 onClick={onSetRating ? () => onSetRating() : undefined}
-                className={clsx(classes.rating, onSetRating && classes.ratingSet)}
+                className={Utils.clsx(classes.rating, onSetRating && classes.ratingSet)}
                 title={rating?.title}
             >
                 <Rating
@@ -462,7 +463,7 @@ const AdapterTile = ({
                 <IsVisible value={allowAdapterUpdate}>
                     <Typography component={'span'} className={classes.availableVersion}>
                         <div>{t('Available version:')}</div>
-                        <div className={clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                        <div className={Utils.clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                             {!commandRunning && updateAvailable ?
 
                                 <Tooltip title={t('Update')}>

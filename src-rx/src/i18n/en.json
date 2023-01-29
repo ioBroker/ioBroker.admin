@@ -1518,5 +1518,6 @@
   "Drag and drop to reorder": "Drag and drop to reorder",
   "Flag will be automatically detected as repository will be read for the first time": "Flag will be automatically detected as repository will be read for the first time",
   "Create a copy of this object": "Create a copy of this object",
-  "common_delete_tip": "If you want delete some attributes in \"common\" you must set it to \"null\""
+  "common_delete_tip": "If you want delete some attributes in \"common\" you must set it to \"null\"",
+  "temporary log level": "Temporary log level"
 }

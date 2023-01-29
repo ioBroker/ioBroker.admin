@@ -1,18 +1,19 @@
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { withStyles } from '@mui/styles';
 
 import { Grid } from '@mui/material';
 
+import { Utils } from '@iobroker/adapter-react-v5';
+
 const styles = {
     root: {
         height: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     overflowAuto: {
-        overflow: 'auto'
-    }
+        overflow: 'auto',
+    },
 };
 
 const TabContent = props => {
@@ -20,9 +21,9 @@ const TabContent = props => {
 
     return <Grid
         item
-        className={ clsx(classes.root, {[classes.overflowAuto]: props.overflow === 'auto'}) }
+        className={Utils.clsx(classes.root, {[classes.overflowAuto]: props.overflow === 'auto'})}
     >
-        { props.children }
+        {props.children}
     </Grid>;
 }
 
@@ -34,7 +35,7 @@ TabContent.propTypes = {
     /**
      * Overflow behavior
      */
-    overflow: PropTypes.string
+    overflow: PropTypes.string,
 };
 
 export default withStyles(styles)(TabContent);

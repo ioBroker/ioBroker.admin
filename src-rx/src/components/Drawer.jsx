@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { Avatar, Drawer as MaterialDrawer } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
@@ -26,9 +25,7 @@ import FilesIcon from '@mui/icons-material/FileCopy';
 
 import LogoutIcon from '@iobroker/adapter-react-v5/icons/IconLogout';
 
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { Utils, I18n, Icon, withWidth } from '@iobroker/adapter-react-v5';
 
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
@@ -467,16 +464,16 @@ class Drawer extends Component {
     getHeader() {
         const { classes, state, handleNavigation } = this.props;
 
-        return <div className={clsx(
+        return <div className={Utils.clsx(
             classes.header,
             this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
             !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
         )}>
-            <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
+            <div className={Utils.clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
                 <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                     {this.props.adminGuiConfig.icon ?
-                        <div style={{height: 50, withWidth: 102, lineHeight: '50px'}}>
-                            <img src={this.props.adminGuiConfig.icon} alt="logo" style={{maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle'}}/>
+                        <div style={{ height: 50, withWidth: 102, lineHeight: '50px' }}>
+                            <img src={this.props.adminGuiConfig.icon} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }}/>
                         </div>
                         :
                         <Avatar
@@ -522,10 +519,10 @@ class Drawer extends Component {
                 if (idx !== undefined) {
                     this.setState({ tabs: newTabs }, () =>
                         socket.setSystemConfig(newObjCopy)
-                            .catch(e => window.alert('Cannot set system config: ' + e)));
+                            .catch(e => window.alert(`Cannot set system config: ${e}`)));
                 } else {
                     return socket.setSystemConfig(newObjCopy)
-                        .catch(e => window.alert('Cannot set system config: ' + e));
+                        .catch(e => window.alert(`Cannot set system config: ${e}`));
                 }
             });
     }
@@ -649,7 +646,7 @@ class Drawer extends Component {
             </SwipeableDrawer>;
         } else {
             return <MaterialDrawer
-                className={clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
+                className={Utils.clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
                 variant="persistent"
                 anchor="left"
                 open={this.props.state !== STATES.closed}

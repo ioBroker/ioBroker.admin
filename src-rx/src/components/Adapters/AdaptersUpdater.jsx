@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import semver from 'semver';
-import clsx from 'clsx';
+import moment from 'moment';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -26,9 +26,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import LanguageIcon from '@mui/icons-material/Language';
 import InfoIcon from '@mui/icons-material/Info';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import moment from "moment";
+import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     smallAvatar: {
@@ -185,7 +183,7 @@ class AdaptersUpdater extends Component {
             <ListItem
                 key={adapter}
                 dense
-                classes={{root: clsx(this.props.classes.listItem, this.props.updated.includes(adapter) && this.props.classes.updateDone)}}
+                classes={{ root: Utils.clsx(this.props.classes.listItem, this.props.updated.includes(adapter) && this.props.classes.updateDone) }}
                 ref={this.state.current === adapter && this.currentRef}
             >
                 <ListItemIcon className={this.props.classes.minWidth}>

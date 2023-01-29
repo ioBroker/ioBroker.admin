@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { withStyles } from '@mui/styles';
 
@@ -12,13 +11,14 @@ import Tooltip from '@mui/material/Tooltip';
 
 import amber from '@mui/material/colors/amber';
 
-import Utils from '../Utils';
+import CommonUtils from '../Utils';
 import { Checkbox } from '@mui/material';
+import { Utils } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     selected: {
         background: theme.palette.primary.main,
-        color: theme.palette.mode === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
+        color: theme.palette.mode === 'light' ? 'white' : CommonUtils.invertColor(theme.palette.primary.main, true),
         '&:hover': {
             color: theme.palette.primary.main,
             '& $selectedIcon': {
@@ -27,7 +27,7 @@ const styles = theme => ({
         },
     },
     selectedIcon: {
-        color: theme.palette.mode === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
+        color: theme.palette.mode === 'light' ? 'white' : CommonUtils.invertColor(theme.palette.primary.main, true),
     },
     compactBadge: {
         paddingLeft: 12,
@@ -70,7 +70,7 @@ const DrawerItem = props => {
     return <div style={Object.assign({ display: 'flex' }, style || {})}>
         {!!editList && <Checkbox checked={visible} onClick={editListFunc} />}
         <ListItemButton
-            className={clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
+            className={Utils.clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
             onClick={onClick}
         >
             <Tooltip title={compact ? content : ''}>
@@ -81,7 +81,7 @@ const DrawerItem = props => {
                     className={classes.noWrap}
                 >
                     <Grid item>
-                        <ListItemIcon style={{ minWidth: 0 }} classes={{root: clsx(selected && classes.selectedIcon)}}>
+                        <ListItemIcon style={{ minWidth: 0 }} classes={{ root: Utils.clsx(selected && classes.selectedIcon) }}>
                             <Badge
                                 badgeContent={badgeContent || 0}
                                 color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
@@ -119,7 +119,7 @@ DrawerItem.propTypes = {
     text: PropTypes.string,
     themeType: PropTypes.string,
     badgeContent: PropTypes.number,
-    badgeColor: PropTypes.oneOf(['', 'default', 'primary', 'secondary', 'error', 'warn'])
+    badgeColor: PropTypes.oneOf(['', 'default', 'primary', 'secondary', 'error', 'warn']),
 };
 
 export default withStyles(styles)(DrawerItem);

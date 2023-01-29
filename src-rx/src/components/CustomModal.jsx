@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import Button from '@mui/material/Button';
 import {Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField} from '@mui/material';
@@ -10,8 +9,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import LanguageIcon from '@mui/icons-material/Language';
 
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     modalDialog: {
@@ -70,7 +68,7 @@ const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help,
                 <LanguageIcon />
             </IconButton> : null}
         </DialogTitle>}
-        <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null, classes.content)} style={{ paddingTop: 8 }}>
+        <DialogContent className={Utils.clsx(overflowHidden ? classes.overflowHidden : null, classes.content)} style={{ paddingTop: 8 }}>
             {textInput && <TextField
                 // className={className}
                 autoComplete="off"

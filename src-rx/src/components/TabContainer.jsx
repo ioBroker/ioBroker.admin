@@ -3,10 +3,11 @@ import { Component } from 'react';
 import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { Grid } from '@mui/material';
 import { Paper } from '@mui/material';
+
+import { Utils } from '@iobroker/adapter-react-v5';
 
 const styles = {
     root: {
@@ -27,7 +28,7 @@ class TabContainer extends Component {
 
         return <Paper
             elevation={ !isNaN(this.props.elevation) ? this.props.elevation : 1 }
-            className={ clsx(classes.root, {[classes.overflowHidden]: this.props.overflow !== 'visible'}, this.props.className) }
+            className={ Utils.clsx(classes.root, {[classes.overflowHidden]: this.props.overflow !== 'visible'}, this.props.className) }
         >
             <Grid
                 container

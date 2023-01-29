@@ -1,7 +1,6 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -17,8 +16,7 @@ import FormControl from '@mui/material/FormControl';
 import Paper from  '@mui/material/Paper';
 import Switch from  '@mui/material/Switch';
 
-import DialogConfirm from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { Utils, withWidth, Confirm as DialogConfirm } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     paper: {
@@ -51,18 +49,18 @@ const styles = theme => ({
     warning: {
         padding: 8,
         fontSize: 14,
-        color: theme.palette.mode === 'dark' ? '#ffa500' : '#b17200'
-    }
+        color: theme.palette.mode === 'dark' ? '#ffa500' : '#b17200',
+    },
 });
 
 const DEFAULT_JSONL_OPTIONS = {
     autoCompress: {
         sizeFactor: 2,
-        sizeFactorMinimumSize: 25000
+        sizeFactorMinimumSize: 25000,
     },
     throttleFS: {
         intervalMs: 60000,
-        maxBufferedCommands: 1000
+        maxBufferedCommands: 1000,
     },
 };
 
@@ -222,18 +220,18 @@ class BaseSettingsObjects extends Component {
     render() {
         return <Paper className={ this.props.classes.paper }>
             {this.renderWarning()}
-            <Grid item className={ clsx(this.props.classes.gridSettings, this.props.classes.dangerZone) }>
+            <Grid item className={Utils.clsx(this.props.classes.gridSettings, this.props.classes.dangerZone)}>
                 <h3 className={this.props.classes.dangerZoneHeader} title={this.props.t('Invalid settings in these fields could lead to dead host')}>{this.props.t('Danger zone')}</h3>
                 <p className={this.props.classes.warning}>{this.props.t('base_settings_hint')}</p>
                 <Grid container direction="column">
                     <Grid item>
                         <Tooltip title={this.props.t('switch_db_note')}>
                             <FormControl className={this.props.classes.controlItem} variant="standard">
-                                <InputLabel>{ this.props.t('Type') }</InputLabel>
+                                <InputLabel>{this.props.t('Type')}</InputLabel>
                                 <Select
                                     variant="standard"
-                                    value={ this.state.type }
-                                    onChange={ e => {
+                                    value={this.state.type}
+                                    onChange={e => {
                                         if (e.target.value !== this.state.originalDBType) {
                                             this.setState({ toConfirmType: e.target.value, showWarningDialog: true });
                                         } else {
@@ -250,14 +248,14 @@ class BaseSettingsObjects extends Component {
                                     }}
                                 >
                                     <MenuItem value="jsonl">JSON Lines</MenuItem>
-                                    <MenuItem value="file">{ this.props.t('File') }</MenuItem>
+                                    <MenuItem value="file">{this.props.t('File')}</MenuItem>
                                     <MenuItem value="redis">Redis</MenuItem>
                                 </Select>
                             </FormControl>
                         </Tooltip>
                     </Grid>
 
-                    <Grid item style={{paddingLeft: 8}}>
+                    <Grid item style={{ paddingLeft: 8 }}>
                         <FormControlLabel
                             control={
                                 <Switch
@@ -273,22 +271,22 @@ class BaseSettingsObjects extends Component {
                         {this.state.textIP ?
                             <TextField
                                 variant="standard"
-                                className={ this.props.classes.controlItem }
-                                value={ this.state.host }
+                                className={this.props.classes.controlItem}
+                                value={this.state.host}
                                 type="text"
-                                onChange={ e => this.setState({ host: e.target.value }, () => this.onChange())}
-                                label={ this.props.t('Bind IP address') }
-                                helperText={ this.props.t('You can enter more than one address divided by comma') }
+                                onChange={e => this.setState({ host: e.target.value }, () => this.onChange())}
+                                label={this.props.t('Bind IP address')}
+                                helperText={this.props.t('You can enter more than one address divided by comma')}
                             />
                             :
                             <FormControl className={this.props.classes.controlItem} variant="standard">
-                                <InputLabel>{ this.props.t('Bind IP address') }</InputLabel>
+                                <InputLabel>{this.props.t('Bind IP address')}</InputLabel>
                                 <Select
                                     variant="standard"
-                                    value={ this.state.host }
-                                    onChange={ e => this.setState({ host: e.target.value }, () => this.onChange())}
+                                    value={this.state.host}
+                                    onChange={e => this.setState({ host: e.target.value }, () => this.onChange())}
                                 >
-                                    { this.state.IPs.map(ip => <MenuItem key={ ip } value={ ip }>{ ip === '0.0.0.0' ? `0.0.0.0 [${ this.props.t('All addresses') }]` : ip }</MenuItem>) }
+                                    { this.state.IPs.map(ip => <MenuItem key={ip} value={ip}>{ip === '0.0.0.0' ? `0.0.0.0 [${ this.props.t('All addresses') }]` : ip}</MenuItem>) }
                                 </Select>
                             </FormControl>
                         }
@@ -297,34 +295,34 @@ class BaseSettingsObjects extends Component {
                     <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.port }
+                            className={this.props.classes.controlItem}
+                            value={this.state.port}
                             type="number"
-                            min={ 1 }
-                            max={ 65535 }
-                            onChange={ e => this.setState({ port: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Port') }
+                            min={1}
+                            max={65535}
+                            onChange={e => this.setState({ port: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Port')}
                         />
                     </Grid>
 
-                    { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
+                    {this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.dataDir }
-                            helperText={ this.props.t('Optional. Always relative to iobroker.js-controller/') }
-                            onChange={ e => this.setState({ dataDir: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Directory path') }
+                            className={this.props.classes.controlItem}
+                            value={this.state.dataDir}
+                            helperText={this.props.t('Optional. Always relative to iobroker.js-controller/')}
+                            onChange={e => this.setState({ dataDir: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Directory path')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
 
                     <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.options_auth_pass }
+                            className={this.props.classes.controlItem}
+                            value={this.state.options_auth_pass}
                             type="password"
-                            helperText={ this.props.t('Optional') }
+                            helperText={this.props.t('Optional')}
                             inputProps={{
                                 autoComplete: 'new-password',
                                 form: {
@@ -332,224 +330,224 @@ class BaseSettingsObjects extends Component {
                                 },
                             }}
                             autoComplete="off"
-                            onChange={ e => this.setState({ options_auth_pass: e.target.value }, () => this.onChange())}
-                            label={ this.state.type === 'redis' ? this.props.t('Redis password') : this.props.t('Connection password') }
+                            onChange={e => this.setState({ options_auth_pass: e.target.value }, () => this.onChange())}
+                            label={this.state.type === 'redis' ? this.props.t('Redis password') : this.props.t('Connection password')}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item className={ this.props.classes.gridSettings }>
+            <Grid item className={this.props.classes.gridSettings}>
                 <Grid container direction="column">
-                    { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
+                    {this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.connectTimeout }
-                            helperText={ this.props.t('ms') }
+                            className={this.props.classes.controlItem}
+                            value={this.state.connectTimeout}
+                            helperText={this.props.t('ms')}
                             type="number"
-                            min={ 200 }
-                            onChange={ e => this.setState({ connectTimeout: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Connect timeout') }
+                            min={200}
+                            onChange={e => this.setState({ connectTimeout: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Connect timeout')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
 
                     { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
-                        <FormControl component="fieldset" variant="standard" className={ this.props.classes.controlItem }>
+                        <FormControl component="fieldset" variant="standard" className={this.props.classes.controlItem}>
                             <FormGroup>
                                 <FormControlLabel
                                     control={
                                         <Checkbox
-                                            checked={ this.state.noFileCache }
-                                            onChange={ e => this.setState( { noFileCache: e.target.checked }, () => this.onChange()) }
+                                            checked={this.state.noFileCache}
+                                            onChange={e => this.setState( { noFileCache: e.target.checked }, () => this.onChange())}
                                         />
                                     }
-                                    label={ this.props.t(`No file cache`) }
+                                    label={this.props.t(`No file cache`)}
                                 />
                             </FormGroup>
-                            <FormHelperText>{ this.props.t('Always read files from disk and do not cache them in RAM. Used for debugging.') }</FormHelperText>
+                            <FormHelperText>{this.props.t('Always read files from disk and do not cache them in RAM. Used for debugging.')}</FormHelperText>
                         </FormControl>
-                    </Grid> : null }
+                    </Grid> : null}
 
-                    { this.state.type === 'file' ? <Grid item>
+                    {this.state.type === 'file' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.writeFileInterval }
-                            helperText={ this.props.t('How often the data from RAM will be saved on disk in ms') }
+                            className={this.props.classes.controlItem}
+                            value={this.state.writeFileInterval}
+                            helperText={this.props.t('How often the data from RAM will be saved on disk in ms')}
                             type="number"
-                            min={ 200 }
-                            onChange={ e => this.setState({ writeFileInterval: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Store file interval') }
+                            min={200}
+                            onChange={e => this.setState({ writeFileInterval: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Store file interval')}
                         />
                     </Grid> : null }
 
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.options_retry_max_delay }
+                            className={this.props.classes.controlItem}
+                            value={this.state.options_retry_max_delay}
                             type="number"
-                            helperText={ this.props.t('Maximum delay between connection attempts') }
-                            onChange={ e => this.setState({ options_retry_max_delay: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Retry maximum delay') }
+                            helperText={this.props.t('Maximum delay between connection attempts')}
+                            onChange={e => this.setState({ options_retry_max_delay: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Retry maximum delay')}
                         />
                     </Grid> : null }
 
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.options_retry_max_count }
+                            className={this.props.classes.controlItem}
+                            value={this.state.options_retry_max_count}
                             type="number"
-                            helperText={this.props.t('Maximum number of connection retries') }
-                            onChange={ e => this.setState({ options_retry_max_count: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Retry maximum count') }
+                            helperText={this.props.t('Maximum number of connection retries')}
+                            onChange={e => this.setState({ options_retry_max_count: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Retry maximum count')}
                         />
                     </Grid> : null }
 
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.options_db }
+                            className={this.props.classes.controlItem}
+                            value={this.state.options_db}
                             type="number"
-                            helperText={ this.props.t('Used for sentinels') }
-                            onChange={ e => this.setState({ options_db: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('DB number') }
+                            helperText={this.props.t('Used for sentinels')}
+                            onChange={e => this.setState({ options_db: e.target.value }, () => this.onChange())}
+                            label={this.props.t('DB number')}
                         />
                     </Grid> : null }
 
                     { this.state.type === 'redis' ? <Grid item>
                         <FormControl className={this.props.classes.controlItem} variant="standard">
-                            <InputLabel>{ this.props.t('Family number') }</InputLabel>
+                            <InputLabel>{this.props.t('Family number')}</InputLabel>
                             <Select
                                 variant="standard"
-                                value={ this.state.options_family }
-                                onChange={ e => this.setState({ options_family: e.target.value}, () => this.onChange())}
+                                value={this.state.options_family}
+                                onChange={e => this.setState({ options_family: e.target.value }, () => this.onChange())}
                             >
                                 <MenuItem value={0}>auto</MenuItem>
                                 <MenuItem value={4}>IPv4</MenuItem>
                                 <MenuItem value={6}>IPv6</MenuItem>
                             </Select>
-                            <FormHelperText>{ this.props.t('Used for sentinels') }</FormHelperText>
+                            <FormHelperText>{this.props.t('Used for sentinels')}</FormHelperText>
                         </FormControl>
                     </Grid> : null }
 
-                    { this.state.type === 'jsonl' ? <Grid item>
+                    {this.state.type === 'jsonl' ? <Grid item>
+                        <TextField
+                            variant="standard"
+                            className={this.props.classes.controlItem}
+                            value={this.state.jsonlOptions_autoCompress_sizeFactor}
+                            type="number"
+                            inputProps={{ min: 2 }}
+                            helperText={this.props.t('The JSONL DB is append-only and will contain unnecessary entries after a while.')}
+                            onChange={e => this.setState({ jsonlOptions_autoCompress_sizeFactor: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Auto-compress size factor')}
+                        />
+                    </Grid> : null}
+
+                    {this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
                             className={ this.props.classes.controlItem }
-                            value={ this.state.jsonlOptions_autoCompress_sizeFactor }
+                            value={this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize}
                             type="number"
-                            inputProps={{min: 2}}
-                            helperText={ this.props.t('The JSONL DB is append-only and will contain unnecessary entries after a while.') }
-                            onChange={ e => this.setState({ jsonlOptions_autoCompress_sizeFactor: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Auto-compress size factor') }
+                            inputProps={{ min: 0 }}
+                            helperText={this.props.t('It will be compressed when the uncompressed size is >= size * sizeFactor AND >= sizeFactorMinimumSize')}
+                            onChange={e => this.setState({ jsonlOptions_autoCompress_sizeFactorMinimumSize: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Auto-compress size factor minimum size')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
 
-                    { this.state.type === 'jsonl' ? <Grid item>
+                    {this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize }
+                            className={this.props.classes.controlItem}
+                            value={this.state.jsonlOptions_throttleFS_intervalMs}
                             type="number"
-                            inputProps={{min: 0}}
-                            helperText={ this.props.t('It will be compressed when the uncompressed size is >= size * sizeFactor AND >= sizeFactorMinimumSize') }
-                            onChange={ e => this.setState({ jsonlOptions_autoCompress_sizeFactorMinimumSize: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Auto-compress size factor minimum size') }
+                            inputProps={{ min: 0 }}
+                            helperText={this.props.t('Write to the database file no more than every X milliseconds')}
+                            onChange={e => this.setState({ jsonlOptions_throttleFS_intervalMs: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Minimal write interval')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
 
-                    { this.state.type === 'jsonl' ? <Grid item>
+                    {this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.jsonlOptions_throttleFS_intervalMs }
+                            className={this.props.classes.controlItem}
+                            value={this.state.jsonlOptions_throttleFS_maxBufferedCommands}
                             type="number"
-                            inputProps={{min: 0}}
-                            helperText={ this.props.t('Write to the database file no more than every X milliseconds') }
-                            onChange={ e => this.setState({ jsonlOptions_throttleFS_intervalMs: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Minimal write interval') }
+                            inputProps={{ min: 0 }}
+                            helperText={this.props.t('Force writing after this many changes have been buffered. This reduces memory consumption and data loss in case of a crash')}
+                            onChange={e => this.setState({ jsonlOptions_throttleFS_maxBufferedCommands: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Maximum changes before write')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
 
-                    { this.state.type === 'jsonl' ? <Grid item>
-                        <TextField
-                            variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.jsonlOptions_throttleFS_maxBufferedCommands }
-                            type="number"
-                            inputProps={{min: 0}}
-                            helperText={ this.props.t('Force writing after this many changes have been buffered. This reduces memory consumption and data loss in case of a crash') }
-                            onChange={ e => this.setState({ jsonlOptions_throttleFS_maxBufferedCommands: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Maximum changes before write') }
-                        />
-                    </Grid> : null }
-
-                    { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
-                        <FormControl component="fieldset" variant="standard" className={ this.props.classes.controlItem }>
+                    {this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
+                        <FormControl component="fieldset" variant="standard" className={this.props.classes.controlItem}>
                             <FormGroup>
                                 <FormControlLabel
                                     control={
                                         <Checkbox
-                                            checked={ this.state.backup_disabled }
-                                            onChange={ e => this.setState( { backup_disabled: e.target.checked }, () => this.onChange()) }
+                                            checked={this.state.backup_disabled}
+                                            onChange={e => this.setState( { backup_disabled: e.target.checked }, () => this.onChange())}
                                         />
                                     }
-                                    label={ this.props.t(`No on-the-fly backup`) }
+                                    label={this.props.t(`No on-the-fly backup`)}
                                 />
                             </FormGroup>
-                            <FormHelperText>{ this.props.t('By every write the backup of object.json will be created.') }</FormHelperText>
+                            <FormHelperText>{this.props.t('By every write the backup of object.json will be created.')}</FormHelperText>
                         </FormControl>
-                    </Grid> : null }
+                    </Grid> : null}
 
-                    { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
+                    {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.backup_files }
+                            className={this.props.classes.controlItem}
+                            value={this.state.backup_files}
                             type="number"
-                            helperText={ this.props.t('Minimal number of backup files, after the deletion will be executed according to the backup time settings') }
-                            onChange={ e => this.setState({ backup_files: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Number of files') }
+                            helperText={this.props.t('Minimal number of backup files, after the deletion will be executed according to the backup time settings')}
+                            onChange={e => this.setState({ backup_files: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Number of files')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
 
-                    { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
+                    {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.backup_hours }
+                            className={this.props.classes.controlItem}
+                            value={this.state.backup_hours}
                             type="number"
-                            helperText={ this.props.t('All backups older than these hours will be deleted, but only if the number of files is greater than of the files number') }
-                            onChange={ e => this.setState({ backup_hours: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Backup hours') }
+                            helperText={this.props.t('All backups older than these hours will be deleted, but only if the number of files is greater than of the files number')}
+                            onChange={e => this.setState({ backup_hours: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Backup hours')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
 
-                    { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
+                    {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.backup_period }
+                            className={this.props.classes.controlItem}
+                            value={this.state.backup_period}
                             type="number"
-                            helperText={ this.props.t('By default the backup is every 2 hours. Time is in minutes. To disable backup set the value to 0') }
-                            onChange={ e => this.setState({ backup_period: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('How often') }
+                            helperText={this.props.t('By default the backup is every 2 hours. Time is in minutes. To disable backup set the value to 0')}
+                            onChange={e => this.setState({ backup_period: e.target.value }, () => this.onChange())}
+                            label={this.props.t('How often')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
 
-                    { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
+                    {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.backup_path }
-                            helperText={ this.props.t('Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.') }
-                            onChange={ e => this.setState({ backup_path: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Path') }
+                            className={this.props.classes.controlItem}
+                            value={this.state.backup_path}
+                            helperText={this.props.t('Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.')}
+                            onChange={e => this.setState({ backup_path: e.target.value }, () => this.onChange())}
+                            label={this.props.t('Path')}
                         />
-                    </Grid> : null }
+                    </Grid> : null}
                 </Grid>
             </Grid>
         </Paper>;

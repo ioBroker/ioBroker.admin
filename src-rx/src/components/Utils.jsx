@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2022 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2023 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -42,6 +42,7 @@ const SIGNATURES = {
     Qk1: 'bmp',
     AAABAA: 'ico' // 00 00 01 00 according to https://en.wikipedia.org/wiki/List_of_file_signatures
 };
+
 class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
@@ -654,17 +655,22 @@ class Utils {
      * @param {string} text
      * @returns {string | JSX.Element[]}
      */
-    static (text) {
-        let m = text.match(/<a [^<]+<\/a>|<br\/?>/);
+    static renderTextWithA(text) {
+        let m = text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/);
         if (m) {
             const result = [];
             let key = 1;
             do {
-                const p = text.split(m[0]);
-                p[0] && result.push(<span key={'a' + (key++)}>{p[0]}</span>);
+                const start = text.substring(0, m.index);
+                text = text.substring(m.index + m[0].length);
+                start && result.push(<span key={`a${key++}`}>{start}</span>);
 
-                if (m[0].startsWith('<br')) {
-                    result.push(<br key={'a' + (key++)} />);
+                if (m[0].startsWith('<b>')) {
+                    result.push(<b key={`a${key++}`}>{m[0].substring(3, m[0].length - 4)}</b>);
+                } else if (m[0].startsWith('<i>')) {
+                    result.push(<i key={`a${key++}`}>{m[0].substring(3, m[0].length - 4)}</i>);
+                } else if (m[0].startsWith('<br')) {
+                    result.push(<br key={`a${key++}`} />);
                 } else {
                     let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
                     let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
@@ -672,14 +678,20 @@ class Utils {
                     const title = m[0].match(/>([^<]*)</);
 
                     // eslint-disable-next-line
-                    result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
+                    result.push(<a
+                        key={`a${key++}`}
+                        href={href ? href[1] : ''}
+                        target={target ? target[1] : '_blank'}
+                        rel={rel ? rel[1] : ''}
+                        style={{ color: 'inherit' }}
+                    >
+                        {title ? title[1] : ''}
+                    </a>);
                 }
 
-                text = p[1];
-
-                m = text && text.match(/<a [^<]+<\/a>|<br\/?>/);
+                m = text && text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/);
                 if (!m) {
-                    p[1] && result.push(<span key={'a' + (key++)}>{p[1]}</span>);
+                    text && result.push(<span key={'a' + (key++)}>{text}</span>);
                 }
             } while (m);
 

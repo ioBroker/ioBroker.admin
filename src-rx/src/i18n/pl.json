@@ -1518,5 +1518,6 @@
   "Drag and drop to reorder": "Przeciągnij i upuść, aby zmienić kolejność",
   "Flag will be automatically detected as repository will be read for the first time": "Flaga zostanie automatycznie wykryta, gdy repozytorium zostanie odczytane po raz pierwszy",
   "Create a copy of this object": "Utwórz kopię tego obiektu",
-  "common_delete_tip": "Jeśli chcesz usunąć niektóre atrybuty w \"common\", musisz ustawić je na \"null\""
+  "common_delete_tip": "Jeśli chcesz usunąć niektóre atrybuty w \"common\", musisz ustawić je na \"null\"",
+  "temporary log level": "Tymczasowy poziom dziennika"
 }

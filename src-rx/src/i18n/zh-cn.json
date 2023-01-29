@@ -1518,5 +1518,6 @@
   "Drag and drop to reorder": "拖放以重新排序",
   "Flag will be automatically detected as repository will be read for the first time": "标记将被自动检测为第一次读取存储库",
   "Create a copy of this object": "创建此对象的副本",
-  "common_delete_tip": "如果要删除“common”中的某些属性，则必须将其设置为“null”"
+  "common_delete_tip": "如果要删除“common”中的某些属性，则必须将其设置为“null”",
+  "temporary log level": "临时日志级别"
 }

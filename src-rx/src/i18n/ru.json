@@ -1518,5 +1518,6 @@
   "Drag and drop to reorder": "Перетащите, чтобы изменить порядок",
   "Flag will be automatically detected as repository will be read for the first time": "Флаг будет автоматически обнаружен, так как репозиторий будет прочитан в первый раз",
   "Create a copy of this object": "Создать копию этого объекта",
-  "common_delete_tip": "Если вы хотите удалить некоторые атрибуты в «common», вы должны установить его в «null»"
+  "common_delete_tip": "Если вы хотите удалить некоторые атрибуты в «common», вы должны установить его в «null»",
+  "temporary log level": "Временный уровень журнала"
 }

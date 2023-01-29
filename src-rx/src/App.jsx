@@ -4,7 +4,6 @@ import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import clsx from 'clsx';
 
 // @mui/material
 import AppBar from '@mui/material/AppBar';
@@ -45,13 +44,9 @@ import { AdminConnection as Connection, PROGRESS } from '@iobroker/socket-client
 import Loader from '@iobroker/adapter-react-v5/Components/Loader';
 import LoaderPT from '@iobroker/adapter-react-v5/Components/Loaders/PT';
 import LoaderVendor from '@iobroker/adapter-react-v5/Components/Loaders/Vendor';
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Router from '@iobroker/adapter-react-v5/Components/Router';
-import Utils from './components/Utils';//adapter-react/Components/Utils';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import { I18n, Router, Confirm as ConfirmDialog, Icon, withWidth } from '@iobroker/adapter-react-v5';
+import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 import theme from '@iobroker/adapter-react-v5/Theme';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
@@ -1881,7 +1876,7 @@ class App extends Router {
 
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return <div title={this.state.user.id} className={clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)} ref={this.refUser}>
+            return <div title={this.state.user.id} className={Utils.clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)} ref={this.refUser}>
                 {this.state.user.icon ?
                     <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
                     :
@@ -2039,7 +2034,7 @@ class App extends Router {
                         <AppBar
                             color="default"
                             position="fixed"
-                            className={clsx(
+                            className={Utils.clsx(
                                 classes.appBar,
                                 { [classes.appBarShift]: !small && this.state.drawerState === DrawerStates.opened },
                                 { [classes.appBarShiftCompact]: !small && this.state.drawerState === DrawerStates.compact }
@@ -2048,7 +2043,7 @@ class App extends Router {
                             <Toolbar>
                                 <IconButton size="large"
                                     edge="start"
-                                    className={clsx(classes.menuButton, !small && this.state.drawerState !== DrawerStates.closed && classes.hide)}
+                                    className={Utils.clsx(classes.menuButton, !small && this.state.drawerState !== DrawerStates.closed && classes.hide)}
                                     onClick={() => this.handleDrawerState(DrawerStates.opened)}
                                 >
                                     <MenuIcon />
@@ -2112,7 +2107,7 @@ class App extends Router {
                                                         title={I18n.t('Toggle expert mode')}
                                                         glowColor={this.state.theme.palette.secondary.main}
                                                         active={this.state.expertMode}
-                                                        className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                                        className={Utils.clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
                                                     />
                                                 </IconButton>
                                             </Badge>
@@ -2167,7 +2162,7 @@ class App extends Router {
                                 {this.renderLoggedUser()}
 
                                 {this.state.drawerState !== 0 && !this.state.expertMode && window.innerWidth > 400 &&
-                                    <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center">
+                                    <Grid container className={Utils.clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center">
                                         {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') &&
                                             <Hidden xsDown>
                                                 <div className={classes.wrapperName}>
@@ -2182,19 +2177,21 @@ class App extends Router {
                                         <Grid item>
                                             <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                                                 {this.adminGuiConfig.icon ?
-                                                    <div style={{
-                                                        height: 50,
-                                                        withWidth: 102,
-                                                        lineHeight: '50px',
-                                                        background: 'white',
-                                                        borderRadius: 5,
-                                                        padding: 5}}
+                                                    <div
+                                                        style={{
+                                                            height: 50,
+                                                            withWidth: 102,
+                                                            lineHeight: '50px',
+                                                            background: 'white',
+                                                            borderRadius: 5,
+                                                            padding: 5,
+                                                        }}
                                                     ><img src={this.adminGuiConfig.icon} alt="logo"
-                                                              style={{maxWidth: '100%', maxHeight: '100%'}}/></div>
+                                                              style={{ maxWidth: '100%', maxHeight: '100%' }}/></div>
                                                     :
                                                     <Avatar
                                                         onClick={() => this.handleNavigation('easy')}
-                                                        className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)}
+                                                        className={Utils.clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)}
                                                         alt="ioBroker"
                                                         src="img/no-image.png"
                                                     />
@@ -2242,7 +2239,7 @@ class App extends Router {
                             elevation={0}
                             square
                             className={
-                                clsx(classes.content, {
+                                Utils.clsx(classes.content, {
                                     [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
                                     [classes.contentMarginCompact]: !small && this.state.drawerState !== DrawerStates.opened,
                                     [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed

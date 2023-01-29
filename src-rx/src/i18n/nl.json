@@ -1518,5 +1518,6 @@
   "Drag and drop to reorder": "Slepen en neerzetten om opnieuw te ordenen",
   "Flag will be automatically detected as repository will be read for the first time": "Vlag wordt automatisch gedetecteerd omdat de repository voor de eerste keer wordt gelezen",
   "Create a copy of this object": "Maak een kopie van dit object",
-  "common_delete_tip": "Als u enkele attributen in \"common\" wilt verwijderen, moet u deze op \"null\" zetten"
+  "common_delete_tip": "Als u enkele attributen in \"common\" wilt verwijderen, moet u deze op \"null\" zetten",
+  "temporary log level": "Tijdelijk logniveau"
 }
