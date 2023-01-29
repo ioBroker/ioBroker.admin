@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.3.5",
+    "version": "6.3.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.3.6": {
+        "en": "Allowed the edit of log level in the configuration tab",
+        "de": "Erlaubt die Bearbeitung der Protokollebene in der Konfigurationstabelle",
+        "ru": "Разрешено редактирование уровня лога в вкладке конфигурации",
+        "pt": "Permitir a edição do nível de log na guia de configuração",
+        "nl": "Vertaling:",
+        "fr": "Permis la modification du niveau de log dans l'onglet de configuration",
+        "it": "Consentito la modifica del livello di log nella scheda di configurazione",
+        "es": "Permitió la edición del nivel de registro en la pestaña configuración",
+        "pl": "Wszystko edytowało poziom logowania w tabeli konfiguracyjnej",
+        "uk": "Дозволено редагування рівня входу в вкладку конфігурації",
+        "zh-cn": "允许在表格表中标明逻辑水平"
+      },
       "6.3.5": {
         "en": "Corrected reading of node.js version",
         "de": "Korrigiertes Lesen von node.js-Version",
@@ -94,18 +107,6 @@
         "es": "Ajustes corregidos del adaptador",
         "pl": "Poprawiony admin4",
         "zh-cn": "适应的适应环境"
-      },
-      "6.2.21": {
-        "en": "Corrected small JSON config issue",
-        "de": "Korrektur kleiner JSON config Ausgabe",
-        "ru": "Исправлена небольшая проблема JSON config",
-        "pt": "Corrigido pequeno problema de configuração JSON",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:",
-        "fr": "Correction du petit problème de configuration JSON",
-        "it": "Corretto piccolo problema di configurazione JSON",
-        "es": "Corregido pequeño número de configuración JSON",
-        "pl": "Kwalifikacja małego JSON",
-        "zh-cn": "小企业家协会"
       }
     },
     "desc": {

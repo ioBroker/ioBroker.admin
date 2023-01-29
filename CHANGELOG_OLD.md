@@ -1,6 +1,14 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.2.23 (2022-10-12)
+* (Apollon77) Prepare for future js-controller versions
+* (bluefox) Corrected deletion of objects
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.2.22 (2022-09-14)
 * (bluefox) Corrected admin4 adapter settings
 

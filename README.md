@@ -116,7 +116,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.3.6 (2023-01-29)
 * (bluefox) Allowed the edit of log level in the configuration tab
 
 ### 6.3.5 (2022-12-22)
@@ -132,10 +132,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Added `useNative` option to `sendTo` JSON Config component
 * (bluefox) Added `checkLicense` and `uuid` components to JSON Config
 * (bluefox) Corrected the news handler
-
-### 6.2.23 (2022-10-12)
-* (Apollon77) Prepare for future js-controller versions
-* (bluefox) Corrected deletion of objects
 
 ## License
 The MIT License (MIT)
