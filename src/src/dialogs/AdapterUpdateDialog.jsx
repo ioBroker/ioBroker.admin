@@ -36,6 +36,7 @@ import 'moment/locale/nl';
 import 'moment/locale/pl';
 import 'moment/locale/pt';
 import 'moment/locale/ru';
+import 'moment/locale/uk';
 import 'moment/locale/zh-cn';
 
 const styles = theme => ({
