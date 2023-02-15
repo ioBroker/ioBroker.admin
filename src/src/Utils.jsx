@@ -390,8 +390,14 @@ class Utils {
                                     ids = [adapter + '.' + instance];
                                 } else {
                                     ids = Object.keys(context.objects)
-                                        .filter(id => id.startsWith('system.adapter.' + adapterInstance + '.') && context.objects[id].common.enabled)
+                                        .filter(id => id.startsWith(`system.adapter.${adapterInstance}.`) && context.objects[id].common.enabled)
                                         .map(id => id.substring(15));
+                                    // try to get disabled instances
+                                    if (!ids.length) {
+                                        ids = Object.keys(context.objects)
+                                            .filter(id => id.startsWith(`system.adapter.${adapterInstance}.`))
+                                            .map(id => id.substring(15));
+                                    }
                                 }
 
                                 // eslint-disable-next-line
@@ -403,18 +409,18 @@ class Utils {
                                         } else {
                                             // add new
                                             const _link = Utils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
-                                            const _port = context.objects['system.adapter.' + id]?.native?.port;
-                                            _urls.push({url: _link, port: _port, instance: id});
+                                            const _port = context.objects[`system.adapter.${id}`]?.native?.port;
+                                            _urls.push({ url: _link, port: _port, instance: id });
                                         }
                                     } else {
                                         const _link = Utils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
-                                        const _port = context.objects['system.adapter.' + id]?.native?.port;
-                                        _urls.push({url: _link, port: _port, instance: id});
+                                        const _port = context.objects[`system.adapter.${id}`]?.native?.port;
+                                        _urls.push({ url: _link, port: _port, instance: id });
                                     }
                                 });
                             } else {
                                 link = Utils._replaceLink(link, context.objects, adapterInstance, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
-                                port = context.objects['system.adapter.' + adapterInstance]?.native?.port;
+                                port = context.objects[`system.adapter.${adapterInstance}`]?.native?.port;
                             }
                         }
                     }
