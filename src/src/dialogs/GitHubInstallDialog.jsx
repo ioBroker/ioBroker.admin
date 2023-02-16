@@ -237,7 +237,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             value={autocompleteValue}
                             onChange={(_, newValue) => setAutocompleteValue(newValue)}
                             options={_list}
-                            getOptionLabel={option => <span title={option.title}>{option.name}</span>}
+                            getOptionLabel={option => option.name}
                             renderInput={params => {
                                 const _params = {...params};
                                 _params.InputProps = _params.InputProps || {};
