@@ -13,6 +13,7 @@ import 'cronstrue/locales/nl';
 import 'cronstrue/locales/pl';
 import 'cronstrue/locales/pt_BR';
 import 'cronstrue/locales/ru';
+import 'cronstrue/locales/uk';
 import 'cronstrue/locales/zh_CN';
 
 import {
