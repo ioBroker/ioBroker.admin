@@ -35,7 +35,7 @@ let IOColorPicker = props => {
             style={{width: IconCustom ? 'calc(100% - 45px)' : '100%', display: 'inline-block', verticalAlign: 'top'}}
             name={props.t(props.label)}
             onChange={props.onChange}
-            openAbove={true}
+            openAbove
             color={props.value || ''}
         />
     </div>;

@@ -249,7 +249,7 @@ class ObjectBrowserValue extends Component {
             themeType={this.props.themeType}
             from={this.chartFrom}
             end={Date.now()}
-            noToolbar={true}
+            noToolbar
             dateFormat={this.props.dateFormat}
             defaultHistory={this.props.defaultHistory}
         />;
@@ -270,9 +270,9 @@ class ObjectBrowserValue extends Component {
             mode="json"
             width="100%"
             height="100%"
-            showPrintMargin={true}
-            showGutter={true}
-            highlightActiveLine={true}
+            showPrintMargin
+            showGutter
+            highlightActiveLine
             theme={this.props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
             defaultValue={(this.propsValue || '').toString()}
             onChange={newValue => {
@@ -341,7 +341,7 @@ class ObjectBrowserValue extends Component {
         />;
 
         return <Dialog
-            open={ true }
+            open={!0}
             maxWidth={ this.state.type === 'number' || this.state.type === 'boolean' || this.state.type === 'states' ? (this.state.chart && this.state.chartEnabled ? 'lg' : null) : 'md'}
             fullWidth={ (this.state.type === 'json' && this.state.fullScreen) || (this.state.type !== 'number' && this.state.type !== 'boolean' && this.state.type !== 'states') || (this.state.chart && this.state.chartEnabled)}
             fullScreen={ this.state.type === 'json' && this.state.fullScreen }
@@ -441,13 +441,13 @@ class ObjectBrowserValue extends Component {
                                                     classes={{ root: this.props.classes.textInput }}
                                                     autoFocus
                                                     inputRef={this.inputRef}
-                                                    helperText={ this.props.t('Press ENTER to write the value, when focused') }
-                                                    label={ this.props.t('Value') }
-                                                    defaultValue={ parseFloat(this.propsValue) || 0 }
-                                                    onKeyUp={ e => {
+                                                    helperText={this.props.t('Press ENTER to write the value, when focused')}
+                                                    label={this.props.t('Value')}
+                                                    defaultValue={parseFloat(this.propsValue) || 0}
+                                                    onKeyUp={e => {
                                                         e.keyCode === 13 && this.onUpdate(e);
                                                     } }
-                                                    onChange={ e => this.value = e.target.value }/>
+                                                    onChange={e => this.value = e.target.value} />
                                                 :
                                                 (this.state.type === 'json' ?
                                                         this.renderJsonEditor()
@@ -461,12 +461,13 @@ class ObjectBrowserValue extends Component {
                                                                     inputRef={this.inputRef}
                                                                     autoFocus
                                                                     helperText={ this.props.t('Press CTRL+ENTER to write the value, when focused')}
-                                                                    label={ this.props.t('Value') }
-                                                                    fullWidth={ true }
+                                                                    label={this.props.t('Value')}
+                                                                    fullWidth
                                                                     multiline
-                                                                    onKeyDown={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate(e) }
-                                                                    defaultValue={ this.propsValue.toString() }
-                                                                    onChange={ e => this.value = e.target.value }/>
+                                                                    onKeyDown={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate(e)}
+                                                                    defaultValue={this.propsValue.toString()}
+                                                                    onChange={e => this.value = e.target.value}
+                                                                />
                                                         )
                                                 )
                                         )
@@ -476,33 +477,33 @@ class ObjectBrowserValue extends Component {
                                 {this.props.expertMode ?
                                     <Grid item>{ackCheckbox}</Grid> : null}
 
-                                { this.props.expertMode ? <Grid item><FormControl variant="standard" className={ this.props.classes.quality }>
-                                    <InputLabel>{ this.props.t('Quality') }</InputLabel>
+                                { this.props.expertMode ? <Grid item><FormControl variant="standard" className={this.props.classes.quality}>
+                                    <InputLabel>{this.props.t('Quality')}</InputLabel>
                                     <Select
                                         variant="standard"
-                                        defaultValue={ 0 }
-                                        onChange={ e => this.q = parseInt(e.target.value, 10) }
+                                        defaultValue={0}
+                                        onChange={e => this.q = parseInt(e.target.value, 10)}
                                     >
-                                        <MenuItem value={ 0x00 }>0x00 - good</MenuItem>
+                                        <MenuItem value={0x00}>0x00 - good</MenuItem>
 
-                                        <MenuItem value={ 0x01 }>0x01 - general problem</MenuItem>
-                                        <MenuItem value={ 0x02 }>0x02 - no connection problem</MenuItem>
+                                        <MenuItem value={0x01}>0x01 - general problem</MenuItem>
+                                        <MenuItem value={0x02}>0x02 - no connection problem</MenuItem>
 
-                                        <MenuItem value={ 0x10 }>0x10 - substitute value from controller</MenuItem>
-                                        <MenuItem value={ 0x20 }>0x20 - substitute initial value</MenuItem>
-                                        <MenuItem value={ 0x40 }>0x40 - substitute value from device or instance</MenuItem>
-                                        <MenuItem value={ 0x80 }>0x80 - substitute value from sensor</MenuItem>
+                                        <MenuItem value={0x10}>0x10 - substitute value from controller</MenuItem>
+                                        <MenuItem value={0x20}>0x20 - substitute initial value</MenuItem>
+                                        <MenuItem value={0x40}>0x40 - substitute value from device or instance</MenuItem>
+                                        <MenuItem value={0x80}>0x80 - substitute value from sensor</MenuItem>
 
-                                        <MenuItem value={ 0x11 }>0x11 - general problem by instance</MenuItem>
-                                        <MenuItem value={ 0x41 }>0x41 - general problem by device</MenuItem>
-                                        <MenuItem value={ 0x81 }>0x81 - general problem by sensor</MenuItem>
+                                        <MenuItem value={0x11}>0x11 - general problem by instance</MenuItem>
+                                        <MenuItem value={0x41}>0x41 - general problem by device</MenuItem>
+                                        <MenuItem value={0x81}>0x81 - general problem by sensor</MenuItem>
 
-                                        <MenuItem value={ 0x12 }>0x12 - instance not connected</MenuItem>
-                                        <MenuItem value={ 0x42 }>0x42 - device not connected</MenuItem>
-                                        <MenuItem value={ 0x82 }>0x82 - sensor not connected</MenuItem>
+                                        <MenuItem value={0x12}>0x12 - instance not connected</MenuItem>
+                                        <MenuItem value={0x42}>0x42 - device not connected</MenuItem>
+                                        <MenuItem value={0x82}>0x82 - sensor not connected</MenuItem>
 
-                                        <MenuItem value={ 0x44 }>0x44 - device reports error</MenuItem>
-                                        <MenuItem value={ 0x84 }>0x84 - sensor reports error</MenuItem>
+                                        <MenuItem value={0x44}>0x44 - device reports error</MenuItem>
+                                        <MenuItem value={0x84}>0x84 - sensor reports error</MenuItem>
                                     </Select>
                                 </FormControl>
                                     <TextField
@@ -534,8 +535,12 @@ class ObjectBrowserValue extends Component {
                     color="primary"
                     startIcon={<IconCheck />}
                     className={this.props.object.common?.write === false ? this.props.classes.readOnly : ''}
-                >{ this.props.t('Set value') }</Button>
-                <Button variant="contained" onClick={ () => this.props.onClose() } color="grey" startIcon={<IconCancel />}>{ this.props.t('Cancel') }</Button>
+                >
+                    {this.props.t('Set value')}
+                </Button>
+                <Button variant="contained" onClick={() => this.props.onClose()} color="grey" startIcon={<IconCancel />}>
+                    {this.props.t('Cancel')}
+                </Button>
             </DialogActions>
         </Dialog>;
     }

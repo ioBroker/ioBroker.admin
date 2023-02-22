@@ -557,7 +557,7 @@ const HostRow = ({
 
     const customModal = showModal ? <CustomModal
         title={titleModal}
-        open={true}
+        open={!0}
         onApply={_ => {
             if (openDialogLogLevel) {
                 socket.setState(`${_id}.logLevel`, logLevelValueSelect);

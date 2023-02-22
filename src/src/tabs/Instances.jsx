@@ -725,12 +725,12 @@ class Instances extends Component {
     getModeIcon = (mode, status, className, stoppedWhenWebExtension) => {
         if (mode === 'daemon') {
             if (stoppedWhenWebExtension) {
-                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner}/></div>;
+                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
             } else
             if (status === 'orange') {
-                return <WarningIcon className={className}/>;
+                return <WarningIcon className={className} />;
             } else if (status === 'green') {
-                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner}/></div>;
+                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
             } else {
                 return <SettingsIcon className={className} />;
             }
@@ -1319,7 +1319,7 @@ class Instances extends Component {
                                 this.changeSetState('filterStatus', newState.filterStatus);
                             }
                         }, this.state.filterMode, this.state.filterStatus, this.getModeIcon, this.props.theme)}>
-                        <FilterListIcon style={{ width: 16, height: 16 }} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''}/>
+                        <FilterListIcon style={{ width: 16, height: 16 }} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''} />
                     </IconButton>
                 </Tooltip>
                 {/*this.props.expertMode && <Tooltip title="sentry">

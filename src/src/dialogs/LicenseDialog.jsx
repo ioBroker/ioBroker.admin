@@ -76,7 +76,7 @@ const LicenseDialog = ({ url, cb, theme }) => {
             <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>
                     {loading ?
-                        <LinearProgress/>
+                        <LinearProgress />
                         :
                         <pre className={classes.pre}>
                             {text}
@@ -93,7 +93,7 @@ const LicenseDialog = ({ url, cb, theme }) => {
                         onClose();
                         cb(true);
                     }}
-                    startIcon={<IconCheck/>}
+                    startIcon={<IconCheck />}
                     color="primary">
                     {I18n.t('Accept')}
                 </Button>
@@ -103,7 +103,7 @@ const LicenseDialog = ({ url, cb, theme }) => {
                         onClose();
                         cb(false);
                     }}
-                    startIcon={<IconClose/>}
+                    startIcon={<IconClose />}
                     color="grey">
                     {I18n.t('Close')}
                 </Button>
@@ -125,7 +125,7 @@ export const licenseDialogFunc = (license, theme, cb, url) => {
 
     return root.render(<StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-            <LicenseDialog url={url} cb={cb} theme={theme}/>
+            <LicenseDialog url={url} cb={cb} theme={theme} />
         </ThemeProvider>
     </StyledEngineProvider>);
 }

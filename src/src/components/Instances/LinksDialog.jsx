@@ -27,7 +27,7 @@ class LinksDialog extends Component {
         const firstPort = this.props.links[0].port;
         const showPort = this.props.links.find(item => item.port !== firstPort);
 
-        return <Dialog onClose={() => this.props.onClose()} open={true}>
+        return <Dialog onClose={() => this.props.onClose()} open={!0}>
             <DialogTitle>{this.props.t('Links')}</DialogTitle>
             <List>
                 {this.props.links.map(link => <ListItemButton

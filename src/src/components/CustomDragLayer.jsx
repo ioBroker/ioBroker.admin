@@ -68,7 +68,7 @@ const CustomDragLayer = ({ classes }) => {
             case 'box':
                 return <div className={classes.root} style={{ width: 179, }}><DrawerItem
                     key={item.name}
-                    editList={true}
+                    editList
                     visible={item.visible}
                     editListFunc={() => { }}
                     compact={item.compact}

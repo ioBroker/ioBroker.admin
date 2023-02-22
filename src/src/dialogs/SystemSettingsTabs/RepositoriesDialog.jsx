@@ -98,7 +98,7 @@ function arrayToRepo(array) {
     return result;
 }
 
-const DragHandle = SortableHandle(({t}) => <DragHandleIcon style={{marginTop: 8, marginRight: 0, cursor: 'handle'}}/>);
+const DragHandle = SortableHandle(({ t }) => <DragHandleIcon style={{ marginTop: 8, marginRight: 0, cursor: 'handle' }} />);
 
 const SortableItem = SortableElement(({
   item,
@@ -116,7 +116,7 @@ const SortableItem = SortableElement(({
   repoInfo,
 }) => <TableRow className="float_row">
     <TableCell className={clsx(classes.dragColumn, 'float_cell')} title={t('Drag and drop to reorder')}>
-        <DragHandle t={t}/>
+        <DragHandle t={t} />
     </TableCell>
     <TableCell className={clsx(classes.enableColumn, 'float_cell')}>
         {_index + 1}
@@ -200,7 +200,7 @@ const SortableItem = SortableElement(({
             aria-label="add"
             onClick={() => onDelete(item.title)}
         >
-            <DeleteIcon/>
+            <DeleteIcon />
         </Fab>
     </TableCell>
 </TableRow>);
@@ -222,7 +222,7 @@ const SortableList = SortableContainer(({
     return <Table className={classes.table}>
         <TableHead>
             <TableRow className="float_row">
-                <TableCell className={clsx(classes.dragColumn, 'float_cell')}/>
+                <TableCell className={clsx(classes.dragColumn, 'float_cell')} />
                 <TableCell className={clsx(classes.enableColumn, 'float_cell')}>{multipleRepos ? I18n.t('Active') : ''}</TableCell>
                 <TableCell className={clsx(classes.stableColumn, 'float_cell')}>{I18n.t('Stable')}</TableCell>
                 <TableCell className={clsx(classes.nameRow, 'float_cell')}>
@@ -461,7 +461,7 @@ class RepositoriesDialog extends Component {
                     className={classes.fabButton}
                     title={this.props.t('Add new line to the repository list')}
                 >
-                    <AddIcon/>
+                    <AddIcon />
                 </Fab>
                 <Fab
                     size="small"
@@ -469,9 +469,9 @@ class RepositoriesDialog extends Component {
                     className={classes.fabButton}
                     title={this.props.t('Restore repository list to default')}
                 >
-                    <RestoreIcon/>
+                    <RestoreIcon />
                 </Fab>
-                <Paper variant="outlined" className={classes.descriptionPanel}/>
+                <Paper variant="outlined" className={classes.descriptionPanel} />
             </div>
             <TableContainer>
                 <SortableList

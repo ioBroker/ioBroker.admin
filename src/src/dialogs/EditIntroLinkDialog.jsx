@@ -181,7 +181,7 @@ class EditIntroLinkDialog extends Component {
                 onClose={() => this.props.onClose()}
                 open={this.props.open}
                 maxWidth="md"
-                fullWidth={true}
+                fullWidth
                 classes={{ paper: classes.paper }}
             >
                 <DialogTitle>
@@ -269,7 +269,7 @@ class EditIntroLinkDialog extends Component {
                                 /> : null}
 
                                 <div style={{ width: 50 }} className={this.props.classes.editItem}>
-                                    <TextField variant="standard" fullWidth={true} label={this.props.t('Color')} className={this.props.editColor} type="color" value={this.state.color} onChange={e => this.setState({ color: e.target.value })} />
+                                    <TextField variant="standard" fullWidth label={this.props.t('Color')} className={this.props.editColor} type="color" value={this.state.color} onChange={e => this.setState({ color: e.target.value })} />
                                 </div>
                                 <UploadImage
                                     disabled={false}
@@ -292,7 +292,7 @@ class EditIntroLinkDialog extends Component {
                             action={{ link: this.state.link, text: this.state.linkName }}
                             t={this.props.t}
                             color={this.state.color}
-                            enabled={true}
+                            enabled
                         >
                             {this.state.desc || ''}
                         </IntroCard>
@@ -316,7 +316,7 @@ class EditIntroLinkDialog extends Component {
                             });
                         }}
                         color="primary"
-                        startIcon={this.props.isNew ? <AddIcon/> : <CheckIcon/>}
+                        startIcon={this.props.isNew ? <AddIcon /> : <CheckIcon />}
                     >
                         {this.props.isNew ? this.props.t('Add') : this.props.t('Save')}
                     </Button>

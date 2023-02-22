@@ -126,7 +126,7 @@ class AdaptersUpdaterDialog extends Component {
 
     render() {
         return <Dialog
-            open={true}
+            open={!0}
             maxWidth="lg"
             fullWidth={!!this.state.current}
             onClose={() => this.props.onClose(!!this.state.updated.length)}
@@ -252,7 +252,7 @@ class AdaptersUpdaterDialog extends Component {
                     onClick={() => this.onStartUpdate()}
                     color="primary"
                     autoFocus
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >
                     {this.props.t('Update')}
                 </Button>

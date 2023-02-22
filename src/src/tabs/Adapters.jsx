@@ -1648,7 +1648,7 @@ class Adapters extends Component {
     getStatistics() {
         if (this.state.showStatistics) {
             return <Dialog
-                open={true}
+                open={!0}
                 onClose={() => this.setState({ showStatistics: false })}
             >
                 <DialogTitle>{this.t('Statistics')}</DialogTitle>
@@ -2019,7 +2019,7 @@ class Adapters extends Component {
             />}
             {this.state.adapterToUpdate &&
                 <AdapterUpdateDialog
-                    open={true}
+                    open={!0}
                     adapter={this.state.adapterToUpdate}
                     adapterObject={this.state.repository[this.state.adapterToUpdate]}
                     t={this.t}
@@ -2060,7 +2060,7 @@ class Adapters extends Component {
             }
             {this.state.adapterInstallVersion &&
                 <CustomModal
-                    open={true}
+                    open={!0}
                     title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
                     applyButton={false}
                     onClose={() => this.setState({adapterInstallVersion: ''})}

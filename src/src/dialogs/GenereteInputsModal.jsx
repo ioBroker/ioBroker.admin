@@ -342,7 +342,7 @@ const GenerateInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                         }
                     }}
                     color="primary"
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >
                     {I18n.t('Apply')}
                 </Button>

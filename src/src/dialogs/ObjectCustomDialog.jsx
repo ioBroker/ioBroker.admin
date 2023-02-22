@@ -104,7 +104,7 @@ class ObjectCustomDialog extends MobileDialog {
         return <ObjectChart
             id={'chart-tabpanel'}
             isFloatComma={this.props.isFloatComma}
-            showJumpToEchart={true}
+            showJumpToEchart
             t={this.props.t}
             lang={this.props.lang}
             expertMode={this.props.expertMode}
@@ -189,9 +189,9 @@ class ObjectCustomDialog extends MobileDialog {
         return <Dialog
             classes={{ scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper }}
             scroll="paper"
-            open={true}
+            open={!0}
             onClose={() => this.props.onClose()}
-            fullWidth={true}
+            fullWidth
             maxWidth="xl"
             aria-labelledby="form-dialog-title"
         >

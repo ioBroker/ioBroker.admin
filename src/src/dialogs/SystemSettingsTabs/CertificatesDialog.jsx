@@ -150,14 +150,14 @@ class CertificatesDialog extends Component {
                         }}
                     />
                 </TableCell>
-                <TableCell className={this.props.classes.littleRow + ' float_cell'}>
+                <TableCell className={`${this.props.classes.littleRow} float_cell`}>
                     <Fab
                         size="small"
                         color="secondary"
                         aria-label="add"
-                        onClick={evt => this.onDelete(e.title)}
+                        onClick={() => this.onDelete(e.title)}
                     >
-                        <DeleteIcon/>
+                        <DeleteIcon />
                     </Fab>
                 </TableCell>
             </TableRow>
@@ -167,14 +167,14 @@ class CertificatesDialog extends Component {
                 {({ getRootProps, getInputProps, acceptedFiles, fileRejections }) => (
                     <div {...getRootProps({
                         className: this.state.chClass ? 'drop-container drop-dop' : 'drop-container',
-                        onDragEnter: evt => this.setState({ chClass: true }),
-                        onDragLeave: evt => this.setState({ chClass: false }),
-                        onDrop: evt => {
+                        onDragEnter: () => this.setState({ chClass: true }),
+                        onDragLeave: () => this.setState({ chClass: false }),
+                        onDrop: () => {
                             if (fileRejections.length) {
                                 let msg = [];
                                 // eslint-disable-next-line array-callback-return
                                 fileRejections.map((e => {
-                                    let m = e.file.name + ': ';
+                                    let m = `${e.file.name}: `;
                                     let mm = [];
                                     e.errors.forEach(ee => mm.push(ee.message));
                                     msg.push(m + mm.join(','));
@@ -210,7 +210,7 @@ class CertificatesDialog extends Component {
                     aria-label="add"
                     onClick={() => this.onAdd()}
                 >
-                    <AddIcon/>
+                    <AddIcon />
                 </Fab>
                 <Paper variant="outlined" className={classes.descriptionPanel}>
                     {this.props.t('certs_hint')}

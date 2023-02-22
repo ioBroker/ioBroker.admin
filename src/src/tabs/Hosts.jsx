@@ -466,7 +466,7 @@ class Hosts extends Component {
             return null;
         } else {
             return <AdapterUpdateDialog
-                open={true}
+                open={!0}
                 adapter={this.state.hostUpdate}
                 adapterObject={this.state.repository['js-controller']}
                 t={this.t}

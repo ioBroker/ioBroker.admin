@@ -198,6 +198,25 @@ class ObjectBrowserEditObject extends Component {
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
 
+    componentDidMount() {
+        this.props.socket.subscribeObject(this.props.obj._id, this.onObjectUpdated);
+    }
+
+    componentWillUnmount() {
+        this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
+    }
+
+    onObjectUpdated = (id, obj) => {
+        if (this.originalObj !== JSON.stringify(obj, null, 2)) {
+            this.originalObj = JSON.stringify(obj, null, 2);
+            if (!this.state.changed) {
+                this.setState({ text: this.originalObj });
+            } else {
+                this.forceUpdate();
+            }
+        }
+    };
+
     checkFunction(func, isWrite) {
         if (!func) {
             return '';
@@ -561,44 +580,43 @@ class ObjectBrowserEditObject extends Component {
                         : null
                     }
                     <div className={classes.flex}>
-                    {checkState ? (typeof json.common.read !== 'undefined' ?
-                            <div className={classes.flex}>
-                                <FormControlLabel
-                                    className={classes.marginBlock}
-                                    control={<Checkbox
-                                        disabled={disabled}
-                                        checked={json.common.read}
-                                        onClick={el => this.setCommonItem(json, 'read', el.target.checked)}
-                                    />}
-                                    label={t('Readable')}
-                                />
-                                {this.buttonRemoveKey('read', () => this.removeCommonItem(json, 'read'))}
-                            </div>
+                        {checkState ? (typeof json.common.read !== 'undefined' ?
+                                <div className={classes.flex}>
+                                    <FormControlLabel
+                                        className={classes.marginBlock}
+                                        control={<Checkbox
+                                            disabled={disabled}
+                                            checked={json.common.read}
+                                            onClick={el => this.setCommonItem(json, 'read', el.target.checked)}
+                                        />}
+                                        label={t('Readable')}
+                                    />
+                                    {this.buttonRemoveKey('read', () => this.removeCommonItem(json, 'read'))}
+                                </div>
+                                :
+                                this.buttonAddKey('read', () => this.setCommonItem(json, 'read', true)))
                             :
-                            this.buttonAddKey('read', () => this.setCommonItem(json, 'read', true)))
-                        :
-                        null
-                    }
-                    {checkState ? (typeof json.common.write !== 'undefined' ?
-                            <div className={classes.flex}>
-                                <FormControlLabel
-                                    className={classes.marginBlock}
-                                    control={<Checkbox
-                                        disabled={disabled}
-                                        checked={json.common.write}
-                                        onClick={el => this.setCommonItem(json, 'write', el.target.checked)}
-                                    />}
-                                    label={t('Writeable')}
-                                />
-                                {this.buttonRemoveKey('write', () => this.removeCommonItem(json, 'write'))}
-                            </div>
+                            null}
+                        {checkState ? (typeof json.common.write !== 'undefined' ?
+                                <div className={classes.flex}>
+                                    <FormControlLabel
+                                        className={classes.marginBlock}
+                                        control={<Checkbox
+                                            disabled={disabled}
+                                            checked={json.common.write}
+                                            onClick={el => this.setCommonItem(json, 'write', el.target.checked)}
+                                        />}
+                                        label={t('Writeable')}
+                                    />
+                                    {this.buttonRemoveKey('write', () => this.removeCommonItem(json, 'write'))}
+                                </div>
+                                :
+                                this.buttonAddKey('write', () => this.setCommonItem(json, 'write', true)))
                             :
-                            this.buttonAddKey('write', () => this.setCommonItem(json, 'write', true)))
-                        :
-                        null
-                    }
+                            null}
                     </div>
-                    {checkRole ? (typeof json.common.role !== 'undefined' ?
+                    {checkRole ?
+                        (typeof json.common.role !== 'undefined' ?
                             <div className={classes.flex}>
                                 <Autocomplete
                                     className={classes.marginBlock}
@@ -611,9 +629,8 @@ class ObjectBrowserEditObject extends Component {
                                 />
                                 {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
                             </div> :
-                            this.buttonAddKey('role', () => this.setCommonItem(json, 'role', '')))
-                        : null
-                    }
+                            this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
+                        ) : null}
                     {typeof json.common.color !== 'undefined' ?
                         <div className={classes.flex}>
                             <TextField
@@ -675,21 +692,22 @@ class ObjectBrowserEditObject extends Component {
                             </div>) : null
                         }
                     </div>
-                    {json.common.type === 'number' ? (typeof json.common.unit !== 'undefined' ?
-                        <div className={classes.flex}>
-                            <TextField
-                                variant="standard"
-                                disabled={disabled}
-                                className={clsx(classes.marginBlock, classes.color)}
-                                label={t('Unit')}
-                                value={json.common.unit}
-                                onChange={el => this.setCommonItem(json, 'unit', el.target.value)}/>
-                            {this.buttonRemoveKey('unit', () => this.removeCommonItem(json, 'unit'))}
-                        </div> :
-                        <div className={classes.flexDrop}>
-                            {this.buttonAddKey('unit', () => this.setCommonItem(json, 'unit', ''))}
-                        </div>) : null
-                    }
+                    {json.common.type === 'number' ?
+                        (typeof json.common.unit !== 'undefined' ?
+                            <div className={classes.flex}>
+                                <TextField
+                                    variant="standard"
+                                    disabled={disabled}
+                                    className={clsx(classes.marginBlock, classes.color)}
+                                    label={t('Unit')}
+                                    value={json.common.unit}
+                                    onChange={el => this.setCommonItem(json, 'unit', el.target.value)}/>
+                                {this.buttonRemoveKey('unit', () => this.removeCommonItem(json, 'unit'))}
+                            </div> :
+                            <div className={classes.flexDrop}>
+                                {this.buttonAddKey('unit', () => this.setCommonItem(json, 'unit', ''))}
+                            </div>
+                        ) : null}
                 </div>
                 {typeof json.common.icon !== 'undefined' ?
                     <div className={classes.flex} style={{ flexGrow: 1 }}>

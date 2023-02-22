@@ -232,9 +232,9 @@ class BaseSettingsDialog extends Component {
     render() {
         return <Dialog
             className={this.props.classes.dialog}
-            open={true}
+            open={!0}
             onClose={() => false}
-            fullWidth={true}
+            fullWidth
             maxWidth="xl"
             aria-labelledby="base-settings-dialog-title"
         >
@@ -247,16 +247,16 @@ class BaseSettingsDialog extends Component {
                         aria-label="system tabs"
                         indicatorColor="secondary"
                     >
-                        <Tab label={this.props.t('System')} id={'system-tab'} aria-controls={'simple-tabpanel-0'} classes={{ selected: this.props.classes.selected }}/>
+                        <Tab label={this.props.t('System')} id={'system-tab'} aria-controls={'simple-tabpanel-0'} classes={{ selected: this.props.classes.selected }} />
                         <Tab label={this.props.t('Multi-host')} id={'multihost-tab'}  classes={{ selected: this.props.classes.selected }}
-                             aria-controls={'simple-tabpanel-1'}/>
-                        <Tab label={this.props.t('Objects')} id={'objects-tab'} aria-controls={'simple-tabpanel-3'}  classes={{ selected: this.props.classes.selected }}/>
-                        <Tab label={this.props.t('States')} id={'states-tab'} aria-controls={'simple-tabpanel-4'}  classes={{ selected: this.props.classes.selected }}/>
-                        <Tab label={this.props.t('Log')} id={'log-tab'} aria-controls={'simple-tabpanel-5'}  classes={{ selected: this.props.classes.selected }}/>
-                        <Tab label={this.props.t('Plugins')} id={'plugins-tab'} aria-controls={'simple-tabpanel-6'}  classes={{ selected: this.props.classes.selected }}/>
+                             aria-controls={'simple-tabpanel-1'} />
+                        <Tab label={this.props.t('Objects')} id={'objects-tab'} aria-controls={'simple-tabpanel-3'}  classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('States')} id={'states-tab'} aria-controls={'simple-tabpanel-4'}  classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('Log')} id={'log-tab'} aria-controls={'simple-tabpanel-5'}  classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('Plugins')} id={'plugins-tab'} aria-controls={'simple-tabpanel-6'}  classes={{ selected: this.props.classes.selected }} />
                     </Tabs>
                 </AppBar>
-                {this.state.loading ? <LinearProgress/> : null}
+                {this.state.loading ? <LinearProgress /> : null}
                 {!this.state.loading && this.state.currentTab === 0 ?
                     <div className={this.props.classes.tabPanel}>{this.renderSystem()}</div> : null}
                 {!this.state.loading && this.state.currentTab === 1 ?
@@ -278,14 +278,14 @@ class BaseSettingsDialog extends Component {
                     disabled={!this.state.hasChanges.length || this.state.saving}
                     onClick={() => this.onSave()}
                     color="primary"
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >{this.props.t('Save & Close')}</Button>
                 <Button
                     variant="contained"
                     color="grey"
                     disabled={this.state.saving}
                     onClick={() => this.state.hasChanges.length ? this.setState({confirmExit: true}) : this.props.onClose()}
-                    startIcon={<CloseIcon/>}
+                    startIcon={<CloseIcon />}
                 >{this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close')}
                 </Button>
             </DialogActions>

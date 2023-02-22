@@ -62,9 +62,9 @@ class ObjectBrowserEditRole extends Component {
     render() {
         return <Dialog
             key="objectBrowserEditRole"
-            open={true}
+            open={!0}
             maxWidth="sm"
-            fullWidth={true}
+            fullWidth
             onClose={() => this.props.onClose()}
             aria-labelledby="edit-role-dialog-title"
             aria-describedby="edit-role-dialog-description"

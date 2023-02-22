@@ -723,7 +723,7 @@ const InstanceRow = ({
     const customModal = showModal ? <CustomModal
         title={title}
         help={help}
-        open={true}
+        open={!0}
         applyDisabled={openDialogText || openDialogMemoryLimit}
         textInput={openDialogText || openDialogMemoryLimit}
         defaultValue={openDialogText ? item.name : openDialogMemoryLimit ? item.memoryLimitMB : ''}
@@ -898,15 +898,15 @@ const InstanceRow = ({
     }
 
     const stateTooltip = [
-        item.stoppedWhenWebExtension !== undefined ? <State key={1} state={true} >{t('Runs as web-extension')}</State> : '',
+        item.stoppedWhenWebExtension !== undefined ? <State key={1} state>{t('Runs as web-extension')}</State> : '',
         instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
         instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={3} state={item.alive} >{t('Heartbeat')}</State> : '',
         item.connected !== null && item.stoppedWhenWebExtension === undefined ? <State key={4} state={!!item.connected}>
-            {typeof item.connected === 'string' ? t('Connected:') + ' ' + (item.connected || '-') : t('Connected to device or service')}
+            {typeof item.connected === 'string' ? `${t('Connected:')} ${item.connected || '-'}` : t('Connected to device or service')}
         </State> : '',
         cronText ? <State key={5} state={instance.enabled}>CRON: {cronText}</State> : null,
-        next ? <State key={6} state={true} >{t('Next start: %s', next.toLocaleDateString(lang) + ' ' + next.toLocaleTimeString(lang))}</State> : null,
-        prev ? <State key={7} state={true} >{t('Last start: %s', prev.toLocaleDateString(lang) + ' ' + prev.toLocaleTimeString(lang))}</State> : null
+        next ? <State key={6} state>{t('Next start: %s', `${next.toLocaleDateString(lang)} ${next.toLocaleTimeString(lang)}`)}</State> : null,
+        prev ? <State key={7} state>{t('Last start: %s', `${prev.toLocaleDateString(lang)} ${prev.toLocaleTimeString(lang)}`)}</State> : null
     ].filter(el => el);
 
     const modeIcon = <div
@@ -960,7 +960,7 @@ const InstanceRow = ({
                     (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
                     (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
                 }
-                clearButton={true}
+                clearButton
                 cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
                 language={I18n.getLanguage()}
                 onOk={cron => {

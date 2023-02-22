@@ -49,7 +49,7 @@ class SlowConnectionWarningDialog extends Component {
 
     render() {
         return <Dialog
-            open={true}
+            open={!0}
             maxWidth="lg"
             onClose={() => this.props.onClose()}
         >
@@ -77,7 +77,7 @@ class SlowConnectionWarningDialog extends Component {
                         SlowConnectionWarningDialog.saveReadTimeoutMs(60000);
                         this.props.onClose(60000);
                     }}
-                    startIcon={<TimeIcon/>}
+                    startIcon={<TimeIcon />}
                     color="grey"
                 >
                     {this.mobile ? this.props.t('1 minute') : this.props.t('Set timeout to 1 minute')}
@@ -92,7 +92,7 @@ class SlowConnectionWarningDialog extends Component {
                         SlowConnectionWarningDialog.saveReadTimeoutMs(readTimeoutMs);
                         this.props.onClose(readTimeoutMs);
                     }}
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >
                     {this.mobile ? null : this.props.t('Apply')}
                 </Button>

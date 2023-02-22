@@ -248,7 +248,7 @@ class HostEdit extends Component {
 
         return <Dialog
             classes={{ paper: this.props.classes.dialog }}
-            open={true}
+            open={!0}
             maxWidth="lg"
             fullWidth={this.state.type !== 'number' && this.state.type !== 'boolean'}
             fullScreen={false}

@@ -247,7 +247,7 @@ class FileViewer extends Component {
             scroll="paper"
             open={!!this.props.href}
             onClose={() => this.props.onClose()}
-            fullWidth={true}
+            fullWidth
             maxWidth="xl"
             aria-labelledby="form-dialog-title"
         >

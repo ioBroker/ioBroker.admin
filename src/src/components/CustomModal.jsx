@@ -57,7 +57,7 @@ const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help,
         classes={{ paper: classes.modalDialog, /*paper: classes.background*/ }}
     >
         {title && <DialogTitle>
-            {icon ? <Icon className={classes.titleIcon}/> : null}
+            {icon ? <Icon className={classes.titleIcon} /> : null}
             {title}
             {I18n.getLanguage() !== 'en' && toggleTranslation ? <IconButton
                 size="large"
@@ -87,7 +87,7 @@ const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help,
         </DialogContent>
         <DialogActions>
             {applyButton && <Button
-                startIcon={<CheckIcon/>}
+                startIcon={<CheckIcon />}
                 disabled={progress || (applyDisabled && defaultValue === value)}
                 onClick={() => onApply(textInput ? value : '')}
                 variant="contained"
@@ -100,7 +100,7 @@ const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help,
                 onClick={onClose}
                 disabled={progress}
                 variant="contained"
-                startIcon={<CloseIcon/>}
+                startIcon={<CloseIcon />}
             >
                 {I18n.t(titleButtonClose)}
             </Button>

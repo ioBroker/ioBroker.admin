@@ -464,7 +464,7 @@ class SystemSettingsDialog extends Component {
                 root: this.props.classes.dialog,
                 paper: 'dialog-setting'
             }}
-            open={true}
+            open={!0}
             onClose={(e, reason) => {
                 if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
                     if (changed) {
@@ -514,7 +514,7 @@ class SystemSettingsDialog extends Component {
                     disabled={!changed || this.state.saving}
                     onClick={() => this.onSave()}
                     color="primary"
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >
                     {this.props.t('Save & Close')}
                 </Button>
@@ -522,7 +522,7 @@ class SystemSettingsDialog extends Component {
                     variant="contained"
                     disabled={this.state.saving}
                     onClick={() => changed ? this.setState({ confirmExit: true }) : this.props.onClose()}
-                    startIcon={<CloseIcon/>}
+                    startIcon={<CloseIcon />}
                     color="grey"
                 >
                     {changed ? this.props.t('Cancel') : this.props.t('Close')}

@@ -104,7 +104,7 @@ class WizardLicenseTab extends Component {
             return null;
         }
         return <Dialog
-            open={true}
+            open={!0}
             onClose={() => this.setState({ notAgree: false }) }
         >
             <DialogTitle >{ this.props.t('Message') }</DialogTitle>

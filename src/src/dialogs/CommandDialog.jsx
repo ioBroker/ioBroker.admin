@@ -56,10 +56,10 @@ class CommandDialog extends Component {
 
         return <Dialog
             scroll="paper"
-            fullWidth={true}
+            fullWidth
             classes={{ root: !this.props.visible ? classes.hiddenDialog : '', paper: classes.dialogRoot }}
             onClose={this.props.inBackground ? this.props.onClose : this.props.onInBackground}
-            open={true}
+            open={!0}
             maxWidth="md"
         >
             <DialogTitle>
@@ -70,7 +70,7 @@ class CommandDialog extends Component {
             </DialogTitle>
             <DialogContent dividers style={{ height: '100%' }}>
                 <Command
-                    noSpacing={true}
+                    noSpacing
                     key="command"
                     ready={this.props.ready}
                     host={this.props.host}

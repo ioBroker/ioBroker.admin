@@ -580,7 +580,7 @@ class UsersList extends Component {
                     </Grid>
                 </Grid>
                 {this.state.userEditDialog ? <UserEditDialog
-                    open={true}
+                    open={!0}
                     onClose={() => this.setState({userEditDialog: false})}
                     users={this.state.users}
                     user={this.state.userEditDialog}
@@ -594,7 +594,7 @@ class UsersList extends Component {
                     innerWidth={this.state.innerWidth}
                 /> : null}
                 {this.state.groupEditDialog ? <GroupEditDialog
-                    open={true}
+                    open={!0}
                     onClose={() => this.setState({groupEditDialog: false})}
                     groups={this.state.groups}
                     group={this.state.groupEditDialog}
@@ -608,7 +608,7 @@ class UsersList extends Component {
                     saveData={this.saveGroup}
                 /> : null}
                 {this.state.userDeleteDialog ? <UserDeleteDialog
-                    open={true}
+                    open={!0}
                     onClose={() => this.setState({userDeleteDialog: false})}
                     user={this.state.userDeleteDialog}
                     t={this.props.t}
@@ -616,7 +616,7 @@ class UsersList extends Component {
                     deleteUser={this.deleteUser}
                 /> : null}
                 {this.state.groupDeleteDialog ? <GroupDeleteDialog
-                    open={true}
+                    open={!0}
                     onClose={() => this.setState({groupDeleteDialog: false})}
                     group={this.state.groupDeleteDialog}
                     t={this.props.t}

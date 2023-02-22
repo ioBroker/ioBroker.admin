@@ -564,7 +564,7 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                     <div style={(object.folder || applyToChildren) ? { color: 'green' } : null}>{t('to apply with children')} {(object.folder || childrenCount > 1) ? `(${childrenCount} ${t('object(s)')})` : ''}</div>
                 </div>
 
-                {progress && <LinearProgress/>}
+                {progress && <LinearProgress />}
 
                 <div style={{ overflowY: 'auto' }}>
                     <div>

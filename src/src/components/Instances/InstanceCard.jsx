@@ -418,7 +418,7 @@ const InstanceCard = memo(({
     const customModal = showModal ? <CustomModal
         title={title}
         help={help}
-        open={true}
+        open={!0}
         applyDisabled={openDialogText || openDialogMemoryLimit}
         textInput={openDialogText || openDialogMemoryLimit}
         defaultValue={openDialogText ? item.name : openDialogMemoryLimit ? item.memoryLimitMB : ''}
@@ -804,7 +804,7 @@ const InstanceCard = memo(({
                 (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
                 (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
             }
-            clearButton={true}
+            clearButton
             cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
             language={I18n.getLanguage()}
             onOk={cron => {

@@ -114,15 +114,22 @@ class Login extends Component {
                     alignItems="center"
                 >
                     {window.loginLogo && window.loginLogo !== '@@loginLogo@@' ?
-                        <div style={{
-                            height: 50,
-                            withWidth: 102,
-                            lineHeight: '50px',
-                            background: 'white',
-                            borderRadius: 5,
-                            padding: 5}}
-                        ><img src={window.loginLogo} alt="logo"
-                              style={{maxWidth: '100%', maxHeight: '100%'}}/></div>
+                        <div
+                            style={{
+                                height: 50,
+                                withWidth: 102,
+                                lineHeight: '50px',
+                                background: 'white',
+                                borderRadius: 5,
+                                padding: 5,
+                            }}
+                        >
+                            <img
+                                src={window.loginLogo}
+                                alt="logo"
+                                style={{ maxWidth: '100%', maxHeight: '100%' }}
+                            />
+                        </div>
                         :
                         window.loginHideLogo === 'false' &&
                         <Avatar className={classes.avatar} src="img/logo.png" classes={{img: classes.avatarImg}} />}
@@ -191,7 +198,7 @@ class Login extends Component {
                             color="primary"
                             className={classes.submit}
                         >
-                            {this.state.inProcess ? <CircularProgress size={24}/> : this.props.t('login')}
+                            {this.state.inProcess ? <CircularProgress size={24} /> : this.props.t('login')}
                         </Button>}
                     </form>
                 </Grid>

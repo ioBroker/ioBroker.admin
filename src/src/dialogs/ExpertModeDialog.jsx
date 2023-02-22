@@ -78,7 +78,10 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon }) => {
             open={open}
             classes={{ paper: classes.paper }}
         >
-            <DialogTitle><ExpertIcon style={{marginRight: 8}}/>{I18n.t('Expert mode')}</DialogTitle>
+            <DialogTitle>
+                <ExpertIcon style={{ marginRight: 8 }} />
+                {I18n.t('Expert mode')}
+            </DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <Grid container>
                     <Grid item className={classes.width100}>
@@ -135,7 +138,7 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon }) => {
                     autoFocus
                     onClick={onClose}
                     color="primary"
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >
                     {I18n.t('Ok')}
                 </Button>

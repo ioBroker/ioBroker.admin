@@ -239,7 +239,7 @@ class RatingDialog extends Component {
         }
 
         return <Dialog
-            open={true}
+            open={!0}
             onClose={() => this.props.onClose()}
         >
             <DialogTitle>{`${this.props.t('Review')} ${this.props.adapter}${this.props.version ? '@' + this.props.version : ''}`}</DialogTitle>

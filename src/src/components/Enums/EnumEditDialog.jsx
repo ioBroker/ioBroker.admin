@@ -84,7 +84,7 @@ function EnumEditDialog(props) {
 
     return <Dialog
         fullWidth={props.innerWidth < 500}
-        open={true}
+        open={!0}
         onClose={(event, reason) => {
             if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
                 props.onClose();

@@ -30,7 +30,7 @@ function build() {
                         <App onThemeChange={_themeName => {
                             themeName = _themeName;
                             build();
-                        }}/>
+                        }} />
                     </ContextWrapperProvider>
                 </LocalizationProvider>
             </ThemeProvider>

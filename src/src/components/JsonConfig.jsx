@@ -441,7 +441,7 @@ class JsonConfig extends Router {
             />
             <SaveCloseButtons
                 isIFrame={false}
-                dense={true}
+                dense
                 paddingLeft={0}
                 newReact
                 theme={this.state.theme}

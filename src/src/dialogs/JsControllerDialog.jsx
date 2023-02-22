@@ -463,7 +463,7 @@ export const jsControllerDialogFunc = (socket, hostId, theme, version) => {
 
     return root.render(<StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-            <JsControllerDialog hostId={hostId} socket={socket} theme={theme} version={version}/>
+            <JsControllerDialog hostId={hostId} socket={socket} theme={theme} version={version} />
         </ThemeProvider>
     </StyledEngineProvider>);
 }

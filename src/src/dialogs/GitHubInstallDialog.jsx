@@ -242,7 +242,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                 const _params = {...params};
                                 _params.InputProps = _params.InputProps || {};
                                 _params.InputProps.startAdornment = <InputAdornment position="start">
-                                    <Icon src={autocompleteValue?.icon || ''} className={classes.listIcon}/>
+                                    <Icon src={autocompleteValue?.icon || ''} className={classes.listIcon} />
                                 </InputAdornment>;
 
                                 return <TextField
@@ -252,7 +252,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                 />;
                             }}
                             renderOption={(props, option) => <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                <Icon src={option.icon || ''}  className={classes.listIconWithMargin}/>
+                                <Icon src={option.icon || ''}  className={classes.listIconWithMargin} />
                                 {option.name}
                             </Box>}
                         />
@@ -286,7 +286,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             value={autocompleteValue}
                             getOptionDisabled={option => option.nogit}
                             renderOption={(props, option) => <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                <Icon src={option.icon || ''}  className={classes.listIconWithMargin}/>
+                                <Icon src={option.icon || ''}  className={classes.listIconWithMargin} />
                                 {option.name}
                                 {option.nogit && <div className={classes.errorTextNoGit}>{I18n.t('This adapter cannot be installed from git as must be built before installation.')}</div>}
                             </Box>}
@@ -297,7 +297,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                 const _params = {...params};
                                 _params.InputProps = _params.InputProps || {};
                                 _params.InputProps.startAdornment = <InputAdornment position="start">
-                                    <Icon src={autocompleteValue?.icon || ''} className={classes.listIconWithMargin}/>
+                                    <Icon src={autocompleteValue?.icon || ''} className={classes.listIconWithMargin} />
                                 </InputAdornment>;
 
                                 return <TextField
@@ -396,7 +396,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     closeInit();
                 }}
                 color="primary"
-                startIcon={<CheckIcon/>}
+                startIcon={<CheckIcon />}
             >
                 {t('Install')}
             </Button>

@@ -1817,7 +1817,7 @@ class App extends Router {
     showRedirectDialog() {
         if (this.state.showRedirect) {
             return <Dialog
-                open={true}
+                open={!0}
                 onClose={() => {}}
             >
                 <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
@@ -1953,15 +1953,15 @@ class App extends Router {
 
             return <div style={{textAlign: 'center', fontSize: 22, marginTop: 50, height: 'calc(100% - 50px)', overflow: 'auto'}}>
                 <h1 style={{color: '#F00'}}>Error in GUI!</h1>
-                Please open the browser console (F12), copy error text from there and create the issue on <a href="https://github.com/ioBroker/ioBroker.admin/issues" target="_blank" rel="noreferrer">github</a><br/>
-                Without this information it is not possible to analyse the error.<br/>
-                It should looks like <br/>
-                <img src="img/browserError.png" alt="error"/><br/>
-                If in the second line you will see <code style={{style: '#888', fontFamily: 'monospace', fontSize: 16}}>at :3000/static/js/main.chunk.js:36903</code> and not the normal file name,<br/>
+                Please open the browser console (F12), copy error text from there and create the issue on <a href="https://github.com/ioBroker/ioBroker.admin/issues" target="_blank" rel="noreferrer">github</a><br />
+                Without this information it is not possible to analyse the error.<br />
+                It should looks like <br />
+                <img src="img/browserError.png" alt="error" /><br />
+                If in the second line you will see <code style={{style: '#888', fontFamily: 'monospace', fontSize: 16}}>at :3000/static/js/main.chunk.js:36903</code> and not the normal file name,<br />
                 please try to reproduce an error with opened browser console. In this case the special "map" files will be loaded and the developers can see the real name of functions and files.
 
-                <div style={{color: '#F88', fontSize: 14, marginTop: 20}}>{message}</div>
-                <pre style={{color: '#F88', fontSize: 12, fontFamily: 'monospace', textAlign: 'left', marginTop: 20, padding: 20}}>{(stack || '').split('\n').join((line, i) => <div key={i}>{line}<br/></div>)}</pre>
+                <div style={{ color: '#F88', fontSize: 14, marginTop: 20 }}>{message}</div>
+                <pre style={{ color: '#F88', fontSize: 12, fontFamily: 'monospace', textAlign: 'left', marginTop: 20, padding: 20 }}>{(stack || '').split('\n').join((line, i) => <div key={i}>{line}<br/></div>)}</pre>
             </div>;
         }
 
@@ -2259,7 +2259,7 @@ class App extends Router {
                     {!this.state.connected && !this.state.redirectCountDown ? <Connecting /> : null}
                     {this.state.showGuiSettings ? <Menu
                         anchorEl={this.state.showGuiSettings}
-                        open={true}
+                        open={!0}
                         onClose={() => this.setState({ showGuiSettings: null })}
                     >
                         <MenuItem onClick={() => {

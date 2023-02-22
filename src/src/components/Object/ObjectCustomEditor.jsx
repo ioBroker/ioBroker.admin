@@ -500,7 +500,7 @@ class ObjectCustomEditor extends Component {
                         <JsonConfigComponent
                             instanceObj={instanceObj}
                             customObj={customObj}
-                            custom={true}
+                            custom
                             className={ '' }
                             adapterName={adapter}
                             instance={parseInt(instance.split('.').pop(), 10) || 0}

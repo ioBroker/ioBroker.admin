@@ -239,7 +239,7 @@ class LicensesDialog extends Component {
             />
             <Button
                 variant="contained"
-                startIcon={<IconRefresh/>}
+                startIcon={<IconRefresh />}
                 disabled={
                     this.state.requesting ||
                     this.props.saving ||

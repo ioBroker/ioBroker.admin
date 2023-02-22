@@ -113,7 +113,7 @@ class MDUtils {
             if (line.startsWith('=========')) {
                 // ignore it
             } else
-            //<h1><img src="ru/adapterref/iobroker.linkeddevices/admin/linkeddevices.png" width="32"/> ioBroker.linkeddevices</h1>
+            //<h1><img src="ru/adapterref/iobroker.linkeddevices/admin/linkeddevices.png" width="32" /> ioBroker.linkeddevices</h1>
             if (line.match(/^<h1>.+<\/h1>/)) {
                 // skip
             } else

@@ -43,18 +43,18 @@ class Files extends Component {
         return <TabContainer>
             <TabContent overflow="auto">
                 <FileBrowser
-                    showViewTypeButton={true}
+                    showViewTypeButton
                     ready={this.props.ready}
                     socket={this.props.socket}
                     themeName={this.props.themeName}
                     lang={this.props.lang}
                     t={this.props.t}
-                    showToolbar={true}
-                    allowUpload={true}
-                    allowView={true}
-                    allowDownload={true}
-                    allowCreateFolder={true}
-                    allowDelete={true}
+                    showToolbar
+                    allowUpload
+                    allowView
+                    allowDownload
+                    allowCreateFolder
+                    allowDelete
                     expertMode={this.props.expertMode}
                     modalEditOfAccessControl={(context, objData) =>
                         <FileEditOfAccessControl

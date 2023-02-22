@@ -249,7 +249,7 @@ class AdapterRow extends Component {
             </TableRow>;
         } else {
             return <TableRow
-                hover={true}
+                hover
                 className={this.props.hidden ? classes.displayNone : ''}
             >
                 <TableCell />

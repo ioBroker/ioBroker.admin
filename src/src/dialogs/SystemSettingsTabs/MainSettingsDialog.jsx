@@ -477,16 +477,16 @@ class MainSettingsDialog extends Component {
                         center={center}
                         zoom={zoom}
                         maxZoom={18}
-                        attributionControl={true}
-                        zoomControl={true}
-                        doubleClickZoom={true}
-                        scrollWheelZoom={true}
-                        dragging={true}
-                        animate={true}
+                        attributionControl
+                        zoomControl
+                        doubleClickZoom
+                        scrollWheelZoom
+                        dragging
+                        animate
                         easeLinearity={0.35}
                     >
-                        <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"/>
-                        <MyMapComponent addMap={map => this.onMap(map)}/>
+                        <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
+                        <MyMapComponent addMap={map => this.onMap(map)} />
                     </MapContainer>
                 </Grid>
             </Grid>

@@ -453,17 +453,17 @@ class Markdown extends Component {
             const _level = parseInt(level, 10);
 
             if (_level === 1) {
-                return <h1 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'}/></h1>;
+                return <h1 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'} /></h1>;
             } else if (_level === 2) {
-                return <h2 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'}/></h2>;
+                return <h2 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'} /></h2>;
             } else if (_level === 3) {
-                return <h3 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'}/></h3>;
+                return <h3 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'} /></h3>;
             } else if (_level === 4) {
-                return <h4 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'}/></h4>;
+                return <h4 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'} /></h4>;
             } else if (_level === 5) {
-                return <h5 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'}/></h5>;
+                return <h5 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'} /></h5>;
             } else  {
-                return <h6 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'}/></h6>;
+                return <h6 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'} /></h6>;
             }
         };
         this.meta = ({text, id, level, prefix}) => {
@@ -749,12 +749,12 @@ class Markdown extends Component {
 
         if (this.state.header.adapter) {
             data.push(<h1 key="h1">{[
-                this.state.header.logo ? <img key="logo" src={'https://www.iobroker.net/' + this.state.header.logo} alt="logo" className={this.props.classes.logoImage}/> : null,
+                this.state.header.logo ? <img key="logo" src={`https://www.iobroker.net/${this.state.header.logo}`} alt="logo" className={this.props.classes.logoImage} /> : null,
                 <div key="title" className={this.props.classes.titleText}>{this.state.header.title}</div>
             ]}</h1>);
             if (this.state.header.readme) {
                 const link = this.state.header.readme.replace(/blob\/master\/README.md$/, '');
-                data.push(<IconButton size="large" key="github" title={I18n.t('Open repository')} onClick={() => Utils.openLink(link)}><IconGithub/></IconButton>);
+                data.push(<IconButton size="large" key="github" title={I18n.t('Open repository')} onClick={() => Utils.openLink(link)}><IconGithub /></IconButton>);
             }
         }
 
@@ -783,8 +783,8 @@ class Markdown extends Component {
                 <AccordionActions classes={{root: this.props.classes.badgesDetails}}>{
                     Object.keys(this.state.header).filter(attr => attr.startsWith('BADGE-'))
                         .map((attr, i) => [
-                            this.state.header[attr].indexOf('nodei.co') !== -1 ? (<br key={'br' + i}/>) : null,
-                            <img key={'img' + i} src={this.state.header[attr]} alt={attr.substring(6)}/>
+                            this.state.header[attr].includes('nodei.co') ? (<br key={'br' + i} />) : null,
+                            <img key={`img${i}`} src={this.state.header[attr]} alt={attr.substring(6)} />
                         ])}
                 </AccordionActions>
             </Accordion>);
@@ -803,7 +803,7 @@ class Markdown extends Component {
                 <a className={this.props.classes.infoEdit}
                    href={this.state.header.editLink.replace(/\/edit\//, '/blob/')}
                    rel="noopener noreferrer"
-                   target="_blank"><IconGithub style={{marginRight: 4}}/>{I18n.t('See on github')}
+                   target="_blank"><IconGithub style={{ marginRight: 4 }} />{I18n.t('See on github')}
                 </a> : null}
             {this.props.editEnabled && this.editText ?
                 <div className={this.props.classes.infoEditLocal} onClick={() => {
@@ -848,9 +848,9 @@ class Markdown extends Component {
 
     renderContentCloseButton() {
         if (this.state.hideContent) {
-            return <IconMenu className={this.props.classes.contentClose}/>;
+            return <IconMenu className={this.props.classes.contentClose} />;
         } else {
-            return <IconClose className={this.props.classes.contentClose} onClick={() => this.onToggleContentButton()}/>;
+            return <IconClose className={this.props.classes.contentClose} onClick={() => this.onToggleContentButton()} />;
         }
     }
 
@@ -955,10 +955,10 @@ class Markdown extends Component {
             const CustomLink = this.customLink;
             const CustomH    = this.customH;
             return <Accordion>
-                <AccordionSummary className={this.props.classes.summary} classes={{expanded: this.props.classes.summaryExpanded}} expandIcon={<IconExpandMore />}>{I18n.t('Changelog')}</AccordionSummary>
-                <AccordionActions classes={{root: this.props.classes.changeLogAccordion}}>
+                <AccordionSummary className={this.props.classes.summary} classes={{ expanded: this.props.classes.summaryExpanded }} expandIcon={<IconExpandMore />}>{I18n.t('Changelog')}</AccordionSummary>
+                <AccordionActions classes={{ root: this.props.classes.changeLogAccordion }}>
                     {typeof this.state.changeLog === 'string' ?
-                        <MarkdownView markdown={this.state.changeLog} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>
+                        <MarkdownView markdown={this.state.changeLog} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />
                         :
                         this.renderChangeLogLines()
                     }
@@ -969,19 +969,19 @@ class Markdown extends Component {
 
     renderSnackbar() {
         return <Snackbar
-            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             open={!!this.state.tooltip}
             autoHideDuration={6000}
-            onClose={() => this.setState({tooltip: ''})}
+            onClose={() => this.setState({ tooltip: '' })}
             message={<span id="message-id">{this.state.tooltip}</span>}
             action={[
                 <IconButton size="large"
                     key="close"
                     color="inherit"
                     className={this.props.classes.close}
-                    onClick={() => this.setState({tooltip: ''})}
+                    onClick={() => this.setState({ tooltip: '' })}
                 >
-                    <IconClose/>
+                    <IconClose />
                 </IconButton>,
             ]}
         />;
@@ -1081,7 +1081,7 @@ class Markdown extends Component {
             mm.forEach(header => {
                 const level = header.match(/^(#+)\s/)[1].length;
                 let text = header.substring(level + 1);
-                line = line.replace(header, `<CustomH text="${text}" id="${Utils.text2link(text)}" level="${level}" prefix="${prefix}"/>`);
+                line = line.replace(header, `<CustomH text="${text}" id="${Utils.text2link(text)}" level="${level}" prefix="${prefix}" />`);
             });
         }
         return line;
@@ -1105,19 +1105,19 @@ class Markdown extends Component {
             const cells = [];
             for (let j = 0; j < header.length; j++) {
                 parts[j] = this.replaceHref(parts[j]);
-                const crt = <MarkdownView markdown={parts[j] || ''}  options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>;
-                cells.push(<TableCell className={this.props.classes.tableCell} key={'cell' + i + '_' + j}>{crt}</TableCell>);
+                const crt = <MarkdownView markdown={parts[j] || ''}  options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />;
+                cells.push(<TableCell className={this.props.classes.tableCell} key={`cell${i}_${j}`}>{crt}</TableCell>);
             }
 
-            rows.push(<TableRow className={this.props.classes.tableRow} key={'row' + i}>{cells}</TableRow>);
+            rows.push(<TableRow className={this.props.classes.tableRow} key={`row${i}`}>{cells}</TableRow>);
         }
-        return <Table key={'table_' + key} size="small" className={this.props.classes.table}>
+        return <Table key={`table_${key}`} size="small" className={this.props.classes.table}>
             <TableHead className={this.props.classes.tableHead}>
                 <TableRow className={this.props.classes.tableRowHead}>
                     {
                         header.map((h, i) =>
-                            <TableCell className={this.props.classes.tableCellHead} key={'header' + i}>
-                                <MarkdownView markdown={h} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>
+                            <TableCell className={this.props.classes.tableCellHead} key={`header${i}`}>
+                                <MarkdownView markdown={h} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />
                             </TableCell>)
                     }
                 </TableRow>
@@ -1141,7 +1141,7 @@ class Markdown extends Component {
             />;
         }
         if (this.state.loadTimeout && !this.state.parts.length) {
-            return <Loader theme={this.props.theme}/>;
+            return <Loader theme={this.props.theme} />;
         }
 
         const prefix = window.location.hash.split('?')[0];
@@ -1173,24 +1173,24 @@ class Markdown extends Component {
 
                 // replace <- with &lt;
                 line = line.replace(/<-/g, '&lt;-');
-                line = line.replace(/<\/ br>/g, '<br/>');
+                line = line.replace(/<\/ br>/g, '<br />');
 
-                const rct = <MarkdownView markdown={line} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH, meta, link}}/>;
+                const rct = <MarkdownView markdown={line} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH, meta, link }} />;
                 /*cconst rct = <ReactMarkdown
                     children={line}
                     components={{ CustomLink, CustomH }}
                 />; */
 
                 if (part.type === 'warn') {
-                    return <div key={'parts' + i} className={this.props.classes.warn}>{rct}</div>;
+                    return <div key={`parts${i}`} className={this.props.classes.warn}>{rct}</div>;
                 } else if (part.type === 'alarm') {
-                    return <div key={'parts' + i} className={this.props.classes.alarm}>{rct}</div>;
+                    return <div key={`parts${i}`} className={this.props.classes.alarm}>{rct}</div>;
                 } else if (part.type === 'notice') {
-                    return <div key={'parts' + i} className={this.props.classes.notice}>{rct}</div>;
+                    return <div key={`parts${i}`} className={this.props.classes.notice}>{rct}</div>;
                 }  else if (part.type === '@@@') {
-                    return <div key={'parts' + i} className={this.props.classes.todo}>{rct}</div>;
+                    return <div key={`parts${i}`} className={this.props.classes.todo}>{rct}</div>;
                 } else {
-                    return <div key={'parts' + i} className={this.props.classes.paragraph}>{rct}</div>;
+                    return <div key={`parts${i}`} className={this.props.classes.paragraph}>{rct}</div>;
                 }
             }
         });
@@ -1200,7 +1200,7 @@ class Markdown extends Component {
             {this.state.title && !this.state.header.adapter ? <h1>{this.state.title}</h1> : null}
             {this.renderAffiliates()}
             {reactElements}
-            <hr/>
+            <hr />
             {this.renderLicense()}
             {this.renderChangeLog()}
             {this.renderInfo()}

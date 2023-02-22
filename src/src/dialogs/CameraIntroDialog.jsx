@@ -90,10 +90,10 @@ class EditIntroLinkDialog extends Component {
         return (
             <Dialog
                 onClose={() => this.props.onClose()}
-                open={true}
+                open={!0}
                 maxWidth="xl"
-                fullWidth={true}
-                fullScreen={true}
+                fullWidth
+                fullScreen
                 classes={{ paper: classes.paper }}
             >
                 <DialogTitle>

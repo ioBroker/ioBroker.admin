@@ -62,10 +62,10 @@ class ObjectEditDialog extends Component {
     render() {
         return <Dialog
             className={this.props.classes.dialog}
-            open={true}
+            open={!0}
             onClose={() => this.props.onClose()}
-            fullWidth={true}
-            fullScreen={true}
+            fullWidth
+            fullScreen
             aria-labelledby="object-edit-dialog-title"
         >
             <DialogTitle id="object-edit-dialog-title">{

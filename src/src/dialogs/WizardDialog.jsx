@@ -137,18 +137,18 @@ class WizardDialog extends Component {
             <div className={ this.props.classes.fullHeightWithoutToolbar }>
 
             </div>
-            <Toolbar className={ this.props.classes.toolbar }>
-                <div className={ this.props.classes.grow }/>
+            <Toolbar className={this.props.classes.toolbar}>
+                <div className={this.props.classes.grow} />
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={ () =>
+                    onClick={() =>
                         this.props.socket.getCompactSystemConfig(true)
                             .then(obj =>
-                                this.setState( { activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
+                                this.setState({ activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
                     }>
-                    {this.props.t('Start wizard')} <PlayArrowIcon className={ this.props.classes.playIcon }/></Button>
-                <div className={this.props.classes.grow}/>
+                    {this.props.t('Start wizard')} <PlayArrowIcon className={this.props.classes.playIcon} /></Button>
+                <div className={this.props.classes.grow} />
             </Toolbar>
         </div>;
     }
@@ -157,8 +157,8 @@ class WizardDialog extends Component {
         return <WizardLicenseTab
             t={this.props.t}
             socket={this.props.socket}
-            themeName={ this.props.themeName}
-            onDone={ settings => {
+            themeName={this.props.themeName}
+            onDone={settings => {
                 this.props.socket.getSystemConfig(true)
                     .then(obj => {
                         obj.common.licenseConfirmed = true;
@@ -167,17 +167,17 @@ class WizardDialog extends Component {
                         }
                         return this.props.socket.setSystemConfig(obj);
                     })
-                    .then(() => this.setState( { activeStep: this.state.activeStep + 1 }));
-            } }
+                    .then(() => this.setState({ activeStep: this.state.activeStep + 1 }));
+            }}
         />;
     }
 
     renderPassword() {
         return <WizardPasswordTab
-            t={ this.props.t }
-            socket={ this.props.socket }
-            themeName={ this.props.themeName }
-            onDone={ pass =>
+            t={this.props.t}
+            socket={this.props.socket}
+            themeName={this.props.themeName}
+            onDone={pass =>
                 this.props.socket.changePassword('admin', pass)
                     .then(() =>
                         this.setState( {activeStep: this.state.activeStep + 1 }))}
@@ -186,9 +186,9 @@ class WizardDialog extends Component {
 
     renderSettings() {
         return <WizardSettingsTab
-            t={ this.props.t }
-            socket={ this.props.socket }
-            themeName={ this.props.themeName }
+            t={this.props.t}
+            socket={this.props.socket}
+            themeName={this.props.themeName}
             onDone={settings =>
                 this.props.socket.getSystemConfig(true)
                     .then(obj => {
@@ -203,11 +203,11 @@ class WizardDialog extends Component {
 
     renderAuthentication() {
         return <WizardAuthSSLTab
-            t={ this.props.t }
+            t={this.props.t}
             auth={this.state.auth}
             secure={this.state.secure}
-            socket={ this.props.socket }
-            themeName={ this.props.themeName }
+            socket={this.props.socket}
+            themeName={this.props.themeName}
             onDone={settings =>
                 this.setState(settings, () => this.setState({ activeStep: this.state.activeStep + 1 }))}
         />;
@@ -215,9 +215,9 @@ class WizardDialog extends Component {
 
     renderPortForwarding() {
         return <WizardPortForwarding
-            t={ this.props.t }
-            socket={ this.props.socket }
-            themeName={ this.props.themeName }
+            t={this.props.t}
+            socket={this.props.socket}
+            themeName={this.props.themeName}
             auth={this.state.auth}
             secure={this.state.secure}
             onDone={() =>
@@ -240,7 +240,7 @@ class WizardDialog extends Component {
                         certPublic  = certs && certs.find(c => c.type === 'public');
                         certPrivate = certs && certs.find(c => c.type === 'private');
                     } catch (e) {
-                        window.alert('Cannot read certificates: ' + e);
+                        window.alert(`Cannot read certificates: ${e}`);
                     }
                 }
                 this.adminInstance.native.auth = this.state.auth;
@@ -288,45 +288,48 @@ class WizardDialog extends Component {
         return <div className={ clsx(this.props.classes.paper, this.props.classes.finishBackground) }>
             <div className={ this.props.classes.fullHeightWithoutToolbar }>
                 <div className={this.props.classes.finalText}>{this.props.t('Have fun automating your home with')}</div>
-                <img src={LongLogo} alt="ioBroker" className={this.props.classes.finalLongLogo}/>
+                <img src={LongLogo} alt="ioBroker" className={this.props.classes.finalLongLogo} />
             </div>
             <Toolbar className={this.props.classes.toolbar}>
-                <div className={this.props.classes.grow}/>
-                <Button variant="contained" color="primary" onClick={async () => await this.onClose()} startIcon={<CheckIcon/>}>{this.props.t('Finish')}</Button>
-                <div className={this.props.classes.grow}/>
+                <div className={this.props.classes.grow} />
+                <Button variant="contained" color="primary" onClick={async () => await this.onClose()} startIcon={<CheckIcon />}>{this.props.t('Finish')}</Button>
+                <div className={this.props.classes.grow} />
             </Toolbar>
         </div>;
     }
 
     render() {
         return <Dialog
-            className={ this.props.classes.dialog }
-            open={ true }
-            onClose={ () => {} }
-            fullWidth={ true }
-            fullScreen={ true }
+            className={this.props.classes.dialog}
+            open={!0}
+            onClose={() => {}}
+            fullWidth
+            fullScreen
             aria-labelledby="wizard-dialog-title"
         >
-            <DialogTitle id="wizard-dialog-title"><img src={Logo} className={this.props.classes.logo} alt="logo"/>{ this.props.t('Initial ioBroker setup') } <ToggleThemeMenu className={this.props.classes.themeButton} t={this.props.t} toggleTheme={this.props.toggleTheme} themeName={this.props.themeName} size="small"/></DialogTitle>
-            <DialogContent className={ this.props.classes.content }>
+            <DialogTitle id="wizard-dialog-title">
+                <img src={Logo} className={this.props.classes.logo} alt="logo" />
+                {this.props.t('Initial ioBroker setup')} <ToggleThemeMenu className={this.props.classes.themeButton} t={this.props.t} toggleTheme={this.props.toggleTheme} themeName={this.props.themeName} size="small" />
+            </DialogTitle>
+            <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
-                    <Stepper activeStep={ this.state.activeStep }>
-                        <Step><StepLabel>{ this.props.t('Welcome') }</StepLabel></Step>
-                        <Step><StepLabel>{ this.props.t('License agreement') }</StepLabel></Step>
-                        <Step><StepLabel>{ this.props.t('Password') }</StepLabel></Step>
-                        <Step><StepLabel>{ this.props.t('Authentication') }</StepLabel></Step>
-                        <Step><StepLabel>{ this.props.t('Port forwarding') }</StepLabel></Step>
-                        <Step><StepLabel>{ this.props.t('Settings') }</StepLabel></Step>
-                        <Step><StepLabel>{ this.props.t('Finish') }</StepLabel></Step>
+                    <Stepper activeStep={this.state.activeStep}>
+                        <Step><StepLabel>{this.props.t('Welcome')}</StepLabel></Step>
+                        <Step><StepLabel>{this.props.t('License agreement')}</StepLabel></Step>
+                        <Step><StepLabel>{this.props.t('Password')}</StepLabel></Step>
+                        <Step><StepLabel>{this.props.t('Authentication')}</StepLabel></Step>
+                        <Step><StepLabel>{this.props.t('Port forwarding')}</StepLabel></Step>
+                        <Step><StepLabel>{this.props.t('Settings')}</StepLabel></Step>
+                        <Step><StepLabel>{this.props.t('Finish')}</StepLabel></Step>
                     </Stepper>
                 </AppBar>
-                {this.state.activeStep === 0 ? <div className={ this.props.classes.tabPanel }>{ this.renderWelcome()        }</div> : null }
-                {this.state.activeStep === 1 ? <div className={ this.props.classes.tabPanel }>{ this.renderLicense()        }</div> : null }
-                {this.state.activeStep === 2 ? <div className={ this.props.classes.tabPanel }>{ this.renderPassword()       }</div> : null }
-                {this.state.activeStep === 3 ? <div className={ this.props.classes.tabPanel }>{ this.renderAuthentication() }</div> : null }
-                {this.state.activeStep === 4 ? <div className={ this.props.classes.tabPanel }>{ this.renderPortForwarding() }</div> : null }
-                {this.state.activeStep === 5 ? <div className={ this.props.classes.tabPanel }>{ this.renderSettings()       }</div> : null }
-                {this.state.activeStep === 6 ? <div className={ this.props.classes.tabPanel }>{ this.renderFinish()         }</div> : null }
+                {this.state.activeStep === 0 ? <div className={this.props.classes.tabPanel}>{this.renderWelcome()       }</div> : null}
+                {this.state.activeStep === 1 ? <div className={this.props.classes.tabPanel}>{this.renderLicense()       }</div> : null}
+                {this.state.activeStep === 2 ? <div className={this.props.classes.tabPanel}>{this.renderPassword()      }</div> : null}
+                {this.state.activeStep === 3 ? <div className={this.props.classes.tabPanel}>{this.renderAuthentication()}</div> : null}
+                {this.state.activeStep === 4 ? <div className={this.props.classes.tabPanel}>{this.renderPortForwarding()}</div> : null}
+                {this.state.activeStep === 5 ? <div className={this.props.classes.tabPanel}>{this.renderSettings()      }</div> : null}
+                {this.state.activeStep === 6 ? <div className={this.props.classes.tabPanel}>{this.renderFinish()        }</div> : null}
             </DialogContent>
         </Dialog>;
     }

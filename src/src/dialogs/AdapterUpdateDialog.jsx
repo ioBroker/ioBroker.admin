@@ -393,13 +393,13 @@ class AdapterUpdateDialog extends Component {
 
             return <Dialog
                 onClose={() => this.setState({showMessageDialog: false})}
-                open={true}
+                open={!0}
             >
                 <DialogTitle className={classes.messageDialogTitle}>
                     {this.getText(message.title, this.props.noTranslation) || this.props.t('Please confirm')}
                 </DialogTitle>
                 <DialogContent className={classes.messageDialogText}>
-                    {message.level === 'warn' ? <IconWarning className={Utils.clsx(classes.messageIcon, classes.messageColor_warn)}/> : null}
+                    {message.level === 'warn' ? <IconWarning className={Utils.clsx(classes.messageIcon, classes.messageColor_warn)} /> : null}
                     {message.level === 'error' ? <IconError className={Utils.clsx(classes.messageIcon, classes.messageColor_error)} /> : null}
                     {message.level === 'info' ? <IconInfo className={Utils.clsx(classes.messageIcon, classes.messageColor_info)} /> : null}
                     {this.getText(message.text, this.props.noTranslation)}
@@ -426,19 +426,19 @@ class AdapterUpdateDialog extends Component {
                                     this.setState({ showMessageDialog: false }, () =>
                                         this.props.onUpdate(version))}
                                 color="primary"
-                                startIcon={<CheckIcon/>}
+                                startIcon={<CheckIcon />}
                             >
                                 {this.t('Update')}
                             </Button>
                         } else if (button === 'agree') {
                             return <Button
-                                className={classes['messageTitle_' + (message.level || 'warn')]}
+                                className={classes[`messageTitle_${message.level || 'warn'}`]}
                                 variant="contained"
                                 onClick={() =>
                                     this.setState({ showMessageDialog: false }, () =>
                                         this.props.onUpdate(version))}
                                 color="primary"
-                                startIcon={<CheckIcon/>}
+                                startIcon={<CheckIcon />}
                             >
                                 {this.t('Agree')}
                             </Button>
@@ -535,7 +535,7 @@ class AdapterUpdateDialog extends Component {
                         }
                     }}
                     color="primary"
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >
                     {this.mobile ? null : (this.props.textUpdate ? this.props.textUpdate : this.t('Update'))}
                 </Button>

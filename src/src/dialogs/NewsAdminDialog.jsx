@@ -313,7 +313,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
                             variant="body2"
                             component="p"
                         >
-                            {Utils.renderTextWithA(text.replace(/\n/g, '<br/>'))}
+                            {Utils.renderTextWithA(text.replace(/\n/g, '<br />'))}
                         </Typography>
                         {newsArr[indexArr]?.link &&
                             <Button
@@ -346,7 +346,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
                     autoFocus
                     onClick={onClose}
                     color="primary"
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >
                     {I18n.t('Acknowledge')}
                 </Button>

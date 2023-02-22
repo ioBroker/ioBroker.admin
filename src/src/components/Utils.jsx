@@ -362,9 +362,9 @@ class Utils {
                 return <span style={style || {}}>{settings.icon}</span>;
             } else
             if (settings.icon.startsWith('data:image')) {
-                return <img alt={settings.name} src={settings.icon} style={style || {}}/>;
+                return <img alt={settings.name} src={settings.icon} style={style || {}} />;
             } else { // may be later some changes for second type
-                return <img alt={settings.name} src={(settings.prefix || '') + settings.icon} style={style || {}}/>;
+                return <img alt={settings.name} src={(settings.prefix || '') + settings.icon} style={style || {}} />;
             }
         }
         return null;

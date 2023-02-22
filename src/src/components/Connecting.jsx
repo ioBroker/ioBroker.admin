@@ -75,7 +75,7 @@ function Connecting(props) {
     return <div className={ classes.root }>
         <div className={ classes.connecting }>
             <svg className={ classes.spinner } width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
-                <circle className={ classes.path } fill="none" strokeWidth="6" strokeLinecap="round" cx="33" cy="33" r="30"/>
+                <circle className={ classes.path } fill="none" strokeWidth="6" strokeLinecap="round" cx="33" cy="33" r="30" />
             </svg>
         </div>
     </div>;

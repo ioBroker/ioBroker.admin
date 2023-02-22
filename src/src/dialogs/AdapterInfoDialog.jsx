@@ -192,7 +192,7 @@ class AdapterInfoDialog extends Component {
 
     render() {
         if (!this.state.text) {
-            return <Loader theme={this.props.theme}/>;
+            return <Loader theme={this.props.theme} />;
         }
         const { classes } = this.props;
         //const { tab } = this.state;

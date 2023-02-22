@@ -113,7 +113,7 @@ class AddInstanceDialog extends Component {
                 >
                     <HostSelectors
                         tooltip={this.t('Select host to add the instance')}
-                        expertMode={true}
+                        expertMode
                         socket={this.props.socket}
                         hostsWorker={this.props.hostsWorker}
                         currentHost={this.props.currentHost}
@@ -148,7 +148,7 @@ class AddInstanceDialog extends Component {
                         this.props.onClose();
                     }}
                     color="primary"
-                    startIcon={<AddIcon/>}
+                    startIcon={<AddIcon />}
                 >
                     {this.t('Add')}
                 </Button>

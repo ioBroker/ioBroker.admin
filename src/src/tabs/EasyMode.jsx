@@ -130,7 +130,7 @@ class EasyMode extends Component {
                         {((strictMode && !getLocation().dialog) || currentInstance?.tab) && <IconButton size="large" onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
-                        <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} size="large"/>
+                        <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} size="large" />
                     </div>
                 </Toolbar>
             </AppBar>
@@ -144,7 +144,7 @@ class EasyMode extends Component {
                         materialize={currentInstance.materialize}
                         tab={currentInstance?.tab}
                         socket={socket}
-                        easyMode={true}
+                        easyMode
                         themeName={themeName}
                         themeType={themeType}
                         theme={theme}

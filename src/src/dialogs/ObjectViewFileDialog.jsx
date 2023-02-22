@@ -113,10 +113,10 @@ class ObjectViewFileDialog extends Component {
     render() {
         return <Dialog
             className={this.props.classes.dialog}
-            open={true}
+            open={!0}
             maxWidth={ this.state.audio ? 'sm' : 'md'}
             onClose={() => this.props.onClose()}
-            fullWidth={true}
+            fullWidth
             aria-labelledby="object-view-dialog-title"
         >
             <DialogTitle id="object-view-dialog-title">{
@@ -124,17 +124,17 @@ class ObjectViewFileDialog extends Component {
             }</DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 { this.state.error ? <div className={this.props.classes.error}>{this.state.error === 'State is not binary' ? this.props.t('No file stored yet') : this.props.t(this.state.error)}</div> : null}
-                { this.state.audio ? <audio ref={this.audioRef} src={ `data:${this.state.mime};base64,${this.state.binary}` }/> : null }
+                { this.state.audio ? <audio ref={this.audioRef} src={ `data:${this.state.mime};base64,${this.state.binary}` } /> : null }
                 { this.state.audio ? <Fab color="primary" onClick={() => this.audioRef.current && this.audioRef.current.play()}>
                     <PlayIcon />
                 </Fab> : null }
-                { this.state.image ? <img src={`data:${this.state.mime};base64,${this.state.binary}`} alt={this.props.obj._id} className={this.props.classes.image}/> : null}
+                { this.state.image ? <img src={`data:${this.state.mime};base64,${this.state.binary}`} alt={this.props.obj._id} className={this.props.classes.image} /> : null}
                 { this.state.text !== null ? <pre className={this.props.classes.text}>{this.state.text}</pre> : null}
             </DialogContent>
             <DialogActions>
                 <a className={this.props.classes.download} download={this.state.fileName} href={ `data:${this.state.mime};base64,${this.state.binary}` }>
-                    <DownloadIcon style={{paddingRight: 8, height: 12}}/>
-                    <span >{this.props.t('Download')}</span>
+                    <DownloadIcon style={{ paddingRight: 8, height: 12 }} />
+                    <span>{this.props.t('Download')}</span>
                 </a>
                 <Button
                     variant="contained"

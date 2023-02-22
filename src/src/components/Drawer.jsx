@@ -473,7 +473,7 @@ class Drawer extends Component {
                 <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                     {this.props.adminGuiConfig.icon ?
                         <div style={{ height: 50, withWidth: 102, lineHeight: '50px' }}>
-                            <img src={this.props.adminGuiConfig.icon} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }}/>
+                            <img src={this.props.adminGuiConfig.icon} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }} />
                         </div>
                         :
                         <Avatar

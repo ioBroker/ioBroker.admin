@@ -137,7 +137,8 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
         onClose={onClose}
         onApply={() => onLocalApply()}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ margin: 10, fontSize: 20 }}><AddIcon/>
+            <div style={{ margin: 10, fontSize: 20 }}>
+                <AddIcon />
                 {I18n.t('Add new object:')}
                 <span style={{ fontStyle: 'italic' }}>{selected}.{name}</span>
             </div>

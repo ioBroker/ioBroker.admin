@@ -114,7 +114,7 @@ class EnumTemplateDialog extends Component {
             maxWidth="md"
             fullWidth
             classes={{root: this.props.classes.fullHeight}}
-            open={true}
+            open={!0}
             onClose={this.props.onClose}
         >
             <DialogTitle>

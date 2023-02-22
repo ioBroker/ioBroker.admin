@@ -91,7 +91,7 @@ class AdapterDeletionDialog extends Component {
                         this.props.onClose();
                     }}
                     color="primary"
-                    startIcon={<CheckIcon/>}
+                    startIcon={<CheckIcon />}
                 >
                     {this.t('Ok')}
                 </Button>

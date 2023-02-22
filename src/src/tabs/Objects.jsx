@@ -124,7 +124,7 @@ class Objects extends Component {
             return <Dialog
                 key="delete"
                 maxWidth="md"
-                open={true}
+                open={!0}
                 onClose={() => this.setState({ deleteObjectShow: null })}
                 aria-labelledby="delete-object-dialog-title"
                 aria-describedby="delete-object-dialog-description"
@@ -207,7 +207,7 @@ class Objects extends Component {
                 objectBrowserEditRole={ObjectBrowserEditRole}
                 objectBrowserViewFile={ObjectViewFileDialog}
                 router={Router}
-                enableStateValueEdit={true}
+                enableStateValueEdit
                 onObjectDelete={(id, hasChildren, exists, childrenCount) =>
                     this.setState({ deleteObjectShow: { id, hasChildren, exists, childrenCount } })}
                 onFilterChanged={filterConfig => {

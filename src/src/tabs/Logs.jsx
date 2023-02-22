@@ -56,7 +56,7 @@ const MAX_LOGS = 3000;
 
 const styles = theme => ({
     container: {
-        height: '100%'
+        height: '100%',
     },
     table: {
         tableLayout: 'fixed',
@@ -67,8 +67,8 @@ const styles = theme => ({
         '& td:nth-of-type(5)': {
             overflow: 'hidden',
             whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis'
-        }
+            textOverflow: 'ellipsis',
+        },
     },
     row: {
     },
@@ -76,7 +76,7 @@ const styles = theme => ({
         backgroundColor: theme.palette.background.default,
     },
     cell: {
-        verticalAlign: 'top'
+        verticalAlign: 'top',
     },
     cellName: {
         lineHeight: '14px',
@@ -85,56 +85,56 @@ const styles = theme => ({
         animation: 'updated 1s',
     },
     formControl: {
-        width: '100%'
+        width: '100%',
     },
     light_error: {
-        color: red[800]
+        color: red[800],
     },
     light_warn: {
-        color: amber[800]
+        color: amber[800],
     },
     light_debug: {
-        color: grey[800]
+        color: grey[800],
     },
     light_silly: {
-        color: grey[700]
+        color: grey[700],
     },
     dark_error: {
-        color: red[200]
+        color: red[200],
     },
     dark_warn: {
-        color: amber[200]
+        color: amber[200],
     },
     dark_debug: {
-        color: grey[300]
+        color: grey[300],
     },
     dark_silly: {
-        color: grey[200]
+        color: grey[200],
     },
     source: {
-        width: 200
+        width: 200,
     },
     pid: {
-        width: 55
+        width: 55,
     },
     timestamp: {
-        width: 175
+        width: 175,
     },
     severity: {
-        width: 80
+        width: 80,
     },
     message: {
-        minWidth: 300
+        minWidth: 300,
     },
     hidden: {
-        display: 'none'
+        display: 'none',
     },
     grow: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     logSize: {
         marginRight: '1rem',
-        marginLeft: '1rem'
+        marginLeft: '1rem',
     },
     logEstimated: {
         fontStyle: 'italic',
@@ -147,69 +147,69 @@ const styles = theme => ({
     },
     header: {
         '& .MuiFormLabel-root.Mui-disabled': {
-            color: theme.palette.text.primary
+            color: theme.palette.text.primary,
         },
         '& .MuiInput-underline::before': {
             content: '',
-            borderBottom: 'none'
-        }
+            borderBottom: 'none',
+        },
     },
     pauseButton: {
-        minWidth: theme.spacing(6)
+        minWidth: theme.spacing(6),
     },
     pauseCount: {
-        color: amber[500]
+        color: amber[500],
     },
     downloadLogSize: {
         color: grey[500],
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.spacing(2),
     },
     downloadEntry: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     pidSize: {
         fontSize: 14,
         width: 24,
         height: 24,
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     '@media screen and (max-width: 450px)': {
         row: {
             '& > *': {
-                fontSize: 8
-            }
+                fontSize: 8,
+            },
         },
         source: {
-            width: 120
+            width: 120,
         },
         pid: {
-            width: 40
+            width: 40,
         },
         timestamp: {
-            width: 100
+            width: 100,
         },
         severity: {
             width: 61,
         },
         message: {
-            minWidth: 150
+            minWidth: 150,
         },
         formControl: {
             '& > *': {
-                fontSize: '10px !important'
-            }
+                fontSize: '10px !important',
+            },
         },
         header: {
             '& > *': {
-                fontSize: '10px !important'
-            }
+                fontSize: '10px !important',
+            },
         },
         messageText: {
             '& > *': {
-                fontSize: '10px !important'
-            }
+                fontSize: '10px !important',
+            },
         }
     },
     badge: {
@@ -217,13 +217,13 @@ const styles = theme => ({
         right: 10,
     },
     badgeError: {
-        //color: red[500]
+        // color: red[500],
     },
     badgeWarn: {
-        backgroundColor: amber[500]
+        backgroundColor: amber[500],
     },
     emptyButton: {
-        width: 48
+        width: 48,
     },
     icon: {
         width: 16,
@@ -242,12 +242,12 @@ const styles = theme => ({
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         width: '100%',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
     },
     iconAndName:{
         whiteSpace: 'nowrap',
-        display: 'flex'
-    }
+        display: 'flex',
+    },
 });
 
 const COLORS_LIGHT = [
@@ -279,17 +279,17 @@ const COLORS_DARK = [
 function padding2(num) {
     let s = num.toString();
     if (s.length < 2) {
-        s = '0' + s;
+        s = `0${s}`;
     }
     return s;
 }
 function padding3(num) {
     let s = num.toString();
     if (s.length < 2) {
-        s = '00' + s;
+        s = `00${s}`;
     } else
         if (s.length < 3) {
-            s = '0' + s;
+            s = `0${s}`;
         }
     return s;
 }
@@ -325,7 +325,7 @@ class Logs extends Component {
             'debug': 1,
             'info': 2,
             'warn': 3,
-            'error': 4
+            'error': 4,
         };
 
         this.t = props.t;
@@ -371,7 +371,7 @@ class Logs extends Component {
                                 icon = `./files/${adapterName}.admin/${icon}`;
                             }
                         } else {
-                            icon = this.state.hosts['system.' + item.from]?.common?.icon;
+                            icon = this.state.hosts[`system.${item.from}`]?.common?.icon;
                         }
                         item.icon = icon || null;
 
@@ -420,7 +420,7 @@ class Logs extends Component {
                         }
                     });
 
-                    // then restart.log ans so on
+                    // then restart.log and so on
                     list.sort();
                     list.forEach(file => {
                         const parts = file.fileName.split('/');
@@ -429,7 +429,7 @@ class Logs extends Component {
                         if (name[0] > '9') {
                             logFiles.push({
                                 path: file,
-                                name
+                                name,
                             });
                         }
                     });
@@ -511,7 +511,7 @@ class Logs extends Component {
                         icon = `./files/${adapterName}.admin/${icon}`;
                     }
                 } else if (this.state.hosts) {
-                    icon = this.state.hosts['system.' + item.from]?.common?.icon;
+                    icon = this.state.hosts[`system.${item.from}`]?.common?.icon;
                 }
                 item.icon = icon || null;
             }
@@ -635,11 +635,11 @@ class Logs extends Component {
             <MenuItem
                 value={id}
                 key={id}
-                style={{backgroundColor: id === '1' ? undefined : this.state.sources[id].color}}
+                style={{ backgroundColor: id === '1' ? undefined : this.state.sources[id].color }}
             >
                 {id === '1' ?
                     null :
-                    <Icon src={this.state.sources[id].icon} className={this.props.classes.iconSelect}/>
+                    <Icon src={this.state.sources[id].icon} className={this.props.classes.iconSelect} />
                 }
                 {id === '1' ?
                     this.t('Source') :
@@ -678,7 +678,7 @@ class Logs extends Component {
                     message = message.replace(matches[0], '');
                     id = matches[0].split(' ')[1].match(/\d+/g)[0];
                 } else {
-                    message = message.replace(row.from + ' ', '');
+                    message = message.replace(`${row.from} `, '');
                 }
             }
 
@@ -707,17 +707,17 @@ class Logs extends Component {
                             {<Icon src={row.icon} className={classes.icon} />}<div className={classes.name}>{row.from}</div>
                         </div>
                     </TableCell>
-                    {this.state.pid && <TableCell className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}>
+                    {this.state.pid && <TableCell className={clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
                         {id}
                     </TableCell>}
-                    <TableCell className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}>
+                    <TableCell className={clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
                         {row.time}
                     </TableCell>
-                    <TableCell className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}>
+                    <TableCell className={clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
                         {row.severity}
                     </TableCell>
                     <TableCell
-                        className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}
+                        className={clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}
                         title={typeof message === 'object' ? message.original : message}
                     >
                         {typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}
@@ -937,10 +937,10 @@ class Logs extends Component {
                                     </FormControl>
                                 </TableCell>
                                 {this.state.pid && <TableCell className={classes.pid}>
-                                    <TextField disabled label={this.t('PID')} className={classes.header} variant="standard"/>
+                                    <TextField disabled label={this.t('PID')} className={classes.header} variant="standard" />
                                 </TableCell>}
                                 <TableCell className={classes.timestamp}>
-                                    <TextField disabled label={this.t('Time')} className={classes.header} variant="standard"/>
+                                    <TextField disabled label={this.t('Time')} className={classes.header} variant="standard" />
                                 </TableCell>
                                 <TableCell className={classes.severity}>
                                     <FormControl variant="standard" className={classes.formControl}>
