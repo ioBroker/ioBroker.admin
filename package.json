@@ -46,7 +46,7 @@
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@iobroker/testing": "^4.1.0",
     "chai": "^4.3.7",
-    "eslint": "^8.34.0",
+    "eslint": "^8.35.0",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
