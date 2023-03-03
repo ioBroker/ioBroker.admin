@@ -1229,7 +1229,7 @@ class App extends Router {
 
         return this.socket.getCompactRepository(currentHost, update, this.state.readTimeoutMs)
             .catch(e => {
-                window.alert('Cannot getRepositoryCompact: ' + e);
+                window.alert(`Cannot getRepositoryCompact: ${e}`);
                 e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
                 return {};
             })
@@ -1237,7 +1237,7 @@ class App extends Router {
                 repository = _repository;
                 return this.socket.getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
                     .catch(e => {
-                        window.alert('Cannot getInstalled: ' + e);
+                        window.alert(`Cannot getInstalled: ${e}`);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
                         return {};
                     });
@@ -1245,7 +1245,7 @@ class App extends Router {
             .then(_installed => {
                 installed = _installed;
                 return this.socket.getCompactAdapters(update)
-                    .catch(e => window.alert('Cannot read adapters: ' + e));
+                    .catch(e => window.alert(`Cannot read adapters: ${e}`));
             })
             .then(adapters => {
                 installed && adapters && Object.keys(adapters).forEach(id => {
@@ -1677,15 +1677,15 @@ class App extends Router {
         this.setState({ alert: false });
     }
 
-    showAlert(message, type) {
-        if (type !== 'error' && type !== 'warning' && type !== 'info' && type !== 'success') {
-            type = 'info';
+    showAlert(alertMessage, alertType) {
+        if (alertType !== 'error' && alertType !== 'warning' && alertType !== 'info' && alertType !== 'success') {
+            alertType = 'info';
         }
 
         this.setState({
             alert: true,
-            alertType: type,
-            alertMessage: message
+            alertType,
+            alertMessage,
         });
     }
 
@@ -1890,7 +1890,7 @@ class App extends Router {
 
     renderAlertSnackbar() {
         return <Snackbar
-            className={this.props.classes['alert_' + this.state.alertType]}
+            className={this.props.classes[`alert_${this.state.alertType}`]}
             open={this.state.alert}
             autoHideDuration={6000}
             onClose={() => this.handleAlertClose()}
