@@ -10,13 +10,14 @@ import Utils from '../components/Utils'; // @iobroker/adapter-react-v5/i18n
 import CustomModal from '../components/CustomModal';
 
 const stateTypeArray = [
-    'boolean',
-    'string',
-    'number',
     'array',
+    'boolean',
+    'file',
     'json',
+    'mixed',
+    'number',
     'object',
-    'mixed'
+    'string',
 ];
 
 const stateDefValues = {
@@ -179,7 +180,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                         setStateType(el.target.value);
                     }}
                 >
-                    {stateTypeArray.map(el => <MenuItem key={el} value={el}>{el}</MenuItem>)}
+                    {stateTypeArray.map(el => <MenuItem key={el} value={el}>{t(el)}</MenuItem>)}
                 </Select>
             </FormControl>}
             <TextField
