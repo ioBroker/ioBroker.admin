@@ -178,6 +178,9 @@ Possible types:
 - `language`
     - `system` - allow the usage of the system language from system.config as default
 
+- `position`
+    - `system` - allow the usage of the system language from system.config as default
+
 - `certificate`
     - `certType` - on of: `public`, `private`, `chained`
 
