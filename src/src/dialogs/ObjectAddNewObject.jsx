@@ -180,7 +180,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                         setStateType(el.target.value);
                     }}
                 >
-                    {stateTypeArray.map(el => <MenuItem key={el} value={el}>{t(el)}</MenuItem>)}
+                    {stateTypeArray.map(el => <MenuItem key={el} value={el}>{I18n.t(el)}</MenuItem>)}
                 </Select>
             </FormControl>}
             <TextField
