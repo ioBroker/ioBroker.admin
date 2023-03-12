@@ -1519,5 +1519,7 @@
   "Flag will be automatically detected as repository will be read for the first time": "Das Flag wird automatisch erkannt, wenn das Repository zum ersten Mal gelesen wird",
   "Create a copy of this object": "Erstellen Sie eine Kopie dieses Objekts",
   "common_delete_tip": "Wenn Sie einige Attribute in \"common\" löschen möchten, müssen Sie es auf \"null\" setzen",
-  "temporary log level": "Temporäre Protokollebene"
+  "temporary log level": "Temporäre Protokollebene",
+  "0 - no expiration": "0 - kein Ablauf",
+  "Expire": "Erlöschen"
 }

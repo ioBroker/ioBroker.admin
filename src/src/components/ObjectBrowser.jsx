@@ -462,6 +462,10 @@ const styles = theme => ({
     cellValueTooltipBox: {
         width: 250,
         overflow: 'hidden',
+        pointerEvents: 'none',
+    },
+    tooltip: {
+        pointerEvents: 'none',
     },
     cellValueTextUnit: {
         marginLeft: theme.spacing(0.5),
@@ -3349,7 +3353,7 @@ class ObjectBrowser extends Component {
             }}
             >
 
-                <Tooltip title={this.props.t('ra_Refresh tree')}>
+                <Tooltip title={this.props.t('ra_Refresh tree')} classes={{ popper: this.props.classes.tooltip }}>
                     <div>
                         <IconButton
                             onClick={() => this.refreshComponent()}
@@ -3361,7 +3365,7 @@ class ObjectBrowser extends Component {
                     </div>
                 </Tooltip>
                 {this.props.showExpertButton && !this.props.expertMode &&
-                    <Tooltip title={this.props.t('ra_expertMode')}>
+                    <Tooltip title={this.props.t('ra_expertMode')} classes={{ popper: this.props.classes.tooltip }}>
                         <IconButton
                             key="expertMode"
                             color={this.state.filter.expertMode ? 'secondary' : 'default'}
@@ -3372,7 +3376,7 @@ class ObjectBrowser extends Component {
                         </IconButton>
                     </Tooltip>}
                 {!this.props.disableColumnSelector &&
-                <Tooltip title={this.props.t('ra_Configure')}>
+                <Tooltip title={this.props.t('ra_Configure')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         key="columnSelector"
                         color={this.state.columnsAuto ? 'primary' : 'default'}
@@ -3383,7 +3387,7 @@ class ObjectBrowser extends Component {
                     </IconButton>
                 </Tooltip>}
                 {this.state.expandAllVisible &&
-                <Tooltip title={this.props.t('ra_Expand all nodes')}>
+                <Tooltip title={this.props.t('ra_Expand all nodes')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         key="expandAll"
                         onClick={() => this.onExpandAll()}
@@ -3392,7 +3396,7 @@ class ObjectBrowser extends Component {
                         <IconOpen />
                     </IconButton>
                 </Tooltip>}
-                <Tooltip title={this.props.t('ra_Collapse all nodes')}>
+                <Tooltip title={this.props.t('ra_Collapse all nodes')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         key="collapseAll"
                         onClick={() => this.onCollapseAll()}
@@ -3401,7 +3405,7 @@ class ObjectBrowser extends Component {
                         <IconClosed />
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.props.t('ra_Expand one step node')}>
+                <Tooltip title={this.props.t('ra_Expand one step node')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         key="expandVisible"
                         color="primary"
@@ -3413,7 +3417,7 @@ class ObjectBrowser extends Component {
                         </StyledBadge>
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.props.t('ra_Collapse one step node')}>
+                <Tooltip title={this.props.t('ra_Collapse one step node')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         key="collapseVisible"
                         color="primary"
@@ -3425,7 +3429,7 @@ class ObjectBrowser extends Component {
                         </StyledBadge>
                     </IconButton>
                 </Tooltip>
-                {this.props.objectStatesView && <Tooltip title={this.props.t('ra_Toggle the states view')}>
+                {this.props.objectStatesView && <Tooltip title={this.props.t('ra_Toggle the states view')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         onClick={() => this.onStatesViewVisible()}
                         size="large"
@@ -3434,7 +3438,7 @@ class ObjectBrowser extends Component {
                     </IconButton>
                 </Tooltip>}
 
-                {<Tooltip title={this.props.t('ra_Show/Hide object descriptions')}>
+                {<Tooltip title={this.props.t('ra_Show/Hide object descriptions')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         onClick={() => {
                             (window._localStorage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.desc`, this.state.showDescription ? 'false' : 'true');
@@ -3447,7 +3451,7 @@ class ObjectBrowser extends Component {
                 </Tooltip>}
 
                 {this.props.objectAddBoolean ?
-                    <Tooltip title={this.toolTipObjectCreating()}>
+                    <Tooltip title={this.toolTipObjectCreating()} classes={{ popper: this.props.classes.tooltip }}>
                         <div>
                             <IconButton
                                 disabled={!allowObjectCreation}
@@ -3461,7 +3465,7 @@ class ObjectBrowser extends Component {
                     : null}
 
                 {this.props.objectImportExport &&
-                <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
+                <Tooltip title={this.props.t('ra_Add objects tree from JSON file')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         onClick={() => {
                             const input = document.createElement('input');
@@ -3477,7 +3481,7 @@ class ObjectBrowser extends Component {
                     </IconButton>
                 </Tooltip>}
                 {this.props.objectImportExport && (!!this.state.selected.length || this.state.selectedNonObject) &&
-                <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
+                <Tooltip title={this.props.t('ra_Save objects tree as JSON file')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         onClick={() => this.setState({ showExportDialog: this._getSelectedIdsForExport().length })}
                         size="large"
@@ -3490,7 +3494,7 @@ class ObjectBrowser extends Component {
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>}
             {this.props.objectEditBoolean &&
-            <Tooltip title={this.props.t('ra_Edit custom config')}>
+            <Tooltip title={this.props.t('ra_Edit custom config')} classes={{ popper: this.props.classes.tooltip }}>
                 <IconButton
                     onClick={() => {
                         // get all visible states
@@ -3650,7 +3654,7 @@ class ObjectBrowser extends Component {
         const aclSystemConfig = item.data.obj.acl && (item.data.obj.type === 'state' ? this.systemConfig.common.defaultNewAcl.state : this.systemConfig.common.defaultNewAcl.object);
 
         return [
-            this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}>
+            this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip} classes={{ popper: this.props.classes.tooltip }}>
                 <IconButton
                     className={classes.cellButtonMinWidth}
                     onClick={() => this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
@@ -4551,7 +4555,12 @@ class ObjectBrowser extends Component {
                     style={{ color: checkColor }}
                     className={Utils.clsx(classes.cellIdSpan, invertBackground && classes.invertedBackground)}
                 >
-                    <Tooltip title={getIdFieldTooltip(item.data, this.props.classes, this.props.lang)}><div>{item.data.name}</div></Tooltip>
+                    <Tooltip
+                        title={getIdFieldTooltip(item.data, this.props.classes, this.props.lang)}
+                        classes={{ popper: this.props.classes.tooltip }}
+                    >
+                        <div>{item.data.name}</div>
+                    </Tooltip>
                     {alias}
                     {icons}
                 </Grid>

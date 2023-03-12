@@ -1519,5 +1519,7 @@
   "Flag will be automatically detected as repository will be read for the first time": "La bandera se detectará automáticamente ya que el repositorio se leerá por primera vez",
   "Create a copy of this object": "Crear una copia de este objeto",
   "common_delete_tip": "Si desea eliminar algunos atributos en \"common\", debe establecerlo en \"null\"",
-  "temporary log level": "Nivel de registro temporal"
+  "temporary log level": "Nivel de registro temporal",
+  "0 - no expiration": "0 - sin caducidad",
+  "Expire": "Expirar"
 }
