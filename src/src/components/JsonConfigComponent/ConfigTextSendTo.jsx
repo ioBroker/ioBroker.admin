@@ -10,10 +10,10 @@ import CopyIcon from './wrapper/icons/IconCopy';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
-        width: '100%'
-    }
+        width: '100%',
+    },
 });
 
 class ConfigTextSendTo extends ConfigGeneric {
@@ -61,9 +61,7 @@ class ConfigTextSendTo extends ConfigGeneric {
         if (this.props.alive) {
             const context = this.getContext();
             if (context !== this.state.context) {
-                setTimeout(() => {
-                    this.askInstance();
-                }, 300);
+                setTimeout(() => this.askInstance(), 300);
             }
         }
 
@@ -75,7 +73,7 @@ class ConfigTextSendTo extends ConfigGeneric {
                     endAdornment: this.props.schema.copyToClipboard ?
                         <IconButton
                             size="small"
-                            onClick={e => {
+                            onClick={() => {
                                 Utils.copyToClipboard(this.state.text);
                                 window.alert('Copied');
                             }}>

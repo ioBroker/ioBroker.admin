@@ -447,7 +447,12 @@ class ConfigGeneric extends Component {
             return '';
         } else {
             if (typeof pattern === 'object') {
-                pattern = pattern.func;
+                if (pattern.func) {
+                    pattern = pattern.func;
+                } else {
+                    console.log(`Object must be stringified: ${JSON.stringify(pattern)}`);
+                    pattern = JSON.stringify(pattern);
+                }
             }
 
             try {
