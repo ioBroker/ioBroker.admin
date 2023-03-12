@@ -521,7 +521,6 @@ class ObjectBrowserEditObject extends Component {
                 'file',
                 'json',
                 'mixed',
-                'multistate',
                 'number',
                 'object',
                 'string',
