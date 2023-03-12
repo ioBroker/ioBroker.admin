@@ -1,19 +1,19 @@
 import { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
+import MonacoEditor from 'react-monaco-editor';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import MonacoEditor from 'react-monaco-editor';
 
 // Icons
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     dialog: {
@@ -27,7 +27,7 @@ const styles = theme => ({
     tabPanel: {
         width: '100%',
         overflow: 'hidden',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
     }
 });
 
