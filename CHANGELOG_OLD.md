@@ -1,6 +1,15 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.3.2 (2022-12-12)
+* (bluefox) Added `useNative` option to `sendTo` JSON Config component
+* (bluefox) Added `checkLicense` and `uuid` components to JSON Config
+* (bluefox) Corrected the news handler
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.2.23 (2022-10-12)
 * (Apollon77) Prepare for future js-controller versions
 * (bluefox) Corrected deletion of objects

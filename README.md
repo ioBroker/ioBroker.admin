@@ -116,9 +116,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.3.7 (2023-03-12)
 * (bluefox) Better tooltips in object browser 
-* Added again possibility to hide/show of columns in object browser 
+* Added again possibility to hide/show of columns in object browser
 
 ### 6.3.6 (2023-01-29)
 * (bluefox) Allowed the edit of log level in the configuration tab
@@ -131,11 +131,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.3.3 (2022-12-14)
 * (bluefox) Corrected icons in object browser
-
-### 6.3.2 (2022-12-12)
-* (bluefox) Added `useNative` option to `sendTo` JSON Config component
-* (bluefox) Added `checkLicense` and `uuid` components to JSON Config
-* (bluefox) Corrected the news handler
 
 ## License
 The MIT License (MIT)

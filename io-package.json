@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.3.6",
+    "version": "6.3.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.3.7": {
+        "en": "Better tooltips in object browser \nAdded again possibility to hide/show of columns in object browser",
+        "de": "Bessere Tooltips im Objektbrowser\nWeitere Möglichkeit zum Verbergen/Zeigen von Spalten im Objektbrowser hinzugefügt",
+        "ru": "Лучшие инструменты в браузере объектов\nДобавлена снова возможность спрятать/шоу колонок в объектном браузере",
+        "pt": "Melhores dicas de ferramentas no navegador de objetos\nAdicionado novamente possibilidade de esconder/mostrar colunas no navegador objeto",
+        "nl": "Betere toltips in object browser\nWeer de mogelijkheid om de kolommen in objecten te verbergen",
+        "fr": "Meilleurs outils dans le navigateur objet\nAjout de nouveau la possibilité de cacher / montrer des colonnes dans le navigateur objet",
+        "it": "Migliori tooltips nel browser degli oggetti\nAggiunta di nuovo la possibilità di nascondere / mostrare di colonne nel browser oggetto",
+        "es": "Mejores puntas de herramientas en el navegador de objetos\nAñadido otra vez la posibilidad de ocultar / mostrar de columnas en el navegador objeto",
+        "pl": "Lepsze opty w przeglądarce obiektowej\nWstępna możliwość ukrywania kolumn w przeglądarce obiektowej",
+        "uk": "Найкращі інструменти в браузері об'єктів\nДодано можливість сховати / показати стовпці в браузері об'єкта",
+        "zh-cn": "目标增援工具\n再次可能藏匿或藏匿投机的栏目"
+      },
       "6.3.6": {
         "en": "Allowed the edit of log level in the configuration tab",
         "de": "Erlaubt die Bearbeitung der Protokollebene in der Konfigurationstabelle",
@@ -95,18 +108,6 @@
         "pl": "Prepare for future js-controller version\nOczyszczenie delecji obiektów",
         "uk": "Підготовка до майбутніх версій js-controller\nВиправлено видалення об'єктів",
         "zh-cn": "今后防污版本的编制\n更正"
-      },
-      "6.2.22": {
-        "en": "Corrected admin4 adapter settings",
-        "de": "Korrigierte Admin4-Adaptereinstellungen",
-        "ru": "Исправлены настройки админ4 адаптера",
-        "pt": "Definições corretas do adaptador admin4",
-        "nl": "Vertaling:",
-        "fr": "Paramètres d'adaptateur admin4 corrigés",
-        "it": "Impostazioni dell'adattatore admin4 corrette",
-        "es": "Ajustes corregidos del adaptador",
-        "pl": "Poprawiony admin4",
-        "zh-cn": "适应的适应环境"
       }
     },
     "desc": {
