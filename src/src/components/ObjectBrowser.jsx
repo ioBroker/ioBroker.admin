@@ -24,6 +24,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Checkbox from '@mui/material/Checkbox';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
@@ -1724,7 +1725,7 @@ class ObjectBrowser extends Component {
             pos !== -1 && this.visibleCols.splice(pos, 1);
         }
 
-        // this.possibleCols = SCREEN_WIDTHS.xl.fields;
+        this.possibleCols = SCREEN_WIDTHS.xl.fields;
 
         let customDialog = null;
 
@@ -1742,7 +1743,7 @@ class ObjectBrowser extends Component {
         }
         selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
 
-        let columns = null; // (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columns`);
+        let columns = (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columns`);
         try {
             columns = columns ? JSON.parse(columns) : null;
         } catch (e) {
@@ -1794,7 +1795,7 @@ class ObjectBrowser extends Component {
             columns,
             columnsForAdmin: null,
             columnsSelectorShow: false,
-            columnsAuto: true, // (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columnsAuto`) !== 'false',
+            columnsAuto: (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columnsAuto`) !== 'false',
             columnsWidths,
             columnsDialogTransparent: 100,
             columnsEditCustomDialog: null,
@@ -2200,7 +2201,6 @@ class ObjectBrowser extends Component {
      * @private
      * @param {boolean} isLast
      */
-    /*
     _renderDefinedList(isLast) {
         const cols = [...this.possibleCols];
         cols.unshift('id');
@@ -2235,6 +2235,7 @@ class ObjectBrowser extends Component {
                         disableRipple
                     />
                     <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
+                    {/*
                     <ListItemSecondaryAction>
                         <FormControl
                             variant="standard"
@@ -2257,10 +2258,10 @@ class ObjectBrowser extends Component {
                             />
                         </FormControl>
                     </ListItemSecondaryAction>
+                    */}
                 </ListItemButton>
             );
     }
-    */
 
     /**
      * Renders the columns' selector.
@@ -2277,28 +2278,6 @@ class ObjectBrowser extends Component {
         >
             <DialogTitle className={this.props.classes.fontSizeTitle}>{this.props.t('ra_Configure')}</DialogTitle>
             <DialogContent className={this.props.classes.fontSizeTitle}>
-                {
-                    /*
-                    <FormControlLabel
-                    className={this.props.classes.switchColumnAuto}
-                    control={<Switch checked={this.state.columnsAuto} onChange={() => {
-                        (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.columnsAuto', this.state.columnsAuto ? 'false' : 'true');
-                        if (!this.state.columnsAuto) {
-                            this.calculateColumnsVisibility(true);
-                            this.setState({ columnsAuto: true });
-                        } else {
-                            if (!this.state.columns) {
-                                this.calculateColumnsVisibility(false, [...this.visibleCols]);
-                                this.setState({ columnsAuto: false, columns: [...this.visibleCols] });
-                            } else {
-                                this.calculateColumnsVisibility(false);
-                                this.setState({ columnsAuto: false });
-                            }
-                        }
-                    }} />}
-                    label={this.props.t('ra_Auto (no custom columns)')}
-                /> */
-                }
                 <FormControlLabel
                     className={this.props.classes.switchColumnAuto}
                     control={<Switch
@@ -2321,12 +2300,33 @@ class ObjectBrowser extends Component {
                     />}
                     label={this.props.t('ra_Show lines between rows')}
                 />
+                <FormControlLabel
+                    className={this.props.classes.switchColumnAuto}
+                    control={<Switch checked={this.state.columnsAuto} onChange={() => {
+                        (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.columnsAuto', this.state.columnsAuto ? 'false' : 'true');
+                        if (!this.state.columnsAuto) {
+                            this.calculateColumnsVisibility(true);
+                            this.setState({ columnsAuto: true });
+                        } else {
+                            if (!this.state.columns) {
+                                this.calculateColumnsVisibility(false, [...this.visibleCols]);
+                                this.setState({ columnsAuto: false, columns: [...this.visibleCols] });
+                            } else {
+                                this.calculateColumnsVisibility(false);
+                                this.setState({ columnsAuto: false });
+                            }
+                        }
+                    }} />}
+                    label={this.props.t('ra_Auto (no custom columns)')}
+                />
                 {
                     /*
                     <Typography classes={{ root: this.props.classes.dialogColumnsLabel }}>{this.props.t('ra_Transparent dialog')}</Typography>
                 <Slider classes={{ root: this.props.classes.width100 }} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
                     this.setState({ columnsDialogTransparent: newValue })
                 } />
+                    */
+                }
                 <List>
                     {this._renderDefinedList(false)}
 
@@ -2357,6 +2357,7 @@ class ObjectBrowser extends Component {
                                     />
                                 </ListItemIcon>
                                 <ListItemText primary={column.name + ' (' + adapter + ')'} />
+                                {/*
                                 <ListItemSecondaryAction>
                                     <FormControl
                                         variant="standard"
@@ -2379,12 +2380,12 @@ class ObjectBrowser extends Component {
                                         />
                                     </FormControl>
                                 </ListItemSecondaryAction>
+                                */}
                             </ListItemButton>
                         )
                     )}
                     {this._renderDefinedList(true)}
                 </List>
-                */}
             </DialogContent>
             <DialogActions>
                 <Button
@@ -3374,7 +3375,7 @@ class ObjectBrowser extends Component {
                 <Tooltip title={this.props.t('ra_Configure')}>
                     <IconButton
                         key="columnSelector"
-                        // color={this.state.columnsAuto ? 'primary' : 'default'}
+                        color={this.state.columnsAuto ? 'primary' : 'default'}
                         onClick={() => this.setState({ columnsSelectorShow: true })}
                         size="large"
                     >
