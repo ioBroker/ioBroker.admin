@@ -297,9 +297,12 @@ adapter.on('message', obj => {
     See `selectSendTo` for handler example
 
 - `coordinates`
-  Determines current location and used system.config coordinates if not possible in form "latitude,longitude"
-  - `divider` - divider between latitude and longitude. Default ","
+  Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"
+  - `divider` - divider between latitude and longitude. Default "," (Used if longitudeName and latitudeName are not defined)
   - `autoInit` - init field with current coordinates if empty
+  - `longitudeName` - if defined, the longitude will be stored in this attribute, divider will be ignored
+  - `latitudeName` - if defined, the latitude will be stored in this attribute, divider will be ignored
+  - `useSystemName` - if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from system.config
 
 - `checkLicense` - Very special component to check the license online. It's required exactly `license` and `useLicenseManager` properties in native.
   - `uuid` - Check UUID

@@ -116,6 +116,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Better tooltips in object browser 
+* Added again possibility to hide/show of columns in object browser 
+
 ### 6.3.6 (2023-01-29)
 * (bluefox) Allowed the edit of log level in the configuration tab
 

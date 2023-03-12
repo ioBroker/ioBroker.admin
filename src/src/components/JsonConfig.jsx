@@ -2,17 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 import JSON5 from 'json5';
+import MD5 from 'crypto-js/md5';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import Tooltip from '@mui/material/Tooltip';
 import Fab from '@mui/material/Fab';
 import PublishIcon from '@mui/icons-material/Publish';
 
-import SaveCloseButtons from '@iobroker/adapter-react-v5/Components/SaveCloseButtons';
-import Router from '@iobroker/adapter-react-v5/Components/Router';
-import theme from '@iobroker/adapter-react-v5/Theme';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import {
+    I18n,
+    Router,
+    SaveCloseButtons,
+    Theme as theme,
+    Confirm as ConfirmDialog,
+} from '@iobroker/adapter-react-v5';
 
 import JsonConfigComponent from './JsonConfigComponent';
 import ConfigGeneric from '@iobroker/adapter-react-v5/Components/JsonConfigComponent/ConfigGeneric';
@@ -175,6 +178,7 @@ class JsonConfig extends Router {
             confirmDialog: false,
             theme: theme(props.themeName), // buttons require special theme
             saveConfigDialog: false,
+            hash: '_',
         };
 
         this.getInstanceObject()
@@ -184,11 +188,24 @@ class JsonConfig extends Router {
                     JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
                         .then(() => {
                             if (obj) {
-                                this.setState({ schema, data: obj.native, common: obj.common });
+                                this.setState({
+                                    schema,
+                                    data: obj.native,
+                                    common: obj.common,
+                                    hash: MD5(JSON.stringify(schema)),
+                                });
                             } else {
                                 window.alert(`Instance system.adapter.${this.props.adapterName}.${this.props.instance} not found!`);
                             }
                         })));
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount();
+        if (this.fileSubscribed) {
+            this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
+            this.fileSubscribed = false;
+        }
     }
 
     /**
@@ -238,13 +255,26 @@ class JsonConfig extends Router {
         </div>;
     }
 
-    getConfigFile() {
-        return this.props.socket.fileExists(this.props.adapterName + '.admin', 'jsonConfig.json5')
+    onFileChange = (id, fileName) => {
+        if (id === `${this.props.adapterName}.admin` && (fileName === this.fileSubscribed)) {
+            this.getConfigFile(this.fileSubscribed)
+                .then(schema =>
+                    // load language
+                    JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
+                        .then(() => this.setState({ schema, hash: MD5(JSON.stringify(schema)) })));
+        }
+    };
+
+    getConfigFile(fileName) {
+        fileName = fileName || 'jsonConfig.json5';
+
+        return this.props.socket.fileExists(`${this.props.adapterName}.admin`, fileName)
             .then(exist => {
                 if (exist) {
-                    return this.props.socket.readFile(this.props.adapterName + '.admin', 'jsonConfig.json5')
+                    return this.props.socket.readFile(`${this.props.adapterName}.admin`, 'jsonConfig.json5');
                 } else {
-                    return this.props.socket.readFile(this.props.adapterName + '.admin', 'jsonConfig.json')
+                    fileName = 'jsonConfig.json';
+                    return this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
                 }
             })
             .then(data => {
@@ -260,13 +290,20 @@ class JsonConfig extends Router {
                     }
                     data = binary;
                 }
+
+                // subscribe on changes
+                if (!this.fileSubscribed) {
+                    this.fileSubscribed = fileName;
+                    this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
+                }
+
                 try {
                     return JSON5.parse(data);
                 } catch (e) {
                     window.alert('[JsonConfig] Cannot parse json5 config!');
                 }
             })
-            .catch(e => window.alert('[JsonConfig] Cannot read file: ' + e));
+            .catch(e => window.alert(`[JsonConfig] Cannot read file: ${e}`));
     }
 
     getInstanceObject() {
@@ -409,6 +446,7 @@ class JsonConfig extends Router {
             {this.getExportImportButtons()}
             {this.renderSaveConfigDialog()}
             <JsonConfigComponent
+                key={this.state.hash}
                 className={ classes.scroll }
                 socket={this.props.socket}
                 theme={this.props.theme}
