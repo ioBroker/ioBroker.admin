@@ -293,8 +293,18 @@ adapter.on('message', obj => {
   - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend
   - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.
   To use this option, your adapter must implement message handler:
-    The result of command must be an array in form `"text"`
-    See `selectSendTo` for handler example
+    The result of command must be a string.
+```
+adapter.on('message', obj => {
+    if (obj) {
+      switch (obj.command) {
+        case 'command':
+          obj.callback && adapter.sendTo(obj.from, obj.command, 'Received ' + JSON.stringify(obj.message), obj.callback);
+          break;
+      }
+    }
+});
+```    
 
 - `coordinates`
   Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"

@@ -3,7 +3,7 @@
  *
  *      Controls Adapter-Processes
  *
- *      Copyright 2014-2022 bluefox <dogafox@gmail.com>,
+ *      Copyright 2014-2023 bluefox <dogafox@gmail.com>,
  *      MIT License
  *
  */
@@ -56,7 +56,7 @@ function startAdapter(options) {
 
     adapter.on('objectChange', (id, obj) => {
         if (obj) {
-            //console.log('objectChange: ' + id);
+            // console.log('objectChange: ' + id);
             objects[id] = obj;
 
             if (id === 'system.config' && !adapter.config.language) {
@@ -74,7 +74,7 @@ function startAdapter(options) {
                 }, 5000);
             }
         } else {
-            //console.log('objectDeleted: ' + id);
+            // console.log('objectDeleted: ' + id);
             if (objects[id]) {
                 delete objects[id];
             }
@@ -146,13 +146,8 @@ function startAdapter(options) {
             // just for test
             return obj.callback && adapter.sendTo(obj.from, obj.command, [{value: 1, label: 'first'}, {value: 2, label: 'second'}], obj.callback);
         } else
-        if (obj.command === 'fill') {
-            // just for test
-            console.log('FILL: ' + JSON.stringify(obj.message));
-            return obj.callback && adapter.sendTo(obj.from, obj.command, 'history.0', obj.callback);
-        } else
         if (obj.command === 'selectSendTo') {
-            adapter.log.info('SelectSendTo: ' + JSON.stringify(obj.message));
+            adapter.log.info(`SelectSendTo: ${JSON.stringify(obj.message)}`);
             // just for test
             return obj.callback && adapter.sendTo(obj.from, obj.command, [
                 {label: 'Afghanistan', value: 'AF'},
@@ -161,7 +156,7 @@ function startAdapter(options) {
             ], obj.callback);
         } else
         if (obj.command === 'url') {
-            adapter.log.info('url: ' + JSON.stringify(obj.message));
+            adapter.log.info(`url: ${JSON.stringify(obj.message)}`);
             // just for test
             return obj.callback && adapter.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback);
         }
@@ -203,7 +198,7 @@ function startAdapter(options) {
 function createUpdateInfo(adapter) {
     const promises = [];
     // create connected object and state
-    let updatesNumberObj = objects[adapter.namespace + '.info.updatesNumber'];
+    let updatesNumberObj = objects[`${adapter.namespace}.info.updatesNumber`];
 
     if (!updatesNumberObj || !updatesNumberObj.common || updatesNumberObj.common.type !== 'number') {
         let obj = {
@@ -234,7 +229,7 @@ function createUpdateInfo(adapter) {
         adapter.setObject(obj._id, obj);
     }
 
-    let updatesListObj = objects[adapter.namespace + '.info.updatesList'];
+    let updatesListObj = objects[`${adapter.namespace}.info.updatesList`];
 
     if (!updatesListObj || !updatesListObj.common || updatesListObj.common.type !== 'string') {
         let obj = {
@@ -265,7 +260,7 @@ function createUpdateInfo(adapter) {
         adapter.setObject(obj._id, obj);
     }
 
-    let newUpdatesObj = objects[adapter.namespace + '.info.newUpdates'];
+    let newUpdatesObj = objects[`${adapter.namespace}.info.newUpdates`];
 
     if (!newUpdatesObj || !newUpdatesObj.common || newUpdatesObj.common.type !== 'boolean') {
         let obj = {
@@ -296,7 +291,7 @@ function createUpdateInfo(adapter) {
         promises.push(adapter.setObjectAsync(obj._id, obj));
     }
 
-    let updatesJsonObj = objects[adapter.namespace + '.info.updatesJson'];
+    let updatesJsonObj = objects[`${adapter.namespace}.info.updatesJson`];
 
     if (!updatesJsonObj || !updatesJsonObj.common || updatesJsonObj.common.type !== 'string') {
         let obj = {
@@ -327,7 +322,7 @@ function createUpdateInfo(adapter) {
         promises.push(adapter.setObjectAsync(obj._id, obj));
     }
 
-    let lastUpdateCheckObj = objects[adapter.namespace + '.info.lastUpdateCheck'];
+    let lastUpdateCheckObj = objects[`${adapter.namespace}.info.lastUpdateCheck`];
 
     if (!lastUpdateCheckObj || !lastUpdateCheckObj.common || lastUpdateCheckObj.common.type !== 'number') {
         let obj = {
@@ -505,11 +500,11 @@ function initSocket(server, store, adapter) {
                 try {
                     await socket.updateRatings();
                 } catch (error) {
-                    adapter.log.error('Cannot fetch ratings: ' + error);
+                    adapter.log.error(`Cannot fetch ratings: ${error}`);
                 }
             }
         })
-        .catch(error => adapter.log.error('Cannot read UUID: ' + error));
+        .catch(error => adapter.log.error(`Cannot read UUID: ${error}`));
 }
 
 function processTasks(adapter) {
@@ -537,7 +532,7 @@ function applyRightsToObjects(adapter, pattern, types, cb) {
         let count = types.length;
         types.forEach(type => applyRightsToObjects(adapter, pattern, type, () => !--count && cb && cb()));
     } else {
-        adapter.getObjectView('system', types, {startkey: pattern + '.', endkey: pattern + '.\u9999'}, (err, doc) => {
+        adapter.getObjectView('system', types, {startkey: `${pattern}.`, endkey: `${pattern}.\u9999`}, (err, doc) => {
             adapter._tasks = adapter._tasks || [];
 
             if (!err && doc.rows.length) {
@@ -556,10 +551,10 @@ function applyRights(adapter) {
     adapter.config.accessAllowedTabs    = adapter.config.accessAllowedTabs || [];
 
     adapter.config.accessAllowedConfigs.forEach(id => promises.push(new Promise(resolve =>
-        adapter.getForeignObject('system.adapter.' + id, (err, obj) => {
+        adapter.getForeignObject(`system.adapter.${id}`, (err, obj) => {
             if (obj && obj.acl && obj.acl.owner !== adapter.config.defaultUser) {
                 obj.acl.owner = adapter.config.defaultUser;
-                adapter.setForeignObject('system.adapter.' + id, obj, err => resolve(!err));
+                adapter.setForeignObject(`system.adapter.${id}`, obj, err => resolve(!err));
             } else {
                 resolve(false);
             }
@@ -823,7 +818,7 @@ async function checkNodeJsVersion() {
         // find newest suggested version
         const nodeNewestNext = response.data.find(item => item.version.startsWith(`v${CURRENT_MAX_MAJOR_NODEJS}.`));
         const nodeCurrentMajor = process.version.split('.')[0];
-        const nodeNewest = response.data.find(item => item.version.startsWith(nodeCurrentMajor + '.'));
+        const nodeNewest = response.data.find(item => item.version.startsWith(`${nodeCurrentMajor}.`));
         if (nodeNewestNext) {
             result.nodeNewestNext = nodeNewestNext.version;
         }
@@ -1008,11 +1003,11 @@ async function checkNodeJsVersion() {
         ];
 
         for (let i = 0; i < states.length; i++) {
-            await adapter.setForeignObjectNotExistsAsync(prefix + '.' + states[i]._id, states[i]);
+            await adapter.setForeignObjectNotExistsAsync(`${prefix}.${states[i]._id}`, states[i]);
         }
         const keys = Object.keys(result);
         for (let k = 0; k < keys.length; k++) {
-            await adapter.setForeignStateAsync(prefix + '.' + keys[k], result[keys[k]].replace(/^v/, ''), true);
+            await adapter.setForeignStateAsync(`${prefix}.${keys[k]}`, result[keys[k]].replace(/^v/, ''), true);
         }
     } catch (error) {
         adapter.log.warn('Cannot check node.js/npm version');
@@ -1092,7 +1087,7 @@ async function checkRevokedVersions(repository) {
                                     }
                                 }
                             } catch (e) {
-                                _adapter.log.error('Cannot check revoked versions: ' + repository[_adapter].blockedVersions[i]);
+                                _adapter.log.error(`Cannot check revoked versions: ${repository[_adapter].blockedVersions[i]}`);
                                 // ignore
                             }
                         }
@@ -1103,14 +1098,14 @@ async function checkRevokedVersions(repository) {
             }
         }
     } catch (e) {
-        adapter.log.error('Cannot check revoked versions: ' + e);
+        adapter.log.error(`Cannot check revoked versions: ${e}`);
     }
 }
 
 // update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
 function updateIcons() {
-    if (fs.existsSync(utils.controllerDir + '/io-package.json')) {
-        const ioPackage = require(utils.controllerDir + '/io-package.json');
+    if (fs.existsSync(`${utils.controllerDir}/io-package.json`)) {
+        const ioPackage = require(`${utils.controllerDir}/io-package.json`);
         ioPackage.objects.forEach(async obj => {
             if (obj.common && obj.common.icon && obj.common.icon.length > 50) {
                 const cObj = await adapter.getForeignObjectAsync(obj._id);
