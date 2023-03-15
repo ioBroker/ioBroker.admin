@@ -17,7 +17,7 @@
           "lg": 5
         },
         "port": {
-          "type": "number",
+          "type": "port",
           "min": 1,
           "max": 65565,
           "label": "Port",
@@ -152,7 +152,7 @@
           "sm": 12,
           "md": 4,
           "lg": 2
-        }
+        },
       }
     },
     "loadingTab": {

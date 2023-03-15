@@ -281,10 +281,10 @@ class Utils {
 
         let hostname;
         // check if the adapter from the same host as admin
-        const adminHost = objects['system.adapter.' + adminInstance]?.common?.host;
+        const adminHost = objects[`system.adapter.${adminInstance}`]?.common?.host;
         if (instanceObj.common.host !== adminHost) {
             // find IP address
-            const host = hosts.find(obj => obj._id === 'system.host.' + instanceObj.common.host);
+            const host = hosts.find(obj => obj._id === `system.host.${instanceObj.common.host}`);
             if (host) {
                 const ip = Utils.findNetworkAddressOfHost(host, currentHostname);
                 if (ip) {

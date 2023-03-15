@@ -64,6 +64,7 @@ function build() {
 
     let ace = `${__dirname}/${srcRx}node_modules/ace-builds/src-min-noconflict/`;
     fs.writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, fs.readFileSync(`${ace}worker-json.js`));
+    fs.writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`, fs.readFileSync(`${ace}ext-searchbox.js`));
 
     const version = JSON.parse(fs.readFileSync(`${__dirname}/package.json`).toString('utf8')).version;
     const data    = JSON.parse(fs.readFileSync(`${src}package.json`).toString('utf8'));

@@ -35,6 +35,7 @@ import ConfigNumber from './ConfigNumber';
 import ConfigObjectId from './ConfigObjectId';
 import ConfigPassword from './ConfigPassword';
 import ConfigPattern from './ConfigPattern';
+import ConfigPort from './ConfigPort';
 import ConfigRoom from './ConfigRoom';
 import ConfigSelect from './ConfigSelect';
 import ConfigSelectSendTo from './ConfigSelectSendTo';
@@ -81,6 +82,7 @@ const components = {
     objectId: ConfigObjectId,
     password: ConfigPassword,
     pattern: ConfigPattern,
+    port: ConfigPort,
     room: ConfigRoom,
     select: ConfigSelect,
     selectSendTo: ConfigSelectSendTo,

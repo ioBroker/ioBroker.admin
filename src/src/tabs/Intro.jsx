@@ -12,7 +12,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import CreateIcon from '@mui/icons-material/Create';
 
-import UtilsCommon from '@iobroker/adapter-react-v5/Components/Utils';
+import { Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
 import Utils from '../Utils';
 import IntroCard from '../components/IntroCard';
@@ -34,30 +34,30 @@ const styles = theme => ({
         backgroundColor: theme.palette.success.main,
         right: theme.spacing(10),
         '&:hover': {
-            backgroundColor: theme.palette.success.dark
-        }
+            backgroundColor: theme.palette.success.dark,
+        },
     },
     addButton: {
         backgroundColor: theme.palette.secondary.main,
         right: theme.spacing(18),
         '&:hover': {
-            backgroundColor: theme.palette.secondary.dark
-        }
+            backgroundColor: theme.palette.secondary.dark,
+        },
     },
     closeButton: {
         backgroundColor: theme.palette.error.main,
         '&:hover': {
-            backgroundColor: theme.palette.error.dark
-        }
+            backgroundColor: theme.palette.error.dark,
+        },
     },
     bold: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     container: {
-        overflowY: 'auto'
+        overflowY: 'auto',
     },
     hostOffline: {
-        color: '#bb0000'
+        color: '#bb0000',
     },
     updateExists: {
         color: '#c28700',
@@ -73,7 +73,7 @@ const styles = theme => ({
     instanceNumber: {
         opacity: 0.7,
         fontSize: 16,
-    }
+    },
 });
 
 const formatInfo = {
@@ -82,7 +82,7 @@ const formatInfo = {
     'RAM':           Utils.formatRam,
     'Speed':         Utils.formatSpeed,
     'Disk size':     Utils.formatBytes,
-    'Disk free':     Utils.formatBytes
+    'Disk free':     Utils.formatBytes,
 };
 
 class Intro extends Component {
@@ -101,7 +101,7 @@ class Intro extends Component {
             hasUnsavedChanges: false,
             reverseProxy: null,
             alive: {},
-            hostsData: {}
+            hostsData: {},
         };
 
         this.currentProxyPath = window.location.pathname; // e.g. /admin/
@@ -219,7 +219,7 @@ class Intro extends Component {
             deactivated: this.deactivatedOriginal,
             introLinks: this.introLinksOriginal,
             hasUnsavedChanges: false,
-            edit: false
+            edit: false,
         }, () => {
             this.deactivatedOriginal = null;
             this.introLinksOriginal = null;
@@ -293,11 +293,10 @@ class Intro extends Component {
                     toggleActivation={() => this.toggleCard(instance.id, instance.linkName)}
                     openSnackBarFunc={() => this.setState({ openSnackBar: true })}
                 >
-                    { instance.description || this.getHostDescription(instance.id)}
+                    {instance.description || this.getHostDescription(instance.id)}
                 </IntroCard>;
-            } else {
-                return null;
             }
+            return null;
         });
     }
 
@@ -318,7 +317,7 @@ class Intro extends Component {
                 return null;
             } else {
                 return <IntroCard
-                    key={'link' + i}
+                    key={`link${i}`}
                     image={item.image}
                     title={item.name}
                     action={{ link: item.link, text: item.linkName }}
@@ -347,7 +346,7 @@ class Intro extends Component {
                     enabled={item.enabled}
                     toggleActivation={() => this.toggleLinkCard(i)}
                 >
-                    { item.desc || ''}
+                    {item.desc || ''}
                 </IntroCard>;
             }
         });
@@ -397,7 +396,7 @@ class Intro extends Component {
                     this.setState({
                         editLink: true,
                         editLinkIndex: -1,
-                        link: {}
+                        link: {},
                     })}
             >
                 <AddIcon />
@@ -469,7 +468,7 @@ class Intro extends Component {
             if (isAlive !== undefined) {
                 return resolve({ val: isAlive });
             } else {
-                return this.props.socket.getState(hostId + '.alive')
+                return this.props.socket.getState(`${hostId}.alive`)
                     .then(state => resolve(state))
                     .catch(e => reject(e));
             }
@@ -523,7 +522,7 @@ class Intro extends Component {
             } else if (item.instance.startsWith('web.')) {
                 // if this is a web instance, check if it is the same as the current instance
                 const _obj = instances.find(o => o._id === `system.adapter.${item.instance}`);
-                if (_obj?.native?.port && (instance.link || instance.url).includes(':' + _obj.native.port)) {
+                if (_obj?.native?.port && (instance.link || instance.url).includes(`:${_obj.native.port}`)) {
                     // replace
                     const regExp = new RegExp(`^.*:${_obj.native.port}/`);
                     if (instance.link) {
@@ -667,7 +666,7 @@ class Intro extends Component {
 
                         links.forEach(link => {
                             const instance = {};
-                            instance.id          = obj._id.replace('system.adapter.', '') + '/' + link.link;
+                            instance.id          = `${obj._id.replace('system.adapter.', '')}/${link.link}`;
                             instance.name        = link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '';
                             instance.color       = link.color || '';
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';

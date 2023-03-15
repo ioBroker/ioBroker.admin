@@ -319,6 +319,7 @@ adapter.on('message', obj => {
   - `version` - Check version
 
 - `uuid` - Show iobroker UUID
+- `port` - Special input for ports. It checks automatically if port is used by other instances and shows warning
 
 ## Common attributes of controls
 All types could have:
