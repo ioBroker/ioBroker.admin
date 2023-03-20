@@ -16,6 +16,8 @@ import ConfigAutocomplete from './ConfigAutocomplete';
 import ConfigAutocompleteSendTo from './ConfigAutocompleteSendTo';
 import ConfigCRON from './ConfigCRON';
 import ConfigCertificateSelect from './ConfigCertificateSelect';
+import ConfigCertificates from './ConfigCertificates';
+import ConfigCertCollection from './ConfigCertCollection';
 import ConfigCheckLicense from './ConfigCheckLicense';
 import ConfigCheckbox from './ConfigCheckbox';
 import ConfigChip from './ConfigChip';
@@ -58,7 +60,9 @@ const components = {
     alive: ConfigAlive,
     autocomplete: ConfigAutocomplete,
     autocompleteSendTo: ConfigAutocompleteSendTo,
+    certCollection: ConfigCertCollection,
     certificate: ConfigCertificateSelect,
+    certificates: ConfigCertificates,
     checkbox: ConfigCheckbox,
     checkLicense: ConfigCheckLicense,
     chip: ConfigChip, // deprecated. Use "chips"

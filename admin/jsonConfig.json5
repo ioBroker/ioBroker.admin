@@ -33,34 +33,11 @@
           "md": 6,
           "lg": 2
         },
-        "certPublic": {
-          "type": "certificate",
+        "_certs": {
+          "type": "certificates",
+          "newLine": true,
           "hidden": "!data.secure",
-          "certType": "public",
-          "validator": "!data.secure || data.certPublic",
-          "label": "Public certificate",
-          "sm": 12,
-          "md": 6,
-          "lg": 2
-        },
-        "certPrivate": {
-          "hidden": "!data.secure",
-          "type": "certificate",
-          "certType": "private",
-          "validator": "!data.secure || data.certPrivate",
-          "label": "Private certificate",
-          "sm": 12,
-          "md": 6,
-          "lg": 2
-        },
-        "certChained": {
-          "hidden": "!data.secure",
-          "type": "certificate",
-          "certType": "chained",
-          "label": "Chained certificate",
-          "sm": 12,
-          "md": 6,
-          "lg": 2
+          "sm": 12
         },
         "auth": {
           "newLine": true,
@@ -212,7 +189,7 @@
         },
         "_staticText": {
             "type": "staticText",
-            "text": "Use iobroker.acme adapter for letsencrypt certificates"
+            "text": "ra_Use iobroker.acme adapter for letsencrypt certificates"
         }
       }
     },

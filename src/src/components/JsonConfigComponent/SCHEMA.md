@@ -175,14 +175,26 @@ Possible types:
     - `showSecondAddAt` - Number of lines from which the second add button at the bottom of the table will be shown. Default 5
 - `json` - json editor
 
-- `language`
-    - `system` - allow the usage of the system language from system.config as default
-
-- `position`
-    - `system` - allow the usage of the system language from system.config as default
+- `language` - select language
+    - `system` - allow the usage of the system language from `system.config` as default
 
 - `certificate`
-    - `certType` - on of: `public`, `private`, `chained`
+    - `certType` - on of: `public`, `private`, `chained`. But from 6.4.0 you can use `certificates` type.
+
+- `certificates` - it is universal type that manages `certPublic`, `certPrivate`, `certChained` and `leCollection` attributes for you.
+  Example:
+```json
+{
+   "_certs": {
+       "type": "certificates",
+       "newLine": true,
+       "hidden": "!data.secure",
+       "sm": 12
+   }
+}
+  ```
+
+- `certCollection` - select certificate collection or just use all collections or don't use let's encrypt at all.
 
 - `custom` (only Admin6)
     - `name` - Component name that will be provided via props, like ComponentInstancesEditor
@@ -304,7 +316,7 @@ adapter.on('message', obj => {
       }
     }
 });
-```    
+```
 
 - `coordinates`
   Determines current location and used `system.config` coordinates if not possible in form "latitude,longitude"

@@ -11,10 +11,10 @@ import Select from '@mui/material/Select';
 import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
-        width: '100%'
-    }
+        width: '100%',
+    },
 });
 
 class ConfigCertificateSelect extends ConfigGeneric {
@@ -39,11 +39,11 @@ class ConfigCertificateSelect extends ConfigGeneric {
 
                 return false;
             })
-            .map(el => ({label: el.name, value: el.name}));
+            .map(el => ({ label: el.name, value: el.name }));
 
-        selectOptions.unshift({label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE});
+        selectOptions.unshift({ label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE });
 
-        this.setState({value, selectOptions});
+        this.setState({ value, selectOptions });
     }
 
     renderItem(error, disabled, defaultValue) {

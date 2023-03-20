@@ -19,7 +19,7 @@ User interface for configuration and administration of ioBroker.
 - `%web_protocol%` - looking for the first instance of web (e.g. web.0) and get `native.secure` from `system.adapter.web.0`
 - `%instance%` - instance of the adapter
 - `%someField%` - get someField from `native` of this adapter instance
-- `%web.0_bind%` - get native.bind from `system.adapter.web.0`
+- `%web.0_bind%` - get `native.bind` from `system.adapter.web.0`
 - `%native_someField%` - get someField from `native` of this adapter instance
 
 ## Scheduled restart
@@ -30,42 +30,10 @@ To activate scheduled restart just define CRON condition when to restart adapter
 It is suggested to restart in the night, when no one use the adapter, e.g. `0 3 * * *` - at 3:00 every day.
 
 ## Let's Encrypt Certificates
-Let’s Encrypt is a free, automated, and open certificate authority brought to you by the non-profit Internet Security Research Group (ISRG).
+To manage and update let's encrypt certificates you need to use [`iobroker.acme`](https://github.com/iobroker-community-adapters/ioBroker.acme) adapter.
 
-You can read about Let’s Encrypt [here](https://letsencrypt.org/).
-
-Some installations use Dynamic DNS and Co to get the domain name and to reach under this domain name own websites.
-ioBroker supports automatic request and renew of certificates from Let’s Encrypt Organisation.
-
-There is an option to activate free certificates from Let’s Encrypt almost in every adapter, that can start some web server and supports HTTPS.
-
-If you just enable the using of certificates and will not activate an automatic update the instance will try to use stored certificates.
-
-If the automatic update is activated the instance will try to request certificates from Let’s Encrypt and will automatically update it.
-
-The certificates will be first requested when the given domain address will be accessed. E.g. you have "sub.domain.com" as address, when you try to access https://sub.domain.com the certificates will be first requested, and it can last a little before first answer will come.
-
-The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easily get free certificates.
-
-Description:
-
-1. The new account will be created with given email address (you must set it up in system settings)
-2. Some random key will be created as password for the account.
-3. After the account is created the system starts on port 80 the small website to confirm the domain.
-4. Let's encrypt use **always** port **80** to check the domain.
-5. If port 80 is occupied by other service see point 4.
-6. After the small web server is up the request to get certificates for given domains (system settings) will be sent to the Let's encrypt server.
-7. Let's encrypt server sends back some challenge phrase as answer on the request and after a while tries to read this challenge phrase on "http://yourdomain:80/.well-known/acme-challenge/<CHALLENGE>"
-8. If challenge phrase from our side comes back the Let's encrypt server send us the certificates. They will be stored in the given directory (system settings).
-
-Sounds complex, but everything what you must do is to activate checkboxes and specify your email and domain in system settings.
-
-The received certificates are valid ca. 90 days.
-After the certificates are received the special task will be started to automatically renew the certificates.
-
-The topic is rather complex and 1000 things can go wrong. If you cannot get certificates please use cloud service to reach your installation from internet.
-
-**Let's encrypt works only from node.js version>=4.5**
+You will have so-called "collections" of certificates. Each collection has its own domains.
+You can select in configuration of admin adapter if and which collection to use.
 
 ## Simple instance's settings page
 The user has the possibility to limit the access to the instance configuration dialog.
@@ -117,7 +85,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ## Changelog
 ### **WORK IN PROGRESS**
-* (bluefox) Added port controller to JSON config	
+* (bluefox) Breaking change: Configuration of Let's encrypt certificates moved to `iobroker.acme` adapter
+* (bluefox) Added port controller to JSON config
+* (bluefox) Added `certificates` to JSON config
 	
 ### 6.3.7 (2023-03-12)
 * (bluefox) Better tooltips in object browser 

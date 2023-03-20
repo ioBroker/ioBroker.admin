@@ -218,6 +218,7 @@
     "accessApplyRights": false,
     "accessAllowedConfigs": [],
     "accessAllowedTabs": [],
+    "leCollection": false,
     "certPublic": "",
     "certPrivate": "",
     "certChained": "",
