@@ -83,5 +83,6 @@
   "Instance path behind proxy": "Percorso dell'istanza dietro il proxy",
   "Loading backgroun": "Sfondo di caricamento",
   "Background color of the loading screen": "Colore di sfondo della schermata di caricamento",
-  "Loading background": "Caricamento dello sfondo"
+  "Loading background": "Caricamento dello sfondo",
+  "Use iobroker.acme adapter for letsencrypt certificates": "Utilizzare l'adattatore iobroker.acme per i certificati letsencrypt"
 }

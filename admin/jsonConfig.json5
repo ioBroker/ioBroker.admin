@@ -210,38 +210,9 @@
             "height": 59
           }
         },
-        "_link": {
-          "newLine": true,
-          "type": "staticLink",
-          "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
-          "text": "Read about Let's Encrypt certificates",
-          "style": {
-            "fontSize": 16,
-            "marginBottom": 20
-          }
-        },
-        "leEnabled": {
-          "newLine": true,
-          "type": "checkbox",
-          "label": "Use Lets Encrypt certificates"
-        },
-        "leUpdate": {
-          "newLine": true,
-          "type": "checkbox",
-          "hidden": "!data.leEnabled",
-          "label": "Use this instance for automatic update"
-        },
-        "lePort": {
-          "newLine": true,
-          "sm": 11,
-          "lg": 4,
-          "type": "number",
-          "hidden": "!data.leEnabled || !data.leUpdate",
-          "label": "Port to check the domain",
-          "style": {
-            "marginTop": 15,
-            "maxWidth": 200
-          }
+        "_staticText": {
+            "type": "staticText",
+            "text": "Use iobroker.acme adapter for letsencrypt certificates"
         }
       }
     },

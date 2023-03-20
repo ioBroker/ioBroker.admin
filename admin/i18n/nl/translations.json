@@ -83,5 +83,6 @@
   "Instance path behind proxy": "Instantiepad achter proxy",
   "Loading backgroun": "Achtergrond laden",
   "Background color of the loading screen": "Achtergrondkleur van het laadscherm",
-  "Loading background": "Achtergrond laden"
+  "Loading background": "Achtergrond laden",
+  "Use iobroker.acme adapter for letsencrypt certificates": "Gebruik de iobroker.acme-adapter voor letsencrypt-certificaten"
 }
