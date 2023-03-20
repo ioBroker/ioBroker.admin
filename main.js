@@ -29,7 +29,7 @@ const Web = require('./lib/web');
 const ONE_HOUR_MS = 3600000;
 const ERROR_PERMISSION = 'permissionError';
 
-const CURRENT_MAX_MAJOR_NODEJS = 16;
+const CURRENT_MAX_MAJOR_NODEJS = 18;
 const CURRENT_MAX_MAJOR_NPM = 8;
 
 let uuid           = '';
