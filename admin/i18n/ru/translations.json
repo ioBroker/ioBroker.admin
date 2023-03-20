@@ -83,5 +83,6 @@
   "Instance path behind proxy": "Путь к инстанции за прокси",
   "Loading backgroun": "Загрузка фона",
   "Background color of the loading screen": "Цвет фона экрана загрузки",
-  "Loading background": "Фон загрузки"
+  "Loading background": "Фон загрузки",
+  "Use iobroker.acme adapter for letsencrypt certificates": "Используйте адаптер iobroker.acme для сертификатов letsencrypt"
 }
