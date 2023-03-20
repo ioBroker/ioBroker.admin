@@ -36,18 +36,36 @@ class ConfigPort extends ConfigGeneric {
         this.props.socket.getAdapterInstances()
             .then(instances => {
                 const ownId = `system.adapter.${this.props.adapterName}.${this.props.instance}`;
-                const ports = instances
-                    .map(instance => {
-                        if (instance._id !== ownId && instance?.native?.port) {
-                            return {
-                                name: instance._id.replace('system.adapter.', ''),
-                                port: parseInt(instance.native.port, 10),
+                const ports = [];
+                instances
+                    .forEach(instance => {
+                        // ignore own instance
+                        if (instance._id === ownId) {
+                            return;
+                        }
+                        // if letsencrypt is enabled and update is enabled, then add port to check
+                        if (instance?.native &&
+                            instance.native.leEnabled &&
+                            instance.native.leUpdate
+                        ) {
+                            const port = parseInt(instance.native.leCheckPort || instance.native.lePort, 10);
+                            port && ports.push({
+                                name: `${instance._id.replace('system.adapter.', '')} (LE)`,
+                                port,
                                 enabled: instance.common?.enabled,
-                            };
+                            });
+                        }
+
+                        const port = parseInt(instance?.native?.port, 10);
+                        if (port) {
+                            ports.push({
+                                name: instance._id.replace('system.adapter.', ''),
+                                port,
+                                enabled: instance.common?.enabled,
+                            });
                         }
                         return null;
-                    })
-                    .filter(p => p?.port);
+                    });
                 this.setState({ ports });
             });
     }
