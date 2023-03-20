@@ -1,7 +1,7 @@
 {
   "Use iobroker.acme adapter for letsencrypt certificates": "Використовуйте адаптер iobroker.acme для сертифікатів letsencrypt",
   "1 minute": "1 хвилина",
-  "Access to instances": "Доступ до примірників (простий режим)",
+  "Access to instances": "Доступ до екземплярів (Спрощений режим)",
   "Admin adapter settings": "Налаштування екземпляра адміністратора",
   "Allow access only to specific instances": "Дозволити доступ лише до певних екземплярів",
   "Apply access rights for selected instances": "Застосувати права доступу для вибраних екземплярів до вибраного користувача",
