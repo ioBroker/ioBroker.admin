@@ -45,6 +45,7 @@ class ConfigPort extends ConfigGeneric {
                         }
                         // if letsencrypt is enabled and update is enabled, then add port to check
                         if (instance?.native &&
+                            instance.native.secure &&
                             instance.native.leEnabled &&
                             instance.native.leUpdate
                         ) {
