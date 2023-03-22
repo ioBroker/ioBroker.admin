@@ -17,7 +17,7 @@ import I18n from './wrapper/i18n';
 import DialogError from './wrapper/Dialogs/Error';
 
 import ConfigGeneric from './ConfigGeneric';
-import ConfirmDialog from "@iobroker/adapter-react-v5/Dialogs/Confirm";
+import ConfirmDialog from './wrapper/Dialogs/Confirm';
 
 const styles = theme => ({
     fullWidth: {
