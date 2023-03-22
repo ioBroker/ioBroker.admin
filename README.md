@@ -84,11 +84,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.4.0 (2023-03-22)
 * (bluefox) Breaking change: Configuration of Let's encrypt certificates moved to `iobroker.acme` adapter
 * (bluefox) Added port controller to JSON config
 * (bluefox) Added `certificates` to JSON config
-	
+
 ### 6.3.7 (2023-03-12)
 * (bluefox) Better tooltips in object browser 
 * Added again possibility to hide/show of columns in object browser
@@ -101,9 +101,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.3.4 (2022-12-18)
 * (bluefox) Corrected crashes in object browser
-
-### 6.3.3 (2022-12-14)
-* (bluefox) Corrected icons in object browser
 
 ## License
 The MIT License (MIT)

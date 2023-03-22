@@ -1,6 +1,13 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.3.3 (2022-12-14)
+* (bluefox) Corrected icons in object browser
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.3.2 (2022-12-12)
 * (bluefox) Added `useNative` option to `sendTo` JSON Config component
 * (bluefox) Added `checkLicense` and `uuid` components to JSON Config

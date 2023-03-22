@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.3.7",
+    "version": "6.4.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.4.0": {
+        "en": "Breaking change: Configuration of Let's encrypt certificates moved to `iobroker.acme` adapter\nAdded port controller to JSON config\nAdded `certificates` to JSON config",
+        "de": "Wechsel: Konfiguration von Let's Verschlüsselungszertifikaten bewegt zu iobroker. acm Adapter\nPort-Controller zu JSON config hinzugefügt\nZertifikate zu JSON config hinzugefügt",
+        "ru": "Перерыв изменений: Конфигурация сертификатов Let's encrypt переехала в iobroker. acme адаптер\nДобавлен контроллер портов в JSON config\nДобавлены сертификаты JSON config",
+        "pt": "Mudança de ruptura: Configuração de Let's encrypt certificados movidos para iobroker. adaptador de acme\nAdicionado controlador de porta para JSON config\nAdicionados certificados para JSON config",
+        "nl": "Verandering: Bespreking van Let's encrypt certificaat verhuisde naar iobroker. Acme adapter\nVoeg de havencontroleur toe aan JSON\nToegevoegd certificaat aan JSON",
+        "fr": "Changement de rupture : Configuration des certificats de chiffrement transférés à iobroker. acme adaptateur\nAjout du contrôleur port à la configuration JSON\nAjout de certificats à la configuration JSON",
+        "it": "Cambiamento di rottura: Configurazione di Let's criptare certificati spostati a iobroker. adattatore di acme\nAggiunto controller di porta a JSON config\nCertificati aggiunti a JSON config",
+        "es": "Cambio de ruptura: Configuración de certificados de encriptación trasladados a iobroker. adaptador de acme\nControlador de puerto añadido a JSON config\nCertificados añadidos a JSON config",
+        "pl": "Zmiana: Konfiguracja szyfrów Leta została przeniesiona do iobrokera. adapter\nKontroler porówny JSON\nZamówione świadectwo konfigurowizacji JSON",
+        "uk": "Зміна розривів: Конфігурація сертифікатів Let's шифруються на iobroker. адаптер змінного струму\nДодано контролер порту в JSON config\nДодано сертифікати на налаштування JSON",
+        "zh-cn": "断然变化: 让的加密证书的配件移到罗克。 a 适应\n将港口管制员增到联合执行联盟总部\n提交联合协商会证书"
+      },
       "6.3.7": {
         "en": "Better tooltips in object browser \nAdded again possibility to hide/show of columns in object browser",
         "de": "Bessere Tooltips im Objektbrowser\nWeitere Möglichkeit zum Verbergen/Zeigen von Spalten im Objektbrowser hinzugefügt",
@@ -95,19 +108,6 @@
         "pl": "Dodano opcję `useNative` do komponentu `sendTo` JSON Config\nDodano komponenty `checkLicense` i `uuid` do JSON Config\nPoprawiono program obsługi wiadomości",
         "uk": "Додано опцію `useNative` до компонента конфігурації JSON `sendTo`\nДо конфігурації JSON додано компоненти `checkLicense` і `uuid`\nВиправлено обробник новин",
         "zh-cn": "向 `sendTo` JSON 配置组件添加了 `useNative` 选项\n向 JSON 配置添加了 `checkLicense` 和 `uuid` 组件\n更正了新闻处理程序"
-      },
-      "6.2.23": {
-        "en": "Prepare for future js-controller versions\nCorrected deletion of objects",
-        "de": "Bereiten Sie sich auf zukünftige js-Controller-Versionen\nKorrigierte Löschung von Objekten",
-        "ru": "Подготовьтесь к будущим версиям js-controller\nИсправлено удаление объектов",
-        "pt": "Prepare-se para futuras versões js-controller\nEliminação correta de objetos",
-        "nl": "Bereid je voor op toekomstige Js-controller versie\nVerwijdering van objecten",
-        "fr": "Préparez-vous pour les versions futures de js-controller\nSuppression corrigée des objets",
-        "it": "Prepararsi per le future versioni js-controller\nCancellazione corretta degli oggetti",
-        "es": "Prepararse para futuras versiones js-controller\nEliminación corregida de objetos",
-        "pl": "Prepare for future js-controller version\nOczyszczenie delecji obiektów",
-        "uk": "Підготовка до майбутніх версій js-controller\nВиправлено видалення об'єктів",
-        "zh-cn": "今后防污版本的编制\n更正"
       }
     },
     "desc": {
