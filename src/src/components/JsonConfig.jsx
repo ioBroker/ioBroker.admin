@@ -186,7 +186,15 @@ class JsonConfig extends Router {
                 .then(schema =>
                     // load language
                     JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
-                        .then(() => {
+                        .then(langFileName => {
+                            if (langFileName) {
+                                // subscribe on changes
+                                if (!this.fileLangSubscribed) {
+                                    this.fileLangSubscribed = langFileName;
+                                    this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, this.fileLangSubscribed, this.onFileChange);
+                                }
+                            }
+
                             if (obj) {
                                 this.setState({
                                     schema,
@@ -205,6 +213,10 @@ class JsonConfig extends Router {
         if (this.fileSubscribed) {
             this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
             this.fileSubscribed = false;
+        }
+        if (this.fileLangSubscribed) {
+            this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileLangSubscribed, this.onFileChange);
+            this.fileLangSubscribed = false;
         }
     }
 
@@ -255,13 +267,18 @@ class JsonConfig extends Router {
         </div>;
     }
 
-    onFileChange = (id, fileName) => {
-        if (id === `${this.props.adapterName}.admin` && (fileName === this.fileSubscribed)) {
-            this.getConfigFile(this.fileSubscribed)
-                .then(schema =>
-                    // load language
-                    JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
-                        .then(() => this.setState({ schema, hash: MD5(JSON.stringify(schema)) })));
+    onFileChange = (id, fileName, size) => {
+        if (id === `${this.props.adapterName}.admin` && size) {
+            if (fileName === this.fileLangSubscribed)  {
+                JsonConfigComponent.loadI18n(this.props.socket, this.state.schema?.i18n, this.props.adapterName)
+                    .then(() => this.setState({hash: `${this.state.hash}1`}))
+                    .catch(() => {
+                    }); // ignore errors
+            } else if (fileName === this.fileSubscribed) {
+                this.getConfigFile(this.fileSubscribed)
+                    .then(schema => this.setState({ schema, hash: MD5(JSON.stringify(schema)) }))
+                    .catch(() => { }) // ignore errors
+            }
         }
     };
 
@@ -270,12 +287,10 @@ class JsonConfig extends Router {
 
         return this.props.socket.fileExists(`${this.props.adapterName}.admin`, fileName)
             .then(exist => {
-                if (exist) {
-                    return this.props.socket.readFile(`${this.props.adapterName}.admin`, 'jsonConfig.json5');
-                } else {
+                if (!exist) {
                     fileName = 'jsonConfig.json';
-                    return this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
                 }
+                return this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
             })
             .then(data => {
                 if (data.file !== undefined) {
@@ -303,7 +318,7 @@ class JsonConfig extends Router {
                     window.alert('[JsonConfig] Cannot parse json5 config!');
                 }
             })
-            .catch(e => window.alert(`[JsonConfig] Cannot read file: ${e}`));
+            .catch(e => !this.state.schema && window.alert(`[JsonConfig] Cannot read file: ${e}`));
     }
 
     getInstanceObject() {
@@ -327,7 +342,7 @@ class JsonConfig extends Router {
                     return obj;
                 }
             })
-            .catch(e => window.alert('[JsonConfig] Cannot read instance object: ' + e));
+            .catch(e => window.alert(`[JsonConfig] Cannot read instance object: ${e}`));
     }
 
     renderConfirmDialog() {

@@ -26,26 +26,26 @@ import Utils from '../../Utils';
 
 // icons
 
-const styles = theme => ({
+const styles = () => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
         overflow: 'auto',
         overflowX: 'hidden',
         padding: 15,
-        position: 'relative'
+        position: 'relative',
     },
     tableContainer: {
-        zIndex: 100
+        zIndex: 100,
     },
     table: {
         display: 'flex',
         flexDirection: 'column',
-        width: '100%'
+        width: '100%',
     },
     buttonPanel: {
         paddingBottom: 40,
-        display: 'flex'
+        display: 'flex',
     },
     descriptionPanel: {
         width: '100%',
@@ -53,17 +53,17 @@ const styles = theme => ({
         marginLeft: 40,
         border: 'none',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     littleRow: {
-        width: 110
+        width: 110,
     },
     nameRow: {
-        width: 220
+        width: 220,
     },
     input: {
-        width: '100%'
-    }
+        width: '100%',
+    },
 });
 
 class CertificatesDialog extends Component {
@@ -115,16 +115,16 @@ class CertificatesDialog extends Component {
             const type = CertificatesDialog.detectType(e.title);
 
             return <TableRow key={i} className="float_row">
-                <TableCell className={this.props.classes.littleRow + ' float_cell'}>
+                <TableCell className={`${this.props.classes.littleRow} float_cell`}>
                     {i + 1}
                 </TableCell>
-                <TableCell className={this.props.classes.nameRow + ' float_cell'}>
+                <TableCell className={`${this.props.classes.nameRow} float_cell`}>
                     <TextField
                         variant="standard"
                         value={e.title}
                         InputLabelProps={{shrink: true}}
                         InputProps={{readOnly: false}}
-                        className={this.props.classes.input + ' xs-centered'}
+                        className={`${this.props.classes.input} xs-centered`}
                         onChange={evt => this.onChangeText(evt.target.value, e.title, 'title')}
                         error={!type}
                         helperText={type || I18n.t('Unknown type: use in name "private", "public" or "chained" to define the certificate type') }
@@ -133,11 +133,11 @@ class CertificatesDialog extends Component {
                 <TableCell className="grow_cell float_cell">
                     <TextField
                         variant="standard"
-                        id={'default_' + i}
+                        id={`default_${i}`}
                         value={e.data}
                         InputLabelProps={{ shrink: true }}
                         InputProps={{ readOnly: false }}
-                        className={this.props.classes.input + ' xs-centered'}
+                        className={`${this.props.classes.input} xs-centered`}
                         onChange={evt => {
                             let value = evt.target.value.replace(/\r/g, '').replace(/\n/g, '');
                             if (value.startsWith('--')) {
@@ -261,10 +261,10 @@ class CertificatesDialog extends Component {
         if (!title) {
             let i = 1;
             // eslint-disable-next-line
-            while (array.find(item => item.title === this.props.t('certificate') + '_' + i)) {
+            while (array.find(item => item.title === `${this.props.t('certificate')}_${i}`)) {
                 i++;
             }
-            title = this.props.t('certificate') + '_' + i;
+            title = `${this.props.t('certificate')}_${i}`;
         }
 
         array.push({

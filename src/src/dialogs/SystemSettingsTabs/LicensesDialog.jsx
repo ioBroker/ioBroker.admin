@@ -17,32 +17,32 @@ import IconRefresh from '@mui/icons-material/Refresh';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
-const styles = theme => ({
+const styles = () => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
         overflow: 'auto',
         overflowX: 'hidden',
         padding: 15,
-        //backgroundColor: blueGrey[ 50 ]
+        // backgroundColor: blueGrey[ 50 ]
     },
     table: {
         display: 'flex',
         flexDirection: 'column',
-        width: '100%'
+        width: '100%',
     },
     input: {
         width: 250,
-        marginRight: 16
+        marginRight: 16,
     },
     button: {
         marginTop: 16,
     },
     uuidGreen: {
-        color: 'green'
+        color: 'green',
     },
     uuidGrey: {
-        color: 'grey'
+        color: 'grey',
     },
     tableName: {
         width: 200,
@@ -65,8 +65,8 @@ const styles = theme => ({
     },
     tableDiv: {
         overflow: 'auto',
-        height: 'calc(100% - 75px)'
-    }
+        height: 'calc(100% - 75px)',
+    },
 });
 
 class LicensesDialog extends Component {
@@ -134,49 +134,40 @@ class LicensesDialog extends Component {
         });
     }
 
-    requestLicenses() {
-        this.setState({requesting: true});
-        let password;
-        return new Promise(resolve => {
+    async requestLicenses() {
+        this.setState({ requesting: true });
+        try {
+            let password = this.props.data.native.password;
             // if password was not changed
-            if (this.props.data.native.password === '__SOME_PASSWORD__') {
-                this.props.socket.getObject('system.licenses')
-                    .then(obj => {
-                        // if login was changed
-                        if (obj.native.login !== this.props.data.native.login) {
-                            return this.props.socket.decrypt(obj.native.password)
-                                .then(password => resolve(password));
-                        } else {
-                            resolve(null);
-                        }
-                    });
-            } else {
-                resolve(this.props.data.native.password);
-            }
-        })
-            .then(_password => {
-                password = _password;
-                return LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, password ? this.props.data.native.login : null, password, this.props.t);
-            })
-            .then(licenses => {
-                if (licenses !== null && licenses !== undefined) {
-                    this.setState({licenses, requesting: false});
+            if (password === '__SOME_PASSWORD__') {
+                const obj = await this.props.socket.getObject('system.licenses');
+                // if login was changed
+                if (obj.native.login !== this.props.data.native.login) {
+                    password = await this.props.socket.decrypt(obj.native.password);
                 } else {
-                    this.setState({requesting: false});
+                    password = null;
                 }
+            }
 
+            const licenses = await LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, password ? this.props.data.native.login : null, password, this.props.t);
+
+            if (licenses !== null && licenses !== undefined) {
                 if (password) {
                     window.alert(this.props.t('Licenses were not stored. They will be stored after the settings will be saved'));
                 }
-            })
-            .catch(error => {
-                this.setState({requesting: false});
-                if (error === 'Authentication required') {
-                    window.alert(this.props.t('Cannot update licenses: %s', this.props.t('Authentication required')));
-                } else {
-                    window.alert(this.props.t('Cannot update licenses: %s', error));
-                }
-            });
+
+                this.setState({ licenses, requesting: false });
+            } else {
+                this.setState({ requesting: false });
+            }
+        } catch (error) {
+            this.setState({ requesting: false });
+            if (error === 'Authentication required') {
+                window.alert(this.props.t('Cannot update licenses: %s', this.props.t('Authentication required')));
+            } else {
+                window.alert(this.props.t('Cannot update licenses: %s', error));
+            }
+        }
     }
 
     renderLicenses() {
@@ -221,7 +212,7 @@ class LicensesDialog extends Component {
                 onChange={e => this.doChange('login', e.target.value)}
                 inputProps={{
                     autoComplete: 'new-password',
-                    form: {autoComplete: 'off'},
+                    form: { autoComplete: 'off' },
                 }}
             />
             <TextField
@@ -234,7 +225,7 @@ class LicensesDialog extends Component {
                 onChange={e => this.doChange('password', e.target.value)}
                 inputProps={{
                     autoComplete: 'new-password',
-                    form: {autoComplete: 'off'},
+                    form: { autoComplete: 'off' },
                 }}
             />
             <Button
@@ -251,7 +242,7 @@ class LicensesDialog extends Component {
                 className={this.props.classes.button}
                 color="grey"
             >{this.props.t('Check')}</Button>
-            { this.renderLicenses() }
+            {this.renderLicenses()}
         </div>;
     }
 }

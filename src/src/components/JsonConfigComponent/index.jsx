@@ -50,59 +50,55 @@ class JsonConfigComponent extends Component {
         }
     }
 
-    static loadI18n(socket, i18n, adapterName) {
+    static async loadI18n(socket, i18n, adapterName) {
         if (i18n === true || (i18n && typeof i18n === 'string')) {
             const lang = I18n.getLanguage();
             const path = typeof i18n === 'string' ? i18n : 'i18n';
-            return socket.fileExists(adapterName + '.admin', `${path}/${lang}.json`)
-                .then(exists => {
+            let exists = await socket.fileExists(`${adapterName}.admin`, `${path}/${lang}.json`);
+            let fileName;
+            if (exists) {
+                fileName = `${path}/${lang}.json`;
+            } else {
+                exists = await socket.fileExists(`${adapterName}.admin`, `${path}/${lang}/translations.json`);
+                if (exists) {
+                    fileName = `${path}/${lang}/translations.json`;
+                } else if (lang !== 'en') {
+                    // fallback to english
+                    exists = await socket.fileExists(`${adapterName}.admin`, `${path}/en.json`);
                     if (exists) {
-                        return `${path}/${lang}.json`;
+                        fileName = `${path}/en.json`;
                     } else {
-                        return socket.fileExists(adapterName + '.admin', `${path}/${lang}/translations.json`)
-                            .then(exists => exists ? `${path}/${lang}/translations.json` : '')
-                            .then(fileName => {
-                                if (!fileName && lang !== 'en') {
-                                    // fallback to english
-                                    return socket.fileExists(adapterName + '.admin', `${path}/en.json`)
-                                        .then(exists => {
-                                            if (exists) {
-                                                return `${path}/en.json`;
-                                            } else {
-                                                return socket.fileExists(adapterName + '.admin', `${path}/en/translations.json`)
-                                                    .then(exists => exists ? `${path}/en/translations.json` : '');
-                                            }
-                                        });
-                                }
-                                return fileName;
-                            });
+                        exists = await socket.fileExists(`${adapterName}.admin`, `${path}/en/translations.json`);
+                        if (exists) {
+                            fileName = `${path}/en/translations.json`;
+                        }
                     }
-                })
-                .then(fileName => {
-                    if (fileName) {
-                        return socket.readFile(adapterName + '.admin', fileName)
-                            .then(json => {
-                                if (json.file !== undefined) {
-                                    json = json.file;
-                                }
-                                try {
-                                    json = JSON.parse(json);
-                                    // apply file to I18n
-                                    I18n.extendTranslations(json, lang);
-                                } catch (e) {
-                                    console.error(`Cannot parse language file "${adapterName}.admin/${fileName}: ${e}`);
-                                }
-                            });
-                    } else {
-                        console.warn(`Cannot find i18n for ${adapterName} / ${fileName}`);
-                        return Promise.resolve();
-                    }
-                });
+                }
+            }
+
+            if (fileName) {
+                let json = await socket.readFile(`${adapterName}.admin`, fileName);
+                if (json.file !== undefined) {
+                    json = json.file;
+                }
+                try {
+                    json = JSON.parse(json);
+                    // apply file to I18n
+                    I18n.extendTranslations(json, lang);
+                } catch (e) {
+                    console.error(`Cannot parse language file "${adapterName}.admin/${fileName}: ${e}`);
+                    return '';
+                }
+                return fileName;
+            } else {
+                console.warn(`Cannot find i18n for ${adapterName} / ${fileName}`);
+                return '';
+            }
         } else if (i18n && typeof i18n === 'object') {
             I18n.extendTranslations(i18n);
-            return Promise.resolve();
+            return '';
         } else {
-            return Promise.resolve();
+            return '';
         }
     }
 
