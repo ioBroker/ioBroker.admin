@@ -134,7 +134,7 @@ class ConfigFileSelector extends ConfigGeneric {
                 this.path = '';
             } else {
                 if (!this.path.endsWith('/')) {
-                    this.path = this.path + '/';
+                    this.path = `${this.path}/`;
                 }
             }
         }
@@ -221,7 +221,7 @@ class ConfigFileSelector extends ConfigGeneric {
         reader.onabort = () => console.log('file reading was aborted');
         reader.onerror = () => console.log('file reading has failed');
         reader.onload = () => {
-            let ext = 'image/' + file.name.split('.').pop().toLowerCase();
+            let ext = `image/${file.name.split('.').pop().toLowerCase()}`;
             if (ext === 'image/jpg') {
                 ext = 'image/jpeg';
             } else if (ext.includes('svg')) {
@@ -236,7 +236,7 @@ class ConfigFileSelector extends ConfigGeneric {
 
             this.props.socket.writeFile64(this.objectID, this.path + file.name, base64)
                 .then(() => this.updateFiles())
-                .catch(e => window.alert('Cannot upload file: ' + e));
+                .catch(e => window.alert(`Cannot upload file: ${e}`));
         };
         reader.readAsArrayBuffer(file);
     }
@@ -256,7 +256,7 @@ class ConfigFileSelector extends ConfigGeneric {
                     if (isOk) {
                         this.props.socket.deleteFile(this.objectID, deleteFile)
                             .then(() => this.updateFiles())
-                            .catch(e => window.alert('Cannot delete file: ' + e));
+                            .catch(e => window.alert(`Cannot delete file: ${e}`));
                     }
                 });
             }}
@@ -402,6 +402,19 @@ class ConfigFileSelector extends ConfigGeneric {
             return <>{element}{this.renderDeleteDialog()}</>;
         } else {
             let accept = {'*/*': []};
+            if (this.props.schema.fileTypes === 'image') {
+                accept = {
+                    'image/*': ['.png', '.jpg', '.svg'],
+                };
+            } else if (this.props.schema.fileTypes === 'audio') {
+                accept = {
+                    'audio/*': ['.mp3', '.ogg', '.wav', '.mp4'],
+                };
+            } else if (this.props.schema.fileTypes === 'text') {
+                accept = {
+                    'text/plain': ['.txt'],
+                };
+            }
             if (this.props.schema.pattern) {
                 const last = this.props.schema.pattern.split('/').pop().toLowerCase().replace(/.*\./, '');
                 if (last === 'png' || last === 'jpg' || last === 'svg') {
@@ -410,23 +423,23 @@ class ConfigFileSelector extends ConfigGeneric {
                     };
                 } else if (last === 'mp3' || last === 'ogg' || last === 'wav') {
                     accept = {
-                        'audio/*': ['.mp3', '.ogg', '.wav', '.mp4']
+                        'audio/*': ['.mp3', '.ogg', '.wav', '.mp4'],
                     };
                 } else if (last === 'ics') {
                     accept = {
-                        'text/calendar': ['.mp3', '.ogg', '.wav', '.mp4']
+                        'text/calendar': ['.ics'],
                     };
                 } else if (last === 'txt') {
                     accept = {
-                        'text/plain': ['.txt']
+                        'text/plain': ['.txt'],
                     };
                 } else if (last === 'pem') {
                     accept = {
-                        'text/plain': ['.pem']
+                        'text/plain': ['.pem'],
                     };
-                } else if (last === 'pem') {
+                } else {
                     accept = {
-                        '*/*': ['.' + last]
+                        '*/*': [`.${last}`],
                     };
                 }
             }

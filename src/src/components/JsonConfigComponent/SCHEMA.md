@@ -218,6 +218,7 @@ Possible types:
 
 - `fileSelector` (only Admin6)
     - `pattern` - File extension pattern. Allowed `**/*.ext` to show all files from sub-folders too, `*.ext` to show from root folder or `folderName/*.ext` to show all files in sub-folder `folderName`. Default `**/*.*`.
+    - `fileTypes` - [optional] type of files: `audio`, `image`, `text`
     - `objectID` - Object ID of type `meta`. You can use special placeholder `%INSTANCE%`: like `myAdapter.%INSTANCE%.files`
     - `upload` - path, where the uploaded files will be stored. Like `folderName`. If not defined, no upload field will be show. To upload in root set this field to `/`.
     - `refresh` - Show refresh button near the select.
