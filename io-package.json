@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.4.0",
+    "version": "6.4.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.4.1": {
+        "en": "Fallback on normal https webserver in case of not let's encrypt certificates\nShow readme from GitHub",
+        "de": "Fallback auf normalen https Webserver, falls wir keine Zertifikate verschlüsseln\nReadme von GitHub anzeigen",
+        "ru": "Падение на обычном веб-сервере https в случае не давайте зашифровать сертификаты\nПоказать читатель от GitHub",
+        "pt": "Retorno no servidor web https normal em caso de não vamos criptografar certificados\nMostrar readme de GitHub",
+        "nl": "Fallback op normale HTP's webserver in geval van niet laten we de certificaten versleutelen\nToon de lezing van GitHub",
+        "fr": "Fallback sur le serveur Web https normal en cas de non-coder les certificats\nShow readme de GitHub",
+        "it": "Fallback sul normale webserver https in caso di non crittografare i certificati\nMostra il testo di GitHub",
+        "es": "Fallback en el servidor web normal de https en caso de no encriptar certificados\nShow readme from GitHub",
+        "pl": "Fallback na zwykłym webserverie https nie pozwala na szyfrowanie certyfikatów\nStrona internetowa GitHub",
+        "uk": "Відшкодування на нормальному веб-сервері https://www.facebook.com/\nПоказати читання з GitHub",
+        "zh-cn": "关于不容许加密证书的正常网站服务器的挫折\nGitHub"
+      },
       "6.4.0": {
         "en": "Breaking change: Configuration of Let's encrypt certificates moved to `iobroker.acme` adapter\nAdded port controller to JSON config\nAdded `certificates` to JSON config",
         "de": "Wechsel: Konfiguration von Let's Verschlüsselungszertifikaten bewegt zu iobroker. acm Adapter\nPort-Controller zu JSON config hinzugefügt\nZertifikate zu JSON config hinzugefügt",
@@ -95,19 +108,6 @@
         "pl": "Ikony w przeglądarce obiektowej",
         "uk": "Виправлені іконки в браузері об'єктів",
         "zh-cn": "物品包件中的修饰"
-      },
-      "6.3.2": {
-        "en": "Added `useNative` option to `sendTo` JSON Config component\nAdded `checkLicense` and `uuid` components to JSON Config\nCorrected the news handler",
-        "de": "Option „useNative“ zur JSON-Konfigurationskomponente „sendTo“ hinzugefügt\n`checkLicense`- und `uuid`-Komponenten zu JSON Config hinzugefügt\nDer Newshandler wurde korrigiert",
-        "ru": "Добавлен параметр `useNative` в компонент конфигурации JSON `sendTo`\nДобавлены компоненты `checkLicense` и `uuid` в JSON Config\nИсправлен обработчик новостей",
-        "pt": "Adicionada a opção `useNative` ao componente JSON Config `sendTo`\nAdicionados os componentes `checkLicense` e `uuid` ao JSON Config\nCorrigido o manipulador de notícias",
-        "nl": "Optie `useNative` toegevoegd aan `sendTo` JSON Config-component\nComponenten `checkLicense` en `uuid` toegevoegd aan JSON Config\nDe nieuwsbehandelaar gecorrigeerd",
-        "fr": "Ajout de l'option `useNative` au composant de configuration JSON `sendTo`\nAjout des composants `checkLicense` et `uuid` à JSON Config\nCorrection du gestionnaire de nouvelles",
-        "it": "Aggiunta l'opzione `useNative` al componente di configurazione JSON `sendTo`\nAggiunti i componenti `checkLicense` e `uuid` alla configurazione JSON\nCorretto il gestore delle notizie",
-        "es": "Se agregó la opción `useNative` al componente `sendTo` JSON Config\nSe agregaron los componentes `checkLicense` y `uuid` a JSON Config\nCorregido el manejador de noticias.",
-        "pl": "Dodano opcję `useNative` do komponentu `sendTo` JSON Config\nDodano komponenty `checkLicense` i `uuid` do JSON Config\nPoprawiono program obsługi wiadomości",
-        "uk": "Додано опцію `useNative` до компонента конфігурації JSON `sendTo`\nДо конфігурації JSON додано компоненти `checkLicense` і `uuid`\nВиправлено обробник новин",
-        "zh-cn": "向 `sendTo` JSON 配置组件添加了 `useNative` 选项\n向 JSON 配置添加了 `checkLicense` 和 `uuid` 组件\n更正了新闻处理程序"
       }
     },
     "desc": {

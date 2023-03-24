@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.4.1 (2023-03-24)
 * (bluefox) Fallback on normal https webserver in case of not let's encrypt certificates
 * (bluefox) Show readme from GitHub
 
@@ -102,9 +102,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.3.5 (2022-12-22)
 * (bluefox) Corrected reading of node.js version
-
-### 6.3.4 (2022-12-18)
-* (bluefox) Corrected crashes in object browser
 
 ## License
 The MIT License (MIT)
