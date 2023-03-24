@@ -10,30 +10,27 @@ import { Toolbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import LinkIcon from '@mui/icons-material/Link';
 
-import Router from '@iobroker/adapter-react-v5/Components/Router';
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Loader from '@iobroker/adapter-react-v5/Components/Loader';
+import { Router, I18n, Loader } from '@iobroker/adapter-react-v5';
 
 import Markdown from '../components/Markdown';
 
 const styles = {
     root: {
-        height: '100%'
+        height: '100%',
     },
     scroll: {
         height: '100%',
         overflowY: 'auto',
         '& img': {
-            maxWidth: '100%'
+            maxWidth: '100%',
         },
         fontSize: 14,
-    }
+    },
 };
 
 class AdapterInfoDialog extends Component {
 
     constructor(props) {
-
         super(props);
 
         const uri = `https://www.iobroker.net/${I18n.getLanguage()}/adapterref/iobroker.${props.adapter}/README.md`;
@@ -45,15 +42,21 @@ class AdapterInfoDialog extends Component {
             tab: 0,
             readme: '',
             uri,
-            rawUri
+            rawUri,
+            uriGithub,
+            text: null,
         };
 
         this.t = props.t;
     }
 
     async componentDidMount() {
+        // https://github.com/iobroker-community-adapters/ioBroker.acme/blob/main/README.md =>
+        // https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.acme/main/README.md
+        const link = this.props.link.replace('github.com', 'raw.githubusercontent.com').replace('blob/', '');
+
         try {
-            const data = await fetch(this.state.uri);
+            const data = await fetch(link);
             let readme = await data.text();
             /*const lines = readme.split('\n');
             if (lines[0].trim() === '---') {
@@ -74,7 +77,7 @@ class AdapterInfoDialog extends Component {
             readme = readme.replace(/src="([-\w]+)\/adapterref\//g, 'src="https://www.iobroker.net/zh-cn/adapterref/');
             // readme = readme.replace(/(<meta[^>]+>)/g, '\\$1');
 
-            this.setState({text: readme});
+            this.setState({ text: readme });
         } catch(error) {
             window.alert(error);
         }
@@ -95,8 +98,7 @@ class AdapterInfoDialog extends Component {
     }
 
     splitReadMe(html, link) {
-
-        const result = {logo: '', readme: [], changelog: [], license: []};
+        const result = { logo: '', readme: [], changelog: [], license: [] };
         let lines = html.trim().split(/\r\n|\n/);
 
         // second line is main title
@@ -116,7 +118,6 @@ class AdapterInfoDialog extends Component {
         let part = 'readme';
 
         for (let i = 0; i < lines.length; i++) {
-
             if (lines[i].match(/^====/)) {
                 continue;
             }
@@ -139,8 +140,6 @@ class AdapterInfoDialog extends Component {
             result[part].push(lines[i]);
         }
 
-
-
         if (result.logo) {
            // that.$divLogo.html('<img src="' + result.logo + '" />').show();
         } else {
@@ -162,7 +161,7 @@ class AdapterInfoDialog extends Component {
             delete result.changelog;
         }
         if (result.license.length) {
-            result.license[0] = '## ' + result.license[0];
+            result.license[0] = `## ${result.license[0]}`;
             result.license = result.license.join('\n');
         } else {
             delete result.license;
@@ -172,9 +171,7 @@ class AdapterInfoDialog extends Component {
     }
 
     changeTab(event, newValue) {
-        this.setState({
-            tab: newValue
-        });
+        this.setState({ tab: newValue });
     }
 
     openTab(path) {
@@ -202,7 +199,7 @@ class AdapterInfoDialog extends Component {
             container
             direction="column"
             wrap="nowrap"
-            className={ classes.root }
+            className={classes.root}
         >
             {/*<AppBar color="default" position="static">
                 <Tabs value={ this.state.tab } onChange={ (event, newValue) => this.changeTab(event, newValue) }>
@@ -220,7 +217,8 @@ class AdapterInfoDialog extends Component {
                     escapeHtml={ false }
                 />
             </Box>*/}
-            <Markdown className={ classes.scroll }
+            <Markdown
+                className={classes.scroll}
                 text={this.state.text}
                 language={I18n.getLanguage()}
                 theme={this.props.theme}
@@ -235,27 +233,27 @@ class AdapterInfoDialog extends Component {
                 link={this.props.link.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/')}
                 //onNavigate={(language, tab, page, chapter) => this.onNavigate(language, tab, page, chapter)}
             />
-            <AppBar  color="default" position="static">
+            <AppBar color="default" position="static">
                 <Toolbar>
-                    <Grid container spacing={ 1 }>
+                    <Grid container spacing={1}>
                         <Grid item>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={ () => this.openTab(this.props.link) }
+                                onClick={() => this.openTab(this.props.link)}
                                 startIcon={<LinkIcon />}
                             >
-                                { this.t('Open original') }
+                                {this.t('Open original')}
                             </Button>
                         </Grid>
                         <Grid item>
                             <Button
                                 variant="contained"
                                 color="grey"
-                                onClick={ () => this.closeDialog() }
+                                onClick={() => this.closeDialog()}
                                 startIcon={<CloseIcon />}
                             >
-                                { this.t('Close') }
+                                {this.t('Close')}
                             </Button>
                         </Grid>
                     </Grid>
@@ -272,7 +270,7 @@ AdapterInfoDialog.propTypes = {
     theme: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
-    socket: PropTypes.object
+    socket: PropTypes.object,
 };
 
 export default withStyles(styles)(AdapterInfoDialog);

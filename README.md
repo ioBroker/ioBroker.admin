@@ -84,6 +84,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Fallback on normal https webserver in case of not let's encrypt certificates
+* (bluefox) Show readme from GitHub
+
 ### 6.4.0 (2023-03-22)
 * (bluefox) Breaking change: Configuration of Let's encrypt certificates moved to `iobroker.acme` adapter
 * (bluefox) Added port controller to JSON config

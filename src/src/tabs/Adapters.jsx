@@ -769,13 +769,13 @@ class Adapters extends Component {
                     }
 
                     return this.props.socket.getRatings(update)
-                        .catch(e => window.alert('Cannot read ratings: ' + e));
+                        .catch(e => window.alert(`Cannot read ratings: ${e}`));
                 })
                 .then(_ratings => {
                     ratings = _ratings;
                     return this.props.socket.getCompactInstances(update)
                         .catch(e => {
-                            window.alert('Cannot read countsOfInstances: ' + e);
+                            window.alert(`Cannot read countsOfInstances: ${e}`);
                             return {};
                         });
                 })
@@ -783,7 +783,7 @@ class Adapters extends Component {
                     instances = _instances;
                     return this.props.socket.getCompactSystemRepositories(update)
                         .catch(e => {
-                            window.alert('Cannot read getCompactSystemRepositories: ' + e);
+                            window.alert(`Cannot read getCompactSystemRepositories: ${e}`);
                             return {};
                         });
                 })
@@ -796,7 +796,7 @@ class Adapters extends Component {
                     // this.rebuildSupported = false;// rebuild || false; Rebuild is no more supported from js-controller 4.0
                     return this.calculateInfo(instances, ratings, hostData, compactRepositories);
                 })
-                .catch(error => window.alert('Cannot get adapters info: ' + error));
+                .catch(error => window.alert(`Cannot get adapters info: ${error}`));
         } else {
             return Promise.resolve();
         }
@@ -818,7 +818,7 @@ class Adapters extends Component {
                 }
             }
             const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
-            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${host} ${debug || this.props.expertMode ? '--debug' : ''}`, host, true);
+            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? `${instance} ` : ''}--host ${host} ${debug || this.props.expertMode ? '--debug' : ''}`, host, true);
         }
     }
 
@@ -842,21 +842,21 @@ class Adapters extends Component {
         this.setState({
             addInstanceDialog: false,
             addInstanceAdapter: '',
-            addInstanceId: 'auto'
+            addInstanceId: 'auto',
         });
     }
 
     openAdapterDeletionDialog(adapter) {
         this.setState({
             adapterDeletionDialog: true,
-            adapterDeletionAdapter: adapter
+            adapterDeletionAdapter: adapter,
         });
     }
 
     closeAdapterDeletionDialog() {
         this.setState({
             adapterDeletionDialog: false,
-            adapterDeletionAdapter: null
+            adapterDeletionAdapter: null,
         });
     }
 
@@ -914,7 +914,7 @@ class Adapters extends Component {
                     version:          null,
                     installed:        false,
                     installedVersion: null,
-                    rightVersion:     false
+                    rightVersion:     false,
                 };
 
                 const checkVersion = typeof dependency !== 'string';
@@ -943,7 +943,7 @@ class Adapters extends Component {
                     version:          nodeVersion,
                     installed:        true,
                     installedVersion: this.state.nodeJsVersion,
-                    rightVersion:     false
+                    rightVersion:     false,
                 };
 
                 try {

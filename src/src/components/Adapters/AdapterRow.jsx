@@ -38,7 +38,7 @@ import {
     amber,
     blue,
     green,
-    red
+    red,
 } from '@mui/material/colors';
 
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
@@ -52,15 +52,15 @@ const styles = theme => ({
         marginLeft: 4,
     },
     paddingNone: {
-        padding: '0 !important'
+        padding: '0 !important',
     },
     hidden: {
-        visibility: 'hidden'
+        visibility: 'hidden',
     },
     name: {
         flexWrap: 'nowrap',
         width: 300,
-        marginTop: 0
+        marginTop: 0,
     },
     nameDiv: {
         display: 'flex',
@@ -71,31 +71,31 @@ const styles = theme => ({
         cursor: 'pointer',
     },
     green: {
-        color: green[500]
+        color: green[500],
     },
     blue: {
-        color: blue[700]
+        color: blue[700],
     },
     category: {
         backgroundColor: theme.palette.background.default,
     },
     updateAvailable: {
-        color: green[700]
+        color: green[700],
     },
     wrongDependencies: {
-        color: red[700]
+        color: red[700],
     },
     grow: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     displayNone: {
-        display: 'none'
+        display: 'none',
     },
     sentryIcon: {
-        fontSize: '1.2rem'
+        fontSize: '1.2rem',
     },
     versionWarn: {
-        color: amber[500]
+        color: amber[500],
     },
     buttonUpdate: {
         border: '1px solid',
@@ -106,43 +106,43 @@ const styles = theme => ({
         cursor: 'pointer',
         transition: 'background 0.5s',
         '&:hover': {
-            background: '#00800026'
-        }
+            background: '#00800026',
+        },
     },
     buttonUpdateIcon: {
         height: 20,
         width: 20,
-        marginRight: 10
+        marginRight: 10,
     },
     classPoll: {
-        color: 'orange'
+        color: 'orange',
     },
     classPush: {
-        color: 'green'
+        color: 'green',
     },
     classAssumption: {
         color: 'red',
-        transform: 'rotate(90deg)'
+        transform: 'rotate(90deg)',
     },
     marginLeft5: {
-        marginLeft: 5
+        marginLeft: 5,
     },
     marginRight5: {
-        marginRight: 5
+        marginRight: 5,
     },
     flex: {
-        display: 'flex'
+        display: 'flex',
     },
     sentry: {
         width: 21,
         height: 21,
         marginTop: 3,
         objectFit: 'fill',
-        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)',
     },
     rating: {
         cursor: 'pointer',
-        height: 18
+        height: 18,
     },
     nameCell: {
         paddingTop: '0 !important',
