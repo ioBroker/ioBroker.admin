@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.4.1",
+    "version": "6.4.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.4.2": {
+        "en": "Better check of the certificates",
+        "de": "Bessere Überprüfung der Zertifikate",
+        "ru": "Лучшая проверка сертификатов",
+        "pt": "Melhor verificação dos certificados",
+        "nl": "Controleer de certificaten",
+        "fr": "Meilleure vérification des certificats",
+        "it": "Controllo migliore dei certificati",
+        "es": "Mejor chequeo de los certificados",
+        "pl": "Błędny sprawdzanie certyfikatów",
+        "uk": "Отримання сертифікатів",
+        "zh-cn": "更好地检查证书"
+      },
       "6.4.1": {
         "en": "Fallback on normal https webserver in case of not let's encrypt certificates\nShow readme from GitHub",
         "de": "Fallback auf normalen https Webserver, falls wir keine Zertifikate verschlüsseln\nReadme von GitHub anzeigen",
@@ -95,19 +108,6 @@
         "pl": "Poprawki w przeglądarce obiektowej",
         "uk": "Виправлені аварійні випадки в браузері об'єкта",
         "zh-cn": "投机中的伤员"
-      },
-      "6.3.3": {
-        "en": "Corrected icons in object browser",
-        "de": "Korrigierte Icons im Objektbrowser",
-        "ru": "Исправлены иконки в браузере объекта",
-        "pt": "Ícones corrigidos no navegador de objetos",
-        "nl": "Vertaling:",
-        "fr": "Icônes corrigées dans le navigateur objet",
-        "it": "Le icone corrette nel browser degli oggetti",
-        "es": "Iconos corregidos en el navegador de objetos",
-        "pl": "Ikony w przeglądarce obiektowej",
-        "uk": "Виправлені іконки в браузері об'єктів",
-        "zh-cn": "物品包件中的修饰"
       }
     },
     "desc": {

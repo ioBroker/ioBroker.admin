@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.4.2 (2023-03-27)
 * (bluefox) Better check of the certificates
 
 ### 6.4.1 (2023-03-24)
@@ -102,9 +102,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.3.6 (2023-01-29)
 * (bluefox) Allowed the edit of log level in the configuration tab
-
-### 6.3.5 (2022-12-22)
-* (bluefox) Corrected reading of node.js version
 
 ## License
 The MIT License (MIT)

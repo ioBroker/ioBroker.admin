@@ -1,6 +1,13 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.3.5 (2022-12-22)
+* (bluefox) Corrected reading of node.js version
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.3.4 (2022-12-18)
 * (bluefox) Corrected crashes in object browser
 
