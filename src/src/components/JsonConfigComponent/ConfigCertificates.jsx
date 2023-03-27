@@ -15,7 +15,8 @@ const styles = () => ({
         width: '100%',
     },
     leWidth: {
-        width: 300,
+        width: 620,
+        marginBottom: 10,
     },
     certWidth: {
         width: 200,
@@ -74,7 +75,6 @@ class ConfigCertificates extends ConfigGeneric {
         const certPrivate = ConfigGeneric.getValue(this.props.data, this.props.schema.certPrivateName || 'certPrivate');
         const certChained = ConfigGeneric.getValue(this.props.data, this.props.schema.certChainedName || 'certChained');
 
-        const itemLeCollection = this.state.collectionsOptions?.find(item => item.value === leCollection);
         const itemCertPublic = this.state.certsPublicOptions?.find(item => item.value === certPublic);
         const itemCertPrivate = this.state.certsPrivateOptions?.find(item => item.value === certPrivate);
         const itemCertChained = this.state.certsChainOptions?.find(item => item.value === certChained);
@@ -88,7 +88,6 @@ class ConfigCertificates extends ConfigGeneric {
                     displayEmpty
                     disabled={!!disabled}
                     value={leCollection}
-                    renderValue={() => this.getText(itemLeCollection?.label)}
                     onChange={e => this.onChange(
                         this.props.schema.leCollectionName || 'leCollection',
                         e.target.value === 'false' ? false : (e.target.value === 'true' ? true: e.target.value)
@@ -110,15 +109,15 @@ class ConfigCertificates extends ConfigGeneric {
                     </MenuItem>
                     {this.state.collectionsOptions?.map(item =>
                         <MenuItem
-                            key={item.value}
-                            value={item.value}
-                            style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
+                            key={item}
+                            value={item}
                         >
-                            {item.label}
+                            {item}
                         </MenuItem>)}
                 </Select>
             </FormControl> : null}
             {this.state.collectionsOptions ? <br /> : null}
+            {this.state.collectionsOptions && leCollection !== 'false' ? <div>{I18n.t('ra_Fallback custom certificates')}</div> : null}
             <FormControl className={this.props.classes.certWidth} variant="standard">
                 <InputLabel shrink>{I18n.t('ra_Public certificate')}</InputLabel>
                 <Select
@@ -130,9 +129,9 @@ class ConfigCertificates extends ConfigGeneric {
                     renderValue={() => this.getText(itemCertPublic?.label)}
                     onChange={e => this.onChange(this.props.schema.certPublicName || 'certPublic', e.target.value)}
                 >
-                    {this.state.certsPublicOptions?.map(item =>
+                    {this.state.certsPublicOptions?.map((item, i) =>
                         <MenuItem
-                            key={item.value}
+                            key={`${item.value}_${i}`}
                             value={item.value}
                             style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
                         >
@@ -151,9 +150,9 @@ class ConfigCertificates extends ConfigGeneric {
                     renderValue={() => this.getText(itemCertPrivate?.label)}
                     onChange={e => this.onChange(this.props.schema.certPrivateName || 'certPrivate', e.target.value)}
                 >
-                    {this.state.certsPrivateOptions?.map(item =>
+                    {this.state.certsPrivateOptions?.map((item, i) =>
                         <MenuItem
-                            key={item.value}
+                            key={`${item.value}_${i}`}
                             value={item.value}
                             style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
                         >
@@ -172,9 +171,9 @@ class ConfigCertificates extends ConfigGeneric {
                     renderValue={() => this.getText(itemCertChained?.label)}
                     onChange={e => this.onChange(this.props.schema.certChainedName || 'certChained', e.target.value)}
                 >
-                    {this.state.certsChainOptions?.map(item =>
+                    {this.state.certsChainOptions?.map((item, i) =>
                         <MenuItem
-                            key={item.value}
+                            key={`${item.value}_${i}`}
                             value={item.value}
                             style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
                         >

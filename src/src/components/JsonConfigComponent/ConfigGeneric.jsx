@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
+import {
+    Grid,
+    Button,
+} from '@mui/material';
 
 import IconInfo from '@mui/icons-material/Info';
 import IconWarning from '@mui/icons-material/Warning';

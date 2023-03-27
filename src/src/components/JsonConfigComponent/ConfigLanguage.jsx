@@ -67,7 +67,7 @@ class ConfigLanguage extends ConfigGeneric {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const languages = [...LANGUAGES];
         if (this.props.schema.system) {
-            languages.unshift({ value: '', label: I18n.t('ra_System language') });
+            languages.unshift({ value: '_', label: I18n.t('ra_System language') });
         }
 
         this.setState({ value: this.props.schema.system ? (value || '') : (value || I18n.getLanguage()), selectOptions: languages });
@@ -87,7 +87,7 @@ class ConfigLanguage extends ConfigGeneric {
                 error={!!error}
                 disabled={!!disabled}
                 value={this.state.value || '_'}
-                renderValue={val => this.getText(item?.label, this.props.schema.noTranslation)}
+                renderValue={() => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
                     const value = e.target.value === '_' ? '' : e.target.value;
                     this.setState({ value }, () => {
