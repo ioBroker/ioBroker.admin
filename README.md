@@ -103,6 +103,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.3.5 (2022-12-22)
 * (bluefox) Corrected reading of node.js version
 
+
 ## License
 The MIT License (MIT)
 
