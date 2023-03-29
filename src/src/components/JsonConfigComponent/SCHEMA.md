@@ -173,6 +173,7 @@ Possible types:
     - `objValueName` - (legacy setting, don't use!) - name of the value in `{"192.168.1.1": "value1", "192.168.1.2": "value2"}`
     - `allowAddByFilter` - if add allowed even if filter is set
     - `showSecondAddAt` - Number of lines from which the second add button at the bottom of the table will be shown. Default 5
+    - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
 - `json` - json editor
 
 - `language` - select language
