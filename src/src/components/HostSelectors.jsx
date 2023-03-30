@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
@@ -8,11 +7,9 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { I18n, Icon, Utils } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles = () => ({
     img: {
         width: 30,
         height: 30,
@@ -33,10 +30,10 @@ const styles = theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     notAlive: {
-        opacity: 0.3
+        opacity: 0.3,
     },
     button: {
         maxWidth: 300,
@@ -44,25 +41,25 @@ const styles = theme => ({
     name: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
     },
     width: {
-        width: '100%'
+        width: '100%',
     },
     selector: {
         width: 15,
-        display: 'inline-block'
+        display: 'inline-block',
     },
     '@media screen and (max-width: 710px)': {
         name: {
-            display: 'none'
+            display: 'none',
         },
         width: {
-            width: 'auto'
+            width: 'auto',
         },
         imgButton: {
             marginRight: 0,
-        }
+        },
     },
     tooltip: {
         pointerEvents: 'none',
@@ -81,13 +78,13 @@ class HostSelectors extends Component {
     }
 
     componentDidMount() {
-        this.props.socket.getCompactHosts()
+        this.props.socket.getCompactHosts(true)
             .then(hosts => {
                 this.setState({ hosts }, async () => {
                     // request for all host the alive status
                     const alive = {}
                     for (let h = 0; h < hosts.length; h++) {
-                        alive[hosts[h]._id] = await this.props.socket.getState(hosts[h]._id + '.alive');
+                        alive[hosts[h]._id] = await this.props.socket.getState(`${hosts[h]._id}.alive`);
                         if (alive[hosts[h]._id]) {
                             alive[hosts[h]._id] = !!alive[hosts[h]._id].val;
                         } else {
@@ -101,7 +98,7 @@ class HostSelectors extends Component {
                 });
             })
             .catch(e => {
-                window.alert('Cannot get hosts: ' + e);
+                window.alert(`Cannot get hosts: ${e}`);
             });
     }
 
@@ -213,7 +210,7 @@ class HostSelectors extends Component {
         }
         let selectedHostObj;
         if (this.state.hosts.length) {
-            selectedHostObj = this.state.hosts.find(host => host._id === this.props.currentHost || host._id === 'system.host.' + this.props.currentHost);
+            selectedHostObj = this.state.hosts.find(host => host._id === this.props.currentHost || host._id === `system.host.${this.props.currentHost}`);
         }
 
         return <div>
@@ -232,14 +229,14 @@ class HostSelectors extends Component {
                         onClick={e => this.setState({anchorEl: e.currentTarget})}
                     >
                         <div
-                            className={clsx(this.props.classes.width, !this.state.alive[this.props.currentHost] && this.props.classes.notAlive)}
+                            className={Utils.clsx(this.props.classes.width, !this.state.alive[this.props.currentHost] && this.props.classes.notAlive)}
                             style={{
                                 display: 'flex',
                                 color: selectedHostObj?.common?.color ? Utils.invertColor(selectedHostObj.common.color, true) : 'none',
                                 alignItems: 'center',
                             }}>
                             <Icon
-                                className={clsx(this.props.classes.img, this.props.classes.imgButton)}
+                                className={Utils.clsx(this.props.classes.img, this.props.classes.imgButton)}
                                 src={selectedHostObj?.common?.icon || 'img/no-image.png'}
                             />
                             <div className={this.props.classes.name}>{selectedHostObj?.common?.name}</div>
