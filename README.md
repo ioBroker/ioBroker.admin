@@ -84,6 +84,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected the folder rights edit dialog
+
 ### 6.4.2 (2023-03-27)
 * (bluefox) Better check of the certificates
 
