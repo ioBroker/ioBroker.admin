@@ -161,7 +161,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
         let _differentObject = [];
 
         let id = selected || modalEmptyId;
-        let idWithDot = id + '.';
+        let idWithDot = `${id}.`;
         const keys = Object.keys(objects).sort();
         let _checkState = false;
         let groups = [];

@@ -710,7 +710,7 @@ class BaseSettingsLog extends Component {
                 type,
                 enabled: true,
 
-                host: 'localhost',
+                host: '127.0.0.1',
                 port: 0,
                 protocol: 'udp4',
                 path: '',
@@ -718,7 +718,7 @@ class BaseSettingsLog extends Component {
                 localhost: 'iobroker',
                 sysLogType: '',
                 app_name: '',
-                eol: ''
+                eol: '',
             };
             this.setState({ transport }, () => this.onChange())
         } else if (type === 'http') {
@@ -733,7 +733,7 @@ class BaseSettingsLog extends Component {
                 type,
                 enabled: true,
 
-                host: 'localhost',
+                host: '127.0.0.1',
                 port: 80,
                 path: '/',
                 auth: 'None',

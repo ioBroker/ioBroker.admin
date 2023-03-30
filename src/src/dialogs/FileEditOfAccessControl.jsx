@@ -253,7 +253,7 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
     const lang = I18n.getLanguage();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(async () => {
+    useEffect(() => {
         let _differentObject = [];
 
         let id = object.id;
@@ -266,104 +266,105 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
         const _ids = [];
         let count = 0
 
-        await loadPath(socket, folders, id);
+        loadPath(socket, folders, id)
+            .then(() => {
+                const list = flatList(folders);
 
-        const list = flatList(folders);
+                let idWithSlash = `${id}/`;
 
-        let idWithSlash = id + '/';
-
-        Object.keys(list).forEach(key => {
-            if (key === '/') {
-                return;
-            }
-
-            if (key === id || key.startsWith(idWithSlash)) {
-                if (!key.includes('/') && objects[key]) { // it is object
-                    const objFolder = objects[key];
-                    count++;
-                    _ids.push(objFolder);
-
-                    if (_valueFileAccessControl === null && objFolder.acl.file !== undefined) {
-                        _valueFileAccessControl = objFolder.acl.file;
-                    }
-                    if (_stateOwnerUser === null && objFolder.acl.owner !== undefined) {
-                        _stateOwnerUser = objFolder.acl.owner;
-                    }
-                    if (_stateOwnerGroup === null && objFolder.acl.ownerGroup !== undefined) {
-                        _stateOwnerGroup = objFolder.acl.ownerGroup;
+                Object.keys(list).forEach(key => {
+                    if (key === '/') {
+                        return;
                     }
 
-                    if (!differentOwner && _stateOwnerUser !== objFolder.acl.owner && objFolder.acl.owner !== undefined) {
-                        _differentOwner = true;
+                    if (key === id || key.startsWith(idWithSlash)) {
+                        if (!key.includes('/') && objects[key]) { // it is object
+                            const objFolder = objects[key];
+                            count++;
+                            _ids.push(objFolder);
+
+                            if (_valueFileAccessControl === null && objFolder.acl.file !== undefined) {
+                                _valueFileAccessControl = objFolder.acl.file;
+                            }
+                            if (_stateOwnerUser === null && objFolder.acl.owner !== undefined) {
+                                _stateOwnerUser = objFolder.acl.owner;
+                            }
+                            if (_stateOwnerGroup === null && objFolder.acl.ownerGroup !== undefined) {
+                                _stateOwnerGroup = objFolder.acl.ownerGroup;
+                            }
+
+                            if (!differentOwner && _stateOwnerUser !== objFolder.acl.owner && objFolder.acl.owner !== undefined) {
+                                _differentOwner = true;
+                            }
+                            if (!differentGroup && _stateOwnerGroup !== objFolder.acl.ownerGroup && objFolder.acl.ownerGroup !== undefined) {
+                                _differentGroup = true;
+                            }
+                            if (objFolder.acl.file !== undefined && _valueFileAccessControl !== objFolder.acl.file && !_differentObject.includes(objFolder.acl.file)) {
+                                _differentObject.push(objFolder.acl.file);
+                            }
+                        } else if (!list[key].folder) {
+                            count++;
+                            const keyFolder = list[key];
+                            _ids.push(keyFolder);
+                            if (_valueFileAccessControl === null && keyFolder.acl.permissions !== undefined) {
+                                _valueFileAccessControl = keyFolder.acl.permissions;
+                            }
+                            if (_stateOwnerUser === null && keyFolder.acl.owner !== undefined) {
+                                _stateOwnerUser = keyFolder.acl.owner;
+                            }
+                            if (_stateOwnerGroup === null && keyFolder.acl.ownerGroup !== undefined) {
+                                _stateOwnerGroup = keyFolder.acl.ownerGroup;
+                            }
+
+                            if (!differentOwner && _stateOwnerUser !== keyFolder.acl.owner && keyFolder.acl.owner !== undefined) {
+                                _differentOwner = true;
+                            }
+                            if (!differentGroup && _stateOwnerGroup !== keyFolder.acl.ownerGroup && keyFolder.acl.ownerGroup !== undefined) {
+                                _differentGroup = true;
+                            }
+                            if (keyFolder.acl.permissions !== undefined && _valueFileAccessControl !== keyFolder.acl.permissions && !_differentObject.includes(keyFolder.acl.permissions)) {
+                                _differentObject.push(keyFolder.acl.permissions);
+                            }
+                        }
                     }
-                    if (!differentGroup && _stateOwnerGroup !== objFolder.acl.ownerGroup && objFolder.acl.ownerGroup !== undefined) {
-                        _differentGroup = true;
+                });
+
+                const _users = [];
+                const _groups = [];
+                // Get users and groups
+                Object.keys(objects).forEach(_id => {
+                    const obj = objects[_id];
+                    if (_id.startsWith('system.group.') && obj?.type === 'group') {
+                        _groups.push(obj);
+                    } else
+                    if (_id.startsWith('system.user.') && obj?.type === 'user') {
+                        _users.push(obj);
                     }
-                    if (objFolder.acl.file !== undefined && _valueFileAccessControl !== objFolder.acl.file && !_differentObject.includes(objFolder.acl.file)) {
-                        _differentObject.push(objFolder.acl.file);
-                    }
-                } else if (!list[key].folder) {
-                    count++;
-                    const keyFolder = list[key];
-                    _ids.push(keyFolder);
-                    if (_valueFileAccessControl === null && keyFolder.acl.permissions !== undefined) {
-                        _valueFileAccessControl = keyFolder.acl.permissions;
-                    }
-                    if (_stateOwnerUser === null && keyFolder.acl.owner !== undefined) {
-                        _stateOwnerUser = keyFolder.acl.owner;
-                    }
-                    if (_stateOwnerGroup === null && keyFolder.acl.ownerGroup !== undefined) {
-                        _stateOwnerGroup = keyFolder.acl.ownerGroup;
-                    }
+                });
 
-                    if (!differentOwner && _stateOwnerUser !== keyFolder.acl.owner && keyFolder.acl.owner !== undefined) {
-                        _differentOwner = true;
-                    }
-                    if (!differentGroup && _stateOwnerGroup !== keyFolder.acl.ownerGroup && keyFolder.acl.ownerGroup !== undefined) {
-                        _differentGroup = true;
-                    }
-                    if (keyFolder.acl.permissions !== undefined && _valueFileAccessControl !== keyFolder.acl.permissions && !_differentObject.includes(keyFolder.acl.permissions)) {
-                        _differentObject.push(keyFolder.acl.permissions);
-                    }
-                }
-            }
-        });
+                const defaultAcl = objects['system.config'].common.defaultNewAcl;
 
-        const _users = [];
-        const _groups = [];
-        // Get users and groups
-        Object.keys(objects).forEach(_id => {
-            const obj = objects[_id];
-            if (_id.startsWith('system.group.') && obj?.type === 'group') {
-                _groups.push(obj);
-            } else
-            if (_id.startsWith('system.user.') && obj?.type === 'user') {
-                _users.push(obj);
-            }
-        });
+                _stateOwnerUser = _stateOwnerUser || defaultAcl.owner;
+                _stateOwnerGroup = _stateOwnerGroup || defaultAcl.ownerGroup;
+                _valueFileAccessControl = _valueFileAccessControl || defaultAcl.file;
+                setValueFileAccessControl(_valueFileAccessControl);
 
-        const defaultAcl = objects['system.config'].common.defaultNewAcl;
+                setStateOwnerUser(_stateOwnerUser);
+                setStateOwnerGroup(_stateOwnerGroup);
 
-        _stateOwnerUser = _stateOwnerUser || defaultAcl.owner;
-        _stateOwnerGroup = _stateOwnerGroup || defaultAcl.ownerGroup;
-        _valueFileAccessControl = _valueFileAccessControl || defaultAcl.file;
-        setValueFileAccessControl(_valueFileAccessControl);
+                setDifferentOwner(_differentOwner);
+                setDifferentGroup(_differentGroup);
 
-        setStateOwnerUser(_stateOwnerUser);
-        setStateOwnerGroup(_stateOwnerGroup);
+                setUsers(_users);
+                setGroups(_groups);
 
-        setDifferentOwner(_differentOwner);
-        setDifferentGroup(_differentGroup);
+                object.folder && setApplyToChildren(true);
+                setChildrenCount(count);
 
-        setUsers(_users);
-        setGroups(_groups);
+                setDifferentObject(_differentObject);
 
-        object.folder && setApplyToChildren(true);
-        setChildrenCount(count);
-
-        setDifferentObject(_differentObject);
-
-        setIds(_ids);
+                setIds(_ids);
+            });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [objects, selected]);
 
@@ -384,7 +385,7 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                 setStateOwnerGroup(objects[selected].acl.ownerGroup);
             }
         }
-        console.log('stateOwnerUser ' +stateOwnerUser)
+        console.log(`stateOwnerUser ${stateOwnerUser}`)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
 

@@ -132,7 +132,7 @@ Possible types:
 
 - `sendto` - button that sends request to instance (https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128)
     - `command` - (Default `send`)
-    - `jsonData` - string - `"{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}"`. You can use special variables `data._origin` and `data._originIp` to send to instance the caller URL, like `http://localhost:8081/admin`.
+    - `jsonData` - string - `"{\"subject1\": \"${data.subject}\", \"options1\": {\"host\": \"${data.host}\"}}"`. You can use special variables `data._origin` and `data._originIp` to send to instance the caller URL, like `http://127.0.0.1:8081/admin`.
     - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
     - `result` - `{result1: {en: 'A'}, result2: {en: 'B'}}`
     - `error` - `{error1: {en: 'E'}, error2: {en: 'E2'}}`

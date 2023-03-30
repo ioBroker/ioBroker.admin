@@ -72,7 +72,7 @@ const DragObjectBrowser = props => {
                 {props.children}
             </div>;
         }
-        setWrapperState({DragWrapper: DragWrapper});
+        setWrapperState({ DragWrapper });
     // eslint-disable-next-line
     }, []); // react-hooks/exhaustive-deps
 

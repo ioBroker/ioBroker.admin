@@ -44,7 +44,7 @@ const styles = theme => ({
         position: 'relative',
         '&:hover': {
             overflowY: 'auto',
-            boxShadow: boxShadowHover
+            boxShadow: boxShadowHover,
         },
         minHeight: 70,
     },
@@ -64,11 +64,11 @@ const styles = theme => ({
             zIndex: 100,
             opacity: '.3 !important',
             background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
-        }
+        },
     },
     enumCardContent: {
         height: '100%',
-        opacity: 1
+        opacity: 1,
     },
     right: {
         float: 'right',
@@ -84,7 +84,7 @@ const styles = theme => ({
         cursor: 'grab',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        display: 'inline-block'
+        display: 'inline-block',
     },
     enumGroupName: {
         marginLeft: 5,
@@ -97,7 +97,7 @@ const styles = theme => ({
         opacity: 0.7,
         marginLeft: 5,
         fontSize: 12,
-        fontStyle: 'italic'
+        fontStyle: 'italic',
     },
     enumName: {
         fontSize: 12,
@@ -152,7 +152,7 @@ const styles = theme => ({
     bottomButtons: {
         position: 'absolute',
         right: 0,
-        bottom: 0
+        bottom: 0,
     },
     membersNumber: {
         top: 40,
@@ -163,7 +163,7 @@ const styles = theme => ({
     memberNumberFolder: {
         top: 46,
         left: 26,
-    }
+    },
 });
 
 function isTouchDevice() {
@@ -235,7 +235,7 @@ class EnumBlock extends Component {
                 }
             }
         } catch (e) {
-            window.alert('Cannot get icons: ' + e);
+            window.alert(`Cannot get icons: ${e}`);
         }
 
         let imagePrefix = '.';
@@ -255,7 +255,7 @@ class EnumBlock extends Component {
                         if (cIcon[0] === '/') {
                             instance[2] += cIcon;
                         } else {
-                            instance[2] += '/' + cIcon;
+                            instance[2] += `/${cIcon}`;
                         }
                         icons[i] = `${imagePrefix}/adapter/${instance[2]}`;
                     } else {
@@ -263,7 +263,7 @@ class EnumBlock extends Component {
                         if (cIcon[0] === '/') {
                             instance[0] += cIcon;
                         } else {
-                            instance[0] += '/' + cIcon;
+                            instance[0] += `/${cIcon}`;
                         }
                         icons[i] = `${imagePrefix}/adapter/${instance[0]}`;
                     }
@@ -315,7 +315,7 @@ class EnumBlock extends Component {
                         onClick={() => props.showEnumEditDialog(props.enum, false)}
                     >
                         <Tooltip title={props.t('Edit')} placement="top">
-                            <EditIcon style={{color: textColor}}/>
+                            <EditIcon style={{ color: textColor }} />
                         </Tooltip>
                     </IconButton> : null}
                     {props.enum ? <IconButton
@@ -323,7 +323,7 @@ class EnumBlock extends Component {
                         onClick={() => props.copyEnum(props.id)}
                     >
                         <Tooltip title={props.t('Clone')} placement="top">
-                            <FileCopyIcon style={{color: textColor}}/>
+                            <FileCopyIcon style={{ color: textColor }} />
                         </Tooltip>
                     </IconButton> : null}
                     <IconButton
@@ -332,7 +332,7 @@ class EnumBlock extends Component {
                         disabled={props.enum?.common?.dontDelete}
                     >
                         <Tooltip title={props.t('Delete')} placement="top">
-                            <DeleteIcon style={props.enum?.common?.dontDelete ? null : {color: textColor}}/>
+                            <DeleteIcon style={props.enum?.common?.dontDelete ? null : { color: textColor }} />
                         </Tooltip>
                     </IconButton>
                 </div>
@@ -367,10 +367,10 @@ class EnumBlock extends Component {
 
                             return <Card
                                 key={member._id}
-                                title={name ? props.t('Name: %s', name) + '\nID: ' + member._id : member._id}
+                                title={name ? `${props.t('Name: %s', name)}\nID: ${member._id}` : member._id}
                                 variant="outlined"
                                 className={classes.enumGroupMember}
-                                style={{color: textColor, borderColor: textColor + '80'}}
+                                style={{color: textColor, borderColor: `${textColor}80`}}
                             >
                                 {
                                     this.state.icons[i] ?
@@ -414,12 +414,12 @@ class EnumBlock extends Component {
                     }}
                 >
                     <Tooltip title={props.t('Add child')} placement="top">
-                        <AddIcon style={{color: textColor}}/>
+                        <AddIcon style={{ color: textColor }} />
                     </Tooltip>
                 </IconButton>
                 <IconButton size="small" onClick={() => props.onCollapse(props.id)}>
                     <Tooltip title={props.collapsed ? props.t('Show members') : props.t('Hide members')} placement="top">
-                        {props.collapsed ? <DownIcon style={{color: textColor}}/> : <UpIcon style={{color: textColor}}/>}
+                        {props.collapsed ? <DownIcon style={{ color: textColor }}/> : <UpIcon style={{ color: textColor }} />}
                     </Tooltip>
                 </IconButton>
             </div>
@@ -432,7 +432,7 @@ const StyledEnumBlock = withStyles(styles)(EnumBlock);
 const EnumBlockDrag = props => {
     const [{canDrop, isOver}, drop] = useDrop(() => ({
         accept: ['object', 'enum'],
-        drop: () => ({enumId: props.id}),
+        drop: () => ({ enumId: props.id }),
         canDrop: (item, monitor) => canMeDrop(monitor, props),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
@@ -448,7 +448,7 @@ const EnumBlockDrag = props => {
             item: () => {
                 return {
                     enumId: props.id,
-                    preview: <div style={{width: widthRef.current.offsetWidth}}><StyledEnumBlock {...props}/></div>
+                    preview: <div style={{width: widthRef.current.offsetWidth}}><StyledEnumBlock {...props}/></div>,
                 }
             },
             end: (item, monitor) => {
@@ -456,7 +456,7 @@ const EnumBlockDrag = props => {
                 if (!dropResult) {
                     // root
                     const parts = item.enumId.split('.');
-                    props.moveEnum(item.enumId, parts[0] + '.' + parts[1]);
+                    props.moveEnum(item.enumId, `${parts[0]}.${parts[1]}`);
                 } else {
                     props.moveEnum(item.enumId, dropResult.enumId);
                 }
@@ -469,7 +469,7 @@ const EnumBlockDrag = props => {
     );
 
     useEffect(() => {
-        preview(getEmptyImage(), {captureDraggingState: true});
+        preview(getEmptyImage(), { captureDraggingState: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -477,12 +477,12 @@ const EnumBlockDrag = props => {
         return <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} {...props}/>;
     } else {
         return isTouchDevice()
-        ? <div ref={drop} style={{opacity: canDrop && isOver ? 0.5 : 1}}>
+        ? <div ref={drop} style={{ opacity: canDrop && isOver ? 0.5 : 1 }}>
             <div ref={widthRef}>
                 <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} iconDragRef={dragRef} {...props}/>
             </div>
         </div>
-        : <div ref={drop} style={{opacity: canDrop && isOver ? 0.5 : 1}}>
+        : <div ref={drop} style={{ opacity: canDrop && isOver ? 0.5 : 1 }}>
             <div ref={dragRef}>
                 <div ref={widthRef}>
                     <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} {...props}/>

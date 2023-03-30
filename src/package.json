@@ -12,7 +12,7 @@
         "@iobroker/socket-client": "^2.0.7",
         "@mui/icons-material": "^5.11.11",
         "@mui/lab": "^5.0.0-alpha.124",
-        "@mui/material": "^5.11.14",
+        "@mui/material": "^5.11.15",
         "@mui/styles": "^5.11.13",
         "@mui/x-data-grid": "^6.0.3",
         "@react-leaflet/core": "^2.1.0",
@@ -62,7 +62,7 @@
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@dilesoft/vite-plugin-federation-dynamic": "^1.1.9",
-        "eslint": "^8.36.0",
+        "eslint": "^8.37.0",
         "eslint-config-react-app": "^7.0.1"
     },
     "homepage": ".",
@@ -82,7 +82,7 @@
         "not dead",
         "not op_mini all"
     ],
-    "proxy": "http://localhost:8081",
+    "proxy": "http://127.0.0.1:8081",
     "plugins": [
         [
             "@babel/plugin-proposal-decorators",

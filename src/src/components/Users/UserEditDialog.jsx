@@ -1,7 +1,6 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -20,8 +19,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import IconCancel from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
 
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import IconPicker from '@iobroker/adapter-react-v5/Components/IconPicker';
+import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
 
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import AdminUtils from '../../Utils';
@@ -44,8 +42,8 @@ const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User
 
 const styles = theme => ({
     contentRoot:{
-        padding: '16px 24px'
-    }
+        padding: '16px 24px',
+    },
 });
 
 function UserEditDialog(props) {
@@ -72,7 +70,6 @@ function UserEditDialog(props) {
 
     let idExists = props.users.find(user => user._id === props.user._id);
     let idChanged = props.user._id !== originalId;
-
 
     const getShortId = _id =>
         _id.split('.').pop();
@@ -112,7 +109,7 @@ function UserEditDialog(props) {
         <DialogTitle className={props.classes.dialogTitle} style={{ padding: 12 }} >
            { props.t( 'User parameters' ) }
         </DialogTitle>
-        <DialogContent classes={{root: clsx(props.innerWidth < 500 && props.classes.narrowContent, props.classes.contentRoot)}}>
+        <DialogContent classes={{root: Utils.clsx(props.innerWidth < 500 && props.classes.narrowContent, props.classes.contentRoot)}}>
             <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
                 <Grid item xs={12} md={6}>
                     <IOTextField
