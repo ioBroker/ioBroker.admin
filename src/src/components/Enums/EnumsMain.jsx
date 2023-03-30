@@ -3,8 +3,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
-import clsx from 'clsx';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 
 import Tooltip from '@mui/material/Tooltip';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -24,6 +23,8 @@ import { FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 import DownIcon from '@mui/icons-material/KeyboardArrowDown';
 import UpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ClearIcon from '@mui/icons-material/Clear';
+
+import { Utils } from '@iobroker/adapter-react-v5';
 
 import EnumBlock from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
@@ -700,7 +701,7 @@ class EnumsList extends Component {
             <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
                 <DndPreview />
                 <Grid container spacing={2} className={this.props.classes.mainGridCont}>
-                    <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
+                    <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
                     <div className={this.props.classes.topPanel}>
                         <Tooltip title={this.props.t('Add enum')} placement="top">
                             <IconButton
@@ -855,7 +856,7 @@ class EnumsList extends Component {
                             {enumItems.map((enumItem, index) => this.renderTree(enumItem, index, 0))}
                         </div>
                     </Grid>
-                    <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
+                    <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
                         <div className={this.props.classes.blocksContainer}>
                             <DragObjectBrowser
                                 addItemToEnum={this.addItemToEnum}

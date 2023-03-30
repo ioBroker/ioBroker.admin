@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { Tooltip, AppBar, Avatar, Box, Checkbox, CircularProgress, LinearProgress, Paper, Step, StepLabel, Stepper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, } from '@mui/material';
+import {
+    Tooltip,
+    AppBar, Avatar, Box,
+    Checkbox, CircularProgress, LinearProgress,
+    Paper, Step, StepLabel, Stepper, Switch,
+    Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow,
+    TableSortLabel, Typography,
+} from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
@@ -18,11 +25,9 @@ import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { I18n, Utils, SelectWithIcon } from '@iobroker/adapter-react-v5';
 
 import Command from '../components/Command';
-import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
 import { licenseDialogFunc } from './LicenseDialog';
 import { generateInputsFunc } from './GenereteInputsModal';
 import { useStateLocal } from '../helpers/hooks/useStateLocal';
@@ -635,7 +640,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     </Step>
                 ))}
             </Stepper>
-            <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
+            <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     <TabPanel
                         className={classes.overflowAuto}
@@ -695,7 +700,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                 />
                                 <div style={showAll ? { color: 'green' } : null}>{I18n.t('show ignored')}</div>
                             </div>
-                            <div className={clsx(classes.divSwitch, classes.marginLeft)}>
+                            <div className={Utils.clsx(classes.divSwitch, classes.marginLeft)}>
                                 <div style={!suggested ? { color: 'green' } : null}>{I18n.t('hide suggested')}</div>
                                 <Switch
                                     checked={suggested}
@@ -795,7 +800,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                 {selected.map((el, idx) => <div
                                     key={el}
                                     onClick={finishInstall ? () => setSelectLogsIndex(idx) : null}
-                                    className={clsx(classes.headerBlockDisplayItem,
+                                    className={Utils.clsx(classes.headerBlockDisplayItem,
                                         finishInstall && classes.pointer,
                                         finishInstall && classes.hover,
                                         finishInstall && selectLogsIndex === idx && classes.activeBlock)}>

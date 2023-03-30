@@ -1,6 +1,5 @@
 // CertificatesDialog.js
 import { Component } from 'react';
-import clsx from 'clsx';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 
@@ -19,8 +18,7 @@ import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { withWidth, I18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
 import Utils from '../../Utils';
 
@@ -220,14 +218,14 @@ class CertificatesDialog extends Component {
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                         <TableRow className="float_row">
-                            <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
-                            <TableCell className={clsx(this.props.classes.nameRow, 'float_cell')}>
+                            <TableCell className={UtilsCommon.clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
+                            <TableCell className={UtilsCommon.clsx(this.props.classes.nameRow, 'float_cell')}>
                                 {this.props.t('name')}
                             </TableCell>
-                            <TableCell className={clsx('grow_cell', 'float_cell')}>
+                            <TableCell className={UtilsCommon.clsx('grow_cell', 'float_cell')}>
                                 {this.props.t('Certificate')}
                             </TableCell>
-                            <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
+                            <TableCell className={UtilsCommon.clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

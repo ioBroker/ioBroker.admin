@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@mui/styles';
@@ -44,8 +43,7 @@ import amber from '@mui/material/colors/amber';
 import grey from '@mui/material/colors/grey';
 import red from '@mui/material/colors/red';
 
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { Icon, withWidth, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
 import Utils from '../Utils';
 import TabContainer from '../components/TabContainer';
@@ -62,7 +60,7 @@ const styles = theme => ({
         tableLayout: 'fixed',
         minWidth: 960,
         '& td,th': {
-            padding: '3px 4px'
+            padding: '3px 4px',
         },
         '& td:nth-of-type(5)': {
             overflow: 'hidden',
@@ -697,27 +695,27 @@ class Logs extends Component {
             previousKey = row.key;
 
             rows.push(<TableRow
-                    className={clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
+                    className={UtilsCommon.clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
                     style={this.state.colors ? {backgroundColor: this.state.sources[row.from]?.color || undefined} : {}}
                     key={key}
                     hover
                 >
-                    <TableCell className={clsx(classes.cell, classes.cellName)}>
+                    <TableCell className={UtilsCommon.clsx(classes.cell, classes.cellName)}>
                         <div className={classes.iconAndName}>
                             {<Icon src={row.icon} className={classes.icon} />}<div className={classes.name}>{row.from}</div>
                         </div>
                     </TableCell>
-                    {this.state.pid && <TableCell className={clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                    {this.state.pid && <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
                         {id}
                     </TableCell>}
-                    <TableCell className={clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                    <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
                         {row.time}
                     </TableCell>
-                    <TableCell className={clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                    <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
                         {row.severity}
                     </TableCell>
                     <TableCell
-                        className={clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}
+                        className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}
                         title={typeof message === 'object' ? message.original : message}
                     >
                         {typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}
@@ -852,7 +850,7 @@ class Logs extends Component {
                     <Badge
                         badgeContent={this.state.logErrors}
                         color="error"
-                        classes={{ badge: clsx(classes.badge, classes.badgeError) }}
+                        classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeError) }}
                     >
                         <IconButton size="large"
                             onClick={() => {
@@ -871,7 +869,7 @@ class Logs extends Component {
                     <Badge
                         badgeContent={this.state.logWarnings}
                         color="default"
-                        classes={{ badge: clsx(classes.badge, classes.badgeWarn) }}
+                        classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeWarn) }}
                     >
                         <IconButton size="large"
                             onClick={() => {

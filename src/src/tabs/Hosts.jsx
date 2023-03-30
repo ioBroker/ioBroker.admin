@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import semver from 'semver';
-import clsx from 'clsx';
 
 import { withStyles } from '@mui/styles';
 
@@ -19,7 +18,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth, Utils as UtilsCommon} from '@iobroker/adapter-react-v5';
 
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
@@ -33,9 +32,9 @@ import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 
-const styles = theme => ({
+const styles = () => ({
     grow: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     cards: {
         display: 'flex',
@@ -58,13 +57,13 @@ const styles = theme => ({
         flex: 1,
         fontSize: 14,
         fontWeight: 600,
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     tabHeaderItemButton: {
         width: 144,
         fontSize: 14,
         fontWeight: 600,
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     widthButtons: {
         width: 240,
@@ -72,18 +71,18 @@ const styles = theme => ({
     tabFlex: {
         display: 'flex',
         flex: 1,
-        padding: '0 10px'
+        padding: '0 10px',
     },
     bold: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     wrapperInfo: {
         display: 'flex',
         flexFlow: 'wrap',
-        width: '100%'
+        width: '100%',
     },
     marginRight: {
-        marginRight: 'auto'
+        marginRight: 'auto',
     },
     wrapperBlockItem: {
         display: 'flex',
@@ -95,34 +94,34 @@ const styles = theme => ({
         paddingTop: 0,
         paddingBottom: 0,
         paddingLeft: 16,
-        paddingRight: 8
+        paddingRight: 8,
     },
     nowrap: {
         display: 'flex',
         flexFlow: 'nowrap',
         flex: 1,
         whiteSpace: 'nowrap',
-        marginRight: 5
+        marginRight: 5,
     },
     '@media screen and (max-width: 1100px)': {
         hidden1100: {
-            display: 'none !important'
+            display: 'none !important',
         },
     },
     '@media screen and (max-width: 800px)': {
         hidden800: {
-            display: 'none !important'
+            display: 'none !important',
         },
     },
     '@media screen and (max-width: 600px)': {
         hidden600: {
-            display: 'none !important'
+            display: 'none !important',
         },
     },
     jsController: {
         fontSize: 12,
         opacity: 0.4,
-        display: 'block'
+        display: 'block',
     },
 });
 
@@ -163,14 +162,14 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
             <div className={classes.marginRight}>
                 {hostData && typeof hostData === 'object' ? Object.keys(hostData).map((value, idx) => idx < 5 &&
                     <div className={classes.wrapperBlockItem} key={value}>
-                        <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                        <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
                         {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                     </div>) : <Skeleton />}
             </div>
             <div className={classes.marginRight}>
                 {hostData && typeof hostData === 'object' ? Object.keys(hostData).map((value, idx) => idx > 4 && idx < 10 &&
                     <div className={classes.wrapperBlockItem} key={value}>
-                        <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                        <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
                         {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                     </div>) : <Skeleton />}
             </div>
@@ -180,7 +179,7 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
                         className={classes.wrapperBlockItem} key={value}>
                         {hostData && typeof hostData === 'object' ?
                             <>
-                                <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                                <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
                                 {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                             </>
                             :
@@ -616,14 +615,14 @@ class Hosts extends Component {
                                 {this.t('Name:')}
                             </div>
                             <div className={classes.tabFlex}>
-                                {/*<div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div>*/}
-                                <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
-                                <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
-                                <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{this.t('Uptime')}</div>
-                                <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Available')}<div className={classes.jsController}>js-controller</div></div>
-                                <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Installed')}<div className={classes.jsController}>js-controller</div></div>
-                                <div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{this.t('Events')}</div>
-                                <div className={clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
+                                {/*<div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div>*/}
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>{this.t('Uptime')}</div>
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Available')}<div className={classes.jsController}>js-controller</div></div>
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Installed')}<div className={classes.jsController}>js-controller</div></div>
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{this.t('Events')}</div>
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
                             </div>
                         </div>}
                     {this.getPanels()}

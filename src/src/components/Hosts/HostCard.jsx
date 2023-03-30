@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
 import { Avatar, Badge, Card, CardContent, CardMedia, Fab, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@mui/material';
@@ -13,10 +12,11 @@ import CachedIcon from '@mui/icons-material/Cached';
 import BuildIcon from '@mui/icons-material/Build';
 import CopyIcon from '@iobroker/adapter-react-v5/icons/IconCopy';
 
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { amber, blue, grey, red } from '@mui/material/colors';
+
+import { Utils } from '@iobroker/adapter-react-v5';
 
 import Adapters from '../../tabs/Adapters';
-import { amber, blue, grey, red } from '@mui/material/colors';
 import CustomModal from '../CustomModal';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
@@ -606,9 +606,9 @@ const HostCard = ({
         </FormControl>}
     </CustomModal> : null;
 
-    return <Card key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+    return <Card key={_id} className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}
-        {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
+        {(openCollapse || focused) && <div className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent className={classes.cardContentInfo}>
                 <div className={classes.cardContentDiv}>
                     <div className={classes.close} onClick={() => setCollapse(false)} />
@@ -618,13 +618,13 @@ const HostCard = ({
             <div className={classes.footerBlock}>
             </div>
         </div>}
-        <div className={clsx(classes.onOffLine, alive ? classes.green : classes.red)} >
+        <div className={Utils.clsx(classes.onOffLine, alive ? classes.green : classes.red)} >
             {alive && <div className={classes.dotLine} />}
         </div>
         <div
             ref={refWarning}
             style={{ background: color || 'inherit' }}
-            className={clsx(
+            className={Utils.clsx(
                 classes.imageBlock,
                 (!connectedToHost || !alive) && classes.instanceStateNotAlive1,
                 connectedToHost && alive && connected === false && classes.instanceStateAliveNotConnected1,
@@ -668,7 +668,7 @@ const HostCard = ({
                 <div className={classes.displayFlex}>{t('Uptime')}: <div ref={refUptime} className={classes.marginLeft5}>{'-d -h'}</div></div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="div" className={classes.wrapperAvailable}>
-                {t('Available')} js-controller: <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                {t('Available')} js-controller: <div className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                     {upgradeAvailable ?
                         <Tooltip title={t('Update')}>
                             <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}>
@@ -718,7 +718,7 @@ const HostCard = ({
                     {expertMode && logLevelValue &&
                         <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
                             <IconButton size="large" onClick={() => setOpenDialogLogLevel(true)}>
-                                <Avatar className={clsx(classes.smallAvatar, classes[logLevelValue])}>
+                                <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
                                     {getLogLevelIcon(logLevelValue)}
                                 </Avatar>
                             </IconButton>

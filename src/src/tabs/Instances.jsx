@@ -1,6 +1,5 @@
 import { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { withStyles } from '@mui/styles';
 
@@ -35,8 +34,7 @@ import green from '@mui/material/colors/green';
 import grey from '@mui/material/colors/grey';
 import red from '@mui/material/colors/red';
 
-import Router from '@iobroker/adapter-react-v5/Components/Router';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { Router, Utils as UtilsCommon, withWidth } from '@iobroker/adapter-react-v5';
 
 import Config from './Config';
 import Utils from '../Utils';
@@ -66,7 +64,7 @@ const styles = theme => ({
         height: theme.spacing(3),
     },
     button: {
-        padding: '5px'
+        padding: '5px',
     },
     enabled: {
         color: green[400],
@@ -725,12 +723,12 @@ class Instances extends Component {
     getModeIcon = (mode, status, className, stoppedWhenWebExtension) => {
         if (mode === 'daemon') {
             if (stoppedWhenWebExtension) {
-                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
+                return <div className={UtilsCommon.clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
             } else
             if (status === 'orange') {
                 return <WarningIcon className={className} />;
             } else if (status === 'green') {
-                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
+                return <div className={UtilsCommon.clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
             } else {
                 return <SettingsIcon className={className} />;
             }
@@ -1329,7 +1327,7 @@ class Instances extends Component {
                         onClick={() => this.changeSetStateBool('sentry')}
                     >
                         <CardMedia
-                            className={clsx(classes.sentry, !this.state.sentry && classes.contrast0)}
+                            className={UtilsCommon.clsx(classes.sentry, !this.state.sentry && classes.contrast0)}
                             component="img"
                             image={sentry}
                         />

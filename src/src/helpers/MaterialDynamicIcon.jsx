@@ -60,7 +60,7 @@ const MaterialDynamicIcon = ({ iconName, className, adapter, socket, onClick, ob
 MaterialDynamicIcon.defaultProps = {
     className: null,
     iconName: 'Help',
-    objIconBool: false
+    objIconBool: false,
 };
 
 export default MaterialDynamicIcon;

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import clsx from 'clsx';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -22,8 +21,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 let node = null;
 
@@ -269,7 +267,7 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, instan
             classes={{ paper: classes.paper }}
         >
             <h2 className={classes.headingTop}><Status name="heading" />{I18n.t('Adapter warnings')}</h2>
-            <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
+            <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     <AppBar position="static" color="default">
                         <Tabs

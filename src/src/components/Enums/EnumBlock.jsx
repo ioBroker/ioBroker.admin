@@ -1,9 +1,8 @@
-import {useEffect, useRef, Component} from 'react';
+import { useEffect, useRef, Component } from 'react';
 import PropTypes from 'prop-types';
-import {useDrag, useDrop} from 'react-dnd';
-import {getEmptyImage} from 'react-dnd-html5-backend';
-import clsx from 'clsx';
-import {withStyles} from '@mui/styles';
+import { useDrag, useDrop } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
+import { withStyles } from '@mui/styles';
 
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -27,7 +26,7 @@ import IconChannel from '@iobroker/adapter-react-v5/icons/IconChannel';
 import IconDevice from '@iobroker/adapter-react-v5/icons/IconDevice';
 import IconState from '@iobroker/adapter-react-v5/icons/IconState';
 
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { Utils } from '@iobroker/adapter-react-v5';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
@@ -288,11 +287,11 @@ class EnumBlock extends Component {
 
         let icon = props.enum?.common?.icon ?
             <Icon
-                className={clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded) }
+                className={Utils.clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded) }
                 src={props.enum.common.icon}
             /> :
             <ListIcon
-                className={clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded)}
+                className={Utils.clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded)}
             />;
 
         icon = props.children ? <div className={classes.folderDiv} onClick={() => props.toggleEnum(props.id)}>
@@ -305,7 +304,7 @@ class EnumBlock extends Component {
 
         return <Card
             style={style}
-            className={clsx(classes.enumGroupCard, this.props.updating && classes.enumUpdating, !props.collapsed && classes.enumGroupCardExpanded)}
+            className={Utils.clsx(classes.enumGroupCard, this.props.updating && classes.enumUpdating, !props.collapsed && classes.enumGroupCardExpanded)}
             id={props.id}
         >
             <div className={classes.enumCardContent}>
@@ -398,7 +397,7 @@ class EnumBlock extends Component {
                                     </Tooltip>
                                 </IconButton>
                             </Card>
-                        }) : (props.enum?.common?.members?.length ? <div className={clsx(classes.membersNumber, props.children && classes.memberNumberFolder)}>{props.enum?.common?.members?.length}</div> : '')}
+                        }) : (props.enum?.common?.members?.length ? <div className={Utils.clsx(classes.membersNumber, props.children && classes.memberNumberFolder)}>{props.enum?.common?.members?.length}</div> : '')}
                     </div>
                 </CardContent>
             </div>

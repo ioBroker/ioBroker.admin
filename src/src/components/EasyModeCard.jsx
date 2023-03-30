@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, CardMedia, } from '@mui/material';
 import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
+
+import { Utils } from '@iobroker/adapter-react-v5';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -19,8 +20,8 @@ const styles = theme => ({
         transition: 'box-shadow 0.5s',
         cursor: 'pointer',
         '&:hover': {
-            boxShadow: boxShadowHover
-        }
+            boxShadow: boxShadowHover,
+        },
     },
     imageBlock: {
         background: 'silver',
@@ -47,7 +48,7 @@ const styles = theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     adapter: {
         width: '100%',
@@ -61,21 +62,21 @@ const styles = theme => ({
         textTransform: 'uppercase',
         textOverflow: 'ellipsis',
         overflow: 'hidden',
-        color: '#ffab40'
+        color: '#ffab40',
     },
     instanceStateNotAlive1: {
-        backgroundColor: 'rgba(192, 192, 192, 0.4)'
+        backgroundColor: 'rgba(192, 192, 192, 0.4)',
     },
     wrapperDesc: {
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     desc: {
         padding: 20,
         fontSize: 15,
-    }
+    },
 });
 
 function getText(text, lang) {
@@ -96,7 +97,7 @@ const EasyModeCard = ({
     navigate
 }) => {
     return <Card onClick={navigate} key={key} className={classes.root}>
-        <div className={clsx(classes.imageBlock, classes.instanceStateNotAlive1)}>
+        <div className={Utils.clsx(classes.imageBlock, classes.instanceStateNotAlive1)}>
             <CardMedia className={classes.img} component="img" image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'} />
         </div>
         <div className={classes.wrapperDesc}>

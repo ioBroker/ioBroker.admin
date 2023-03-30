@@ -1,7 +1,6 @@
 // LicensesDialog
-import {Component} from 'react';
-import clsx from 'clsx';
-import {withStyles} from '@mui/styles';
+import { Component } from 'react';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
@@ -15,7 +14,7 @@ import TextField from '@mui/material/TextField';
 
 import IconRefresh from '@mui/icons-material/Refresh';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth, Utils } from '@iobroker/adapter-react-v5';
 
 const styles = () => ({
     tabPanel: {
@@ -188,7 +187,7 @@ class LicensesDialog extends Component {
                         {this.state.licenses && this.state.licenses.map(license => <TableRow key={license.id}>
                             <TableCell className={this.props.classes.tableName}>{license.product}</TableCell>
                             <TableCell className={this.props.classes.tableDate}>{new Date(license.time).toLocaleDateString()}</TableCell>
-                            <TableCell className={clsx(this.props.classes.tableUuid, license.uuid && this.state.uuid === license.uuid ? this.props.classes.uuidGreen : (license.uuid ? this.props.classes.uuidGrey : ''))}>{license.uuid || ''}</TableCell>
+                            <TableCell className={Utils.clsx(this.props.classes.tableUuid, license.uuid && this.state.uuid === license.uuid ? this.props.classes.uuidGreen : (license.uuid ? this.props.classes.uuidGrey : ''))}>{license.uuid || ''}</TableCell>
                             <TableCell className={this.props.classes.tableValid}>{license.validTill === '0000-00-00 00:00:00' ? '' : license.validTill || ''}</TableCell>
                             <TableCell className={this.props.classes.tableVersion}>{license.version || ''}</TableCell>
                             <TableCell className={this.props.classes.tableUsedIn}>{license.usedBy || ''}</TableCell>

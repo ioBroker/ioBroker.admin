@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
 
 import { Avatar, Badge, CardContent, CardMedia, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@mui/material';
 
@@ -11,12 +10,14 @@ import BuildIcon from '@mui/icons-material/Build';
 import EditIcon from '@mui/icons-material/Edit';
 import CachedIcon from '@mui/icons-material/Cached';
 
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { amber, blue, grey, red } from '@mui/material/colors';
+
+import { Utils } from '@iobroker/adapter-react-v5';
+
+import CopyIcon from '@iobroker/adapter-react-v5/icons/IconCopy';
 
 import Adapters from '../../tabs/Adapters';
 import CustomModal from '../CustomModal';
-import { amber, blue, grey, red } from '@mui/material/colors';
-import CopyIcon from "@iobroker/adapter-react-v5/icons/IconCopy";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -31,8 +32,8 @@ const styles = theme => ({
         overflow: 'hidden',
         transition: 'box-shadow 0.5s,height 0.3s',
         '&:hover': {
-            boxShadow: boxShadowHover
-        }
+            boxShadow: boxShadowHover,
+        },
     },
     imageBlock: {
         marginRight: 6,
@@ -61,7 +62,7 @@ const styles = theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     collapse: {
         height: 160,
@@ -77,27 +78,27 @@ const styles = theme => ({
         flexDirection: 'column',
     },
     collapseOff: {
-        height: 0
+        height: 0,
     },
     collapseOn: {
-        animation: '$height 1s'
+        animation: '$height 1s',
     },
     '@keyframes height': {
         '0%': {
-            height: 0
+            height: 0,
         },
         '100%': {
             height: 160,
-        }
+        },
     },
     footerBlock: {
         background: theme.palette.background.default,
         padding: 10,
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     hidden: {
-        display: 'none'
+        display: 'none',
     },
     onOff: {
         alignSelf: 'center',
@@ -126,16 +127,16 @@ const styles = theme => ({
         // flexDirection: 'column',
         justifyContent: 'space-between',
         padding: '10px !important',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     marginTop10: {
         // marginTop: 10
         marginLeft: 'auto',
-        display: 'flex'
+        display: 'flex',
     },
     enableButton: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     emptyButton: {
         width: 48,
@@ -143,7 +144,7 @@ const styles = theme => ({
     green: {
         background: '#00ce00',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     dotLine: {
         width: 10,
@@ -156,11 +157,11 @@ const styles = theme => ({
     },
     '@keyframes colors': {
         '0%': {
-            top: -21
+            top: -21,
         },
         '100%': {
-            top: '101%'
-        }
+            top: '101%',
+        },
     },
     red: {
         background: '#da0000',
@@ -168,17 +169,17 @@ const styles = theme => ({
     },
     '@keyframes red': {
         '0%': {
-            opacity: 1
+            opacity: 1,
         },
         '100%': {
-            opacity: 0.80
-        }
+            opacity: 0.80,
+        },
     },
     flex: {
         flex: 1,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
     },
 
     cardContentInfo: {
@@ -191,7 +192,7 @@ const styles = theme => ({
         // alignItems: 'center'
     },
     cursorNoDrop: {
-        cursor: 'no-drop !important'
+        cursor: 'no-drop !important',
     },
     wrapperFlex: {
         display: 'flex', cursor: 'pointer',
@@ -207,54 +208,54 @@ const styles = theme => ({
                 width: '30px',
                 color: 'black'
             },
-            animation: '$warning 2.5s ease-in-out infinite alternate'
+            animation: '$warning 2.5s ease-in-out infinite alternate',
         }
     },
     '@keyframes warning': {
         '0%': {
-            opacity: 1
+            opacity: 1,
         },
         '100%': {
-            opacity: 0.7
-        }
+            opacity: 0.7,
+        },
     },
     wrapperColor: {
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     '@media screen and (max-width: 1100px)': {
         hidden1100: {
-            display: 'none !important'
+            display: 'none !important',
         },
     },
     '@media screen and (max-width: 800px)': {
         hidden800: {
-            display: 'none !important'
+            display: 'none !important',
         },
     },
     '@media screen and (max-width: 600px)': {
         hidden600: {
-            display: 'none !important'
+            display: 'none !important',
         },
     },
     '@media screen and (max-width: 500px)': {
         wrapperFlex: {
-            flexDirection: 'column'
+            flexDirection: 'column',
         },
     },
     badge: {
-        top: 14
+        top: 14,
     },
     greenText: {
         color: theme.palette.success.dark,
     },
     curdContentFlexCenter: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     wrapperAvailable: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     buttonUpdate: {
         border: '1px solid',
@@ -265,38 +266,38 @@ const styles = theme => ({
         cursor: 'pointer',
         transition: 'background 0.5s',
         '&:hover': {
-            background: '#00800026'
-        }
+            background: '#00800026',
+        },
     },
     buttonUpdateIcon: {
         height: 20,
         width: 20,
-        marginRight: 10
+        marginRight: 10,
     },
     debug: {
-        backgroundColor: grey[700]
+        backgroundColor: grey[700],
     },
     info: {
-        backgroundColor: blue[700]
+        backgroundColor: blue[700],
     },
     warn: {
-        backgroundColor: amber[700]
+        backgroundColor: amber[700],
     },
     error: {
-        backgroundColor: red[700]
+        backgroundColor: red[700],
     },
     smallAvatar: {
         width: 24,
-        height: 24
+        height: 24,
     },
     formControl: {
-        display: 'flex'
+        display: 'flex',
     },
     baseSettingsButton: {
         transform: 'rotate(45deg)',
     },
     newValue: {
-        animation: '$newValueAnimation 2s ease-in-out'
+        animation: '$newValueAnimation 2s ease-in-out',
     },
     '@keyframes newValueAnimation': {
         '0%': {
@@ -307,8 +308,8 @@ const styles = theme => ({
         },
         '100%': {
             color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-        }
-    }
+        },
+    },
 });
 
 let outputCache = '-';
@@ -595,11 +596,11 @@ const HostRow = ({
         onMouseOut={openDialogLogLevel ? null : () => setFocused(false)}
         onMouseOver={openDialogLogLevel ? null : () => setFocused(true)}
         onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
-        key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+        key={_id} className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}
-        <div className={clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)} onClick={openDialogLogLevel ? null : () => setCollapse(bool => !bool)}>
+        <div className={Utils.clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)} onClick={openDialogLogLevel ? null : () => setCollapse(bool => !bool)}>
             <div className={classes.wrapperColor}>
-                <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
+                <div className={Utils.clsx(classes.onOff, alive ? classes.green : classes.red)} />
                 {alive && <div className={classes.dotLine} />}
             </div>
             <div
@@ -622,20 +623,20 @@ const HostRow = ({
                 </div>
             </div>
             <CardContent className={classes.cardContentH5}>
-                {/*<Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
+                {/*<Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
                     {title}
                 </Typography>*/}
-                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
+                <Typography className={Utils.clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
                     <div ref={refCpu}>{'- %'}</div>
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
+                <Typography className={Utils.clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
                     <div ref={refMem}>{'- %'}</div>
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
+                <Typography className={Utils.clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
                     <div ref={refUptime}>{'-/-'}</div>
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="div">
-                    <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                <Typography className={Utils.clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="div">
+                    <div className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                         {upgradeAvailable ?
                             <Tooltip title={t('Update')}>
                                 <div
@@ -656,10 +657,10 @@ const HostRow = ({
                             available
                         }</div>
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
+                <Typography className={Utils.clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
                     {installed}
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="div">
+                <Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="div">
                     <div ref={refEvents}>{events}</div>
                 </Typography>
                 <div className={classes.marginTop10}>
@@ -702,7 +703,7 @@ const HostRow = ({
                                     event.stopPropagation();
                                     setOpenDialogLogLevel(true);
                                 }}>
-                                    <Avatar className={clsx(classes.smallAvatar, classes[logLevelValue])}>
+                                    <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
                                         {getLogLevelIcon(logLevelValue)}
                                     </Avatar>
                                 </IconButton>
@@ -728,7 +729,7 @@ const HostRow = ({
             </CardContent>
         </div>
         {(openCollapse || focused) && typeof description === 'object' &&
-            <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)} onClick={e => e.stopPropagation()}>
+            <div className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)} onClick={e => e.stopPropagation()}>
                 <CardContent className={classes.cardContentInfo}>
                     {description}
                     <Tooltip title={t('Copy')}>

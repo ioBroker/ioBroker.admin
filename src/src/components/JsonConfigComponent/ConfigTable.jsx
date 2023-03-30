@@ -1,10 +1,15 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import { /*lighten,*/ withStyles } from '@mui/styles';
-import clsx from 'clsx';
 
 import FormHelperText from '@mui/material/FormHelperText';
-import { IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, TextField, Toolbar, Tooltip, Typography } from '@mui/material';
+import {
+    IconButton, InputAdornment, Paper,
+    Table, TableBody, TableCell, TableContainer,
+    TableHead, TableRow, TableSortLabel,
+    TextField, Toolbar, Tooltip,
+    Typography,
+} from '@mui/material';
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -16,6 +21,7 @@ import IconFilterOff from '@mui/icons-material/FilterAltOff';
 import CopyContentIcon from '@mui/icons-material/ContentCopy';
 
 import I18n from './wrapper/i18n';
+import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
@@ -283,7 +289,7 @@ class ConfigTable extends ConfigGeneric {
                             </Tooltip> : null}
                             {headCell.sort && <TableSortLabel
                                 active
-                                className={clsx(orderBy !== headCell.attr && classes.silver)}
+                                className={Utils.clsx(orderBy !== headCell.attr && classes.silver)}
                                 direction={orderBy === headCell.attr ? order : 'asc'}
                                 onClick={() => this.handleRequestSort(headCell.attr)}
                             />}
@@ -363,6 +369,7 @@ class ConfigTable extends ConfigGeneric {
             } else {
                 text += '_';
             }
+            // eslint-disable-next-line no-loop-func
             while (newValue.find(it => it[this.props.schema.clone] === text + i.toString())) {
                 i++;
             }

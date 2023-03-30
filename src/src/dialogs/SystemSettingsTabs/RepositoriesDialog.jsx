@@ -1,6 +1,5 @@
 // RepositoriesDialog
 import { Component} from 'react';
-import clsx from 'clsx';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
@@ -21,9 +20,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DragHandleIcon from '@mui/icons-material/Menu';
 import RestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { I18n, Utils as UtilsCommon, withWidth, Confirm as ConfirmDialog } from '@iobroker/adapter-react-v5';
+
 import Utils from '../../Utils';
 
 const styles = theme => ({
@@ -115,10 +113,10 @@ const SortableItem = SortableElement(({
   onChangeActiveRepo,
   repoInfo,
 }) => <TableRow className="float_row">
-    <TableCell className={clsx(classes.dragColumn, 'float_cell')} title={t('Drag and drop to reorder')}>
+    <TableCell className={UtilsCommon.clsx(classes.dragColumn, 'float_cell')} title={t('Drag and drop to reorder')}>
         <DragHandle t={t} />
     </TableCell>
-    <TableCell className={clsx(classes.enableColumn, 'float_cell')}>
+    <TableCell className={UtilsCommon.clsx(classes.enableColumn, 'float_cell')}>
         {_index + 1}
         {multipleRepos ? <Checkbox
             disabled={adminGuiConfig.admin.settings.activeRepo === false}
@@ -161,7 +159,7 @@ const SortableItem = SortableElement(({
             }}
         /> : null}
     </TableCell>
-    <TableCell className={clsx(classes.stableColumn, 'float_cell')}>
+    <TableCell className={UtilsCommon.clsx(classes.stableColumn, 'float_cell')}>
         <Tooltip title={I18n.t('Flag will be automatically detected as repository will be read for the first time')}>
             <span>
                 <Checkbox
@@ -172,28 +170,28 @@ const SortableItem = SortableElement(({
             </span>
         </Tooltip>
     </TableCell>
-    <TableCell className={clsx(classes.nameRow, 'float_cell')}>
+    <TableCell className={UtilsCommon.clsx(classes.nameRow, 'float_cell')}>
         <TextField
             variant="standard"
             value={item.title}
             InputLabelProps={{ shrink: true }}
             InputProps={{ readOnly: false }}
-            className={clsx(classes.input, 'xs-centered')}
+            className={UtilsCommon.clsx(classes.input, 'xs-centered')}
             onChange={evt => onValueChanged(evt.target.value, item.title, 'title')}
         />
     </TableCell>
-    <TableCell className={clsx('grow_cell', 'float_cell')}>
+    <TableCell className={UtilsCommon.clsx('grow_cell', 'float_cell')}>
         <TextField
             variant="standard"
             id={'default_' + _index}
             value={item.link}
             InputLabelProps={{ shrink: true }}
             InputProps={{ readOnly: false }}
-            className={clsx(classes.input, 'xs-centered')}
+            className={UtilsCommon.clsx(classes.input, 'xs-centered')}
             onChange={evt => onValueChanged(evt.target.value, item.title, 'link')}
         />
     </TableCell>
-    <TableCell className={clsx(classes.buttonColumn, 'float_cell')}>
+    <TableCell className={UtilsCommon.clsx(classes.buttonColumn, 'float_cell')}>
         <Fab
             size="small"
             color="secondary"
@@ -222,16 +220,16 @@ const SortableList = SortableContainer(({
     return <Table className={classes.table}>
         <TableHead>
             <TableRow className="float_row">
-                <TableCell className={clsx(classes.dragColumn, 'float_cell')} />
-                <TableCell className={clsx(classes.enableColumn, 'float_cell')}>{multipleRepos ? I18n.t('Active') : ''}</TableCell>
-                <TableCell className={clsx(classes.stableColumn, 'float_cell')}>{I18n.t('Stable')}</TableCell>
-                <TableCell className={clsx(classes.nameRow, 'float_cell')}>
+                <TableCell className={UtilsCommon.clsx(classes.dragColumn, 'float_cell')} />
+                <TableCell className={UtilsCommon.clsx(classes.enableColumn, 'float_cell')}>{multipleRepos ? I18n.t('Active') : ''}</TableCell>
+                <TableCell className={UtilsCommon.clsx(classes.stableColumn, 'float_cell')}>{I18n.t('Stable')}</TableCell>
+                <TableCell className={UtilsCommon.clsx(classes.nameRow, 'float_cell')}>
                     {t('name')}
                 </TableCell>
                 <TableCell className="grow_cell float_cell">
                     {t('link')}
                 </TableCell>
-                <TableCell className={clsx(classes.buttonColumn, 'float_cell')}> </TableCell>
+                <TableCell className={UtilsCommon.clsx(classes.buttonColumn, 'float_cell')}> </TableCell>
             </TableRow>
         </TableHead>
         <TableBody>

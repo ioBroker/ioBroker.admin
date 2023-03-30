@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import clsx from 'clsx';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,11 +11,11 @@ import { makeStyles } from '@mui/styles';
 
 import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 import ConfigPanel from '../components/JsonConfigComponent/ConfigPanel';
-import CheckIcon from '@mui/icons-material/Check';
 
 let node = null;
 
@@ -293,7 +292,7 @@ const GenerateInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                     marginRight: 10
                 }} />
                 {I18n.t('Instance parameters for %s', newInstances._id.replace('system.adapter.', ''))}</h2>
-            <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
+            <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     <TabPanel
                         value={1}

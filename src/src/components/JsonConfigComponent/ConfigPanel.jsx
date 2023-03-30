@@ -1,14 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
 
 import Grid from '@mui/material/Grid';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigAlive from './ConfigAlive';
@@ -277,7 +279,7 @@ class ConfigPanel extends ConfigGeneric {
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         style={Object.assign({}, schema.style, this.props.themeType ? schema.darkStyle : {})}
-                        className={clsx(classes.fullWidth, schema.color === 'primary' && classes.primary, schema.color === 'secondary' && classes.secondary)}
+                        className={Utils.clsx(classes.fullWidth, schema.color === 'primary' && classes.primary, schema.color === 'secondary' && classes.secondary)}
                     >
                         <Typography className={classes.heading}>{this.getText(schema.label)}</Typography>
                     </AccordionSummary>
@@ -290,9 +292,9 @@ class ConfigPanel extends ConfigGeneric {
             } else {
                 content = <div
                     key={`${this.props.attr}_${this.props.index}`}
-                    className={clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
+                    className={Utils.clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
                 >
-                    <Grid container className={clsx(classes.fullWidth, this.props.isParentTab && classes.padding)} spacing={2}>
+                    <Grid container className={Utils.clsx(classes.fullWidth, this.props.isParentTab && classes.padding)} spacing={2}>
                         {this.renderItems(items, disabled)}
                     </Grid>
                 </div>;

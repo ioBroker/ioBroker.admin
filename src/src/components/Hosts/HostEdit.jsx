@@ -1,5 +1,4 @@
 import { Component } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -9,12 +8,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 
 import IconClose from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
 
-import { Tooltip } from '@mui/material';
+import { Utils } from '@iobroker/adapter-react-v5';
+
 import UploadImage from '../UploadImage';
 
 const styles = theme => ({
@@ -198,7 +199,7 @@ class HostEdit extends Component {
                             variant="standard"
                             disabled={disabled}
                             label={t('title')}
-                            className={clsx(classes.marginBlock, classes.textField)}
+                            className={Utils.clsx(classes.marginBlock, classes.textField)}
                             fullWidth
                             value={json.common.title}
                             onChange={(el) => this.setCommonItem(json, 'title', el.target.value)}
@@ -210,7 +211,7 @@ class HostEdit extends Component {
                             <TextField
                                 variant="standard"
                                 disabled={disabled}
-                                className={clsx(classes.marginBlock, classes.color)}
+                                className={Utils.clsx(classes.marginBlock, classes.color)}
                                 label={t('Color')}
                                 type="color"
                                 value={json.common.color}

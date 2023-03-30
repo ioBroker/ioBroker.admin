@@ -15,12 +15,12 @@ import { IconButton, Tooltip } from '@mui/material';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import LanguageIcon from '@mui/icons-material/Language';
+
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
-import I18n from "@iobroker/adapter-react-v5/i18n";
-import Utils from "@iobroker/adapter-react-v5/Components/Utils";
-import LanguageIcon from "@mui/icons-material/Language";
 
 const styles = theme => {
     return ({

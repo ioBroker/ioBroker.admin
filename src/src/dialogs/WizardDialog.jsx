@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -17,8 +16,7 @@ import StepLabel from '@mui/material/StepLabel';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import CheckIcon from '@mui/icons-material/Check';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
-import Router from '@iobroker/adapter-react-v5/Components/Router';
+import { withWidth, Utils, Router } from '@iobroker/adapter-react-v5';
 
 import ToggleThemeMenu from '../components/ToggleThemeMenu';
 import WizardPasswordTab from '../components/Wizard/WizardPasswordTab';
@@ -133,8 +131,8 @@ class WizardDialog extends Component {
 
     renderWelcome() {
         // shutterstock Standard commercial license on ioBroker GmbH: https://www.shutterstock.com/de/image-vector/welcome-neon-text-vector-sign-design-1186433386
-        return <div className={ clsx(this.props.classes.paper, this.props.classes.welcomeBackground) }>
-            <div className={ this.props.classes.fullHeightWithoutToolbar }>
+        return <div className={Utils.clsx(this.props.classes.paper, this.props.classes.welcomeBackground)}>
+            <div className={this.props.classes.fullHeightWithoutToolbar}>
 
             </div>
             <Toolbar className={this.props.classes.toolbar}>
@@ -285,8 +283,8 @@ class WizardDialog extends Component {
 
     renderFinish() {
         // Free Image license: https://pixabay.com/illustrations/road-sky-mountains-clouds-black-908176/
-        return <div className={ clsx(this.props.classes.paper, this.props.classes.finishBackground) }>
-            <div className={ this.props.classes.fullHeightWithoutToolbar }>
+        return <div className={Utils.clsx(this.props.classes.paper, this.props.classes.finishBackground)}>
+            <div className={this.props.classes.fullHeightWithoutToolbar}>
                 <div className={this.props.classes.finalText}>{this.props.t('Have fun automating your home with')}</div>
                 <img src={LongLogo} alt="ioBroker" className={this.props.classes.finalLongLogo} />
             </div>
