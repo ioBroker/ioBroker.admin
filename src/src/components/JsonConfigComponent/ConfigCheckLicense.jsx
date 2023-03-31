@@ -65,7 +65,7 @@ class ConfigCheckLicense extends ConfigGeneric {
 
     renderErrorDialog() {
         if (this.state._error && !this.state.showLicenseData) {
-            return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({_error: ''})} />;
+            return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({ _error: '' })} />;
         } else {
             return null;
         }
@@ -261,7 +261,7 @@ class ConfigCheckLicense extends ConfigGeneric {
                 method: 'POST',
                 body: JSON.stringify({json: license, uuid}),
                 headers: {
-                    'Content-Type': 'text/plain'
+                    'Content-Type': 'text/plain',
                 },
                 signal: controller.signal,
             });
