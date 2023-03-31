@@ -1,6 +1,13 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.3.6 (2023-01-29)
+* (bluefox) Allowed the edit of log level in the configuration tab
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.3.5 (2022-12-22)
 * (bluefox) Corrected reading of node.js version
 

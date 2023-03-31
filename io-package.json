@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.4.2",
+    "version": "6.4.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.4.3": {
+        "en": "Corrected the folder rights edit dialog",
+        "de": "Korrigiert den Ordner Rechte bearbeiten Dialog",
+        "ru": "Исправлен диалог редактирования прав папки",
+        "pt": "Corrigido o diálogo de edição de direitos da pasta",
+        "nl": "Vertaling:",
+        "fr": "Correction du dialogue sur les droits du dossier",
+        "it": "Corretto la finestra di dialogo di modifica dei diritti della cartella",
+        "es": "Corregido el diálogo de edición de derechos de carpeta",
+        "pl": "Poprawiono prawa do edytowania dialogów edytowanych",
+        "uk": "Виправлено діалогове вікно редагування прав папки",
+        "zh-cn": "纠正双重权利"
+      },
       "6.4.2": {
         "en": "Better check of the certificates",
         "de": "Bessere Überprüfung der Zertifikate",
@@ -95,19 +108,6 @@
         "pl": "Poprawne odczytywanie wersji węzła.js",
         "uk": "Виправлено читання версії node.js",
         "zh-cn": "更正"
-      },
-      "6.3.4": {
-        "en": "Corrected crashes in object browser",
-        "de": "Korrigierte Abstürze im Objektbrowser",
-        "ru": "Исправлены сбои в браузере объектов",
-        "pt": "Falhas corrigidas no navegador de objetos",
-        "nl": "Vertaling:",
-        "fr": "Accidents corrigés dans le navigateur objet",
-        "it": "Crash corretti nel browser degli oggetti",
-        "es": "Estrecho corregido en el navegador objeto",
-        "pl": "Poprawki w przeglądarce obiektowej",
-        "uk": "Виправлені аварійні випадки в браузері об'єкта",
-        "zh-cn": "投机中的伤员"
       }
     },
     "desc": {
