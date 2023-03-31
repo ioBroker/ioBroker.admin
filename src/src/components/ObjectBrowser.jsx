@@ -3669,7 +3669,7 @@ class ObjectBrowser extends Component {
                     onClick={() => this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
                     size="large"
                 >
-                    <div className={classes.aclText}>{Number.isNaN(Number(acl).toString(16)) ? Number(aclSystemConfig).toString(16) : Number(acl).toString(16)}</div>
+                    <div className={classes.aclText}>{Number.isNaN(Number(acl)) ? Number(aclSystemConfig).toString(16) : Number(acl).toString(16)}</div>
                 </IconButton>
             </Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
             <IconButton
