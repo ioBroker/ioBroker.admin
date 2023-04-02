@@ -111,14 +111,14 @@ const components = {
 const styles = theme => ({
     fullWidth: {
         width: '100%',
-        //height: '100%',
+        // height: '100%',
     },
     paper: {
         margin: 10,
         height: 'calc(100vh - 235px) !important',
         width: 'auto !important',
         overflowY: 'auto',
-        paddingBottom: theme.spacing(1)
+        paddingBottom: theme.spacing(1),
     },
     padding: {
         padding: 10,
@@ -128,18 +128,18 @@ const styles = theme => ({
     },
     primary: {
         backgroundColor: theme.palette.primary.main,
-        color: theme.palette.mode === 'dark' ? 'inherit' : '#FFF'
+        color: theme.palette.mode === 'dark' ? 'inherit' : '#FFF',
     },
     secondary: {
         backgroundColor: theme.palette.secondary.main,
-    }
+    },
 });
 
 class ConfigPanel extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         if (this.props.schema && this.props.schema.collapsable) {
-            this.setState({expanded: (window._localStorage || window.localStorage).getItem(this.props.adapterName + '.' + this.props.attr) === 'true'});
+            this.setState({ expanded: (window._localStorage || window.localStorage).getItem(`${this.props.adapterName}.${this.props.attr}`) === 'true' });
         }
     }
 
@@ -223,6 +223,7 @@ class ConfigPanel extends ConfigGeneric {
 
         const items   = this.props.schema.items;
         const classes = this.props.classes || {};
+        const style = this.props.schema.style || {};
 
         if (hidden) {
             if (schema.hideOnlyControl) {
@@ -234,7 +235,7 @@ class ConfigPanel extends ConfigGeneric {
                     sm={schema.sm || undefined}
                     style={Object.assign(
                         {},
-                        {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'},
+                        { marginBottom: 0, /*marginRight: 8, */textAlign: 'left' },
                         schema.style,
                         this.props.themaType === 'dark' ? schema.darkStyle : {}
                     )}
@@ -242,7 +243,7 @@ class ConfigPanel extends ConfigGeneric {
 
                 if (schema.newLine) {
                     return <>
-                        <div style={{flexBasis: '100%', height: 0}} />
+                        <div style={{ flexBasis: '100%', height: 0 }} />
                         {item}
                     </>
                 } else {
@@ -261,6 +262,7 @@ class ConfigPanel extends ConfigGeneric {
                 container
                 className={classes.fullWidth}
                 spacing={2}
+                style={style}
             >
                 {this.renderItems(items, disabled)}
             </Grid>;
@@ -273,7 +275,7 @@ class ConfigPanel extends ConfigGeneric {
                     expanded={!!this.state.expanded}
                     onChange={() => {
                         (window._localStorage || window.localStorage).setItem(`${this.props.adapterName}.${this.props.attr}`, this.state.expanded ? 'false' : 'true');
-                        this.setState({expanded: !this.state.expanded});
+                        this.setState({ expanded: !this.state.expanded });
                     }}
                 >
                     <AccordionSummary
@@ -284,7 +286,7 @@ class ConfigPanel extends ConfigGeneric {
                         <Typography className={classes.heading}>{this.getText(schema.label)}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Grid container className={`${classes.fullWidth} ${classes.padding}`} spacing={2}>
+                        <Grid container className={`${classes.fullWidth} ${classes.padding}`} spacing={2} style={style}>
                             {this.renderItems(items, disabled)}
                         </Grid>
                     </AccordionDetails>
@@ -293,6 +295,7 @@ class ConfigPanel extends ConfigGeneric {
                 content = <div
                     key={`${this.props.attr}_${this.props.index}`}
                     className={Utils.clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
+                    style={style}
                 >
                     <Grid container className={Utils.clsx(classes.fullWidth, this.props.isParentTab && classes.padding)} spacing={2}>
                         {this.renderItems(items, disabled)}

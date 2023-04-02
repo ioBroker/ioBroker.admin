@@ -25,6 +25,7 @@ class ConfigStaticImage extends ConfigGeneric {
         return <img
             className={this.props.classes.fullWidth}
             src={src}
+            style={Object.assign({}, this.props.schema.href ? { cursor: 'pointer' } : {})}
             onClick={this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
             alt=""
         />;

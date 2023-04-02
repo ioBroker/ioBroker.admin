@@ -26,7 +26,6 @@ const styles = theme => ({
         textDecoration: 'underline',
         color: theme.palette.mode === 'dark' ? '#4dabf5' : '#254e72',
         cursor: 'pointer',
-
     },
 });
 
