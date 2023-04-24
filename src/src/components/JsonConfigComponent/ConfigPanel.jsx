@@ -31,6 +31,7 @@ import ConfigFile from './ConfigFile';
 import ConfigFileSelector from './ConfigFileSelector';
 import ConfigFunc from './ConfigFunc';
 import ConfigIP from './ConfigIP';
+import ConfigImageSendTo from './ConfigImageSendTo';
 import ConfigImageUpload from './ConfigImageUpload';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
 import ConfigJsonEditor from './ConfigJsonEditor';
@@ -80,6 +81,7 @@ const components = {
     func: ConfigFunc,
     header: ConfigStaticHeader,
     image: ConfigImageUpload,
+    imageSendTo: ConfigImageSendTo,
     instance: ConfigInstanceSelect,
     ip: ConfigIP,
     jsonEditor: ConfigJsonEditor,

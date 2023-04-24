@@ -84,6 +84,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added `imageSendTo` Control to JSONConfig
+
 ### 6.4.3 (2023-03-31)
 * (bluefox) Corrected the folder rights edit dialog
 
