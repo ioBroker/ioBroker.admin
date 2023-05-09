@@ -247,7 +247,7 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
                 .catch(e =>
                     window.alert(`Cannot get information about host "${hostId}": ${e}`));
         }
-    }, [open]);
+    }, [open, location, os, socket, version]);
 
     if (!open) {
         return null;

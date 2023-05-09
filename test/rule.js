@@ -105,11 +105,11 @@ describe('GUI', () => {
                     operand: 'and',
                     rules: [
                         'oldVersion<5.5.0',
-                        'newVersion>=5.5.0'
-                    ]
-                }
+                        'newVersion>=5.5.0',
+                    ],
+                },
             },
-        ]
+        ];
 
         let messages = checkCondition(conditions, '5.5.4', '5.6.0');
         expect(messages).to.be.equal(null);

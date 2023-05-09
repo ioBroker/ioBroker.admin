@@ -90,8 +90,9 @@ Possible types:
        },
        "crop": true
      }
+  }
 ```
-  `login-bg.png` is file name for writeFile('myAdapter.INSTANCE', 'login-bg.png')   
+     `login-bg.png` is file name for writeFile('myAdapter.INSTANCE', 'login-bg.png')   
   - `accept` - html accept attribute, like "image/*,.pdf"
   - `maxSize` - 
   - `base64` - if true the image will be saved as data-url in attribute, elsewise as binary in file storage
@@ -101,7 +102,19 @@ Possible types:
   - `!square` - width must be equal to height or crop must allow only square as shape
 
 - `objectId` - object ID: show it with name, color and icon
-    - `types` - Array of possible types: ['channel', 'device', ...] (has only `state` by default)
+    - `type` - Desired type: `channel`, `device`, ... (has only `state` by default)
+    - `root` - [optional] Show only this root object and its children
+    - `customFilter` - [optional] Cannot be used together with `type` settings. Examples
+       `{common: {custom: true}}` - show only objects with some custom settings
+       `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
+       `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb` or `sql` or `history`
+       `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
+       `{type: 'channel'}` - show only channels
+       `{type: ['channel', 'device']}` - show only channels and devices
+       `{common: {type: 'number'}` - show only states of type 'number
+       `{common: {type: ['number', 'string']}` - show only states of type 'number and string
+       `{common: {role: 'switch']}` - show only states with roles starting from switch
+       `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
 
 - `password` - password field
   This field-type just have an effect in the UI.
