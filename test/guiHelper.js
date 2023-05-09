@@ -44,7 +44,7 @@ async function startBrowser(headless) {
 
     // Create directory
     !fs.existsSync(`${rootDir}tmp/screenshots`) && fs.mkdirSync(`${rootDir}tmp/screenshots`);
-    await gPage.screenshot({path: `${rootDir}tmp/screenshots/00_started.png`});
+    await gPage.screenshot({path: `${rootDir}tmp/screenshots/00_starting.png`});
 
     return { browser, page: pages[0] };
 }
