@@ -3,6 +3,8 @@ node_modules
 /src/.eslintcache
 /src/.cache
 www
+tmp/
+*.tgz
 .i18n-editor-metadata
 nbproject
 admin/i18n/*/flat.txt
