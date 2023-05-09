@@ -65,9 +65,32 @@ jobs:
 #        if: startsWith(runner.OS, 'windows')
 #        run: set DEBUG=testing:* & npm run test:integration
 
+  adapter-tests-gui:
+    if: contains(github.event.head_commit.message, '[skip ci]') == false
+
+    needs: [build]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: NODE_OPTIONS=--max_old_space_size=4096 npm run build
+
+      - name: Run GUI tests
+        run: npm run test:gui
+
   # Deploys the final package to NPM
   deploy:
-    needs: [adapter-tests]
+    needs: [adapter-tests-gui]
 
     # Trigger this step only when a commit on master is tagged with a version number
     if: |

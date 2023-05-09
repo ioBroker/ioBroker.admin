@@ -40,8 +40,13 @@ function startIoBroker(options) {
 
         await setup.setOfflineState('system.adapter.admin.0.alive', { val: false });
 
-        setup.setupController(null, async () => {
-            // lets the web adapter start on port 18082
+        setup.setupController(null, async systemConfig => {
+            // disable statistics and set license accepted
+            systemConfig.common.licenseConfirmed = true;
+            systemConfig.common.diag = 'none';
+            await setup.setObject('system.config', systemConfig);
+
+            // lets the web adapter start on port 18081
             let config = await setup.getAdapterConfig(0, 'admin');
             if (config && config.common) {
                 config.native.port = 18081;
@@ -56,8 +61,8 @@ function startIoBroker(options) {
                 async (_objects, _states) => {
                     objects = _objects;
                     states = _states;
-                    setup.startCustomAdapter(options.widgetsSetName, 0);
-                    await checkIsAdminStartedAsync();
+                    setup.startCustomAdapter('admin', 0);
+                    await checkIsAdminStartedAsync(states);
                     resolve({ objects, states });
                 });
         });
@@ -65,16 +70,7 @@ function startIoBroker(options) {
 }
 
 async function stopIoBroker() {
-    for (let a = 0; a < gOptions.additionalAdapters.length; a++) {
-        await setup.stopCustomAdapter(gOptions.additionalAdapters[a].split('@')[0].replace('iobroker.', ''), 0);
-    }
-
-    if (gOptions.startOwnAdapter) {
-        await setup.stopCustomAdapter(gOptions.widgetsSetName, 0);
-    }
-
-    // wait till adapters are stopped
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await setup.stopCustomAdapter('admin', 0);
 
     await new Promise(resolve =>
         setup.stopController(normalTerminated => {
@@ -89,7 +85,7 @@ function checkIsAdminStarted(states, cb, counter) {
         return cb && cb(`Cannot check value Of State system.adapter.admin.0.alive`);
     }
 
-    states.getState(gOptions.visUploadedId, (err, state) => {
+    states.getState('system.adapter.admin.0.alive', (err, state) => {
         console.log(`[${counter}]Check if vis is uploaded "system.adapter.admin.0.alive" = ${JSON.stringify(state)}`);
         err && console.error(err);
         if (state && state.val) {
