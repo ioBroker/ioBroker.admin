@@ -102,7 +102,7 @@ Possible types:
   - `!square` - width must be equal to height or crop must allow only square as shape
 
 - `objectId` - object ID: show it with name, color and icon
-    - `type` - Desired type: `channel`, `device`, ... (has only `state` by default)
+    - `types` - Desired type: `channel`, `device`, ... (has only `state` by default). It is singular, because `type` is already occupied.
     - `root` - [optional] Show only this root object and its children
     - `customFilter` - [optional] Cannot be used together with `type` settings. Examples
        `{common: {custom: true}}` - show only objects with some custom settings

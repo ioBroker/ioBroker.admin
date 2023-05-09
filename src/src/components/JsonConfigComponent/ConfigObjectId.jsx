@@ -71,7 +71,7 @@ class ConfigObjectId extends ConfigGeneric {
                 isFloatComma={this.props.isFloatComma}
                 dialogName={`admin.${this.props.adapterName}`}
                 themeType={this.props.themeType}
-                types={schema.type ? [schema.type] : undefined}
+                types={schema.types ? [schema.types] : undefined}
                 customFilter={schema.customFilter}
                 filters={schema.filters}
                 socket={socket}
