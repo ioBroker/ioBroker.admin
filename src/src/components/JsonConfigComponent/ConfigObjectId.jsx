@@ -10,18 +10,18 @@ import DialogSelectID from './wrapper/Dialogs/SelectID';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     flex: {
-        display: 'flex'
+        display: 'flex',
     },
     button: {
         height: 48,
         marginLeft: 4,
         minWidth: 48,
-    }
+    },
 });
 
 class ConfigObjectId extends ConfigGeneric {
@@ -29,7 +29,7 @@ class ConfigObjectId extends ConfigGeneric {
         super.componentDidMount();
         const { data, attr } = this.props;
         const value = ConfigGeneric.getValue(data, attr) || '';
-        this.setState({ value, initialized: true});
+        this.setState({ value, initialized: true });
     }
 
     renderItem(error, disabled, defaultValue) {
@@ -54,7 +54,7 @@ class ConfigObjectId extends ConfigGeneric {
                     onChange={e => {
                         const value = e.target.value;
                         this.setState({ value }, () =>
-                            this.onChange(attr, value))
+                            this.onChange(attr, value));
                     }}
                 />
                 <Button
@@ -69,11 +69,15 @@ class ConfigObjectId extends ConfigGeneric {
                 imagePrefix={this.props.imagePrefix === undefined ? '../..' : this.props.imagePrefix}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
-                dialogName={'admin.' + this.props.adapterName}
+                dialogName={`admin.${this.props.adapterName}`}
                 themeType={this.props.themeType}
+                types={schema.types ? [schema.types] : undefined}
+                customFilter={schema.customFilter}
+                filters={schema.filters}
                 socket={socket}
                 statesOnly={schema.all === undefined ? true : schema.all}
                 selected={value}
+                root={schema.root}
                 onClose={() => this.setState({ showSelectId: false })}
                 onOk={value =>
                     this.setState({ showSelectId: false, value }, () =>

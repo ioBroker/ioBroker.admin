@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
       - run: npm i
       - run: NODE_OPTIONS=--max_old_space_size=4096 npm run build
 
@@ -41,7 +41,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [16.x, 18.x, 20.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -65,9 +65,32 @@ jobs:
 #        if: startsWith(runner.OS, 'windows')
 #        run: set DEBUG=testing:* & npm run test:integration
 
+  adapter-tests-gui:
+    if: contains(github.event.head_commit.message, '[skip ci]') == false
+
+    needs: [build]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: NODE_OPTIONS=--max_old_space_size=4096 npm run build
+
+      - name: Run GUI tests
+        run: npm run test:gui
+
   # Deploys the final package to NPM
   deploy:
-    needs: [adapter-tests]
+    needs: [adapter-tests-gui]
 
     # Trigger this step only when a commit on master is tagged with a version number
     if: |
@@ -75,18 +98,15 @@ jobs:
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
 
       - name: Extract the version and commit body from the tag
         id: extract_release

@@ -29,7 +29,7 @@ import ObjectAddNewObject from '../dialogs/ObjectAddNewObject';
 import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
 import ObjectViewFileDialog from '../dialogs/ObjectViewFileDialog';
 
-const styles = theme => ({
+const styles = {
     buttonIcon: {
         marginRight: 4,
     },
@@ -40,9 +40,9 @@ const styles = theme => ({
         fontStyle: 'italic',
     },
     buttonText: {
-        whiteSpace: 'nowrap'
-    }
-});
+        whiteSpace: 'nowrap',
+    },
+};
 class Objects extends Component {
     constructor(props) {
         super(props);

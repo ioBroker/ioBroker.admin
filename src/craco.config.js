@@ -26,5 +26,10 @@ module.exports = {
                 React: 'react',
             }),
         ],
+        configure: webpackConfig => {
+            webpackConfig.resolve.fallback = webpackConfig.resolve.fallback || {}
+            webpackConfig.resolve.fallback.util = false;//webpackConfig.resolve.fallback.util || require.resolve('util');
+            return webpackConfig;
+        },
     },
 };
