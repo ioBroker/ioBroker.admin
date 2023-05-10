@@ -438,8 +438,8 @@ All types could have:
                     "label": "Type",
                     "sm": 6, // 1 - 12
                     "options": [
-                        {"label": "option 1", value: 1},
-                        {"label": "option 2", value: 2}
+                        {"label": "option 1", "value": 1},
+                        {"label": "option 2", "value": 2}
                     ] 
                 },
                 "myBool": {
