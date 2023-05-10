@@ -131,7 +131,7 @@ Possible types:
     - `short` - value will look like `0` and not `ADAPTER.0`
     - `all` - Add to the options "all" option with value `*`
 
-- `chips` - user can enter the word, and it will be added (see cloud => services => White list). Option is an array if no `delimiter` defined.
+- `chips` - user can enter the word, and it will be added (see cloud => services => White list). Output is an array if no `delimiter` defined.
     - `delimiter` - if it is defined, so the option will be stored as string with delimiter instead of an array. E.g. by `delimiter=;` you will get `a;b;c` instead of `['a', 'b', 'c']`
 
 - `alive` - just indication if the instance is alive, and it could be used in "hidden" and "disabled" (will not be saved in config)
