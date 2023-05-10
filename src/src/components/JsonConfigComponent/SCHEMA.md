@@ -71,7 +71,14 @@ Possible types:
   - `square` - width must be equal to height or crop must allow only square as shape
 
 - `image` - saves image as file of the `adapter.X` object or as base64 in attribute
-  - `filename` - name of file is structure name
+  - `filename` - name of file is structure name. In the below example `login-bg.png` is file name for `writeFile("myAdapter.INSTANCE", "login-bg.png")`
+  - `accept` - html accept attribute, like `image/*,.pdf`
+  - `maxSize` - maximal size of file to upload
+  - `base64` - if true the image will be saved as data-url in attribute, elsewise as binary in file storage
+  - `!maxWidth`
+  - `!maxHeight`
+  - `!crop` - if true, allow user to crop the image
+  - `!square` - width must be equal to height or crop must allow only square as shape
 ```
   "login-bg.png": {
        "type": "image",
@@ -92,14 +99,6 @@ Possible types:
      }
   }
 ```
-     `login-bg.png` is file name for writeFile('myAdapter.INSTANCE', 'login-bg.png')   
-  - `accept` - html accept attribute, like "image/*,.pdf"
-  - `maxSize` - 
-  - `base64` - if true the image will be saved as data-url in attribute, elsewise as binary in file storage
-  - `!maxWidth`
-  - `!maxHeight`
-  - `!crop` - if true, allow user to crop the image
-  - `!square` - width must be equal to height or crop must allow only square as shape
 
 - `objectId` - object ID: show it with name, color and icon
     - `types` - Desired type: `channel`, `device`, ... (has only `state` by default). It is singular, because `type` is already occupied.
