@@ -1120,7 +1120,6 @@ function getObjectTooltip(data, lang) {
     return null;
 }
 
-
 function getIdFieldTooltip(data, classes, lang) {
     const tooltip = getObjectTooltip(data, lang);
     if (tooltip?.startsWith('http')) {
@@ -1141,15 +1140,23 @@ function buildTree(objects, options) {
     options = options || {};
     const imagePrefix = options.imagePrefix || '.';
 
-    const ids = Object.keys(objects);
+    let ids = Object.keys(objects);
 
     ids.sort((a, b) => {
-        if (a === b) return 0;
+        if (a === b) {
+            return 0;
+        }
         a = a.replace(/\./g, '!!!');
         b = b.replace(/\./g, '!!!');
-        if (a > b) return 1;
+        if (a > b) {
+            return 1;
+        }
         return -1;
     });
+
+    if (options.root) {
+        ids = ids.filter(id => id === options.root || id.startsWith(`${options.root}.`));
+    }
 
     // find empty nodes and create names for it
     let currentPathArr = [];
@@ -1962,7 +1969,8 @@ class ObjectBrowser extends Component {
                             type === 'folder'   ||
                             type === 'adapter'  ||
                             type === 'instance' ||
-                            props.types.includes(type))) {
+                            props.types.includes(type))
+                        ) {
                             this.objects[id] = objects[id];
                         }
                     });
@@ -5349,7 +5357,7 @@ ObjectBrowser.propTypes = {
     customFilter: PropTypes.object,     // optional
                                         // `{common: {custom: true}}` - show only objects with some custom settings
                                         // `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
-                                        // `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb' or 'sql' or 'history'
+                                        // `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb` or `sql` or `history`
                                         // `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
                                         // `{type: 'channel'}` - show only channels
                                         // `{type: ['channel', 'device']}` - show only channels and devices
@@ -5367,6 +5375,7 @@ ObjectBrowser.propTypes = {
     ]),
     types: PropTypes.array,             // optional ['state', 'instance', 'channel']
     columns: PropTypes.array,           // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+    root: PropTypes.string,             // optional, shows only elements of this root
 
     objectsWorker: PropTypes.object,    // optional cache of objects
     filterFunc: PropTypes.func,         // function to filter out all unnecessary objects. It cannot be used together with "types"
