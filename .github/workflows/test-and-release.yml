@@ -88,6 +88,14 @@ jobs:
       - name: Run GUI tests
         run: npm run test:gui
 
+      - name: Archive screenshots
+        if: always()
+        # if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          path: tmp/screenshots/**/*.png
+          retention-days: 3
+
   # Deploys the final package to NPM
   deploy:
     needs: [adapter-tests-gui]
