@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const { blue, cyan, red, yellow } = require('colorette');
-const fs = require("fs");
+const fs = require('fs');
 
 let rootDir = `${__dirname}/../../../`;
 let gBrowser;
