@@ -1,6 +1,14 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.3.7 (2023-03-12)
+* (bluefox) Better tooltips in object browser 
+* Added again possibility to hide/show of columns in object browser
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.3.6 (2023-01-29)
 * (bluefox) Allowed the edit of log level in the configuration tab
 
