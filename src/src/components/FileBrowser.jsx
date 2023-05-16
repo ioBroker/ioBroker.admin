@@ -1067,6 +1067,8 @@ class FileBrowser extends Component {
             case 'js':
             case 'html':
             case 'txt':
+            case 'css':
+            case 'log':
                 return true;
             default:
                 return false;

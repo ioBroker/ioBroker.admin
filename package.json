@@ -38,7 +38,7 @@
     "mime": "^3.0.0",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "semver": "^7.5.0",
+    "semver": "^7.5.1",
     "ws": "^8.13.0"
   },
   "devDependencies": {
@@ -57,7 +57,7 @@
     "gulp-replace": "^1.1.4",
     "gulp-sourcemaps": "^3.0.0",
     "mocha": "^10.2.0",
-    "puppeteer": "^20.1.2"
+    "puppeteer": "^20.2.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"

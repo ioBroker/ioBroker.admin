@@ -17,7 +17,7 @@
         "@mui/lab": "^5.0.0-alpha.129",
         "@mui/material": "^5.13.0",
         "@mui/styles": "^5.12.3",
-        "@mui/x-data-grid": "^6.3.1",
+        "@mui/x-data-grid": "^6.4.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^2.1.0",
         "@sentry/browser": "^7.51.2",
@@ -62,7 +62,7 @@
         "react-scripts": "^5.0.1",
         "react-showdown": "^2.3.1",
         "react-sortable-hoc": "^2.0.0",
-        "semver": "^7.5.0"
+        "semver": "^7.5.1"
     },
     "homepage": ".",
     "scripts": {
