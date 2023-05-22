@@ -62,6 +62,8 @@ class JsControllerUpdater extends Component {
             .then(response => this.setState({ response }, () => {
                 if (response && !response.running) {
                     this.props.onUpdating(false);
+                    this.intervall && clearInterval(this.intervall);
+                    this.intervall = null;
                 }
 
                 // scroll down
@@ -71,7 +73,11 @@ class JsControllerUpdater extends Component {
                     }, 100);
                 }
             }))
-            .catch(e => this.setState({ error: e.toString() }, () => this.props.onUpdating(false)));
+            .catch(e => {
+                this.intervall && clearInterval(this.intervall);
+                this.intervall = null;
+                this.setState({ error: e.toString() }, () => this.props.onUpdating(false))
+            });
     }
 
     render() {
