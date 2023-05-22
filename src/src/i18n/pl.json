@@ -1521,5 +1521,9 @@
   "common_delete_tip": "Jeśli chcesz usunąć niektóre atrybuty w \"common\", musisz ustawić je na \"null\"",
   "temporary log level": "Tymczasowy poziom dziennika",
   "0 - no expiration": "0 - brak wygaśnięcia",
-  "Expire": "Wygasać"
+  "Expire": "Wygasać",
+  "You cannot delete host, when it is alive": "Nie możesz usunąć hosta, gdy jest żywy",
+  "Start update": "Rozpocząć aktualizację",
+  "Updating JS-Controller...": "Aktualizowanie kontrolera JS...",
+  "Copy": "Skopiuj do schowka"
 }

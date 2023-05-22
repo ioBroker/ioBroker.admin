@@ -1521,5 +1521,9 @@
   "common_delete_tip": "Als u enkele attributen in \"common\" wilt verwijderen, moet u deze op \"null\" zetten",
   "temporary log level": "Tijdelijk logniveau",
   "0 - no expiration": "0 - geen vervaldatum",
-  "Expire": "Verlopen"
+  "Expire": "Verlopen",
+  "You cannot delete host, when it is alive": "U kunt de host niet verwijderen wanneer deze nog leeft",
+  "Start update": "Start update",
+  "Updating JS-Controller...": "JS-Controller updaten...",
+  "Copy": "Kopieer naar klembord"
 }

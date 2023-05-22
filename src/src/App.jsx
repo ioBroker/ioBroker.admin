@@ -109,7 +109,7 @@ const styles = theme => ({
         }),
     },
     logoWhite: {
-        background: '#FFFFFF'
+        background: '#FFFFFF',
     },
     appBarShift: {
         width: `calc(100% - ${DRAWER_FULL_WIDTH}px)`,
@@ -131,7 +131,7 @@ const styles = theme => ({
         marginRight: theme.spacing(2),
     },
     hide: {
-        display: 'none'
+        display: 'none',
     },
     content: {
         flexGrow: 1,
@@ -143,11 +143,11 @@ const styles = theme => ({
         overflowY: 'auto',
         marginTop: theme.mixins.toolbar?.minHeight,
         '@media (min-width:0px) and (orientation: landscape)': {
-            marginTop: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight
+            marginTop: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight,
         },
         '@media (min-width:600px)': {
-            marginTop: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight
-        }
+            marginTop: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight,
+        },
     },
     contentMargin: {
         marginLeft: -DRAWER_FULL_WIDTH,
@@ -177,19 +177,19 @@ const styles = theme => ({
 
     },
     alert_error: {
-        backgroundColor: '#f44336'
+        backgroundColor: '#f44336',
     },
     alert_success: {
-        backgroundColor: '#4caf50'
+        backgroundColor: '#4caf50',
     },
     avatarNotVisible: {
         opacity: 0,
         marginLeft: 5,
         transition: 'opacity 0.3s',
-        width: 'initial'
+        width: 'initial',
     },
     avatarVisible: {
-        opacity: 1
+        opacity: 1,
     },
     cmd: {
         animation: '1s linear infinite alternate $myEffect',
@@ -198,12 +198,12 @@ const styles = theme => ({
     '@keyframes myEffect': {
         '0%': {
             opacity: 0.2,
-            transform: 'translateY(0)'
+            transform: 'translateY(0)',
         },
         '100%': {
             opacity: 1,
-            transform: 'translateY(-10%)'
-        }
+            transform: 'translateY(-10%)',
+        },
     },
     errorCmd: {
         color: '#a90000',
@@ -216,16 +216,16 @@ const styles = theme => ({
     wrapperButtons: {
         display: 'flex',
         marginRight: 'auto',
-        overflowY: 'auto'
+        overflowY: 'auto',
     },
     '@keyframes myEffect2': {
         '0%': {
             opacity: 1,
-            transform: 'translateX(0)'
+            transform: 'translateX(0)',
         },
         '100%': {
             opacity: 0.7,
-            transform: 'translateX(-2%)'
+            transform: 'translateX(-2%)',
         }
     },
 
@@ -233,7 +233,7 @@ const styles = theme => ({
         flexGrow: 2,
     },
     userBadge: {
-        lineHeight: '48px'
+        lineHeight: '48px',
     },
     userIcon: {
         borderRadius: 4,
@@ -248,7 +248,7 @@ const styles = theme => ({
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        display: 'inline-block'
+        display: 'inline-block',
     },
     userBackground: {
         borderRadius: 4,
@@ -266,7 +266,7 @@ const styles = theme => ({
     expertBadge: {
         marginTop: 11,
         marginRight: 11,
-    }
+    },
 });
 
 const DEFAULT_GUI_SETTINGS_OBJECT = {
@@ -437,7 +437,7 @@ class App extends Router {
 
                 forceUpdateAdapters: 0,
 
-                noTranslation: (window._localStorage || window.localStorage).getItem('App.noTranslation') === 'true',
+                noTranslation: (window._localStorage || window.localStorage).getItem('App.noTranslation') !== 'false',
 
                 cloudNotConnected: false,
                 cloudReconnect: 0,
@@ -446,6 +446,8 @@ class App extends Router {
                 redirectCountDown: 0,
 
                 triggerAdapterUpdate: 0,
+
+                updating: false, // js controller updating
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -575,14 +577,14 @@ class App extends Router {
                         removeItem: this.sessionStorageRemoveItem,
                     };
 
-                    // this is only settings, that initialized before connection established
+                    // this is only settings that initialized before connection was established
                     let drawerState = this.guiSettings.native['App.drawerState'];
                     if (drawerState) {
                         drawerState = parseInt(drawerState, 10);
                     } else {
                         drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
                     }
-                    const noTranslation = (window._localStorage || window.localStorage).getItem('App.noTranslation') === 'true';
+                    const noTranslation = (window._localStorage || window.localStorage).getItem('App.noTranslation') !== 'false';
 
                     this.setState({ guiSettings: true, drawerState, noTranslation }, () => {
                         if (Utils.getThemeName() !== this.state.theme.name) {
@@ -1578,6 +1580,8 @@ class App extends Router {
                         executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
                         systemConfig={this.state.systemConfig}
                         showAdaptersWarning={this.showAdaptersWarning}
+                        adminInstance={this.adminInstance}
+                        onUpdating={updating => this.setState({ updating })}
                     />
                 </Suspense>;
             } else {
@@ -1975,7 +1979,7 @@ class App extends Router {
                 </StyledEngineProvider>
             </StylesProvider>;
         } else
-        if (!this.state.ready) {
+        if (!this.state.ready && !this.state.updating) {
             return <StylesProvider generateClassName={generateClassName}>
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>

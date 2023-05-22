@@ -1521,5 +1521,9 @@
   "common_delete_tip": "Если вы хотите удалить некоторые атрибуты в «common», вы должны установить его в «null»",
   "temporary log level": "Временный уровень журнала",
   "0 - no expiration": "0 - нет срока действия",
-  "Expire": "Срок действия"
+  "Expire": "Срок действия",
+  "You cannot delete host, when it is alive": "Вы не можете удалить хост, когда он жив",
+  "Start update": "Начать обновление",
+  "Updating JS-Controller...": "Обновление JS-контроллера...",
+  "Copy": "Скопировать в буфер обмена"
 }

@@ -1521,5 +1521,9 @@
   "common_delete_tip": "如果要删除“common”中的某些属性，则必须将其设置为“null”",
   "temporary log level": "临时日志级别",
   "0 - no expiration": "0 - 没有过期",
-  "Expire": "到期"
+  "Expire": "到期",
+  "You cannot delete host, when it is alive": "你不能删除主机，当它还活着",
+  "Start update": "开始升级",
+  "Updating JS-Controller...": "更新 JS 控制器...",
+  "Copy": "复制到剪贴板"
 }

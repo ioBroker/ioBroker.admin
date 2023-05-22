@@ -1521,5 +1521,9 @@
   "common_delete_tip": "Si desea eliminar algunos atributos en \"common\", debe establecerlo en \"null\"",
   "temporary log level": "Nivel de registro temporal",
   "0 - no expiration": "0 - sin caducidad",
-  "Expire": "Expirar"
+  "Expire": "Expirar",
+  "You cannot delete host, when it is alive": "No puede eliminar el host, cuando está vivo",
+  "Start update": "Iniciar la actualización",
+  "Updating JS-Controller...": "Actualizando el controlador JS...",
+  "Copy": "Copiar al portapapeles"
 }

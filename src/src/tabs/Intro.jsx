@@ -355,7 +355,6 @@ class Intro extends Component {
     editLinkCard() {
         if (this.state.editLink) {
             return <EditIntroLinkDialog
-                open={this.state.editLink}
                 link={this.state.link}
                 socket={this.props.socket}
                 isNew={this.state.editLinkIndex === -1}
@@ -379,9 +378,9 @@ class Intro extends Component {
                         this.setState({ editLink: false });
                     }
                 }} />;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     getButtons(classes) {

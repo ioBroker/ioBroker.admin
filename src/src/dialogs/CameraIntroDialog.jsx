@@ -87,42 +87,40 @@ class EditIntroLinkDialog extends Component {
     render() {
         const { classes } = this.props;
 
-        return (
-            <Dialog
-                onClose={() => this.props.onClose()}
-                open={!0}
-                maxWidth="xl"
-                fullWidth
-                fullScreen
-                classes={{ paper: classes.paper }}
-            >
-                <DialogTitle>
-                    <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                        {this.props.name}
-                        <IconButton size="large" className={classes.closeButton} onClick={() => this.props.onClose()}>
-                            <CloseIcon />
-                        </IconButton>
-                    </Typography>
-                </DialogTitle>
-                <DialogContent dividers>
-                    <img className={this.props.classes.img} src="" alt="camera" ref={this.cameraRef} />
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        autoFocus
-                        onClick={e => {
-                            e.stopPropagation();
-                            this.props.onClose();
-                        }}
-                        color="primary"
-                        startIcon={<CloseIcon />}
-                    >
-                        {this.props.t('Close')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog
+            onClose={() => this.props.onClose()}
+            open={!0}
+            maxWidth="xl"
+            fullWidth
+            fullScreen
+            classes={{ paper: classes.paper }}
+        >
+            <DialogTitle>
+                <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
+                    {this.props.name}
+                    <IconButton size="large" className={classes.closeButton} onClick={() => this.props.onClose()}>
+                        <CloseIcon />
+                    </IconButton>
+                </Typography>
+            </DialogTitle>
+            <DialogContent dividers>
+                <img className={this.props.classes.img} src="" alt="camera" ref={this.cameraRef} />
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    autoFocus
+                    onClick={e => {
+                        e.stopPropagation();
+                        this.props.onClose();
+                    }}
+                    color="primary"
+                    startIcon={<CloseIcon />}
+                >
+                    {this.props.t('Close')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

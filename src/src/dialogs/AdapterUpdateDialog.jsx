@@ -49,10 +49,10 @@ const styles = theme => ({
     languageButton: {
         position: 'absolute',
         right: 52 + parseInt(theme.spacing(1), 10),
-        top: theme.spacing(1)
+        top: theme.spacing(1),
     },
     languageButtonActive: {
-        color: theme.palette.primary.main
+        color: theme.palette.primary.main,
     },
     typography: {
         paddingRight: 30
@@ -62,22 +62,22 @@ const styles = theme => ({
         borderRadius: 3,
         paddingLeft: 10,
         fontWeight: 'bold',
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
     wrapperButton: {
     },
     '@media screen and (max-width: 465px)': {
         wrapperButton: {
             '& *': {
-                fontSize: 10
-            }
+                fontSize: 10,
+            },
         },
     },
     '@media screen and (max-width: 380px)': {
         wrapperButton: {
             '& *': {
-                fontSize: 9
-            }
+                fontSize: 9,
+            },
         },
     },
     messageText: {
@@ -86,7 +86,7 @@ const styles = theme => ({
     messageIcon: {
         width: 32,
         height: 32,
-        marginRight: 8
+        marginRight: 8,
     },
     messageColor_warn: {
         color: '#cb7642',
@@ -102,24 +102,24 @@ const styles = theme => ({
         borderRadius: 3,
         paddingLeft: 10,
         fontWeight: 'bold',
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
     messageTitle_error: {
         background: '#f5614d',
         borderRadius: 3,
         paddingLeft: 10,
         fontWeight: 'bold',
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
     messageTitle_info: {
         background: '#5abd29',
         borderRadius: 3,
         paddingLeft: 10,
         fontWeight: 'bold',
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
     messageDialogText: {
-        fontSize: 18
+        fontSize: 18,
     },
     messageDialogTitle: {
 
@@ -233,7 +233,7 @@ class AdapterUpdateDialog extends Component {
                 </Typography>
                 {news.map((value, index) => {
                     return <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
-                        { '• ' + value}
+                        {`• ${value}`}
                     </Typography>;
                 })}
             </Grid>);
@@ -326,7 +326,13 @@ class AdapterUpdateDialog extends Component {
 
                 if (show) {
                     messages = messages || [];
-                    messages.push({title: message.title, text: message.text, link: message.link, buttons: message.buttons, level: message.level});
+                    messages.push({
+                        title: message.title,
+                        text: message.text,
+                        link: message.link,
+                        buttons: message.buttons,
+                        level: message.level,
+                    });
                 }
             });
         }
@@ -348,7 +354,7 @@ class AdapterUpdateDialog extends Component {
 
     renderOneMessage(message, index) {
         return <Grid item key={index}>
-            <Typography className={this.props.classes['messageTitle_' + (message.level || 'warn')]}>
+            <Typography className={this.props.classes[`messageTitle_${message.level || 'warn'}`]}>
                 {this.getText(message.title, this.props.noTranslation) || ''}
             </Typography>
             <Typography component="div" variant="body2"  className={this.props.classes.messageText}>
@@ -392,7 +398,7 @@ class AdapterUpdateDialog extends Component {
             const classes = this.props.classes;
 
             return <Dialog
-                onClose={() => this.setState({showMessageDialog: false})}
+                onClose={() => this.setState({ showMessageDialog: false })}
                 open={!0}
             >
                 <DialogTitle className={classes.messageDialogTitle}>

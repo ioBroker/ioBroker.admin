@@ -1,24 +1,22 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React, { useState, useEffect } from 'react';
-import { createRoot } from 'react-dom/client';
+import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown'
+import { makeStyles } from '@mui/styles';
+
+import { Accordion, AccordionDetails, AccordionSummary, Card, DialogTitle, IconButton } from '@mui/material';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import IconCopy from '@iobroker/adapter-react-v5/icons/IconCopy';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, Card, DialogTitle, IconButton } from '@mui/material';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
-
-import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';
+import CloseIcon from '@mui/icons-material/Close';
+
+import IconCopy from '@iobroker/adapter-react-v5/icons/IconCopy';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
-
-let node = null;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -141,117 +139,69 @@ function removeChapter(text, remove, mustContain) {
     return newLines.join('\n')
 }
 
-const JsControllerDialog = ({ socket, hostId, theme, version }) => {
+const JsControllerDialog = ({ socket, hostId, theme, version, onClose }) => {
     const classes = useStyles();
-    const [open, setOpen] = useState(true);
     const [readme, setReadme] = useState(null);
     const [location, setLocation] = useState('');
     const [os, setOS] = useState('');
 
-    const onClose = () => {
-        setOpen(false);
-        if (node) {
-            try {
-                window.document.body.removeChild(node);
-            } catch (e) {
-                // ignore
-            }
-            node = null;
-        }
-    };
-/*
-    const fallbackCopyTextToClipboard = text => {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-
-        try {
-            const successful = document.execCommand('copyTextToClipboard');
-            successful && window.alert(I18n.t('Copied'));
-        } catch (err) {
-            console.error('Fallback: Oops, unable to copyTextToClipboard', err);
-        }
-
-        try {
-            window.document.body.removeChild(textArea);
-        } catch (e) {
-            // ignore
-        }
-    };
-*/
     const copyTextToClipboard = text => {
         Utils.copyToClipboard(text);
         window.alert(I18n.t('Copied'));
-
-        /*if (!navigator.clipboard) {
-            return fallbackCopyTextToClipboard(text);
-        }
-
-        navigator.clipboard.writeText(text)
-            .then(() => window.alert(I18n.t('Copied')),
-                    err => console.error('Async: Could not copyTextToClipboard text: ', err));*/
     };
 
     useEffect(() => {
-        if (open) {
-            (!location || !os) && socket.getHostInfoShort(hostId)
-                .then(data => {
-                    data.location && data.location !== location && setLocation(data.location);
-                    data.os && data.os !== os && setOS(data.os); // win32, linux, darwin, freebsd, android
+        (!location || !os) && socket.getHostInfoShort(hostId)
+            .then(data => {
+                data.location && data.location !== location && setLocation(data.location);
+                data.os && data.os !== os && setOS(data.os); // win32, linux, darwin, freebsd, android
 
-                    fetch(`https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/${I18n.getLanguage()}/controller-upgrade.md`)
-                        .then(response => response.text())
-                        .then(_readme => {
-                            let _os = data.os || os;
-                            let _location = (data.location || location).replace(/\\/g, '/');
-                            if (_os === 'win32') {
-                                _readme = removeChapter(_readme, 'linux', 'windows');
-                            } else {
-                                _readme = removeChapter(_readme, 'windows', 'linux');
-                            }
-                            _readme = _readme.replace(/cd \/opt\/iobroker/g, `cd ${_location}`)
-                            _readme = _readme.replace(/cd C:\\iobroker/g, `cd ${_location}`)
-                            _readme = _readme.replace(/x\.y\.z/g, version)
-                            _readme = _readme.split('<!-- copy');
-                            const parts = [];
-                            _readme.forEach(chapter => {
-                                if (chapter.includes('-->')) {
-                                    let [button, text] = chapter.split('-->');
-                                    let small = false;
-                                    if (button.startsWith(' small')) {
-                                        button = button.replace(/^ {2}small /, '');
-                                        small = true;
-                                    }
-                                    button = button.replace(/^\n\r/, '').replace(/^\n/, '');
-                                    if (small) {
-                                        parts.push(<IconButton key={`b${parts.length}`} onClick={() => copyTextToClipboard(button)}><IconCopy /></IconButton>);
-                                    } else {
-                                        parts.push(<Button
-                                            key={`b${parts.length}`}
-                                            variant="contained"
-                                            onClick={() => copyTextToClipboard(button)}
-                                            startIcon={<IconCopy />}
-                                        >{I18n.t('Copy to clipboard')}</Button>);
-                                    }
-                                    parts.push(text);
-                                } else {
-                                    parts.push(chapter);
+                fetch(`https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/${I18n.getLanguage()}/controller-upgrade.md`)
+                    .then(response => response.text())
+                    .then(_readme => {
+                        let _os = data.os || os;
+                        let _location = (data.location || location).replace(/\\/g, '/');
+                        if (_os === 'win32') {
+                            _readme = removeChapter(_readme, 'linux', 'windows');
+                        } else {
+                            _readme = removeChapter(_readme, 'windows', 'linux');
+                        }
+                        _readme = _readme.replace(/cd \/opt\/iobroker/g, `cd ${_location}`)
+                        _readme = _readme.replace(/cd C:\\iobroker/g, `cd ${_location}`)
+                        _readme = _readme.replace(/x\.y\.z/g, version)
+                        _readme = _readme.split('<!-- copy');
+                        const parts = [];
+                        _readme.forEach(chapter => {
+                            if (chapter.includes('-->')) {
+                                let [button, text] = chapter.split('-->');
+                                let small = false;
+                                if (button.startsWith(' small')) {
+                                    button = button.replace(/^ {2}small /, '');
+                                    small = true;
                                 }
-                            });
-
-                            setReadme(parts);
+                                button = button.replace(/^\n\r/, '').replace(/^\n/, '');
+                                if (small) {
+                                    parts.push(<IconButton key={`b${parts.length}`} onClick={() => copyTextToClipboard(button)}><IconCopy /></IconButton>);
+                                } else {
+                                    parts.push(<Button
+                                        key={`b${parts.length}`}
+                                        variant="contained"
+                                        onClick={() => copyTextToClipboard(button)}
+                                        startIcon={<IconCopy />}
+                                    >{I18n.t('Copy to clipboard')}</Button>);
+                                }
+                                parts.push(text);
+                            } else {
+                                parts.push(chapter);
+                            }
                         });
-                })
-                .catch(e =>
-                    window.alert(`Cannot get information about host "${hostId}": ${e}`));
-        }
-    }, [open, location, os, socket, version, hostId]);
 
-    if (!open) {
-        return null;
-    }
+                        setReadme(parts);
+                    });
+            })
+            .catch(e =>
+                window.alert(`Cannot get information about host "${hostId}": ${e}`));
+    }, [location, os, socket, version, hostId]);
 
     const renderReadme = () => <>{readme.map((text, i) => typeof text === 'object' ? text : <ReactMarkdown
         key={`t_${i}`}
@@ -261,7 +211,9 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
             a: ({node, ...props}) => <a style={{ color: 'inherit' }} {...props} />,
             code: ({node, inline, className, children, ...props}) => <code className={classes.code} {...props} >{children}</code>,
         }}
-    >{text}</ReactMarkdown>)}</>;
+    >
+        {text}
+    </ReactMarkdown>)}</>;
 
     const renderText = () => <Card className={classes.root}>
         <div className={classes.standardText}>{I18n.t('Due to the different hardware and platforms under which ioBroker runs, the js-controller has to be updated manually. Further details can be found in the appropriate section.')}</div>
@@ -418,9 +370,8 @@ sudo -u iobroker -H npm install iobroker.js-controller`
         </Accordion>
     </Card>;
 
-    return <ThemeProvider theme={theme}>
-        <Dialog
-            onClose={onClose}
+    return <Dialog
+            onClose={() => onClose()}
             open={!0}
             classes={{ paper: classes.paper }}
         >
@@ -442,28 +393,22 @@ sudo -u iobroker -H npm install iobroker.js-controller`
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={onClose}
+                    onClick={() => onClose()}
                     color="primary"
                     startIcon={<CloseIcon />}
                 >
                     {I18n.t('Ok')}
                 </Button>
             </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
+        </Dialog>;
 }
 
-export const jsControllerDialogFunc = (socket, hostId, theme, version) => {
-    if (!node) {
-        node = document.createElement('div');
-        node.id = 'renderModal';
-        document.body.appendChild(node);
-    }
-    const root = createRoot(node);
+JsControllerDialog.propTypes = {
+    socket: PropTypes.object,
+    hostId: PropTypes.string,
+    theme: PropTypes.object,
+    version: PropTypes.string,
+    onClose: PropTypes.func,
+};
 
-    return root.render(<StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-            <JsControllerDialog hostId={hostId} socket={socket} theme={theme} version={version} />
-        </ThemeProvider>
-    </StyledEngineProvider>);
-}
+export default JsControllerDialog;

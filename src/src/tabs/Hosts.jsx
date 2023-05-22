@@ -18,7 +18,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 
-import { withWidth, Utils as UtilsCommon} from '@iobroker/adapter-react-v5';
+import { withWidth, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
@@ -26,11 +26,12 @@ import TabHeader from '../components/TabHeader';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 import HostEdit from '../components/Hosts/HostEdit';
-import { jsControllerDialogFunc } from '../dialogs/JsControllerDialog';
+import JsControllerDialog from '../dialogs/JsControllerDialog';
 import Utils from '../Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
+import JsControllerUpdater from '../dialogs/JsControllerUpdater';
 
 const styles = () => ({
     grow: {
@@ -219,6 +220,7 @@ class Hosts extends Component {
             showSlowConnectionWarning: false,
             readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
             hostUpdate: false,
+            updateDialog: false,
             hostUpdateDialog: null,
             editDialog: { index: 0, dialogName: '' },
             baseSettingsDialog: { index: 0, dialogName: '' },
@@ -431,10 +433,18 @@ class Hosts extends Component {
     };
 
     closeHostUpdateDialog = cb =>
-        this.setState({ hostUpdateDialog: false, hostUpdate: null}, cb);
+        this.setState({ hostUpdateDialog: false, hostUpdate: null }, cb);
 
-    openHostUpdateDialog = (hostUpdate, cb) =>
-        this.setState({ hostUpdateDialog: true, hostUpdate }, cb);
+    openHostUpdateDialog = async (hostUpdate, cb) => {
+        const updateAvailable = await this.props.socket.checkFeatureSupported('CONTROLLER_UI_UPGRADE');
+
+        this.setState({
+            hostUpdateDialog: true,
+            hostUpdate,
+            updateAvailable,
+        }, cb);
+    }
+
 
     getNews = (value, all = false) => {
         const adapter = this.state.repository['js-controller'];
@@ -460,28 +470,53 @@ class Hosts extends Component {
         return news;
     };
 
+    renderUpdateDialog() {
+        if (!this.state.updateDialog) {
+            return null;
+        }
+
+        if (this.state.updateAvailable) {
+            return <JsControllerUpdater
+                socket={this.props.socket}
+                hostId={this.state.updateDialog}
+                version={this.state.repository['js-controller'].version}
+                onClose={() => this.setState({ updateDialog: false })}
+                adminInstance={this.props.adminInstance}
+                onUpdating={isUpdating => this.props.onUpdating(isUpdating)}
+            />;
+        }
+
+        return <JsControllerDialog
+            socket={this.props.socket}
+            hostId={this.state.updateDialog}
+            theme={this.props.theme}
+            version={this.state.repository['js-controller'].version}
+            onClose={() => this.setState({ updateDialog: false })}
+        />;
+    }
+
     hostUpdateDialogCb = () => {
         if (!this.state.hostUpdateDialog) {
             return null;
-        } else {
-            return <AdapterUpdateDialog
-                open={!0}
-                adapter={this.state.hostUpdate}
-                adapterObject={this.state.repository['js-controller']}
-                t={this.t}
-                textUpdate={this.t('Show instructions')}
-                rightDependencies
-                news={this.getNews()}
-                toggleTranslation={this.props.toggleTranslation}
-                noTranslation={this.props.noTranslation}
-                onUpdate={() => {
-                    const hostUpdate = this.state.hostUpdate;
-                    this.closeHostUpdateDialog(() =>
-                        jsControllerDialogFunc(this.props.socket, hostUpdate, this.props.theme, this.state.repository['js-controller'].version))
-                }}
-                onClose={() => this.closeHostUpdateDialog()}
-            />;
         }
+
+        return <AdapterUpdateDialog
+            open={!0}
+            adapter={this.state.hostUpdate}
+            adapterObject={this.state.repository['js-controller']}
+            t={this.t}
+            textUpdate={this.state.updateAvailable ? this.t('Start update') : this.t('Show instructions')}
+            rightDependencies
+            news={this.getNews()}
+            toggleTranslation={this.props.toggleTranslation}
+            noTranslation={this.props.noTranslation}
+            onUpdate={async () => {
+                const hostUpdate = this.state.hostUpdate;
+                this.closeHostUpdateDialog(() =>
+                    this.setState({ updateDialog: hostUpdate }));
+            }}
+            onClose={() => this.closeHostUpdateDialog()}
+        />;
     };
 
     renderHosts() {
@@ -513,7 +548,7 @@ class Hosts extends Component {
                 executeCommandRemove={() => this.props.executeCommand(`host remove ${name}`)}
                 isCurrentHost={this.props.currentHost === _id}
                 installed={installedVersion}
-                events={'- / -'}
+                events="- / -"
                 t={this.t}
                 _id={_id}
                 showAdaptersWarning={this.props.showAdaptersWarning}
@@ -541,7 +576,7 @@ class Hosts extends Component {
                 formatInfo={formatInfo}
                 available={this.state.repository['js-controller']?.version || '-'}
                 installed={installedVersion}
-                events={'- / -'}
+                events="- / -"
                 t={this.t}
                 _id={_id}
                 showAdaptersWarning={this.props.showAdaptersWarning}
@@ -565,6 +600,7 @@ class Hosts extends Component {
             {this.baseSettingsSettingsDialog()}
             {this.renderSlowConnectionWarning()}
             {this.hostUpdateDialogCb()}
+            {this.renderUpdateDialog()}
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>
                     <IconButton size="large" onClick={() => {
@@ -590,19 +626,17 @@ class Hosts extends Component {
                         this.setState({filterText: event.target.value});
                     }}
                     InputProps={{
-                        endAdornment: (
-                            this.state.filterText ? <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={() => {
-                                        (window._localStorage || window.localStorage).setItem('Hosts.viewMode', '');
-                                        this.setState({filterText: ''})
-                                    }}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </InputAdornment> : null
-                        ),
+                        endAdornment: this.state.filterText ? <InputAdornment position="end">
+                            <IconButton
+                                size="small"
+                                onClick={() => {
+                                    (window._localStorage || window.localStorage).setItem('Hosts.viewMode', '');
+                                    this.setState({filterText: ''})
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </InputAdornment> : null,
                     }}
                 /> : null}
                 <div className={classes.grow} />
@@ -644,6 +678,8 @@ Hosts.propTypes = {
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
     currentHost: PropTypes.string,
+    adminInstance: PropTypes.string,
+    onUpdating: PropTypes.func,
 };
 
 export default withWidth()(withStyles(styles)(Hosts));
