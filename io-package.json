@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.4.4",
+    "version": "6.5.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.5.0": {
+        "en": "Added support for the js-controller update",
+        "de": "Unterstützung für das js-Controller-Update hinzugefügt",
+        "ru": "Добавлена поддержка обновления js-controller",
+        "pt": "Adicionado suporte para a atualização js-controller",
+        "nl": "Aangepast voor de JS-controller update",
+        "fr": "Ajout du support pour la mise à jour de js-controller",
+        "it": "Aggiunto supporto per l'aggiornamento js-controller",
+        "es": "Añadido soporte para la actualización js-controller",
+        "pl": "Wsparcie dla js-kontrolerowskiej aktualizacji",
+        "uk": "Додано підтримку оновлення js-controller",
+        "zh-cn": "增加对控制下的警员更新的支助"
+      },
       "6.4.4": {
         "en": "Added `imageSendTo` Control to JSONConfig\nAdded possibility to filter objects in selectID JSON component",
         "de": "Bild vergrößern SendeTo Control an JSONConfig\nMöglichkeit zum Filtern von Objekten in selectID JSON-Komponente",
@@ -95,19 +108,6 @@
         "pl": "Lepsze opty w przeglądarce obiektowej\nWstępna możliwość ukrywania kolumn w przeglądarce obiektowej",
         "uk": "Найкращі інструменти в браузері об'єктів\nДодано можливість сховати / показати стовпці в браузері об'єкта",
         "zh-cn": "目标增援工具\n再次可能藏匿或藏匿投机的栏目"
-      },
-      "6.3.6": {
-        "en": "Allowed the edit of log level in the configuration tab",
-        "de": "Erlaubt die Bearbeitung der Protokollebene in der Konfigurationstabelle",
-        "ru": "Разрешено редактирование уровня лога в вкладке конфигурации",
-        "pt": "Permitir a edição do nível de log na guia de configuração",
-        "nl": "Vertaling:",
-        "fr": "Permis la modification du niveau de log dans l'onglet de configuration",
-        "it": "Consentito la modifica del livello di log nella scheda di configurazione",
-        "es": "Permitió la edición del nivel de registro en la pestaña configuración",
-        "pl": "Wszystko edytowało poziom logowania w tabeli konfiguracyjnej",
-        "uk": "Дозволено редагування рівня входу в вкладку конфігурації",
-        "zh-cn": "允许在表格表中标明逻辑水平"
       }
     },
     "desc": {

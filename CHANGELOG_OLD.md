@@ -1,6 +1,15 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.4.0 (2023-03-22)
+* (bluefox) Breaking change: Configuration of Let's encrypt certificates moved to `iobroker.acme` adapter
+* (bluefox) Added port controller to JSON config
+* (bluefox) Added `certificates` to JSON config
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.3.7 (2023-03-12)
 * (bluefox) Better tooltips in object browser 
 * Added again possibility to hide/show of columns in object browser
