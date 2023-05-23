@@ -36,7 +36,7 @@ class JsControllerUpdater extends Component {
         }, result => {
             if (result.result) {
                 this.setState({ starting: false });
-                this.intervall = setInterval(() => this.checkStatus(), 1000); // poll every second
+                this.intervall = setInterval(() => this.checkStatus(), 10000); // poll every second
             } else {
                 this.setState({ error: I18n.t('Not updatable'), starting: false });
                 this.props.onUpdating(false);
