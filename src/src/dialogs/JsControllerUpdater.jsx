@@ -32,7 +32,7 @@ class JsControllerUpdater extends Component {
         // send update command to js-controller
         this.props.socket.getRawSocket().emit('sendToHost', this.props.hostId, 'upgradeController', {
             version: this.props.version,
-            adminInstance: this.props.adminInstance,
+            adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
         }, result => {
             if (result.result) {
                 this.setState({ starting: false });
