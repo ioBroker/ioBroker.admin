@@ -723,7 +723,7 @@ class App extends Router {
                             };
 
                             if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
-                                // close command dialog after reconnect (maybe admin was restarted and update is now finished)
+                                // close the command dialog after reconnect (maybe admin was restarted, and update is now finished)
                                 newState.commandRunning = false;
                                 newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
 
@@ -2260,7 +2260,7 @@ class App extends Router {
                     {this.renderWizardDialog()}
                     {this.showRedirectDialog()}
                     {this.renderSlowConnectionWarning()}
-                    {!this.state.connected && !this.state.redirectCountDown ? <Connecting /> : null}
+                    {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? <Connecting /> : null}
                     {this.state.showGuiSettings ? <Menu
                         anchorEl={this.state.showGuiSettings}
                         open={!0}

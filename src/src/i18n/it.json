@@ -1525,5 +1525,7 @@
   "You cannot delete host, when it is alive": "Non puoi eliminare l'host, quando è vivo",
   "Start update": "Inizia l'aggiornamento",
   "Updating JS-Controller...": "Aggiornamento del controller JS...",
-  "Copy": "Copia negli appunti"
+  "Copy": "Copia negli appunti",
+  "js-controller was successfully updated to %s": "js-controller è stato aggiornato con successo a %s",
+  "updating js-controller to %s...": "aggiornamento del controller js a %s..."
 }

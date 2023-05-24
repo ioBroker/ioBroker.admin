@@ -10,6 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import CloseIcon from '@mui/icons-material/Close';
+import ReloadIcon from '@mui/icons-material/Refresh';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -23,9 +24,18 @@ class JsControllerUpdater extends Component {
             starting: true,
         };
 
+        this.updating = false;
+
         this.textareaRef = React.createRef();
 
         this.link = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+    }
+
+    setUpdating(updating) {
+        if (this.updating !== updating) {
+            this.updating = updating;
+            this.props.onUpdating(updating);
+        }
     }
 
     componentDidMount() {
@@ -35,11 +45,16 @@ class JsControllerUpdater extends Component {
             adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
         }, result => {
             if (result.result) {
-                this.setState({ starting: false });
-                this.intervall = setInterval(() => this.checkStatus(), 10000); // poll every second
+                this.setUpdating(true);
+                this.intervall = setInterval(() => this.checkStatus(), 1000); // poll every second
+
+                this.startTimeout = setTimeout(() => {
+                    this.startTimeout = null;
+                    this.setState({ starting: false });
+                }, 10000); // give 10 seconds to controller to start update
             } else {
                 this.setState({ error: I18n.t('Not updatable'), starting: false });
-                this.props.onUpdating(false);
+                this.setUpdating(false);
             }
         });
     }
@@ -47,6 +62,9 @@ class JsControllerUpdater extends Component {
     componentWillUnmount() {
         this.intervall && clearInterval(this.intervall);
         this.intervall = null;
+
+        this.startTimeout && clearTimeout(this.startTimeout);
+        this.startTimeout = null;
     }
 
     checkStatus() {
@@ -59,37 +77,52 @@ class JsControllerUpdater extends Component {
 
         fetch(this.link)
             .then(res => res.json())
-            .then(response => this.setState({ response }, () => {
-                if (response && !response.running) {
-                    this.props.onUpdating(false);
-                    this.intervall && clearInterval(this.intervall);
-                    this.intervall = null;
+            .then(response => {
+                // sometimes stderr has only one empty string in it
+                if (response && response.stderr) {
+                    response.stderr = response.stderr.filter(line => line.trim());
                 }
+                if (response && !response.running && response.success && response.stdout) {
+                    response.stdout.push('');
+                    response.stdout.push('---------------------------------------------------');
+                    response.stdout.push(I18n.t('js-controller was successfully updated to %s', this.props.version));
+                } else if (response?.stdout) {
+                    response.stdout.unshift('');
+                    response.stdout.unshift('---------------------------------------------------');
+                    response.stdout.unshift(I18n.t('updating js-controller to %s...', this.props.version));
+                }
+                this.setState({ response, error: null }, () => {
+                    if (response && !response.running) {
+                        this.setUpdating(false);
+                        this.intervall && clearInterval(this.intervall);
+                        this.intervall = null;
+                    } else if (response?.running) {
+                        this.setUpdating(true);
+                    }
 
-                // scroll down
-                if (this.textareaRef.current) {
-                    setTimeout(() => {
-                        this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight;
-                    }, 100);
-                }
-            }))
+                    // scroll down
+                    if (this.textareaRef.current) {
+                        setTimeout(() => this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight, 100);
+                    }
+                });
+            })
             .catch(e => {
-                this.intervall && clearInterval(this.intervall);
-                this.intervall = null;
-                this.setState({ error: e.toString() }, () => this.props.onUpdating(false))
+                if (!this.state.starting) {
+                    this.setState({ error: e.toString() }, () => this.setUpdating(false));
+                }
             });
     }
 
     render() {
         return <Dialog
-                onClose={(e, reason) => {
-                    if (reason !== 'escapeKeyDown' && reason !== 'backdropClick') {
-                        this.props.onClose();
-                    }
-                }}
-                open={!0}
-                maxWidth="lg"
-                fullWidth
+            onClose={(e, reason) => {
+                if (reason !== 'escapeKeyDown' && reason !== 'backdropClick') {
+                    this.props.onClose();
+                }
+            }}
+            open={!0}
+            maxWidth="lg"
+            fullWidth
         >
             <DialogTitle>{I18n.t('Updating JS-Controller...')}</DialogTitle>
             <DialogContent style={{ height: 400, padding: '0 20px', overflow: 'hidden' }}>
@@ -100,29 +133,33 @@ class JsControllerUpdater extends Component {
                         width: '100%',
                         height: '100%',
                         resize: 'none',
+                        background: this.props.themeName === 'dark' ? '#000' : '#fff',
+                        color: this.props.themeName === 'dark' ? '#EEE' : '#111',
+                        boxSizing: 'border-box',
                         fontFamily: 'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
-                        border: !this.state.error && !this.state.response?.running && this.state.response?.success ? '1px solid green' :
-                            (this.state.error || (this.state.response && this.state.response.running && !this.state.response.success) ? '1px solid red' : undefined),
+                        border: this.state.response?.success ? '2px solid green' :
+                            (this.state.error || (this.state.response && !this.state.response.running && !this.state.response.success) ? '2px solid red' : undefined),
                     }}
                     value={this.state.error ? this.state.error : (
-                        this.state.response.stderr ? this.state.response.stderr.join('\n') : this.state.response.stdout.join('\n'))}
+                        this.state.response.stderr && this.state.response.stderr.length ?
+                            this.state.response.stderr.join('\n') : this.state.response.stdout.join('\n'))}
                     readOnly
                 /> : null}
             </DialogContent>
             <DialogActions>
                 <Button
                     variant="contained"
-                    disabled={this.state.starting || (!this.state.error && this.state.response && !this.state.response.running)}
+                    disabled={this.state.starting || (!this.state.error && this.state.response?.running)}
                     onClick={() => {
-                        if (this.state.response && this.state.response.success) {
+                        if (this.state.response?.success) {
                             window.location.reload();
                         }
                         this.props.onClose();
                     }}
-                    color="grey"
-                    startIcon={<CloseIcon />}
+                    color={this.state.response?.success ? 'primary' : 'grey'}
+                    startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
                 >
-                    {I18n.t('Close')}
+                    {this.state.response?.success ? I18n.t('Reload') : I18n.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>;
@@ -136,6 +173,7 @@ JsControllerUpdater.propTypes = {
     version: PropTypes.string.isRequired,
     adminInstance: PropTypes.string.isRequired,
     onUpdating: PropTypes.func.isRequired,
+    themeName: PropTypes.string,
 };
 
 export default JsControllerUpdater;

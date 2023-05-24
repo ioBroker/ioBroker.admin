@@ -1525,5 +1525,7 @@
   "You cannot delete host, when it is alive": "U kunt de host niet verwijderen wanneer deze nog leeft",
   "Start update": "Start update",
   "Updating JS-Controller...": "JS-Controller updaten...",
-  "Copy": "Kopieer naar klembord"
+  "Copy": "Kopieer naar klembord",
+  "js-controller was successfully updated to %s": "js-controller is met succes geüpdatet naar %s",
+  "updating js-controller to %s...": "js-controller updaten naar %s..."
 }

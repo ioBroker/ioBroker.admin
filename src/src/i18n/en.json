@@ -1525,5 +1525,7 @@
   "You cannot delete host, when it is alive": "You cannot delete host, when it is alive",
   "Start update": "Start update",
   "Updating JS-Controller...": "Updating JS-Controller...",
-  "Copy": "Copy to clipboard"
+  "Copy": "Copy to clipboard",
+  "js-controller was successfully updated to %s": "js-controller was successfully updated to %s",
+  "updating js-controller to %s...": "updating js-controller to %s..."
 }

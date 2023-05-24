@@ -1525,5 +1525,7 @@
   "You cannot delete host, when it is alive": "你不能删除主机，当它还活着",
   "Start update": "开始升级",
   "Updating JS-Controller...": "更新 JS 控制器...",
-  "Copy": "复制到剪贴板"
+  "Copy": "复制到剪贴板",
+  "js-controller was successfully updated to %s": "js-controller 已成功更新为 %s",
+  "updating js-controller to %s...": "更新 js-controller 到 %s..."
 }

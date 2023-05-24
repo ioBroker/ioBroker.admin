@@ -483,6 +483,7 @@ class Hosts extends Component {
                 onClose={() => this.setState({ updateDialog: false })}
                 adminInstance={this.props.adminInstance}
                 onUpdating={isUpdating => this.props.onUpdating(isUpdating)}
+                themeName={this.props.themeName}
             />;
         }
 

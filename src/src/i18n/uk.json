@@ -1525,5 +1525,7 @@
   "You cannot delete host, when it is alive": "Ви не можете видалити хост, коли він живий",
   "Start update": "Почати оновлення",
   "Updating JS-Controller...": "Оновлення JS-Controller...",
-  "Copy": "Копіювати в буфер обміну"
+  "Copy": "Копіювати в буфер обміну",
+  "js-controller was successfully updated to %s": "js-контролер успішно оновлено до %s",
+  "updating js-controller to %s...": "оновлення js-контролера до %s..."
 }
