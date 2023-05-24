@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.5.3 (2023-05-24)
 * (bluefox) Added support for the js-controller update
 
 ### 6.4.4 (2023-05-10)
