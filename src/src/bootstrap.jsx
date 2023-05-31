@@ -65,24 +65,29 @@ const ignoreErrors = [
 ];
 
 if (!window.disableDataReporting && window.location.port !== '3000') {
-    Sentry.init({
-        dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
-        release: 'iobroker.' + window.adapterName + '@' + pack.version,
-        integrations: [
-            new SentryIntegrations.Dedupe()
-        ],
-        beforeSend(event) {
-            // Modify the event here
-            if (event && event.culprit &&
-                versionChanged.find(error => event.culprit.includes(error))) {
-                window.reload();
-            } else if (event && event.culprit &&
-                ignoreErrors.find(error => event.culprit.includes(error))) {
-                return null;
+    try {
+        Sentry.init({
+            dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
+            release: 'iobroker.' + window.adapterName + '@' + pack.version,
+            integrations: [
+                new SentryIntegrations.Dedupe()
+            ],
+            beforeSend(event) {
+                // Modify the event here
+                if (event && event.culprit &&
+                    versionChanged.find(error => event.culprit.includes(error))) {
+                    window.reload();
+                } else if (event && event.culprit &&
+                    ignoreErrors.find(error => event.culprit.includes(error))) {
+                    return null;
+                }
+                return event;
             }
-            return event;
-        }
-    });
+        });
+    } catch (e) {
+        console.log('VERY STRANGE!!!!');
+        window.location.reload();
+    }
 } else {
     window.onerror = function (error) {
         const errText = error.toString();

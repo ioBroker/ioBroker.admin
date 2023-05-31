@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 6.5.4 (2023-05-31)
+### **WORK IN PROGRESS**
 * (bluefox) Sentry packages were updated
 
 ### 6.5.3 (2023-05-24)
