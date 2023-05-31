@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.5.4 (2023-05-31)
 * (bluefox) Sentry packages were updated
 
 ### 6.5.3 (2023-05-24)
@@ -99,10 +99,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.4.2 (2023-03-27)
 * (bluefox) Better check of the certificates
-
-### 6.4.1 (2023-03-24)
-* (bluefox) Fallback on normal https webserver in case of not let's encrypt certificates
-* (bluefox) Show readme from GitHub
 
 ## License
 The MIT License (MIT)

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.5.3",
+    "version": "6.5.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.5.4": {
+        "en": "Sentry packages were updated",
+        "de": "Sentry Pakete wurden aktualisiert",
+        "ru": "Пакеты Sentry были обновлены",
+        "pt": "Pacotes enviados foram atualizados",
+        "nl": "Vertaling:",
+        "fr": "Les paquets Sentry ont été mis à jour",
+        "it": "I pacchetti Sentry sono stati aggiornati",
+        "es": "Se actualizaron los paquetes de centry",
+        "pl": "Pakiety wstępne zostały zaktualizowane",
+        "uk": "Оновлення пакетів Sentry",
+        "zh-cn": "已更新一揽子营养计划。"
+      },
       "6.5.3": {
         "en": "Added support for the js-controller update",
         "de": "Unterstützung für das js-Controller-Update hinzugefügt",
@@ -95,19 +108,6 @@
         "pl": "Zmiana: Konfiguracja szyfrów Leta została przeniesiona do iobrokera. adapter\nKontroler porówny JSON\nZamówione świadectwo konfigurowizacji JSON",
         "uk": "Зміна розривів: Конфігурація сертифікатів Let's шифруються на iobroker. адаптер змінного струму\nДодано контролер порту в JSON config\nДодано сертифікати на налаштування JSON",
         "zh-cn": "断然变化: 让的加密证书的配件移到罗克。 a 适应\n将港口管制员增到联合执行联盟总部\n提交联合协商会证书"
-      },
-      "6.3.7": {
-        "en": "Better tooltips in object browser \nAdded again possibility to hide/show of columns in object browser",
-        "de": "Bessere Tooltips im Objektbrowser\nWeitere Möglichkeit zum Verbergen/Zeigen von Spalten im Objektbrowser hinzugefügt",
-        "ru": "Лучшие инструменты в браузере объектов\nДобавлена снова возможность спрятать/шоу колонок в объектном браузере",
-        "pt": "Melhores dicas de ferramentas no navegador de objetos\nAdicionado novamente possibilidade de esconder/mostrar colunas no navegador objeto",
-        "nl": "Betere toltips in object browser\nWeer de mogelijkheid om de kolommen in objecten te verbergen",
-        "fr": "Meilleurs outils dans le navigateur objet\nAjout de nouveau la possibilité de cacher / montrer des colonnes dans le navigateur objet",
-        "it": "Migliori tooltips nel browser degli oggetti\nAggiunta di nuovo la possibilità di nascondere / mostrare di colonne nel browser oggetto",
-        "es": "Mejores puntas de herramientas en el navegador de objetos\nAñadido otra vez la posibilidad de ocultar / mostrar de columnas en el navegador objeto",
-        "pl": "Lepsze opty w przeglądarce obiektowej\nWstępna możliwość ukrywania kolumn w przeglądarce obiektowej",
-        "uk": "Найкращі інструменти в браузері об'єктів\nДодано можливість сховати / показати стовпці в браузері об'єкта",
-        "zh-cn": "目标增援工具\n再次可能藏匿或藏匿投机的栏目"
       }
     },
     "desc": {
