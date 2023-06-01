@@ -5,6 +5,10 @@
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
 
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.4.1 (2023-03-24)
 * (bluefox) Fallback on normal https webserver in case of not let's encrypt certificates
 * (bluefox) Show readme from GitHub

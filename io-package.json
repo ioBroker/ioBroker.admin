@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.5.5",
+    "version": "6.5.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.5.6": {
+        "en": "Sentry packages were updated",
+        "de": "Sentry Pakete wurden aktualisiert",
+        "ru": "Пакеты Sentry были обновлены",
+        "pt": "Pacotes enviados foram atualizados",
+        "nl": "Vertaling:",
+        "fr": "Les paquets Sentry ont été mis à jour",
+        "it": "I pacchetti Sentry sono stati aggiornati",
+        "es": "Se actualizaron los paquetes de centry",
+        "pl": "Pakiety wstępne zostały zaktualizowane",
+        "uk": "Оновлення пакетів Sentry",
+        "zh-cn": "已更新一揽子营养计划。"
+      },
       "6.5.3": {
         "en": "Added support for the js-controller update",
         "de": "Unterstützung für das js-Controller-Update hinzugefügt",
