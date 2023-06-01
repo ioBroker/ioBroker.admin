@@ -39,14 +39,14 @@ function npmInstall() {
         console.log(`"${cmd} in ${cwd}`);
 
         // System call used for update of js-controller itself,
-        // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
+        // because during the installation the npm packet will be deleted too, but some files must be loaded even during the installation process.
         const child = cp.exec(cmd, { cwd });
 
         child.stderr.pipe(process.stderr);
         child.stdout.pipe(process.stdout);
 
         child.on('exit', (code /* , signal */) => {
-            // code 1 is strange error that cannot be explained. Everything is installed but error :(
+            // code 1 is a strange error that cannot be explained. Everything is installed but error :(
             if (code && code !== 1) {
                 reject(`Cannot install: ${code}`);
             } else {
@@ -90,14 +90,14 @@ function build() {
             console.error(`Cannot find execution file: ${script}`);
             reject(`Cannot find execution file: ${script}`);
         } else {
-            const cmd = `node --max-old-space-size=8192 ${script} build`;
+            const cmd = `node --max-old-space-size=11000 ${script} build`;
             const child = cp.exec(cmd, { cwd: src });
 
             child.stderr.pipe(process.stderr);
             child.stdout.pipe(process.stdout);
 
             child.on('exit', (code /* , signal */) => {
-                // code 1 is strange error that cannot be explained. Everything is installed but error :(
+                // code 1 is a strange error that cannot be explained. Everything is installed but error :(
                 if (code && code !== 1) {
                     reject(`Cannot install: ${code}`);
                 } else {

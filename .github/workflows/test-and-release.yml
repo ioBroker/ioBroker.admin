@@ -83,7 +83,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: NODE_OPTIONS=--max_old_space_size=4096 npm run build
+        run: NODE_OPTIONS=--max_old_space_size=8192 npm run build
 
       - name: Run GUI tests
         run: npm run test:gui
@@ -105,7 +105,7 @@ jobs:
       contains(github.event.head_commit.message, '[skip ci]') == false &&
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
+    runs-on: macos-latest # ubuntu-latest has too few RAM
 
     steps:
       - name: Checkout code
@@ -118,7 +118,7 @@ jobs:
 
       - name: Extract the version and commit body from the tag
         id: extract_release
-        # The body may be multiline, therefore we need to escape some characters
+        # The body may be multiline, therefore, we need to escape some characters
         run: |
           VERSION="${{ github.ref }}"
           VERSION=${VERSION##*/}
