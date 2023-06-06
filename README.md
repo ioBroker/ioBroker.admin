@@ -16,16 +16,16 @@ User interface for configuration and administration of ioBroker.
 ## Using common.localLink
 - `%ip%` - ioBroker ip address (address of the admin)
 - `%secure%` or `%protocol%` - read from `native.secure` the value and use http or https
-- `%web_protocol%` - looking for the first instance of web (e.g. web.0) and get `native.secure` from `system.adapter.web.0`
+- `%web_protocol%` - looking for the first instance of web (e.g., `web.0`) and get `native.secure` from `system.adapter.web.0`
 - `%instance%` - instance of the adapter
 - `%someField%` - get someField from `native` of this adapter instance
 - `%web.0_bind%` - get `native.bind` from `system.adapter.web.0`
 - `%native_someField%` - get someField from `native` of this adapter instance
 
 ## Scheduled restart
-Some adapters are not stable or connection disappear after one or two days.
-To fix this there is a scheduled restart setting.
-To activate scheduled restart just define CRON condition when to restart adapter.
+Some adapters are not stable or connection disappears after one or two days.
+To fix this, there is a scheduled restart setting.
+To activate scheduled restart, just define CRON condition when to restart adapter.
 
 It is suggested to restart in the night, when no one use the adapter, e.g. `0 3 * * *` - at 3:00 every day.
 
@@ -50,12 +50,12 @@ From version 6.1.0 you have the possibility to tune intro page for usage with re
 
 ### Example 
 Your `ioBroker.admin` runs on port 8081 behind reverse proxy with domain `iobroker.mydomain.com` under path `/ioBrokerAdmin/`. 
-And you set up e.g. nginx to forward the requests to the `http://local-iobroker.IP:8081`. 
+And you set up e.g., nginx to forward the requests to the `http://local-iobroker.IP:8081`. 
 
-Same is with your web instance: `https://iobroker.mydomain.com/ioBrokerWeb/ => http://local-iobroker.IP:8082`.
+The same is with your web instance: `https://iobroker.mydomain.com/ioBrokerWeb/ => http://local-iobroker.IP:8082`.
 And with rest-api instance: `https://iobroker.mydomain.com/ioBrokerAPI/ => http://local-iobroker.IP:8093`.
 
-You can add following lines into Reverse Proxy tab to let Intro tab run behind reverse proxy properly:
+You can add the following lines into Reverse Proxy tab to let Intro tab run behind reverse proxy properly:
 
 | Global path       | Instance      | Instance path behind proxy |
 |-------------------|---------------|----------------------------|
