@@ -37,7 +37,7 @@ You can select in configuration of admin adapter if and which collection to use.
 
 ## Simple instance's settings page
 The user has the possibility to limit the access to the instance configuration dialog.
-For that the option "Allow access only to specific instances" must be activated.
+For that, the option "Allow access only to specific instances" must be activated.
 It could be found on the "Access to the instances" tab.
 Additionally, the allowed instances should be selected in the appeared configuration table.
 
