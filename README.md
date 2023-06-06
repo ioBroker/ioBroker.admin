@@ -84,6 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
 * (bluefox) ZIP archives will be saved in files and not in states
 
 ### 6.5.6 (2023-06-01)
