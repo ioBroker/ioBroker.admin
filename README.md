@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.5.7 (2023-06-06)
 * (bluefox) ZIP archives will be saved in files and not in states
 
 ### 6.5.6 (2023-06-01)
@@ -99,9 +99,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.4.3 (2023-03-31)
 * (bluefox) Corrected the folder rights edit dialog
-
-### 6.4.2 (2023-03-27)
-* (bluefox) Better check of the certificates
 
 ## License
 The MIT License (MIT)

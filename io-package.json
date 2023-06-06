@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.5.6",
+    "version": "6.5.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.5.7": {
+        "en": "ZIP archives will be saved in files and not in states",
+        "de": "ZIP-Archive werden in Dateien gespeichert und nicht in Staaten",
+        "ru": "ZIP архивы будут сохранены в файлах и не в государствах",
+        "pt": "Arquivos ZIP serão salvos em arquivos e não em estados",
+        "nl": "ZIP archieven worden gered in dossiers en niet in staat",
+        "fr": "Les archives ZIP seront sauvegardées dans les fichiers et non dans les états",
+        "it": "Gli archivi ZIP saranno salvati nei file e non negli stati",
+        "es": "Los archivos ZIP se guardarán en archivos y no en estados",
+        "pl": "Archiwa ZIP będą przechowywane w plikach i nie w krajach",
+        "uk": "Архіви ZIP будуть збережені в файлах і не в штатах",
+        "zh-cn": "档案馆档案将予保存,而不是在各州。"
+      },
       "6.5.6": {
         "en": "Sentry packages were updated",
         "de": "Sentry Pakete wurden aktualisiert",
@@ -95,19 +108,6 @@
         "pl": "Fallback na zwykłym webserverie https nie pozwala na szyfrowanie certyfikatów\nStrona internetowa GitHub",
         "uk": "Відшкодування на нормальному веб-сервері https://www.facebook.com/\nПоказати читання з GitHub",
         "zh-cn": "关于不容许加密证书的正常网站服务器的挫折\nGitHub"
-      },
-      "6.4.0": {
-        "en": "Breaking change: Configuration of Let's encrypt certificates moved to `iobroker.acme` adapter\nAdded port controller to JSON config\nAdded `certificates` to JSON config",
-        "de": "Wechsel: Konfiguration von Let's Verschlüsselungszertifikaten bewegt zu iobroker. acm Adapter\nPort-Controller zu JSON config hinzugefügt\nZertifikate zu JSON config hinzugefügt",
-        "ru": "Перерыв изменений: Конфигурация сертификатов Let's encrypt переехала в iobroker. acme адаптер\nДобавлен контроллер портов в JSON config\nДобавлены сертификаты JSON config",
-        "pt": "Mudança de ruptura: Configuração de Let's encrypt certificados movidos para iobroker. adaptador de acme\nAdicionado controlador de porta para JSON config\nAdicionados certificados para JSON config",
-        "nl": "Verandering: Bespreking van Let's encrypt certificaat verhuisde naar iobroker. Acme adapter\nVoeg de havencontroleur toe aan JSON\nToegevoegd certificaat aan JSON",
-        "fr": "Changement de rupture : Configuration des certificats de chiffrement transférés à iobroker. acme adaptateur\nAjout du contrôleur port à la configuration JSON\nAjout de certificats à la configuration JSON",
-        "it": "Cambiamento di rottura: Configurazione di Let's criptare certificati spostati a iobroker. adattatore di acme\nAggiunto controller di porta a JSON config\nCertificati aggiunti a JSON config",
-        "es": "Cambio de ruptura: Configuración de certificados de encriptación trasladados a iobroker. adaptador de acme\nControlador de puerto añadido a JSON config\nCertificados añadidos a JSON config",
-        "pl": "Zmiana: Konfiguracja szyfrów Leta została przeniesiona do iobrokera. adapter\nKontroler porówny JSON\nZamówione świadectwo konfigurowizacji JSON",
-        "uk": "Зміна розривів: Конфігурація сертифікатів Let's шифруються на iobroker. адаптер змінного струму\nДодано контролер порту в JSON config\nДодано сертифікати на налаштування JSON",
-        "zh-cn": "断然变化: 让的加密证书的配件移到罗克。 a 适应\n将港口管制员增到联合执行联盟总部\n提交联合协商会证书"
       }
     },
     "desc": {
