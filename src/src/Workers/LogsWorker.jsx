@@ -184,7 +184,7 @@ class LogsWorker {
 
             if (time && time.length > 0) {
                 let ts;
-                // Safari sucks. It is very idiotic browser and because of it, we must parse every number apart
+                // Safari sucks. It is a very idiotic browser, and because of it, we must parse every number apart
                 if (this.isSafari) {
                     // parse every number
                     const tt = line.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})/);
@@ -237,7 +237,7 @@ class LogsWorker {
             // if new message time is less than last message in log
             if (length && this.logs[length - 1].key > obj.key) {
                 let i;
-                // find place
+                // find the place
                 for (i = length - 1; i >= 0; i--) {
                     if (this.logs[i].key < obj.key) {
                         break;
@@ -290,10 +290,10 @@ class LogsWorker {
                     return {logs: this.logs, logSize: 0};
                 }
 
-                let logSize = lines ? lines.pop() : null
+                let logSize = lines ? lines.pop() : null;
 
                 if (typeof logSize === 'string') {
-                    logSize = parseInt(logSize)
+                    logSize = parseInt(logSize);
                 }
 
                 this.logs = [];
@@ -318,11 +318,9 @@ class LogsWorker {
                 this.errors && this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
                 this.warnings && this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
 
-                return {logs: this.logs, logSize};
+                return { logs: this.logs, logSize };
             })
-            .catch(e => {
-                window.alert('Cannot get logs: ' + e);
-            });
+            .catch(e => window.alert(`Cannot get logs: ${e}`));
 
         return this.promise;
     }
