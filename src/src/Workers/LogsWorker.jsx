@@ -289,7 +289,12 @@ class LogsWorker {
 
                     return {logs: this.logs, logSize: 0};
                 }
-                const logSize = lines ? lines.pop() : null;
+
+                let logSize = lines ? lines.pop() : null
+
+                if (typeof logSize === 'string') {
+                    logSize = parseInt(logSize)
+                }
 
                 this.logs = [];
                 let lastKey;
