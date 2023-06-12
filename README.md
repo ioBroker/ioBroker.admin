@@ -84,6 +84,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) The log size will be parsed correctly for controller v5
+
 ### 6.5.7 (2023-06-06)
 * (bluefox) ZIP archives will be saved in files and not in states
 
