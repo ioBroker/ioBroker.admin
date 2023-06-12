@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.5.8 (2023-06-12)
 * (foxriver76) The log size will be parsed correctly for controller v5
 
 ### 6.5.7 (2023-06-06)
@@ -99,9 +99,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.4.4 (2023-05-10)
 * (bluefox) Added `imageSendTo` Control to JSONConfig
 * (bluefox) Added possibility to filter objects in selectID JSON component
-
-### 6.4.3 (2023-03-31)
-* (bluefox) Corrected the folder rights edit dialog
 
 ## License
 The MIT License (MIT)

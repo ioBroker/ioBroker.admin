@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.5.7",
+    "version": "6.5.8",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.5.8": {
+        "en": "The log size will be parsed correctly for controller v5",
+        "de": "Die Log-Größe wird für den Controller v5 korrekt pariert",
+        "ru": "Размер лога будет отправлен правильно для контроллера v5",
+        "pt": "O tamanho do log será analisado corretamente para o controlador v5",
+        "nl": "De logmatische grootte zal correct worden uitgedeeld voor controleur V5",
+        "fr": "La taille du journal sera parsée correctement pour le contrôleur v5",
+        "it": "La dimensione del log verrà correttamente analizzata per il controller v5",
+        "es": "El tamaño del registro será analizado correctamente para el controlador v5",
+        "pl": "Rozmiary logowania będą poprawnie zarezerwowane dla kontrolera v5",
+        "uk": "Розмір колоди буде припаркований правильно для контролера v5",
+        "zh-cn": "逻辑大小将正确地用于控制容忍 v5"
+      },
       "6.5.7": {
         "en": "ZIP archives will be saved in files and not in states",
         "de": "ZIP-Archive werden in Dateien gespeichert und nicht in Staaten",
@@ -95,19 +108,6 @@
         "pl": "Błędny sprawdzanie certyfikatów",
         "uk": "Отримання сертифікатів",
         "zh-cn": "更好地检查证书"
-      },
-      "6.4.1": {
-        "en": "Fallback on normal https webserver in case of not let's encrypt certificates\nShow readme from GitHub",
-        "de": "Fallback auf normalen https Webserver, falls wir keine Zertifikate verschlüsseln\nReadme von GitHub anzeigen",
-        "ru": "Падение на обычном веб-сервере https в случае не давайте зашифровать сертификаты\nПоказать читатель от GitHub",
-        "pt": "Retorno no servidor web https normal em caso de não vamos criptografar certificados\nMostrar readme de GitHub",
-        "nl": "Fallback op normale HTP's webserver in geval van niet laten we de certificaten versleutelen\nToon de lezing van GitHub",
-        "fr": "Fallback sur le serveur Web https normal en cas de non-coder les certificats\nShow readme de GitHub",
-        "it": "Fallback sul normale webserver https in caso di non crittografare i certificati\nMostra il testo di GitHub",
-        "es": "Fallback en el servidor web normal de https en caso de no encriptar certificados\nShow readme from GitHub",
-        "pl": "Fallback na zwykłym webserverie https nie pozwala na szyfrowanie certyfikatów\nStrona internetowa GitHub",
-        "uk": "Відшкодування на нормальному веб-сервері https://www.facebook.com/\nПоказати читання з GitHub",
-        "zh-cn": "关于不容许加密证书的正常网站服务器的挫折\nGitHub"
       }
     },
     "desc": {
