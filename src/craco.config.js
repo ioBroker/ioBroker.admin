@@ -28,6 +28,7 @@ module.exports = {
         configure: webpackConfig => {
             webpackConfig.resolve.fallback = webpackConfig.resolve.fallback || {}
             webpackConfig.resolve.fallback.util = false;//webpackConfig.resolve.fallback.util || require.resolve('util');
+            webpackConfig.parallelism = 50
             return webpackConfig;
         },
     },
