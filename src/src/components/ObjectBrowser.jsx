@@ -3066,33 +3066,39 @@ class ObjectBrowser extends Component {
     _createAllEnums = async (enums, objId) => {
         for (let e = 0; e < enums.length; e++) {
             let id = enums[e];
-            let _enObj;
+            let newObj;
+            // some admin version delivered enums as string
             if (typeof id === 'object') {
-                _enObj = id;
+                newObj = id;
                 id = id._id;
             }
-            let enObj = this.objects[id];
-            if (!enObj) {
-                enObj = _enObj || {
+            let oldObj = this.objects[id];
+            // if enum does not exist
+            if (!oldObj) {
+                // create a new one
+                oldObj = newObj || {
                     _id: id,
                     common: {
                         name: id.split('.').pop(),
                         members: [],
                     },
                     native: {},
+                    type: 'enum',
                 };
 
-                enObj.common = enObj.common || {};
-                enObj.common.members = [objId];
+                oldObj.common = oldObj.common || {};
+                oldObj.common.members = [objId];
+                oldObj.type = 'enum';
 
-                await this.props.socket.setObject(id, enObj);
-            } else if (!enObj.common?.members?.includes(objId)) {
-                enObj.common = enObj.common || {};
-                enObj.common.members = enObj.common.members || [];
-                // add missing object
-                enObj.common.members.push(objId);
-                enObj.common.members.sort();
-                await this.props.socket.setObject(id, enObj);
+                await this.props.socket.setObject(id, oldObj);
+            } else if (!oldObj.common?.members?.includes(objId)) {
+                oldObj.common = oldObj.common || {};
+                oldObj.type = 'enum';
+                oldObj.common.members = oldObj.common.members || [];
+                // add the missing object
+                oldObj.common.members.push(objId);
+                oldObj.common.members.sort();
+                await this.props.socket.setObject(id, oldObj);
             }
         }
     };
