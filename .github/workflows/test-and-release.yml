@@ -128,7 +128,6 @@ jobs:
 
       - name: Publish package to npm
         run: |
-          npm whoami
           npm run prepublishOnly
 
 
