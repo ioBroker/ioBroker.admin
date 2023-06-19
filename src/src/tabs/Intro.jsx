@@ -23,7 +23,7 @@ import EditIntroLinkDialog from '../dialogs/EditIntroLinkDialog';
 const styles = theme => ({
     root: {
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     button: {
         position: 'absolute',
