@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import ipaddr from 'ipaddr.js';
 
 import { LinearProgress }from '@mui/material';
 
@@ -38,25 +39,75 @@ class JsControllerUpdater extends Component {
         }
     }
 
+    async findIpAddress() {
+        // Controller to update: this.props.hostId
+        // Current admin instance: this.props.adminInstance = 'admin.X'
+        // read settings of admin.X
+        const instanceObj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
+        if (instanceObj.common.host !== this.props.hostId) {
+            // we are updating some slave => try to find the common ip address
+            const host = await this.props.socket.getObject(`system.host.${this.props.hostId}`);
+            const settings = await this.props.socket.readBaseSettings(this.props.hostId);
+            let hostIp = settings?.config?.objects?.host;
+
+            if (hostIp && hostIp !== 'localhost') {
+                hostIp = ipaddr.parse(hostIp);
+                // find common ip address in host.native.hardware.networkInterfaces
+                const keys = host?.native?.hardware?.networkInterfaces && Object.keys(host?.native?.hardware?.networkInterfaces);
+                if (keys) {
+                    for (let i = 0; i < keys.length; i++) {
+                        const eth = host.native.hardware.networkInterfaces[keys[i]];
+                        eth.find(addr => {
+                            // addr = {
+                            //     "address": "192.168.178.45",
+                            //     "netmask": "255.255.255.0",
+                            //     "family": "IPv4",
+                            //     "mac": "00:2e:5c:68:15:e1",
+                            //     "internal": false,
+                            //     "cidr": "192.168.178.45/24"
+                            // }
+                            try {
+                                const iIP = ipaddr.parseCIDR(addr.cidr);
+                                if (addr.internal === false && hostIp.match(iIP)) {
+                                    this.link = `${window.location.protocol}//${addr.family === 'IPv6' ? `[${addr.address}]` : addr.address}:${window.location.port}`;
+                                }
+                            } catch (e) {
+                                // ignore
+                            }
+                            return false;
+                        });
+                    }
+                }
+            }
+        }
+    }
+
     componentDidMount() {
         // send update command to js-controller
-        this.props.socket.getRawSocket().emit('sendToHost', this.props.hostId, 'upgradeController', {
-            version: this.props.version,
-            adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
-        }, result => {
-            if (result.result) {
-                this.setUpdating(true);
-                this.intervall = setInterval(() => this.checkStatus(), 1000); // poll every second
+        this.findIpAddress()
+            .catch(e => {
+                // cannot find ip address
+                console.error(`Cannot find ip address: ${e}`);
+            })
+            .then(() => {
+                this.props.socket.getRawSocket().emit('sendToHost', this.props.hostId, 'upgradeController', {
+                    version: this.props.version,
+                    adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
+                }, result => {
+                    if (result.result) {
+                        this.setUpdating(true);
+                        this.intervall = setInterval(() => this.checkStatus(), 1000); // poll every second
 
-                this.startTimeout = setTimeout(() => {
-                    this.startTimeout = null;
-                    this.setState({ starting: false });
-                }, 10000); // give 10 seconds to controller to start update
-            } else {
-                this.setState({ error: I18n.t('Not updatable'), starting: false });
-                this.setUpdating(false);
-            }
-        });
+                        this.startTimeout = setTimeout(() => {
+                            this.startTimeout = null;
+                            this.setState({ starting: false });
+                        }, 10000); // give 10 seconds to controller to start update
+                    } else {
+                        this.setState({ error: I18n.t('Not updatable'), starting: false });
+                        this.setUpdating(false);
+                    }
+                });
+            });
     }
 
     componentWillUnmount() {

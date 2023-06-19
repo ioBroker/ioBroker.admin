@@ -90,7 +90,7 @@ function build() {
             console.error(`Cannot find execution file: ${script}`);
             reject(`Cannot find execution file: ${script}`);
         } else {
-            const cmd = `${script} --max-old-space-size=7000 build`;
+            const cmd = `node ${script} --max-old-space-size=7000 build`;
             const child = cp.exec(cmd, { cwd: src });
 
             child.stderr.pipe(process.stderr);

@@ -38,7 +38,7 @@ const styles = theme => ({
     },
     selected: {
         color: theme.palette.mode === 'dark' ? '#FFF !important' : '#222 !important',
-    }
+    },
 });
 
 class BaseSettingsDialog extends Component {

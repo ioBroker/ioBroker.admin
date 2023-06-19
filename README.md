@@ -84,6 +84,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added support for update of the js-controller slaves
+
 ### 6.5.8 (2023-06-12)
 * (foxriver76) The log size will be parsed correctly for controller v5
 
