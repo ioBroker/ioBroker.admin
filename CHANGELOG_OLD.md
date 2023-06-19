@@ -1,6 +1,14 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.4.4 (2023-05-10)
+* (bluefox) Added `imageSendTo` Control to JSONConfig
+* (bluefox) Added possibility to filter objects in selectID JSON component
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.4.3 (2023-03-31)
 * (bluefox) Corrected the folder rights edit dialog
 

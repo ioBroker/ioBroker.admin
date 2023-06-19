@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.5.9 (2023-06-19)
 * (bluefox) Added support for update of the js-controller slaves
 
 ### 6.5.8 (2023-06-12)
@@ -98,10 +98,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.5.3 (2023-05-24)
 * (bluefox) Added support for the js-controller update
-
-### 6.4.4 (2023-05-10)
-* (bluefox) Added `imageSendTo` Control to JSONConfig
-* (bluefox) Added possibility to filter objects in selectID JSON component
 
 ## License
 The MIT License (MIT)

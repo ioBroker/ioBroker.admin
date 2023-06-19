@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.5.8",
+    "version": "6.5.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.5.9": {
+        "en": "Added support for update of the js-controller slaves",
+        "de": "Unterstützung für das Update der js-Controller Slaves",
+        "ru": "Добавлена поддержка обновления рабов js-controller",
+        "pt": "Adicionado suporte para atualização dos escravos js-controller",
+        "nl": "Aangepast voor update van de Js-controller slaven",
+        "fr": "Ajout du support pour la mise à jour des esclaves js-controller",
+        "it": "Aggiunto supporto per l'aggiornamento degli schiavi js-controller",
+        "es": "Apoyo añadido para la actualización de los esclavos js-controladores",
+        "pl": "Wsparcie dla uaktualniania js-controllerowskich niewolników",
+        "uk": "Додана підтримка оновлення рабів-контролерів",
+        "zh-cn": "增加支助,以更新控制的手奴"
+      },
       "6.5.8": {
         "en": "The log size will be parsed correctly for controller v5",
         "de": "Die Log-Größe wird für den Controller v5 korrekt pariert",
@@ -95,19 +108,6 @@
         "pl": "Poprawiono prawa do edytowania dialogów edytowanych",
         "uk": "Виправлено діалогове вікно редагування прав папки",
         "zh-cn": "纠正双重权利"
-      },
-      "6.4.2": {
-        "en": "Better check of the certificates",
-        "de": "Bessere Überprüfung der Zertifikate",
-        "ru": "Лучшая проверка сертификатов",
-        "pt": "Melhor verificação dos certificados",
-        "nl": "Controleer de certificaten",
-        "fr": "Meilleure vérification des certificats",
-        "it": "Controllo migliore dei certificati",
-        "es": "Mejor chequeo de los certificados",
-        "pl": "Błędny sprawdzanie certyfikatów",
-        "uk": "Отримання сертифікатів",
-        "zh-cn": "更好地检查证书"
       }
     },
     "desc": {
