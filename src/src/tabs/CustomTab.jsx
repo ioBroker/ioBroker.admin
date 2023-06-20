@@ -9,7 +9,7 @@ import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import Utils from '../Utils';
 
-const styles = theme => ({
+const styles = () => ({
     root: {
         //border:     '0 solid #FFF',
         display:    'block',
@@ -21,7 +21,7 @@ const styles = theme => ({
         color:      'black',
         borderRadius: 4,
         boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
-        border: '0px solid #888'
+        border: '0px solid #888',
     },
 });
 
@@ -132,12 +132,12 @@ class CustomTab extends Component {
 
         return <iframe
             ref={el => this.refIframe = el}
-            title={ this.props.tab }
-            className={ this.props.classes.root }
-            src={ this.state.href }
-            onError={ e => {
+            title={this.props.tab}
+            className={this.props.classes.root}
+            src={this.state.href}
+            onError={e => {
                 e.target.onerror = null;
-                this.setState({href: this.state.href.replace('tab_m.html', 'tab.html') });
+                this.setState({ href: this.state.href.replace('tab_m.html', 'tab.html') });
             }}
         />;
     }
