@@ -381,7 +381,7 @@ class ConfigGeneric extends Component {
                 // eslint-disable-next-line no-new-func
                 const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', 'arrayIndex', 'globalData', func.includes('return') ? func : 'return ' + func);
                 const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket, arrayIndex, globalData);
-                console.log(result);
+                // console.log(result);
                 return result;
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);

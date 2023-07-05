@@ -181,14 +181,21 @@ Possible types:
     - `href` - optional HTTP link
     - `src` - name of picture (from admin directory)
 
-- `table` - table with items that could be deleted, added, movedUP, moved Down
-    - `items` - [{"type": see above, "width": px or %, "title": {"en": "header"}, "attr": "name", "filter": false, "sort": true, "default": ""}]
+- `table` - table with items that could be deleted, added, moved up, moved down
+    - `items` - `[{"type": see above, "width": px or %, "title": {"en": "header"}, "attr": "name", "filter": false, "sort": true, "default": ""}]`
     - `noDelete` - boolean if delete or add disabled, If `noDelete` is false, add, delete and move up/down should work
     - `objKeyName` - (legacy setting, don't use!) - name of the key in `{"192.168.1.1": {delay: 1000, enabled: true}, "192.168.1.2": {delay: 2000, enabled: false}}`
     - `objValueName` - (legacy setting, don't use!) - name of the value in `{"192.168.1.1": "value1", "192.168.1.2": "value2"}`
     - `allowAddByFilter` - if add allowed even if filter is set
     - `showSecondAddAt` - Number of lines from which the second add button at the bottom of the table will be shown. Default 5
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
+
+- `accordion` - accordion with items that could be deleted, added, moved up, moved down
+    - `items` - `[{"type": see above, "attr": "name", "default": ""}]` - items can be placed like on a `panel` (xs, sm, md, lg and newLine)
+    - `titleAttr` - key of the items list which should be used as name
+    - `noDelete` - boolean if delete or add disabled, If `noDelete` is false, add, delete and move up/down should work
+    - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
+
 - `json` - json editor
 
 - `language` - select language

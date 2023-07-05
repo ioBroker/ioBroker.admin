@@ -13,6 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
+import ConfigAccordion from './ConfigAccordion';
 import ConfigAlive from './ConfigAlive';
 import ConfigAutocomplete from './ConfigAutocomplete';
 import ConfigAutocompleteSendTo from './ConfigAutocompleteSendTo';
@@ -60,6 +61,7 @@ import ConfigUUID from './ConfigUUID';
 import ConfigUser from './ConfigUser';
 
 const components = {
+    accordion: ConfigAccordion,
     alive: ConfigAlive,
     autocomplete: ConfigAutocomplete,
     autocompleteSendTo: ConfigAutocompleteSendTo,
