@@ -48,46 +48,6 @@ const styles = theme => ({
         backgroundColor: theme.palette.secondary.main,
     },
 });
-function objectToArray(object, nameOfFirstAttr, nameOfSecondAttr) {
-    nameOfFirstAttr  = nameOfFirstAttr || 'key';
-
-    const array = [];
-    Object.keys(object).forEach(key => {
-        const item = {};
-        item[nameOfFirstAttr] = key;
-
-        if (nameOfSecondAttr) {
-            item[nameOfSecondAttr] = object[key]
-            array.push(item);
-        } else {
-            array.push(Object.assign(item, object[key]));
-        }
-    });
-
-    return array;
-}
-
-function arrayToObject(array, nameOfFirstAttr, nameOfSecondAttr) {
-    nameOfFirstAttr  = nameOfFirstAttr  || 'key';
-
-    const object = {};
-
-    array.forEach(row => {
-        let key = row[nameOfFirstAttr];
-        if (key === null || key === undefined) {
-            key = '';
-        }
-        delete row[nameOfFirstAttr];
-
-        if (nameOfSecondAttr) {
-            object[key] = row[nameOfSecondAttr];
-        } else {
-            object[key] = row;
-        }
-    });
-
-    return object;
-}
 
 class ConfigAccordion extends ConfigGeneric {
     constructor(props) {
@@ -106,6 +66,7 @@ class ConfigAccordion extends ConfigGeneric {
 
         this.setState({
             value,
+            activeIndex: -1,
             order: 'asc',
             iteration: 0,
             filterOn: [],
@@ -184,7 +145,7 @@ class ConfigAccordion extends ConfigGeneric {
 
         newValue.splice(index, 0, cloned);
 
-        this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () => this.onChangeWrapper(newValue));
+        this.setState({ value: newValue, activeIndex: -1, iteration: this.state.iteration + 10000 }, () => this.onChangeWrapper(newValue));
     }
 
     onChangeWrapper = (newValue) => {
@@ -218,7 +179,7 @@ class ConfigAccordion extends ConfigGeneric {
 
         newValue.push(newItem);
 
-        this.setState({ value: newValue }, () => this.onChangeWrapper(newValue));
+        this.setState({ value: newValue, activeIndex: newValue.length -1 }, () => this.onChangeWrapper(newValue));
     }
 
     onMoveUp(idx) {
@@ -226,7 +187,9 @@ class ConfigAccordion extends ConfigGeneric {
         const item = newValue[idx];
         newValue.splice(idx, 1);
         newValue.splice(idx - 1, 0, item);
-        this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () => this.onChangeWrapper(newValue));
+
+        const newIndex = this.state.activeIndex - 1;
+        this.setState({ value: newValue, activeIndex: newIndex, iteration: this.state.iteration + 10000 }, () => this.onChangeWrapper(newValue));
     }
 
     onMoveDown(idx) {
@@ -234,7 +197,9 @@ class ConfigAccordion extends ConfigGeneric {
         const item = newValue[idx];
         newValue.splice(idx, 1);
         newValue.splice(idx + 1, 0, item);
-        this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () => this.onChangeWrapper(newValue));
+
+        const newIndex = this.state.activeIndex + 1;
+        this.setState({ value: newValue, activeIndex: newIndex, iteration: this.state.iteration + 10000 }, () => this.onChangeWrapper(newValue));
     }
 
     renderItem(error, disabled, defaultValue) {
@@ -246,10 +211,7 @@ class ConfigAccordion extends ConfigGeneric {
         }
 
         return <Paper className={classes.paper}>
-            {schema.label || !schema.noDelete ? <Toolbar
-                variant="dense"
-                className={classes.rootTool}
-            >
+            {schema.label || !schema.noDelete ? <Toolbar variant="dense" className={classes.rootTool}>
                 <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                     {this.getText(schema.label)}
                 </Typography>
@@ -258,7 +220,7 @@ class ConfigAccordion extends ConfigGeneric {
                 </IconButton> : null}
             </Toolbar> : null}
             {value.map((idx, i) =>
-                <Accordion key={`${idx}_${i}`} className={classes.accordion}>
+                <Accordion key={`${idx}_${i}`} className={classes.accordion} expanded={this.state.activeIndex === i} onChange={(e, expanded) => { this.setState({ activeIndex: expanded ? i : -1 }) }}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         style={Object.assign({}, schema.style, this.props.themeType ? schema.darkStyle : {})}
@@ -292,7 +254,7 @@ class ConfigAccordion extends ConfigGeneric {
                     </AccordionDetails>
                 </Accordion>
             )}
-            {!schema.noDelete ? <Toolbar>
+            {!schema.noDelete ? <Toolbar variant="dense" className={classes.rootTool}>
                 <IconButton size="small" color="primary" onClick={this.onAdd}>
                     <AddIcon />
                 </IconButton>
