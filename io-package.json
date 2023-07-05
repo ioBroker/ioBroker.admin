@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.5.9",
+    "version": "6.6.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.6.0": {
+        "en": "New json config component added: accordion\nAdded site name and corrected the system dialog",
+        "de": "Neue json config Komponente hinzugefügt: Akkordeon\nSeitenname hinzugefügt und den Systemdialog korrigiert",
+        "ru": "Новый компонент json config добавлен: аккордеон\nДобавил имя сайта и исправил диалог системы",
+        "pt": "Novo componente json config adicionado: acordeão\nAdicionado nome do site e corrigido a caixa de diálogo do sistema",
+        "nl": "Nieuw Json config component toegevoegd:\nVoeg de site naam toe en corrigeerde de systeem dialog",
+        "fr": "Nouveau composant json config ajouté: accordion\nAjout du nom du site et correction du dialogue système",
+        "it": "Nuovo componente json config aggiunto: fisarmonica\nAggiunto nome del sito e corretto il sistema dialogo",
+        "es": "Nuevo componente de configuración json añadido: acordeón\nAñadido el nombre del sitio y corregido el diálogo del sistema",
+        "pl": "Dodano nowy skład konfigurowny: akordeon\nNazwa miejsca i poprawiła dialogi systemowe",
+        "uk": "Додано новий json config компонент: акордеон\nДодано назву сайту і виправлено діалогове вікно системи",
+        "zh-cn": "新 jsonconfig部分增加:同意\n增加网站名称和纠正系统口号"
+      },
       "6.5.9": {
         "en": "Added support for update of the js-controller slaves",
         "de": "Unterstützung für das Update der js-Controller Slaves",
@@ -95,19 +108,6 @@
         "pl": "Added image Strona internetowa JSONConfig\nWstępna możliwość filtrowania obiektów w wybranych komponentach JSON",
         "uk": "Додано зображення Перейти до вмісту JSONConfig\nДодано можливість фільтрувати об'єкти в компоненті selectID JSON",
         "zh-cn": "增加图像 A. 控制联合企业协会\n增加在选定的国际开发协会组成部分中过滤物体的可能性"
-      },
-      "6.4.3": {
-        "en": "Corrected the folder rights edit dialog",
-        "de": "Korrigiert den Ordner Rechte bearbeiten Dialog",
-        "ru": "Исправлен диалог редактирования прав папки",
-        "pt": "Corrigido o diálogo de edição de direitos da pasta",
-        "nl": "Vertaling:",
-        "fr": "Correction du dialogue sur les droits du dossier",
-        "it": "Corretto la finestra di dialogo di modifica dei diritti della cartella",
-        "es": "Corregido el diálogo de edición de derechos de carpeta",
-        "pl": "Poprawiono prawa do edytowania dialogów edytowanych",
-        "uk": "Виправлено діалогове вікно редагування прав папки",
-        "zh-cn": "纠正双重权利"
       }
     },
     "desc": {

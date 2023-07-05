@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
 * (bluefox) Added site name and corrected the system dialog
 
@@ -99,9 +99,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.5.6 (2023-06-01)
 * (bluefox) Sentry packages were updated
-
-### 6.5.3 (2023-05-24)
-* (bluefox) Added support for the js-controller update
 
 ## License
 The MIT License (MIT)
