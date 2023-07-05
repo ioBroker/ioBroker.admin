@@ -298,7 +298,7 @@ class MainSettingsDialog extends Component {
         if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
             return <Grid item sm={6} xs={12} key={i}>
                 <FormControl className={classes.formControl} variant="standard">
-                    <InputLabel shrink id={e.id + '-label'}>
+                    <InputLabel shrink id={`${e.id}-label`}>
                         {this.props.t(e.title)}
                     </InputLabel>
                     <TextField
@@ -320,7 +320,7 @@ class MainSettingsDialog extends Component {
 
         return <Grid item sm={6} xs={12} key={i}>
             <FormControl className={classes.formControl} variant="standard">
-                <InputLabel shrink id={e.id + '-label'}>
+                <InputLabel shrink id={`${e.id}-label`}>
                     {this.props.t(e.title)}
                 </InputLabel>
                 <Select
@@ -468,6 +468,17 @@ class MainSettingsDialog extends Component {
             <Grid container spacing={3}>
                 <Grid item lg={6} md={12}>
                     <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                variant="standard"
+                                id="siteName"
+                                label={this.props.t('Site name')}
+                                value={this.props.data.common.siteName || ''}
+                                onChange={e => this.doChange('siteName', e.target.value)}
+                                helperText={this.props.t('This name will be shown in admin\'s header. Just to identify the whole installation')}
+                            />
+                        </Grid>
                         {selectors}
                     </Grid>
                 </Grid>

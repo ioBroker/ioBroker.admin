@@ -84,6 +84,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (klein0r) New json config component added: accordion
+* (bluefox) Added site name and corrected the system dialog
+
 ### 6.5.9 (2023-06-19)
 * (bluefox) Added support for update of the js-controller slaves
 

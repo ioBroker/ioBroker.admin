@@ -1527,5 +1527,7 @@
   "Updating JS-Controller...": "Обновление JS-контроллера...",
   "Copy": "Скопировать в буфер обмена",
   "js-controller was successfully updated to %s": "js-контроллер был успешно обновлен до %s",
-  "updating js-controller to %s...": "обновление js-контроллера до %s..."
+  "updating js-controller to %s...": "обновление js-контроллера до %s...",
+  "Site name": "Название инсталляции",
+  "This name will be shown in admin's header. Just to identify the whole installation": "Это имя будет отображаться в шапке администратора. Просто чтобы идентифицировать всю установку"
 }

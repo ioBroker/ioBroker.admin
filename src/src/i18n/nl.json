@@ -1527,5 +1527,7 @@
   "Updating JS-Controller...": "JS-Controller updaten...",
   "Copy": "Kopieer naar klembord",
   "js-controller was successfully updated to %s": "js-controller is met succes geüpdatet naar %s",
-  "updating js-controller to %s...": "js-controller updaten naar %s..."
+  "updating js-controller to %s...": "js-controller updaten naar %s...",
+  "Site name": "Site naam",
+  "This name will be shown in admin's header. Just to identify the whole installation": "Deze naam wordt weergegeven in de admin-header. Gewoon om de hele installatie te identificeren"
 }

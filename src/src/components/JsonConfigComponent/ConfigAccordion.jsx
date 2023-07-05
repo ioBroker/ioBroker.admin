@@ -87,7 +87,7 @@ class ConfigAccordion extends ConfigGeneric {
             items: schema.items.reduce((accumulator, currentValue) => {
                 accumulator[currentValue.attr] = currentValue;
                 return accumulator;
-            }, {})
+            }, {}),
         };
 
         return <ConfigPanel

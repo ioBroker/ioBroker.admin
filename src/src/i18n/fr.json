@@ -1527,5 +1527,7 @@
   "Updating JS-Controller...": "Mise à jour du JS-Controller...",
   "Copy": "Copier dans le presse-papier",
   "js-controller was successfully updated to %s": "js-controller a été mis à jour avec succès vers %s",
-  "updating js-controller to %s...": "mise à jour de js-controller vers %s..."
+  "updating js-controller to %s...": "mise à jour de js-controller vers %s...",
+  "Site name": "Nom du site",
+  "This name will be shown in admin's header. Just to identify the whole installation": "Ce nom sera affiché dans l'en-tête de l'administrateur. Juste pour identifier l'ensemble de l'installation"
 }

@@ -1527,5 +1527,7 @@
   "Updating JS-Controller...": "JS-Controller wird aktualisiert...",
   "Copy": "In die Zwischenablage kopieren",
   "js-controller was successfully updated to %s": "js-controller wurde erfolgreich auf %s aktualisiert",
-  "updating js-controller to %s...": "JS-Controller wird auf %s aktualisiert.."
+  "updating js-controller to %s...": "JS-Controller wird auf %s aktualisiert..",
+  "Site name": "Anlagenname",
+  "This name will be shown in admin's header. Just to identify the whole installation": "Dieser Name wird in der Kopfzeile des Administrators angezeigt. Nur um die gesamte Installation zu identifizieren"
 }

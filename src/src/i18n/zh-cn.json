@@ -1527,5 +1527,7 @@
   "Updating JS-Controller...": "更新 JS 控制器...",
   "Copy": "复制到剪贴板",
   "js-controller was successfully updated to %s": "js-controller 已成功更新为 %s",
-  "updating js-controller to %s...": "更新 js-controller 到 %s..."
+  "updating js-controller to %s...": "更新 js-controller 到 %s...",
+  "Site name": "站点名称",
+  "This name will be shown in admin's header. Just to identify the whole installation": "该名称将显示在管理员的标题中。只是为了识别整个安装"
 }

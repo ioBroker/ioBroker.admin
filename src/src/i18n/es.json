@@ -1527,5 +1527,7 @@
   "Updating JS-Controller...": "Actualizando el controlador JS...",
   "Copy": "Copiar al portapapeles",
   "js-controller was successfully updated to %s": "js-controller se actualizó correctamente a %s",
-  "updating js-controller to %s...": "actualizando js-controller a %s..."
+  "updating js-controller to %s...": "actualizando js-controller a %s...",
+  "Site name": "Nombre del sitio",
+  "This name will be shown in admin's header. Just to identify the whole installation": "Este nombre se mostrará en el encabezado del administrador. Solo para identificar toda la instalación."
 }

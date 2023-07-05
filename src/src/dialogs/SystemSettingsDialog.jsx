@@ -170,14 +170,14 @@ class SystemSettingsDialog extends Component {
             .then(systemLicenses => {
                 systemLicenses = systemLicenses || {
                     common: {
-                        name: 'Licenses from iobroker.net'
+                        name: 'Licenses from iobroker.net',
                     },
                     native: {
                         login: '',
                         password: '',
                         licenses: [],
                     },
-                    type: 'config'
+                    type: 'config',
                 };
                 if (systemLicenses.native.password) {
                     systemLicenses.native.password = SOME_PASSWORD;
@@ -187,7 +187,7 @@ class SystemSettingsDialog extends Component {
                 newState.systemLicenses = systemLicenses;
                 this.setState(newState);
             })
-            .catch(e => window.alert('Cannot read settings: ' + e));
+            .catch(e => window.alert(`Cannot read settings: ${e}`));
     }
 
     renderConfirmDialog() {
@@ -205,102 +205,93 @@ class SystemSettingsDialog extends Component {
 
     onSave() {
         let repoChanged = false;
-        this.setState({saving: true}, () =>
-            this.props.socket.getSystemConfig(true)
-                .then(systemConfig => {
-                    systemConfig = systemConfig || {};
-                    if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) {
-                        return this.props.socket.setSystemConfig(this.state.systemConfig);
-                    } else {
-                        return Promise.resolve();
-                    }
-                })
-                .then(() => this.props.socket.setObject('system.certificates', this.state.systemCertificates))
-                .then(() => this.props.socket.getObject('system.repositories'))
-                .then(systemRepositories => {
-                    systemRepositories = systemRepositories || {};
-                    systemRepositories.native = systemRepositories.native || {};
-                    systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                    const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
+        this.setState({ saving: true }, async () => {
+            try {
+                let systemConfig = await this.props.socket.getSystemConfig(true);
+                systemConfig = systemConfig || {};
+                if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) {
+                    await this.props.socket.setSystemConfig(this.state.systemConfig);
+                }
+                await this.props.socket.setObject('system.certificates', this.state.systemCertificates);
 
-                    // merge new and existing info
-                    Object.keys(newRepo).forEach(repo => {
-                        if (systemRepositories.native.repositories[repo]) {
-                            if (systemRepositories.native.repositories[repo].json) {
-                                newRepo[repo].json = systemRepositories.native.repositories[repo].json;
-                            }
-                            if (systemRepositories.native.repositories[repo].hash) {
-                                newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
-                            }
-                            if (systemRepositories.native.repositories[repo].time) {
-                                newRepo[repo].time = systemRepositories.native.repositories[repo].time;
-                            }
+                let systemRepositories = await this.props.socket.getObject('system.repositories');
+                systemRepositories = systemRepositories || {};
+                systemRepositories.native = systemRepositories.native || {};
+                systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+                const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
+
+                // merge new and existing info
+                Object.keys(newRepo).forEach(repo => {
+                    if (systemRepositories.native.repositories[repo]) {
+                        if (systemRepositories.native.repositories[repo].json) {
+                            newRepo[repo].json = systemRepositories.native.repositories[repo].json;
                         }
-                    });
-                    if (JSON.stringify(this.state.systemRepositories.native.repositories) !== JSON.stringify(newRepo)) {
-                        systemRepositories.native.repositories = newRepo;
-                        repoChanged = true;
-                        return this.props.socket.setObject('system.repositories', systemRepositories);
-                    } else {
-                        return Promise.resolve();
+                        if (systemRepositories.native.repositories[repo].hash) {
+                            newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                        }
+                        if (systemRepositories.native.repositories[repo].time) {
+                            newRepo[repo].time = systemRepositories.native.repositories[repo].time;
+                        }
                     }
-                })
-                .then(() => this.props.socket.getObject('system.licenses'))
-                .then(systemLicenses => {
-                    systemLicenses = systemLicenses || {};
-                    systemLicenses.type = systemLicenses.type || 'config';
-                    systemLicenses.name = systemLicenses.name || 'Licenses from iobroker.net';
-                    systemLicenses.common = systemLicenses.common || {};
-                    systemLicenses.native = systemLicenses.native || {};
-                    systemLicenses.native.licenses = systemLicenses.native.licenses || [];
-                    systemLicenses.native.password = systemLicenses.native.password || '';
-                    systemLicenses.native.login = systemLicenses.native.login || '';
+                });
+                if (JSON.stringify(this.state.systemRepositories.native.repositories) !== JSON.stringify(newRepo)) {
+                    systemRepositories.native.repositories = newRepo;
+                    repoChanged = true;
+                    await this.props.socket.setObject('system.repositories', systemRepositories);
+                }
 
-                    const currentPassword = systemLicenses.native.password ? SOME_PASSWORD : '';
+                let systemLicenses = await this.props.socket.getObject('system.licenses');
+                systemLicenses = systemLicenses || {};
+                systemLicenses.type = systemLicenses.type || 'config';
+                systemLicenses.name = systemLicenses.name || 'Licenses from iobroker.net';
+                systemLicenses.common = systemLicenses.common || {};
+                systemLicenses.native = systemLicenses.native || {};
+                systemLicenses.native.licenses = systemLicenses.native.licenses || [];
+                systemLicenses.native.password = systemLicenses.native.password || '';
+                systemLicenses.native.login = systemLicenses.native.login || '';
 
-                    if (this.state.systemLicenses.native.password !== currentPassword ||
-                        systemLicenses.native.login !== this.state.systemLicenses.native.login
-                    ) {
-                        systemLicenses.native.login = this.state.systemLicenses.native.login;
+                const currentPassword = systemLicenses.native.password ? SOME_PASSWORD : '';
 
-                        if (this.state.systemLicenses.native.password !== SOME_PASSWORD && this.state.systemLicenses.native.password) {
-                            // encode it
-                            return this.props.socket.encrypt(this.state.systemLicenses.native.password)
-                                .then(password => {
-                                    systemLicenses.native.password = password;
-                                    return this.props.socket.setObject('system.licenses', systemLicenses)
-                                        .then(() => LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, null, null, this.props.t))
-                                        .catch(error => window.alert(this.props.t('Cannot update licenses: %s', error)));
+                if (this.state.systemLicenses.native.password !== currentPassword ||
+                    systemLicenses.native.login !== this.state.systemLicenses.native.login
+                ) {
+                    systemLicenses.native.login = this.state.systemLicenses.native.login;
 
-                                });
-                        } else {
-                            if (!this.state.systemLicenses.native.password) {
-                                systemLicenses.native.password = '';
-                            }
-                            return this.props.socket.setObject('system.licenses', systemLicenses)
-                                .then(() => LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, null, null, this.props.t))
-                                .catch(error => window.alert(this.props.t('Cannot update licenses: %s', error)));
+                    if (this.state.systemLicenses.native.password !== SOME_PASSWORD && this.state.systemLicenses.native.password) {
+                        // encode it
+                        try {
+                            systemLicenses.native.password = await this.props.socket.encrypt(this.state.systemLicenses.native.password);
+                        } catch (error) {
+                            window.alert(this.props.t('Cannot update licenses: %s', error));
                         }
                     } else {
-                        return Promise.resolve();
+                        if (!this.state.systemLicenses.native.password) {
+                            systemLicenses.native.password = '';
+                        }
                     }
-                })
-                .then(() => {
-                    // this.getSettings();
-                    alert(this.props.t('Settings saved'));
-                    this.props.onClose(repoChanged);
-                    if (this.state.systemConfig.common.expertMode !== JSON.parse(this.originalConfig).common.expertMode) {
-                        this.props.expertModeFunc(this.state.systemConfig.common.expertMode);
+                    try {
+                        await this.props.socket.setObject('system.licenses', systemLicenses);
+                        LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, null, null, this.props.t);
+                    } catch (error) {
+                        window.alert(this.props.t('Cannot update licenses: %s', error));
                     }
-                    if (this.state.systemConfig.common.language !== JSON.parse(this.originalConfig).common.language ||
-                        JSON.stringify(this.state.systemConfig.common.activeRepo) !== JSON.stringify(JSON.parse(this.originalConfig).common.activeRepo)) {
-                        window.location.reload(false);
-                    }
-                })
-                .then(() => this.setState({ saving: false }))
-                .catch(e =>
-                    window.alert(`Cannot save system configuration: ${e}`))
-        );
+                }
+
+                // this.getSettings();
+                alert(this.props.t('Settings saved'));
+                this.props.onClose(repoChanged);
+                if (this.state.systemConfig.common.expertMode !== JSON.parse(this.originalConfig).common.expertMode) {
+                    this.props.expertModeFunc(this.state.systemConfig.common.expertMode);
+                }
+                if (this.state.systemConfig.common.language !== JSON.parse(this.originalConfig).common.language ||
+                    JSON.stringify(this.state.systemConfig.common.activeRepo) !== JSON.stringify(JSON.parse(this.originalConfig).common.activeRepo)) {
+                    window.location.reload(false);
+                }
+                this.setState({ saving: false });
+            } catch (e) {
+                window.alert(`Cannot save system configuration: ${e}`);
+            }
+        });
     }
 
     getTabs() {
@@ -312,7 +303,7 @@ class SystemSettingsDialog extends Component {
                 data: 'systemConfig',
                 name: 'tabConfig',
                 dataAux: 'systemRepositories',
-                handle: null
+                handle: null,
             },
             {
                 id: 1,
@@ -341,7 +332,7 @@ class SystemSettingsDialog extends Component {
                 data: 'systemCertificates',
                 name: 'tabCertificates',
                 dataAux: {},
-                handle: null
+                handle: null,
             },
             {
                 id: 4,
@@ -350,7 +341,7 @@ class SystemSettingsDialog extends Component {
                 data: 'systemCertificates',
                 name: 'tabLetsEncrypt',
                 dataAux: {},
-                handle: null
+                handle: null,
             },
             {
                 id: 5,
@@ -359,7 +350,7 @@ class SystemSettingsDialog extends Component {
                 data: 'systemConfig',
                 name: 'tabDefaultACL',
                 dataAux: {},
-                handle: null
+                handle: null,
             },
             {
                 id: 6,
@@ -368,7 +359,7 @@ class SystemSettingsDialog extends Component {
                 data: 'systemConfig',
                 dataAux: 'diagData',
                 name: 'tabStatistics',
-                handle: type => this.onChangeDiagType(type)
+                handle: type => this.onChangeDiagType(type),
             }
         ];
     }
@@ -382,9 +373,9 @@ class SystemSettingsDialog extends Component {
                         ...this.state.systemConfig,
                         common: {
                             ...this.state.systemConfig.common,
-                            diag: type
-                        }
-                    }
+                            diag: type,
+                        },
+                    },
                 }));
     }
 
@@ -462,7 +453,7 @@ class SystemSettingsDialog extends Component {
             className={this.props.classes.dialog}
             classes={{
                 root: this.props.classes.dialog,
-                paper: 'dialog-setting'
+                paper: 'dialog-setting',
             }}
             open={!0}
             onClose={(e, reason) => {

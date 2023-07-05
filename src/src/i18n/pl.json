@@ -1527,5 +1527,7 @@
   "Updating JS-Controller...": "Aktualizowanie kontrolera JS...",
   "Copy": "Skopiuj do schowka",
   "js-controller was successfully updated to %s": "js-controller został pomyślnie zaktualizowany do %s",
-  "updating js-controller to %s...": "aktualizowanie kontrolera js do %s..."
+  "updating js-controller to %s...": "aktualizowanie kontrolera js do %s...",
+  "Site name": "Nazwa strony",
+  "This name will be shown in admin's header. Just to identify the whole installation": "Ta nazwa będzie wyświetlana w nagłówku administratora. Wystarczy zidentyfikować całą instalację"
 }

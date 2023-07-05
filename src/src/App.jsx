@@ -226,7 +226,7 @@ const styles = theme => ({
         '100%': {
             opacity: 0.7,
             transform: 'translateX(-2%)',
-        }
+        },
     },
 
     flexGrow: {
@@ -261,11 +261,15 @@ const styles = theme => ({
     wrapperName: {
         display: 'flex',
         flexDirection: 'column',
-        marginRight: 10
+        marginRight: 10,
     },
     expertBadge: {
         marginTop: 11,
         marginRight: 11,
+    },
+    siteName: {
+        fontSize: 24,
+        marginRight: 16,
     },
 });
 
@@ -277,7 +281,7 @@ const DEFAULT_GUI_SETTINGS_OBJECT = {
         write: false,
         role: 'state',
     },
-    native: {}
+    native: {},
 };
 
 class App extends Router {
@@ -733,7 +737,7 @@ class App extends Router {
                                 });
                             } else {
                                 try {
-                                    const adminObj = await this.socket.getObject('system.adapter.' + this.adminInstance);
+                                    const adminObj = await this.socket.getObject(`system.adapter.${this.adminInstance}`);
                                     // use instance language
                                     if (adminObj?.native?.language) {
                                         if (adminObj.native.language !== I18n.getLanguage()) {
@@ -770,7 +774,7 @@ class App extends Router {
                 },
                 onReady: async objects => {
                     // Combine adminGuiConfig with user settings
-                    this.adminGuiConfig = Object.assign({admin: {menu: {}, settings: {}, adapters: {}, login: {}}}, this.socket.systemConfig.native?.vendor);
+                    this.adminGuiConfig = Object.assign({ admin: { menu: {}, settings: {}, adapters: {}, login: {} } }, this.socket.systemConfig.native?.vendor);
                     this.adminGuiConfig.admin.menu     = this.adminGuiConfig.admin.menu     || {};
                     this.adminGuiConfig.admin.settings = this.adminGuiConfig.admin.settings || {};
                     this.adminGuiConfig.admin.adapters = this.adminGuiConfig.admin.adapters || {};
@@ -779,7 +783,7 @@ class App extends Router {
                     this.socket.getCurrentInstance()
                         .then(adminInstance => {
                             this.adminInstance = adminInstance;
-                            return this.socket.getObject('system.adapter.' + adminInstance);
+                            return this.socket.getObject(`system.adapter.${adminInstance}`);
                         })
                         .then(adminObj => {
                             // use instance language
@@ -841,7 +845,7 @@ class App extends Router {
                                 if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
                                     this.socket.getCurrentUser()
                                         .then(user => {
-                                            this.socket.getObject('system.user.' + user)
+                                            this.socket.getObject(`system.user.${user}`)
                                                 .then(userObj => {
                                                     if (userObj.native?.vendor) {
                                                         Object.assign(this.adminGuiConfig, userObj.native.vendor);
@@ -854,8 +858,8 @@ class App extends Router {
                                                                 name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
                                                                 color: userObj.common.color,
                                                                 icon: userObj.common.icon,
-                                                                invertBackground: this.mustInvertBackground(userObj.common.color)
-                                                            }
+                                                                invertBackground: this.mustInvertBackground(userObj.common.color),
+                                                            },
                                                         });
 
                                                         // start ping interval
@@ -1652,10 +1656,15 @@ class App extends Router {
             themeType={this.state.themeType}
             theme={this.state.theme}
             key="systemSettings"
-            onClose={repoChanged => {
+            onClose={async repoChanged => {
                 Router.doNavigate(null);
+                // read systemConfig anew
+                const systemConfig = await this.socket.getObject('system.config');
+
                 if (repoChanged) {
-                    this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1})
+                    this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1, systemConfig });
+                } else {
+                    this.setState({ systemConfig });
                 }
             }}
             lang={this.state.lang}
@@ -1880,13 +1889,20 @@ class App extends Router {
 
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return <div title={this.state.user.id} className={Utils.clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)} ref={this.refUser}>
+            return <div
+                title={this.state.user.id}
+                className={Utils.clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)}
+                ref={this.refUser}
+            >
+                {this.state.systemConfig.common.siteName ? <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div> : null}
                 {this.state.user.icon ?
                     <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
                     :
                     <UserIcon className={this.props.classes.userIcon} />}
                 <div ref={this.refUserDiv} style={{ color: this.state.user.color || undefined }} className={this.props.classes.userText}>{this.state.user.name}</div>
-            </div>
+            </div>;
+        } else if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
+            return <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div>;
         } else {
             return null;
         }
@@ -2190,8 +2206,11 @@ class App extends Router {
                                                             borderRadius: 5,
                                                             padding: 5,
                                                         }}
-                                                    ><img src={this.adminGuiConfig.icon} alt="logo"
-                                                              style={{ maxWidth: '100%', maxHeight: '100%' }}/></div>
+                                                    ><img
+                                                        src={this.adminGuiConfig.icon}
+                                                        alt="logo"
+                                                          style={{ maxWidth: '100%', maxHeight: '100%' }}
+                                                    /></div>
                                                     :
                                                     <Avatar
                                                         onClick={() => this.handleNavigation('easy')}
