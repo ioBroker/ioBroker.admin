@@ -525,10 +525,6 @@ class ConfigGeneric extends Component {
         } else {
             // Add error
             if (schema.validatorNoSaveOnError) {
-                if (error) {
-                    console.error('++++++' + JSON.stringify(this.props.attr));
-                }
-
                 if (error && !Object.keys(this.isError).length) {
                     this.isError = {[this.props.attr]: schema.validatorErrorText ? I18n.t(schema.validatorErrorText) : true};
                     setTimeout(isError =>
