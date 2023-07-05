@@ -8,7 +8,18 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, Tab, Tabs, TextField, Autocomplete } from '@mui/material';
+import {
+    AppBar,
+    Box,
+    Checkbox,
+    FormControlLabel,
+    IconButton,
+    InputAdornment,
+    Tab,
+    Tabs,
+    TextField,
+    Autocomplete,
+} from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 import npmIcon from '../assets/npm.png';
@@ -54,30 +65,30 @@ const useStyles = makeStyles(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     paper: {
-        maxWidth: 1000
+        maxWidth: 1000,
     },
     tabPaper: {
-        padding: theme.spacing(2)
+        padding: theme.spacing(2),
     },
     title: {
         marginTop: 10,
         padding: theme.spacing(1),
         marginLeft: theme.spacing(1),
         fontSize: 18,
-        color: theme.palette.primary.main
+        color: theme.palette.primary.main,
     },
     warningText: {
-        color: '#f53939'
+        color: '#f53939',
     },
     noteText: {
         marginTop: theme.spacing(2),
     },
     errorTextNoGit: {
         fontSize: 13,
-        color: '#ff1616'
+        color: '#ff1616',
     },
     listIcon: {
         width: 24,
@@ -119,9 +130,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
     t = t || I18n.t;
 
     const classes = useStyles();
-    const [autocompleteValue, setAutocompleteValue] = useState(null);
+    const [autocompleteValue, setAutocompleteValue] = useState((window._localStorage || window.localStorage).getItem('App.autocomplete') || null);
     const [debug, setDebug] = useState((window._localStorage || window.localStorage).getItem('App.gitDebug') === 'true');
-    const [url, setUrl] = useState('');
+    const [url, setUrl] = useState((window._localStorage || window.localStorage).getItem('App.userUrl') || '');
     const [currentTab, setCurrentTab] = useState((window._localStorage || window.localStorage).getItem('App.gitTab') || 'npm');
 
     // eslint-disable-next-line array-callback-return
@@ -129,40 +140,40 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
         const adapters = categories
             .map(category => category.adapters)
             .flat()
-            .sort()
+            .sort();
 
         return adapters
-                .map((el, i) => {
-                    if (i && adapters[i - 1] === el) {
-                        return null;
-                    }
-                    const adapter = repository[el];
-                    if (!adapter?.controller) {
-                        const parts = (adapter.extIcon || adapter.meta || adapter.readme || '').toString().split('/');
+            .map((el, i) => {
+                if (i && adapters[i - 1] === el) {
+                    return null;
+                }
+                const adapter = repository[el];
+                if (!adapter?.controller) {
+                    const parts = (adapter.extIcon || adapter.meta || adapter.readme || '').toString().split('/');
 
-                        let name = adapter?.name;
-                        if (!name) {
-                            name = adapter.titleLang;
-                            if (name && typeof name === 'object') {
-                                name = name[I18n.getLanguage()] || name.en;
-                            } else {
-                                name = adapter.title || el;
-                            }
+                    let name = adapter?.name;
+                    if (!name) {
+                        name = adapter.titleLang;
+                        if (name && typeof name === 'object') {
+                            name = name[I18n.getLanguage()] || name.en;
+                        } else {
+                            name = adapter.title || el;
                         }
-
-                        return {
-                            value: `${el}/${parts[3]}`,
-                            name: `${name} [${parts[3]}]`,
-                            icon: adapter.extIcon || adapter.icon,
-                            nogit: !!adapter.nogit,
-                            title: el,
-                        };
-                    } else {
-                        return null;
                     }
-                })
-                .filter(it => it)
-                .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+
+                    return {
+                        value: `${el}/${parts[3]}`,
+                        name: `${name} [${parts[3]}]`,
+                        icon: adapter.extIcon || adapter.icon,
+                        nogit: !!adapter.nogit,
+                        title: el,
+                    };
+                } else {
+                    return null;
+                }
+            })
+            .filter(it => it)
+            .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
     }, [categories, repository]);
 
     const closeInit = () => {
@@ -235,7 +246,10 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         <Autocomplete
                             fullWidth
                             value={autocompleteValue}
-                            onChange={(_, newValue) => setAutocompleteValue(newValue)}
+                            onChange={(_, newValue) => {
+                                (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
+                                setAutocompleteValue(newValue);
+                            }}
                             options={_list}
                             getOptionLabel={option => option.name}
                             renderInput={params => {
@@ -251,8 +265,13 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                     label={I18n.t('Select adapter')}
                                 />;
                             }}
-                            renderOption={(props, option) => <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                <Icon src={option.icon || ''}  className={classes.listIconWithMargin} />
+                            renderOption={(props, option) =>
+                                <Box
+                                    component="li"
+                                    sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                    {...props}
+                                >
+                                <Icon src={option.icon || ''} className={classes.listIconWithMargin} />
                                 {option.name}
                             </Box>}
                         />
@@ -265,7 +284,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     <div className={classes.warningText}>
                         {t('npm_warning', 'NPM', 'NPM')}
                     </div>
-                    <div className={classes.noteText} >
+                    <div className={classes.noteText}>
                         {t('github_note')}
                     </div>
                 </Paper> : null}
@@ -275,7 +294,11 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             control={
                                 <Checkbox
                                     checked={debug}
-                                    onChange={(e) => setDebug(e.target.checked)} />}
+                                    onChange={(e) => {
+                                        (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                        setDebug(e.target.checked);
+                                    }}
+                                />}
                             label={t('Debug outputs')}
                         />
                     </div>
@@ -285,12 +308,24 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             fullWidth
                             value={autocompleteValue}
                             getOptionDisabled={option => option.nogit}
-                            renderOption={(props, option) => <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                <Icon src={option.icon || ''}  className={classes.listIconWithMargin} />
+                            renderOption={(props, option) =>
+                                <Box
+                                    component="li"
+                                    sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                    {...props}
+                                >
+                                <Icon src={option.icon || ''} className={classes.listIconWithMargin}/>
                                 {option.name}
-                                {option.nogit && <div className={classes.errorTextNoGit}>{I18n.t('This adapter cannot be installed from git as must be built before installation.')}</div>}
+                                {option.nogit && <div
+                                    className={classes.errorTextNoGit}
+                                >
+                                    {I18n.t('This adapter cannot be installed from git as must be built before installation.')}
+                                </div>}
                             </Box>}
-                            onChange={(_, newValue) => setAutocompleteValue(newValue)}
+                            onChange={(_, newValue) => {
+                                (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
+                                setAutocompleteValue(newValue);
+                            }}
                             options={_list}
                             getOptionLabel={option => option.name}
                             renderInput={params => {
@@ -316,7 +351,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     <div className={classes.warningText}>
                         {t('github_warning', 'GitHub', 'GitHub')}
                     </div>
-                    <div className={classes.noteText} >
+                    <div className={classes.noteText}>
                         {t('github_note')}
                     </div>
                 </Paper> : null}
@@ -328,7 +363,19 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             label={t('URL')}
                             helperText={t('URL or file path')}
                             value={url}
-                            onChange={event => setUrl(event.target.value)}
+                            onChange={event => {
+                                (window._localStorage || window.localStorage).setItem('App.userUrl', event.target.value);
+                                setUrl(event.target.value);
+                            }}
+                            onKeyUp={event => {
+                                if (event.keyCode === 13 && url) {
+                                    if (!url.includes('.')) {
+                                        installFromUrl(`iobroker.${url}`, debug, true);
+                                    } else {
+                                        installFromUrl(url, debug, true);
+                                    }
+                                }
+                            }}
                             InputProps={{
                                 endAdornment: url ? <InputAdornment position="end">
                                     <IconButton
@@ -343,25 +390,33 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     </div>
                     <div style={{
                         display: 'flex',
-                        alignItems: 'center'
+                        alignItems: 'center',
                     }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
                                     checked={debug}
-                                    onChange={(e) => setDebug(e.target.checked)} />}
+                                    onChange={(e) => {
+                                        (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                        setDebug(e.target.checked);
+                                    }}
+                                />}
                             label={t('Debug outputs')}
                         />
                     </div>
-                    <div style={{
-                        fontSize: 24,
-                        fontWeight: 'bold',
-                        marginTop: 40
-                    }}>{t('Warning!')}</div>
+                    <div
+                        style={{
+                            fontSize: 24,
+                            fontWeight: 'bold',
+                            marginTop: 40,
+                        }}
+                    >
+                        {t('Warning!')}
+                    </div>
                     <div className={classes.warningText}>
                         {t('github_warning', 'URL', 'URL')}
                     </div>
-                    <div className={classes.noteText} >
+                    <div className={classes.noteText}>
                         {t('github_note')}
                     </div>
                 </Paper> : null}
@@ -380,14 +435,14 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         installFromUrl(_url, debug, true);
                     } else if (currentTab === 'URL') {
                         if (!url.includes('.')) {
-                            installFromUrl('iobroker.' + url, debug, true);
+                            installFromUrl(`iobroker.${url}`, debug, true);
                         } else {
                             installFromUrl(url, debug, true);
                         }
                     } else if (currentTab === 'npm') {
                         const parts = (autocompleteValue?.value || '').split('/');
                         if (!parts[0].includes('.')) {
-                            installFromUrl('iobroker.' + parts[0], debug, true);
+                            installFromUrl(`iobroker.${parts[0]}`, debug, true);
                         } else {
                             installFromUrl(parts[0], debug, true);
                         }

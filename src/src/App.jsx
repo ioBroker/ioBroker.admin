@@ -270,6 +270,7 @@ const styles = theme => ({
     siteName: {
         fontSize: 24,
         marginRight: 16,
+        display: 'inline-block',
     },
 });
 
