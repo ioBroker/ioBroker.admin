@@ -192,6 +192,7 @@ Possible types:
 
 - `accordion` - accordion with items that could be deleted, added, moved up, moved down
     - `items` - `[{"type": see above, "attr": "name", "default": ""}]` - items can be placed like on a `panel` (xs, sm, md, lg and newLine)
+    - `titleAttr` - key of the items list which should be used as name
     - `noDelete` - boolean if delete or add disabled, If `noDelete` is false, add, delete and move up/down should work
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
 
