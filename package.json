@@ -50,6 +50,7 @@
     "chai": "^4.3.7",
     "colorette": "^2.0.20",
     "eslint": "^8.44.0",
+    "eslint-config-react-app": "^7.0.1",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
