@@ -28,12 +28,13 @@ import HostRow from '../components/Hosts/HostRow';
 import HostEdit from '../components/Hosts/HostEdit';
 import JsControllerDialog from '../dialogs/JsControllerDialog';
 import Utils from '../Utils';
+import ComponentUtils from '../components/Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 import JsControllerUpdater from '../dialogs/JsControllerUpdater';
 
-const styles = () => ({
+const styles = theme => ({
     grow: {
         flexGrow: 1,
     },
@@ -96,6 +97,13 @@ const styles = () => ({
         paddingBottom: 0,
         paddingLeft: 16,
         paddingRight: 8,
+    },
+    notStableRepo: {
+        background: theme.palette.mode === 'dark' ? '#8a7e00' : '#fdee20',
+        color: '#000',
+        fontSize: 14,
+        padding: '2px 8px',
+        borderRadius: 5,
     },
     nowrap: {
         display: 'flex',
@@ -643,6 +651,8 @@ class Hosts extends Component {
                 <div className={classes.grow} />
             </TabHeader>
             <TabContent overflow="auto">
+                {!ComponentUtils.isStableRepository(this.props.systemConfig.common.activeRepo) ?
+                    <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
                 <div className={this.state.viewMode ? classes.cards : ''}>
                     {!this.state.viewMode &&
                         <div className={classes.tabHeaderWrapper}>

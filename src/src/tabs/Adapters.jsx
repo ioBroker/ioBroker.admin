@@ -1736,17 +1736,7 @@ class Adapters extends Component {
         };
 
         // fast check if active repo is stable
-        let stableRepo =
-            (
-                typeof this.props.systemConfig.common.activeRepo === 'string' &&
-                this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable')
-            )
-            ||
-            (
-                this.props.systemConfig.common.activeRepo &&
-                typeof this.props.systemConfig.common.activeRepo !== 'string' &&
-                this.props.systemConfig.common.activeRepo.find(r => r.toLowerCase().startsWith('stable'))
-            );
+        let stableRepo = Utils.isStableRepository(this.props.systemConfig.common.activeRepo)
 
         // if repositories are available
         const repositories = this.state.compactRepositories?.native?.repositories;

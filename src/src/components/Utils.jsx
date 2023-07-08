@@ -1629,13 +1629,32 @@ class Utils {
     }
 
     /**
-     * Detect file xtension by its content
+     * Detect file extension by its content
      * @param {string} base64 Base64 encoded binary file
      * @returns {string} Detected extension, like 'jpg'
      */
     static detectMimeType(base64) {
         const signature = Object.keys(SIGNATURES).find(s => base64.startsWith(s));
         return signature ? SIGNATURES[signature] : null;
+    }
+
+    /**
+     * Check if configured repository is the stable repository
+     *
+     * @param {string | string[]} activeRepo current configured repository or multi repository
+     * @return {boolean}
+     */
+    static isStableRepository(activeRepo) {
+        return !!((
+                typeof activeRepo === 'string' &&
+                activeRepo.toLowerCase().startsWith('stable')
+            )
+            ||
+            (
+                activeRepo &&
+                typeof activeRepo !== 'string' &&
+                activeRepo.find(r => r.toLowerCase().startsWith('stable'))
+            ));
     }
 }
 

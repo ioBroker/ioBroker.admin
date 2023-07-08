@@ -24,3 +24,7 @@ admin/words.js
 /src-admin/package-lock.json
 /src/public_aes
 /src/public/js/adapter-settings-aes.js
+
+
+# ioBroker dev-server
+.dev-server/
