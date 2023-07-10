@@ -84,6 +84,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+* (foxriver76) also show non-stable repo warning on hosts tab
+
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
 * (bluefox) Added site name and corrected the system dialog

@@ -45,11 +45,12 @@
     "@alcalzone/release-script": "^3.6.0",
     "@alcalzone/release-script-plugin-iobroker": "^3.6.0",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
-    "@iobroker/testing": "^4.1.0",
     "@iobroker/legacy-testing": "^0.3.6",
+    "@iobroker/testing": "^4.1.0",
     "chai": "^4.3.7",
     "colorette": "^2.0.20",
     "eslint": "^8.44.0",
+    "eslint-config-react-app": "^7.0.1",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
@@ -57,6 +58,7 @@
     "gulp-replace": "^1.1.4",
     "gulp-sourcemaps": "^3.0.0",
     "mocha": "^10.2.0",
+    "prettier": "^3.0.0",
     "puppeteer": "^20.7.4"
   },
   "bugs": {
