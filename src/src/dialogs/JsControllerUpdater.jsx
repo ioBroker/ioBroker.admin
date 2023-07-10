@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ipaddr from 'ipaddr.js';
 
-import { LinearProgress }from '@mui/material';
+import { LinearProgress } from '@mui/material';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -53,11 +53,10 @@ class JsControllerUpdater extends Component {
             if (hostIp && hostIp !== 'localhost') {
                 hostIp = ipaddr.parse(hostIp);
                 // find common ip address in host.native.hardware.networkInterfaces
-                const keys = host?.native?.hardware?.networkInterfaces && Object.keys(host?.native?.hardware?.networkInterfaces);
-                if (keys) {
-                    for (let i = 0; i < keys.length; i++) {
-                        const eth = host.native.hardware.networkInterfaces[keys[i]];
-                        eth.find(addr => {
+
+                if (host?.native?.hardware?.networkInterfaces) {
+                    for (const networkInterface of Object.entries(host.native.hardware.networkInterfaces)) {
+                        networkInterface.find(addr => {
                             // addr = {
                             //     "address": "192.168.178.45",
                             //     "netmask": "255.255.255.0",
@@ -69,7 +68,9 @@ class JsControllerUpdater extends Component {
                             try {
                                 const iIP = ipaddr.parseCIDR(addr.cidr);
                                 if (addr.internal === false && hostIp.match(iIP)) {
-                                    this.link = `${window.location.protocol}//${addr.family === 'IPv6' ? `[${addr.address}]` : addr.address}:${window.location.port}`;
+                                    this.link = `${window.location.protocol}//${
+                                        addr.family === 'IPv6' ? `[${addr.address}]` : addr.address
+                                    }:${window.location.port}`;
                                 }
                             } catch (e) {
                                 // ignore
@@ -90,23 +91,30 @@ class JsControllerUpdater extends Component {
                 console.error(`Cannot find ip address: ${e}`);
             })
             .then(() => {
-                this.props.socket.getRawSocket().emit('sendToHost', this.props.hostId, 'upgradeController', {
-                    version: this.props.version,
-                    adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
-                }, result => {
-                    if (result.result) {
-                        this.setUpdating(true);
-                        this.intervall = setInterval(() => this.checkStatus(), 1000); // poll every second
+                console.info('');
+                this.props.socket.getRawSocket().emit(
+                    'sendToHost',
+                    this.props.hostId,
+                    'upgradeController',
+                    {
+                        version: this.props.version,
+                        adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
+                    },
+                    result => {
+                        if (result.result) {
+                            this.setUpdating(true);
+                            this.intervall = setInterval(() => this.checkStatus(), 1000); // poll every second
 
-                        this.startTimeout = setTimeout(() => {
-                            this.startTimeout = null;
-                            this.setState({ starting: false });
-                        }, 10000); // give 10 seconds to controller to start update
-                    } else {
-                        this.setState({ error: I18n.t('Not updatable'), starting: false });
-                        this.setUpdating(false);
+                            this.startTimeout = setTimeout(() => {
+                                this.startTimeout = null;
+                                this.setState({ starting: false });
+                            }, 10000); // give 10 seconds to controller to start update
+                        } else {
+                            this.setState({ error: I18n.t('Not updatable'), starting: false });
+                            this.setUpdating(false);
+                        }
                     }
-                });
+                );
             });
     }
 
@@ -153,7 +161,10 @@ class JsControllerUpdater extends Component {
 
                     // scroll down
                     if (this.textareaRef.current) {
-                        setTimeout(() => this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight, 100);
+                        setTimeout(
+                            () => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight),
+                            100
+                        );
                     }
                 });
             })
@@ -165,55 +176,72 @@ class JsControllerUpdater extends Component {
     }
 
     render() {
-        return <Dialog
-            onClose={(e, reason) => {
-                if (reason !== 'escapeKeyDown' && reason !== 'backdropClick') {
-                    this.props.onClose();
-                }
-            }}
-            open={!0}
-            maxWidth="lg"
-            fullWidth
-        >
-            <DialogTitle>{I18n.t('Updating JS-Controller...')}</DialogTitle>
-            <DialogContent style={{ height: 400, padding: '0 20px', overflow: 'hidden' }}>
-                {(!this.state.response || this.state.response.running) && !this.state.error ? <LinearProgress /> : null}
-                {this.state.response || this.state.error ? <textarea
-                    ref={this.textareaRef}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        resize: 'none',
-                        background: this.props.themeName === 'dark' ? '#000' : '#fff',
-                        color: this.props.themeName === 'dark' ? '#EEE' : '#111',
-                        boxSizing: 'border-box',
-                        fontFamily: 'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
-                        border: this.state.response?.success ? '2px solid green' :
-                            (this.state.error || (this.state.response && !this.state.response.running && !this.state.response.success) ? '2px solid red' : undefined),
-                    }}
-                    value={this.state.error ? this.state.error : (
-                        this.state.response.stderr && this.state.response.stderr.length ?
-                            this.state.response.stderr.join('\n') : this.state.response.stdout.join('\n'))}
-                    readOnly
-                /> : null}
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    disabled={this.state.starting || (!this.state.error && this.state.response?.running)}
-                    onClick={() => {
-                        if (this.state.response?.success) {
-                            window.location.reload();
-                        }
+        return (
+            <Dialog
+                onClose={(e, reason) => {
+                    if (reason !== 'escapeKeyDown' && reason !== 'backdropClick') {
                         this.props.onClose();
-                    }}
-                    color={this.state.response?.success ? 'primary' : 'grey'}
-                    startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
-                >
-                    {this.state.response?.success ? I18n.t('Reload') : I18n.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+                    }
+                }}
+                open={!0}
+                maxWidth="lg"
+                fullWidth
+            >
+                <DialogTitle>{I18n.t('Updating JS-Controller...')}</DialogTitle>
+                <DialogContent style={{ height: 400, padding: '0 20px', overflow: 'hidden' }}>
+                    {(!this.state.response || this.state.response.running) && !this.state.error ? (
+                        <LinearProgress />
+                    ) : null}
+                    {this.state.response || this.state.error ? (
+                        <textarea
+                            ref={this.textareaRef}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                resize: 'none',
+                                background: this.props.themeName === 'dark' ? '#000' : '#fff',
+                                color: this.props.themeName === 'dark' ? '#EEE' : '#111',
+                                boxSizing: 'border-box',
+                                fontFamily:
+                                    'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
+                                border: this.state.response?.success
+                                    ? '2px solid green'
+                                    : this.state.error ||
+                                      (this.state.response &&
+                                          !this.state.response.running &&
+                                          !this.state.response.success)
+                                    ? '2px solid red'
+                                    : undefined,
+                            }}
+                            value={
+                                this.state.error
+                                    ? this.state.error
+                                    : this.state.response.stderr && this.state.response.stderr.length
+                                    ? this.state.response.stderr.join('\n')
+                                    : this.state.response.stdout.join('\n')
+                            }
+                            readOnly
+                        />
+                    ) : null}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        disabled={this.state.starting || (!this.state.error && this.state.response?.running)}
+                        onClick={() => {
+                            if (this.state.response?.success) {
+                                window.location.reload();
+                            }
+                            this.props.onClose();
+                        }}
+                        color={this.state.response?.success ? 'primary' : 'grey'}
+                        startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
+                    >
+                        {this.state.response?.success ? I18n.t('Reload') : I18n.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

@@ -87,6 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### **WORK IN PROGRESS**
 * (foxriver76) also show non-stable repo warning on hosts tab
+* (foxriver76) fixed jsonConfig slider with different max/min values than 0/100
 
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
