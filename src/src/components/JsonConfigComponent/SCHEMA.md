@@ -175,7 +175,9 @@ Possible types:
     - `label` - multi-language text
     - `href` - link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`
     - `button` - show link as button
-    - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`. You can use `base64` icons. (Request via issue if you need more icons)
+    - `variant` - type of button (`outlined`, `contained`, `text`)
+    - `color` - color of button (e.g. `primary`)
+    - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (start with `data:image/svg+xml;base64,...`). (Request via issue if you need more icons)
 
 - `staticImage` - static image
     - `href` - optional HTTP link

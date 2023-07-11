@@ -26,27 +26,17 @@ import ConfigPanel from './ConfigPanel';
 const styles = theme => ({
     fullWidth: {
         width: '100%',
-        // height: '100%',
     },
-    paper: {
-        margin: 10,
-        width: 'auto !important',
-        overflowY: 'auto',
-        paddingBottom: theme.spacing(1),
+    accordionSummary: {
+        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
     },
-    padding: {
-        padding: 10,
+    accordionTitle: {
+        // fontWeight: 'bold',
     },
-    heading: {
-
-    },
-    primary: {
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.mode === 'dark' ? 'inherit' : '#FFF',
-    },
-    secondary: {
-        backgroundColor: theme.palette.secondary.main,
-    },
+    toolbar: {
+        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
+        borderRadius: 3,
+    }
 });
 
 class ConfigAccordion extends ConfigGeneric {
@@ -88,6 +78,7 @@ class ConfigAccordion extends ConfigGeneric {
                 accumulator[currentValue.attr] = currentValue;
                 return accumulator;
             }, {}),
+            style: { marginLeft: -8, marginTop: 10, marginBottom: 10 }
         };
 
         return <ConfigPanel
@@ -210,26 +201,25 @@ class ConfigAccordion extends ConfigGeneric {
             return null;
         }
 
-        return <Paper className={classes.paper}>
-            {schema.label || !schema.noDelete ? <Toolbar variant="dense" className={classes.rootTool}>
-                <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+        return <Paper>
+            {schema.label || !schema.noDelete ? <Toolbar variant="dense">
+                {schema.label ? <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                     {this.getText(schema.label)}
-                </Typography>
+                </Typography> : null}
                 {!schema.noDelete ? <IconButton size="small" color="primary" onClick={this.onAdd}>
                     <AddIcon />
                 </IconButton> : null}
             </Toolbar> : null}
             {value.map((idx, i) =>
-                <Accordion key={`${idx}_${i}`} className={classes.accordion} expanded={this.state.activeIndex === i} onChange={(e, expanded) => { this.setState({ activeIndex: expanded ? i : -1 }) }}>
+                <Accordion key={`${idx}_${i}`} expanded={this.state.activeIndex === i} onChange={(e, expanded) => { this.setState({ activeIndex: expanded ? i : -1 }) }}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
-                        style={Object.assign({}, schema.style, this.props.themeType ? schema.darkStyle : {})}
-                        className={Utils.clsx(classes.fullWidth, schema.color === 'primary' && classes.primary, schema.color === 'secondary' && classes.secondary)}>
-                        <Typography>{idx[schema.titleAttr]}</Typography>
+                        className={Utils.clsx(classes.fullWidth, classes.accordionSummary)}>
+                        <Typography className={classes.accordionTitle} >{idx[schema.titleAttr]}</Typography>
                     </AccordionSummary>
-                    <AccordionDetails>
+                    <AccordionDetails style={Object.assign({}, schema.style, this.props.themeType ? schema.darkStyle : {})}>
                         {this.itemAccordion(value[i], i)}
-                        <Toolbar>
+                        <Toolbar className={classes.toolbar}>
                             {i ? <Tooltip title={I18n.t('ra_Move up')}>
                                 <IconButton size="small" onClick={() => this.onMoveUp(i)}>
                                     <UpIcon />
