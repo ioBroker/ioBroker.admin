@@ -11,6 +11,9 @@ import IconWarning from '@mui/icons-material/Warning';
 import IconError from '@mui/icons-material/Error';
 import IconInfo from '@mui/icons-material/Info';
 import IconSearch from '@mui/icons-material/Search';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import HelpIcon from '@mui/icons-material/Help';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import Icon from './wrapper/Components/Icon';
 import Utils from './wrapper/Components/Utils';
@@ -46,6 +49,12 @@ class ConfigStaticText extends ConfigGeneric {
             icon = <IconInfo />;
         } else if (this.props.schema.icon === 'search') {
             icon = <IconSearch />;
+        } else if (this.props.schema.icon === 'book') {
+            icon = <MenuBookIcon />;
+        } else if (this.props.schema.icon === 'help') {
+            icon = <HelpIcon />;
+        } else if (this.props.schema.icon === 'upload') {
+            icon = <UploadFileIcon />;
         } else if (this.props.schema.icon) {
             icon = <Icon src={this.props.schema.icon} />;
         }
