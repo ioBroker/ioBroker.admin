@@ -198,7 +198,7 @@ Possible types:
     - `noDelete` - boolean if delete or add disabled, If `noDelete` is false, add, delete and move up/down should work
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
 
-- `json` - json editor
+- `jsonEditor` - json editor
 
 - `language` - select language
     - `system` - allow the usage of the system language from `system.config` as default
