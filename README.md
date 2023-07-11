@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed jsonConfig slider with different max/min values than 0/100
 * (foxriver76) fixed jsonConfig number element arrows
 * (foxriver76) fixed jsonConfig coordinates not triggering onChange and not being prefilled
+* (foxriver76) fixed jsonConfig jsonEditor component
 
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion

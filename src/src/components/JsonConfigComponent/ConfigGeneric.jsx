@@ -453,7 +453,6 @@ class ConfigGeneric extends Component {
                     arrayIndex,
                     globalData
                 );
-                // console.log(result);
                 return result;
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
@@ -493,7 +492,6 @@ class ConfigGeneric extends Component {
                     arrayIndex,
                     globalData
                 );
-                // console.log(result);
                 return result;
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
