@@ -91,7 +91,7 @@ class JsControllerUpdater extends Component {
                 console.error(`Cannot find ip address: ${e}`);
             })
             .then(() => {
-                console.info('');
+                console.info(`Using ip address: ${this.ip}`);
                 this.props.socket.getRawSocket().emit(
                     'sendToHost',
                     this.props.hostId,
