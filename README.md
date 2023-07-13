@@ -94,6 +94,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) assume status as offline if status state value has been deleted (e.g. via `setState` with `expire` option)
 * (foxriver76) fixed jsonConfig CheckLicense edge case error
 * (foxriver76) fixed host name not being visible on some themes
+* (foxriver76) fixed multiple problems with jsonConfig coordinates when using `useSystemName` and separate `latitude`/`longitutde` states
 
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
