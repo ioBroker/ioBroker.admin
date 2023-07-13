@@ -39,7 +39,6 @@ import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import ObjectChart from './ObjectChart';
 import { Tooltip } from '@mui/material';
-import Icon from '@mui/material/Icon';
 import InfoIcon from '@mui/icons-material/Info';
 
 const styles = theme => ({
