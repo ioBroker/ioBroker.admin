@@ -14,6 +14,7 @@
   "Access control": "访问控制",
   "Access control list": "访问控制列表",
   "Acknowledged": "已确认",
+  "Acknowledged explanation": "如果您想控制设备，请勿使用 '已确认'。",
   "Activated. Click to stop.": "已激活。点击停止。",
   "Active instances": "运行中程序",
   "Active repository:": "活动库",
