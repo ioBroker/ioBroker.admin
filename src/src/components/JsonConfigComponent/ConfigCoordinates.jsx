@@ -25,7 +25,6 @@ const styles = () => ({
 });
 
 class ConfigCoordinates extends ConfigGeneric {
-    USE_SYSTEM_NAME_ID = 'jsonConfig__useSystemName';
     componentDidMount() {
         super.componentDidMount();
 
@@ -34,7 +33,7 @@ class ConfigCoordinates extends ConfigGeneric {
 
         const newState = {};
         if (this.props.schema.useSystemName) {
-            newState.useSystem = !!ConfigGeneric.getValue(this.props.data, this.USE_SYSTEM_NAME_ID);
+            newState.useSystem = !!ConfigGeneric.getValue(this.props.data, this.props.schema.useSystemName);
         }
         if (this.props.schema.longitudeName && this.props.schema.latitudeName) {
             newState.longitude = ConfigGeneric.getValue(this.props.data, this.props.schema.longitudeName);
@@ -143,7 +142,7 @@ class ConfigCoordinates extends ConfigGeneric {
                                         this.getSystemCoordinates();
                                     }
                                     this.setState({ useSystem }, () =>
-                                        this.onChange(this.USE_SYSTEM_NAME_ID, useSystem)
+                                        this.onChange(this.props.schema.useSystemName, useSystem)
                                     );
                                 }}
                             />
