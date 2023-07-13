@@ -28,6 +28,7 @@
   "Acknowledge": "Визнати",
   "Acknowledge & close": "Підтвердити та закрити",
   "Acknowledged": "Визнано",
+  "Acknowledged explanation": "Якщо ви хочете контролювати пристрій, не використовуйте 'Визнано'",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Активуйте перевірку пароля в адмінці, якщо ви плануєте отримати доступ до свого ioBroker не в «Демілітаризованій зоні»",
   "Activated. Click to stop.": "активовано. Натисніть, щоб зупинити.",
   "Active": "Активний",
