@@ -78,11 +78,12 @@ class HostSelectors extends Component {
     }
 
     componentDidMount() {
-        this.props.socket.getCompactHosts(true)
+        this.props.socket
+            .getCompactHosts(true)
             .then(hosts => {
                 this.setState({ hosts }, async () => {
                     // request for all host the alive status
-                    const alive = {}
+                    const alive = {};
                     for (let h = 0; h < hosts.length; h++) {
                         alive[hosts[h]._id] = await this.props.socket.getState(`${hosts[h]._id}.alive`);
                         if (alive[hosts[h]._id]) {
@@ -91,7 +92,7 @@ class HostSelectors extends Component {
                             alive[hosts[h]._id] = false;
                         }
                     }
-                    this.setState({alive}, () => {
+                    this.setState({ alive }, () => {
                         this.props.hostsWorker.registerHandler(this.onHostsObjectChange);
                         this.props.hostsWorker.registerAliveHandler(this.onAliveChanged);
                     });
@@ -116,7 +117,7 @@ class HostSelectors extends Component {
                     delete alive[event.id];
                     changed = true;
                 }
-            } else if ((!!alive[event.id]) !== (!!event.alive)) {
+            } else if (!!alive[event.id] !== !!event.alive) {
                 alive[event.id] = event.alive;
                 changed = true;
             }
@@ -129,7 +130,10 @@ class HostSelectors extends Component {
                     if (aliveHost) {
                         const obj = this.state.hosts.find(obj => obj._id === aliveHost);
                         if (obj) {
-                            this.props.setCurrentHost(obj.common?.name || aliveHost.replace('system.host.', ''), aliveHost);
+                            this.props.setCurrentHost(
+                                obj.common?.name || aliveHost.replace('system.host.', ''),
+                                aliveHost
+                            );
                         } else {
                             this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
                         }
@@ -144,64 +148,68 @@ class HostSelectors extends Component {
         const alive = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
 
-        Promise.all(events.map(async event => {
-            const host = hosts.find(it => it._id === event.id);
+        Promise.all(
+            events.map(async event => {
+                const host = hosts.find(it => it._id === event.id);
 
-            if (event.type === 'delete' || !event.obj) {
-                if (host) {
-                    const pos = hosts.indexOf(host);
-                    if (pos !== -1) {
-                        delete alive[host];
-                        hosts.splice(pos);
-                        changed = true;
-                    }
-                }
-            } else {
-                if (host) {
-                    if (host.common.name !== event.obj.common?.name) {
-                        host.common.name  = event.obj.common?.name  || '';
-                        changed = true;
-                    }
-                    if (host.common.color !== event.obj.common?.color) {
-                        host.common.color  = event.obj.common?.color  || '';
-                        changed = true;
-                    }
-                    if (host.common.icon !== event.obj.common?.icon) {
-                        host.common.icon  = event.obj.common?.icon  || '';
-                        changed = true;
+                if (event.type === 'delete' || !event.obj) {
+                    if (host) {
+                        const pos = hosts.indexOf(host);
+                        if (pos !== -1) {
+                            delete alive[host];
+                            hosts.splice(pos);
+                            changed = true;
+                        }
                     }
                 } else {
-                    changed = true;
-                    hosts.push({
-                        _id: event.id,
-                        common: {
-                            name: event.obj.common?.name   || '',
-                            color: event.obj.common?.color || '',
-                            icon: event.obj.common?.icon   || '',
+                    if (host) {
+                        if (host.common.name !== event.obj.common?.name) {
+                            host.common.name = event.obj.common?.name || '';
+                            changed = true;
                         }
-                    });
-                    const state = await this.props.socket.getState(event.id + '.alive');
-                    alive[event.id] = state ? state.val : false;
+                        if (host.common.color !== event.obj.common?.color) {
+                            host.common.color = event.obj.common?.color || '';
+                            changed = true;
+                        }
+                        if (host.common.icon !== event.obj.common?.icon) {
+                            host.common.icon = event.obj.common?.icon || '';
+                            changed = true;
+                        }
+                    } else {
+                        changed = true;
+                        hosts.push({
+                            _id: event.id,
+                            common: {
+                                name: event.obj.common?.name || '',
+                                color: event.obj.common?.color || '',
+                                icon: event.obj.common?.icon || '',
+                            },
+                        });
+                        const state = await this.props.socket.getState(event.id + '.alive');
+                        alive[event.id] = state ? state.val : false;
+                    }
                 }
-            }
-        }))
-            .then(() => {
-                if (changed) {
-                    this.setState({ hosts, alive }, () => {
-                        if (!alive[this.props.currentHost]) {
-                            const aliveHost = Object.keys(alive).find(id => alive[id]);
-                            if (aliveHost) {
-                                const obj = this.state.hosts.find(obj => obj._id === aliveHost);
-                                if (obj) {
-                                    this.props.setCurrentHost(obj.common?.name || aliveHost.replace('system.host.', ''), aliveHost);
-                                } else {
-                                    this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
-                                }
+            })
+        ).then(() => {
+            if (changed) {
+                this.setState({ hosts, alive }, () => {
+                    if (!alive[this.props.currentHost]) {
+                        const aliveHost = Object.keys(alive).find(id => alive[id]);
+                        if (aliveHost) {
+                            const obj = this.state.hosts.find(obj => obj._id === aliveHost);
+                            if (obj) {
+                                this.props.setCurrentHost(
+                                    obj.common?.name || aliveHost.replace('system.host.', ''),
+                                    aliveHost
+                                );
+                            } else {
+                                this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
                             }
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
+        });
     };
 
     render() {
@@ -210,72 +218,95 @@ class HostSelectors extends Component {
         }
         let selectedHostObj;
         if (this.state.hosts.length) {
-            selectedHostObj = this.state.hosts.find(host => host._id === this.props.currentHost || host._id === `system.host.${this.props.currentHost}`);
+            selectedHostObj = this.state.hosts.find(
+                host => host._id === this.props.currentHost || host._id === `system.host.${this.props.currentHost}`
+            );
         }
 
-        return <div>
-            <Tooltip title={this.props.tooltip || I18n.t('Change current host')} classes={{ popper: this.props.classes.tooltip }}>
-                <span>
-                    <Button
-                        //color="grey"
-                        className={this.props.classes.button}
-                        style={{
-                            background: selectedHostObj?.common?.color || 'none',
-                            borderColor: selectedHostObj?.common?.color ? Utils.invertColor(selectedHostObj.common.color) : 'none'
-                        }}
-                        variant={this.props.disabled || this.state.hosts.length < 2 ? 'text' : 'outlined'}
-                        disabled={this.props.disabled || this.state.hosts.length < 2}
-                        aria-haspopup="true"
-                        onClick={e => this.setState({anchorEl: e.currentTarget})}
-                    >
-                        <div
-                            className={Utils.clsx(this.props.classes.width, !this.state.alive[this.props.currentHost] && this.props.classes.notAlive)}
+        return (
+            <div>
+                <Tooltip
+                    title={this.props.tooltip || I18n.t('Change current host')}
+                    classes={{ popper: this.props.classes.tooltip }}
+                >
+                    <span>
+                        <Button
+                            color="secondary"
+                            className={this.props.classes.button}
                             style={{
-                                display: 'flex',
-                                color: selectedHostObj?.common?.color ? Utils.invertColor(selectedHostObj.common.color, true) : 'none',
-                                alignItems: 'center',
-                            }}>
-                            <Icon
-                                className={Utils.clsx(this.props.classes.img, this.props.classes.imgButton)}
-                                src={selectedHostObj?.common?.icon || 'img/no-image.png'}
-                            />
-                            <div className={this.props.classes.name}>{selectedHostObj?.common?.name}</div>
-                        </div>
-                    </Button>
-                </span>
-            </Tooltip>
-            <Menu
-                anchorEl={this.state.anchorEl}
-                keepMounted
-                open={!!this.state.anchorEl}
-                onClose={() => this.setState({ anchorEl: null })}
-            >
-                {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) =>
-                    <MenuItem
-                        key={_id}
-                        // button
-                        disabled={!this.state.alive[_id]}
-                        selected={_id === this.props.currentHost}
-                        style={{ background: color || 'inherit' }}
-                        onClick={() => {
-                            if (this.props.currentHost !== this.state.hosts[idx]._id) {
-                                this.props.setCurrentHost(this.state.hosts[idx].common.name, this.state.hosts[idx]._id);
-                            }
-                            this.setState({ anchorEl: null });
-                        }}>
-                        <div style={{
-                            display: 'flex',
-                            color: (color && Utils.invertColor(color, true)) || 'inherit',
-                            alignItems: 'center',
-                        }}>
-                            <div className={this.props.classes.selector}>{_id === this.props.currentHost ? 'ᐅ' : ''}</div>
-                            <Icon className={this.props.classes.img} src={icon || 'img/no-image.png'} />
-                            {name}
-                        </div>
-                    </MenuItem>
-                )}
-            </Menu>
-        </div>;
+                                background: selectedHostObj?.common?.color || 'none',
+                                borderColor: selectedHostObj?.common?.color
+                                    ? Utils.invertColor(selectedHostObj.common.color)
+                                    : 'none',
+                            }}
+                            variant={this.props.disabled || this.state.hosts.length < 2 ? 'text' : 'outlined'}
+                            disabled={this.props.disabled || this.state.hosts.length < 2}
+                            aria-haspopup="true"
+                            onClick={e => this.setState({ anchorEl: e.currentTarget })}
+                        >
+                            <div
+                                className={Utils.clsx(
+                                    this.props.classes.width,
+                                    !this.state.alive[this.props.currentHost] && this.props.classes.notAlive
+                                )}
+                                style={{
+                                    display: 'flex',
+                                    color: selectedHostObj?.common?.color
+                                        ? Utils.invertColor(selectedHostObj.common.color, true)
+                                        : 'none',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Icon
+                                    className={Utils.clsx(this.props.classes.img, this.props.classes.imgButton)}
+                                    src={selectedHostObj?.common?.icon || 'img/no-image.png'}
+                                />
+                                <div className={this.props.classes.name}>{selectedHostObj?.common?.name}</div>
+                            </div>
+                        </Button>
+                    </span>
+                </Tooltip>
+                <Menu
+                    anchorEl={this.state.anchorEl}
+                    keepMounted
+                    open={!!this.state.anchorEl}
+                    onClose={() => this.setState({ anchorEl: null })}
+                >
+                    {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) => (
+                        <MenuItem
+                            key={_id}
+                            // button
+                            disabled={!this.state.alive[_id]}
+                            selected={_id === this.props.currentHost}
+                            style={{ background: color || 'inherit' }}
+                            onClick={() => {
+                                if (this.props.currentHost !== this.state.hosts[idx]._id) {
+                                    this.props.setCurrentHost(
+                                        this.state.hosts[idx].common.name,
+                                        this.state.hosts[idx]._id
+                                    );
+                                }
+                                this.setState({ anchorEl: null });
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    color: (color && Utils.invertColor(color, true)) || 'inherit',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <div className={this.props.classes.selector}>
+                                    {_id === this.props.currentHost ? 'ᐅ' : ''}
+                                </div>
+                                <Icon className={this.props.classes.img} src={icon || 'img/no-image.png'} />
+                                {name}
+                            </div>
+                        </MenuItem>
+                    ))}
+                </Menu>
+            </div>
+        );
     }
 }
 
