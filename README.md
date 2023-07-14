@@ -95,6 +95,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed jsonConfig CheckLicense edge case error
 * (foxriver76) added tooltip to ObjectBrowserValue to show that ack-flag cannot be used to control a device
 * (foxriver76) fixed host name not being visible on some themes
+* (foxriver76) fixed issue with jsonConfig CRON placeholder overlapping input
 
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
