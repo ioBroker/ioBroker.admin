@@ -368,7 +368,7 @@ adapter.on('message', obj => {
   - `autoInit` - init field with current coordinates if empty
   - `longitudeName` - if defined, the longitude will be stored in this attribute, divider will be ignored
   - `latitudeName` - if defined, the latitude will be stored in this attribute, divider will be ignored
-  - `useSystemName` - if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from system.config
+  - `useSystemName` - if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from system.config, a boolean will be saved to the given name
 
 - `checkLicense` - Very special component to check the license online. It's required exactly `license` and `useLicenseManager` properties in native.
   - `uuid` - Check UUID
