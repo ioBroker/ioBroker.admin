@@ -279,6 +279,14 @@ class ConfigGeneric extends Component {
         );
     }
 
+    /**
+     * Trigger onChange, to activate save button on change
+     *
+     * @param attr the changed attribute
+     * @param newValue new value of the attribute
+     * @param {(() => void)?} cb optional callback function, else returns a Promise
+     * @return {Promise<void>}
+     */
     onChange(attr, newValue, cb) {
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
@@ -287,11 +295,22 @@ class ConfigGeneric extends Component {
             this.props.schema.confirm &&
             this.execute(this.props.schema.confirm.condition, false, data, this.props.arrayIndex, this.props.globalData)
         ) {
-            return this.setState({
-                confirmDialog: true,
-                confirmNewValue: newValue,
-                confirmAttr: attr,
-                confirmData: null,
+            return new Promise(resolve => {
+                this.setState(
+                    {
+                        confirmDialog: true,
+                        confirmNewValue: newValue,
+                        confirmAttr: attr,
+                        confirmData: null,
+                    },
+                    () => {
+                        if (typeof cb === 'function') {
+                            cb();
+                        } else {
+                            resolve();
+                        }
+                    }
+                );
             });
         } else {
             // find any inputs with confirmation
@@ -310,13 +329,24 @@ class ConfigGeneric extends Component {
                                 this.props.globalData
                             )
                         ) {
-                            return this.setState({
-                                confirmDialog: true,
-                                confirmNewValue: newValue,
-                                confirmAttr: attr,
-                                confirmDepNewValue: val,
-                                confirmDepAttr: dep.attr,
-                                confirmData: dep.confirm,
+                            return new Promise(resolve => {
+                                this.setState(
+                                    {
+                                        confirmDialog: true,
+                                        confirmNewValue: newValue,
+                                        confirmAttr: attr,
+                                        confirmDepNewValue: val,
+                                        confirmDepAttr: dep.attr,
+                                        confirmData: dep.confirm,
+                                    },
+                                    () => {
+                                        if (typeof cb === 'function') {
+                                            cb();
+                                        } else {
+                                            resolve();
+                                        }
+                                    }
+                                );
                             });
                         }
                     }

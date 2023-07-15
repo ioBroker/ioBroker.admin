@@ -60,9 +60,9 @@ class ConfigCoordinates extends ConfigGeneric {
                             longitude: obj.common.longitude,
                             latitude: obj.common.latitude,
                         },
-                        () => {
-                            this.onChange(this.props.schema.longitudeName, (obj.common.longitude || '').trim());
-                            this.onChange(this.props.schema.latitudeName, (obj.common.latitude || '').trim());
+                        async () => {
+                            await this.onChange(this.props.schema.longitudeName, (obj.common.longitude || '').trim());
+                            await this.onChange(this.props.schema.latitudeName, (obj.common.latitude || '').trim());
                         }
                     );
                 } else {
@@ -97,15 +97,12 @@ class ConfigCoordinates extends ConfigGeneric {
                                     longitude: position.coords.longitude,
                                     latitude: position.coords.latitude,
                                 },
-                                () => {
-                                    this.onChange(
+                                async () => {
+                                    await this.onChange(
                                         this.props.schema.longitudeName,
-                                        (position.coords.longitude || '').trim()
+                                        position.coords.longitude || ''
                                     );
-                                    this.onChange(
-                                        this.props.schema.latitudeName,
-                                        (position.coords.latitude || '').trim()
-                                    );
+                                    await this.onChange(this.props.schema.latitudeName, position.coords.latitude || '');
                                 }
                             );
                         } else {
@@ -138,7 +135,7 @@ class ConfigCoordinates extends ConfigGeneric {
                     <FormControlLabel
                         control={
                             <Checkbox
-                                value={this.state.useSystem}
+                                checked={!!this.state.useSystem}
                                 onChange={e => {
                                     const useSystem = e.target.checked;
                                     if (useSystem) {
@@ -157,11 +154,7 @@ class ConfigCoordinates extends ConfigGeneric {
                     <TextField
                         variant="standard"
                         className={this.props.classes.width50}
-                        value={
-                            this.state.longitude === null || this.state.longitude === undefined
-                                ? ''
-                                : this.state.longitude
-                        }
+                        value={this.state.longitude ?? ''}
                         error={!!error}
                         disabled={this.state.useSystem || !!disabled}
                         onChange={e => {
@@ -177,9 +170,7 @@ class ConfigCoordinates extends ConfigGeneric {
                     <TextField
                         variant="standard"
                         className={this.props.classes.width50}
-                        value={
-                            this.state.latitude === null || this.state.latitude === undefined ? '' : this.state.latitude
-                        }
+                        value={this.state.latitude ?? ''}
                         error={!!error}
                         disabled={this.state.useSystem || !!disabled}
                         onChange={e => {
