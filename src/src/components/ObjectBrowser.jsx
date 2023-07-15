@@ -4277,7 +4277,6 @@ class ObjectBrowser extends Component {
                 texts: this.texts,
                 dateFormat: this.props.dateFormat,
                 isFloatComma: this.props.isFloatComma,
-                isExpertMode: this.state.filter.expertMode,
             });
             info = item.data.state;
 
