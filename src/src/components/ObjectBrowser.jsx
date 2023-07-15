@@ -411,9 +411,6 @@ const styles = theme => ({
             transform: 'scale(0.8)',
         },
     },
-    cellValueButtonFalse: {
-        opacity: 0.3,
-    },
     cellAdapter: {
         display: 'inline-block',
         verticalAlign: 'top',
@@ -1467,7 +1464,16 @@ function quality2text(q) {
 }
 */
 
-function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
+/** @typedef  {{ state: ioBroker.State, obj: Record<string, any>, texts: Record<string, any>, dateFormat: any, isFloatComma: boolean }} FormatValueOptions */
+
+/**
+ * Format a state value for visualization
+ *
+ * @param {FormatValueOptions} options
+ * @return {{valText: {}, valFull: [{t: (*|String), v: (string|*)}] }}
+ */
+function formatValue(options) {
+    const { dateFormat, obj, state, isFloatComma, texts } = options;
     const states = Utils.getStates(obj);
     const isCommon = obj.common;
 
@@ -1482,7 +1488,7 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
             : state.val;
     const type = typeof v;
 
-    if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
+    if (isCommon?.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
         if (v && typeof v === 'string') {
             if (v.length === 13) {
                 // (length of "1647597254924") warning, this solution only works till Nov 20 2286 18:46:39CET
@@ -1523,7 +1529,7 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
         }
     }
 
-    if (isCommon && isCommon.unit) {
+    if (isCommon?.unit) {
         valText.u = isCommon.unit;
     }
     const valFull = [{ t: texts.value, v }];
@@ -1563,8 +1569,26 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     return {
         valText,
         valFull,
-        style: { color: state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9' },
     };
+}
+
+/** @typedef {{ state: ioBroker.State, isExpertMode: boolean, obj: ioBroker.StateObject }} GetValueStyleOptions */
+
+/**
+ * Get css style for given state value
+ *
+ * @param {GetValueStyleOptions} options
+ * @return {{color: (string)}}
+ */
+function getValueStyle(options) {
+    const { state, isExpertMode, obj } = options;
+    let color = state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9';
+
+    if (!isExpertMode && obj.common.role === 'button') {
+        color = '';
+    }
+
+    return { color };
 }
 
 function prepareSparkData(values, from) {
@@ -2189,16 +2213,15 @@ class ObjectBrowser extends Component {
     /**
      * Called when component is mounted.
      */
-    componentDidMount() {
-        this.loadAllObjects(!objectsAlreadyLoaded).then(() => {
-            if (this.props.objectsWorker) {
-                this.props.objectsWorker.registerHandler(this.onObjectChange);
-            } else {
-                this.props.socket.subscribeObject('*', this.onObjectChange);
-            }
+    async componentDidMount() {
+        await this.loadAllObjects(!objectsAlreadyLoaded);
+        if (this.props.objectsWorker) {
+            this.props.objectsWorker.registerHandler(this.onObjectChange);
+        } else {
+            this.props.socket.subscribeObject('*', this.onObjectChange);
+        }
 
-            objectsAlreadyLoaded = true;
-        });
+        objectsAlreadyLoaded = true;
     }
 
     /**
@@ -4223,6 +4246,10 @@ class ObjectBrowser extends Component {
      * @returns {JSX.Element | null}
      */
     renderColumnValue(id, item, classes) {
+        if (id.includes('buttontest')) {
+            console.log('render col val ' + id);
+            console.log(this.state.filter.expertMode);
+        }
         const obj = item.data.obj;
         if (!obj || !this.states) {
             return null;
@@ -4244,9 +4271,14 @@ class ObjectBrowser extends Component {
         const state = this.states[id];
         let info = item.data.state;
         if (!info) {
-            item.data.state =
-                item.data.state ||
-                formatValue(id, state, obj, this.texts, this.props.dateFormat, this.props.isFloatComma);
+            item.data.state = formatValue({
+                state,
+                obj,
+                texts: this.texts,
+                dateFormat: this.props.dateFormat,
+                isFloatComma: this.props.isFloatComma,
+                isExpertMode: this.state.filter.expertMode,
+            });
             info = item.data.state;
 
             info.valFull = info.valFull.map(_item => {
@@ -4328,16 +4360,11 @@ class ObjectBrowser extends Component {
             ];
         }
 
+        info.style = getValueStyle({ isExpertMode: this.state.filter.expertMode, state, obj });
+
         let val = info.valText;
         if (!this.state.filter.expertMode && item.data.button) {
-            val = (
-                <PressButtonIcon
-                    className={Utils.clsx(
-                        this.props.classes.cellValueButton,
-                        !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : ''
-                    )}
-                />
-            );
+            val = <PressButtonIcon className={this.props.classes.cellValueButton} />;
         }
 
         return (
