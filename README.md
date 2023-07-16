@@ -96,6 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) added tooltip to ObjectBrowserValue to show that ack-flag cannot be used to control a device
 * (foxriver76) fixed host name not being visible on some themes
 * (foxriver76) fixed issue with jsonConfig CRON placeholder overlapping input
+* (foxriver76) button color in non-expert mode will not change according to ack/q anymore
 * (foxriver76) fixed multiple problems with jsonConfig coordinates when using `useSystemName` and separate `latitude`/`longitutde` states
 * (foxriver76) when adding an icon to an object, to not show already uploaded non-existing image initially
 
