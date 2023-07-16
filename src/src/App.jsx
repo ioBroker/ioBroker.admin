@@ -1114,7 +1114,8 @@ class App extends Router {
 
     updateExpireIn() {
         const now = Date.now();
-        this.expireInSec -= (now - this.lastExecution) / 1_000;
+        this.expireInSec = this.expireInSec > 0 ? this.expireInSec - (now - this.lastExecution) / 1_000 : 0;
+
         const time = Utils.formatTime(this.expireInSec);
         if (this.refUser.current) {
             this.refUser.current.title = this.expireText.replace('%s', time);
