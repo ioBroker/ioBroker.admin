@@ -31,6 +31,7 @@ import DialogActions from '@mui/material/DialogActions';
 // @material-ui/icons
 import MenuIcon from '@mui/icons-material/Menu';
 import BuildIcon from '@mui/icons-material/Build';
+import UpdateIcon from '@mui/icons-material/Update';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import UserIcon from '@mui/icons-material/Person';
@@ -337,6 +338,8 @@ class App extends Router {
         I18n.setTranslations(this.translations);
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
+        /** Seconds before logout to show warning */
+        this.EXPIRE_WARNING_THRESHOLD = 120;
         this.refConfigIframe = null;
         this.refUser = React.createRef();
         this.refUserDiv = React.createRef();
@@ -439,7 +442,8 @@ class App extends Router {
                 readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
                 showSlowConnectionWarning: false,
 
-                expireInSec: null,
+                /** if true, shows the expiry warning (left time and update button) */
+                expireWarningMode: false,
 
                 versionAdmin: '',
 
@@ -730,7 +734,7 @@ class App extends Router {
                                         } else {
                                             window.location.reload();
                                         }
-                                    }, 1000);
+                                    }, 1_000);
 
                                     return this.setState({
                                         cloudNotConnected: true,
@@ -791,7 +795,7 @@ class App extends Router {
                                         }
                                     }
                                 } catch (e) {
-                                    console.error('Cannot read admin settings: ' + e);
+                                    console.error(`Cannot read admin settings: ${e}`);
                                 }
 
                                 this.setState(newState);
@@ -1110,51 +1114,63 @@ class App extends Router {
 
     updateExpireIn() {
         const now = Date.now();
-        this.expireInSec -= (now - this.lastExecution) / 1000;
+        this.expireInSec -= (now - this.lastExecution) / 1_000;
         const time = Utils.formatTime(this.expireInSec);
         if (this.refUser.current) {
             this.refUser.current.title = this.expireText.replace('%s', time);
         }
-        if (this.expireInSec < 120 && this.refUserDiv.current) {
+        if (this.expireInSec < this.EXPIRE_WARNING_THRESHOLD && this.refUserDiv.current) {
             this.refUserDiv.current.innerHTML = time;
-            this.refUserDiv.current.style.color = '#F44';
+
+            if (!this.state.expireWarningMode) {
+                this.setState({ expireWarningMode: true });
+            }
+        } else if (this.state.expireWarningMode) {
+            this.setState({ expireWarningMode: false });
         }
 
         if (this.expireInSec <= 0) {
             window.alert('Session expired');
             // reconnect
-            setTimeout(() => window.location.reload(false), 1000);
+            setTimeout(() => window.location.reload(false), 1_000);
         }
 
         this.lastExecution = now;
     }
 
-    makePingAuth() {
+    /**
+     * Extends the socket connection by configured ttl
+     */
+    extendSession() {
+        // TODO
+        console.log('not implemented yet');
+    }
+
+    /**
+     * Start interval to handle logout after session expires
+     *
+     * @return {Promise<void>}
+     */
+    async makePingAuth() {
         this.pingAuth && clearTimeout(this.pingAuth);
         this.pingAuth = null;
 
-        this.socket
-            .getCurrentSession()
-            .then(data => {
-                if (data) {
-                    if (!this.expireInSecInterval) {
-                        this.expireInSecInterval = setInterval(() => this.updateExpireIn(), 1000);
-                    }
-                    this.expireInSec = data.expireInSec;
-                    this.lastExecution = Date.now();
-                    this.updateExpireIn();
-                }
+        try {
+            const data = await this.socket.getCurrentSession();
 
-                /*this.pingAuth = setTimeout(() => {
-                    this.pingAuth = null;
-                    this.makePingAuth();
-                }, 30000);*/
-            })
-            .catch(e => {
-                window.alert('Session timeout: ' + e);
-                // reconnect
-                setTimeout(() => window.location.reload(false), 1000);
-            });
+            if (data) {
+                if (!this.expireInSecInterval) {
+                    this.expireInSecInterval = setInterval(() => this.updateExpireIn(), 1_000);
+                }
+                this.expireInSec = data.expireInSec;
+                this.lastExecution = Date.now();
+                this.updateExpireIn();
+            }
+        } catch (e) {
+            window.alert(`Session timeout: ${e}`);
+            // reconnect
+            setTimeout(() => window.location.reload(false), 1_000);
+        }
     }
 
     onDiscoveryAlive = (name, value) => {
@@ -2029,11 +2045,20 @@ class App extends Router {
                     )}
                     <div
                         ref={this.refUserDiv}
-                        style={{ color: this.state.user.color || undefined }}
+                        style={
+                            this.state.expireWarningMode
+                                ? { color: '#F44' }
+                                : { color: this.state.user?.color || undefined }
+                        }
                         className={this.props.classes.userText}
                     >
                         {this.state.user.name}
                     </div>
+                    {this.state.expireWarningMode ? (
+                        <IconButton onClick={() => this.extendSession()}>
+                            <UpdateIcon />
+                        </IconButton>
+                    ) : null}
                 </div>
             );
         } else if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
