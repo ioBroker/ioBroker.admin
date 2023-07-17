@@ -86,20 +86,21 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 
 ### **WORK IN PROGRESS**
-* (foxriver76) also show non-stable repo warning on hosts tab
+* (foxriver76) also show non-stable repo warning on the hosts tab
 * (foxriver76) fixed jsonConfig slider with different max/min values than 0/100
 * (foxriver76) fixed jsonConfig number element arrows
 * (foxriver76) fixed jsonConfig coordinates not triggering onChange and not being prefilled
 * (foxriver76) fixed jsonConfig jsonEditor component
-* (foxriver76) assume status as offline if status state value has been deleted (e.g. via `setState` with `expire` option)
+* (foxriver76) assume status as offline if status state value has been deleted (e.g., via `setState` with `expire` option)
 * (foxriver76) fixed jsonConfig CheckLicense edge case error
 * (foxriver76) added tooltip to ObjectBrowserValue to show that ack-flag cannot be used to control a device
 * (foxriver76) fixed host name not being visible on some themes
 * (foxriver76) fixed issue with jsonConfig CRON placeholder overlapping input
-* (foxriver76) button color in non-expert mode will not change according to ack/q anymore
+* (foxriver76) button color in non-expert mode will not be changed according to ack/q anymore
 * (foxriver76) fixed multiple problems with jsonConfig coordinates when using `useSystemName` and separate `latitude`/`longitutde` states
 * (foxriver76) when adding an icon to an object, to not show already uploaded non-existing image initially
-* (foxriver76) when session timer falls below 2 minute mark, show button to extend the session
+* (foxriver76) when the session timer falls below the 2 - minute mark, show button to extend the session
+* (bluefox) New json config component added: license agreement
 
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
