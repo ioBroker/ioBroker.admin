@@ -13,15 +13,15 @@ import I18n from './wrapper/i18n';
 import Icon from './wrapper/Components/Icon';
 import ConfirmDialog from './wrapper/Dialogs/Confirm';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     icon: {
         width: 24,
         height: 24,
-        marginRight: 4
-    }
+        marginRight: 4,
+    },
 });
 
 class ConfigSetState extends ConfigGeneric {
@@ -70,7 +70,7 @@ class ConfigSetState extends ConfigGeneric {
             cancel={ this.getText(confirm.cancel) || I18n.t('ra_Cancel') }
             icon={icon}
             onClose={isOk =>
-                this.setState({ confirmDialog: false}, async () =>
+                this.setState({ confirmDialog: false }, async () =>
                     isOk && (await this._onClick()))
             }
         />;
@@ -84,13 +84,13 @@ class ConfigSetState extends ConfigGeneric {
             disabled={disabled}
             onClick={async () => {
                 if (this.props.schema.confirm) {
-                    this.setState({confirmDialog: true});
+                    this.setState({ confirmDialog: true });
                 } else {
                     await this._onClick();
                 }
             }}
         >
-            {this.props.schema.icon ? <Icon src={this.props.schema.icon} className={this.props.classes.icon}/> : null}
+            {this.props.schema.icon ? <Icon src={this.props.schema.icon} className={this.props.classes.icon} /> : null}
             {this.getText(this.props.schema.label, this.props.schema.noTranslation)}
         </Button>;
     }

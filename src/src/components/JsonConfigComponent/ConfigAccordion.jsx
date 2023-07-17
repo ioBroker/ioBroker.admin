@@ -36,7 +36,7 @@ const styles = theme => ({
     toolbar: {
         backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
         borderRadius: 3,
-    }
+    },
 });
 
 class ConfigAccordion extends ConfigGeneric {

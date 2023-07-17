@@ -7,8 +7,8 @@ import { TimePicker } from '@mui/x-date-pickers';
 
 const styles = theme => ({
     indeterminate: {
-        opacity: 0.5
-    }
+        opacity: 0.5,
+    },
 });
 
 class ConfigTimePicker extends ConfigGeneric {

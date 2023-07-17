@@ -57,7 +57,7 @@ const styles = theme => ({
     },
     addIcon: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     highlight:
         theme.palette.mode === 'light'
@@ -77,7 +77,7 @@ const styles = theme => ({
         paddingRight: theme.spacing(1),
     },
     silver: {
-        opacity: 0.2
+        opacity: 0.2,
     },
     flex: {
         display: 'flex',
@@ -90,11 +90,11 @@ const styles = theme => ({
     },
     buttonEmpty: {
         width: 34,
-        display: 'inline-block'
+        display: 'inline-block',
     },
     buttonCell: {
         whiteSpace: 'nowrap',
-    }
+    },
 });
 
 function objectToArray(object, nameOfFirstAttr, nameOfSecondAttr) {
@@ -106,7 +106,7 @@ function objectToArray(object, nameOfFirstAttr, nameOfSecondAttr) {
         item[nameOfFirstAttr] = key;
 
         if (nameOfSecondAttr) {
-            item[nameOfSecondAttr] = object[key]
+            item[nameOfSecondAttr] = object[key];
             array.push(item);
         } else {
             array.push(Object.assign(item, object[key]));
@@ -190,8 +190,8 @@ class ConfigTable extends ConfigGeneric {
 
         const schemaItem = {
             items: {
-                [attrItem]: schemaForAttribute
-            }
+                [attrItem]: schemaForAttribute,
+            },
         };
 
         return <ConfigPanel
@@ -225,12 +225,11 @@ class ConfigTable extends ConfigGeneric {
     static descendingComparator(a, b, orderBy) {
         if (b[orderBy] < a[orderBy]) {
             return -1;
-        } else
-            if (b[orderBy] > a[orderBy]) {
-                return 1;
-            } else {
-                return 0;
-            }
+        } else if (b[orderBy] > a[orderBy]) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     static getComparator(order, orderBy) {
@@ -334,7 +333,9 @@ class ConfigTable extends ConfigGeneric {
                                         }
                                     });
                                 }}
-                            >{this.state.filterOn.includes(headCell.attr) ? <IconFilterOff /> : <IconFilterOn />}</IconButton> : null}
+                            >
+                                {this.state.filterOn.includes(headCell.attr) ? <IconFilterOff /> : <IconFilterOn />}
+                            </IconButton> : null}
                         </div>
                     </TableCell>
                 )}
@@ -562,7 +563,7 @@ class ConfigTable extends ConfigGeneric {
                             {I18n.t('ra_All items are filtered out')}
                             <IconButton
                                 size="small"
-                                onClick={e => this.applyFilter(true)}
+                                onClick={() => this.applyFilter(true)}
                             >
                                 <CloseIcon />
                             </IconButton>

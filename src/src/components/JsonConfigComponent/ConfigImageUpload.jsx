@@ -13,11 +13,11 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     image: {
-        width: 100
-    }
+        width: 100,
+    },
 });
 
 class ConfigImageUpload extends ConfigGeneric {

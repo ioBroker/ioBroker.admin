@@ -22,7 +22,6 @@ const styles = () => ({
 });
 
 class ConfigIP extends ConfigGeneric {
-
     componentDidMount() {
         super.componentDidMount();
         this.props.socket.getHostByIp(this.props.common.host)

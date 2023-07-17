@@ -19,7 +19,7 @@ const styles = theme => ({});
 class ConfigColor extends ConfigGeneric {
     renderColorDialog() {
         return !!this.state.showColorDialog && <Dialog
-            onClose={() => this.setState({showColorDialog: false})}
+            onClose={() => this.setState({ showColorDialog: false })}
             open={this.state.showColorDialog}>
             <ChromePicker
                 color={this.state.colorDialogValue}
@@ -41,7 +41,7 @@ class ConfigColor extends ConfigGeneric {
             <TextField
                 variant="standard"
                 disabled={!!disabled}
-                style={{minWidth: 100, width: 'calc(100% - 8px)'}}
+                style={{ minWidth: 100, width: 'calc(100% - 8px)' }}
                 label={this.getText(this.props.schema.label)}
                 value={value || ''}
                 onClick={() => !this.props.schema.readOnly && this.setState({ showColorDialog: true, colorDialogValue: value || '' })}
@@ -53,7 +53,7 @@ class ConfigColor extends ConfigGeneric {
                     style: {
                         //paddingLeft: noPadding ? 0 : 8,
                         backgroundColor: value,
-                        color: textColor ? '#FFF' : '#000'
+                        color: textColor ? '#FFF' : '#000',
                     },
                     readOnly: this.props.schema.readOnly || false,
                 }}

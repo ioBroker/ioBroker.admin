@@ -7,13 +7,13 @@ import { TextField } from '@mui/material';
 
 const styles = theme => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     icon: {
         width: 16,
         height: 16,
-        marginRight: 8
-    }
+        marginRight: 8,
+    },
 });
 
 function convertID2Topic(id, prefix, namespace) {
@@ -32,10 +32,10 @@ class ConfigTopic extends ConfigGeneric {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         if (!value && this.props.customObj && this.props.customObj._id) {
-            let topic = convertID2Topic(this.props.customObj._id, null, this.props.adapterName + '.' + this.props.instance);
-            this.setState({value: topic});
+            let topic = convertID2Topic(this.props.customObj._id, null, `${this.props.adapterName}.${this.props.instance}`);
+            this.setState({ value: topic });
         } else {
-            this.setState({value: value || ''});
+            this.setState({ value: value || '' });
         }
     }
 

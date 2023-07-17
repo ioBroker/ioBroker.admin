@@ -16,7 +16,7 @@ import ConfigGeneric from './ConfigGeneric';
 const styles = theme => ({
     fullWidth: {
         width: '100%',
-        display: 'inline-block'
+        display: 'inline-block',
     },
     halfWidth1: {
         width: `calc(50% - ${theme.spacing(0.5)})`,
@@ -25,8 +25,8 @@ const styles = theme => ({
     },
     halfWidth2: {
         width: `calc(50% - ${theme.spacing(0.5)})`,
-        display: 'inline-block'
-    }
+        display: 'inline-block',
+    },
 });
 
 const PASSWORD_PLACEHOLDER = '____ppp____';
@@ -39,7 +39,7 @@ class ConfigPassword extends ConfigGeneric {
             _repeat: value ? PASSWORD_PLACEHOLDER : '',
             _visible: false,
             value: value ? PASSWORD_PLACEHOLDER : '',
-            _notEqual: false
+            _notEqual: false,
         });
     }
 

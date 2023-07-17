@@ -19,7 +19,7 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
                     if (!window[remote].__initialized) {
                         // if share scope doesn't exist (like in webpack 4) then expect shareScope to be a manual object
                         if (typeof __webpack_share_scopes__ === 'undefined') {
-                            // use default share scope object passed in manually
+                            // use a default share scope object passed in manually
                             await window[remote].init(shareScope.default);
                         } else {
                             // otherwise, init share scope as usual

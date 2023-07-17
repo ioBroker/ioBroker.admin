@@ -10,8 +10,8 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
     fullWidth: {
-        width: '100%'
-    }
+        width: '100%',
+    },
 });
 
 class ConfigAutocompleteSendTo extends ConfigGeneric {

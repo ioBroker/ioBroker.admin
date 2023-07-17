@@ -10,11 +10,11 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = () => ({
     indeterminate: {
-        opacity: 0.5
+        opacity: 0.5,
     },
     control: {
         flexDirection: 'row',
-        width: '100%'
+        width: '100%',
     },
     warning: {
         '& .Mui-error': {

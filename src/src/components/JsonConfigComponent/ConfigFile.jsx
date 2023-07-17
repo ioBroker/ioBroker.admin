@@ -18,7 +18,7 @@ import ConfigFileSelector from './ConfigFileSelector';
 
 const styles = theme => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     fullWidthOneButton: {
         width: 'calc(100% - 69px)',
@@ -33,7 +33,7 @@ const styles = theme => ({
         width: 40,
         display: 'inline-block',
         marginRight: 8,
-    }
+    },
 });
 
 const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp'];

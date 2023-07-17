@@ -8,8 +8,8 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
     indeterminate: {
-        opacity: 0.5
-    }
+        opacity: 0.5,
+    },
 });
 
 class ConfigDatePicker extends ConfigGeneric {

@@ -20,10 +20,10 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     menuPaper: {
-        maxHeight: 800
+        maxHeight: 800,
     },
 });
 

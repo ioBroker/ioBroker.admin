@@ -56,6 +56,10 @@ const LANGUAGES =[
         label: 'Polski',
     },
     {
+        value: 'uk',
+        label: 'Український',
+    },
+    {
         value: 'zh-ch',
         label: '简体中文',
     },

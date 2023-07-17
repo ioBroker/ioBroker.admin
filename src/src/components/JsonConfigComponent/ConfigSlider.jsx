@@ -6,7 +6,7 @@ import { Box, Typography, Slider } from '@mui/material';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
         width: '100%',
     },
@@ -70,15 +70,13 @@ class ConfigSlider extends ConfigGeneric {
                         this.setState({ _value }, () => this.onChange(this.props.attr, _value));
                     }}
                 />
-                {this.props.schema.help ? (
-                    <Typography>
-                        {this.renderHelp(
-                            this.props.schema.help,
-                            this.props.schema.helpLink,
-                            this.props.schema.noTranslation
-                        )}
-                    </Typography>
-                ) : null}
+                {this.props.schema.help ? <Typography>
+                    {this.renderHelp(
+                        this.props.schema.help,
+                        this.props.schema.helpLink,
+                        this.props.schema.noTranslation,
+                    )}
+                </Typography> : null}
             </Box>
         );
     }

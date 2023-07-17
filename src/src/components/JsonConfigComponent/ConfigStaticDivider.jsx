@@ -13,11 +13,11 @@ const styles = theme => ({
         borderStyle: 'hidden',
     },
     primary: {
-        backgroundColor: theme.palette.primary.main
+        backgroundColor: theme.palette.primary.main,
     },
     secondary: {
-        backgroundColor: theme.palette.secondary.main
-    }
+        backgroundColor: theme.palette.secondary.main,
+    },
 });
 
 class ConfigStaticDivider extends ConfigGeneric {
@@ -26,7 +26,7 @@ class ConfigStaticDivider extends ConfigGeneric {
             className={Utils.clsx(
                 this.props.classes.fullWidth,
                 this.props.schema.color === 'primary' && this.props.classes.primary,
-                this.props.schema.color === 'secondary' && this.props.classes.secondary
+                this.props.schema.color === 'secondary' && this.props.classes.secondary,
             )}
             style={{
                 height: this.props.schema.color ? this.props.schema.height || 2 : this.props.schema.height || 1,

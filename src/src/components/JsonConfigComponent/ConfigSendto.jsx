@@ -22,7 +22,7 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = () => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     icon: {
         width: 24,

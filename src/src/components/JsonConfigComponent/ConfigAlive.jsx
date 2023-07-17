@@ -12,7 +12,7 @@ const styles = theme => ({
         width: '100%',
     },
     notAlive: {
-        color: '#a30000'
+        color: '#a30000',
     },
 });
 

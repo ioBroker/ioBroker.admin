@@ -22,7 +22,7 @@ const variantComponent = {
     outlined: OutlinedInput,
 };
 
-const styles = (theme) => {
+const styles = theme => {
     const light = theme.palette.type === 'light';
     const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)';
 
@@ -42,7 +42,7 @@ const styles = (theme) => {
             },
             '&$filled': {
                 paddingTop: 28,
-            }
+            },
         },
         input: {
             display: 'inline-block',
@@ -92,7 +92,7 @@ const styles = (theme) => {
                 top: 2,
                 '$marginDense &': {
                     top: 5,
-                }
+                },
             },
             '&$filled&:not($labelShrink)': {
                 top: 15,
@@ -114,7 +114,7 @@ const styles = (theme) => {
                 borderBottom: `2px solid ${theme.palette.primary[light ? 'dark' : 'light']}`,
                 left: 0,
                 bottom: 0,
-                // Doing the other way around crash on IE 11 "''" https://github.com/cssinjs/jss/issues/242
+                // Doing the other way around a crash on IE 11 "''" https://github.com/cssinjs/jss/issues/242
                 content: '""',
                 position: 'absolute',
                 right: 0,
@@ -136,7 +136,7 @@ const styles = (theme) => {
                 borderBottom: `1px solid ${bottomLineColor}`,
                 left: 0,
                 bottom: 0,
-                // Doing the other way around crash on IE 11 "''" https://github.com/cssinjs/jss/issues/242
+                // Doing the other way around a crash on IE 11 "''" https://github.com/cssinjs/jss/issues/242
                 content: '"\\00a0"',
                 position: 'absolute',
                 right: 0,
@@ -150,17 +150,17 @@ const styles = (theme) => {
                 // Reset on touch devices, it doesn't add specificity
                 '@media (hover: none)': {
                     borderBottom: `1px solid ${bottomLineColor}`,
-                }
+                },
             },
             '&$disabled:before': {
                 borderBottomStyle: 'dotted',
-            }
+            },
         },
         error: {
             '&:after': {
                 backgroundColor: theme.palette.error.main,
                 transform: 'scaleX(1)', // error is always underlined in red
-            }
+            },
         },
         chip: {
             margin: '0 8px 8px 0',
@@ -168,7 +168,7 @@ const styles = (theme) => {
         },
         marginDense: {},
     }
-}
+};
 
 const keyCodes = {
     BACKSPACE: 8,
@@ -213,7 +213,7 @@ class ChipInput extends React.Component {
         let newState = null;
 
         if (props.value && props.value.length !== state.prevPropsValue.length) {
-            newState = {prevPropsValue: props.value};
+            newState = { prevPropsValue: props.value };
             if (props.clearInputValueOnChange) {
                 newState.inputValue = '';
             }
@@ -221,15 +221,15 @@ class ChipInput extends React.Component {
 
         // if change detection is only needed for clearInputValueOnChange
         if (props.clearInputValueOnChange && props.value && props.value.length !== state.prevPropsValue.length) {
-            newState = {prevPropsValue: props.value, inputValue: ''};
+            newState = { prevPropsValue: props.value, inputValue: '' };
         }
 
         if (props.disabled) {
-            newState = {...newState, focusedChip: null};
+            newState = { ...newState, focusedChip: null };
         }
 
         if (!state.chipsUpdated && props.defaultValue) {
-            newState = {...newState, chips: props.defaultValue};
+            newState = { ...newState, chips: props.defaultValue };
         }
 
         return newState;
@@ -252,7 +252,7 @@ class ChipInput extends React.Component {
     focus = () => {
         this.actualInput.focus();
         if (this.state.focusedChip) {
-            this.setState({focusedChip: null});
+            this.setState({ focusedChip: null });
         }
     }
 
@@ -273,8 +273,8 @@ class ChipInput extends React.Component {
             case 'add':
                 if (this.props.delayBeforeAdd) {
                     // Let's assume that we only want to add the existing content as chip, when
-                    // another event has not added a chip within 200ms .
-                    // e.g. onSelection Callback in Autocomplete case
+                    // another event has not added a chip within 200ms.
+                    // e.g., onSelection Callback in Autocomplete case
                     const numChipsBefore = (this.props.value || this.state.chips).length;
                     this.inputBlurTimeout = setTimeout(() => {
                         const numChipsAfter = (this.props.value || this.state.chips).length;
@@ -311,10 +311,10 @@ class ChipInput extends React.Component {
         this._preventChipCreation = false;
 
         if (this.props.onKeyDown) {
-            // Needed for arrow controls on menu in autocomplete scenario
+            // Needed for arrow controls on a menu in autocomplete scenario
             this.props.onKeyDown(event);
             // Check if the callback marked the event as isDefaultPrevented() and skip further actions
-            // enter key for example should not always add the current value of the inputField
+            // enter key, for example, should not always add the current value of the inputField
             if (event.isDefaultPrevented()) {
                 return;
             }
@@ -334,10 +334,10 @@ class ChipInput extends React.Component {
                     if (focusedChip) {
                         this.handleDeleteChip(chips[focusedChip], focusedChip);
                         if (focusedChip) {
-                            this.setState({focusedChip: focusedChip - 1});
+                            this.setState({ focusedChip: focusedChip - 1 });
                         }
                     } else {
-                        this.setState({focusedChip: chips.length - 1});
+                        this.setState({ focusedChip: chips.length - 1 });
                     }
                 }
                 break;
@@ -418,8 +418,8 @@ class ChipInput extends React.Component {
         if (this.props.dataSourceConfig) {
             if (typeof chip === 'string') {
                 chip = {
-                    [this.props.dataSourceConfig.text]:  chip,
-                    [this.props.dataSourceConfig.value]: chip
+                    [this.props.dataSourceConfig.text]: chip,
+                    [this.props.dataSourceConfig.value]: chip,
                 };
             }
 
@@ -565,7 +565,7 @@ class ChipInput extends React.Component {
                     isFocused: this.state.focusedChip === i,
                     handleClick: () => this.setState({ focusedChip: i }),
                     handleDelete: () => this.handleDeleteChip(chip, i),
-                    className: classes.chip
+                    className: classes.chip,
                 },
                 i
             );
@@ -626,7 +626,7 @@ class ChipInput extends React.Component {
                     ref={this.input}
                     classes={{
                         input: Utils.clsx(classes.input, classes[variant]),
-                        root: Utils.clsx(classes.inputRoot, classes[variant])
+                        root: Utils.clsx(classes.inputRoot, classes[variant]),
                     }}
                     id={id}
                     value={actualInputValue}
@@ -720,7 +720,7 @@ ChipInput.propTypes = {
     /** The chips to display (enables controlled mode if set). */
     value: PropTypes.array,
     /** The variant of the Input component */
-    variant: PropTypes.oneOf(['outlined', 'standard', 'filled'])
+    variant: PropTypes.oneOf(['outlined', 'standard', 'filled']),
 }
 
 ChipInput.defaultProps = {
@@ -731,7 +731,7 @@ ChipInput.defaultProps = {
     disableUnderline: false,
     newChipKeyCodes: [13],
     newChipKeys: ['Enter'],
-    variant: 'standard'
+    variant: 'standard',
 };
 
 export default withStyles(styles, {name: 'WAMuiChipInput'})(ChipInput);
@@ -744,14 +744,14 @@ export const defaultChipRenderer = ({
     isReadOnly,
     handleClick,
     handleDelete,
-    className
+    className,
 }, key) =>
     <Chip
         key={key}
         className={className}
         style={{
             pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
-            backgroundColor: isFocused ? blue[300] : undefined
+            backgroundColor: isFocused ? blue[300] : undefined,
         }}
         onClick={handleClick}
         onDelete={handleDelete}

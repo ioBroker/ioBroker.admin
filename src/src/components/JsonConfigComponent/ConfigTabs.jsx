@@ -16,8 +16,8 @@ const styles = theme => ({
     panel: {
         height: 'calc(100% - 48px)',
         width: '100%',
-        display: 'block'
-    }
+        display: 'block',
+    },
 });
 
 class ConfigTabs extends ConfigGeneric {
@@ -61,7 +61,7 @@ class ConfigTabs extends ConfigGeneric {
                     return <Tab wrapped disabled={disabled} key={name} value={name} label={this.getText(items[name].label)} />
                 })}
             </Tabs>
-            {<ConfigPanel
+            <ConfigPanel
                 isParentTab
                 key={this.state.tab}
                 index={1001}
@@ -98,7 +98,7 @@ class ConfigTabs extends ConfigGeneric {
                 custom={this.props.custom}
 
                 schema={items[this.state.tab]}
-            />}
+            />
         </div>;
     }
 }

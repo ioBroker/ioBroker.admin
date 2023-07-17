@@ -10,8 +10,8 @@ import ChipInput from './ChipInput';
 
 const styles = theme => ({
     fullWidth: {
-        width: '100%'
-    }
+        width: '100%',
+    },
 });
 
 class ConfigLanguage extends ConfigGeneric {

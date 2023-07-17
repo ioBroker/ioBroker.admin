@@ -15,13 +15,13 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = () => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     noMargin: {
         '&>div': {
             marginTop: 0,
         },
-    }
+    },
 });
 
 class ConfigSelect extends ConfigGeneric {

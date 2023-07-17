@@ -370,6 +370,13 @@ adapter.on('message', obj => {
   - `latitudeName` - if defined, the latitude will be stored in this attribute, divider will be ignored
   - `useSystemName` - if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from system.config, a boolean will be saved to the given name
 
+- `license` - shows the license information if not already accepted. One of attributes `texts` or `licenseUrl` must be defined. When the license is accepted, the defined configuration attribute will be set to `true`.
+  - `texts` - array of paragraphs with texts, which will be shown each as a separate paragraph
+  - `licenseUrl` - URL to the license file (e.g. https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/LICENSE)
+  - `title` - Title of the license dialog
+  - `agreeText` - Text of the agreed button
+  - `checkBox` - If defined, the checkbox with the given name will be shown. If checked, the agreed button will be enabled.
+
 - `checkLicense` - Very special component to check the license online. It's required exactly `license` and `useLicenseManager` properties in native.
   - `uuid` - Check UUID
   - `version` - Check version
@@ -516,7 +523,7 @@ Component must look like
 />
 ```
 
-If no schema provided, the schema must be created automatically from data.
+If no schema is provided, the schema must be created automatically from data.
 - `boolean` => checkbox
 - `text` => text input
 - `number` => number
@@ -528,7 +535,7 @@ If element has no attribute `type`, assume it has default type 'panel'.
 
 ## i18n
 There are several options to provide the translations.
-Only the first one is compatible with our Community Translation Tool Weblate, so it should be favoured over the others!
+Only the first one is compatible with our Community Translation Tool Weblate, so it should be favored over the others!
 
 1. Users can provide texts from files.
 

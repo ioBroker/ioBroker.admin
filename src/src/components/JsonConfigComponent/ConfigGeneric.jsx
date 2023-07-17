@@ -39,7 +39,7 @@ class ConfigGeneric extends Component {
                           props.data,
                           props.instanceObj,
                           props.arrayIndex,
-                          props.globalData
+                          props.globalData,
                       )
                     : props.schema.default;
             } else {
@@ -49,7 +49,7 @@ class ConfigGeneric extends Component {
                           props.schema.default,
                           props.data,
                           props.arrayIndex,
-                          props.globalData
+                          props.globalData,
                       )
                     : props.schema.default;
             }
@@ -796,76 +796,71 @@ class ConfigGeneric extends Component {
             const renderedItem = this.renderItem(
                 error,
                 disabled || this.props.commandRunning || this.props.disabled,
-                defaultValue
+                defaultValue,
             );
 
-            const item = (
-                <Grid
-                    item
-                    title={this.getText(schema.tooltip)}
-                    xs={schema.xs || undefined}
-                    lg={schema.lg || undefined}
-                    md={schema.md || undefined}
-                    sm={schema.sm || undefined}
-                    style={Object.assign(
-                        {},
-                        {
-                            marginBottom: 0,
-                            // marginRight: 8,
-                            textAlign: 'left',
-                            width:
-                                schema.type === 'divider' || schema.type === 'header'
-                                    ? schema.width || '100%'
-                                    : undefined,
-                        },
-                        schema.style,
-                        this.props.themeType === 'dark' ? schema.darkStyle : {}
-                    )}
-                >
-                    {this.props.schema.defaultSendTo && this.props.schema.button ? (
-                        <Grid container style={{ width: '100%' }}>
-                            <Grid item flex={1}>
-                                {renderedItem}
-                            </Grid>
-                            <Grid item>
-                                <Button
-                                    variant="outlined"
-                                    onClick={() => this.sendTo()}
-                                    title={
-                                        this.props.schema.buttonTooltip
-                                            ? this.getText(
-                                                  this.props.schema.buttonTooltip,
-                                                  this.props.schema.buttonTooltipNoTranslation
-                                              )
-                                            : I18n.t('ra_Request data by instance')
-                                    }
-                                >
-                                    {this.getText(this.props.schema.button)}
-                                </Button>
-                            </Grid>
+            if (this.noPlaceRequired) {
+                return renderedItem;
+            }
+
+            const item = <Grid
+                item
+                title={this.getText(schema.tooltip)}
+                xs={schema.xs || undefined}
+                lg={schema.lg || undefined}
+                md={schema.md || undefined}
+                sm={schema.sm || undefined}
+                style={Object.assign(
+                    {},
+                    {
+                        marginBottom: 0,
+                        // marginRight: 8,
+                        textAlign: 'left',
+                        width:
+                            schema.type === 'divider' || schema.type === 'header'
+                                ? schema.width || '100%'
+                                : undefined,
+                    },
+                    schema.style,
+                    this.props.themeType === 'dark' ? schema.darkStyle : {}
+                )}
+            >
+                {this.props.schema.defaultSendTo && this.props.schema.button ?
+                    <Grid container style={{ width: '100%' }}>
+                        <Grid item flex={1}>
+                            {renderedItem}
                         </Grid>
-                    ) : (
-                        renderedItem
-                    )}
-                </Grid>
-            );
+                        <Grid item>
+                            <Button
+                                variant="outlined"
+                                onClick={() => this.sendTo()}
+                                title={
+                                    this.props.schema.buttonTooltip
+                                        ? this.getText(
+                                              this.props.schema.buttonTooltip,
+                                              this.props.schema.buttonTooltipNoTranslation
+                                          )
+                                        : I18n.t('ra_Request data by instance')
+                                }
+                            >
+                                {this.getText(this.props.schema.button)}
+                            </Button>
+                        </Grid>
+                    </Grid> : renderedItem}
+            </Grid>;
 
             if (schema.newLine) {
-                return (
-                    <>
-                        <div style={{ flexBasis: '100%', height: 0 }} />
-                        {this.renderConfirmDialog()}
-                        {item}
-                    </>
-                );
+                return <>
+                    <div style={{ flexBasis: '100%', height: 0 }} />
+                    {this.renderConfirmDialog()}
+                    {item}
+                </>;
             } else {
                 if (this.state.confirmDialog) {
-                    return (
-                        <>
-                            {this.renderConfirmDialog()}
-                            {item}
-                        </>
-                    );
+                    return <>
+                        {this.renderConfirmDialog()}
+                        {item}
+                    </>;
                 } else {
                     return item;
                 }

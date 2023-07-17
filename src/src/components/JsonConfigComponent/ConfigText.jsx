@@ -14,7 +14,7 @@ import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
     indeterminate: {
-        opacity: 0.5
+        opacity: 0.5,
     },
     label: {
         width: '100%',
@@ -28,7 +28,7 @@ const styles = theme => ({
         width: '100%',
         fontSize: 12,
         color: '#FF0000',
-    }
+    },
 });
 
 class ConfigText extends ConfigGeneric {

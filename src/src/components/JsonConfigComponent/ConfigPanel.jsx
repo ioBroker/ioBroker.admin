@@ -37,6 +37,7 @@ import ConfigImageUpload from './ConfigImageUpload';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
 import ConfigJsonEditor from './ConfigJsonEditor';
 import ConfigLanguage from './ConfigLanguage';
+import ConfigLicense from './ConfigLicense';
 import ConfigNumber from './ConfigNumber';
 import ConfigObjectId from './ConfigObjectId';
 import ConfigPassword from './ConfigPassword';
@@ -88,6 +89,7 @@ const components = {
     ip: ConfigIP,
     jsonEditor: ConfigJsonEditor,
     language: ConfigLanguage,
+    license: ConfigLicense,
     number: ConfigNumber,
     objectId: ConfigObjectId,
     password: ConfigPassword,

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import TextField from '@mui/material/TextField';
 
@@ -10,9 +9,6 @@ import ConfigGeneric from './ConfigGeneric';
 
 import Utils from './wrapper/Components/Utils';
 import CopyIcon from './wrapper/icons/IconCopy';
-
-const styles = theme => ({
-});
 
 class ConfigPattern extends ConfigGeneric {
     renderItem(error, disabled) {
@@ -51,4 +47,4 @@ ConfigPattern.propTypes = {
     onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(ConfigPattern);
+export default ConfigPattern;

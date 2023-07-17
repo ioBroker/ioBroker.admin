@@ -12,8 +12,8 @@ import I18n from './wrapper/i18n';
 
 const styles = theme => ({
     error: {
-        color: 'red'
-    }
+        color: 'red',
+    },
 });
 
 class ConfigCheckbox extends ConfigGeneric {

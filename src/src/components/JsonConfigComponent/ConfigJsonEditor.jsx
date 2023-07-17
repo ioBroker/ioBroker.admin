@@ -51,60 +51,54 @@ class ConfigJsonEditor extends ConfigGeneric {
         const { classes, schema, data, attr } = this.props;
         const { value, showSelectId } = this.state;
 
-        return (
-            <FormControl className={classes.fullWidth} variant="standard">
-                <div className={classes.flex}>
-                    <Button
-                        color="grey"
-                        className={classes.button}
-                        size="small"
-                        variant="outlined"
-                        onClick={() => this.setState({ showSelectId: true })}
-                    >
-                        {I18n.t('ra_JSON editor')}
-                    </Button>
+        return <FormControl className={classes.fullWidth} variant="standard">
+            <div className={classes.flex}>
+                <Button
+                    color="grey"
+                    className={classes.button}
+                    size="small"
+                    variant="outlined"
+                    onClick={() => this.setState({ showSelectId: true })}
+                >
+                    {I18n.t('ra_JSON editor')}
+                </Button>
+            </div>
+            {showSelectId ? <CustomModal
+                title={this.getText(schema.label)}
+                open={showSelectId}
+                overflowHidden
+                onClose={() =>
+                    this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })
+                }
+                onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
+            >
+                <div className={classes.wrapper}>
+                    <AceEditor
+                        mode="json"
+                        theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
+                        value={typeof value === 'object' ? JSON.stringify(value) : value}
+                        width="100%"
+                        height="100%"
+                        onChange={newValue => this.setState({ value: newValue })}
+                        name="ConfigJsonEditor"
+                        fontSize={14}
+                        setOptions={{
+                            enableBasicAutocompletion: true,
+                            enableLiveAutocompletion: true,
+                            enableSnippets: true,
+                        }}
+                        editorProps={{ $blockScrolling: true }}
+                    />
                 </div>
-                {showSelectId ? (
-                    <CustomModal
-                        title={this.getText(schema.label)}
-                        open={showSelectId}
-                        overflowHidden
-                        onClose={() =>
-                            this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })
-                        }
-                        onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
-                    >
-                        <div className={classes.wrapper}>
-                            <AceEditor
-                                mode="json"
-                                theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
-                                value={typeof value === 'object' ? JSON.stringify(value) : value}
-                                width="100%"
-                                height="100%"
-                                onChange={newValue => this.setState({ value: newValue })}
-                                name="ConfigJsonEditor"
-                                fontSize={14}
-                                setOptions={{
-                                    enableBasicAutocompletion: true,
-                                    enableLiveAutocompletion: true,
-                                    enableSnippets: true,
-                                }}
-                                editorProps={{ $blockScrolling: true }}
-                            />
-                        </div>
-                    </CustomModal>
-                ) : null}
-                {schema.help ? (
-                    <FormHelperText>
-                        {this.renderHelp(
-                            this.props.schema.help,
-                            this.props.schema.helpLink,
-                            this.props.schema.noTranslation
-                        )}
-                    </FormHelperText>
-                ) : null}
-            </FormControl>
-        );
+            </CustomModal> : null}
+            {schema.help ? <FormHelperText>
+                {this.renderHelp(
+                    this.props.schema.help,
+                    this.props.schema.helpLink,
+                    this.props.schema.noTranslation
+                )}
+            </FormHelperText> : null}
+        </FormControl>;
     }
 }
 

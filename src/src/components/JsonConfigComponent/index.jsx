@@ -12,8 +12,8 @@ import ConfigPanel from './ConfigPanel';
 const styles = theme => ({
     root: {
         width: '100%',
-        height: '100%'
-    }
+        height: '100%',
+    },
 });
 
 class JsonConfigComponent extends Component {
@@ -28,7 +28,7 @@ class JsonConfigComponent extends Component {
             systemConfig: null,
             alive: false,
             commandRunning: false,
-            schema: JSON.parse(JSON.stringify(this.props.schema))
+            schema: JSON.parse(JSON.stringify(this.props.schema)),
         };
 
         this.forceUpdateHandlers = {};
@@ -109,7 +109,7 @@ class JsonConfigComponent extends Component {
             return Promise.resolve();
         } else {
             return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
-                .then(obj => this.setState({common: obj.common, data: this.props.data || obj.native}));
+                .then(obj => this.setState({ common: obj.common, data: this.props.data || obj.native }));
         }
     }
 
@@ -120,9 +120,9 @@ class JsonConfigComponent extends Component {
                 this.props.socket.getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
                     .then(state => {
                         if (this.props.custom) {
-                            this.setState({systemConfig: systemConfig.common, alive: !!(state && state.val)});
+                            this.setState({ systemConfig: systemConfig.common, alive: !!(state && state.val) });
                         } else {
-                            this.setState({systemConfig: systemConfig.common, alive: !!(state && state.val)}, () =>
+                            this.setState({ systemConfig: systemConfig.common, alive: !!(state && state.val) }, () =>
                                 this.props.socket.subscribeState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`, this.onAlive));
                         }
                     }));
@@ -130,7 +130,7 @@ class JsonConfigComponent extends Component {
 
     onAlive = (id, state) => {
         if ((state?.val || false) !== this.state.alive) {
-            this.setState({alive: state?.val || false});
+            this.setState({ alive: state?.val || false });
         }
     }
 
@@ -205,7 +205,7 @@ class JsonConfigComponent extends Component {
                     } else {
                         attrs[dep].confirmDependsOn = attrs[dep].confirmDependsOn || [];
 
-                        const depObj = {...attrs[attr], attr};
+                        const depObj = { ...attrs[attr], attr };
                         if (depObj.confirm) {
                             depObj.confirm.cancel = 'Undo';
                         }
@@ -225,7 +225,7 @@ class JsonConfigComponent extends Component {
                     } else {
                         attrs[dep].onChangeDependsOn = attrs[dep].onChangeDependsOn || [];
 
-                        const depObj = {...attrs[attr], attr};
+                        const depObj = { ...attrs[attr], attr };
 
                         attrs[dep].onChangeDependsOn.push(depObj);
                     }
@@ -242,7 +242,7 @@ class JsonConfigComponent extends Component {
                     } else {
                         attrs[dep].hiddenDependsOn = attrs[dep].hiddenDependsOn || [];
 
-                        const depObj = {...attrs[attr], attr};
+                        const depObj = { ...attrs[attr], attr };
 
                         attrs[dep].hiddenDependsOn.push(depObj);
                     }
@@ -259,7 +259,7 @@ class JsonConfigComponent extends Component {
                     } else {
                         attrs[dep].labelDependsOn = attrs[dep].labelDependsOn || [];
 
-                        const depObj = {...attrs[attr], attr};
+                        const depObj = { ...attrs[attr], attr };
 
                         attrs[dep].labelDependsOn.push(depObj);
                     }
@@ -276,7 +276,7 @@ class JsonConfigComponent extends Component {
                     } else {
                         attrs[dep].helpDependsOn = attrs[dep].helpDependsOn || [];
 
-                        const depObj = {...attrs[attr], attr};
+                        const depObj = { ...attrs[attr], attr };
 
                         attrs[dep].helpDependsOn.push(depObj);
                     }
