@@ -84,8 +84,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
 ### **WORK IN PROGRESS**
+* (foxriver76) Many GUI improvements
+* (bluefox) New json config component added: license agreement
+
+### 6.6.0.5 (2023-07-17)
 * (foxriver76) also show non-stable repo warning on the hosts tab
 * (foxriver76) fixed jsonConfig slider with different max/min values than 0/100
 * (foxriver76) fixed jsonConfig number element arrows
@@ -100,7 +103,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed multiple problems with jsonConfig coordinates when using `useSystemName` and separate `latitude`/`longitutde` states
 * (foxriver76) when adding an icon to an object, to not show already uploaded non-existing image initially
 * (foxriver76) when the session timer falls below the 2 - minute mark, show button to extend the session
-* (bluefox) New json config component added: license agreement
+
 
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
@@ -114,9 +117,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.5.7 (2023-06-06)
 * (bluefox) ZIP archives will be saved in files and not in states
-
-### 6.5.6 (2023-06-01)
-* (bluefox) Sentry packages were updated
 
 ## License
 The MIT License (MIT)
