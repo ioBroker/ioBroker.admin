@@ -2048,7 +2048,12 @@ class App extends Router {
                         {this.state.user.name}
                     </div>
                     {this.state.expireWarningMode ? (
-                        <IconButton onClick={() => this.makePingAuth()}>
+                        <IconButton
+                            onClick={async () => {
+                                await this.socket.getCurrentSession();
+                                await this.makePingAuth();
+                            }}
+                        >
                             <UpdateIcon />
                         </IconButton>
                     ) : null}
