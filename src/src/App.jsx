@@ -1140,15 +1140,7 @@ class App extends Router {
     }
 
     /**
-     * Extends the socket connection by configured ttl
-     */
-    extendSession() {
-        // TODO
-        console.log('not implemented yet');
-    }
-
-    /**
-     * Start interval to handle logout after session expires
+     * Start interval to handle logout after session expires, this also refreshes the session
      *
      * @return {Promise<void>}
      */
@@ -2056,7 +2048,7 @@ class App extends Router {
                         {this.state.user.name}
                     </div>
                     {this.state.expireWarningMode ? (
-                        <IconButton onClick={() => this.extendSession()}>
+                        <IconButton onClick={() => this.makePingAuth()}>
                             <UpdateIcon />
                         </IconButton>
                     ) : null}
