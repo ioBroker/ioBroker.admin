@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.6.1 (2023-07-17)
 * (foxriver76) Many GUI improvements
 * (bluefox) New json config component added: license agreement
 
@@ -104,7 +104,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) when adding an icon to an object, to not show already uploaded non-existing image initially
 * (foxriver76) when the session timer falls below the 2 - minute mark, show button to extend the session
 
-
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
 * (bluefox) Added site name and corrected the system dialog
@@ -114,9 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.5.8 (2023-06-12)
 * (foxriver76) The log size will be parsed correctly for controller v5
-
-### 6.5.7 (2023-06-06)
-* (bluefox) ZIP archives will be saved in files and not in states
 
 ## License
 The MIT License (MIT)
