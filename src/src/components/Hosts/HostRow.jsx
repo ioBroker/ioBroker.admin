@@ -2,7 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import { Avatar, Badge, CardContent, CardMedia, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@mui/material';
+import {
+    Avatar,
+    Badge,
+    CardContent,
+    CardMedia,
+    FormControl,
+    FormHelperText,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -149,7 +162,8 @@ const styles = theme => ({
     dotLine: {
         width: 10,
         height: 20,
-        background: 'linear-gradient( rgba(0,206,0,0.7497373949579832) 0%, rgba(31,255,1,1) 50%, rgba(0,206,0,0.7805497198879552) 100%)',
+        background:
+            'linear-gradient( rgba(0,206,0,0.7497373949579832) 0%, rgba(31,255,1,1) 50%, rgba(0,206,0,0.7805497198879552) 100%)',
         zIndex: 2,
         position: 'absolute',
         top: -21,
@@ -172,7 +186,7 @@ const styles = theme => ({
             opacity: 1,
         },
         '100%': {
-            opacity: 0.80,
+            opacity: 0.8,
         },
     },
     flex: {
@@ -195,7 +209,8 @@ const styles = theme => ({
         cursor: 'no-drop !important',
     },
     wrapperFlex: {
-        display: 'flex', cursor: 'pointer',
+        display: 'flex',
+        cursor: 'pointer',
         '& .warning': {
             backgroundColor: '#de0000 !important',
             '&:before': {
@@ -206,10 +221,10 @@ const styles = theme => ({
                 fontSize: 25,
                 height: '30px',
                 width: '30px',
-                color: 'black'
+                color: 'black',
             },
             animation: '$warning 2.5s ease-in-out infinite alternate',
-        }
+        },
     },
     '@keyframes warning': {
         '0%': {
@@ -320,9 +335,10 @@ let uptimeCache = '-';
 
 let diskFreeCache = 1;
 let diskSizeCache = 1;
+/** if no disk warning in percentage is configured we are using 1 % */
 let diskWarningCache = 1;
 
-const StyledBadge = withStyles((theme) => ({
+const StyledBadge = withStyles(theme => ({
     badge: {
         right: -3,
         top: 13,
@@ -341,7 +357,25 @@ function toggleClassName(el, name) {
     }
     classNames.push(name);
     //el.className = classNames.join(' ');
-    setTimeout(_classNames => el.className = _classNames, 100, classNames.join(' '));
+    setTimeout(_classNames => (el.className = _classNames), 100, classNames.join(' '));
+}
+
+/**
+ * Get the initial disk states to show problems with disk usage
+ *
+ * @param {string} hostId id of the host to get information from
+ * @param {import('@iobroker/socket-client').Connection} socket the connection
+ * @return {Promise<void>}
+ */
+async function getInitialDiskStates(hostId, socket) {
+    const diskWarningState = await socket.getState(`${hostId}.diskWarning`);
+    diskWarningCache = diskWarningState?.val ?? diskWarningCache;
+
+    const diskFreeState = await socket.getState(`${hostId}.diskFree`);
+    diskFreeCache = diskFreeState?.val ?? diskFreeCache;
+
+    const diskSizeState = await socket.getState(`${hostId}.diskSize`);
+    diskSizeCache = diskSizeState?.val ?? diskSizeCache;
 }
 
 const HostRow = ({
@@ -435,7 +469,7 @@ const HostRow = ({
             refCpu.current.innerHTML = cpuCache;
             toggleClassName(refCpu.current, classes.newValue);
         }
-    }
+    };
 
     const memFunc = (_, state) => {
         memCache = formatValue(state, '%');
@@ -443,19 +477,19 @@ const HostRow = ({
             refMem.current.innerHTML = memCache;
             toggleClassName(refMem.current, classes.newValue);
         }
-    }
+    };
 
     const uptimeFunc = (_, state) => {
         if (state && state.val) {
             const d = Math.floor(state.val / (3600 * 24));
-            const h = Math.floor(state.val % (3600 * 24) / 3600);
+            const h = Math.floor((state.val % (3600 * 24)) / 3600);
             uptimeCache = d ? `${d}d${h}h` : `${h}h`; // TODO translate
         }
         if (refUptime.current) {
             refUptime.current.innerHTML = uptimeCache;
             toggleClassName(refUptime.current, classes.newValue);
         }
-    }
+    };
 
     const calculateWarning = notifications => {
         if (!notifications) {
@@ -468,8 +502,7 @@ const HostRow = ({
         }
         if (Object.keys(result.system.categories).length) {
             let obj = result.system.categories;
-            Object.keys(obj).forEach(nameTab =>
-                Object.keys(obj[nameTab].instances).forEach(_ => count++));
+            Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(_ => count++));
         }
 
         return count;
@@ -482,18 +515,21 @@ const HostRow = ({
             setLogLevelValue(state.val);
             setLogLevelValueSelect(state.val);
         }
-    }
+    };
 
     useEffect(() => {
         const notificationHandler = notifications =>
-            notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
+            notifications &&
+            notifications[_id] &&
+            setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
 
         hostsWorker.registerNotificationHandler(notificationHandler);
 
-        hostsWorker.getNotifications(_id)
-            .then(notifications => {
-                notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
-            });
+        hostsWorker.getNotifications(_id).then(notifications => {
+            notifications &&
+                notifications[_id] &&
+                setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
+        });
 
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
         socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
@@ -502,9 +538,11 @@ const HostRow = ({
         socket.subscribeState(`${_id}.mem`, memFunc);
         socket.subscribeState(`${_id}.uptime`, uptimeFunc);
 
-        socket.subscribeState(`${_id}.diskFree`, warningFunc);
-        socket.subscribeState(`${_id}.diskSize`, warningFunc);
-        socket.subscribeState(`${_id}.diskWarning`, warningFunc);
+        getInitialDiskStates(_id, socket).finally(() => {
+            socket.subscribeState(`${_id}.diskFree`, warningFunc);
+            socket.subscribeState(`${_id}.diskSize`, warningFunc);
+            socket.subscribeState(`${_id}.diskWarning`, warningFunc);
+        });
 
         socket.subscribeState(`${_id}.logLevel`, logLevelFunc);
 
@@ -522,10 +560,9 @@ const HostRow = ({
             socket.unsubscribeState(`${_id}.diskWarning`, warningFunc);
 
             socket.unsubscribeState(`${_id}.logLevel`, logLevelFunc);
-        }
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_id, socket, classes]);
-
 
     const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
     const [logLevelValue, setLogLevelValue] = useState(null);
@@ -535,15 +572,22 @@ const HostRow = ({
 
     const onCopy = () => {
         let text = [];
-        refCpu.current    && text.push(`CPU: ${refCpu.current.innerHTML}`);
-        refMem.current    && text.push(`RAM: ${refMem.current.innerHTML}`);
+        refCpu.current && text.push(`CPU: ${refCpu.current.innerHTML}`);
+        refMem.current && text.push(`RAM: ${refMem.current.innerHTML}`);
         refUptime.current && text.push(`${t('Uptime')}: ${refUptime.current.innerHTML}`);
         text.push(`${t('Available')}: ${available}`);
         text.push(`${t('Installed')}: ${installed}`);
         refEvents.current && text.push(`${t('Events')}: ${refEvents.current.innerHTML}`);
 
-        hostData && typeof hostData === 'object' && Object.keys(hostData).map(value =>
-            text.push(`${t(value)}: ${formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--'}`));
+        hostData &&
+            typeof hostData === 'object' &&
+            Object.keys(hostData).map(value =>
+                text.push(
+                    `${t(value)}: ${
+                        formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--'
+                    }`
+                )
+            );
 
         Utils.copyToClipboard(text.join('\n'));
         window.alert(t('Copied'));
@@ -556,193 +600,269 @@ const HostRow = ({
         showModal = true;
     }
 
-    const customModal = showModal ? <CustomModal
-        title={titleModal}
-        open={!0}
-        onApply={_ => {
-            if (openDialogLogLevel) {
-                socket.setState(`${_id}.logLevel`, logLevelValueSelect);
-                setOpenDialogLogLevel(false);
-            }
-        }}
-        onClose={_ => {
-            if (openDialogLogLevel) {
-                setLogLevelValueSelect(logLevelValue);
-                setOpenDialogLogLevel(false);
-            }
-        }}>
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
-            <InputLabel>{t('log level')}</InputLabel>
-            <Select
-                variant="standard"
-                value={logLevelValueSelect}
-                fullWidth
-                onChange={el =>
-                    setLogLevelValueSelect(el.target.value)}
-            >
-                {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                    {t(el)}
-                </MenuItem>)}
-            </Select>
-        </FormControl>}
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
-            <FormHelperText>{t('Log level will be reset to the saved level after the restart of the controller')}</FormHelperText>
-            <FormHelperText>{t('You can set the log level permanently in the base host settings')}<BuildIcon className={classes.baseSettingsButton} /></FormHelperText>
-        </FormControl>}
-    </CustomModal> : null;
+    const customModal = showModal ? (
+        <CustomModal
+            title={titleModal}
+            open={!0}
+            onApply={_ => {
+                if (openDialogLogLevel) {
+                    socket.setState(`${_id}.logLevel`, logLevelValueSelect);
+                    setOpenDialogLogLevel(false);
+                }
+            }}
+            onClose={_ => {
+                if (openDialogLogLevel) {
+                    setLogLevelValueSelect(logLevelValue);
+                    setOpenDialogLogLevel(false);
+                }
+            }}
+        >
+            {openDialogLogLevel && (
+                <FormControl className={classes.formControl} variant="outlined">
+                    <InputLabel>{t('log level')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={logLevelValueSelect}
+                        fullWidth
+                        onChange={el => setLogLevelValueSelect(el.target.value)}
+                    >
+                        {arrayLogLevel.map(el => (
+                            <MenuItem key={el} value={el}>
+                                {t(el)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            )}
+            {openDialogLogLevel && (
+                <FormControl className={classes.formControl} variant="outlined">
+                    <FormHelperText>
+                        {t('Log level will be reset to the saved level after the restart of the controller')}
+                    </FormHelperText>
+                    <FormHelperText>
+                        {t('You can set the log level permanently in the base host settings')}
+                        <BuildIcon className={classes.baseSettingsButton} />
+                    </FormHelperText>
+                </FormControl>
+            )}
+        </CustomModal>
+    ) : null;
 
-    return <div
-        style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }}
-        onMouseOut={openDialogLogLevel ? null : () => setFocused(false)}
-        onMouseOver={openDialogLogLevel ? null : () => setFocused(true)}
-        onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
-        key={_id} className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}>
-        {customModal}
-        <div className={Utils.clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)} onClick={openDialogLogLevel ? null : () => setCollapse(bool => !bool)}>
-            <div className={classes.wrapperColor}>
-                <div className={Utils.clsx(classes.onOff, alive ? classes.green : classes.red)} />
-                {alive && <div className={classes.dotLine} />}
-            </div>
+    return (
+        <div
+            style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }}
+            onMouseOut={openDialogLogLevel ? null : () => setFocused(false)}
+            onMouseOver={openDialogLogLevel ? null : () => setFocused(true)}
+            onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
+            key={_id}
+            className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}
+        >
+            {customModal}
             <div
-                ref={refWarning}
-                style={{ background: color || 'inherit' }}
-                className={classes.imageBlock}>
-                <StyledBadge
-                    title={t('Hosts notifications')}
-                    badgeContent={errorHost.count}
-                    color="error"
-                    onClick={e => {
-                        e.stopPropagation();
-                        showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
-                    }}
-                >
-                    <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
-                </StyledBadge>
-                <div style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }} className={classes.host}>
-                    {name}
+                className={Utils.clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)}
+                onClick={openDialogLogLevel ? null : () => setCollapse(bool => !bool)}
+            >
+                <div className={classes.wrapperColor}>
+                    <div className={Utils.clsx(classes.onOff, alive ? classes.green : classes.red)} />
+                    {alive && <div className={classes.dotLine} />}
                 </div>
-            </div>
-            <CardContent className={classes.cardContentH5}>
-                {/*<Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
+                <div ref={refWarning} style={{ background: color || 'inherit' }} className={classes.imageBlock}>
+                    <StyledBadge
+                        title={t('Hosts notifications')}
+                        badgeContent={errorHost.count}
+                        color="error"
+                        onClick={e => {
+                            e.stopPropagation();
+                            showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
+                        }}
+                    >
+                        <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
+                    </StyledBadge>
+                    <div
+                        style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
+                        className={classes.host}
+                    >
+                        {name}
+                    </div>
+                </div>
+                <CardContent className={classes.cardContentH5}>
+                    {/*<Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
                     {title}
                 </Typography>*/}
-                <Typography className={Utils.clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
-                    <div ref={refCpu}>{'- %'}</div>
-                </Typography>
-                <Typography className={Utils.clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
-                    <div ref={refMem}>{'- %'}</div>
-                </Typography>
-                <Typography className={Utils.clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
-                    <div ref={refUptime}>{'-/-'}</div>
-                </Typography>
-                <Typography className={Utils.clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="div">
-                    <div className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
-                        {upgradeAvailable ?
-                            <Tooltip title={t('Update')}>
-                                <div
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        openHostUpdateDialog();
-                                    }}
-                                    className={classes.buttonUpdate}
-                                >
-                                    <IconButton
-                                        className={classes.buttonUpdateIcon}
-                                        size="small"
-                                    >
-                                        <RefreshIcon />
-                                    </IconButton>{available}
-                                </div>
-                            </Tooltip> :
-                            available
-                        }</div>
-                </Typography>
-                <Typography className={Utils.clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
-                    {installed}
-                </Typography>
-                <Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="div">
-                    <div ref={refEvents}>{events}</div>
-                </Typography>
-                <div className={classes.marginTop10}>
-                    <Typography component={'span'} className={classes.enableButton}>
-                        <IconButton size="large"
-                            onClick={e => {
-                                e.stopPropagation();
-                                setEditDialog(true);
-                            }}
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div ref={refCpu}>{'- %'}</div>
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div ref={refMem}>{'- %'}</div>
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div ref={refUptime}>{'-/-'}</div>
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden1100)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div
+                            className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}
                         >
-                            <EditIcon />
-                        </IconButton>
+                            {upgradeAvailable ? (
+                                <Tooltip title={t('Update')}>
+                                    <div
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            openHostUpdateDialog();
+                                        }}
+                                        className={classes.buttonUpdate}
+                                    >
+                                        <IconButton className={classes.buttonUpdateIcon} size="small">
+                                            <RefreshIcon />
+                                        </IconButton>
+                                        {available}
+                                    </div>
+                                </Tooltip>
+                            ) : (
+                                available
+                            )}
+                        </div>
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden1100)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                    >
+                        {installed}
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden600)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div ref={refEvents}>{events}</div>
+                    </Typography>
+                    <div className={classes.marginTop10}>
+                        <Typography component={'span'} className={classes.enableButton}>
+                            <IconButton
+                                size="large"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setEditDialog(true);
+                                }}
+                            >
+                                <EditIcon />
+                            </IconButton>
 
-                        {expertMode &&
-                            <Tooltip title={t('Host Base Settings')}>
+                            {expertMode && (
+                                <Tooltip title={t('Host Base Settings')}>
+                                    <div>
+                                        <IconButton
+                                            size="large"
+                                            disabled={!alive}
+                                            onClick={e => {
+                                                setBaseSettingsDialog();
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            <BuildIcon className={classes.baseSettingsButton} />
+                                        </IconButton>
+                                    </div>
+                                </Tooltip>
+                            )}
+                            <Tooltip title={t('Restart host')}>
                                 <div>
-                                    <IconButton size="large" disabled={!alive} onClick={e => {
-                                        setBaseSettingsDialog();
-                                        e.stopPropagation();
-                                    }}>
-                                        <BuildIcon className={classes.baseSettingsButton} />
+                                    <IconButton
+                                        size="large"
+                                        disabled={!alive}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            socket
+                                                .restartController(_id)
+                                                .catch(e => window.alert(`Cannot restart: ${e}`));
+                                        }}
+                                    >
+                                        <CachedIcon />
                                     </IconButton>
                                 </div>
                             </Tooltip>
-                        }
-                        <Tooltip title={t('Restart host')}>
-                            <div>
-                                <IconButton size="large" disabled={!alive} onClick={e => {
-                                    e.stopPropagation();
-                                    socket.restartController(_id)
-                                        .catch(e => window.alert(`Cannot restart: ${e}`));
-                                }}>
-                                    <CachedIcon />
-                                </IconButton>
-                            </div>
-                        </Tooltip>
-                        {expertMode && logLevelValue ?
-                            <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
-                                <IconButton size="large" onClick={event => {
-                                    event.stopPropagation();
-                                    setOpenDialogLogLevel(true);
-                                }}>
-                                    <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
-                                        {getLogLevelIcon(logLevelValue)}
-                                    </Avatar>
-                                </IconButton>
-                            </Tooltip> : <div className={classes.emptyButton} />
-                        }
-                        <Tooltip title={t('Remove')}>
-                            <span>
-                                <IconButton
-                                    size="large"
-                                    disabled={alive || isCurrentHost}
-                                    title={alive || isCurrentHost ? t('You cannot delete host, when it is alive') : ''}
-                                    onClick={e => {
-                                        executeCommandRemove();
-                                        e.stopPropagation();
-                                    }}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    </Typography>
-                </div>
-            </CardContent>
-        </div>
-        {(openCollapse || focused) && typeof description === 'object' &&
-            <div className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)} onClick={e => e.stopPropagation()}>
-                <CardContent className={classes.cardContentInfo}>
-                    {description}
-                    <Tooltip title={t('Copy')}>
-                        <IconButton size="large" onClick={() => onCopy()} style={{ position: 'absolute', top: 8, right: 8 }}>
-                            <CopyIcon />
-                        </IconButton>
-                    </Tooltip>
+                            {expertMode && logLevelValue ? (
+                                <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
+                                    <IconButton
+                                        size="large"
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            setOpenDialogLogLevel(true);
+                                        }}
+                                    >
+                                        <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
+                                            {getLogLevelIcon(logLevelValue)}
+                                        </Avatar>
+                                    </IconButton>
+                                </Tooltip>
+                            ) : (
+                                <div className={classes.emptyButton} />
+                            )}
+                            <Tooltip title={t('Remove')}>
+                                <span>
+                                    <IconButton
+                                        size="large"
+                                        disabled={alive || isCurrentHost}
+                                        title={
+                                            alive || isCurrentHost ? t('You cannot delete host, when it is alive') : ''
+                                        }
+                                        onClick={e => {
+                                            executeCommandRemove();
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
+                        </Typography>
+                    </div>
                 </CardContent>
-                <div className={classes.footerBlock}>
+            </div>
+            {(openCollapse || focused) && typeof description === 'object' && (
+                <div
+                    className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)}
+                    onClick={e => e.stopPropagation()}
+                >
+                    <CardContent className={classes.cardContentInfo}>
+                        {description}
+                        <Tooltip title={t('Copy')}>
+                            <IconButton
+                                size="large"
+                                onClick={() => onCopy()}
+                                style={{ position: 'absolute', top: 8, right: 8 }}
+                            >
+                                <CopyIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </CardContent>
+                    <div className={classes.footerBlock}></div>
                 </div>
-            </div>}
-    </div>;
-}
+            )}
+        </div>
+    );
+};
 
 HostRow.propTypes = {
     t: PropTypes.func,
