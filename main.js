@@ -812,26 +812,13 @@ function validateUserData0() {
     });
 }
 
-function getNpmVersion() {
-    return new Promise((resolve, reject) => {
-        const child = cp.exec('npm --version --location=global');
-
-        const chunks = [];
-        child.stdout.on('data', data => chunks.push(data.toString()));
-
-        child.on('exit', (code /* , signal */) => {
-            // try to analyse answer
-            const lines = chunks.join('').split('\n');
-            // npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
-            // 6.14.16
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].trim().match(/^\d+\.\d+\.\d+/)) {
-                    return resolve(lines[i].trim());
-                }
-            }
-            reject('Cannot find npm version');
-        });
-    });
+/**
+ * Get current npm version from controller
+ * @returns {Promise<string>}
+ */
+async function getNpmVersion() {
+    const hostInfo = await adapter.sendToHostAsync(adapter.host, 'getHostInfo', {});
+    return hostInfo.NPM;
 }
 
 async function checkNodeJsVersion() {
