@@ -1,7 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Avatar, Badge, Card, CardContent, CardMedia, Fab, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@mui/material';
+import {
+    Avatar,
+    Badge,
+    Card,
+    CardContent,
+    CardMedia,
+    Fab,
+    FormControl,
+    FormHelperText,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 
 import { withStyles } from '@mui/styles';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -34,7 +49,7 @@ const styles = theme => ({
         flexDirection: 'column',
         transition: 'box-shadow 0.5s',
         '&:hover': {
-            boxShadow: boxShadowHover
+            boxShadow: boxShadowHover,
         },
         '& .warning': {
             backgroundColor: '#de0000 !important',
@@ -46,18 +61,18 @@ const styles = theme => ({
                 fontSize: 25,
                 height: '30px',
                 width: '30px',
-                color: 'black'
+                color: 'black',
             },
-            animation: '$warning 2.5s ease-in-out infinite alternate'
-        }
+            animation: '$warning 2.5s ease-in-out infinite alternate',
+        },
     },
     '@keyframes warning': {
         '0%': {
-            opacity: 1
+            opacity: 1,
         },
         '100%': {
-            opacity: 0.7
-        }
+            opacity: 0.7,
+        },
     },
     imageBlock: {
         minHeight: 60,
@@ -83,10 +98,10 @@ const styles = theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     installed: {
-        background: '#77c7ff8c'
+        background: '#77c7ff8c',
     },
     /*update: {
         background: '#10ff006b'
@@ -109,10 +124,10 @@ const styles = theme => ({
         transition: 'height 0.3s',
         justifyContent: 'space-between',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     collapseOff: {
-        height: 0
+        height: 0,
     },
     close: {
         width: 20,
@@ -124,7 +139,7 @@ const styles = theme => ({
         marginBottom: 10,
         transition: 'all 0.6s ease',
         '&:hover': {
-            transform: 'rotate(90deg)'
+            transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
@@ -133,7 +148,7 @@ const styles = theme => ({
             height: 20,
             width: 3,
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)'
+            transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
@@ -142,24 +157,23 @@ const styles = theme => ({
             height: 20,
             width: 3,
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)'
+            transform: 'rotate(-45deg)',
         },
     },
     footerBlock: {
         background: theme.palette.background.default,
         padding: 10,
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     hidden: {
-        display: 'none'
+        display: 'none',
     },
     onOffLine: {
         alignSelf: 'center',
         width: '100%',
         height: 4,
         // borderRadius: 20,
-
     },
     adapter: {
         width: '100%',
@@ -168,11 +182,11 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.mode === 'dark' ? '#333' : '#555'
+        color: theme.palette.mode === 'dark' ? '#333' : '#555',
     },
     cardContent: {
         marginTop: 16,
-        paddingTop: 0
+        paddingTop: 0,
     },
     cardContentInfo: {
         overflow: 'auto',
@@ -185,36 +199,36 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        paddingBottom: '10px !important'
+        paddingBottom: '10px !important',
     },
     marginTop10: {
-        marginTop: 10
+        marginTop: 10,
     },
     displayFlex: {
         display: 'flex',
     },
     marginLeft5: {
-        marginLeft: 5
+        marginLeft: 5,
     },
     enableButton: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     instanceStateNotAlive1: {
-        backgroundColor: 'rgba(192, 192, 192, 0.4)'
+        backgroundColor: 'rgba(192, 192, 192, 0.4)',
     },
     /*instanceStateNotAlive2: {
         backgroundColor: 'rgb(192 192 192 / 15%)'
     },*/
     instanceStateAliveNotConnected1: {
-        backgroundColor: 'rgba(255, 177, 0, 0.4)'
+        backgroundColor: 'rgba(255, 177, 0, 0.4)',
     },
     /*instanceStateAliveNotConnected2: {
         backgroundColor: 'rgb(255 177 0  / 14%)'
     },*/
     instanceStateAliveAndConnected1: {
-        backgroundColor: 'rgba(0, 255, 0, 0.4)'
+        backgroundColor: 'rgba(0, 255, 0, 0.4)',
     },
     /*instanceStateAliveAndConnected2: {
         backgroundColor: 'rgb(0 255 0 / 14%)'
@@ -222,7 +236,7 @@ const styles = theme => ({
     green: {
         background: '#00ce00',
         // border: '1px solid #014a00',
-        position: 'relative'
+        position: 'relative',
     },
     red: {
         background: '#da0000',
@@ -231,16 +245,17 @@ const styles = theme => ({
     },
     '@keyframes red': {
         '0%': {
-            opacity: 1
+            opacity: 1,
         },
         '100%': {
-            opacity: 0.85
-        }
+            opacity: 0.85,
+        },
     },
     dotLine: {
         width: 50,
         height: '100%',
-        background: 'linear-gradient(90deg, rgba(0,206,0,0.7497373949579832) 0%, rgba(31,255,1,1) 50%, rgba(0,206,0,0.7805497198879552) 100%)',
+        background:
+            'linear-gradient(90deg, rgba(0,206,0,0.7497373949579832) 0%, rgba(31,255,1,1) 50%, rgba(0,206,0,0.7805497198879552) 100%)',
         zIndex: 2,
         position: 'absolute',
         left: -11,
@@ -249,24 +264,24 @@ const styles = theme => ({
     },
     '@keyframes colors': {
         '0%': {
-            left: -51
+            left: -51,
         },
         '100%': {
-            left: '101%'
-        }
+            left: '101%',
+        },
     },
     versionDate: {
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
 
     cardContentDiv: {
         position: 'sticky',
         right: 0,
         top: 0,
-        paddingTop: 10
+        paddingTop: 10,
     },
     badge: {
-        cursor: 'pointer'
+        cursor: 'pointer',
     },
     emptyButton: {
         width: 48,
@@ -277,11 +292,11 @@ const styles = theme => ({
     curdContentFlexCenter: {
         display: 'flex',
         alignItems: 'center',
-        marginLeft: 4
+        marginLeft: 4,
     },
     wrapperAvailable: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     buttonUpdate: {
         border: '1px solid',
@@ -292,38 +307,38 @@ const styles = theme => ({
         cursor: 'pointer',
         transition: 'background 0.5s',
         '&:hover': {
-            background: '#00800026'
-        }
+            background: '#00800026',
+        },
     },
     buttonUpdateIcon: {
         height: 20,
         width: 20,
-        marginRight: 10
+        marginRight: 10,
     },
     debug: {
-        backgroundColor: grey[700]
+        backgroundColor: grey[700],
     },
     info: {
-        backgroundColor: blue[700]
+        backgroundColor: blue[700],
     },
     warn: {
-        backgroundColor: amber[700]
+        backgroundColor: amber[700],
     },
     error: {
-        backgroundColor: red[700]
+        backgroundColor: red[700],
     },
     smallAvatar: {
         width: 24,
-        height: 24
+        height: 24,
     },
     formControl: {
-        display: 'flex'
+        display: 'flex',
     },
     baseSettingsButton: {
         transform: 'rotate(45deg)',
     },
     newValue: {
-        animation: '$newValueAnimation 2s ease-in-out'
+        animation: '$newValueAnimation 2s ease-in-out',
     },
     '@keyframes newValueAnimation': {
         '0%': {
@@ -334,9 +349,8 @@ const styles = theme => ({
         },
         '100%': {
             color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-        }
+        },
     },
-
 });
 
 let outputCache = '-';
@@ -359,9 +373,26 @@ function toggleClassName(el, name) {
         el.className = classNames.join(' ');
     }
     classNames.push(name);
-    setTimeout(_classNames => el.className = _classNames, 100, classNames.join(' '));
+    setTimeout(_classNames => (el.className = _classNames), 100, classNames.join(' '));
 }
 
+/**
+ * Get the initial disk states to show problems with disk usage
+ *
+ * @param {string} hostId id of the host to get information from
+ * @param {import('@iobroker/socket-client').Connection} socket the connection
+ * @return {Promise<void>}
+ */
+async function getInitialDiskStates(hostId, socket) {
+    const diskWarningState = await socket.getState(`${hostId}.diskWarning`);
+    diskWarningCache = diskWarningState?.val ?? diskWarningCache;
+
+    const diskFreeState = await socket.getState(`${hostId}.diskFree`);
+    diskFreeCache = diskFreeState?.val ?? diskFreeCache;
+
+    const diskSizeState = await socket.getState(`${hostId}.diskSize`);
+    diskSizeCache = diskSizeState?.val ?? diskSizeCache;
+}
 
 const HostCard = ({
     _id,
@@ -453,7 +484,7 @@ const HostCard = ({
             refCpu.current.innerHTML = cpuCache;
             toggleClassName(refCpu.current, classes.newValue);
         }
-    }
+    };
 
     const memFunc = (_, state) => {
         memCache = formatValue(state, '%');
@@ -461,19 +492,19 @@ const HostCard = ({
             refMem.current.innerHTML = memCache;
             toggleClassName(refMem.current, classes.newValue);
         }
-    }
+    };
 
     const uptimeFunc = (_, state) => {
         if (state.val) {
             const d = Math.floor(state.val / (3600 * 24));
-            const h = Math.floor(state.val % (3600 * 24) / 3600);
+            const h = Math.floor((state.val % (3600 * 24)) / 3600);
             uptimeCache = d ? `${d}d${h}h` : `${h}h`; // TODO translate
         }
         if (refUptime.current) {
             refUptime.current.innerHTML = uptimeCache;
             toggleClassName(refUptime.current, classes.newValue);
         }
-    }
+    };
 
     const calculateWarning = notifications => {
         if (!notifications) {
@@ -486,8 +517,7 @@ const HostCard = ({
         }
         if (Object.keys(result.system.categories).length) {
             let obj = result.system.categories;
-            Object.keys(obj).forEach(nameTab =>
-                Object.keys(obj[nameTab].instances).forEach(_ => count++));
+            Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(_ => count++));
         }
         return count;
     };
@@ -495,20 +525,28 @@ const HostCard = ({
     const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
 
     const logLevelFunc = (name, state) => {
-        if(state){
+        if (state) {
             setLogLevelValue(state.val);
             setLogLevelValueSelect(state.val);
         }
-    }
+    };
 
     useEffect(() => {
         const notificationHandler = notifications =>
-            notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
+            notifications &&
+            notifications[_id] &&
+            setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
 
         hostsWorker.registerNotificationHandler(notificationHandler);
 
-        hostsWorker.getNotifications(_id)
-            .then(notifications => notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) }));
+        hostsWorker
+            .getNotifications(_id)
+            .then(
+                notifications =>
+                    notifications &&
+                    notifications[_id] &&
+                    setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) })
+            );
 
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
         socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
@@ -517,9 +555,11 @@ const HostCard = ({
         socket.subscribeState(`${_id}.mem`, memFunc);
         socket.subscribeState(`${_id}.uptime`, uptimeFunc);
 
-        socket.subscribeState(`${_id}.diskFree`, warningFunc);
-        socket.subscribeState(`${_id}.diskSize`, warningFunc);
-        socket.subscribeState(`${_id}.diskWarning`, warningFunc);
+        getInitialDiskStates(_id, socket).finally(() => {
+            socket.subscribeState(`${_id}.diskFree`, warningFunc);
+            socket.subscribeState(`${_id}.diskSize`, warningFunc);
+            socket.subscribeState(`${_id}.diskWarning`, warningFunc);
+        });
 
         socket.subscribeState(`${_id}.logLevel`, logLevelFunc);
 
@@ -537,7 +577,7 @@ const HostCard = ({
             socket.unsubscribeState(`${_id}.diskWarning`, warningFunc);
 
             socket.unsubscribeState(`${_id}.logLevel`, logLevelFunc);
-        }
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_id, socket, classes]);
 
@@ -558,8 +598,15 @@ const HostCard = ({
         text.push(`${t('Installed')}: ${installed}`);
         refEvents.current && text.push(`${t('Events')}: ${refEvents.current.innerHTML}`);
 
-        hostData && typeof hostData === 'object' && Object.keys(hostData).map(value =>
-            text.push(t(value) + ': ' + (formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')));
+        hostData &&
+            typeof hostData === 'object' &&
+            Object.keys(hostData).map(value =>
+                text.push(
+                    t(value) +
+                        ': ' +
+                        (formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')
+                )
+            );
 
         Utils.copyToClipboard(text.join('\n'));
         window.alert(t('Copied'));
@@ -572,174 +619,225 @@ const HostCard = ({
         showModal = true;
     }
 
-    const customModal = showModal ? <CustomModal
-        title={titleModal}
-        open={!0}
-        onApply={value => {
-            if (openDialogLogLevel) {
-                socket.setState(`${_id}.logLevel`,logLevelValueSelect);
-                setOpenDialogLogLevel(false);
-            }
-        }}
-        onClose={() => {
-            if (openDialogLogLevel) {
-                setLogLevelValueSelect(logLevelValue);
-                setOpenDialogLogLevel(false);
-            }
-        }}>
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" style={{ marginTop: 8 }}>
-            <InputLabel>{t('log level')}</InputLabel>
-            <Select
-                variant="standard"
-                value={logLevelValueSelect}
-                fullWidth
-                onChange={el => setLogLevelValueSelect(el.target.value)}
-            >
-                {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                    {t(el)}
-                </MenuItem>)}
-            </Select>
-        </FormControl>}
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
-            <FormHelperText>{t('Log level will be reset to the saved level after the restart of the controller')}</FormHelperText>
-            <FormHelperText>{t('You can set the log level permanently in the base host settings')}<BuildIcon className={classes.baseSettingsButton} /></FormHelperText>
-        </FormControl>}
-    </CustomModal> : null;
+    const customModal = showModal ? (
+        <CustomModal
+            title={titleModal}
+            open={!0}
+            onApply={value => {
+                if (openDialogLogLevel) {
+                    socket.setState(`${_id}.logLevel`, logLevelValueSelect);
+                    setOpenDialogLogLevel(false);
+                }
+            }}
+            onClose={() => {
+                if (openDialogLogLevel) {
+                    setLogLevelValueSelect(logLevelValue);
+                    setOpenDialogLogLevel(false);
+                }
+            }}
+        >
+            {openDialogLogLevel && (
+                <FormControl className={classes.formControl} variant="outlined" style={{ marginTop: 8 }}>
+                    <InputLabel>{t('log level')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={logLevelValueSelect}
+                        fullWidth
+                        onChange={el => setLogLevelValueSelect(el.target.value)}
+                    >
+                        {arrayLogLevel.map(el => (
+                            <MenuItem key={el} value={el}>
+                                {t(el)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            )}
+            {openDialogLogLevel && (
+                <FormControl className={classes.formControl} variant="outlined">
+                    <FormHelperText>
+                        {t('Log level will be reset to the saved level after the restart of the controller')}
+                    </FormHelperText>
+                    <FormHelperText>
+                        {t('You can set the log level permanently in the base host settings')}
+                        <BuildIcon className={classes.baseSettingsButton} />
+                    </FormHelperText>
+                </FormControl>
+            )}
+        </CustomModal>
+    ) : null;
 
-    return <Card key={_id} className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}>
-        {customModal}
-        {(openCollapse || focused) && <div className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
-            <CardContent className={classes.cardContentInfo}>
-                <div className={classes.cardContentDiv}>
-                    <div className={classes.close} onClick={() => setCollapse(false)} />
+    return (
+        <Card key={_id} className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}>
+            {customModal}
+            {(openCollapse || focused) && (
+                <div className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
+                    <CardContent className={classes.cardContentInfo}>
+                        <div className={classes.cardContentDiv}>
+                            <div className={classes.close} onClick={() => setCollapse(false)} />
+                        </div>
+                        {description}
+                    </CardContent>
+                    <div className={classes.footerBlock}></div>
                 </div>
-                {description}
-            </CardContent>
-            <div className={classes.footerBlock}>
+            )}
+            <div className={Utils.clsx(classes.onOffLine, alive ? classes.green : classes.red)}>
+                {alive && <div className={classes.dotLine} />}
             </div>
-        </div>}
-        <div className={Utils.clsx(classes.onOffLine, alive ? classes.green : classes.red)} >
-            {alive && <div className={classes.dotLine} />}
-        </div>
-        <div
-            ref={refWarning}
-            style={{ background: color || 'inherit' }}
-            className={Utils.clsx(
-                classes.imageBlock,
-                (!connectedToHost || !alive) && classes.instanceStateNotAlive1,
-                connectedToHost && alive && connected === false && classes.instanceStateAliveNotConnected1,
-                connectedToHost && alive && connected !== false && classes.instanceStateAliveAndConnected1
-            )}>
-            <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
             <div
-                style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
-                className={classes.adapter}>
-                <Badge
-                    title={t('Hosts notifications')}
-                    badgeContent={errorHost.count}
-                    color="error"
-                    className={classes.badge}
-                    onClick={e => {
-                        e.stopPropagation();
-                        showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
-                    }}
-                >{name}
-                </Badge>
+                ref={refWarning}
+                style={{ background: color || 'inherit' }}
+                className={Utils.clsx(
+                    classes.imageBlock,
+                    (!connectedToHost || !alive) && classes.instanceStateNotAlive1,
+                    connectedToHost && alive && connected === false && classes.instanceStateAliveNotConnected1,
+                    connectedToHost && alive && connected !== false && classes.instanceStateAliveAndConnected1
+                )}
+            >
+                <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
+                <div
+                    style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
+                    className={classes.adapter}
+                >
+                    <Badge
+                        title={t('Hosts notifications')}
+                        badgeContent={errorHost.count}
+                        color="error"
+                        className={classes.badge}
+                        onClick={e => {
+                            e.stopPropagation();
+                            showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
+                        }}
+                    >
+                        {name}
+                    </Badge>
+                </div>
+                <Fab
+                    disabled={typeof description === 'string'}
+                    onMouseOut={() => setFocused(false)}
+                    onMouseOver={() => setFocused(true)}
+                    onClick={() => setCollapse(true)}
+                    className={classes.fab}
+                    color="primary"
+                    aria-label="add"
+                >
+                    <MoreVertIcon />
+                </Fab>
             </div>
-            <Fab
-                disabled={typeof description === 'string'}
-                onMouseOut={() => setFocused(false)}
-                onMouseOver={() => setFocused(true)}
-                onClick={() => setCollapse(true)} className={classes.fab} color="primary" aria-label="add">
-                <MoreVertIcon />
-            </Fab>
-        </div>
-        <CardContent className={classes.cardContentH5}>
-            {/*<Typography variant="body2" color="textSecondary" component="p">
+            <CardContent className={classes.cardContentH5}>
+                {/*<Typography variant="body2" color="textSecondary" component="p">
                 {t('Title')}: {title}
             </Typography>*/}
-            <Typography variant="body2" color="textSecondary" component="div">
-                <div className={classes.displayFlex}>CPU:<div ref={refCpu} className={classes.marginLeft5}>{'- %'}</div></div>
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="div">
-                <div className={classes.displayFlex}>RAM:<div ref={refMem} className={classes.marginLeft5}>{'- %'}</div></div>
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="div">
-                <div className={classes.displayFlex}>{t('Uptime')}: <div ref={refUptime} className={classes.marginLeft5}>{'-d -h'}</div></div>
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="div" className={classes.wrapperAvailable}>
-                {t('Available')} js-controller: <div className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
-                    {upgradeAvailable ?
-                        <Tooltip title={t('Update')}>
-                            <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}>
-                                <IconButton
-                                    className={classes.buttonUpdateIcon}
-                                    size="small"
-                                >
-                                <RefreshIcon />
-                            </IconButton>{available}</div>
-                        </Tooltip> :
-                        available
-                    }</div>
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('Installed')} js-controller: {installed}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="div">
-                <div className={classes.displayFlex}>{t('Events')}: <div ref={refEvents} className={classes.marginLeft5}>{events}</div></div>
-            </Typography>
-            <div className={classes.marginTop10}>
-                <Typography component={'span'} className={classes.enableButton}>
-                    <IconButton size="large"
-                        onClick={() => setEditDialog(true)}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                    {expertMode &&
-                        <Tooltip title={t('Host Base Settings')}>
+                <Typography variant="body2" color="textSecondary" component="div">
+                    <div className={classes.displayFlex}>
+                        CPU:
+                        <div ref={refCpu} className={classes.marginLeft5}>
+                            {'- %'}
+                        </div>
+                    </div>
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="div">
+                    <div className={classes.displayFlex}>
+                        RAM:
+                        <div ref={refMem} className={classes.marginLeft5}>
+                            {'- %'}
+                        </div>
+                    </div>
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="div">
+                    <div className={classes.displayFlex}>
+                        {t('Uptime')}:{' '}
+                        <div ref={refUptime} className={classes.marginLeft5}>
+                            {'-d -h'}
+                        </div>
+                    </div>
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="div" className={classes.wrapperAvailable}>
+                    {t('Available')} js-controller:{' '}
+                    <div className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}>
+                        {upgradeAvailable ? (
+                            <Tooltip title={t('Update')}>
+                                <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}>
+                                    <IconButton className={classes.buttonUpdateIcon} size="small">
+                                        <RefreshIcon />
+                                    </IconButton>
+                                    {available}
+                                </div>
+                            </Tooltip>
+                        ) : (
+                            available
+                        )}
+                    </div>
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="p">
+                    {t('Installed')} js-controller: {installed}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="div">
+                    <div className={classes.displayFlex}>
+                        {t('Events')}:{' '}
+                        <div ref={refEvents} className={classes.marginLeft5}>
+                            {events}
+                        </div>
+                    </div>
+                </Typography>
+                <div className={classes.marginTop10}>
+                    <Typography component={'span'} className={classes.enableButton}>
+                        <IconButton size="large" onClick={() => setEditDialog(true)}>
+                            <EditIcon />
+                        </IconButton>
+                        {expertMode && (
+                            <Tooltip title={t('Host Base Settings')}>
+                                <div>
+                                    <IconButton size="large" disabled={!alive} onClick={setBaseSettingsDialog}>
+                                        <BuildIcon className={classes.baseSettingsButton} />
+                                    </IconButton>
+                                </div>
+                            </Tooltip>
+                        )}
+                        <Tooltip title={t('Restart host')}>
                             <div>
-                                <IconButton size="large" disabled={!alive} onClick={setBaseSettingsDialog}>
-                                    <BuildIcon className={classes.baseSettingsButton} />
+                                <IconButton
+                                    size="large"
+                                    disabled={!alive}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        socket.restartController(_id).catch(e => window.alert(`Cannot restart: ${e}`));
+                                    }}
+                                >
+                                    <CachedIcon />
                                 </IconButton>
                             </div>
                         </Tooltip>
-                    }
-                    <Tooltip title={t('Restart host')}>
-                        <div>
-                            <IconButton size="large" disabled={!alive} onClick={e => {
-                                e.stopPropagation();
-                                socket.restartController(_id)
-                                    .catch(e => window.alert(`Cannot restart: ${e}`));
-                            }}>
-                                <CachedIcon />
-                            </IconButton>
-                        </div>
-                    </Tooltip>
-                    {expertMode && logLevelValue &&
-                        <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
-                            <IconButton size="large" onClick={() => setOpenDialogLogLevel(true)}>
-                                <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
-                                    {getLogLevelIcon(logLevelValue)}
-                                </Avatar>
+                        {expertMode && logLevelValue && (
+                            <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
+                                <IconButton size="large" onClick={() => setOpenDialogLogLevel(true)}>
+                                    <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
+                                        {getLogLevelIcon(logLevelValue)}
+                                    </Avatar>
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                        {!alive && !isCurrentHost ? (
+                            <Tooltip title={t('Remove')}>
+                                <IconButton size="large" onClick={executeCommandRemove}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                        ) : (
+                            <div className={classes.emptyButton} />
+                        )}
+
+                        <Tooltip title={t('Copy')}>
+                            <IconButton size="large" onClick={() => onCopy()}>
+                                <CopyIcon />
                             </IconButton>
                         </Tooltip>
-                    }
-                    {!alive && !isCurrentHost ? <Tooltip title={t('Remove')}>
-                        <IconButton size="large" onClick={executeCommandRemove}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip> : <div className={classes.emptyButton} />}
-
-                    <Tooltip title={t('Copy')}>
-                        <IconButton size="large" onClick={() => onCopy()}>
-                            <CopyIcon />
-                        </IconButton>
-                    </Tooltip>
-                </Typography>
-            </div>
-        </CardContent>
-    </Card>;
-}
+                    </Typography>
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
 
 HostCard.propTypes = {
     t: PropTypes.func,
