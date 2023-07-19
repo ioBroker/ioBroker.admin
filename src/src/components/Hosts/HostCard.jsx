@@ -21,7 +21,7 @@ import {
 
 import {
     MoreVert as MoreVertIcon,
-    Refresh RefreshIcon,
+    Refresh as RefreshIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
     Cached as CachedIcon,

@@ -2405,7 +2405,7 @@ class ObjectBrowser extends Component {
                                 columns.splice(pos, 1);
                             }
                             (window._localStorage || window.localStorage).setItem(
-                                (this.props.dialogName || 'App') + '.columns',
+                                `${this.props.dialogName || 'App'}.columns`,
                                 JSON.stringify(columns)
                             );
                             this.calculateColumnsVisibility(null, columns);
@@ -2425,7 +2425,7 @@ class ObjectBrowser extends Component {
                         }
                         disableRipple
                     />
-                    <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
+                    <ListItemText primary={this.texts[`filter_${id}`] || this.props.t(`ra_${id}`)} />
                     {/*
                     <ListItemSecondaryAction>
                         <FormControl
@@ -2513,7 +2513,7 @@ class ObjectBrowser extends Component {
                             checked={this.state.columnsAuto}
                             onChange={() => {
                                 (window._localStorage || window.localStorage).setItem(
-                                    (this.props.dialogName || 'App') + '.columnsAuto',
+                                    `${this.props.dialogName || 'App'}.columnsAuto`,
                                     this.state.columnsAuto ? 'false' : 'true'
                                 );
                                 if (!this.state.columnsAuto) {
