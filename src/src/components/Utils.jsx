@@ -66,17 +66,17 @@ class Utils {
         seconds %= 3600 * 24;
         let hours = Math.floor(seconds / 3600);
         if (hours < 10) {
-            hours = '0' + hours;
+            hours = `0${hours}`;
         }
         seconds %= 3600;
         let minutes = Math.floor(seconds / 60);
         if (minutes < 10) {
-            minutes = '0' + minutes;
+            minutes = `0${minutes}`;
         }
         seconds %= 60;
         seconds = Math.floor(seconds);
         if (seconds < 10) {
-            seconds = '0' + seconds;
+            seconds = `0${seconds}`;
         }
         let text = '';
         if (days) {
@@ -363,7 +363,7 @@ class Utils {
             } else
             if (settings.icon.startsWith('data:image')) {
                 return <img alt={settings.name} src={settings.icon} style={style || {}} />;
-            } else { // may be later some changes for second type
+            } else { // maybe later some changes for a second type
                 return <img alt={settings.name} src={(settings.prefix || '') + settings.icon} style={style || {}} />;
             }
         }
@@ -394,18 +394,18 @@ class Utils {
             } else {
                 const parts = id.split('.');
                 if (parts[0] === 'system') {
-                    icon = 'adapter/' + parts[2] + (icon.startsWith('/') ? '' : '/') + icon;
+                    icon = `adapter/${parts[2]}${icon.startsWith('/') ? '' : '/'}${icon}`;
                 } else {
-                    icon = 'adapter/' + parts[0] + (icon.startsWith('/') ? '' : '/') + icon;
+                    icon = `adapter/${parts[0]}${icon.startsWith('/') ? '' : '/'}${icon}`;
                 }
 
                 if (window.location.pathname.match(/adapter\/[^/]+\/[^/]+\.html/)) {
-                    icon = '../../' + icon;
+                    icon = `../../${icon}`;
                 } else if (window.location.pathname.match(/material\/[.\d]+/)) {
-                    icon = '../../' + icon;
+                    icon = `../../${icon}`;
                 } else
                 if (window.location.pathname.match(/material\//)) {
-                    icon = '../' + icon;
+                    icon = `../${icon}`;
                 }
                 return icon;
             }
@@ -469,7 +469,7 @@ class Utils {
             return defaultValue === undefined ? true : defaultValue;
         }
         color = color.toString();
-        if (color.indexOf('#') === 0) {
+        if (color.startsWith('#')) {
             color = color.slice(1);
         }
         let r;
@@ -516,12 +516,18 @@ class Utils {
         let minutes = Math.floor((seconds % 3600) / 60);
         let secs = seconds % 60;
         if (hours) {
-            if (minutes < 10) minutes = '0' + minutes;
-            if (secs < 10) secs = '0' + secs;
-            return hours + ':' + minutes + ':' + secs;
+            if (minutes < 10) {
+                minutes = `0${minutes}`;
+            }
+            if (secs < 10) {
+                secs = `0${secs}`;
+            }
+            return `${hours}:${minutes}:${secs}`;
         } else {
-            if (secs < 10) secs = '0' + secs;
-            return minutes + ':' + secs;
+            if (secs < 10) {
+                secs = `0${secs}`;
+            }
+            return `${minutes}:${secs}`;
         }
     }
 
@@ -575,12 +581,12 @@ class Utils {
     static padding(num) {
         if (typeof num === 'string') {
             if (num.length < 2) {
-                return '0' + num;
+                return `0${num}`;
             } else {
                 return num;
             }
         } else if (num < 10) {
-            return '0' + num;
+            return `0${num}`;
         } else {
             return num;
         }
@@ -608,7 +614,7 @@ class Utils {
             if (!now) return '';
             // only letters
             if (now.match(/^[\w\s]+$/)) {
-                // Day of week
+                // Day of the week
                 return now;
             }
             let m = now.match(/(\d{1,4})[-./](\d{1,2})[-./](\d{1,4})/);
@@ -628,7 +634,7 @@ class Utils {
                             now = new Date(year, a[1] - 1, a[0]);
                         }
                     } else
-                    // DD MM
+                        // DD MM
                     if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
                         now = new Date(year, a[1] - 1, a[0]);
                         if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
@@ -645,8 +651,8 @@ class Utils {
             now = new Date(now);
         }
 
-        let date = I18n.t('ra_dow_' + days[now.getDay()]).replace('ra_dow_', '');
-        date += '. ' + now.getDate() + ' ' + I18n.t('ra_month_' + months[now.getMonth()]).replace('ra_month_', '');
+        let date = I18n.t(`ra_dow_${days[now.getDay()]}`).replace('ra_dow_', '');
+        date += `. ${now.getDate()} ${I18n.t(`ra_month_${months[now.getMonth()]}`).replace('ra_month_', '')}`;
         return date;
     }
 
@@ -691,7 +697,7 @@ class Utils {
 
                 m = text && text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/);
                 if (!m) {
-                    text && result.push(<span key={'a' + (key++)}>{text}</span>);
+                    text && result.push(<span key={`a${key++}`}>{text}</span>);
                 }
             } while (m);
 
@@ -817,14 +823,14 @@ class Utils {
     static updateSmartName(obj, newSmartName, byON, smartType, instanceId, noCommon) {
         const language = I18n.getLanguage();
 
-        // convert Old format
+        // convert the old format
         if (typeof obj.common.smartName === 'string') {
             const nnn = obj.common.smartName;
             obj.common.smartName = {};
             obj.common.smartName[language] = nnn;
         }
 
-        // convert old settings
+        // convert the old settings
         if (obj.native && obj.native.byON) {
             delete obj.native.byON;
             let _smartName = obj.common.smartName;
@@ -852,9 +858,9 @@ class Utils {
                 } else {
                     obj.common.smartName.smartType = smartType;
                 }
-
             }
         }
+
         if (byON !== undefined) {
             if (noCommon) {
                 obj.common.custom = obj.common.custom || {};
@@ -866,6 +872,7 @@ class Utils {
                 obj.common.smartName.byON = byON;
             }
         }
+
         if (newSmartName !== undefined) {
             let smartName;
             if (noCommon) {
@@ -882,10 +889,10 @@ class Utils {
             // If smart name deleted
             if (smartName && (!smartName[language] ||
                 (smartName[language] === obj.common.name &&
-                    (!obj.common.role || obj.common.role.indexOf('button') >= 0)))) {
+                    (!obj.common.role || obj.common.role.includes('button'))))) {
                 delete smartName[language];
                 let empty = true;
-                // Check if structure has any definitions
+                // Check if the structure has any definitions
                 for (const key in smartName) {
                     if (smartName.hasOwnProperty(key)) {
                         empty = false;
@@ -907,6 +914,7 @@ class Utils {
                             delete obj.common.custom[instanceId].fr;
                             delete obj.common.custom[instanceId].pt;
                             delete obj.common.custom[instanceId].es;
+                            delete obj.common.custom[instanceId].uk;
                             delete obj.common.custom[instanceId]['zh-cn'];
                         }
                     } else {
@@ -920,6 +928,7 @@ class Utils {
                             delete obj.common.smartName.fr;
                             delete obj.common.smartName.pt;
                             delete obj.common.smartName.es;
+                            delete obj.common.smartName.uk;
                             delete obj.common.smartName['zh-cn'];
                         } else {
                             obj.common.smartName = null;
@@ -979,7 +988,7 @@ class Utils {
      */
     static formatBytes(bytes) {
         if (Math.abs(bytes) < 1024) {
-            return bytes + ' B';
+            return `${bytes} B`;
         }
 
         const units = ['KB','MB','GB'];
@@ -991,15 +1000,15 @@ class Utils {
             ++u;
         } while (Math.abs(bytes) >= 1024 && u < units.length - 1);
 
-        return bytes.toFixed(1) + ' ' + units[u];
+        return `${bytes.toFixed(1)} ${units[u]}`;
     }
 
     /**
-     * Invert the given color according to theme type to get the inverted text color for background
-     * @param {string} color Color in the format '#rrggbb' or '#rgb' (or without hash)
+     * Invert the given color according to a theme type to get the inverted text color for background
+     * @param {string} color Color in the format '#rrggbb' or '#rgb' (or without a hash)
      * @param {string} themeType theme type
      * @param {string} invert dark theme has light color in control or light theme has light color in control
-     * @returns {string}
+     * @returns {string | undefined}
      */
     static getInvertedColor(color, themeType, invert) {
         if (!color) {
@@ -1056,7 +1065,7 @@ class Utils {
             hex = hex.substring(0, 6);
         } else
         if (hex.length !== 6) {
-            console.warn('Cannot invert color: ' + hex);
+            console.warn(`Cannot invert color: ${hex}`);
             return hex;
         }
         let r = parseInt(hex.slice(0, 2), 16);
@@ -1370,48 +1379,48 @@ class Utils {
         let text;
         let mm = dateObj.getMonth() + 1;
         if (mm < 10) {
-            mm = '0' + mm;
+            mm = `0${mm}`;
         }
 
         let dd = dateObj.getDate();
         if (dd < 10) {
-            dd = '0' + dd;
+            dd = `0${dd}`;
         }
 
         if (dateFormat === 'MM/DD/YYYY') {
-            text = mm + '/' + dd + '/' + dateObj.getFullYear();
+            text = `${mm}/${dd}/${dateObj.getFullYear()}`;
         } else {
-            text = dateObj.getFullYear() + '-' + mm + '-' + dd;
+            text = `${dateObj.getFullYear()}-${mm}-${dd}`;
         }
 
         // time
         let v = dateObj.getHours();
         if (v < 10) {
-            text += ' 0' + v;
+            text += ` 0${v}`;
         } else {
-            text += ' ' + v;
+            text += ` ${v}`;
         }
         v = dateObj.getMinutes();
         if (v < 10) {
-            text += ':0' + v;
+            text += `:0${v}`;
         } else {
-            text += ':' + v;
+            text += `:${v}`;
         }
 
         v = dateObj.getSeconds();
         if (v < 10) {
-            text += ':0' + v;
+            text += `:0${v}`;
         } else {
-            text += ':' + v;
+            text += `:${v}`;
         }
 
         v = dateObj.getMilliseconds();
         if (v < 10) {
-            text += '.00' + v;
+            text += `.00${v}`;
         } else if (v < 100) {
-            text += '.0' + v;
+            text += `.0${v}`;
         } else {
-            text += '.' + v;
+            text += `.${v}`;
         }
 
         return text;
@@ -1521,8 +1530,8 @@ class Utils {
      * @returns {object} json structure (not stringified)
      */
     static generateFile(filename, json) {
-        let el = document.createElement('a');
-        el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(json, null, 2)));
+        const el = document.createElement('a');
+        el.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(json, null, 2))}`);
         el.setAttribute('download', filename);
 
         el.style.display = 'none';
@@ -1536,7 +1545,7 @@ class Utils {
     /**
      * Convert quality code into text
      * @param {number} quality code
-     * @returns {array<string>} lines that decode qulity
+     * @returns {array<string>} lines that decode quality
      */
     static quality2text(quality) {
         const custom = quality & 0xFFFF0000;
@@ -1545,14 +1554,14 @@ class Utils {
         if (text) {
             result = [text];
         } else if (quality & 0x01) {
-            result = [QUALITY_BITS[0x01], '0x' + (quality & (0xFFFF & ~1)).toString(16)];
+            result = [QUALITY_BITS[0x01], `0x${(quality & (0xFFFF & ~1)).toString(16)}`];
         } else if (quality & 0x02) {
-            result = [QUALITY_BITS[0x02], '0x' + (quality & (0xFFFF & ~2)).toString(16)];
+            result = [QUALITY_BITS[0x02], `0x${(quality & (0xFFFF & ~2)).toString(16)}`];
         } else {
-            result = ['0x' + quality.toString(16)];
+            result = [`0x${quality.toString(16)}`];
         }
         if (custom) {
-            result.push('0x' + (custom >> 16).toString(16).toUpperCase());
+            result.push(`0x${(custom >> 16).toString(16).toUpperCase()}`);
         }
         return result;
     }
@@ -1582,7 +1591,7 @@ class Utils {
                     states = null;
                 }
             } else
-            // if old format val1:text1;val2:text2
+                // if old format val1:text1;val2:text2
             if (typeof states === 'string') {
                 const parts = states.split(';');
                 states = {};

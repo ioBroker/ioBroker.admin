@@ -1,9 +1,11 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import { /*lighten,*/ withStyles } from '@mui/styles';
+import Dropzone from 'react-dropzone';
 
 import FormHelperText from '@mui/material/FormHelperText';
 import {
+    Button, Dialog, DialogActions, DialogContent, DialogTitle,
     IconButton, InputAdornment, Paper,
     Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, TableSortLabel,
@@ -11,20 +13,27 @@ import {
     Typography,
 } from '@mui/material';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CloseIcon from '@mui/icons-material/Close';
-import UpIcon from '@mui/icons-material/ArrowUpward';
-import DownIcon from '@mui/icons-material/ArrowDownward';
-import IconFilterOn from '@mui/icons-material/FilterAlt';
-import IconFilterOff from '@mui/icons-material/FilterAltOff';
-import CopyContentIcon from '@mui/icons-material/ContentCopy';
+import {
+    Add as AddIcon,
+    Delete as DeleteIcon,
+    Close as CloseIcon,
+    ArrowUpward as UpIcon,
+    ArrowDownward as DownIcon,
+    FilterAlt as IconFilterOn,
+    FilterAltOff as IconFilterOff,
+    ContentCopy as CopyContentIcon,
+    Download as ExportIcon,
+    UploadFile as ImportIcon,
+    Close as IconClose,
+} from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
+
+const MAX_SIZE = 1024 * 1024; // 1MB
 
 const styles = theme => ({
     fullWidth: {
@@ -94,6 +103,74 @@ const styles = theme => ({
     },
     buttonCell: {
         whiteSpace: 'nowrap',
+    },
+
+    dropZone: {
+        width: '100%',
+        height: 100,
+        position: 'relative',
+    },
+    dropZoneEmpty: {
+
+    },
+    uploadDiv: {
+        position: 'relative',
+        width: '100%',
+        height: 300,
+        opacity: 0.9,
+        marginTop: 30,
+        cursor: 'pointer',
+        outline: 'none'
+    },
+    uploadDivDragging: {
+        opacity: 1,
+        background: 'rgba(128,255,128,0.1)'
+    },
+    image: {
+        objectFit: 'contain',
+        margin: 'auto',
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+    },
+    uploadCenterDiv: {
+        margin: 5,
+        border: '3px dashed grey',
+        borderRadius: 5,
+        width: 'calc(100% - 10px)',
+        height: 'calc(100% - 10px)',
+        minHeight: 300,
+        position: 'relative',
+        display: 'flex'
+    },
+    uploadCenterIcon: {
+        paddingTop: 10,
+        width: 48,
+        height: 48,
+    },
+    uploadCenterText: {
+        fontSize: 16,
+    },
+    uploadCenterTextAndIcon: {
+        textAlign: 'center',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    buttonRemoveWrapper: {
+        position: 'absolute',
+        zIndex: 222,
+        right: 0
+    },
+    error: {
+        border: '2px solid red',
+        boxSizing: 'border-box',
     },
 });
 
@@ -315,7 +392,7 @@ class ConfigTable extends ConfigGeneric {
                                     placeholder={this.getText(headCell.title)}
                                 />
                                 : <span className={this.props.classes.headerText}>{this.getText(headCell.title)}</span>}
-                            { headCell.filter ? <IconButton
+                            {headCell.filter ? <IconButton
                                 title={I18n.t('ra_Show/hide filter input')}
                                 size="small"
                                 onClick={() => {
@@ -340,6 +417,22 @@ class ConfigTable extends ConfigGeneric {
                     </TableCell>
                 )}
                 {!schema.noDelete && <TableCell style={{ paddingLeft: 20, paddingRight: 20, width: buttonsWidth, textAlign: 'right' }} padding="checkbox">
+                    {schema.import ? <IconButton
+                        style={{ marginRight: 10 }}
+                        size="small"
+                        onClick={() => this.setState({ showImportDialog: true })}
+                        title={I18n.t('ra_import data from %s file', 'CSV')}
+                    >
+                        <ImportIcon />
+                    </IconButton> : null}
+                    {schema.export ? <IconButton
+                        style={{ marginRight: 10 }}
+                        size="small"
+                        onClick={() => this.onExport()}
+                        title={I18n.t('ra_Export data to %s file', 'CSV')}
+                    >
+                        <ExportIcon />
+                    </IconButton> : null}
                     <IconButton disabled size="small">
                         <DeleteIcon />
                     </IconButton>
@@ -356,6 +449,81 @@ class ConfigTable extends ConfigGeneric {
             this.applyFilter(false, null, () =>
                 this.onChangeWrapper(newValue)));
     };
+
+    onExport() {
+        const { schema } = this.props;
+        const { value } = this.state;
+        const cols = schema.items.map(it => it.attr);
+        const lines = [cols.join(';')];
+        value.forEach(row => {
+            const line = [];
+            schema.items.forEach(it => {
+                if (row[it.attr].includes(';')) {
+                    line.push(`"${row[it.attr]}"`);
+                } else {
+                    line.push(row[it.attr]);
+                }
+            });
+            lines.push(line.join(';'));
+        });
+        const el = document.createElement('a');
+        el.setAttribute('href', `data:text/csv;charset=utf-8,${encodeURIComponent(lines.join('\n'))}`);
+        const now = new Date();
+        el.setAttribute('download',
+            `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${this.props.adapterName}.${this.props.instance}_${this.props.attr}.csv`);
+
+        el.style.display = 'none';
+        document.body.appendChild(el);
+
+        el.click();
+
+        document.body.removeChild(el);
+    }
+
+    onImport(text) {
+        const lines = text.split('\n').map(line => line.replace('\r', '').trim());
+        // the first line is header
+        const { schema } = this.props;
+        const header = lines.shift().split(';').filter(it => it && schema.items.find(it2 => it2.attr === it));
+        const values = [];
+        lines.forEach(line => {
+            const parts = line.split(';');
+            const obj = {};
+            for (let p = 0; p < parts.length; p++) {
+                let value = parts[p];
+                if (value.startsWith('"')) {
+                    value = value.substring(1);
+                    while (p < parts.length && !value.endsWith('"')) {
+                        value += `;${parts[++p]}`;
+                    }
+                    value = value.substring(0, value.length - 1);
+                }
+                if (parts[p] === 'true') {
+                    parts[p] = true;
+                } else if (parts[p] === 'false') {
+                    parts[p] = false;
+                } else if (window.isFinite(parts[p])) {
+                    const attr = this.props.schema.items.find(it => it.attr === header[p]);
+                    if (attr && attr.type === 'number') {
+                        // if a type of attribute is a "number"
+                        parts[p] = parseFloat(parts[p]);
+                    }
+                }
+                obj[header[p]] = parts[p];
+            }
+            values.push(obj);
+        });
+
+        if (values.length) {
+            if (this.state.value?.length) {
+                this.setState({ showTypeOfImportDialog: values, showImportDialog: false });
+            } else {
+                this.setState({ value: values, showImportDialog: false });
+            }
+        } else {
+            window.alert('ra_No data found in file');
+        }
+    }
 
     onClone = index => () => {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
@@ -483,6 +651,137 @@ class ConfigTable extends ConfigGeneric {
                 this.onChangeWrapper(newValue)));
     }
 
+    onDrop(acceptedFiles) {
+        const file = acceptedFiles[0];
+        const reader = new FileReader();
+
+        reader.onabort = () => console.log('file reading was aborted');
+        reader.onerror = () => console.log('file reading has failed');
+        reader.onload = () => {
+            if (file.size > MAX_SIZE) {
+                return window.alert(I18n.t('ra_File is too big. Max %sk allowed. Try use SVG.', Math.round(MAX_SIZE / 1024)));
+            }
+            const text = new Uint8Array(reader.result)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '');
+
+            this.onImport(text);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    showTypeOfImportDialog() {
+        if (!this.state.showTypeOfImportDialog) {
+            return null;
+        }
+        return <Dialog
+            open={!0}
+            onClose={() => this.setState({ showTypeOfImportDialog: false })}
+            maxWidth="md"
+        >
+            <DialogTitle>{I18n.t('ra_Append or replace?')}</DialogTitle>
+            <DialogContent>
+                {I18n.t('ra_Append %s entries or replace existing?', this.state.showTypeOfImportDialog.length)}
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    autoFocus
+                    onClick={() => {
+                        const value = JSON.parse(JSON.stringify(this.state.value));
+                        this.state.showTypeOfImportDialog.forEach(obj => value.push(obj));
+                        this.setState({
+                            value,
+                            iteration: this.state.iteration + 10000,
+                            showTypeOfImportDialog: false
+                        }, () =>
+                            this.applyFilter(false, null, () =>
+                                this.onChangeWrapper(value)));
+                    }}
+                >
+                    {I18n.t('ra_Append')}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    autoFocus
+                    onClick={() => {
+                        const value = this.state.showTypeOfImportDialog;
+                        this.setState({
+                            value,
+                            iteration: this.state.iteration + 10000,
+                            showTypeOfImportDialog: false
+                        }, () =>
+                            this.applyFilter(false, null, () =>
+                                this.onChangeWrapper(value)));
+                    }}
+                >
+                    {I18n.t('ra_Replace')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
+    }
+
+    showImportDialog() {
+        if (!this.state.showImportDialog) {
+            return null;
+        }
+        return <Dialog
+            open={!0}
+            onClose={() => this.setState({ showImportDialog: false })}
+            maxWidth="md"
+            fullWidth
+        >
+            <DialogTitle>{I18n.t('ra_Import from %s', 'CSV')}</DialogTitle>
+            <DialogContent>
+                <Dropzone
+                    multiple={false}
+                    accept={{ 'text/csv': ['.csv'] }}
+                    maxSize={MAX_SIZE}
+                    onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
+                    onDragLeave={() => this.setState({ uploadFile: true })}
+                    onDrop={(acceptedFiles, errors) => {
+                        this.setState({ uploadFile: false });
+                        if (!acceptedFiles.length) {
+                            window.alert((errors && errors[0] && errors[0].errors && errors[0].errors[0] && errors[0].errors[0].message) || I18n.t('ra_Cannot upload'));
+                        } else {
+                            return this.onDrop(acceptedFiles);
+                        }
+                    }}
+                >
+                    {({ getRootProps, getInputProps }) => <div
+                        className={Utils.clsx(
+                            this.props.classes.uploadDiv,
+                            this.state.uploadFile === 'dragging' && this.props.classes.uploadDivDragging,
+                            this.props.classes.dropZone,
+                            !this.state.icon && this.props.classes.dropZoneEmpty,
+                        )}
+                        {...getRootProps()}>
+                        <input {...getInputProps()} />
+                        <div className={Utils.clsx(this.props.classes.uploadCenterDiv)}>
+                            <div className={this.props.classes.uploadCenterTextAndIcon}>
+                                <ImportIcon className={this.props.classes.uploadCenterIcon} />
+                                <div className={this.props.classes.uploadCenterText}>{
+                                    this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
+                                        I18n.t('ra_Place your files here or click here to open the browse dialog')}</div>
+                            </div>
+                        </div>
+                    </div>}
+                </Dropzone>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    onClick={() => this.setState({ showImportDialog: false })}
+                    color="primary"
+                    startIcon={<IconClose />}
+                >
+                    {I18n.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
+    }
+
     renderItem(error, disabled, defaultValue) {
         const { classes, schema } = this.props;
         let { value, visibleValue } = this.state;
@@ -496,6 +795,8 @@ class ConfigTable extends ConfigGeneric {
         const doAnyFilterSet = this.isAnyFilterSet();
 
         return <Paper className={classes.paper}>
+            {this.showImportDialog()}
+            {this.showTypeOfImportDialog()}
             <div className={classes.addIcon}>
                 {schema.label ? <Toolbar
                     variant="dense"
