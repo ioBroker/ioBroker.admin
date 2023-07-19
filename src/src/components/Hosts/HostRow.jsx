@@ -17,11 +17,13 @@ import {
     Typography,
 } from '@mui/material';
 
-import RefreshIcon from '@mui/icons-material/Refresh';
-import DeleteIcon from '@mui/icons-material/Delete';
-import BuildIcon from '@mui/icons-material/Build';
-import EditIcon from '@mui/icons-material/Edit';
-import CachedIcon from '@mui/icons-material/Cached';
+import {
+    Refresh as RefreshIcon,
+    Delete as DeleteIcon,
+    Build as BuildIcon,
+    Edit as EditIcon,
+    Cached as CachedIcon,
+} from '@mui/icons-material';
 
 import { amber, blue, grey, red } from '@mui/material/colors';
 
@@ -432,11 +434,11 @@ const HostRow = ({
 
     const formatValue = (state, unit) => {
         if (!state || state.val === null || state.val === undefined) {
-            return '-' + (unit ? ' ' + unit : '');
+            return `-${unit ? ' ' + unit : ''}`;
         } else if (systemConfig.common.isFloatComma) {
             return state.val.toString().replace('.', ',') + (unit ? ' ' + unit : '');
         } else {
-            return state.val + (unit ? ' ' + unit : '');
+            return state.val + (unit ? ` ${unit}` : '');
         }
     };
 
@@ -600,268 +602,252 @@ const HostRow = ({
         showModal = true;
     }
 
-    const customModal = showModal ? (
-        <CustomModal
-            title={titleModal}
-            open={!0}
-            onApply={_ => {
-                if (openDialogLogLevel) {
-                    socket.setState(`${_id}.logLevel`, logLevelValueSelect);
-                    setOpenDialogLogLevel(false);
-                }
-            }}
-            onClose={_ => {
-                if (openDialogLogLevel) {
-                    setLogLevelValueSelect(logLevelValue);
-                    setOpenDialogLogLevel(false);
-                }
-            }}
-        >
-            {openDialogLogLevel && (
-                <FormControl className={classes.formControl} variant="outlined">
-                    <InputLabel>{t('log level')}</InputLabel>
-                    <Select
-                        variant="standard"
-                        value={logLevelValueSelect}
-                        fullWidth
-                        onChange={el => setLogLevelValueSelect(el.target.value)}
-                    >
-                        {arrayLogLevel.map(el => (
-                            <MenuItem key={el} value={el}>
-                                {t(el)}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            )}
-            {openDialogLogLevel && (
-                <FormControl className={classes.formControl} variant="outlined">
-                    <FormHelperText>
-                        {t('Log level will be reset to the saved level after the restart of the controller')}
-                    </FormHelperText>
-                    <FormHelperText>
-                        {t('You can set the log level permanently in the base host settings')}
-                        <BuildIcon className={classes.baseSettingsButton} />
-                    </FormHelperText>
-                </FormControl>
-            )}
-        </CustomModal>
-    ) : null;
-
-    return (
-        <div
-            style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }}
-            onMouseOut={openDialogLogLevel ? null : () => setFocused(false)}
-            onMouseOver={openDialogLogLevel ? null : () => setFocused(true)}
-            onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
-            key={_id}
-            className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}
-        >
-            {customModal}
-            <div
-                className={Utils.clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)}
-                onClick={openDialogLogLevel ? null : () => setCollapse(bool => !bool)}
+    const customModal = showModal ? <CustomModal
+        title={titleModal}
+        open={!0}
+        onApply={_ => {
+            if (openDialogLogLevel) {
+                socket.setState(`${_id}.logLevel`, logLevelValueSelect);
+                setOpenDialogLogLevel(false);
+            }
+        }}
+        onClose={_ => {
+            if (openDialogLogLevel) {
+                setLogLevelValueSelect(logLevelValue);
+                setOpenDialogLogLevel(false);
+            }
+        }}
+    >
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
+            <InputLabel>{t('log level')}</InputLabel>
+            <Select
+                variant="standard"
+                value={logLevelValueSelect}
+                fullWidth
+                onChange={el => setLogLevelValueSelect(el.target.value)}
             >
-                <div className={classes.wrapperColor}>
-                    <div className={Utils.clsx(classes.onOff, alive ? classes.green : classes.red)} />
-                    {alive && <div className={classes.dotLine} />}
+                {arrayLogLevel.map(el => (
+                    <MenuItem key={el} value={el}>
+                        {t(el)}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>}
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
+            <FormHelperText>
+                {t('Log level will be reset to the saved level after the restart of the controller')}
+            </FormHelperText>
+            <FormHelperText>
+                {t('You can set the log level permanently in the base host settings')}
+                <BuildIcon className={classes.baseSettingsButton} />
+            </FormHelperText>
+        </FormControl>}
+    </CustomModal> : null;
+
+    return <div
+        style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }}
+        onMouseOut={openDialogLogLevel ? null : () => setFocused(false)}
+        onMouseOver={openDialogLogLevel ? null : () => setFocused(true)}
+        onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
+        key={_id}
+        className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}
+    >
+        {customModal}
+        <div
+            className={Utils.clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)}
+            onClick={openDialogLogLevel ? null : () => setCollapse(bool => !bool)}
+        >
+            <div className={classes.wrapperColor}>
+                <div className={Utils.clsx(classes.onOff, alive ? classes.green : classes.red)} />
+                {alive && <div className={classes.dotLine} />}
+            </div>
+            <div ref={refWarning} style={{ background: color || 'inherit' }} className={classes.imageBlock}>
+                <StyledBadge
+                    title={t('Hosts notifications')}
+                    badgeContent={errorHost.count}
+                    color="error"
+                    onClick={e => {
+                        e.stopPropagation();
+                        showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
+                    }}
+                >
+                    <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
+                </StyledBadge>
+                <div
+                    style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
+                    className={classes.host}
+                >
+                    {name}
                 </div>
-                <div ref={refWarning} style={{ background: color || 'inherit' }} className={classes.imageBlock}>
-                    <StyledBadge
-                        title={t('Hosts notifications')}
-                        badgeContent={errorHost.count}
-                        color="error"
-                        onClick={e => {
-                            e.stopPropagation();
-                            showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
-                        }}
-                    >
-                        <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
-                    </StyledBadge>
+            </div>
+            <CardContent className={classes.cardContentH5}>
+                {/*<Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
+                {title}
+            </Typography>*/}
+                <Typography
+                    className={Utils.clsx(classes.flex, classes.hidden800)}
+                    variant="body2"
+                    color="textSecondary"
+                    component="div"
+                >
+                    <div ref={refCpu}>{'- %'}</div>
+                </Typography>
+                <Typography
+                    className={Utils.clsx(classes.flex, classes.hidden800)}
+                    variant="body2"
+                    color="textSecondary"
+                    component="div"
+                >
+                    <div ref={refMem}>{'- %'}</div>
+                </Typography>
+                <Typography
+                    className={Utils.clsx(classes.flex, classes.hidden800)}
+                    variant="body2"
+                    color="textSecondary"
+                    component="div"
+                >
+                    <div ref={refUptime}>{'-/-'}</div>
+                </Typography>
+                <Typography
+                    className={Utils.clsx(classes.flex, classes.hidden1100)}
+                    variant="body2"
+                    color="textSecondary"
+                    component="div"
+                >
                     <div
-                        style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
-                        className={classes.host}
+                        className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}
                     >
-                        {name}
-                    </div>
-                </div>
-                <CardContent className={classes.cardContentH5}>
-                    {/*<Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
-                    {title}
-                </Typography>*/}
-                    <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800)}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
-                    >
-                        <div ref={refCpu}>{'- %'}</div>
-                    </Typography>
-                    <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800)}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
-                    >
-                        <div ref={refMem}>{'- %'}</div>
-                    </Typography>
-                    <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800)}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
-                    >
-                        <div ref={refUptime}>{'-/-'}</div>
-                    </Typography>
-                    <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden1100)}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
-                    >
-                        <div
-                            className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}
-                        >
-                            {upgradeAvailable ? (
-                                <Tooltip title={t('Update')}>
-                                    <div
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            openHostUpdateDialog();
-                                        }}
-                                        className={classes.buttonUpdate}
-                                    >
-                                        <IconButton className={classes.buttonUpdateIcon} size="small">
-                                            <RefreshIcon />
-                                        </IconButton>
-                                        {available}
-                                    </div>
-                                </Tooltip>
-                            ) : (
-                                available
-                            )}
-                        </div>
-                    </Typography>
-                    <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden1100)}
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                    >
-                        {installed}
-                    </Typography>
-                    <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden600)}
-                        variant="body2"
-                        color="textSecondary"
-                        component="div"
-                    >
-                        <div ref={refEvents}>{events}</div>
-                    </Typography>
-                    <div className={classes.marginTop10}>
-                        <Typography component={'span'} className={classes.enableButton}>
-                            <IconButton
-                                size="large"
+                        {upgradeAvailable ? <Tooltip title={t('Update')}>
+                            <div
                                 onClick={e => {
                                     e.stopPropagation();
-                                    setEditDialog(true);
+                                    openHostUpdateDialog();
                                 }}
+                                className={classes.buttonUpdate}
                             >
-                                <EditIcon />
-                            </IconButton>
-
-                            {expertMode && (
-                                <Tooltip title={t('Host Base Settings')}>
-                                    <div>
-                                        <IconButton
-                                            size="large"
-                                            disabled={!alive}
-                                            onClick={e => {
-                                                setBaseSettingsDialog();
-                                                e.stopPropagation();
-                                            }}
-                                        >
-                                            <BuildIcon className={classes.baseSettingsButton} />
-                                        </IconButton>
-                                    </div>
-                                </Tooltip>
-                            )}
-                            <Tooltip title={t('Restart host')}>
-                                <div>
-                                    <IconButton
-                                        size="large"
-                                        disabled={!alive}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            socket
-                                                .restartController(_id)
-                                                .catch(e => window.alert(`Cannot restart: ${e}`));
-                                        }}
-                                    >
-                                        <CachedIcon />
-                                    </IconButton>
-                                </div>
-                            </Tooltip>
-                            {expertMode && logLevelValue ? (
-                                <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
-                                    <IconButton
-                                        size="large"
-                                        onClick={event => {
-                                            event.stopPropagation();
-                                            setOpenDialogLogLevel(true);
-                                        }}
-                                    >
-                                        <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
-                                            {getLogLevelIcon(logLevelValue)}
-                                        </Avatar>
-                                    </IconButton>
-                                </Tooltip>
-                            ) : (
-                                <div className={classes.emptyButton} />
-                            )}
-                            <Tooltip title={t('Remove')}>
-                                <span>
-                                    <IconButton
-                                        size="large"
-                                        disabled={alive || isCurrentHost}
-                                        title={
-                                            alive || isCurrentHost ? t('You cannot delete host, when it is alive') : ''
-                                        }
-                                        onClick={e => {
-                                            executeCommandRemove();
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                        </Typography>
+                                <IconButton className={classes.buttonUpdateIcon} size="small">
+                                    <RefreshIcon />
+                                </IconButton>
+                                {available}
+                            </div>
+                        </Tooltip>
+                        :
+                        available}
                     </div>
-                </CardContent>
-            </div>
-            {(openCollapse || focused) && typeof description === 'object' && (
-                <div
-                    className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)}
-                    onClick={e => e.stopPropagation()}
+                </Typography>
+                <Typography
+                    className={Utils.clsx(classes.flex, classes.hidden1100)}
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
                 >
-                    <CardContent className={classes.cardContentInfo}>
-                        {description}
-                        <Tooltip title={t('Copy')}>
+                    {installed}
+                </Typography>
+                <Typography
+                    className={Utils.clsx(classes.flex, classes.hidden600)}
+                    variant="body2"
+                    color="textSecondary"
+                    component="div"
+                >
+                    <div ref={refEvents}>{events}</div>
+                </Typography>
+                <div className={classes.marginTop10}>
+                    <Typography component={'span'} className={classes.enableButton}>
+                        <IconButton
+                            size="large"
+                            onClick={e => {
+                                e.stopPropagation();
+                                setEditDialog(true);
+                            }}
+                        >
+                            <EditIcon />
+                        </IconButton>
+
+                        {expertMode && <Tooltip title={t('Host Base Settings')}>
+                            <div>
+                                <IconButton
+                                    size="large"
+                                    disabled={!alive}
+                                    onClick={e => {
+                                        setBaseSettingsDialog();
+                                        e.stopPropagation();
+                                    }}
+                                >
+                                    <BuildIcon className={classes.baseSettingsButton} />
+                                </IconButton>
+                            </div>
+                        </Tooltip>}
+                        <Tooltip title={t('Restart host')}>
+                            <div>
+                                <IconButton
+                                    size="large"
+                                    disabled={!alive}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        socket
+                                            .restartController(_id)
+                                            .catch(e => window.alert(`Cannot restart: ${e}`));
+                                    }}
+                                >
+                                    <CachedIcon />
+                                </IconButton>
+                            </div>
+                        </Tooltip>
+                        {expertMode && logLevelValue ? <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
                             <IconButton
                                 size="large"
-                                onClick={() => onCopy()}
-                                style={{ position: 'absolute', top: 8, right: 8 }}
+                                onClick={event => {
+                                    event.stopPropagation();
+                                    setOpenDialogLogLevel(true);
+                                }}
                             >
-                                <CopyIcon />
+                                <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
+                                    {getLogLevelIcon(logLevelValue)}
+                                </Avatar>
                             </IconButton>
                         </Tooltip>
-                    </CardContent>
-                    <div className={classes.footerBlock}></div>
+                        :
+                        <div className={classes.emptyButton} />}
+                        <Tooltip title={t('Remove')}>
+                            <span>
+                                <IconButton
+                                    size="large"
+                                    disabled={alive || isCurrentHost}
+                                    title={
+                                        alive || isCurrentHost ? t('You cannot delete host, when it is alive') : ''
+                                    }
+                                    onClick={e => {
+                                        executeCommandRemove();
+                                        e.stopPropagation();
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                    </Typography>
                 </div>
-            )}
+            </CardContent>
         </div>
-    );
+        {(openCollapse || focused) && typeof description === 'object' && <div
+            className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)}
+            onClick={e => e.stopPropagation()}
+        >
+            <CardContent className={classes.cardContentInfo}>
+                {description}
+                <Tooltip title={t('Copy')}>
+                    <IconButton
+                        size="large"
+                        onClick={() => onCopy()}
+                        style={{ position: 'absolute', top: 8, right: 8 }}
+                    >
+                        <CopyIcon />
+                    </IconButton>
+                </Tooltip>
+            </CardContent>
+            <div className={classes.footerBlock}></div>
+        </div>}
+    </div>;
 };
 
 HostRow.propTypes = {
