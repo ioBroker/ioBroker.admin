@@ -1586,7 +1586,7 @@ function formatValue(options) {
     };
 }
 
-/** @typedef {{ state: ioBroker.State, isExpertMode: boolean, obj: ioBroker.StateObject }} GetValueStyleOptions */
+/** @typedef {{ state: ioBroker.State, isExpertMode: boolean, isButton: boolean }} GetValueStyleOptions */
 
 /**
  * Get css style for given state value
@@ -1595,10 +1595,10 @@ function formatValue(options) {
  * @return {{color: (string)}}
  */
 function getValueStyle(options) {
-    const { state, isExpertMode, obj } = options;
+    const { state, isExpertMode, isButton } = options;
     let color = state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9';
 
-    if (!isExpertMode && obj.common.role === 'button') {
+    if (!isExpertMode && isButton) {
         color = '';
     }
 
@@ -4345,7 +4345,7 @@ class ObjectBrowser extends Component {
             ];
         }
 
-        info.style = getValueStyle({ isExpertMode: this.state.filter.expertMode, state, obj });
+        info.style = getValueStyle({ state, isExpertMode: this.state.filter.expertMode, isButton: item.data.button });
 
         let val = info.valText;
         if (!this.state.filter.expertMode && item.data.button) {
