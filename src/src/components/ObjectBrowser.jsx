@@ -1586,7 +1586,7 @@ function formatValue(options) {
     };
 }
 
-/** @typedef {{ state: ioBroker.State, isExpertMode: boolean, obj: ioBroker.StateObject }} GetValueStyleOptions */
+/** @typedef {{ state: ioBroker.State, isExpertMode: boolean, isButton: boolean }} GetValueStyleOptions */
 
 /**
  * Get css style for given state value
