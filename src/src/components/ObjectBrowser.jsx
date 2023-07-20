@@ -11,65 +11,66 @@ import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
 import SVG from 'react-inlinesvg';
 
-import IconButton from '@mui/material/IconButton';
-import CircularProgress from '@mui/material/CircularProgress';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import Input from '@mui/material/Input';
-import Grid from '@mui/material/Grid';
-import Badge from '@mui/material/Badge';
-import Tooltip from '@mui/material/Tooltip';
-import Snackbar from '@mui/material/Snackbar';
-import Checkbox from '@mui/material/Checkbox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Fab from '@mui/material/Fab';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-// import ListItemButton from '@mui/material/ListItemButton';
-// import Slider from '@mui/material/Slider';
-// import Typography from '@mui/material/Typography';
+import {
+    IconButton,
+    CircularProgress,
+    MenuItem,
+    Select,
+    FormControl,
+    Input,
+    Grid,
+    Badge,
+    Tooltip,
+    Snackbar,
+    Checkbox,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemSecondaryAction,
+    ListItemText,
+    DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button,
+    Fab,
+    TextField,
+    FormControlLabel,
+    Switch,
+} from '@mui/material';
 
 // Icons
-import IconEdit from '@mui/icons-material/Edit';
-import IconDelete from '@mui/icons-material/Delete';
-import IconConfig from '@mui/icons-material/Settings';
-import IconSystem from '@mui/icons-material/SettingsApplications';
-import IconPhoto from '@mui/icons-material/Photo';
-import IconGroup from '@mui/icons-material/SupervisedUserCircle';
-import IconSchedule from '@mui/icons-material/CalendarToday';
-import IconUser from '@mui/icons-material/PersonOutlined';
-import IconHost from '@mui/icons-material/Router';
-import IconConnection from '@mui/icons-material/Wifi';
-import IconInfo from '@mui/icons-material/Info';
-import IconMeta from '@mui/icons-material/Description';
-import IconScript from '@mui/icons-material/Code';
-import IconChart from '@mui/icons-material/ShowChart';
-import IconEnum from '@mui/icons-material/ListAlt';
-import IconColumns from '@mui/icons-material/ViewColumn';
-import IconClose from '@mui/icons-material/Close';
-import IconCheck from '@mui/icons-material/Check';
-import BuildIcon from '@mui/icons-material/Build';
-import PublishIcon from '@mui/icons-material/Publish';
-import AddIcon from '@mui/icons-material/Add';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import LooksOneIcon from '@mui/icons-material/LooksOne';
-import PressButtonIcon from '@mui/icons-material/RoomService';
-import IconError from '@mui/icons-material/Error';
-import IconDisconnected from '@mui/icons-material/WifiOff';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
+import {
+    Edit as IconEdit,
+    Delete as IconDelete,
+    Settings as IconConfig,
+    SettingsApplications as IconSystem,
+    Photo as IconPhoto,
+    SupervisedUserCircle as IconGroup,
+    CalendarToday as IconSchedule,
+    PersonOutlined as IconUser,
+    Router as IconHost,
+    Wifi as IconConnection,
+    Info as IconInfo,
+    Description as IconMeta,
+    Code as IconScript,
+    ShowChart as IconChart,
+    ListAlt as IconEnum,
+    ViewColumn as IconColumns,
+    Close as IconClose,
+    Check as IconCheck,
+    Build as BuildIcon,
+    Publish as PublishIcon,
+    Add as AddIcon,
+    Refresh as RefreshIcon,
+    LooksOne as LooksOneIcon,
+    RoomService as PressButtonIcon,
+    Error as IconError,
+    WifiOff as IconDisconnected,
+    TextFields as TextFieldsIcon,
+} from '@mui/icons-material';
 
 import IconExpert from '@iobroker/adapter-react-v5/icons/IconExpert';
 import IconAdapter from '@iobroker/adapter-react-v5/icons/IconAdapter';
@@ -86,8 +87,7 @@ import IconOpen from '@iobroker/adapter-react-v5/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react-v5/icons/IconClearFilter';
 
 // own
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { Icon, withWidth } from '@iobroker/adapter-react-v5';
 import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
@@ -287,7 +287,9 @@ const styles = theme => ({
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
     },
-    cellIdIconOwn: {},
+    cellIdIconOwn: {
+
+    },
     cellIdTooltip: {
         fontSize: 14,
     },
@@ -341,7 +343,9 @@ const styles = theme => ({
     cellNameWithDesc: {
         lineHeight: 'normal',
     },
-    cellNameDivDiv: {},
+    cellNameDivDiv: {
+
+    },
     cellDescription: {
         fontSize: 10,
         opacity: 0.5,
@@ -410,6 +414,9 @@ const styles = theme => ({
         '&:active': {
             transform: 'scale(0.8)',
         },
+    },
+    cellValueButtonFalse: {
+        opacity: 0.3,
     },
     cellAdapter: {
         display: 'inline-block',
@@ -667,8 +674,12 @@ const styles = theme => ({
             },
         },
     },
-    '@media screen and (max-width: 700px)': {},
-    '@media screen and (max-width: 430px)': {},
+    '@media screen and (max-width: 700px)': {
+
+    },
+    '@media screen and (max-width: 430px)': {
+
+    },
     draggable: {
         cursor: 'copy',
     },
@@ -1063,7 +1074,8 @@ function getVisibleItems(item, type, objects, _result) {
     const data = item.data;
     if (data.sumVisibility) {
         data.id && objects[data.id] && (!type || objects[data.id].type === type) && _result.push(data.id);
-        item.children?.forEach(_item => getVisibleItems(_item, type, objects, _result));
+        item.children?.forEach(_item =>
+            getVisibleItems(_item, type, objects, _result));
     }
 
     return _result;
@@ -1128,11 +1140,14 @@ function getObjectTooltip(data, lang) {
 function getIdFieldTooltip(data, classes, lang) {
     const tooltip = getObjectTooltip(data, lang);
     if (tooltip?.startsWith('http')) {
-        return (
-            <a className={Utils.clsx(classes.cellIdTooltipLink)} href={tooltip} target="_blank" rel="noreferrer">
-                {tooltip}
-            </a>
-        );
+        return <a
+            className={Utils.clsx(classes.cellIdTooltipLink)}
+            href={tooltip}
+            target="_blank"
+            rel="noreferrer"
+        >
+            {tooltip}
+        </a>;
     } else {
         return <span className={Utils.clsx(classes.cellIdTooltip)}>{tooltip || data.id || ''}</span>;
     }
@@ -1175,12 +1190,12 @@ function buildTree(objects, options) {
     const info = {
         funcEnums: [],
         roomEnums: [],
-        roles: [],
-        ids: [],
-        types: [],
+        roles:     [],
+        ids:       [],
+        types:     [],
         objects,
-        customs: ['_'],
-        enums: [],
+        customs:   ['_'],
+        enums:     [],
         hasSomeCustoms: false,
     };
 
@@ -1237,12 +1252,12 @@ function buildTree(objects, options) {
                         if (!binarySearch(info.ids, curPath)) {
                             const _croot = {
                                 data: {
-                                    name: parts[k],
-                                    parent: croot,
-                                    id: curPath,
-                                    obj: objects[curPath],
-                                    level: k,
-                                    icon: getSystemIcon(objects, curPath, k, imagePrefix),
+                                    name:      parts[k],
+                                    parent:    croot,
+                                    id:        curPath,
+                                    obj:       objects[curPath],
+                                    level:     k,
+                                    icon:      getSystemIcon(objects, curPath, k, imagePrefix),
                                     generated: true,
                                 },
                             };
@@ -1259,21 +1274,20 @@ function buildTree(objects, options) {
 
                 const _croot = {
                     data: {
-                        name: parts[parts.length - 1],
-                        title: getName(obj && obj.common && obj.common.name, options.lang),
+                        name:       parts[parts.length - 1],
+                        title:      getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
-                        parent: croot,
-                        icon: getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
+                        parent:     croot,
+                        icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
                         hasCustoms: obj.common?.custom && Object.keys(obj.common.custom).length,
-                        level: parts.length - 1,
-                        generated: false,
-                        button:
-                            obj.type === 'state' &&
-                            obj.common?.role &&
-                            typeof obj.common.role === 'string' &&
-                            obj.common.role.startsWith('button') &&
-                            obj.common?.write !== false,
+                        level:      parts.length - 1,
+                        generated:  false,
+                        button:     obj.type === 'state' &&
+                                    obj.common?.role &&
+                                    typeof obj.common.role === 'string' &&
+                                    obj.common.role.startsWith('button') &&
+                                    obj.common?.write !== false,
                     },
                 };
 
@@ -1572,7 +1586,7 @@ function formatValue(options) {
     };
 }
 
-/** @typedef {{ state: ioBroker.State, isExpertMode: boolean, obj: ioBroker.StateObject }} GetValueStyleOptions */
+/** @typedef {{ state: ioBroker.State, isExpertMode: boolean, isButton: boolean }} GetValueStyleOptions */
 
 /**
  * Get css style for given state value
@@ -1581,10 +1595,10 @@ function formatValue(options) {
  * @return {{color: (string)}}
  */
 function getValueStyle(options) {
-    const { state, isExpertMode, obj } = options;
+    const { state, isExpertMode, isButton } = options;
     let color = state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9';
 
-    if (!isExpertMode && obj.common.role === 'button') {
+    if (!isExpertMode && isButton) {
         color = '';
     }
 
@@ -1920,51 +1934,51 @@ class ObjectBrowser extends Component {
         this.edit = {};
 
         this.texts = {
-            value: props.t('ra_tooltip_value'),
-            ack: props.t('ra_tooltip_ack'),
-            ts: props.t('ra_tooltip_ts'),
-            lc: props.t('ra_tooltip_lc'),
-            from: props.t('ra_tooltip_from'),
-            user: props.t('ra_tooltip_user'),
-            c: props.t('ra_tooltip_comment'),
-            quality: props.t('ra_tooltip_quality'),
-            editObject: props.t('ra_tooltip_editObject'),
-            deleteObject: props.t('ra_tooltip_deleteObject'),
-            customConfig: props.t('ra_tooltip_customConfig'),
-            copyState: props.t('ra_tooltip_copyState'),
-            editState: props.t('ra_tooltip_editState'),
-            close: props.t('ra_Close'),
-            filter_id: props.t('ra_filter_id'),
-            filter_name: props.t('ra_filter_name'),
-            filter_type: props.t('ra_filter_type'),
-            filter_role: props.t('ra_filter_role'),
-            filter_room: props.t('ra_filter_room'),
-            filter_func: props.t('ra_filter_func'),
-            filter_custom: props.t('ra_filter_customs'), //
-            filterCustomsWithout: props.t('ra_filter_customs_without'), //
-            objectChangedByUser: props.t('ra_object_changed_by_user'), // Object last changed at
-            objectChangedBy: props.t('ra_object_changed_by'), // Object changed by
-            objectChangedFrom: props.t('ra_state_changed_from'), // Object changed from
-            stateChangedBy: props.t('ra_state_changed_by'), // State changed by
-            stateChangedFrom: props.t('ra_state_changed_from'), // State changed from
-            ownerGroup: props.t('ra_Owner group'),
-            ownerUser: props.t('ra_Owner user'),
-            deviceError: props.t('ra_Error'),
-            deviceDisconnected: props.t('ra_Disconnected'),
-            deviceConnected: props.t('ra_Connected'),
+            value:                    props.t('ra_tooltip_value'),
+            ack:                      props.t('ra_tooltip_ack'),
+            ts:                       props.t('ra_tooltip_ts'),
+            lc:                       props.t('ra_tooltip_lc'),
+            from:                     props.t('ra_tooltip_from'),
+            user:                     props.t('ra_tooltip_user'),
+            c:                        props.t('ra_tooltip_comment'),
+            quality:                  props.t('ra_tooltip_quality'),
+            editObject:               props.t('ra_tooltip_editObject'),
+            deleteObject:             props.t('ra_tooltip_deleteObject'),
+            customConfig:             props.t('ra_tooltip_customConfig'),
+            copyState:                props.t('ra_tooltip_copyState'),
+            editState:                props.t('ra_tooltip_editState'),
+            close:                    props.t('ra_Close'),
+            filter_id:                props.t('ra_filter_id'),
+            filter_name:              props.t('ra_filter_name'),
+            filter_type:              props.t('ra_filter_type'),
+            filter_role:              props.t('ra_filter_role'),
+            filter_room:              props.t('ra_filter_room'),
+            filter_func:              props.t('ra_filter_func'),
+            filter_custom:            props.t('ra_filter_customs'), //
+            filterCustomsWithout:     props.t('ra_filter_customs_without'), //
+            objectChangedByUser:      props.t('ra_object_changed_by_user'), // Object last changed at
+            objectChangedBy:          props.t('ra_object_changed_by'), // Object changed by
+            objectChangedFrom:        props.t('ra_state_changed_from'), // Object changed from
+            stateChangedBy:           props.t('ra_state_changed_by'), // State changed by
+            stateChangedFrom:         props.t('ra_state_changed_from'), // State changed from
+            ownerGroup:               props.t('ra_Owner group'),
+            ownerUser:                props.t('ra_Owner user'),
+            deviceError:              props.t('ra_Error'),
+            deviceDisconnected:       props.t('ra_Disconnected'),
+            deviceConnected:          props.t('ra_Connected'),
 
-            aclOwner_read_object: props.t('ra_aclOwner_read_object'),
-            aclOwner_read_state: props.t('ra_aclOwner_read_state'),
-            aclOwner_write_object: props.t('ra_aclOwner_write_object'),
-            aclOwner_write_state: props.t('ra_aclOwner_write_state'),
-            aclGroup_read_object: props.t('ra_aclGroup_read_object'),
-            aclGroup_read_state: props.t('ra_aclGroup_read_state'),
-            aclGroup_write_object: props.t('ra_aclGroup_write_object'),
-            aclGroup_write_state: props.t('ra_aclGroup_write_state'),
-            aclEveryone_read_object: props.t('ra_aclEveryone_read_object'),
-            aclEveryone_read_state: props.t('ra_aclEveryone_read_state'),
+            aclOwner_read_object:     props.t('ra_aclOwner_read_object'),
+            aclOwner_read_state:      props.t('ra_aclOwner_read_state'),
+            aclOwner_write_object:    props.t('ra_aclOwner_write_object'),
+            aclOwner_write_state:     props.t('ra_aclOwner_write_state'),
+            aclGroup_read_object:     props.t('ra_aclGroup_read_object'),
+            aclGroup_read_state:      props.t('ra_aclGroup_read_state'),
+            aclGroup_write_object:    props.t('ra_aclGroup_write_object'),
+            aclGroup_write_state:     props.t('ra_aclGroup_write_state'),
+            aclEveryone_read_object:  props.t('ra_aclEveryone_read_object'),
+            aclEveryone_read_state:   props.t('ra_aclEveryone_read_state'),
             aclEveryone_write_object: props.t('ra_aclEveryone_write_object'),
-            aclEveryone_write_state: props.t('ra_aclEveryone_write_state'),
+            aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
         };
 
         this.levelPadding = props.levelPadding || ITEM_LEVEL;
@@ -2105,7 +2119,7 @@ class ObjectBrowser extends Component {
 
                 this.lastAppliedFilter = null;
 
-                // If selected ID is not visible, reset filter
+                // If the selected ID is not visible, reset filter
                 if (
                     node &&
                     !applyFilter(
@@ -2259,7 +2273,8 @@ class ObjectBrowser extends Component {
 
         this.subscribes = [];
 
-        this.loadAllObjects(true).then(() => console.log('updated!'));
+        this.loadAllObjects(true)
+            .then(() => console.log('updated!'));
     }
 
     /**
@@ -2267,32 +2282,32 @@ class ObjectBrowser extends Component {
      * @returns {JSX.Element | null}
      */
     renderErrorDialog() {
-        return this.state.error ? (
-            <Dialog
-                open={!0}
-                maxWidth="sm"
-                fullWidth
-                onClose={() => this.setState({ error: '' })}
-                aria-labelledby="error-dialog-title"
-                aria-describedby="error-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('ra_Error')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">{this.state.error}</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        onClick={() => this.setState({ error: '' })}
-                        color="primary"
-                        autoFocus
-                        startIcon={<IconCheck />}
-                    >
-                        {this.props.t('ra_Ok')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        ) : null;
+        return this.state.error ? <Dialog
+            open={!0}
+            maxWidth="sm"
+            fullWidth
+            onClose={() => this.setState({ error: '' })}
+            aria-labelledby="error-dialog-title"
+            aria-describedby="error-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('ra_Error')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {this.state.error}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    onClick={() => this.setState({ error: '' })}
+                    color="primary"
+                    autoFocus
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('ra_Ok')}
+                </Button>
+            </DialogActions>
+        </Dialog> : null;
     }
 
     /**
@@ -2355,7 +2370,8 @@ class ObjectBrowser extends Component {
                 selected.splice(pos, 1);
             }
 
-            this.setState({ selected, selectedNonObject: '' }, () => this.onAfterSelect(isDouble));
+            this.setState({ selected, selectedNonObject: '' }, () =>
+                this.onAfterSelect(isDouble));
         }
     }
 
@@ -2376,7 +2392,7 @@ class ObjectBrowser extends Component {
             .filter(
                 id => (isLast && (id === 'val' || id === 'buttons')) || (!isLast && id !== 'val' && id !== 'buttons')
             )
-            .map(id => (
+            .map(id =>
                 <ListItemButton
                     onClick={() => {
                         if (!this.state.columnsAuto && id !== 'id') {
@@ -2389,7 +2405,7 @@ class ObjectBrowser extends Component {
                                 columns.splice(pos, 1);
                             }
                             (window._localStorage || window.localStorage).setItem(
-                                (this.props.dialogName || 'App') + '.columns',
+                                `${this.props.dialogName || 'App'}.columns`,
                                 JSON.stringify(columns)
                             );
                             this.calculateColumnsVisibility(null, columns);
@@ -2409,7 +2425,7 @@ class ObjectBrowser extends Component {
                         }
                         disableRipple
                     />
-                    <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
+                    <ListItemText primary={this.texts[`filter_${id}`] || this.props.t(`ra_${id}`)} />
                     {/*
                     <ListItemSecondaryAction>
                         <FormControl
@@ -2435,7 +2451,7 @@ class ObjectBrowser extends Component {
                     </ListItemSecondaryAction>
                     */}
                 </ListItemButton>
-            ));
+            );
     }
 
     /**
@@ -2446,169 +2462,167 @@ class ObjectBrowser extends Component {
         if (!this.state.columnsSelectorShow) {
             return null;
         }
-        return (
-            <Dialog
-                onClose={() => this.setState({ columnsSelectorShow: false })}
-                open={!0}
-                classes={{
-                    root: Utils.clsx(
-                        this.props.classes.dialogColumns,
-                        this.props.classes[`transparent_${this.state.columnsDialogTransparent}`]
-                    ),
-                }}
-            >
-                <DialogTitle className={this.props.classes.fontSizeTitle}>{this.props.t('ra_Configure')}</DialogTitle>
-                <DialogContent className={this.props.classes.fontSizeTitle}>
-                    <FormControlLabel
-                        className={this.props.classes.switchColumnAuto}
-                        control={
-                            <Switch
-                                checked={this.state.foldersFirst}
-                                onChange={() => {
-                                    (window._localStorage || window.localStorage).setItem(
-                                        `${this.props.dialogName || 'App'}.foldersFirst`,
-                                        this.state.foldersFirst ? 'false' : 'true'
-                                    );
-                                    this.setState({ foldersFirst: !this.state.foldersFirst });
-                                }}
-                            />
-                        }
-                        label={this.props.t('ra_Folders always first')}
-                    />
-                    <FormControlLabel
-                        className={this.props.classes.switchColumnAuto}
-                        control={
-                            <Switch
-                                checked={this.state.linesEnabled}
-                                onChange={() => {
-                                    (window._localStorage || window.localStorage).setItem(
-                                        `${this.props.dialogName || 'App'}.lines`,
-                                        this.state.linesEnabled ? 'false' : 'true'
-                                    );
-                                    this.setState({ linesEnabled: !this.state.linesEnabled });
-                                }}
-                            />
-                        }
-                        label={this.props.t('ra_Show lines between rows')}
-                    />
-                    <FormControlLabel
-                        className={this.props.classes.switchColumnAuto}
-                        control={
-                            <Switch
-                                checked={this.state.columnsAuto}
-                                onChange={() => {
-                                    (window._localStorage || window.localStorage).setItem(
-                                        (this.props.dialogName || 'App') + '.columnsAuto',
-                                        this.state.columnsAuto ? 'false' : 'true'
-                                    );
-                                    if (!this.state.columnsAuto) {
-                                        this.calculateColumnsVisibility(true);
-                                        this.setState({ columnsAuto: true });
+        return <Dialog
+            onClose={() => this.setState({ columnsSelectorShow: false })}
+            open={!0}
+            classes={{
+                root: Utils.clsx(
+                    this.props.classes.dialogColumns,
+                    this.props.classes[`transparent_${this.state.columnsDialogTransparent}`]
+                ),
+            }}
+        >
+            <DialogTitle className={this.props.classes.fontSizeTitle}>{this.props.t('ra_Configure')}</DialogTitle>
+            <DialogContent className={this.props.classes.fontSizeTitle}>
+                <FormControlLabel
+                    className={this.props.classes.switchColumnAuto}
+                    control={
+                        <Switch
+                            checked={this.state.foldersFirst}
+                            onChange={() => {
+                                (window._localStorage || window.localStorage).setItem(
+                                    `${this.props.dialogName || 'App'}.foldersFirst`,
+                                    this.state.foldersFirst ? 'false' : 'true'
+                                );
+                                this.setState({ foldersFirst: !this.state.foldersFirst });
+                            }}
+                        />
+                    }
+                    label={this.props.t('ra_Folders always first')}
+                />
+                <FormControlLabel
+                    className={this.props.classes.switchColumnAuto}
+                    control={
+                        <Switch
+                            checked={this.state.linesEnabled}
+                            onChange={() => {
+                                (window._localStorage || window.localStorage).setItem(
+                                    `${this.props.dialogName || 'App'}.lines`,
+                                    this.state.linesEnabled ? 'false' : 'true'
+                                );
+                                this.setState({ linesEnabled: !this.state.linesEnabled });
+                            }}
+                        />
+                    }
+                    label={this.props.t('ra_Show lines between rows')}
+                />
+                <FormControlLabel
+                    className={this.props.classes.switchColumnAuto}
+                    control={
+                        <Switch
+                            checked={this.state.columnsAuto}
+                            onChange={() => {
+                                (window._localStorage || window.localStorage).setItem(
+                                    `${this.props.dialogName || 'App'}.columnsAuto`,
+                                    this.state.columnsAuto ? 'false' : 'true'
+                                );
+                                if (!this.state.columnsAuto) {
+                                    this.calculateColumnsVisibility(true);
+                                    this.setState({ columnsAuto: true });
+                                } else {
+                                    if (!this.state.columns) {
+                                        this.calculateColumnsVisibility(false, [...this.visibleCols]);
+                                        this.setState({ columnsAuto: false, columns: [...this.visibleCols] });
                                     } else {
-                                        if (!this.state.columns) {
-                                            this.calculateColumnsVisibility(false, [...this.visibleCols]);
-                                            this.setState({ columnsAuto: false, columns: [...this.visibleCols] });
-                                        } else {
-                                            this.calculateColumnsVisibility(false);
-                                            this.setState({ columnsAuto: false });
-                                        }
+                                        this.calculateColumnsVisibility(false);
+                                        this.setState({ columnsAuto: false });
                                     }
-                                }}
-                            />
-                        }
-                        label={this.props.t('ra_Auto (no custom columns)')}
-                    />
-                    {/*
-                    <Typography classes={{ root: this.props.classes.dialogColumnsLabel }}>{this.props.t('ra_Transparent dialog')}</Typography>
-                <Slider classes={{ root: this.props.classes.width100 }} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
-                    this.setState({ columnsDialogTransparent: newValue })
-                } />
-                    */}
-                    <List>
-                        {this._renderDefinedList(false)}
+                                }
+                            }}
+                        />
+                    }
+                    label={this.props.t('ra_Auto (no custom columns)')}
+                />
+                {/*
+                <Typography classes={{ root: this.props.classes.dialogColumnsLabel }}>{this.props.t('ra_Transparent dialog')}</Typography>
+            <Slider classes={{ root: this.props.classes.width100 }} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
+                this.setState({ columnsDialogTransparent: newValue })
+            } />
+                */}
+                <List>
+                    {this._renderDefinedList(false)}
 
-                        {this.state.columnsForAdmin &&
-                            Object.keys(this.state.columnsForAdmin)
-                                .sort()
-                                .map(adapter =>
-                                    this.state.columnsForAdmin[adapter].map(column => (
-                                        <ListItemButton
-                                            onClick={() => {
-                                                if (!this.state.columnsAuto) {
-                                                    const columns = [...(this.state.columns || [])];
-                                                    const id = `_${adapter}_${column.path}`;
-                                                    const pos = columns.indexOf(id);
-                                                    if (pos === -1) {
-                                                        columns.push(id);
-                                                        columns.sort();
-                                                    } else {
-                                                        columns.splice(pos, 1);
-                                                    }
-                                                    this.calculateColumnsVisibility(null, columns);
-                                                    (window._localStorage || window.localStorage).setItem(
-                                                        `${this.props.dialogName || 'App'}.columns`,
-                                                        JSON.stringify(columns)
-                                                    );
-                                                    this.setState({ columns });
+                    {this.state.columnsForAdmin &&
+                        Object.keys(this.state.columnsForAdmin)
+                            .sort()
+                            .map(adapter =>
+                                this.state.columnsForAdmin[adapter].map(column => (
+                                    <ListItemButton
+                                        onClick={() => {
+                                            if (!this.state.columnsAuto) {
+                                                const columns = [...(this.state.columns || [])];
+                                                const id = `_${adapter}_${column.path}`;
+                                                const pos = columns.indexOf(id);
+                                                if (pos === -1) {
+                                                    columns.push(id);
+                                                    columns.sort();
+                                                } else {
+                                                    columns.splice(pos, 1);
                                                 }
-                                            }}
-                                            key={`${adapter}_${column.name}`}
-                                        >
-                                            <ListItemIcon>
-                                                <Checkbox
-                                                    disabled={this.state.columnsAuto}
-                                                    edge="start"
-                                                    checked={
-                                                        !this.state.columnsAuto &&
-                                                        this.state.columns &&
-                                                        this.state.columns.includes(`_${adapter}_${column.path}`)
-                                                    }
-                                                    disableRipple
-                                                />
-                                            </ListItemIcon>
-                                            <ListItemText primary={`${column.name} (${adapter})`} />
-                                            {/*
-                                <ListItemSecondaryAction>
-                                    <FormControl
-                                        variant="standard"
-                                        className={this.props.classes.columnsDialogInputWidth}
-                                        style={{ marginTop: 0, marginBottom: 0 }}
-                                        margin="dense"
+                                                this.calculateColumnsVisibility(null, columns);
+                                                (window._localStorage || window.localStorage).setItem(
+                                                    `${this.props.dialogName || 'App'}.columns`,
+                                                    JSON.stringify(columns)
+                                                );
+                                                this.setState({ columns });
+                                            }
+                                        }}
+                                        key={`${adapter}_${column.name}`}
                                     >
-                                        <Input
-                                            classes={{ underline: 'no-underline' }}
-                                            placeholder={this.props.t('ra_Width')}
-                                            value={this.state.columnsWidths['_' + adapter + '_' + column.path] || ''}
-                                            onChange={e => {
-                                                const columnsWidths = JSON.parse(JSON.stringify(this.state.columnsWidths));
-                                                columnsWidths['_' + adapter + '_' + column.path] = e.target.value;
-                                                (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
-                                                this.calculateColumnsVisibility(null, null, null, columnsWidths);
-                                                this.setState({ columnsWidths });
-                                            }}
-                                            autoComplete="off"
-                                        />
-                                    </FormControl>
-                                </ListItemSecondaryAction>
-                                */}
-                                        </ListItemButton>
-                                    ))
-                                )}
-                        {this._renderDefinedList(true)}
-                    </List>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        onClick={() => this.setState({ columnsSelectorShow: false })}
-                        color="primary"
-                        startIcon={<IconClose />}
-                    >
-                        {this.texts.close}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+                                        <ListItemIcon>
+                                            <Checkbox
+                                                disabled={this.state.columnsAuto}
+                                                edge="start"
+                                                checked={
+                                                    !this.state.columnsAuto &&
+                                                    this.state.columns &&
+                                                    this.state.columns.includes(`_${adapter}_${column.path}`)
+                                                }
+                                                disableRipple
+                                            />
+                                        </ListItemIcon>
+                                        <ListItemText primary={`${column.name} (${adapter})`} />
+                                        {/*
+                            <ListItemSecondaryAction>
+                                <FormControl
+                                    variant="standard"
+                                    className={this.props.classes.columnsDialogInputWidth}
+                                    style={{ marginTop: 0, marginBottom: 0 }}
+                                    margin="dense"
+                                >
+                                    <Input
+                                        classes={{ underline: 'no-underline' }}
+                                        placeholder={this.props.t('ra_Width')}
+                                        value={this.state.columnsWidths['_' + adapter + '_' + column.path] || ''}
+                                        onChange={e => {
+                                            const columnsWidths = JSON.parse(JSON.stringify(this.state.columnsWidths));
+                                            columnsWidths['_' + adapter + '_' + column.path] = e.target.value;
+                                            (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
+                                            this.calculateColumnsVisibility(null, null, null, columnsWidths);
+                                            this.setState({ columnsWidths });
+                                        }}
+                                        autoComplete="off"
+                                    />
+                                </FormControl>
+                            </ListItemSecondaryAction>
+                            */}
+                                    </ListItemButton>
+                                ))
+                            )}
+                    {this._renderDefinedList(true)}
+                </List>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    onClick={() => this.setState({ columnsSelectorShow: false })}
+                    color="primary"
+                    startIcon={<IconClose />}
+                >
+                    {this.texts.close}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 
     /**
@@ -2972,45 +2986,42 @@ class ObjectBrowser extends Component {
      * @param {string} name
      */
     getFilterInput(name) {
-        return (
-            <FormControl
-                className={Utils.clsx(this.props.classes.headerCellInput, this.props.classes.filterInput)}
-                key={`${name}_${this.state.filterKey}`}
-                // style={{ marginTop: 0, marginBottom: 0 }}
-                margin="dense"
-            >
-                <Input
-                    ref={this.filterRefs[name]}
-                    classes={{ underline: 'no-underline' }}
-                    id={name}
-                    placeholder={this.texts[`filter_${name}`]}
-                    defaultValue={this.state.filter[name]}
-                    onChange={() => {
-                        this.filterTimer && clearTimeout(this.filterTimer);
-                        this.filterTimer = setTimeout(() => this.onFilter(), 400);
+        return <FormControl
+            className={Utils.clsx(this.props.classes.headerCellInput, this.props.classes.filterInput)}
+            key={`${name}_${this.state.filterKey}`}
+            // style={{ marginTop: 0, marginBottom: 0 }}
+            margin="dense"
+        >
+            <Input
+                ref={this.filterRefs[name]}
+                classes={{ underline: 'no-underline' }}
+                id={name}
+                placeholder={this.texts[`filter_${name}`]}
+                defaultValue={this.state.filter[name]}
+                onChange={() => {
+                    this.filterTimer && clearTimeout(this.filterTimer);
+                    this.filterTimer = setTimeout(() => this.onFilter(), 400);
+                }}
+                autoComplete="off"
+            />
+            {this.filterRefs[name]?.current?.firstChild.value ?
+                <div
+                    style={{
+                        position: 'absolute',
+                        right: 0,
                     }}
-                    autoComplete="off"
-                />
-                {this.filterRefs[name]?.current?.firstChild.value ? (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            right: 0,
+                >
+                    <IconButton
+                        size="small"
+                        onClick={() => {
+                            this.filterRefs[name].current.firstChild.value = '';
+                            this.onFilter(name, '');
                         }}
                     >
-                        <IconButton
-                            size="small"
-                            onClick={() => {
-                                this.filterRefs[name].current.firstChild.value = '';
-                                this.onFilter(name, '');
-                            }}
-                        >
-                            <IconClose />
-                        </IconButton>
-                    </div>
-                ) : null}
-            </FormControl>
-        );
+                        <IconClose />
+                    </IconButton>
+                </div> : null}
+        </FormControl>;
     }
 
     /**
@@ -3020,68 +3031,63 @@ class ObjectBrowser extends Component {
      */
     getFilterSelect(name, values) {
         const hasIcons = !!values.find(item => item.icon);
-        return (
-            <div style={{ position: 'relative' }}>
-                <Select
-                    variant="standard"
-                    key={`${name}_${this.state.filterKey}`}
-                    ref={this.filterRefs[name]}
-                    className={`${this.props.classes.headerCellInput} no-underline`}
-                    onChange={() => {
-                        this.filterTimer && clearTimeout(this.filterTimer);
-                        this.filterTimer = setTimeout(() => this.onFilter(), 400);
-                    }}
-                    defaultValue={this.state.filter[name] || ''}
-                    inputProps={{ name, id: name }}
-                    displayEmpty
-                >
-                    <MenuItem key="empty" value="">
-                        <span className={this.props.classes.selectNone}>{this.texts[`filter_${name}`]}</span>
-                    </MenuItem>
-                    {values.map(item => {
-                        let id;
-                        let _name;
-                        let icon;
-                        if (typeof item === 'object') {
-                            id = item.value;
-                            _name = item.name;
-                            icon = item.icon;
-                        } else {
-                            id = item;
-                            _name = item;
-                        }
-                        return (
-                            <MenuItem className={this.props.classes.headerCellSelectItem} key={id} value={id}>
-                                {icon || (hasIcons ? <div className="itemIcon" /> : null)}
-                                {_name}
-                            </MenuItem>
-                        );
-                    })}
-                </Select>
-                {this.filterRefs[name]?.current?.childNodes[1]?.value ? (
-                    <div className={Utils.clsx(this.props.classes.selectClearButton)}>
-                        <IconButton
-                            size="small"
-                            onClick={() => {
-                                const newFilter = { ...this.state.filter };
-                                newFilter[name] = '';
-                                this.filterRefs[name].current.childNodes[1].value = '';
-                                (window._localStorage || window.localStorage).setItem(
-                                    `${this.props.dialogName || 'App'}.objectFilter`,
-                                    JSON.stringify(newFilter)
-                                );
-                                this.setState(
-                                    { filter: newFilter, filterKey: this.state.filterKey + 1 },
-                                    () => this.props.onFilterChanged && this.props.onFilterChanged(newFilter)
-                                );
-                            }}
-                        >
-                            <IconClose />
-                        </IconButton>
-                    </div>
-                ) : null}
-            </div>
-        );
+        return <div style={{ position: 'relative' }}>
+            <Select
+                variant="standard"
+                key={`${name}_${this.state.filterKey}`}
+                ref={this.filterRefs[name]}
+                className={`${this.props.classes.headerCellInput} no-underline`}
+                onChange={() => {
+                    this.filterTimer && clearTimeout(this.filterTimer);
+                    this.filterTimer = setTimeout(() => this.onFilter(), 400);
+                }}
+                defaultValue={this.state.filter[name] || ''}
+                inputProps={{ name, id: name }}
+                displayEmpty
+            >
+                <MenuItem key="empty" value="">
+                    <span className={this.props.classes.selectNone}>{this.texts[`filter_${name}`]}</span>
+                </MenuItem>
+                {values.map(item => {
+                    let id;
+                    let _name;
+                    let icon;
+                    if (typeof item === 'object') {
+                        id = item.value;
+                        _name = item.name;
+                        icon = item.icon;
+                    } else {
+                        id = item;
+                        _name = item;
+                    }
+                    return <MenuItem className={this.props.classes.headerCellSelectItem} key={id} value={id}>
+                        {icon || (hasIcons ? <div className="itemIcon" /> : null)}
+                        {_name}
+                    </MenuItem>;
+                })}
+            </Select>
+            {this.filterRefs[name]?.current?.childNodes[1]?.value ?
+                <div className={Utils.clsx(this.props.classes.selectClearButton)}>
+                    <IconButton
+                        size="small"
+                        onClick={() => {
+                            const newFilter = { ...this.state.filter };
+                            newFilter[name] = '';
+                            this.filterRefs[name].current.childNodes[1].value = '';
+                            (window._localStorage || window.localStorage).setItem(
+                                `${this.props.dialogName || 'App'}.objectFilter`,
+                                JSON.stringify(newFilter)
+                            );
+                            this.setState(
+                                { filter: newFilter, filterKey: this.state.filterKey + 1 },
+                                () => this.props.onFilterChanged && this.props.onFilterChanged(newFilter)
+                            );
+                        }}
+                    >
+                        <IconClose />
+                    </IconButton>
+                </div> : null}
+        </div>;
     }
 
     /**
@@ -3140,13 +3146,10 @@ class ObjectBrowser extends Component {
             const customs = this.info.customs.map(id => ({
                 name: id === '_' ? this.texts.filterCustomsWithout : id,
                 value: id,
-                icon:
-                    id === '_' ? null : (
-                        <Icon
-                            src={getSelectIdIcon(this.objects, id, this.imagePrefix) || ''}
-                            className={this.props.classes.selectIcon}
-                        />
-                    ),
+                icon: id === '_' ? null : <Icon
+                    src={getSelectIdIcon(this.objects, id, this.imagePrefix) || ''}
+                    className={this.props.classes.selectIcon}
+                />,
             }));
             return this.getFilterSelect('custom', customs);
         }
@@ -3190,7 +3193,8 @@ class ObjectBrowser extends Component {
             JSON.stringify([])
         );
         (window._localStorage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.objectSelected`, '[]');
-        this.setState({ expanded: [], depth: 0, selected: [] }, () => this.onAfterSelect());
+        this.setState({ expanded: [], depth: 0, selected: [] }, () =>
+            this.onAfterSelect());
     }
 
     /**
@@ -3438,43 +3442,41 @@ class ObjectBrowser extends Component {
         if (this.state.showExportDialog === false) {
             return null;
         }
-        return (
-            <Dialog open={!0}>
-                <DialogTitle>{this.props.t('Select type of export')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {this.props.t('You can export all objects or just the selected branch.')}
-                        <br />
-                        {this.props.t('Selected %s object(s)', this.state.showExportDialog)}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        color="grey"
-                        variant="outlined"
-                        onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(true))}
-                    >
-                        {this.props.t('ra_All objects')} ({Object.keys(this.objects).length})
-                    </Button>
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        autoFocus
-                        onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(false))}
-                    >
-                        {this.props.t('ra_Only selected')} ({this.state.showExportDialog})
-                    </Button>
-                    <Button
-                        color="grey"
-                        variant="contained"
-                        onClick={() => this.setState({ showExportDialog: false })}
-                        startIcon={<IconClose />}
-                    >
-                        {this.props.t('ra_Cancel')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+        return <Dialog open={!0}>
+            <DialogTitle>{this.props.t('Select type of export')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    {this.props.t('You can export all objects or just the selected branch.')}
+                    <br />
+                    {this.props.t('Selected %s object(s)', this.state.showExportDialog)}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    color="grey"
+                    variant="outlined"
+                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(true))}
+                >
+                    {this.props.t('ra_All objects')} ({Object.keys(this.objects).length})
+                </Button>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    autoFocus
+                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(false))}
+                >
+                    {this.props.t('ra_Only selected')} ({this.state.showExportDialog})
+                </Button>
+                <Button
+                    color="grey"
+                    variant="contained"
+                    onClick={() => this.setState({ showExportDialog: false })}
+                    startIcon={<IconClose />}
+                >
+                    {this.props.t('ra_Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 
     /**
@@ -3658,7 +3660,13 @@ class ObjectBrowser extends Component {
             }
         }
 
-        return (
+        return <div
+            style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+            }}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -3666,221 +3674,213 @@ class ObjectBrowser extends Component {
                     alignItems: 'center',
                 }}
             >
-                <div
-                    style={{
-                        display: 'flex',
-                        width: '100%',
-                        alignItems: 'center',
-                    }}
+                <Tooltip title={this.props.t('ra_Refresh tree')} classes={{ popper: this.props.classes.tooltip }}>
+                    <div>
+                        <IconButton
+                            onClick={() => this.refreshComponent()}
+                            disabled={this.state.updating}
+                            size="large"
+                        >
+                            <RefreshIcon />
+                        </IconButton>
+                    </div>
+                </Tooltip>
+                {this.props.showExpertButton && !this.props.expertMode &&
+                    <Tooltip title={this.props.t('ra_expertMode')} classes={{ popper: this.props.classes.tooltip }}>
+                        <IconButton
+                            key="expertMode"
+                            color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                            onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                            size="large"
+                        >
+                            <IconExpert />
+                        </IconButton>
+                    </Tooltip>}
+                {!this.props.disableColumnSelector &&
+                    <Tooltip title={this.props.t('ra_Configure')} classes={{ popper: this.props.classes.tooltip }}>
+                        <IconButton
+                            key="columnSelector"
+                            color={this.state.columnsAuto ? 'primary' : 'default'}
+                            onClick={() => this.setState({ columnsSelectorShow: true })}
+                            size="large"
+                        >
+                            <IconColumns />
+                        </IconButton>
+                    </Tooltip>}
+                {this.state.expandAllVisible &&
+                    <Tooltip
+                        title={this.props.t('ra_Expand all nodes')}
+                        classes={{ popper: this.props.classes.tooltip }}
+                    >
+                        <IconButton
+                            key="expandAll"
+                            onClick={() => this.onExpandAll()}
+                            size="large"
+                        >
+                            <IconOpen />
+                        </IconButton>
+                    </Tooltip>}
+                <Tooltip
+                    title={this.props.t('ra_Collapse all nodes')}
+                    classes={{ popper: this.props.classes.tooltip }}
                 >
-                    <Tooltip title={this.props.t('ra_Refresh tree')} classes={{ popper: this.props.classes.tooltip }}>
+                    <IconButton
+                        key="collapseAll"
+                        onClick={() => this.onCollapseAll()}
+                        size="large"
+                    >
+                        <IconClosed />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip
+                    title={this.props.t('ra_Expand one step node')}
+                    classes={{ popper: this.props.classes.tooltip }}
+                >
+                    <IconButton
+                        key="expandVisible"
+                        color="primary"
+                        onClick={() => this.onExpandVisible()}
+                        size="large"
+                    >
+                        <StyledBadge badgeContent={this.state.depth} color="secondary">
+                            <IconOpen />
+                        </StyledBadge>
+                    </IconButton>
+                </Tooltip>
+                <Tooltip
+                    title={this.props.t('ra_Collapse one step node')}
+                    classes={{ popper: this.props.classes.tooltip }}
+                >
+                    <IconButton
+                        key="collapseVisible"
+                        color="primary"
+                        onClick={() => this.onCollapseVisible()}
+                        size="large"
+                    >
+                        <StyledBadge badgeContent={this.state.depth} color="secondary">
+                            <IconClosed />
+                        </StyledBadge>
+                    </IconButton>
+                </Tooltip>
+                {this.props.objectStatesView &&
+                    <Tooltip
+                        title={this.props.t('ra_Toggle the states view')}
+                        classes={{ popper: this.props.classes.tooltip }}
+                    >
+                        <IconButton
+                            onClick={() => this.onStatesViewVisible()}
+                            size="large"
+                        >
+                            <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>}
+
+                <Tooltip
+                    title={this.props.t('ra_Show/Hide object descriptions')}
+                    classes={{ popper: this.props.classes.tooltip }}
+                >
+                    <IconButton
+                        onClick={() => {
+                            (window._localStorage || window.localStorage).setItem(
+                                `${this.props.dialogName || 'App'}.desc`,
+                                this.state.showDescription ? 'false' : 'true'
+                            );
+                            this.setState({ showDescription: !this.state.showDescription });
+                        }}
+                        size="large"
+                    >
+                        <TextFieldsIcon color={this.state.showDescription ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>
+
+                {this.props.objectAddBoolean ?
+                    <Tooltip title={this.toolTipObjectCreating()} classes={{ popper: this.props.classes.tooltip }}>
                         <div>
                             <IconButton
-                                onClick={() => this.refreshComponent()}
-                                disabled={this.state.updating}
+                                disabled={!allowObjectCreation}
+                                onClick={() => this.setState({ modalNewObj: true })}
                                 size="large"
                             >
-                                <RefreshIcon />
+                                <AddIcon />
                             </IconButton>
                         </div>
-                    </Tooltip>
-                    {this.props.showExpertButton && !this.props.expertMode && (
-                        <Tooltip title={this.props.t('ra_expertMode')} classes={{ popper: this.props.classes.tooltip }}>
-                            <IconButton
-                                key="expertMode"
-                                color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                                onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                                size="large"
-                            >
-                                <IconExpert />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    {!this.props.disableColumnSelector && (
-                        <Tooltip title={this.props.t('ra_Configure')} classes={{ popper: this.props.classes.tooltip }}>
-                            <IconButton
-                                key="columnSelector"
-                                color={this.state.columnsAuto ? 'primary' : 'default'}
-                                onClick={() => this.setState({ columnsSelectorShow: true })}
-                                size="large"
-                            >
-                                <IconColumns />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    {this.state.expandAllVisible && (
-                        <Tooltip
-                            title={this.props.t('ra_Expand all nodes')}
-                            classes={{ popper: this.props.classes.tooltip }}
-                        >
-                            <IconButton key="expandAll" onClick={() => this.onExpandAll()} size="large">
-                                <IconOpen />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    <Tooltip
-                        title={this.props.t('ra_Collapse all nodes')}
-                        classes={{ popper: this.props.classes.tooltip }}
-                    >
-                        <IconButton key="collapseAll" onClick={() => this.onCollapseAll()} size="large">
-                            <IconClosed />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={this.props.t('ra_Expand one step node')}
-                        classes={{ popper: this.props.classes.tooltip }}
-                    >
-                        <IconButton
-                            key="expandVisible"
-                            color="primary"
-                            onClick={() => this.onExpandVisible()}
-                            size="large"
-                        >
-                            <StyledBadge badgeContent={this.state.depth} color="secondary">
-                                <IconOpen />
-                            </StyledBadge>
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={this.props.t('ra_Collapse one step node')}
-                        classes={{ popper: this.props.classes.tooltip }}
-                    >
-                        <IconButton
-                            key="collapseVisible"
-                            color="primary"
-                            onClick={() => this.onCollapseVisible()}
-                            size="large"
-                        >
-                            <StyledBadge badgeContent={this.state.depth} color="secondary">
-                                <IconClosed />
-                            </StyledBadge>
-                        </IconButton>
-                    </Tooltip>
-                    {this.props.objectStatesView && (
-                        <Tooltip
-                            title={this.props.t('ra_Toggle the states view')}
-                            classes={{ popper: this.props.classes.tooltip }}
-                        >
-                            <IconButton onClick={() => this.onStatesViewVisible()} size="large">
-                                <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
-                            </IconButton>
-                        </Tooltip>
-                    )}
+                    </Tooltip> : null}
 
-                    {
-                        <Tooltip
-                            title={this.props.t('ra_Show/Hide object descriptions')}
-                            classes={{ popper: this.props.classes.tooltip }}
-                        >
-                            <IconButton
-                                onClick={() => {
-                                    (window._localStorage || window.localStorage).setItem(
-                                        `${this.props.dialogName || 'App'}.desc`,
-                                        this.state.showDescription ? 'false' : 'true'
-                                    );
-                                    this.setState({ showDescription: !this.state.showDescription });
-                                }}
-                                size="large"
-                            >
-                                <TextFieldsIcon color={this.state.showDescription ? 'primary' : 'inherit'} />
-                            </IconButton>
-                        </Tooltip>
-                    }
-
-                    {this.props.objectAddBoolean ? (
-                        <Tooltip title={this.toolTipObjectCreating()} classes={{ popper: this.props.classes.tooltip }}>
-                            <div>
-                                <IconButton
-                                    disabled={!allowObjectCreation}
-                                    onClick={() => this.setState({ modalNewObj: true })}
-                                    size="large"
-                                >
-                                    <AddIcon />
-                                </IconButton>
-                            </div>
-                        </Tooltip>
-                    ) : null}
-
-                    {this.props.objectImportExport && (
-                        <Tooltip
-                            title={this.props.t('ra_Add objects tree from JSON file')}
-                            classes={{ popper: this.props.classes.tooltip }}
-                        >
-                            <IconButton
-                                onClick={() => {
-                                    const input = document.createElement('input');
-                                    input.setAttribute('type', 'file');
-                                    input.setAttribute('id', 'files');
-                                    input.setAttribute('opacity', 0);
-                                    input.addEventListener('change', e => this.handleJsonUpload(e), false);
-                                    input.click();
-                                }}
-                                size="large"
-                            >
-                                <PublishIcon />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    {this.props.objectImportExport &&
-                        (!!this.state.selected.length || this.state.selectedNonObject) && (
-                            <Tooltip
-                                title={this.props.t('ra_Save objects tree as JSON file')}
-                                classes={{ popper: this.props.classes.tooltip }}
-                            >
-                                <IconButton
-                                    onClick={() =>
-                                        this.setState({ showExportDialog: this._getSelectedIdsForExport().length })
-                                    }
-                                    size="large"
-                                >
-                                    <PublishIcon style={{ transform: 'rotate(180deg)' }} />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-                </div>
-                {!!this.props.objectBrowserEditObject && (
-                    <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
-                        {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t(
-                            'ra_States'
-                        )}: ${
-                            Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length
-                        }`}
-                    </div>
-                )}
-                {this.props.objectEditBoolean && (
+                {this.props.objectImportExport &&
                     <Tooltip
-                        title={this.props.t('ra_Edit custom config')}
+                        title={this.props.t('ra_Add objects tree from JSON file')}
                         classes={{ popper: this.props.classes.tooltip }}
                     >
                         <IconButton
                             onClick={() => {
-                                // get all visible states
-                                const ids = getVisibleItems(this.root, 'state', this.objects);
-
-                                if (ids.length) {
-                                    this.pauseSubscribe(true);
-
-                                    if (ids.length === 1) {
-                                        (window._localStorage || window.localStorage).setItem(
-                                            `${this.props.dialogName || 'App'}.objectSelected`,
-                                            this.state.selected[0]
-                                        );
-                                        this.props.router &&
-                                            this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
-                                    }
-                                    this.setState({ customDialog: ids });
-                                } else {
-                                    this.setState({ toast: this.props.t('ra_please select object') });
-                                }
+                                const input = document.createElement('input');
+                                input.setAttribute('type', 'file');
+                                input.setAttribute('id', 'files');
+                                input.setAttribute('opacity', 0);
+                                input.addEventListener('change', e => this.handleJsonUpload(e), false);
+                                input.click();
                             }}
                             size="large"
                         >
-                            <BuildIcon />
+                            <PublishIcon />
                         </IconButton>
-                    </Tooltip>
-                )}
+                    </Tooltip>}
+                {this.props.objectImportExport &&
+                    (!!this.state.selected.length || this.state.selectedNonObject) &&
+                        <Tooltip
+                            title={this.props.t('ra_Save objects tree as JSON file')}
+                            classes={{ popper: this.props.classes.tooltip }}
+                        >
+                            <IconButton
+                                onClick={() =>
+                                    this.setState({ showExportDialog: this._getSelectedIdsForExport().length })
+                                }
+                                size="large"
+                            >
+                                <PublishIcon style={{ transform: 'rotate(180deg)' }} />
+                            </IconButton>
+                        </Tooltip>}
             </div>
-        );
+            {!!this.props.objectBrowserEditObject &&
+                <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+                    {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t(
+                        'ra_States'
+                    )}: ${
+                        Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length
+                    }`}
+                </div>}
+            {this.props.objectEditBoolean &&
+                <Tooltip
+                    title={this.props.t('ra_Edit custom config')}
+                    classes={{ popper: this.props.classes.tooltip }}
+                >
+                    <IconButton
+                        onClick={() => {
+                            // get all visible states
+                            const ids = getVisibleItems(this.root, 'state', this.objects);
+
+                            if (ids.length) {
+                                this.pauseSubscribe(true);
+
+                                if (ids.length === 1) {
+                                    (window._localStorage || window.localStorage).setItem(
+                                        `${this.props.dialogName || 'App'}.objectSelected`,
+                                        this.state.selected[0]
+                                    );
+                                    this.props.router &&
+                                        this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                                }
+                                this.setState({ customDialog: ids });
+                            } else {
+                                this.setState({ toast: this.props.t('ra_please select object') });
+                            }
+                        }}
+                        size="large"
+                    >
+                        <BuildIcon />
+                    </IconButton>
+                </Tooltip>}
+        </div>;
     }
 
     /**
@@ -4014,9 +4014,9 @@ class ObjectBrowser extends Component {
      */
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
-            return this.props.onObjectDelete || this.props.objectEditOfAccessControl ? (
+            return this.props.onObjectDelete || this.props.objectEditOfAccessControl ?
                 <div className={classes.buttonDiv}>
-                    {this.state.filter.expertMode && this.props.objectEditOfAccessControl ? (
+                    {this.state.filter.expertMode && this.props.objectEditOfAccessControl ?
                         <IconButton
                             className={Utils.clsx(
                                 classes.cellButtonsButton,
@@ -4029,9 +4029,8 @@ class ObjectBrowser extends Component {
                             size="large"
                         >
                             ---
-                        </IconButton>
-                    ) : null}
-                    {this.props.onObjectDelete && item.children && item.children.length ? (
+                        </IconButton> : null}
+                    {this.props.onObjectDelete && item.children && item.children.length ?
                         <IconButton
                             className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
                             size="small"
@@ -4060,10 +4059,8 @@ class ObjectBrowser extends Component {
                             }}
                         >
                             <IconDelete className={classes.cellButtonsButtonIcon} />
-                        </IconButton>
-                    ) : null}
-                </div>
-            ) : null;
+                        </IconButton> : null}
+                </div> : null;
         }
 
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
@@ -4080,7 +4077,7 @@ class ObjectBrowser extends Component {
                 : this.systemConfig.common.defaultNewAcl.object);
 
         return [
-            this.state.filter.expertMode && this.props.objectEditOfAccessControl ? (
+            this.state.filter.expertMode && this.props.objectEditOfAccessControl ?
                 <Tooltip key="acl" title={item.data.aclTooltip} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton
                         className={classes.cellButtonMinWidth}
@@ -4094,9 +4091,8 @@ class ObjectBrowser extends Component {
                         </div>
                     </IconButton>
                 </Tooltip>
-            ) : (
-                <div key="aclEmpty" className={classes.cellButtonMinWidth} />
-            ),
+                :
+                <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
             <IconButton
                 key="edit"
                 className={classes.cellButtonsButton}
@@ -4113,7 +4109,7 @@ class ObjectBrowser extends Component {
             >
                 <IconEdit className={classes.cellButtonsButtonIcon} />
             </IconButton>,
-            this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ? (
+            this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ?
                 <IconButton
                     key="delete"
                     className={classes.cellButtonsButton}
@@ -4141,12 +4137,11 @@ class ObjectBrowser extends Component {
                     title={this.texts.deleteObject}
                 >
                     <IconDelete className={classes.cellButtonsButtonIcon} />
-                </IconButton>
-            ) : null,
+                </IconButton> : null,
             this.props.objectCustomDialog &&
             this.info.hasSomeCustoms &&
             item.data.obj.type === 'state' &&
-            item.data.obj.common?.type !== 'file' ? (
+            item.data.obj.common?.type !== 'file' ?
                 <IconButton
                     className={Utils.clsx(
                         classes.cellButtonsButton,
@@ -4170,8 +4165,7 @@ class ObjectBrowser extends Component {
                     }}
                 >
                     <IconConfig className={classes.cellButtonsButtonIcon} />
-                </IconButton>
-            ) : null,
+                </IconButton> : null,
         ];
     }
 
@@ -4246,10 +4240,6 @@ class ObjectBrowser extends Component {
      * @returns {JSX.Element | null}
      */
     renderColumnValue(id, item, classes) {
-        if (id.includes('buttontest')) {
-            console.log('render col val ' + id);
-            console.log(this.state.filter.expertMode);
-        }
         const obj = item.data.obj;
         if (!obj || !this.states) {
             return null;
@@ -4330,22 +4320,18 @@ class ObjectBrowser extends Component {
                 <span className={classes.newValue} key={`${info.valText.v.toString()}valText`}>
                     {info.valText.v.toString()}
                 </span>,
-                info.valText.u ? (
-                    <span
-                        className={Utils.clsx(classes.cellValueTextUnit, classes.newValue)}
-                        key={`${info.valText.v.toString()}unit`}
-                    >
-                        {info.valText.u}
-                    </span>
-                ) : null,
-                info.valText.s !== undefined ? (
-                    <span
-                        className={Utils.clsx(classes.cellValueTextState, classes.newValue)}
-                        key={`${info.valText.v.toString()}states`}
-                    >
-                        ({info.valText.s})
-                    </span>
-                ) : null,
+                info.valText.u ? <span
+                    className={Utils.clsx(classes.cellValueTextUnit, classes.newValue)}
+                    key={`${info.valText.v.toString()}unit`}
+                >
+                    {info.valText.u}
+                </span> : null,
+                info.valText.s !== undefined ? <span
+                    className={Utils.clsx(classes.cellValueTextState, classes.newValue)}
+                    key={`${info.valText.v.toString()}states`}
+                >
+                    ({info.valText.s})
+                </span> : null,
                 <IconCopy
                     className={Utils.clsx(
                         classes.cellButtonsValueButton,
@@ -4359,28 +4345,26 @@ class ObjectBrowser extends Component {
             ];
         }
 
-        info.style = getValueStyle({ isExpertMode: this.state.filter.expertMode, state, obj });
+        info.style = getValueStyle({ state, isExpertMode: this.state.filter.expertMode, isButton: item.data.button });
 
         let val = info.valText;
         if (!this.state.filter.expertMode && item.data.button) {
             val = <PressButtonIcon className={this.props.classes.cellValueButton} />;
         }
 
-        return (
-            <Tooltip
-                key="value"
-                title={info.valFull}
-                classes={{
-                    tooltip: this.props.classes.cellValueTooltip,
-                    popper: this.props.classes.cellValueTooltipBox,
-                }}
-                onOpen={() => this.readHistory(id)}
-            >
-                <div style={info.style} className={classes.cellValueText}>
-                    {val}
-                </div>
-            </Tooltip>
-        );
+        return <Tooltip
+            key="value"
+            title={info.valFull}
+            classes={{
+                tooltip: this.props.classes.cellValueTooltip,
+                popper: this.props.classes.cellValueTooltipBox,
+            }}
+            onOpen={() => this.readHistory(id)}
+        >
+            <div style={info.style} className={classes.cellValueText}>
+                {val}
+            </div>
+        </Tooltip>;
     }
 
     /**
@@ -4426,7 +4410,9 @@ class ObjectBrowser extends Component {
             }
         }
 
-        Promise.all(promises).then(() => setTimeout(() => this._syncEnum(id, enumIds, newArray, cb), 0));
+        Promise.all(promises)
+            .then(() => setTimeout(() =>
+                this._syncEnum(id, enumIds, newArray, cb), 0));
     }
 
     /**
@@ -4470,88 +4456,82 @@ class ObjectBrowser extends Component {
 
             enums.forEach(_item => {
                 if (_item.icon && typeof _item.icon === 'string') {
-                    _item.icon = (
-                        <div className={this.props.classes.enumIconDiv}>
-                            <img src={_item.icon} className={this.props.classes.enumIcon} alt={_item.name} />
-                        </div>
-                    );
+                    _item.icon = <div className={this.props.classes.enumIconDiv}>
+                        <img src={_item.icon} className={this.props.classes.enumIcon} alt={_item.name} />
+                    </div>;
                 }
             });
 
             // const hasIcons = !!enums.find(item => item.icon);
 
-            return (
-                <Dialog
-                    className={this.props.classes.enumDialog}
-                    onClose={() => this.setState({ enumDialog: null })}
-                    aria-labelledby="enum-dialog-title"
-                    open={!0} // true
-                >
-                    <DialogTitle id="enum-dialog-title">
-                        {type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms')}
-                        <Fab
-                            className={this.props.classes.enumButton}
-                            color="primary"
-                            disabled={JSON.stringify(enumsOriginal) === JSON.stringify(itemEnums)}
-                            size="small"
-                            onClick={() =>
-                                this.syncEnum(item.data.id, type, itemEnums).then(() =>
-                                    this.setState({ enumDialog: null, enumDialogEnums: null })
-                                )
-                            }
+            return <Dialog
+                className={this.props.classes.enumDialog}
+                onClose={() => this.setState({ enumDialog: null })}
+                aria-labelledby="enum-dialog-title"
+                open={!0} // true
+            >
+                <DialogTitle id="enum-dialog-title">
+                    {type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms')}
+                    <Fab
+                        className={this.props.classes.enumButton}
+                        color="primary"
+                        disabled={JSON.stringify(enumsOriginal) === JSON.stringify(itemEnums)}
+                        size="small"
+                        onClick={() =>
+                            this.syncEnum(item.data.id, type, itemEnums)
+                                .then(() => this.setState({ enumDialog: null, enumDialogEnums: null })
+                            )
+                        }
+                    >
+                        <IconCheck />
+                    </Fab>
+                </DialogTitle>
+                <List classes={{ root: this.props.classes.enumList }}>
+                    {enums.map(_item => {
+                        let id;
+                        let name;
+                        let icon;
+
+                        if (typeof _item === 'object') {
+                            id   = _item.value;
+                            name = _item.name;
+                            icon = _item.icon;
+                        } else {
+                            id   = _item;
+                            name = _item;
+                        }
+                        const labelId = `checkbox-list-label-${id}`;
+
+                        return <ListItem
+                            className={this.props.classes.headerCellSelectItem}
+                            key={id}
+                            onClick={() => {
+                                const pos = itemEnums.indexOf(id);
+                                const enumDialogEnums = JSON.parse(JSON.stringify(this.state.enumDialogEnums));
+                                if (pos === -1) {
+                                    enumDialogEnums.push(id);
+                                    enumDialogEnums.sort();
+                                } else {
+                                    enumDialogEnums.splice(pos, 1);
+                                }
+                                this.setState({ enumDialogEnums });
+                            }}
                         >
-                            <IconCheck />
-                        </Fab>
-                    </DialogTitle>
-                    <List classes={{ root: this.props.classes.enumList }}>
-                        {enums.map(_item => {
-                            let id;
-                            let name;
-                            let icon;
-
-                            if (typeof _item === 'object') {
-                                id = _item.value;
-                                name = _item.name;
-                                icon = _item.icon;
-                            } else {
-                                id = _item;
-                                name = _item;
-                            }
-                            const labelId = `checkbox-list-label-${id}`;
-
-                            return (
-                                <ListItem
-                                    className={this.props.classes.headerCellSelectItem}
-                                    key={id}
-                                    onClick={() => {
-                                        const pos = itemEnums.indexOf(id);
-                                        const enumDialogEnums = JSON.parse(JSON.stringify(this.state.enumDialogEnums));
-                                        if (pos === -1) {
-                                            enumDialogEnums.push(id);
-                                            enumDialogEnums.sort();
-                                        } else {
-                                            enumDialogEnums.splice(pos, 1);
-                                        }
-                                        this.setState({ enumDialogEnums });
-                                    }}
-                                >
-                                    <ListItemIcon classes={{ root: this.props.classes.enumCheckbox }}>
-                                        <Checkbox
-                                            edge="start"
-                                            checked={itemEnums.includes(id)}
-                                            tabIndex={-1}
-                                            disableRipple
-                                            inputProps={{ 'aria-labelledby': labelId }}
-                                        />
-                                    </ListItemIcon>
-                                    <ListItemText id={labelId}>{name}</ListItemText>
-                                    {icon ? <ListItemSecondaryAction>{icon}</ListItemSecondaryAction> : null}
-                                </ListItem>
-                            );
-                        })}
-                    </List>
-                </Dialog>
-            );
+                            <ListItemIcon classes={{ root: this.props.classes.enumCheckbox }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={itemEnums.includes(id)}
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{ 'aria-labelledby': labelId }}
+                                />
+                            </ListItemIcon>
+                            <ListItemText id={labelId}>{name}</ListItemText>
+                            {icon ? <ListItemSecondaryAction>{icon}</ListItemSecondaryAction> : null}
+                        </ListItem>;
+                    })}
+                </List>
+            </Dialog>;
         }
         return null;
     }
@@ -4563,21 +4543,19 @@ class ObjectBrowser extends Component {
     renderEditRoleDialog() {
         if (this.state.roleDialog && this.props.objectBrowserEditRole) {
             const ObjectBrowserEditRole = this.props.objectBrowserEditRole;
-            return (
-                <ObjectBrowserEditRole
-                    key="objectBrowserEditRole"
-                    id={this.state.roleDialog}
-                    socket={this.props.socket}
-                    t={this.props.t}
-                    roles={this.info.roles}
-                    onClose={obj => {
-                        if (obj) {
-                            this.info.objects[this.state.roleDialog] = obj;
-                        }
-                        this.setState({ roleDialog: false });
-                    }}
-                />
-            );
+            return <ObjectBrowserEditRole
+                key="objectBrowserEditRole"
+                id={this.state.roleDialog}
+                socket={this.props.socket}
+                t={this.props.t}
+                roles={this.info.roles}
+                onClose={obj => {
+                    if (obj) {
+                        this.info.objects[this.state.roleDialog] = obj;
+                    }
+                    this.setState({ roleDialog: false });
+                }}
+            />;
         }
         return null;
     }
@@ -4628,77 +4606,74 @@ class ObjectBrowser extends Component {
                 };
             }
 
-            return (
-                <Dialog
-                    onClose={() => this.setState({ columnsEditCustomDialog: null })}
-                    maxWidth="md"
-                    aria-labelledby="custom-dialog-title"
-                    open={!0}
-                >
-                    <DialogTitle id="custom-dialog-title">{`${this.props.t('ra_Edit object field')}: ${
-                        this.state.columnsEditCustomDialog.obj._id
-                    }`}</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            {this.customColumnDialog.type === 'boolean' ? (
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            onKeyUp={e => e.keyCode === 13 && this.onColumnsEditCustomDialogClose(true)}
-                                            defaultChecked={this.customColumnDialog.value === 'true'}
-                                            onChange={e => {
-                                                this.customColumnDialog.value = e.target.checked.toString();
-                                                const changed =
-                                                    this.customColumnDialog.value !== this.customColumnDialog.initValue;
-                                                if (changed === !this.state.customColumnDialogValueChanged) {
-                                                    this.setState({ customColumnDialogValueChanged: changed });
-                                                }
-                                            }}
-                                        />
+            return <Dialog
+                onClose={() => this.setState({ columnsEditCustomDialog: null })}
+                maxWidth="md"
+                aria-labelledby="custom-dialog-title"
+                open={!0}
+            >
+                <DialogTitle id="custom-dialog-title">{`${this.props.t('ra_Edit object field')}: ${
+                    this.state.columnsEditCustomDialog.obj._id
+                }`}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {this.customColumnDialog.type === 'boolean' ?
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        onKeyUp={e => e.keyCode === 13 && this.onColumnsEditCustomDialogClose(true)}
+                                        defaultChecked={this.customColumnDialog.value === 'true'}
+                                        onChange={e => {
+                                            this.customColumnDialog.value = e.target.checked.toString();
+                                            const changed =
+                                                this.customColumnDialog.value !== this.customColumnDialog.initValue;
+                                            if (changed === !this.state.customColumnDialogValueChanged) {
+                                                this.setState({ customColumnDialogValueChanged: changed });
+                                            }
+                                        }}
+                                    />
+                                }
+                                label={`${this.state.columnsEditCustomDialog.it.name} (${this.state.columnsEditCustomDialog.it.pathText})`}
+                            />
+                            :
+                            <TextField
+                                variant="standard"
+                                defaultValue={this.customColumnDialog.value}
+                                fullWidth
+                                onKeyUp={e => e.keyCode === 13 && this.onColumnsEditCustomDialogClose(true)}
+                                label={`${this.state.columnsEditCustomDialog.it.name} (${this.state.columnsEditCustomDialog.it.pathText})`}
+                                onChange={e => {
+                                    this.customColumnDialog.value = e.target.value;
+                                    const changed =
+                                        this.customColumnDialog.value !== this.customColumnDialog.initValue;
+                                    if (changed === !this.state.customColumnDialogValueChanged) {
+                                        this.setState({ customColumnDialogValueChanged: changed });
                                     }
-                                    label={`${this.state.columnsEditCustomDialog.it.name} (${this.state.columnsEditCustomDialog.it.pathText})`}
-                                />
-                            ) : (
-                                <TextField
-                                    variant="standard"
-                                    defaultValue={this.customColumnDialog.value}
-                                    fullWidth
-                                    onKeyUp={e => e.keyCode === 13 && this.onColumnsEditCustomDialogClose(true)}
-                                    label={`${this.state.columnsEditCustomDialog.it.name} (${this.state.columnsEditCustomDialog.it.pathText})`}
-                                    onChange={e => {
-                                        this.customColumnDialog.value = e.target.value;
-                                        const changed =
-                                            this.customColumnDialog.value !== this.customColumnDialog.initValue;
-                                        if (changed === !this.state.customColumnDialogValueChanged) {
-                                            this.setState({ customColumnDialogValueChanged: changed });
-                                        }
-                                    }}
-                                    autoFocus
-                                />
-                            )}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            variant="contained"
-                            onClick={() => this.onColumnsEditCustomDialogClose(true)}
-                            disabled={!this.state.customColumnDialogValueChanged}
-                            color="primary"
-                            startIcon={<IconCheck />}
-                        >
-                            {this.props.t('ra_Update')}
-                        </Button>
-                        <Button
-                            color="grey"
-                            variant="contained"
-                            onClick={() => this.onColumnsEditCustomDialogClose()}
-                            startIcon={<IconClose />}
-                        >
-                            {this.props.t('ra_Cancel')}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            );
+                                }}
+                                autoFocus
+                            />}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.onColumnsEditCustomDialogClose(true)}
+                        disabled={!this.state.customColumnDialogValueChanged}
+                        color="primary"
+                        startIcon={<IconCheck />}
+                    >
+                        {this.props.t('ra_Update')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        variant="contained"
+                        onClick={() => this.onColumnsEditCustomDialogClose()}
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('ra_Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>;
         }
         return null;
     }
@@ -4824,34 +4799,30 @@ class ObjectBrowser extends Component {
         const text = ObjectBrowser.getCustomValue(obj, it);
         if (text !== null && text !== undefined) {
             if (it.edit && !this.props.notEditable && (!it.objTypes || it.objTypes.includes(obj.type))) {
-                return (
-                    <div
-                        className={Utils.clsx(
-                            this.props.classes.columnCustom,
-                            this.props.classes.columnCustomEditable,
-                            this.props.classes[`columnCustom_${it.align}`]
-                        )}
-                        onClick={() =>
-                            this.setState({
-                                columnsEditCustomDialog: { item, it, obj },
-                                customColumnDialogValueChanged: false,
-                            })
-                        }
-                    >
-                        {text}
-                    </div>
-                );
-            }
-            return (
-                <div
+                return <div
                     className={Utils.clsx(
                         this.props.classes.columnCustom,
+                        this.props.classes.columnCustomEditable,
                         this.props.classes[`columnCustom_${it.align}`]
                     )}
+                    onClick={() =>
+                        this.setState({
+                            columnsEditCustomDialog: { item, it, obj },
+                            customColumnDialogValueChanged: false,
+                        })
+                    }
                 >
                     {text}
-                </div>
-            );
+                </div>;
+            }
+            return <div
+                className={Utils.clsx(
+                    this.props.classes.columnCustom,
+                    this.props.classes[`columnCustom_${it.align}`]
+                )}
+            >
+                {text}
+            </div>;
         }
         return null;
     }
@@ -4881,11 +4852,13 @@ class ObjectBrowser extends Component {
             itemType === 'channel' ||
             itemType === 'meta'
         ) {
-            iconFolder = isExpanded ? (
-                <IconOpen className={classes.cellIdIconFolder} onClick={() => this.toggleExpanded(id)} />
-            ) : (
-                <IconClosed className={classes.cellIdIconFolder} onClick={() => this.toggleExpanded(id)} />
-            );
+            iconFolder = isExpanded ? <IconOpen
+                className={classes.cellIdIconFolder}
+                onClick={() => this.toggleExpanded(id)}
+            /> : <IconClosed
+                className={classes.cellIdIconFolder}
+                onClick={() => this.toggleExpanded(id)}
+            />;
         } else if (obj.common && obj.common.write === false && obj.type === 'state') {
             iconFolder = <IconDocumentReadOnly className={classes.cellIdIconDocument} />;
         } else {
@@ -4898,9 +4871,7 @@ class ObjectBrowser extends Component {
                 if (item.data.icon.length < 3) {
                     iconItem = <span className={Utils.clsx(classes.cellIdIconOwn, 'iconOwn')}>{item.data.icon}</span>; // utf-8 char
                 } else {
-                    iconItem = (
-                        <img className={Utils.clsx(classes.cellIdIconOwn, 'iconOwn')} src={item.data.icon} alt="" />
-                    );
+                    iconItem = <img className={Utils.clsx(classes.cellIdIconOwn, 'iconOwn')} src={item.data.icon} alt="" />;
                 }
             } else {
                 iconItem = item.data.icon;
@@ -4926,9 +4897,11 @@ class ObjectBrowser extends Component {
         const checkbox =
             this.props.multiSelect &&
             this.objects[id] &&
-            (!this.props.types || this.props.types.includes(this.objects[id].type)) ? (
-                <Checkbox className={classes.checkBox} checked={this.state.selected.includes(id)} />
-            ) : null;
+            (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
+                <Checkbox
+                    className={classes.checkBox}
+                    checked={this.state.selected.includes(id)}
+                /> : null;
 
         let valueEditable =
             !this.props.notEditable &&
@@ -4975,55 +4948,53 @@ class ObjectBrowser extends Component {
 
         const alias =
             id.startsWith('alias.') && common?.alias?.id ? (
-                readWriteAlias ? (
+                readWriteAlias ?
                     <div className={classes.cellIdAliasReadWriteDiv}>
-                        {common.alias.id.read ? (
-                            <div
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    this.onSelect(common.alias.id.read);
-                                    setTimeout(() => {
-                                        this.expandAllSelected(() => this.scrollToItem(common.alias.id.read));
-                                    }, 100);
-                                }}
-                                className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                            >
-                                ←{common.alias.id.read}
-                            </div>
-                        ) : null}
-                        {common.alias.id.write ? (
-                            <div
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    this.onSelect(common.alias.id.write);
-                                    setTimeout(() => {
-                                        this.expandAllSelected(() => this.scrollToItem(common.alias.id.write));
-                                    }, 100);
-                                }}
-                                className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                            >
-                                →{common.alias.id.write}
-                            </div>
-                        ) : null}
+                        {common.alias.id.read ? <div
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                this.onSelect(common.alias.id.read);
+                                setTimeout(() =>
+                                    this.expandAllSelected(() =>
+                                        this.scrollToItem(common.alias.id.read)), 100);
+                            }}
+                            className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                        >
+                            ←
+                            {common.alias.id.read}
+                        </div> : null}
+                        {common.alias.id.write ? <div
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                this.onSelect(common.alias.id.write);
+                                setTimeout(() =>
+                                    this.expandAllSelected(() =>
+                                        this.scrollToItem(common.alias.id.write)), 100);
+                            }}
+                            className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                        >
+                            →
+                            {common.alias.id.write}
+                        </div> : null}
                     </div>
-                ) : (
+                    :
                     <div
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             this.onSelect(common.alias.id);
-                            setTimeout(() => {
-                                this.expandAllSelected(() => this.scrollToItem(common.alias.id));
-                            }, 100);
+                            setTimeout(() =>
+                                this.expandAllSelected(() =>
+                                    this.scrollToItem(common.alias.id)), 100);
                         }}
                         className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
                     >
-                        →{common.alias.id}
+                        →
+                        {common.alias.id}
                     </div>
-                )
-            ) : null;
+                ) : null;
 
         let checkColor = common?.color;
         let invertBackground = undefined;
@@ -5186,284 +5157,264 @@ class ObjectBrowser extends Component {
             }
         }
 
-        return (
+        return <Grid
+            container
+            direction="row"
+            wrap="nowrap"
+            className={Utils.clsx(
+                classes.tableRow,
+                this.state.linesEnabled && classes.tableRowLines,
+                !this.props.dragEnabled && classes.tableRowNoDragging,
+                alias && classes.tableRowAlias,
+                readWriteAlias && classes.tableRowAliasReadWrite,
+                !item.data.visible && classes.filteredOut,
+                item.data.hasVisibleParent &&
+                    !item.data.visible &&
+                    !item.data.hasVisibleChildren &&
+                    classes.filteredParentOut,
+                this.state.selected.includes(id) && classes.itemSelected,
+                this.state.selectedNonObject === id && classes.itemSelected,
+            )}
+            key={id}
+            id={id}
+            onClick={() => this.onSelect(id)}
+            onDoubleClick={() => {
+                if (!item.children) {
+                    this.onSelect(id, true);
+                } else {
+                    this.toggleExpanded(id);
+                }
+            }}
+        >
             <Grid
                 container
-                direction="row"
                 wrap="nowrap"
-                className={Utils.clsx(
-                    classes.tableRow,
-                    this.state.linesEnabled && classes.tableRowLines,
-                    !this.props.dragEnabled && classes.tableRowNoDragging,
-                    alias && classes.tableRowAlias,
-                    readWriteAlias && classes.tableRowAliasReadWrite,
-                    !item.data.visible && classes.filteredOut,
-                    item.data.hasVisibleParent &&
-                        !item.data.visible &&
-                        !item.data.hasVisibleChildren &&
-                        classes.filteredParentOut,
-                    this.state.selected.includes(id) && classes.itemSelected,
-                    this.state.selectedNonObject === id && classes.itemSelected
-                )}
-                key={id}
-                id={id}
-                onClick={() => this.onSelect(id)}
-                onDoubleClick={() => {
-                    if (!item.children) {
-                        this.onSelect(id, true);
-                    } else {
-                        this.toggleExpanded(id);
-                    }
-                }}
+                direction="row"
+                className={classes.cellId}
+                style={{ width: this.columnsVisibility.id, paddingLeft }}
             >
                 <Grid
+                    item
                     container
-                    wrap="nowrap"
-                    direction="row"
-                    className={classes.cellId}
-                    style={{ width: this.columnsVisibility.id, paddingLeft }}
+                    alignItems="center"
                 >
-                    <Grid
-                        item
-                        container
-                        alignItems="center"
-                        style={
-                            {
-                                // color: checkColor,
-                                // background: invertBackground,
-                            }
-                        }
-                    >
-                        {checkbox}
-                        {iconFolder}
-                    </Grid>
-                    <Grid
-                        item
-                        style={{ color: checkColor }}
-                        className={Utils.clsx(classes.cellIdSpan, invertBackground && classes.invertedBackground)}
-                    >
-                        <Tooltip
-                            title={getIdFieldTooltip(item.data, this.props.classes, this.props.lang)}
-                            classes={{ popper: this.props.classes.tooltip }}
-                        >
-                            <div>{item.data.name}</div>
-                        </Tooltip>
-                        {alias}
-                        {icons}
-                    </Grid>
-                    <div className={Utils.clsx(classes.grow, invertBackground && classes.invertedBackgroundFlex)} />
-                    <Grid item container alignItems="center">
-                        {iconItem}
-                    </Grid>
-                    <div>
-                        <IconCopy
-                            className={Utils.clsx(classes.cellCopyButton, 'copyButton')}
-                            onClick={e => this.onCopy(e, id)}
-                        />
-                    </div>
+                    {checkbox}
+                    {iconFolder}
                 </Grid>
-
-                {this.columnsVisibility.name ? (
-                    <div
-                        className={Utils.clsx(classes.cellName, useDesc && classes.cellNameWithDesc)}
-                        style={{ width: this.columnsVisibility.name }}
+                <Grid
+                    item
+                    style={{ color: checkColor }}
+                    className={Utils.clsx(classes.cellIdSpan, invertBackground && classes.invertedBackground)}
+                >
+                    <Tooltip
+                        title={getIdFieldTooltip(item.data, this.props.classes, this.props.lang)}
+                        classes={{ popper: this.props.classes.tooltip }}
                     >
-                        {name}
-                        {item.data?.title ? (
-                            <div style={{ color: checkColor }}>
-                                <IconCopy
-                                    className={Utils.clsx(classes.cellCopyButton, 'copyButton')}
-                                    onClick={e => this.onCopy(e, item.data.title)}
-                                />
-                            </div>
-                        ) : null}
-                    </div>
-                ) : null}
-
-                {!this.state.statesView ? (
-                    <>
-                        {this.columnsVisibility.type ? (
-                            <div className={classes.cellType} style={{ width: this.columnsVisibility.type }}>
-                                {typeImg}
-                                &nbsp;
-                                {obj && obj.type}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.role ? (
-                            <div
-                                className={classes.cellRole}
-                                style={{
-                                    width: this.columnsVisibility.role,
-                                    cursor:
-                                        this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
-                                            ? 'text'
-                                            : 'default',
-                                }}
-                                onClick={
-                                    this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
-                                        ? () => this.setState({ roleDialog: item.data.id })
-                                        : undefined
-                                }
-                            >
-                                {common?.role}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.room ? (
-                            <div
-                                className={`${classes.cellRoom} ${item.data.per ? classes.cellEnumParent : ''}`}
-                                style={{
-                                    width: this.columnsVisibility.room,
-                                    cursor: enumEditable ? 'text' : 'default',
-                                }}
-                                onClick={
-                                    enumEditable
-                                        ? () => {
-                                              const enums = findEnumsForObjectAsIds(
-                                                  this.info,
-                                                  item.data.id,
-                                                  'roomEnums'
-                                              );
-                                              this.setState({
-                                                  enumDialogEnums: enums,
-                                                  enumDialog: {
-                                                      item,
-                                                      type: 'room',
-                                                      enumsOriginal: JSON.parse(JSON.stringify(enums)),
-                                                  },
-                                              });
-                                          }
-                                        : undefined
-                                }
-                            >
-                                {item.data.rooms}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.func ? (
-                            <div
-                                className={`${classes.cellFunc} ${item.data.pef ? classes.cellEnumParent : ''}`}
-                                style={{
-                                    width: this.columnsVisibility.func,
-                                    cursor: enumEditable ? 'text' : 'default',
-                                }}
-                                onClick={
-                                    enumEditable
-                                        ? () => {
-                                              const enums = findEnumsForObjectAsIds(
-                                                  this.info,
-                                                  item.data.id,
-                                                  'funcEnums'
-                                              );
-                                              this.setState({
-                                                  enumDialogEnums: enums,
-                                                  enumDialog: {
-                                                      item,
-                                                      type: 'func',
-                                                      enumsOriginal: JSON.parse(JSON.stringify(enums)),
-                                                  },
-                                              });
-                                          }
-                                        : undefined
-                                }
-                            >
-                                {item.data.funcs}
-                            </div>
-                        ) : null}
-                    </>
-                ) : (
-                    <>
-                        {this.columnsVisibility.changedFrom ? (
-                            <div
-                                className={classes.cellRole}
-                                style={{ width: this.columnsVisibility.changedFrom }}
-                                title={newValueTitle.join('\n')}
-                            >
-                                {checkVisibleObjectType && this.states[id]?.from ? newValue : null}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.qualityCode ? (
-                            <div
-                                className={classes.cellRole}
-                                style={{ width: this.columnsVisibility.qualityCode }}
-                                title={q || ''}
-                            >
-                                {q}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.timestamp ? (
-                            <div className={classes.cellRole} style={{ width: this.columnsVisibility.timestamp }}>
-                                {checkVisibleObjectType && this.states[id]?.ts
-                                    ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat)
-                                    : null}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.lastChange ? (
-                            <div className={classes.cellRole} style={{ width: this.columnsVisibility.lastChange }}>
-                                {checkVisibleObjectType && this.states[id]?.lc
-                                    ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat)
-                                    : null}
-                            </div>
-                        ) : null}
-                    </>
-                )}
-                {this.adapterColumns.map(it => (
-                    <div
-                        className={classes.cellAdapter}
-                        style={{ width: this.columnsVisibility[it.id] }}
-                        key={it.id}
-                        title={`${it.adapter} => ${it.pathText}`}
-                    >
-                        {this.renderCustomValue(obj, it, item)}
-                    </div>
-                ))}
-                {this.columnsVisibility.val ? (
-                    <div
-                        className={classes.cellValue}
-                        style={{
-                            width: this.columnsVisibility.val,
-                            cursor: valueEditable
-                                ? common?.type === 'file'
-                                    ? 'zoom-in'
-                                    : item.data.button
-                                    ? 'grab'
-                                    : 'text'
-                                : 'default',
-                        }}
-                        onClick={
-                            valueEditable
-                                ? () => {
-                                      if (!obj || !this.states) {
-                                          // return;
-                                      } else if (common?.type === 'file') {
-                                          this.setState({ viewFileDialog: id });
-                                      }
-                                      // in non-expert mode control button directly
-                                      else if (!this.state.filter.expertMode && item.data.button) {
-                                          this.props.socket
-                                              .setState(id, true)
-                                              .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
-                                      } else {
-                                          this.edit = {
-                                              val: this.states[id] ? this.states[id].val : '',
-                                              q: this.states[id] ? this.states[id].q || 0 : 0,
-                                              ack: false,
-                                              id,
-                                          };
-                                          this.setState({ updateOpened: true });
-                                      }
-                                  }
-                                : undefined
-                        }
-                    >
-                        {this.renderColumnValue(id, item, classes)}
-                    </div>
-                ) : null}
-                {this.columnsVisibility.buttons ? (
-                    <div className={classes.cellButtons} style={{ width: this.columnsVisibility.buttons }}>
-                        {this.renderColumnButtons(id, item, classes)}
-                    </div>
-                ) : null}
+                        <div>{item.data.name}</div>
+                    </Tooltip>
+                    {alias}
+                    {icons}
+                </Grid>
+                <div className={Utils.clsx(classes.grow, invertBackground && classes.invertedBackgroundFlex)} />
+                <Grid
+                    item
+                    container
+                    alignItems="center"
+                >
+                    {iconItem}
+                </Grid>
+                <div>
+                    <IconCopy
+                        className={Utils.clsx(classes.cellCopyButton, 'copyButton')}
+                        onClick={e => this.onCopy(e, id)}
+                    />
+                </div>
             </Grid>
-        );
+
+            {this.columnsVisibility.name ? <div
+                className={Utils.clsx(classes.cellName, useDesc && classes.cellNameWithDesc)}
+                style={{ width: this.columnsVisibility.name }}
+            >
+                {name}
+                {item.data?.title ? <div style={{ color: checkColor }}>
+                    <IconCopy
+                        className={Utils.clsx(classes.cellCopyButton, 'copyButton')}
+                        onClick={e => this.onCopy(e, item.data.title)}
+                    />
+                </div> : null}
+            </div> : null}
+
+            {!this.state.statesView ? <>
+                {this.columnsVisibility.type ? <div
+                    className={classes.cellType}
+                    style={{ width: this.columnsVisibility.type }}
+                >
+                    {typeImg}
+                    &nbsp;
+                    {obj && obj.type}
+                </div> : null}
+                {this.columnsVisibility.role ? <div
+                    className={classes.cellRole}
+                    style={{
+                        width: this.columnsVisibility.role,
+                        cursor:
+                            this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
+                                ? 'text'
+                                : 'default',
+                    }}
+                    onClick={
+                        this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
+                            ? () => this.setState({ roleDialog: item.data.id })
+                            : undefined
+                    }
+                >
+                    {common?.role}
+                </div> : null}
+                {this.columnsVisibility.room ? <div
+                    className={`${classes.cellRoom} ${item.data.per ? classes.cellEnumParent : ''}`}
+                    style={{
+                        width: this.columnsVisibility.room,
+                        cursor: enumEditable ? 'text' : 'default',
+                    }}
+                    onClick={
+                        enumEditable
+                            ? () => {
+                                  const enums = findEnumsForObjectAsIds(
+                                      this.info,
+                                      item.data.id,
+                                      'roomEnums'
+                                  );
+                                  this.setState({
+                                      enumDialogEnums: enums,
+                                      enumDialog: {
+                                          item,
+                                          type: 'room',
+                                          enumsOriginal: JSON.parse(JSON.stringify(enums)),
+                                      },
+                                  });
+                              }
+                            : undefined
+                    }
+                >
+                    {item.data.rooms}
+                </div> : null}
+                {this.columnsVisibility.func ? <div
+                    className={`${classes.cellFunc} ${item.data.pef ? classes.cellEnumParent : ''}`}
+                    style={{
+                        width: this.columnsVisibility.func,
+                        cursor: enumEditable ? 'text' : 'default',
+                    }}
+                    onClick={
+                        enumEditable
+                            ? () => {
+                                  const enums = findEnumsForObjectAsIds(
+                                      this.info,
+                                      item.data.id,
+                                      'funcEnums'
+                                  );
+                                  this.setState({
+                                      enumDialogEnums: enums,
+                                      enumDialog: {
+                                          item,
+                                          type: 'func',
+                                          enumsOriginal: JSON.parse(JSON.stringify(enums)),
+                                      },
+                                  });
+                              }
+                            : undefined
+                    }
+                >
+                    {item.data.funcs}
+                </div> : null}
+            </>
+            :
+            <>
+                {this.columnsVisibility.changedFrom ? <div
+                    className={classes.cellRole}
+                    style={{ width: this.columnsVisibility.changedFrom }}
+                    title={newValueTitle.join('\n')}
+                >
+                    {checkVisibleObjectType && this.states[id]?.from ? newValue : null}
+                </div> : null}
+                {this.columnsVisibility.qualityCode ? <div
+                    className={classes.cellRole}
+                    style={{ width: this.columnsVisibility.qualityCode }}
+                    title={q || ''}
+                >
+                    {q}
+                </div> : null}
+                {this.columnsVisibility.timestamp ? <div
+                    className={classes.cellRole}
+                    style={{ width: this.columnsVisibility.timestamp }}
+                >
+                    {checkVisibleObjectType && this.states[id]?.ts
+                        ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat)
+                        : null}
+                </div> : null}
+                {this.columnsVisibility.lastChange ? <div
+                    className={classes.cellRole}
+                    style={{ width: this.columnsVisibility.lastChange }}
+                >
+                    {checkVisibleObjectType && this.states[id]?.lc
+                        ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat)
+                        : null}
+                </div> : null}
+            </>}
+            {this.adapterColumns.map(it => <div
+                className={classes.cellAdapter}
+                style={{ width: this.columnsVisibility[it.id] }}
+                key={it.id}
+                title={`${it.adapter} => ${it.pathText}`}
+            >
+                {this.renderCustomValue(obj, it, item)}
+            </div>)}
+            {this.columnsVisibility.val ? <div
+                className={classes.cellValue}
+                style={{
+                    width: this.columnsVisibility.val,
+                    cursor: valueEditable
+                        ? common?.type === 'file'
+                            ? 'zoom-in'
+                            : item.data.button
+                            ? 'grab'
+                            : 'text'
+                        : 'default',
+                }}
+                onClick={
+                    valueEditable
+                        ? () => {
+                              if (!obj || !this.states) {
+                                  // return;
+                              } else if (common?.type === 'file') {
+                                  this.setState({ viewFileDialog: id });
+                              }
+                              // in non-expert mode control button directly
+                              else if (!this.state.filter.expertMode && item.data.button) {
+                                  this.props.socket
+                                      .setState(id, true)
+                                      .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                              } else {
+                                  this.edit = {
+                                      val: this.states[id] ? this.states[id].val : '',
+                                      q: this.states[id] ? this.states[id].q || 0 : 0,
+                                      ack: false,
+                                      id,
+                                  };
+                                  this.setState({ updateOpened: true });
+                              }
+                          }
+                        : undefined
+                }
+            >
+                {this.renderColumnValue(id, item, classes)}
+            </div> : null}
+            {this.columnsVisibility.buttons ? <div
+                className={classes.cellButtons}
+                style={{ width: this.columnsVisibility.buttons }}
+            >
+                {this.renderColumnButtons(id, item, classes)}
+            </div> : null}
+        </Grid>;
     }
 
     /**
@@ -5481,18 +5432,14 @@ class ObjectBrowser extends Component {
         const DragWrapper = this.props.DragWrapper;
         if (this.props.dragEnabled) {
             if (root.data.sumVisibility) {
-                leaf = (
-                    <DragWrapper key={root.data.id} item={root} className={classes.draggable}>
-                        {leaf}
-                    </DragWrapper>
-                );
+                leaf = <DragWrapper key={root.data.id} item={root} className={classes.draggable}>
+                    {leaf}
+                </DragWrapper>;
             } else {
                 // change cursor
-                leaf = (
-                    <div key={root.data.id} className={classes.nonDraggable}>
-                        {leaf}
-                    </div>
-                );
+                leaf = <div key={root.data.id} className={classes.nonDraggable}>
+                    {leaf}
+                </div>;
             }
         }
         root.data.id && items.push(leaf);
@@ -5558,10 +5505,10 @@ class ObjectBrowser extends Component {
      * @param {Record<string, number>} [columnsWidths]
      */
     calculateColumnsVisibility(columnsAuto, columns, columnsForAdmin, columnsWidths) {
-        columnsWidths = columnsWidths || this.state.columnsWidths;
+        columnsWidths   = columnsWidths   || this.state.columnsWidths;
         columnsForAdmin = columnsForAdmin || this.state.columnsForAdmin;
-        columns = columns || this.state.columns || [];
-        columnsAuto = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
+        columns         = columns         || this.state.columns || [];
+        columnsAuto     = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
 
         columnsWidths = JSON.parse(JSON.stringify(columnsWidths));
         Object.keys(columnsWidths).forEach(name => {
@@ -5575,19 +5522,19 @@ class ObjectBrowser extends Component {
 
         if (columnsAuto) {
             this.columnsVisibility = {
-                id: SCREEN_WIDTHS[this.props.width].idWidth,
-                name: this.visibleCols.includes('name') ? WIDTHS.name || 0 : 0,
-                nameHeader: this.visibleCols.includes('name') ? WIDTHS.name || 0 : 0,
-                type: this.visibleCols.includes('type') ? WIDTHS.type || 0 : 0,
-                role: this.visibleCols.includes('role') ? WIDTHS.role || 0 : 0,
-                room: this.visibleCols.includes('room') ? WIDTHS.room || 0 : 0,
-                func: this.visibleCols.includes('func') ? WIDTHS.func || 0 : 0,
-                changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom || 0 : 0,
-                qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode || 0 : 0,
-                timestamp: this.visibleCols.includes('timestamp') ? WIDTHS.timestamp || 0 : 0,
-                lastChange: this.visibleCols.includes('lastChange') ? WIDTHS.lastChange || 0 : 0,
-                val: this.visibleCols.includes('val') ? WIDTHS.val || 0 : 0,
-                buttons: this.visibleCols.includes('buttons') ? WIDTHS.buttons || 0 : 0,
+                id:          SCREEN_WIDTHS[this.props.width].idWidth,
+                name:        this.visibleCols.includes('name')        ? WIDTHS.name         || 0 : 0,
+                nameHeader:  this.visibleCols.includes('name')        ? WIDTHS.name         || 0 : 0,
+                type:        this.visibleCols.includes('type')        ? WIDTHS.type         || 0 : 0,
+                role:        this.visibleCols.includes('role')        ? WIDTHS.role         || 0 : 0,
+                room:        this.visibleCols.includes('room')        ? WIDTHS.room         || 0 : 0,
+                func:        this.visibleCols.includes('func')        ? WIDTHS.func         || 0 : 0,
+                changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom  || 0 : 0,
+                qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode  || 0 : 0,
+                timestamp:   this.visibleCols.includes('timestamp')   ? WIDTHS.timestamp    || 0 : 0,
+                lastChange:  this.visibleCols.includes('lastChange')  ? WIDTHS.lastChange   || 0 : 0,
+                val:         this.visibleCols.includes('val')         ? WIDTHS.val          || 0 : 0,
+                buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons      || 0 : 0,
             };
 
             if (this.columnsVisibility.name && !this.customWidth) {
@@ -5843,163 +5790,142 @@ class ObjectBrowser extends Component {
 
         let filterClearInValue = null;
         if (!this.columnsVisibility.buttons && !this.isFilterEmpty()) {
-            filterClearInValue = (
-                <IconButton
-                    onClick={() => this.clearFilter()}
-                    className={classes.buttonClearFilter}
-                    title={this.props.t('ra_Clear filter')}
-                    size="large"
-                >
-                    <IconClearFilter />
-                    <IconClose className={classes.buttonClearFilterIcon} />
-                </IconButton>
-            );
+            filterClearInValue = <IconButton
+                onClick={() => this.clearFilter()}
+                className={classes.buttonClearFilter}
+                title={this.props.t('ra_Clear filter')}
+                size="large"
+            >
+                <IconClearFilter />
+                <IconClose className={classes.buttonClearFilterIcon} />
+            </IconButton>;
         }
 
-        return (
-            <div className={classes.headerRow}>
+        return <div className={classes.headerRow}>
+            <div
+                className={classes.headerCell}
+                style={{ width: this.columnsVisibility.id, position: 'relative' }}
+                data-min={240}
+                data-name="id"
+            >
+                {this.getFilterInput('id')}
                 <div
-                    className={classes.headerCell}
-                    style={{ width: this.columnsVisibility.id, position: 'relative' }}
-                    data-min={240}
-                    data-name="id"
-                >
-                    {this.getFilterInput('id')}
-                    <div
-                        className={`${this.props.classes.resizeHandle} ${this.props.classes.resizeHandleRight}`}
-                        onMouseDown={this.resizerMouseDown}
-                        onDoubleClick={this.resizerReset}
-                        title={this.props.t('ra_Double click to reset table layout')}
-                    />
-                </div>
-                {this.columnsVisibility.name ? (
-                    <div
-                        className={classes.headerCell}
-                        style={{ width: this.columnsVisibility.nameHeader }}
-                        data-min={100}
-                        data-name="nameHeader"
-                    >
-                        {this.getFilterInput('name')}
-                    </div>
-                ) : null}
-                {!this.state.statesView && (
-                    <>
-                        {this.columnsVisibility.type ? (
-                            <div
-                                className={classes.headerCell}
-                                style={{ width: this.columnsVisibility.type }}
-                                data-min={100}
-                                data-name="type"
-                            >
-                                {this.getFilterSelectType()}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.role ? (
-                            <div
-                                className={classes.headerCell}
-                                style={{ width: this.columnsVisibility.role }}
-                                data-min={100}
-                                data-name="role"
-                            >
-                                {this.getFilterSelectRole()}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.room ? (
-                            <div
-                                className={classes.headerCell}
-                                style={{ width: this.columnsVisibility.room }}
-                                data-min={100}
-                                data-name="room"
-                            >
-                                {this.getFilterSelectRoom()}
-                            </div>
-                        ) : null}
-                        {this.columnsVisibility.func ? (
-                            <div
-                                className={classes.headerCell}
-                                style={{ width: this.columnsVisibility.func }}
-                                data-min={100}
-                                data-name="func"
-                            >
-                                {this.getFilterSelectFunction()}
-                            </div>
-                        ) : null}
-                    </>
-                )}
-                {this.state.statesView && (
-                    <>
-                        <div
-                            className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                            style={{ width: this.columnsVisibility.changedFrom }}
-                            data-min={100}
-                            data-name="changedFrom"
-                        >
-                            {this.props.t('ra_Changed from')}
-                        </div>
-                        <div
-                            className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                            style={{ width: this.columnsVisibility.qualityCode }}
-                            data-min={100}
-                            data-name="qualityCode"
-                        >
-                            {this.props.t('ra_Quality code')}
-                        </div>
-                        <div
-                            className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                            style={{ width: this.columnsVisibility.timestamp }}
-                            data-min={100}
-                            data-name="timestamp"
-                        >
-                            {this.props.t('ra_Timestamp')}
-                        </div>
-                        <div
-                            className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                            style={{ width: this.columnsVisibility.lastChange }}
-                            data-min={100}
-                            data-name="lastChange"
-                        >
-                            {this.props.t('ra_Last change')}
-                        </div>
-                    </>
-                )}
-                {this.adapterColumns.map(item => (
-                    <div
-                        className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                        style={{ width: this.columnsVisibility[item.id] }}
-                        title={item.adapter}
-                        key={item.id}
-                        data-min={100}
-                        data-name={item.id}
-                    >
-                        {item.name}
-                    </div>
-                ))}
-                {this.columnsVisibility.val ? (
-                    <div
-                        className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                        style={{ width: this.columnsVisibility.val, position: 'relative' }}
-                        data-min={120}
-                        data-name="val"
-                    >
-                        <div
-                            className={`${this.props.classes.resizeHandle} ${this.props.classes.resizeHandleLeft}`}
-                            data-left="true"
-                            onMouseDown={this.resizerMouseDown}
-                            onDoubleClick={this.resizerReset}
-                            title={this.props.t('ra_Double click to reset table layout')}
-                        />
-                        {this.props.t('ra_Value')}
-                        {filterClearInValue}
-                    </div>
-                ) : null}
-                {this.columnsVisibility.buttons ? (
-                    <div className={classes.headerCell} style={{ width: this.columnsVisibility.buttons }}>
-                        {' '}
-                        {this.getFilterSelectCustoms()}
-                    </div>
-                ) : null}
+                    className={`${this.props.classes.resizeHandle} ${this.props.classes.resizeHandleRight}`}
+                    onMouseDown={this.resizerMouseDown}
+                    onDoubleClick={this.resizerReset}
+                    title={this.props.t('ra_Double click to reset table layout')}
+                />
             </div>
-        );
+            {this.columnsVisibility.name ? <div
+                className={classes.headerCell}
+                style={{ width: this.columnsVisibility.nameHeader }}
+                data-min={100}
+                data-name="nameHeader"
+            >
+                {this.getFilterInput('name')}
+            </div> : null}
+            {!this.state.statesView && <>
+                {this.columnsVisibility.type ? <div
+                    className={classes.headerCell}
+                    style={{ width: this.columnsVisibility.type }}
+                    data-min={100}
+                    data-name="type"
+                >
+                    {this.getFilterSelectType()}
+                </div> : null}
+                {this.columnsVisibility.role ? <div
+                    className={classes.headerCell}
+                    style={{ width: this.columnsVisibility.role }}
+                    data-min={100}
+                    data-name="role"
+                >
+                    {this.getFilterSelectRole()}
+                </div> : null}
+                {this.columnsVisibility.room ? <div
+                    className={classes.headerCell}
+                    style={{ width: this.columnsVisibility.room }}
+                    data-min={100}
+                    data-name="room"
+                >
+                    {this.getFilterSelectRoom()}
+                </div> : null}
+                {this.columnsVisibility.func ? <div
+                    className={classes.headerCell}
+                    style={{ width: this.columnsVisibility.func }}
+                    data-min={100}
+                    data-name="func"
+                >
+                    {this.getFilterSelectFunction()}
+                </div> : null}
+            </>}
+            {this.state.statesView && <>
+                <div
+                    className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
+                    style={{ width: this.columnsVisibility.changedFrom }}
+                    data-min={100}
+                    data-name="changedFrom"
+                >
+                    {this.props.t('ra_Changed from')}
+                </div>
+                <div
+                    className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
+                    style={{ width: this.columnsVisibility.qualityCode }}
+                    data-min={100}
+                    data-name="qualityCode"
+                >
+                    {this.props.t('ra_Quality code')}
+                </div>
+                <div
+                    className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
+                    style={{ width: this.columnsVisibility.timestamp }}
+                    data-min={100}
+                    data-name="timestamp"
+                >
+                    {this.props.t('ra_Timestamp')}
+                </div>
+                <div
+                    className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
+                    style={{ width: this.columnsVisibility.lastChange }}
+                    data-min={100}
+                    data-name="lastChange"
+                >
+                    {this.props.t('ra_Last change')}
+                </div>
+            </>}
+            {this.adapterColumns.map(item => <div
+                className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
+                style={{ width: this.columnsVisibility[item.id] }}
+                title={item.adapter}
+                key={item.id}
+                data-min={100}
+                data-name={item.id}
+            >
+                {item.name}
+            </div>)}
+            {this.columnsVisibility.val ? <div
+                className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
+                style={{ width: this.columnsVisibility.val, position: 'relative' }}
+                data-min={120}
+                data-name="val"
+            >
+                <div
+                    className={`${this.props.classes.resizeHandle} ${this.props.classes.resizeHandleLeft}`}
+                    data-left="true"
+                    onMouseDown={this.resizerMouseDown}
+                    onDoubleClick={this.resizerReset}
+                    title={this.props.t('ra_Double click to reset table layout')}
+                />
+                {this.props.t('ra_Value')}
+                {filterClearInValue}
+            </div> : null}
+            {this.columnsVisibility.buttons ? <div
+                className={classes.headerCell}
+                style={{ width: this.columnsVisibility.buttons }}
+            >
+                    {' '}
+                    {this.getFilterSelectCustoms()}
+                </div> : null}
+        </div>;
     }
 
     /**
@@ -6007,25 +5933,23 @@ class ObjectBrowser extends Component {
      * @returns {JSX.Element}
      */
     renderToast() {
-        return (
-            <Snackbar
-                open={!!this.state.toast}
-                autoHideDuration={3000}
-                onClick={() => this.setState({ toast: '' })}
-                onClose={() => this.setState({ toast: '' })}
-                message={this.state.toast}
-                action={
-                    <IconButton
-                        size="small"
-                        aria-label="close"
-                        color="inherit"
-                        onClick={() => this.setState({ toast: '' })}
-                    >
-                        <IconClose fontSize="small" />
-                    </IconButton>
-                }
-            />
-        );
+        return <Snackbar
+            open={!!this.state.toast}
+            autoHideDuration={3000}
+            onClick={() => this.setState({ toast: '' })}
+            onClose={() => this.setState({ toast: '' })}
+            message={this.state.toast}
+            action={
+                <IconButton
+                    size="small"
+                    aria-label="close"
+                    color="inherit"
+                    onClick={() => this.setState({ toast: '' })}
+                >
+                    <IconClose fontSize="small" />
+                </IconButton>
+            }
+        />;
     }
 
     /**
@@ -6064,33 +5988,31 @@ class ObjectBrowser extends Component {
         if (this.state.customDialog && this.props.objectCustomDialog) {
             const ObjectCustomDialog = this.props.objectCustomDialog;
 
-            return (
-                <ObjectCustomDialog
-                    reportChangedIds={changedIds => (this.changedIds = [...changedIds])}
-                    objectIDs={this.state.customDialog}
-                    expertMode={this.state.filter.expertMode}
-                    isFloatComma={this.props.isFloatComma}
-                    t={this.props.t}
-                    lang={this.props.lang}
-                    socket={this.props.socket}
-                    themeName={this.props.themeName}
-                    themeType={this.props.themeType}
-                    theme={this.props.theme}
-                    objects={this.objects}
-                    customsInstances={this.info.customs}
-                    onClose={() => {
-                        this.pauseSubscribe(false);
-                        this.setState({ customDialog: null });
-                        if (this.changedIds) {
-                            this.changedIds = null;
-                            // update all changed IDs
-                            this.forceUpdate();
-                        }
+            return <ObjectCustomDialog
+                reportChangedIds={changedIds => (this.changedIds = [...changedIds])}
+                objectIDs={this.state.customDialog}
+                expertMode={this.state.filter.expertMode}
+                isFloatComma={this.props.isFloatComma}
+                t={this.props.t}
+                lang={this.props.lang}
+                socket={this.props.socket}
+                themeName={this.props.themeName}
+                themeType={this.props.themeType}
+                theme={this.props.theme}
+                objects={this.objects}
+                customsInstances={this.info.customs}
+                onClose={() => {
+                    this.pauseSubscribe(false);
+                    this.setState({ customDialog: null });
+                    if (this.changedIds) {
+                        this.changedIds = null;
+                        // update all changed IDs
+                        this.forceUpdate();
+                    }
 
-                        this.props.router && this.props.router.doNavigate('tab-objects');
-                    }}
-                />
-            );
+                    this.props.router && this.props.router.doNavigate('tab-objects');
+                }}
+            />;
         }
         return null;
     }
@@ -6121,51 +6043,49 @@ class ObjectBrowser extends Component {
 
         const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
 
-        return (
-            <ObjectBrowserEditObject
-                key={this.state.editObjectDialog}
-                obj={this.objects[this.state.editObjectDialog]}
-                roleArray={this.info.roles}
-                objects={this.objects}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                themeName={this.props.themeName}
-                socket={this.props.socket}
-                dialogName={this.props.dialogName}
-                t={this.props.t}
-                expertMode={this.state.filter.expertMode}
-                onNewObject={obj =>
+        return <ObjectBrowserEditObject
+            key={this.state.editObjectDialog}
+            obj={this.objects[this.state.editObjectDialog]}
+            roleArray={this.info.roles}
+            objects={this.objects}
+            dateFormat={this.props.dateFormat}
+            isFloatComma={this.props.isFloatComma}
+            themeName={this.props.themeName}
+            socket={this.props.socket}
+            dialogName={this.props.dialogName}
+            t={this.props.t}
+            expertMode={this.state.filter.expertMode}
+            onNewObject={obj =>
+                this.props.socket
+                    .setObject(obj._id, obj)
+                    .then(() => this.setState({ editObjectDialog: obj._id }, () => this.onSelect(obj._id)))
+                    .catch(e => this.showError(`Cannot write object: ${e}`))
+            }
+            onClose={obj => {
+                if (obj) {
+                    let updateAlias;
+                    if (this.state.editObjectDialog.startsWith('alias.')) {
+                        if (
+                            JSON.stringify(this.objects[this.state.editObjectDialog].common?.alias) !==
+                            JSON.stringify(obj.common?.alias)
+                        ) {
+                            updateAlias = this.state.editObjectDialog;
+                        }
+                    }
+
                     this.props.socket
                         .setObject(obj._id, obj)
-                        .then(() => this.setState({ editObjectDialog: obj._id }, () => this.onSelect(obj._id)))
-                        .catch(e => this.showError(`Cannot write object: ${e}`))
-                }
-                onClose={obj => {
-                    if (obj) {
-                        let updateAlias;
-                        if (this.state.editObjectDialog.startsWith('alias.')) {
-                            if (
-                                JSON.stringify(this.objects[this.state.editObjectDialog].common?.alias) !==
-                                JSON.stringify(obj.common?.alias)
-                            ) {
-                                updateAlias = this.state.editObjectDialog;
+                        .then(() => {
+                            if (updateAlias && this.subscribes.includes(updateAlias)) {
+                                this.unsubscribe(updateAlias);
+                                setTimeout(() => this.subscribe(updateAlias), 100);
                             }
-                        }
-
-                        this.props.socket
-                            .setObject(obj._id, obj)
-                            .then(() => {
-                                if (updateAlias && this.subscribes.includes(updateAlias)) {
-                                    this.unsubscribe(updateAlias);
-                                    setTimeout(() => this.subscribe(updateAlias), 100);
-                                }
-                            })
-                            .catch(e => this.showError(`Cannot write object: ${e}`));
-                    }
-                    this.setState({ editObjectDialog: '' });
-                }}
-            />
-        );
+                        })
+                        .catch(e => this.showError(`Cannot write object: ${e}`));
+                }
+                this.setState({ editObjectDialog: '' });
+            }}
+        />;
     }
 
     /**
@@ -6178,18 +6098,16 @@ class ObjectBrowser extends Component {
         }
         const ObjectBrowserViewFile = this.props.objectBrowserViewFile;
 
-        return (
-            <ObjectBrowserViewFile
-                key="viewFile"
-                obj={this.objects[this.state.viewFileDialog]}
-                themeType={this.props.themeType}
-                socket={this.props.socket}
-                dialogName={this.props.dialogName}
-                t={this.props.t}
-                expertMode={this.state.filter.expertMode}
-                onClose={() => this.setState({ viewFileDialog: '' })}
-            />
-        );
+        return <ObjectBrowserViewFile
+            key="viewFile"
+            obj={this.objects[this.state.viewFileDialog]}
+            themeType={this.props.themeType}
+            socket={this.props.socket}
+            dialogName={this.props.dialogName}
+            t={this.props.t}
+            expertMode={this.state.filter.expertMode}
+            onClose={() => this.setState({ viewFileDialog: '' })}
+        />;
     }
 
     /**
@@ -6217,30 +6135,32 @@ class ObjectBrowser extends Component {
 
         const ObjectBrowserValue = this.props.objectBrowserValue;
 
-        return (
-            <ObjectBrowserValue
-                t={this.props.t}
-                lang={this.props.lang}
-                type={type}
-                states={Utils.getStates(this.objects[this.edit.id])}
-                themeType={this.props.themeType}
-                expertMode={this.state.filter.expertMode}
-                value={this.edit.val}
-                socket={this.props.socket}
-                object={this.objects[this.edit.id]}
-                defaultHistory={this.defaultHistory}
-                dateFormat={this.props.dateFormat}
-                onClose={res => {
-                    this.setState({ updateOpened: false });
-                    res && this.onUpdate(res);
-                }}
-            />
-        );
+        return <ObjectBrowserValue
+            t={this.props.t}
+            lang={this.props.lang}
+            type={type}
+            states={Utils.getStates(this.objects[this.edit.id])}
+            themeType={this.props.themeType}
+            expertMode={this.state.filter.expertMode}
+            value={this.edit.val}
+            socket={this.props.socket}
+            object={this.objects[this.edit.id]}
+            defaultHistory={this.defaultHistory}
+            dateFormat={this.props.dateFormat}
+            onClose={res => {
+                this.setState({ updateOpened: false });
+                res && this.onUpdate(res);
+            }}
+        />;
     }
 
-    extendObject = (id, data) => this.props.socket.extendObject(id, data).catch(error => window.alert(error));
+    extendObject = (id, data) =>
+        this.props.socket.extendObject(id, data)
+            .catch(error => window.alert(error));
 
-    setObject = (id, data) => this.props.socket.setObject(id, data).catch(error => window.alert(error));
+    setObject = (id, data) =>
+        this.props.socket.setObject(id, data)
+            .catch(error => window.alert(error));
 
     /**
      * The rendering method of this component.
@@ -6287,32 +6207,30 @@ class ObjectBrowser extends Component {
         const classes = this.props.classes;
         const items = this.renderItem(this.root, undefined, classes);
 
-        return (
-            <TabContainer key={this.props.dialogName} classes={{}}>
-                <TabHeader>{this.getToolbar()}</TabHeader>
-                <TabContent classes={{}}>
-                    {this.renderHeader()}
-                    <div className={this.props.classes.tableDiv} ref={this.tableRef}>
-                        {items}
-                    </div>
-                </TabContent>
-                {this.renderToast()}
-                {this.renderColumnsEditCustomDialog()}
-                {this.renderColumnsSelectorDialog()}
-                {this.renderCustomDialog()}
-                {this.renderEditValueDialog()}
-                {this.renderEditObjectDialog()}
-                {this.renderViewObjectFileDialog()}
-                {this.renderEditRoleDialog()}
-                {this.renderEnumDialog()}
-                {this.renderErrorDialog()}
-                {this.renderExportDialog()}
-                {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)}
-                {this.state.modalEditOfAccess &&
-                    this.props.modalEditOfAccessControl &&
-                    this.props.modalEditOfAccessControl(this, this.state.modalEditOfAccessObjData)}
-            </TabContainer>
-        );
+        return <TabContainer key={this.props.dialogName} classes={{}}>
+            <TabHeader>{this.getToolbar()}</TabHeader>
+            <TabContent classes={{}}>
+                {this.renderHeader()}
+                <div className={this.props.classes.tableDiv} ref={this.tableRef}>
+                    {items}
+                </div>
+            </TabContent>
+            {this.renderToast()}
+            {this.renderColumnsEditCustomDialog()}
+            {this.renderColumnsSelectorDialog()}
+            {this.renderCustomDialog()}
+            {this.renderEditValueDialog()}
+            {this.renderEditObjectDialog()}
+            {this.renderViewObjectFileDialog()}
+            {this.renderEditRoleDialog()}
+            {this.renderEnumDialog()}
+            {this.renderErrorDialog()}
+            {this.renderExportDialog()}
+            {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)}
+            {this.state.modalEditOfAccess &&
+                this.props.modalEditOfAccessControl &&
+                this.props.modalEditOfAccessControl(this, this.state.modalEditOfAccessObjData)}
+        </TabContainer>;
     }
 }
 
@@ -6330,7 +6248,10 @@ ObjectBrowser.propTypes = {
     dialogName: PropTypes.string, // where to store settings in localStorage
     classes: PropTypes.object,
     defaultFilters: PropTypes.object,
-    selected: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    selected: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array,
+    ]),
     onSelect: PropTypes.func,
     onFilterChanged: PropTypes.func,
     socket: PropTypes.object,
@@ -6351,38 +6272,44 @@ ObjectBrowser.propTypes = {
     levelPadding: PropTypes.number,
 
     // components
-    objectCustomDialog: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
-    objectAddBoolean: PropTypes.bool, // optional toolbar button
-    objectEditBoolean: PropTypes.bool, // optional toolbar button
-    objectStatesView: PropTypes.bool, // optional toolbar button
+    objectCustomDialog: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.func,
+    ]),
+    objectAddBoolean: PropTypes.bool,   // optional toolbar button
+    objectEditBoolean: PropTypes.bool,  // optional toolbar button
+    objectStatesView: PropTypes.bool,   // optional toolbar button
     objectImportExport: PropTypes.bool, // optional toolbar button
     objectEditOfAccessControl: PropTypes.bool, // Access Control
-    modalNewObject: PropTypes.func, // modal add object
+    modalNewObject: PropTypes.func,     // modal add object
     modalEditOfAccessControl: PropTypes.func, // modal Edit Of Access Control
-    onObjectDelete: PropTypes.func, // optional function (id, hasChildren, objectExists, childrenCount+1) {  }
-    customFilter: PropTypes.object, // optional
-    // `{common: {custom: true}}` - show only objects with some custom settings
-    // `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
-    // `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb` or `sql` or `history`
-    // `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
-    // `{type: 'channel'}` - show only channels
-    // `{type: ['channel', 'device']}` - show only channels and devices
-    // `{common: {type: 'number'}` - show only states of type 'number
-    // `{common: {type: ['number', 'string']}` - show only states of type 'number and string
-    // `{common: {role: 'switch']}` - show only states with roles starting from switch
-    // `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
+    onObjectDelete: PropTypes.func,     // optional function (id, hasChildren, objectExists, childrenCount+1) {  }
+    customFilter: PropTypes.object,     // optional
+                                        // `{common: {custom: true}}` - show only objects with some custom settings
+                                        // `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
+                                        // `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb' or 'sql' or 'history'
+                                        // `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
+                                        // `{type: 'channel'}` - show only channels
+                                        // `{type: ['channel', 'device']}` - show only channels and devices
+                                        // `{common: {type: 'number'}` - show only states of type 'number
+                                        // `{common: {type: ['number', 'string']}` - show only states of type 'number and string
+                                        // `{common: {role: 'switch']}` - show only states with roles starting from switch
+                                        // `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     objectBrowserEditRole: PropTypes.object, // on Edit role
     objectBrowserViewFile: PropTypes.func, // on view file state
-    router: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
-    types: PropTypes.array, // optional ['state', 'instance', 'channel']
-    columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
-    root: PropTypes.string, // optional, shows only elements of this root
+    router: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.func,
+    ]),
+    types: PropTypes.array,             // optional ['state', 'instance', 'channel']
+    columns: PropTypes.array,           // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+    root: PropTypes.string,             // optional, shows only elements of this root
 
-    objectsWorker: PropTypes.object, // optional cache of objects
-    filterFunc: PropTypes.func, // function to filter out all unnecessary objects. It cannot be used together with "types"
-    // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
+    objectsWorker: PropTypes.object,    // optional cache of objects
+    filterFunc: PropTypes.func,         // function to filter out all unnecessary objects. It cannot be used together with "types"
+                                        // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
 
     dragSettings: PropTypes.object,
     DragWrapper: PropTypes.func,

@@ -68,7 +68,7 @@ Possible types:
   - `maxWidth`
   - `maxHeight`
   - `crop` - if true, allow user to crop the image (only for non svg)
-  - `square` - width must be equal to height or crop must allow only square as shape
+  - `square` - width must be equal to height, or crop must allow only square as shape
 
 - `image` - saves image as file of the `adapter.X` object or as base64 in attribute
   - `filename` - name of file is structure name. In the below example `login-bg.png` is file name for `writeFile("myAdapter.INSTANCE", "login-bg.png")`
@@ -78,7 +78,7 @@ Possible types:
   - `!maxWidth`
   - `!maxHeight`
   - `!crop` - if true, allow user to crop the image
-  - `!square` - width must be equal to height or crop must allow only square as shape
+  - `!square` - width must be equal to height, or crop must allow only square as shape
 ```
   "login-bg.png": {
        "type": "image",
@@ -132,7 +132,7 @@ Possible types:
     - `all` - Add to the options "all" option with value `*`
 
 - `chips` - user can enter the word, and it will be added (see cloud => services => White list). Output is an array if no `delimiter` defined.
-    - `delimiter` - if it is defined, so the option will be stored as string with delimiter instead of an array. E.g. by `delimiter=;` you will get `a;b;c` instead of `['a', 'b', 'c']`
+    - `delimiter` - if it is defined, so the option will be stored as string with delimiter instead of an array. E.g., by `delimiter=;` you will get `a;b;c` instead of `['a', 'b', 'c']`
 
 - `alive` - just indication if the instance is alive, and it could be used in "hidden" and "disabled" (will not be saved in config)
   Just text: Instance is running, Instance is not running
@@ -141,7 +141,7 @@ Possible types:
     - `textNotAlive` - default text is `Instance %s is not alive`, where %s will be replaced by `ADAPTER.0`.
 
 - `pattern` - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)
-  Text input with the read only flag, that shows pattern.
+  Text input with the read only flag, that shows a pattern.
     - `copyToClipboard` - if true - show button
     - `pattern` - my pattern
 
@@ -156,7 +156,7 @@ Possible types:
     - `window` - if `openUrl` is true, this is name of the new window. Could be overwritten if response consist `window` attribute.
       `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
     - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`. You can use `base64` icons. (Request via issue if you need more icons)
-    - `useNative` - if adapter returns result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration.
+    - `useNative` - if adapter returns a result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration.
     - `showProcess` - Show spinner while request is in progress
     - `timeout` - timeout for request in ms. Default: none.
 
@@ -174,7 +174,7 @@ Possible types:
 - `staticLink` - static link
     - `label` - multi-language text
     - `href` - link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`
-    - `button` - show link as button
+    - `button` - show a link as button
     - `variant` - type of button (`outlined`, `contained`, `text`)
     - `color` - color of button (e.g. `primary`)
     - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (start with `data:image/svg+xml;base64,...`). (Request via issue if you need more icons)
@@ -191,10 +191,12 @@ Possible types:
     - `allowAddByFilter` - if add allowed even if filter is set
     - `showSecondAddAt` - Number of lines from which the second add button at the bottom of the table will be shown. Default 5
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
+    - `export` - [optional] - if export button should be shown. Export as csv file.
+    - `import` - [optional] - if import button should be shown. Import from csv file.
 
 - `accordion` - accordion with items that could be deleted, added, moved up, moved down (Admin 6.6.0 and newer)
     - `items` - `[{"type": see above, "attr": "name", "default": ""}]` - items can be placed like on a `panel` (xs, sm, md, lg and newLine)
-    - `titleAttr` - key of the items list which should be used as name
+    - `titleAttr` - key of the item's list which should be used as name
     - `noDelete` - boolean if delete or add disabled, If `noDelete` is false, add, delete and move up/down should work
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
 
@@ -286,8 +288,8 @@ adapter.on('message', obj => {
 - `selectSendTo`
   Shows the drop-down menu with the given from the instance values.
     - `command` - sendTo command
-    - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend
-    - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.
+    - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend
+    - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.
     - `manual` - allow manual editing. Without drop-down menu (if instance is offline). Default `true`.
     - `multiple` - Multiple choice select
     - `showAllValues` - show item even if no label was found for it (by multiple), default=`true`
@@ -331,8 +333,8 @@ adapter.on('message', obj => {
 - `autocompleteSendTo`
   Shows autocomplete control with the given from the instance values.
   - `command` - sendTo command
-  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend
-  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.
+  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend
+  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.
   - `freeSolo` - Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.
   - `alsoDependsOn` - by change of which attributes, the command must be resent
   - `maxLength` - max length of the text in field
@@ -346,9 +348,9 @@ adapter.on('message', obj => {
   - `copyToClipboard` - if true - show button
   - `alsoDependsOn` - by change of which attributes, the command must be resent
   - `command` - sendTo command
-  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend
-  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.
-  To use this option, your adapter must implement message handler:
+  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend
+  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.
+  To use this option, your adapter must implement a message handler:
     The result of command must be a string.
 ```
 adapter.on('message', obj => {
@@ -382,7 +384,7 @@ adapter.on('message', obj => {
   - `version` - Check version
 
 - `uuid` - Show iobroker UUID
-- `port` - Special input for ports. It checks automatically if port is used by other instances and shows warning
+- `port` - Special input for ports. It checks automatically if port is used by other instances and shows a warning
 
 ## Common attributes of controls
 All types could have:
@@ -411,7 +413,7 @@ All types could have:
 - `defaultSendTo` - command to request initial value from running instance, example: `"myInstance": {"type": "text", "defaultSendTo": "fill"}`
   - `data` - static data
   - `jsonData` - static data
-  - if no `data` and `jsonData` defined, following info will be sent `{"attr": "<attribute name>", "value": "<current value>"}`
+  - if no `data` and `jsonData` defined, the following info will be sent `{"attr": "<attribute name>", "value": "<current value>"}`
   - `button` - button label to re-trigger request from instance
   - `buttonTooltip` - Button tooltip (default: `Request data by instance`)
   - `buttonTooltipNoTranslation` - Do not translate button tooltip
@@ -490,7 +492,7 @@ data: {
 }
 ```
 In this case input must be text, where shown `__different__`, with the autocomplete option of 3 possible values.
-Users can select from dropdown 1000, 2000 or 3000 or input own new value, e.g. 500.
+Users can select from dropdown 1000, 2000 or 3000 or input their own new value, e.g. 500.
 
 Boolean must support indeterminate if value is [false, true]
 

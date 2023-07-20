@@ -45,77 +45,75 @@ class SSLDialog extends Component {
     render() {
         const { classes, data } = this.props;
         const { letsEncrypt } = data.native || {};
-        return (
-            <div className={classes.tabPanel}>
-                <div
-                    style={{
-                        width: '100%',
-                        // height: '100% ',
-                        overflow: 'auto',
-                        overflowX: 'hidden',
-                        padding: 15,
-                        fontSize: 20,
-                        color: '#ff4949',
-                    }}
-                >
-                    {this.props.t('ra_Use iobroker.acme adapter for letsencrypt certificates')}
-                </div>
-                <div className={classes.buttonPanel}>
-                    <Paper
-                        variant="outlined"
-                        className={classes.descriptionPanel}
-                        dangerouslySetInnerHTML={{ __html: this.props.t('letsnecrypt_help') }}
-                    />
-                </div>
-                <Grid container spacing={6}>
-                    <Grid item md={3} xs={12}>
-                        <FormControl variant="standard" className={classes.formControl}>
-                            <TextField
-                                variant="standard"
-                                id="email"
-                                label={this.props.t('Email for account:')}
-                                value={letsEncrypt ? letsEncrypt.email : ''}
-                                InputLabelProps={{
-                                    readOnly: false,
-                                    shrink: true,
-                                }}
-                                onChange={evt => this.onChangeText(evt, 'email')}
-                            />
-                        </FormControl>
-                    </Grid>
-                    <Grid item md={3} xs={12}>
-                        <FormControl variant="standard" className={classes.formControl}>
-                            <TextField
-                                variant="standard"
-                                id="domains"
-                                label={this.props.t('Domains:')}
-                                value={letsEncrypt ? letsEncrypt.domains : ''}
-                                InputLabelProps={{
-                                    readOnly: false,
-                                    shrink: true,
-                                }}
-                                onChange={evt => this.onChangeText(evt, 'domains')}
-                            />
-                        </FormControl>
-                    </Grid>
-                    <Grid item md={3} xs={12}>
-                        <FormControl variant="standard" className={classes.formControl}>
-                            <TextField
-                                variant="standard"
-                                id="path"
-                                label={this.props.t('Path to storage:')}
-                                value={letsEncrypt ? letsEncrypt.path : ''}
-                                InputLabelProps={{
-                                    readOnly: false,
-                                    shrink: true,
-                                }}
-                                onChange={evt => this.onChangeText(evt, 'path')}
-                            />
-                        </FormControl>
-                    </Grid>
-                </Grid>
+        return <div className={classes.tabPanel}>
+            <div
+                style={{
+                    width: '100%',
+                    // height: '100% ',
+                    overflow: 'auto',
+                    overflowX: 'hidden',
+                    padding: 15,
+                    fontSize: 20,
+                    color: '#ff4949',
+                }}
+            >
+                {this.props.t('ra_Use iobroker.acme adapter for letsencrypt certificates')}
             </div>
-        );
+            <div className={classes.buttonPanel}>
+                <Paper
+                    variant="outlined"
+                    className={classes.descriptionPanel}
+                    dangerouslySetInnerHTML={{ __html: this.props.t('letsnecrypt_help') }}
+                />
+            </div>
+            <Grid container spacing={6}>
+                <Grid item md={3} xs={12}>
+                    <FormControl variant="standard" className={classes.formControl}>
+                        <TextField
+                            variant="standard"
+                            id="email"
+                            label={this.props.t('Email for account:')}
+                            value={letsEncrypt ? letsEncrypt.email : ''}
+                            InputLabelProps={{
+                                readOnly: false,
+                                shrink: true,
+                            }}
+                            onChange={evt => this.onChangeText(evt, 'email')}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item md={3} xs={12}>
+                    <FormControl variant="standard" className={classes.formControl}>
+                        <TextField
+                            variant="standard"
+                            id="domains"
+                            label={this.props.t('Domains:')}
+                            value={letsEncrypt ? letsEncrypt.domains : ''}
+                            InputLabelProps={{
+                                readOnly: false,
+                                shrink: true,
+                            }}
+                            onChange={evt => this.onChangeText(evt, 'domains')}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item md={3} xs={12}>
+                    <FormControl variant="standard" className={classes.formControl}>
+                        <TextField
+                            variant="standard"
+                            id="path"
+                            label={this.props.t('Path to storage:')}
+                            value={letsEncrypt ? letsEncrypt.path : ''}
+                            InputLabelProps={{
+                                readOnly: false,
+                                shrink: true,
+                            }}
+                            onChange={evt => this.onChangeText(evt, 'path')}
+                        />
+                    </FormControl>
+                </Grid>
+            </Grid>
+        </div>;
     }
 
     onChangeText = (evt, id) => {

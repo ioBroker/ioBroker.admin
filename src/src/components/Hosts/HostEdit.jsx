@@ -2,17 +2,21 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    Tooltip,
+} from '@mui/material';
 
-import IconClose from '@mui/icons-material/Close';
-import IconCheck from '@mui/icons-material/Check';
-import AddIcon from '@mui/icons-material/Add';
+import {
+    Close as IconClose,
+    Check as IconCheck,
+    Add as IconAdd,
+} from '@mui/icons-material';
 
 import { Utils } from '@iobroker/adapter-react-v5';
 
@@ -26,18 +30,18 @@ const styles = theme => ({
         fontStyle: 'italic',
     },
     dialog: {
-        height: 'calc(100% - 64px)'
+        height: 'calc(100% - 64px)',
     },
     button: {
         marginTop: 20,
         marginLeft: theme.spacing(1),
     },
     funcDivEdit: {
-        width: '100%'
+        width: '100%',
     },
     funcEditName: {
         display: 'inline-block',
-        width: 85
+        width: 85,
     },
     funcEdit: {
         width: 400,
@@ -47,29 +51,29 @@ const styles = theme => ({
     },
     commonTabWrapper: {
         flexFlow: 'wrap',
-        display: 'flex'
+        display: 'flex',
     },
     commonWrapper: {
         width: 500,
-        minWidth: 300
+        minWidth: 300,
     },
     flexDrop: {
         width: '100%',
         maxWidth: 500,
         margin: 'auto',
-        display: 'flex'
+        display: 'flex',
     },
     marginBlock: {
-        marginTop: 20
+        marginTop: 20,
     },
     buttonAdd: {
-        minWidth: 150
+        minWidth: 150,
     },
     textField: {
-        width: '100%'
+        width: '100%',
     },
     flex: {
-        display: 'flex'
+        display: 'flex',
     },
     close: {
         width: '20px',
@@ -98,20 +102,20 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)'
+            transform: 'rotate(-45deg)',
         },
     },
     color: {
-        width: 70
+        width: 70,
     },
     buttonRemoveWrapper: {
         position: 'absolute',
         zIndex: 222,
-        right: 0
+        right: 0,
     },
     tabsPadding: {
-        padding: '0px 24px'
-    }
+        padding: '0px 24px',
+    },
 });
 
 class HostEdit extends Component {
@@ -162,14 +166,17 @@ class HostEdit extends Component {
             // ignore
         }
     }
+
     setCommonItem(json, name, value) {
         json.common[name] = value;
         this.onChange(JSON.stringify(json, null, 2));
     }
+
     removeCommonItem(json, name) {
         delete json.common[name]
         this.onChange(JSON.stringify(json, null, 2));
     }
+
     buttonAddKey(nameKey, cb) {
         const { t, classes } = this.props;
         return <div
@@ -179,14 +186,16 @@ class HostEdit extends Component {
                 variant="contained"
                 color="secondary"
                 onClick={cb}
-                startIcon={<AddIcon />}
-            >{t('Add ' + nameKey)}</Button>
+                startIcon={<IconAdd />}
+            >{t(`Add ${nameKey}`)}</Button>
         </div>
     }
+
     buttonRemoveKey(nameKey, cb) {
         const { t, classes } = this.props;
-        return <Tooltip title={t('Remove ' + nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>
+        return <Tooltip title={t(`Remove ${nameKey}`)}><div className={classes.close} onClick={cb} /></Tooltip>
     }
+
     renderCommonEdit() {
         try {
             const json = JSON.parse(this.state.text);
@@ -257,11 +266,11 @@ class HostEdit extends Component {
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
         >
-            <DialogTitle id="edit-value-dialog-title">{this.props.t('Edit host settings')}: <span className={this.props.classes.id}>{this.props.obj._id}</span></DialogTitle>
+            <DialogTitle id="edit-value-dialog-title">
+                {this.props.t('Edit host settings')}: <span className={this.props.classes.id}>{this.props.obj._id}</span>
+            </DialogTitle>
             <DialogContent>
-                {
-                    this.renderCommonEdit()
-                }
+                {this.renderCommonEdit()}
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary" startIcon={<IconCheck />}>{this.props.t('Write')}</Button>
