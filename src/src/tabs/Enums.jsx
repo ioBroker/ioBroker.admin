@@ -8,7 +8,7 @@ import TabContent from '../components/TabContent';
 class Enums extends Component {
     render() {
         return <TabContainer>
-            <TabContent style={{display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+            <TabContent style={{ display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                 <EnumsMain {...this.props} />
             </TabContent>
         </TabContainer>;

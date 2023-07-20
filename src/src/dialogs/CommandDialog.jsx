@@ -32,7 +32,7 @@ const styles = theme => ({
     },
     dialogRoot: {
         height: 'calc(100% - 64px)',
-    }
+    },
 });
 
 class CommandDialog extends Component {
@@ -40,17 +40,11 @@ class CommandDialog extends Component {
         super(props);
 
         this.state = {
-            log: ['$ iobroker ' + (props.cmd || '')],
-            init: false,
-            max: null,
-            value: null,
             progressText: '',
             closeOnReady: (window._localStorage || window.localStorage).getItem('CommandDialog.closeOnReady') === 'true',
-            checked: true
         };
-
-        this.t = props.t;
     }
+
     render() {
         const { classes } = this.props;
 
@@ -95,7 +89,9 @@ class CommandDialog extends Component {
                             onChange={e => {
                                 this.setState({ closeOnReady: e.target.checked });
                                 (window._localStorage || window.localStorage).setItem('CommandDialog.closeOnReady', e.target.checked ? 'true' : 'false');
-                            }} />}
+                            }}
+                        />
+                    }
                     label={this.props.t('close on ready')}
                 />
                 <div>
@@ -106,7 +102,8 @@ class CommandDialog extends Component {
                         style={{ marginRight: 8 }}
                         onClick={this.props.onInBackground}
                         startIcon={<OpenInBrowserIcon />}
-                        color="primary">
+                        color="primary"
+                    >
                         {this.props.confirmText || this.props.t('In background')}
                     </Button>
                     <Button
@@ -127,7 +124,6 @@ class CommandDialog extends Component {
 CommandDialog.propTypes = {
     t: PropTypes.func,
     confirmText: PropTypes.string,
-    header: PropTypes.string,
     onClose: PropTypes.func.isRequired,
     callback: PropTypes.bool,
     onInBackground: PropTypes.func.isRequired,

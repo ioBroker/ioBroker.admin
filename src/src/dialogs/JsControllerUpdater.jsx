@@ -91,7 +91,6 @@ class JsControllerUpdater extends Component {
                 console.error(`Cannot find ip address: ${e}`);
             })
             .then(() => {
-                console.info(`Using ip address: ${this.ip}`);
                 this.props.socket.getRawSocket().emit(
                     'sendToHost',
                     this.props.hostId,
@@ -113,7 +112,7 @@ class JsControllerUpdater extends Component {
                             this.setState({ error: I18n.t('Not updatable'), starting: false });
                             this.setUpdating(false);
                         }
-                    }
+                    },
                 );
             });
     }
@@ -161,10 +160,7 @@ class JsControllerUpdater extends Component {
 
                     // scroll down
                     if (this.textareaRef.current) {
-                        setTimeout(
-                            () => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight),
-                            100
-                        );
+                        setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
                     }
                 });
             })
@@ -210,15 +206,15 @@ class JsControllerUpdater extends Component {
                                       (this.state.response &&
                                           !this.state.response.running &&
                                           !this.state.response.success)
-                                    ? '2px solid red'
-                                    : undefined,
+                                        ? '2px solid red'
+                                        : undefined,
                             }}
                             value={
                                 this.state.error
                                     ? this.state.error
                                     : this.state.response.stderr && this.state.response.stderr.length
-                                    ? this.state.response.stderr.join('\n')
-                                    : this.state.response.stdout.join('\n')
+                                        ? this.state.response.stderr.join('\n')
+                                        : this.state.response.stdout.join('\n')
                             }
                             readOnly
                         />

@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import {DialogTitle, LinearProgress} from '@mui/material';
+import { DialogTitle, LinearProgress } from '@mui/material';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
         whiteSpace: 'pre-wrap',
         margin: 0,
         padding: 10,
-    }
+    },
 }));
 
 const LicenseDialog = ({ url, cb, theme }) => {
@@ -80,8 +80,7 @@ const LicenseDialog = ({ url, cb, theme }) => {
                         :
                         <pre className={classes.pre}>
                             {text}
-                        </pre>
-                    }
+                        </pre>}
                 </div>
             </DialogContent>
             <DialogActions>
@@ -94,7 +93,8 @@ const LicenseDialog = ({ url, cb, theme }) => {
                         cb(true);
                     }}
                     startIcon={<IconCheck />}
-                    color="primary">
+                    color="primary"
+                >
                     {I18n.t('Accept')}
                 </Button>
                 <Button
@@ -104,13 +104,14 @@ const LicenseDialog = ({ url, cb, theme }) => {
                         cb(false);
                     }}
                     startIcon={<IconClose />}
-                    color="grey">
+                    color="grey"
+                >
                     {I18n.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>
     </ThemeProvider>;
-}
+};
 
 export const licenseDialogFunc = (license, theme, cb, url) => {
     if (license) {
@@ -128,4 +129,4 @@ export const licenseDialogFunc = (license, theme, cb, url) => {
             <LicenseDialog url={url} cb={cb} theme={theme} />
         </ThemeProvider>
     </StyledEngineProvider>);
-}
+};

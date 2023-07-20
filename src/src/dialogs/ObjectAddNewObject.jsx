@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import {
+    FormControl, InputLabel, MenuItem, Select, TextField,
+} from '@mui/material';
 
 import AddIcon from '@mui/icons-material/AddBox';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 import Utils from '../components/Utils'; // @iobroker/adapter-react-v5/i18n
 
 import CustomModal from '../components/CustomModal';
@@ -27,13 +29,15 @@ const stateDefValues = {
 };
 
 const TYPES = {
-    state:   {name: 'Datapoint', value: 'state'},
-    channel: {name: 'Channel', value: 'channel'},
-    device:  {name: 'Device', value: 'device'},
-    folder:  {name: 'Folder', value: 'folder'}
+    state:   { name: 'Datapoint', value: 'state' },
+    channel: { name: 'Channel', value: 'channel' },
+    device:  { name: 'Device', value: 'device' },
+    folder:  { name: 'Folder', value: 'folder' },
 };
 
-const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objects, expertMode }) => {
+const ObjectAddNewObject = ({
+    onClose, onApply, open, selected, setObject, objects, expertMode,
+}) => {
     const names = {
         state:   I18n.t('New state'),
         channel: I18n.t('New channel'),
@@ -45,7 +49,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
 
     // analyse possible types
     const parentType = objects[selected]?.type;
-    let initialType = '';
+    let initialType;
     if (objects[selected]) {
         if (parentType === 'channel') {
             types.push(TYPES.state);
@@ -87,14 +91,14 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
         initialType = storedType;
     }
 
+    function buildId(_name) {
+        return `${selected}.${_name.toString().replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_')}`;
+    }
+
     const [type, setType] = useState(initialType);
     const [name, setName] = useState(names[initialType]);
     const [stateType, setStateType] = useState((window._localStorage || window.localStorage).getItem('App.lastStateType') || 'string');
     const [unique, setUnique] = useState(!objects[buildId(names.state)]);
-
-    function buildId(name) {
-        return selected + '.' + name.toString().replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
-    }
 
     const onLocalApply = () => {
         const newObj = {
@@ -102,7 +106,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 name,
                 desc: I18n.t('Manually created'),
             },
-            type
+            type,
         };
 
         if (type === 'state') {
@@ -112,7 +116,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 type: stateType,
                 read: true,
                 write: true,
-                def: stateDefValues[stateType]
+                def: stateDefValues[stateType],
             };
             newObj.native = {};
         } else if (type !== 'folder') {
@@ -127,7 +131,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
 
         setObject(`${selected}.${name.split(' ').join('_')}`, newObj)
             .then(() => onApply());
-    }
+    };
 
     return open ? <CustomModal
         open
@@ -136,12 +140,17 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
         titleButtonApply="add"
         applyDisabled={!name || !unique || !types.length}
         onClose={onClose}
-        onApply={() => onLocalApply()}>
+        onApply={() => onLocalApply()}
+    >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ margin: 10, fontSize: 20 }}>
                 <AddIcon />
                 {I18n.t('Add new object:')}
-                <span style={{ fontStyle: 'italic' }}>{selected}.{name}</span>
+                <span style={{ fontStyle: 'italic' }}>
+                    {selected}
+.
+                    {name}
+                </span>
             </div>
             <TextField
                 variant="standard"
@@ -155,7 +164,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 <Select
                     variant="standard"
                     value={type}
-                    onChange={(el) => {
+                    onChange={el => {
                         (window._localStorage || window.localStorage).setItem('App.lastObjectType', el.target.value);
 
                         if (name === names[type]) {
@@ -202,6 +211,6 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
             />
         </div>
     </CustomModal> : null;
-}
+};
 
 export default ObjectAddNewObject;

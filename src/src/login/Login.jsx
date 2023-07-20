@@ -37,7 +37,7 @@ const styles = theme => ({
         height: '100%',
         maxHeight: 500,
         maxWidth: 380,
-        boxShadow
+        boxShadow,
     },
     avatar: {
         margin: theme.spacing(1),
@@ -48,7 +48,7 @@ const styles = theme => ({
     avatarImg: {
         width: 'calc(100% - 4px)',
         height: 'calc(100% - 4px)',
-        padding: 2
+        padding: 2,
     },
     form: {
         width: '100%', // Fix IE 11 issue.
@@ -66,14 +66,14 @@ const styles = theme => ({
         fontSize: 16,
     },
     ioBrokerLink: {
-        textTransform: 'inherit'
+        textTransform: 'inherit',
     },
     marginTop: {
-        marginTop: 'auto'
+        marginTop: 'auto',
     },
     progress: {
-        textAlign: 'center'
-    }
+        textAlign: 'center',
+    },
 });
 
 class Login extends Component {
@@ -132,15 +132,14 @@ class Login extends Component {
                         </div>
                         :
                         window.loginHideLogo === 'false' &&
-                        <Avatar className={classes.avatar} src="img/logo.png" classes={{img: classes.avatarImg}} />}
+                        <Avatar className={classes.avatar} src="img/logo.png" classes={{ img: classes.avatarImg }} />}
                     <Typography component="h1" variant="h5">
                         {window.loginTitle && window.loginTitle !== '@@loginTitle@@' ? window.loginTitle : this.props.t('loginTitle')}
                     </Typography>
                     {window.location.search.includes('error') &&
                         <div className={classes.alert}>
                             {this.props.t('wrongPassword')}
-                        </div>
-                    }
+                        </div>}
                     <form
                         ref={this.formRef}
                         className={classes.form}
@@ -217,8 +216,7 @@ class Login extends Component {
                                 target="_blank"
                             >
                                 {motto}
-                            </Link> : null
-                        }
+                            </Link> : null}
                         {!window.loginLink || window.loginLink === '@@loginLink@@' ? motto : null}
                         {!window.loginLink || window.loginLink === '@@loginLink@@' ? <Link
                             className={classes.ioBrokerLink}
@@ -241,4 +239,3 @@ Login.propTypes = {
 };
 
 export default withWidth()(withStyles(styles)(Login));
-

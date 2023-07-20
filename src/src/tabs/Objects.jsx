@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
@@ -15,13 +14,12 @@ import Snackbar from '@mui/material/Snackbar';
 // icons
 import IconCancel from '@mui/icons-material/Close';
 import IconDeleteOne from '@mui/icons-material/Delete';
-import IconDeleteAll from '@mui/icons-material/Delete';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
+import Router from '@iobroker/adapter-react-v5/Components/Router';
 import ObjectBrowser from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
-import Router from '@iobroker/adapter-react-v5/Components/Router';
 import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';
 import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';
@@ -29,6 +27,7 @@ import ObjectAddNewObject from '../dialogs/ObjectAddNewObject';
 import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
 import ObjectViewFileDialog from '../dialogs/ObjectViewFileDialog';
 
+const IconDeleteAll = IconDeleteOne;
 const styles = {
     buttonIcon: {
         marginRight: 4,
@@ -57,14 +56,14 @@ class Objects extends Component {
             this.filters = {};
         }
 
-        let selected = (window._localStorage || window.localStorage).getItem(`${this.dialogName || 'App'}.selected`) || '';
+        const selected = (window._localStorage || window.localStorage).getItem(`${this.dialogName || 'App'}.selected`) || '';
 
         this.state = {
             selected: this.props.selected === undefined ? selected : '',
             name: '',
             toast: '',
             deleteObjectShow: null,
-            //suppressDeleteConfirm: false,
+            // suppressDeleteConfirm: false,
         };
         this.t = this.translate;
         this.wordCache = {};
@@ -80,7 +79,7 @@ class Objects extends Component {
         }
 
         return this.wordCache[word];
-    }
+    };
 
     onDelete(withChildren) {
         const id = this.state.deleteObjectShow.id;
@@ -93,12 +92,13 @@ class Objects extends Component {
         } else {
             this.props.socket.delObject(id, false)
                 .catch(e => window.alert(`Cannot delete object: ${e}`));
-            this.setState({ deleteObjectShow: null })
+            this.setState({ deleteObjectShow: null });
         }
     }
 
     renderToast() {
         return <Snackbar
+            key="toast"
             anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'right',
@@ -108,11 +108,9 @@ class Objects extends Component {
             onClose={() => this.setState({ toast: '' })}
             message={this.state.toast}
             action={
-                <React.Fragment>
-                    <IconButton size="small" aria-label="close" color="inherit" onClick={() => this.setState({ toast: '' })}>
-                        <IconCancel fontSize="small" />
-                    </IconButton>
-                </React.Fragment>
+                <IconButton size="small" aria-label="close" color="inherit" onClick={() => this.setState({ toast: '' })}>
+                    <IconCancel fontSize="small" />
+                </IconButton>
             }
         />;
     }
@@ -120,20 +118,25 @@ class Objects extends Component {
     renderDeleteDialog() {
         if (!this.state.deleteObjectShow) {
             return null;
-        } else {
-            return <Dialog
-                key="delete"
-                maxWidth="md"
-                open={!0}
-                onClose={() => this.setState({ deleteObjectShow: null })}
-                aria-labelledby="delete-object-dialog-title"
-                aria-describedby="delete-object-dialog-description"
-            >
-                <DialogTitle id="delete-object-dialog-title">{this.state.deleteObjectShow.hasChildren ? this.t('Delete object(s)') : this.t('Delete object')}: <span className={this.props.classes.id}>{this.state.deleteObjectShow.id}</span></DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {this.t('Are you sure?')}
-                        {/*<FormControlLabel
+        }
+        return <Dialog
+            key="delete"
+            maxWidth="md"
+            open={!0}
+            onClose={() => this.setState({ deleteObjectShow: null })}
+            aria-labelledby="delete-object-dialog-title"
+            aria-describedby="delete-object-dialog-description"
+        >
+            <DialogTitle id="delete-object-dialog-title">
+                {this.state.deleteObjectShow.hasChildren ? this.t('Delete object(s)') : this.t('Delete object')}
+:
+                {' '}
+                <span className={this.props.classes.id}>{this.state.deleteObjectShow.id}</span>
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    {this.t('Are you sure?')}
+                    {/* <FormControlLabel
                             control={<Checkbox
                                 checked={this.state.suppressDeleteConfirm}
                                 onChange={() => {
@@ -143,45 +146,46 @@ class Objects extends Component {
                                 name="checkedA" />
                             }
                             label="Secondary"
-                        />*/}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    {this.state.deleteObjectShow.hasChildren ?
-                        <Button
-                            variant="contained"
-                            color="grey"
-                            classes={{ label: this.props.classes.buttonText }}
-                            onClick={() => this.onDelete(true)}
-                            startIcon={<IconDeleteAll className={this.props.classes.buttonAll} />}
-                        >
-                            {this.t('Delete with children', this.state.deleteObjectShow.childrenCount)}
-                        </Button> : null}
-                    {this.state.deleteObjectShow.exists ?
-                        <Button
-                            variant="contained"
-                            classes={{ label: this.props.classes.buttonText }}
-                            onClick={() => this.onDelete(false)}
-                            color="primary" startIcon={<IconDeleteOne />}
-                            autoFocus
-                        >
-                            {this.t('Delete one item')}
-                        </Button> : null}
+                        /> */}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                {this.state.deleteObjectShow.hasChildren ?
                     <Button
                         variant="contained"
                         color="grey"
-                        onClick={() => this.setState({ deleteObjectShow: null })}
-                        startIcon={<IconCancel />}
+                        classes={{ label: this.props.classes.buttonText }}
+                        onClick={() => this.onDelete(true)}
+                        startIcon={<IconDeleteAll className={this.props.classes.buttonAll} />}
                     >
-                        {this.t('ra_Cancel')}
-                    </Button>
-                </DialogActions>
-            </Dialog>;
-        }
+                        {this.t('Delete with children', this.state.deleteObjectShow.childrenCount)}
+                    </Button> : null}
+                {this.state.deleteObjectShow.exists ?
+                    <Button
+                        variant="contained"
+                        classes={{ label: this.props.classes.buttonText }}
+                        onClick={() => this.onDelete(false)}
+                        color="primary"
+                        startIcon={<IconDeleteOne />}
+                        autoFocus
+                    >
+                        {this.t('Delete one item')}
+                    </Button> : null}
+                <Button
+                    variant="contained"
+                    color="grey"
+                    onClick={() => this.setState({ deleteObjectShow: null })}
+                    startIcon={<IconCancel />}
+                >
+                    {this.t('ra_Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 
     render() {
         return [
+            this.renderToast(),
             <ObjectBrowser
                 key="browser"
                 dialogName="admin"
@@ -209,7 +213,11 @@ class Objects extends Component {
                 router={Router}
                 enableStateValueEdit
                 onObjectDelete={(id, hasChildren, exists, childrenCount) =>
-                    this.setState({ deleteObjectShow: { id, hasChildren, exists, childrenCount } })}
+                    this.setState({
+                        deleteObjectShow: {
+                            id, hasChildren, exists, childrenCount,
+                        },
+                    })}
                 onFilterChanged={filterConfig => {
                     this.filters = filterConfig;
                     (window._localStorage || window.localStorage).setItem(`${this.dialogName || 'App'}.filters`, JSON.stringify(filterConfig));
@@ -221,6 +229,7 @@ class Objects extends Component {
                 objectStatesView
                 objectImportExport
                 objectEditOfAccessControl
+                // eslint-disable-next-line react/no-unstable-nested-components
                 modalNewObject={context =>
                     <ObjectAddNewObject
                         objects={context.objects}
@@ -229,8 +238,9 @@ class Objects extends Component {
                         setObject={(id, data) => context.setObject(id, data)}
                         selected={context.state.selected[0] || context.state.selectedNonObject}
                         onClose={() => context.setState({ modalNewObj: false })}
-                        onApply={() => context.setState({ modalNewObj: false })} />
-                }
+                        onApply={() => context.setState({ modalNewObj: false })}
+                    />}
+                // eslint-disable-next-line react/no-unstable-nested-components
                 modalEditOfAccessControl={(context, objData) =>
                     <ObjectEditOfAccessControl
                         themeType={this.props.themeType}
@@ -244,10 +254,10 @@ class Objects extends Component {
                         objects={context.objects}
                         t={this.t}
                         onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null, modalEmptyId: null })}
-                        onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null, modalEmptyId: null })} />
-                }
+                        onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null, modalEmptyId: null })}
+                    />}
             />,
-            this.renderDeleteDialog()
+            this.renderDeleteDialog(),
         ];
     }
 }

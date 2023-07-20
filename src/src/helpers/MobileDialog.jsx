@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import { Component } from 'react';
 
 export const MOBILE_WIDTH = 800;
 
@@ -9,7 +9,7 @@ class MobileDialog extends Component {
 
     componentDidMount() {
         if (this.state.mobile !== MobileDialog.isMobile()) {
-            this.setState({mobile: MobileDialog.isMobile()});
+            this.setState({ mobile: MobileDialog.isMobile() });
         }
         if (!this._resizeHandlerinstalled) {
             this._resizeHandlerinstalled = true;
@@ -30,29 +30,35 @@ class MobileDialog extends Component {
         this._timerOnResize = setTimeout(() => {
             this._timerOnResize = null;
             if (this.state.mobile !== MobileDialog.isMobile()) {
-                this.setState({mobile: MobileDialog.isMobile()});
+                this.setState({ mobile: MobileDialog.isMobile() });
             }
         }, 200);
-    }
+    };
 
-    getButtonTitle(icon, text, moreMobileIcon) {
+    static getButtonTitle(icon, text, moreMobileIcon) {
         if (icon && text) {
             if (this.state.mobile) {
                 if (moreMobileIcon) {
-                    return <>{icon} & {moreMobileIcon}</>;
-                } else {
-                    return icon;
+                    return <>
+                        {icon}
+                        {' '}
+&
+                        {' '}
+                        {moreMobileIcon}
+                    </>;
                 }
-            } else {
-                return <>{icon}<span style={{marginLeft: 4}}>{text}</span></>;
+                return icon;
             }
-        } else if (icon) {
+            return <>
+                {icon}
+                <span style={{ marginLeft: 4 }}>{text}</span>
+            </>;
+        } if (icon) {
             return icon;
-        } else if (text) {
+        } if (text) {
             return text;
-        } else {
-            return null;
         }
+        return null;
     }
 }
 

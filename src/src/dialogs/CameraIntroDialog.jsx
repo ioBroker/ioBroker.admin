@@ -25,20 +25,19 @@ const styles = theme => ({
         color: theme.palette.grey[500],
     },
     paper: {
-        //minWidth: 600
+        // minWidth: 600
     },
     typography: {
-        paddingRight: 30
+        paddingRight: 30,
     },
     img: {
         width: '100%',
         height: '100%',
         objectFit: 'contain',
-    }
+    },
 });
 
 class EditIntroLinkDialog extends Component {
-
     constructor(props) {
         super(props);
 
@@ -64,9 +63,9 @@ class EditIntroLinkDialog extends Component {
                 let url = this.props.children;
                 if (this.props.addTs) {
                     if (url.includes('?')) {
-                        url += '&ts=' + Date.now();
+                        url += `&ts=${Date.now()}`;
                     } else {
-                        url += '?ts=' + Date.now();
+                        url += `?ts=${Date.now()}`;
                     }
                 }
                 this.cameraRef.current.src = url;
@@ -74,10 +73,10 @@ class EditIntroLinkDialog extends Component {
                 const parts = this.props.camera.split('.');
                 const adapter = parts.shift();
                 const instance = parts.shift();
-                this.props.socket.sendTo(adapter + '.' + instance, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
+                this.props.socket.sendTo(`${adapter}.${instance}`, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
                     .then(result => {
                         if (result && result.data && this.cameraRef.current) {
-                            this.cameraRef.current.src = 'data:image/jpeg;base64,' + result.data;
+                            this.cameraRef.current.src = `data:image/jpeg;base64,${result.data}`;
                         }
                     });
             }

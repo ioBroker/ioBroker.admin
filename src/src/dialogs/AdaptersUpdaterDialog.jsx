@@ -22,49 +22,47 @@ import { I18n, Utils } from '@iobroker/adapter-react-v5';
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
 
-const styles = theme => {
-    return ({
-        dialogRoot: {
-            height: 'calc(100% - 64px)',
+const styles = theme => ({
+    dialogRoot: {
+        height: 'calc(100% - 64px)',
+    },
+    wrapperHead: {
+        justifyContent: 'space-between',
+        display: 'flex',
+    },
+    checkbox: {
+        marginRight: 10,
+    },
+    appBar: {
+        flexWrap: 'wrap',
+        position: 'sticky',
+        bottom: -10,
+        paddingLeft: theme.spacing(1),
+        background: theme.name === 'blue' ? '#5d6467' : (theme.name === 'dark' ? '#5b5b5b' : '#FFF'),
+    },
+    container:{
+        overflow: 'hidden',
+        height: 'calc(100% - 48px)',
+    },
+    '@media screen and (max-width: 602px)': {
+        container: {
+            height: 'auto',
         },
-        wrapperHead: {
-            justifyContent: 'space-between',
-            display: 'flex'
+    },
+    '@media screen and (max-width: 500px)': {
+        content: {
+            padding: 8,
         },
-        checkbox: {
-            marginRight: 10
-        },
-        appBar: {
-            flexWrap: 'wrap',
-            position: 'sticky',
-            bottom: -10,
-            paddingLeft: theme.spacing(1),
-            background: theme.name === 'blue' ? '#5d6467' : (theme.name === 'dark' ? '#5b5b5b' : '#FFF'),
-        },
-        container:{
-            overflow: 'hidden',
-            height: 'calc(100% - 48px)'
-        },
-        '@media screen and (max-width: 602px)': {
-            container: {
-                height: 'auto'
-            }
-        },
-        '@media screen and (max-width: 500px)': {
-            content: {
-                padding: 8
-            }
-        },
-        languageButton: {
-            position: 'absolute',
-            right: 73,
-            top: 11
-        },
-        languageButtonActive: {
-            color: theme.palette.primary.main
-        },
-    })
-};
+    },
+    languageButton: {
+        position: 'absolute',
+        right: 73,
+        top: 11,
+    },
+    languageButtonActive: {
+        color: theme.palette.primary.main,
+    },
+});
 
 class AdaptersUpdaterDialog extends Component {
     constructor(props) {
@@ -94,7 +92,7 @@ class AdaptersUpdaterDialog extends Component {
         this.setState({ inProcess: true }, () => {
             this.props.onSetCommandRunning(true);
             this.processList = [...this.state.selected];
-            this.processList = this.processList.map(adapter => ({adapter, version: this.props.repository[adapter]?.version}));
+            this.processList = this.processList.map(adapter => ({ adapter, version: this.props.repository[adapter]?.version }));
 
             this.updateAdapters(() => {
                 this.setState({ inProcess: false, finished: true }, () => {
@@ -113,7 +111,7 @@ class AdaptersUpdaterDialog extends Component {
         if (!this.processList || !this.processList.length) {
             cb && cb();
         } else {
-            const {adapter, version} = this.processList.shift();
+            const { adapter, version } = this.processList.shift();
 
             this.updateAdapter(adapter, version, () => {
                 const updated = [...this.state.updated];
@@ -138,20 +136,22 @@ class AdaptersUpdaterDialog extends Component {
             <DialogTitle id="update-dialog-title">
                 <div className={this.props.classes.wrapperHead}>
                     {this.props.t('Update %s adapter(s)', this.state.selected.length)}
-                    {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')}><Checkbox
-                        checked={this.state.selected.length === this.updateAvailable.length}
-                        className={this.props.classes.checkbox}
-                        tabIndex={-1}
-                        indeterminate={this.state.selected.length !== this.updateAvailable.length && this.state.selected.length !== 0}
-                        disableRipple
-                        onClick={() => {
-                            let selected = [];
-                            if (this.state.selected.length !== this.updateAvailable.length) {
-                                selected = [...this.updateAvailable];
-                            }
-                            this.setState({ selected });
-                        }}
-                    /></Tooltip>}
+                    {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')}>
+                        <Checkbox
+                            checked={this.state.selected.length === this.updateAvailable.length}
+                            className={this.props.classes.checkbox}
+                            tabIndex={-1}
+                            indeterminate={this.state.selected.length !== this.updateAvailable.length && this.state.selected.length !== 0}
+                            disableRipple
+                            onClick={() => {
+                                let selected = [];
+                                if (this.state.selected.length !== this.updateAvailable.length) {
+                                    selected = [...this.updateAvailable];
+                                }
+                                this.setState({ selected });
+                            }}
+                        />
+                    </Tooltip>}
                     {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
                         size="large"
                         className={Utils.clsx(this.props.classes.languageButton, this.props.noTranslation && this.props.classes.languageButtonActive)}
@@ -189,7 +189,15 @@ class AdaptersUpdaterDialog extends Component {
                             />
                         </div>
                     </Grid>
-                    {!!this.state.current && <Grid item style={{ height: '100%', overflow: 'hidden', width: 'calc(100% - 260px)', minWidth: 240 }}>
+                    {!!this.state.current && <Grid
+                        item
+                        style={{
+                            height: '100%',
+                            overflow: 'hidden',
+                            width: 'calc(100% - 260px)',
+                            minWidth: 240,
+                        }}
+                    >
                         <Command
                             noSpacing
                             key={this.state.current}
@@ -230,7 +238,8 @@ class AdaptersUpdaterDialog extends Component {
                             onChange={() => {
                                 (window._localStorage || window.localStorage).setItem('AdaptersUpdaterDialog.closeOnFinished', this.state.closeOnFinished ? 'false' : 'true');
                                 this.setState({ closeOnFinished: !this.state.closeOnFinished });
-                            }} />}
+                            }}
+                        />}
                         label={this.props.t('Close on finished')}
                     />
                     <FormControlLabel
@@ -240,7 +249,8 @@ class AdaptersUpdaterDialog extends Component {
                             onChange={() => {
                                 (window._localStorage || window.localStorage).setItem('AdaptersUpdaterDialog.debug', this.state.debug ? 'false' : 'true');
                                 this.setState({ debug: !this.state.debug });
-                            }} />}
+                            }}
+                        />}
                         label={this.props.t('Debug info')}
                     />
                 </Toolbar>
@@ -281,6 +291,6 @@ AdaptersUpdaterDialog.propTypes = {
     onSetCommandRunning: PropTypes.func.isRequired,
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
-}
+};
 
 export default withStyles(styles)(AdaptersUpdaterDialog);

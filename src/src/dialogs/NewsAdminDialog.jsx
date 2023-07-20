@@ -27,11 +27,11 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         height: 'auto',
         display: 'flex',
-        borderRadius: 4
+        borderRadius: 4,
     },
     paper: {
         maxWidth: 1000,
-        width: '100%'
+        width: '100%',
     },
     overflowHidden: {
         display: 'flex',
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
         margin: 20,
         '& p': {
             fontSize: 18,
-        }
+        },
     },
     blockInfo: {
         right: 20,
@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
         position: 'absolute',
         display: 'flex',
         alignItems: 'center',
-        color: 'silver'
+        color: 'silver',
     },
     img: {
         marginLeft: 10,
@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     img2: {
         width: 70,
@@ -87,11 +87,11 @@ const useStyles = makeStyles(theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     link:{
         margin: '10px 0',
-    }
+    },
 }));
 
 const Status = ({ name, ...props }) => {
@@ -105,17 +105,17 @@ const Status = ({ name, ...props }) => {
         default:
             return <InfoIcon style={{ color: '#007cff' }} {...props} />;
     }
-}
+};
 
 function checkActive(adapterName, instances) {
-    return !!Object.keys(instances).filter(id => id.startsWith('adapter.system.' + adapterName + '.')).find(id => instances[id].enabled);
+    return !!Object.keys(instances).filter(id => id.startsWith(`adapter.system.${adapterName}.`)).find(id => instances[id].enabled);
 }
 
 function checkConditions(condition, installedVersion) {
     if (condition.startsWith('equals')) {
         const vers = condition.substring(7, condition.length - 1).trim();
         return installedVersion === vers;
-    } else if (condition.startsWith('bigger') || condition.startsWith('greater')) {
+    } if (condition.startsWith('bigger') || condition.startsWith('greater')) {
         const vers = condition.substring(7, condition.length - 1).trim();
         try {
             return semver.gt(vers, installedVersion);
@@ -142,7 +142,7 @@ function checkConditions(condition, installedVersion) {
     }
 }
 
-/*const context = {
+/* const context = {
     adapters,
     instances,
     nodeVersion,
@@ -151,7 +151,7 @@ function checkConditions(condition, installedVersion) {
     activeRepo
     uuid,
     lang
-}*/
+} */
 
 export const checkMessages = function (messages, lastMessageId, context) {
     const messagesToShow = [];
@@ -199,22 +199,22 @@ export const checkMessages = function (messages, lastMessageId, context) {
             if (showIt && message['npm-version'] && context.npmVersion) {
                 showIt = checkConditions(message['npm-version'], context.npmVersion);
             }
-            if (showIt && message['os'] && context.os) {
-                showIt = context.os === message['os'];
+            if (showIt && message.os && context.os) {
+                showIt = context.os === message.os;
             }
-            if (showIt && message['repo']) {
+            if (showIt && message.repo) {
                 // If multi-repo
                 if (Array.isArray(context.activeRepo)) {
-                    showIt = context.activeRepo.includes(message['repo']);
+                    showIt = context.activeRepo.includes(message.repo);
                 } else {
-                    showIt = context.activeRepo === message['repo'];
+                    showIt = context.activeRepo === message.repo;
                 }
             }
-            if (showIt && message['uuid']) {
-                if (Array.isArray(message['uuid'])) {
-                    showIt = context.uuid && message['uuid'].find(uuid => context.uuid === uuid);
+            if (showIt && message.uuid) {
+                if (Array.isArray(message.uuid)) {
+                    showIt = context.uuid && message.uuid.find(uuid => context.uuid === uuid);
                 } else {
-                    showIt = context.uuid && context.uuid === message['uuid'];
+                    showIt = context.uuid && context.uuid === message.uuid;
                 }
             }
 
@@ -223,7 +223,7 @@ export const checkMessages = function (messages, lastMessageId, context) {
                     id: message.id,
                     title: message.title[context.lang] || message.title.en,
                     content: message.content[context.lang] || message.content.en,
-                    'class': message.class,
+                    class: message.class,
                     icon: message.icon,
                     created: message.created,
                     link: message.link,
@@ -237,9 +237,11 @@ export const checkMessages = function (messages, lastMessageId, context) {
     }
 
     return messagesToShow;
-}
+};
 
-const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
+const NewsAdminDialog = ({
+    newsArr, current, callback, themeType, theme,
+}) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [id, setId] = useState(current);
@@ -273,7 +275,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
 
     const onClose = () => {
         // setOpen(false);
-        setLast(!last)
+        setLast(!last);
         callback(id);
     };
 
@@ -353,7 +355,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
             </DialogActions>
         </Dialog>
     </ThemeProvider>;
-}
+};
 
 export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, theme, callback) => {
     if (!node) {
@@ -375,4 +377,4 @@ export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, them
             />
         </ThemeProvider>
     </StyledEngineProvider>);
-}
+};

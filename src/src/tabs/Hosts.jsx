@@ -134,15 +134,15 @@ const styles = theme => ({
     },
 });
 
-let wordCache = {};
+const wordCache = {};
 
 const formatInfo = {
-    'Uptime': Utils.formatSeconds,
+    Uptime: Utils.formatSeconds,
     'System uptime': Utils.formatSeconds,
-    'RAM': Utils.formatRam,
-    'Speed': Utils.formatSpeed,
+    RAM: Utils.formatRam,
+    Speed: Utils.formatSpeed,
     'Disk size': Utils.formatBytes,
-    'Disk free': Utils.formatBytes
+    'Disk free': Utils.formatBytes,
 };
 
 const getHostDescriptionAll = (id, t, classes, hostsData) => {
@@ -156,58 +156,75 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
     }
 
     return [
-        <ul className={classes.ul}>
+        <ul key="ul" className={classes.ul}>
             {
                 hostData && typeof hostData === 'object' ? Object.keys(hostData).map(value =>
                     <li key={value}>
                         <span className={classes.black}>
-                            <span className={classes.bold}>{t(value)}: </span>
+                            <span className={classes.bold}>
+                                {t(value)}
+:
+                                {' '}
+                            </span>
                             {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                         </span>
                     </li>) : <Skeleton />
             }
         </ul>,
-        <div className={classes.wrapperInfo}>
+        <div key="info" className={classes.wrapperInfo}>
             <div className={classes.marginRight}>
                 {hostData && typeof hostData === 'object' ? Object.keys(hostData).map((value, idx) => idx < 5 &&
                     <div className={classes.wrapperBlockItem} key={value}>
-                        <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                        <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>
+                            {t(value)}
+:
+                            {' '}
+                        </span>
                         {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                     </div>) : <Skeleton />}
             </div>
             <div className={classes.marginRight}>
                 {hostData && typeof hostData === 'object' ? Object.keys(hostData).map((value, idx) => idx > 4 && idx < 10 &&
                     <div className={classes.wrapperBlockItem} key={value}>
-                        <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                        <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>
+                            {t(value)}
+:
+                            {' '}
+                        </span>
                         {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                     </div>) : <Skeleton />}
             </div>
             <div className={classes.marginRight}>
                 {hostData && typeof hostData === 'object' && Object.keys(hostData).map((value, idx) => idx > 10 &&
                     <div
-                        className={classes.wrapperBlockItem} key={value}>
+                        className={classes.wrapperBlockItem}
+                        key={value}
+                    >
                         {hostData && typeof hostData === 'object' ?
                             <>
-                                <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                                <span className={UtilsCommon.clsx(classes.bold, classes.nowrap)}>
+                                    {t(value)}
+:
+                                    {' '}
+                                </span>
                                 {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                             </>
                             :
-                            <Skeleton />
-                        }
+                            <Skeleton />}
                     </div>)}
             </div>
-        </div>
+        </div>,
     ];
-}
+};
 
 const getLogLevelIcon = level => {
     if (level === 'debug') {
         return <BugReportIcon />;
-    } else if (level === 'info') {
+    } if (level === 'info') {
         return <InfoIcon />;
-    } else if (level === 'warn') {
+    } if (level === 'warn') {
         return <WarningIcon />;
-    } else if (level === 'error') {
+    } if (level === 'error') {
         return <ErrorIcon />;
     }
     return null;
@@ -234,16 +251,17 @@ class Hosts extends Component {
             baseSettingsDialog: { index: 0, dialogName: '' },
         };
     }
+
     // cache translations
     t = (word, arg1, arg2) => {
         if (arg1 !== undefined && arg2 !== undefined && !wordCache[`${word} ${arg1} ${arg2}`]) {
             wordCache[`${word} ${arg1} ${arg2}`] = this.props.t(word, arg1, arg2);
         } else
-        if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
-            wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
-        } else if (!wordCache[word]) {
-            wordCache[word] = this.props.t(word);
-        }
+            if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
+                wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
+            } else if (!wordCache[word]) {
+                wordCache[word] = this.props.t(word);
+            }
 
         return arg1 !== undefined && arg2 !== undefined ? wordCache[`${word} ${arg1} ${arg2}`] : (arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word]);
     };
@@ -266,49 +284,47 @@ class Hosts extends Component {
             if (_alive[obj._id]) {
                 return this.props.socket.getHostInfo(obj._id, null, this.state.readTimeoutMs)
                     .catch(error => {
-                        console.error('Cannot get getHostInfo: ' + error);
+                        console.error(`Cannot get getHostInfo: ${error}`);
                         error.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                         return error;
                     })
                     .then(data =>
                         ({ id: obj._id, data }));
-            } else {
-                return { id: obj._id, data: 'offline' };
             }
+            return { id: obj._id, data: 'offline' };
         });
 
-        return new Promise(resolve =>
-            Promise.all(promises)
-                .then(results => {
-                    const _hostsData = {};
-                    results.forEach(res => _hostsData[res.id] = res.data);
-                    resolve(_hostsData);
-                }));
+        return Promise.all(promises)
+            .then(results => {
+                const _hostsData = {};
+                results.forEach(res => _hostsData[res.id] = res.data);
+                return _hostsData;
+            });
     };
 
-    readInfo = () => {
-        return this.props.socket.getHosts(true, false, this.state.readTimeoutMs)
-            .then(hosts => this.props.socket.getRepository(this.props.currentHost, { update: false }, false, this.state.readTimeoutMs)
-                .then(async repository => {
-                    const alive = JSON.parse(JSON.stringify(this.state.alive));
+    readInfo = () => this.props.socket.getHosts(true, false, this.state.readTimeoutMs)
+        .then(hosts => this.props.socket.getRepository(this.props.currentHost, { update: false }, false, this.state.readTimeoutMs)
+            .then(async repository => {
+                const alive = JSON.parse(JSON.stringify(this.state.alive));
 
-                    for (let h = 0; h < hosts.length; h++) {
-                        let aliveValue = await this.props.socket.getState(`${hosts[h]._id}.alive`);
-                        alive[hosts[h]._id] = !aliveValue ? false : !!aliveValue.val;
-                    }
+                for (let h = 0; h < hosts.length; h++) {
+                    const aliveValue = await this.props.socket.getState(`${hosts[h]._id}.alive`);
+                    alive[hosts[h]._id] = !aliveValue ? false : !!aliveValue.val;
+                }
 
-                    const hostsData = await this.getHostsData(hosts, alive);
-                    const newState = { alive, hosts, hostsData, repository };
-                    if (this.state.filterText && hosts.length <= 2) {
-                        newState.filterText = '';
-                    }
-                    this.setState(newState);
-                })
-                .catch(e => {
-                    window.alert('Cannot getRepository: ' + e);
-                    e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
-                }));
-    };
+                const hostsData = await this.getHostsData(hosts, alive);
+                const newState = {
+                    alive, hosts, hostsData, repository,
+                };
+                if (this.state.filterText && hosts.length <= 2) {
+                    newState.filterText = '';
+                }
+                this.setState(newState);
+            })
+            .catch(e => {
+                window.alert(`Cannot getRepository: ${e}`);
+                e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+            }));
 
     updateHosts = (hostId, obj) => {
         const hosts = JSON.parse(JSON.stringify(this.state.hosts));
@@ -330,7 +346,7 @@ class Hosts extends Component {
                     hosts.splice(index, 1);
                 }
             } else {
-                const state = await this.props.socket.getState(event.id + '.alive');
+                const state = await this.props.socket.getState(`${event.id}.alive`);
                 alive[event.id] = state ? state.val : false;
                 // new
                 hosts.push(event.obj);
@@ -348,7 +364,7 @@ class Hosts extends Component {
     };
 
     updateHostsAlive = events => {
-        let alive = JSON.parse(JSON.stringify(this.state.alive));
+        const alive = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
 
         events.forEach(event => {
@@ -368,8 +384,8 @@ class Hosts extends Component {
 
     getPanels() {
         const items = this.renderHosts()
-            .filter(el => this.state.filterText ? el.name.toLowerCase().includes(this.state.filterText.toLowerCase()) : true)
-            .map(el => this.state.viewMode ? el.renderCard : el.renderRow);
+            .filter(el => (this.state.filterText ? el.name.toLowerCase().includes(this.state.filterText.toLowerCase()) : true))
+            .map(el => (this.state.viewMode ? el.renderCard : el.renderRow));
 
         return items.length ? items : this.t('All items are filtered out');
     }
@@ -385,16 +401,18 @@ class Hosts extends Component {
             themeName={this.props.themeName}
             currentHostName={this.state.baseSettingsDialog.dialogName}
             key="base"
-            onClose={() => this.setState({baseSettingsDialog: {
-                index: 0,
-                dialogName: ''
-            }})}
+            onClose={() => this.setState({
+                baseSettingsDialog: {
+                    index: 0,
+                    dialogName: '',
+                },
+            })}
             lang={this.props.lang}
             // showAlert={(message, type) => this.showAlert(message, type)}
             socket={this.props.socket}
             // currentTab={currentTab}
             t={this.t}
-        />
+        />;
     }
 
     renderEditObjectDialog = () => {
@@ -409,14 +427,16 @@ class Hosts extends Component {
             t={this.t}
             expertMode={this.props.expertMode}
             onClose={obj => {
-                this.setState({ editDialog: {
-                    index: 0,
-                    dialogName: ''
-                }});
+                this.setState({
+                    editDialog: {
+                        index: 0,
+                        dialogName: '',
+                    },
+                });
                 if (obj) {
                     this.props.socket.setObject(obj._id, obj)
-                        .then(_ => this.forceUpdate())
-                        .catch(e => alert('Cannot write object: ' + e));
+                        .then(() => this.forceUpdate())
+                        .catch(e => alert(`Cannot write object: ${e}`));
                 }
             }}
         />;
@@ -425,19 +445,18 @@ class Hosts extends Component {
     renderSlowConnectionWarning = () => {
         if (!this.state.showSlowConnectionWarning) {
             return null;
-        } else {
-            return <SlowConnectionWarningDialog
-                readTimeoutMs={this.state.readTimeoutMs}
-                t={this.t}
-                onClose={async readTimeoutMs => {
-                    this.setState({ showSlowConnectionWarning: false });
-                    if (readTimeoutMs) {
-                        this.setState({ readTimeoutMs });
-                        await this.readInfo();
-                    }
-                }}
-            />;
         }
+        return <SlowConnectionWarningDialog
+            readTimeoutMs={this.state.readTimeoutMs}
+            t={this.t}
+            onClose={async readTimeoutMs => {
+                this.setState({ showSlowConnectionWarning: false });
+                if (readTimeoutMs) {
+                    this.setState({ readTimeoutMs });
+                    await this.readInfo();
+                }
+            }}
+        />;
     };
 
     closeHostUpdateDialog = cb =>
@@ -451,8 +470,7 @@ class Hosts extends Component {
             hostUpdate,
             updateAvailable,
         }, cb);
-    }
-
+    };
 
     getNews = (value, all = false) => {
         const adapter = this.state.repository['js-controller'];
@@ -531,14 +549,16 @@ class Hosts extends Component {
     renderHosts() {
         return this.state.hosts.map(({
             _id,
-            common: { name, icon, color, title, installedVersion },
+            common: {
+                name, icon, color, title, installedVersion,
+            },
             native: { os: { platform } },
         }, idx) => ({
             renderCard: this.state.viewMode ? <HostCard
                 systemConfig={this.props.systemConfig}
                 key={_id}
                 setEditDialog={() => this.setState({ editDialog: { index: idx, dialogName: name } })}
-                setBaseSettingsDialog={() => this.setState({ baseSettingsDialog: { index: idx, dialogName: name }})}
+                setBaseSettingsDialog={() => this.setState({ baseSettingsDialog: { index: idx, dialogName: name } })}
                 hostsWorker={this.props.hostsWorker}
                 expertMode={this.props.expertMode}
                 socket={this.props.socket}
@@ -566,7 +586,7 @@ class Hosts extends Component {
                 systemConfig={this.props.systemConfig}
                 key={_id}
                 setEditDialog={() => this.setState({ editDialog: { index: idx, dialogName: name } })}
-                setBaseSettingsDialog={() => this.setState({ baseSettingsDialog: { index: idx, dialogName: name }})}
+                setBaseSettingsDialog={() => this.setState({ baseSettingsDialog: { index: idx, dialogName: name } })}
                 hostsWorker={this.props.hostsWorker}
                 expertMode={this.props.expertMode}
                 socket={this.props.socket}
@@ -590,7 +610,7 @@ class Hosts extends Component {
                 _id={_id}
                 showAdaptersWarning={this.props.showAdaptersWarning}
             /> : null,
-            name
+            name,
         }));
     }
 
@@ -612,10 +632,13 @@ class Hosts extends Component {
             {this.renderUpdateDialog()}
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>
-                    <IconButton size="large" onClick={() => {
-                        (window._localStorage || window.localStorage).setItem('Hosts.viewMode', this.state.viewMode ? 'false' : 'true');
-                        this.setState({viewMode: !this.state.viewMode});
-                    }}>
+                    <IconButton
+                        size="large"
+                        onClick={() => {
+                            (window._localStorage || window.localStorage).setItem('Hosts.viewMode', this.state.viewMode ? 'false' : 'true');
+                            this.setState({ viewMode: !this.state.viewMode });
+                        }}
+                    >
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
                 </Tooltip>
@@ -632,7 +655,7 @@ class Hosts extends Component {
                     value={this.state.filterText}
                     onChange={event => {
                         (window._localStorage || window.localStorage).setItem('Hosts.viewMode', event.target.value);
-                        this.setState({filterText: event.target.value});
+                        this.setState({ filterText: event.target.value });
                     }}
                     InputProps={{
                         endAdornment: this.state.filterText ? <InputAdornment position="end">
@@ -640,7 +663,7 @@ class Hosts extends Component {
                                 size="small"
                                 onClick={() => {
                                     (window._localStorage || window.localStorage).setItem('Hosts.viewMode', '');
-                                    this.setState({filterText: ''})
+                                    this.setState({ filterText: '' });
                                 }}
                             >
                                 <CloseIcon />
@@ -660,12 +683,18 @@ class Hosts extends Component {
                                 {this.t('Name:')}
                             </div>
                             <div className={classes.tabFlex}>
-                                {/*<div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div>*/}
+                                {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
                                 <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
                                 <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
                                 <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>{this.t('Uptime')}</div>
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Available')}<div className={classes.jsController}>js-controller</div></div>
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Installed')}<div className={classes.jsController}>js-controller</div></div>
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden1100)}>
+                                    {this.t('Available')}
+                                    <div className={classes.jsController}>js-controller</div>
+                                </div>
+                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden1100)}>
+                                    {this.t('Installed')}
+                                    <div className={classes.jsController}>js-controller</div>
+                                </div>
                                 <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{this.t('Events')}</div>
                                 <div className={UtilsCommon.clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
                             </div>

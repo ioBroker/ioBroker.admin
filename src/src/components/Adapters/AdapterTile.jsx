@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Rating from '@mui/material/Rating';
+import {
+    Card, CardContent, CardMedia, Fab,
+    IconButton, Tooltip, Typography, Rating,
+} from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -30,17 +32,26 @@ const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
 function MyImage(props) {
-    const {src, alt, style, ...other} = props;
+    const {
+        src, alt, style, ...other
+    } = props;
     const img = props.style.backgroundImage.substring(5, props.style.backgroundImage.length - 2);
-    return <img src={img} alt={alt} {...other} onError={e => {
-        if (this) {
-            this.onerror = null;
-            this.src = './img/no-image.png';
-        } else if (e.target) {
-            e.target.onerror = null;
-            e.target.src = './img/no-image.png';
-        }
-    }} />;
+    return <img
+        src={img}
+        alt={alt}
+        {...other}
+        onError={e => {
+            if (this) {
+                // eslint-disable-next-line react/no-this-in-sfc
+                this.onerror = null;
+                // eslint-disable-next-line react/no-this-in-sfc
+                this.src = './img/no-image.png';
+            } else if (e.target) {
+                e.target.onerror = null;
+                e.target.src = './img/no-image.png';
+            }
+        }}
+    />;
 }
 
 const styles = theme => ({
@@ -55,8 +66,8 @@ const styles = theme => ({
         flexDirection: 'column',
         transition: 'box-shadow 0.5s',
         '&:hover': {
-            boxShadow: boxShadowHover
-        }
+            boxShadow: boxShadowHover,
+        },
     },
     imageBlock: {
         background: theme.palette.mode === 'dark' ? '#848484' : '#c0c0c0',
@@ -65,7 +76,7 @@ const styles = theme => ({
         padding: '0 10px 0 10px',
         position: 'relative',
         justifyContent: 'space-between',
-        color: '#000'
+        color: '#000',
     },
     img: {
         width: 45,
@@ -83,13 +94,13 @@ const styles = theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     installed: {
-        background: '#77c7ff8c'
+        background: '#77c7ff8c',
     },
     update: {
-        background: '#10ff006b'
+        background: '#10ff006b',
     },
     fab: {
         position: 'absolute',
@@ -112,10 +123,10 @@ const styles = theme => ({
         transition: 'height 0.3s',
         justifyContent: 'space-between',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     collapseOff: {
-        height: 0
+        height: 0,
     },
     close: {
         width: '20px',
@@ -127,7 +138,7 @@ const styles = theme => ({
         marginBottom: 10,
         transition: 'all 0.6s ease',
         '&:hover': {
-            transform: 'rotate(90deg)'
+            transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
@@ -136,7 +147,7 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: 'rgba(0, 0, 0, 0.54)',
-            transform: 'rotate(45deg)'
+            transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
@@ -145,17 +156,17 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: 'rgba(0, 0, 0, 0.54)',
-            transform: 'rotate(-45deg)'
+            transform: 'rotate(-45deg)',
         },
     },
     footerBlock: {
         background: theme.palette.background.default,
         padding: 10,
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     hidden: {
-        display: 'none'
+        display: 'none',
     },
     buttonUpdate: {
         border: '1px solid',
@@ -166,11 +177,11 @@ const styles = theme => ({
         cursor: 'pointer',
         transition: 'background 0.5s',
         '&:hover': {
-            background: '#00800026'
-        }
+            background: '#00800026',
+        },
     },
     versionDate: {
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     adapter: {
         width: '100%',
@@ -179,88 +190,89 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.mode === 'dark' ? '#333' : '#333'
+        color: theme.palette.mode === 'dark' ? '#333' : '#333',
     },
     adapterWithAgo: {
         width: 'calc(100% - 145px)',
     },
     description: {
-        color: theme.palette.mode === 'dark' ? '#222' : 'inherit'
+        color: theme.palette.mode === 'dark' ? '#222' : 'inherit',
     },
 
     cardContent: {
-        overflow: 'auto'
+        overflow: 'auto',
     },
     cardContentDiv: {
         position: 'sticky',
         right: 0,
         top: 0,
-        background: 'silver'
+        background: 'silver',
     },
     cardContentFlex: {
-        display: 'flex'
+        display: 'flex',
     },
     cardContentFlexBetween: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     cardContent2: {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     cardMargin10: {
         marginTop: 10,
     },
     availableVersion: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     buttonUpdateIcon: {
         height: 20,
         width: 20,
-        marginRight: 10
+        marginRight: 10,
     },
     curdContentFlexCenter: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
 
     classPoll: {
-        color: 'orange'
+        color: 'orange',
     },
     classPush: {
-        color: 'green'
+        color: 'green',
     },
     classAssumption: {
         color: 'red',
-        transform: 'rotate(90deg)'
+        transform: 'rotate(90deg)',
     },
     marginLeft5: {
-        marginLeft: 5
+        marginLeft: 5,
     },
     rating: {
         marginTop: 20,
     },
     ratingSet: {
-        cursor: 'pointer'
+        cursor: 'pointer',
     },
     versionWarn: {
         color: amber[500],
-        marginRight:5
+        marginRight: 5,
     },
     sentry: {
         width: 21,
         height: 21,
         objectFit: 'fill',
         marginTop: 3,
-        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)',
     },
     tooltip: {
         pointerEvents: 'none',
     },
 });
+
 const AdapterTile = ({
     name,
     classes,
@@ -297,7 +309,7 @@ const AdapterTile = ({
     allowAdapterReadme,
     allowAdapterDelete,
     allowAdapterUpdate,
-    allowAdapterRating
+    allowAdapterRating,
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
@@ -306,9 +318,9 @@ const AdapterTile = ({
         {(openCollapse || focused) && <div className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent className={classes.cardContent}>
                 <div className={classes.cardContentDiv}>
-                    <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
+                    <div className={classes.close} onClick={() => setCollapse(bool => !bool)} />
                 </div>
-                <Typography gutterBottom component={'span'} variant={'body2'} className={classes.description}>
+                <Typography gutterBottom component="span" variant="body2" className={classes.description}>
                     {description}
                 </Typography>
             </CardContent>
@@ -346,8 +358,7 @@ const AdapterTile = ({
                             >
                                 <PublishIcon />
                             </IconButton>
-                        </Tooltip>
-                    }
+                        </Tooltip>}
                     <IsVisible value={allowAdapterDelete}>
                         <Tooltip title={t('Delete adapter')}>
                             <IconButton
@@ -370,8 +381,7 @@ const AdapterTile = ({
                             >
                                 <AddToPhotosIcon />
                             </IconButton>
-                        </Tooltip>
-                    }
+                        </Tooltip>}
                     {rebuild && expertMode &&
                         <Tooltip title={t('Rebuild')}>
                             <IconButton
@@ -382,14 +392,16 @@ const AdapterTile = ({
                             >
                                 <BuildIcon />
                             </IconButton>
-                        </Tooltip>
-                    }
+                        </Tooltip>}
                 </div>
             </div>
         </div>}
-        <div className={Utils.clsx(classes.imageBlock,
-            installedVersion ? classes.installed : '',
-            installedVersion && installedVersion !== version && updateAvailable ? classes.update : '')}
+        <div
+            className={Utils.clsx(
+                classes.imageBlock,
+                installedVersion ? classes.installed : '',
+                installedVersion && installedVersion !== version && updateAvailable ? classes.update : '',
+            )}
         >
             <CardMedia
                 className={classes.img}
@@ -416,7 +428,11 @@ const AdapterTile = ({
                 <Fab
                     onMouseOut={() => setFocused(false)}
                     onMouseOver={() => setFocused(true)}
-                    onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
+                    onClick={() => setCollapse(bool => !bool)}
+                    className={classes.fab}
+                    color="primary"
+                    aria-label="add"
+                >
                     <MoreVertIcon />
                 </Fab>
             </Tooltip>
@@ -426,25 +442,27 @@ const AdapterTile = ({
             <div className={classes.cardContentFlex}>
                 {!isCategory &&
                     (connectionType === 'cloud' ?
-                        <Tooltip title={t('Adapter requires the specific cloud access for these devices/service')}><CloudIcon /></Tooltip> :
+                        <Tooltip title={t('Adapter requires the specific cloud access for these devices/service')}>
+                            <CloudIcon />
+                        </Tooltip> :
                         connectionType === 'local' ?
-                            <Tooltip title={t('Adapter does not use the cloud for these devices/service')}><CloudOffIcon /></Tooltip> : '')
-                }
-                {
-                    dataSource && <div className={classes.marginLeft5}>{(
-                        dataSource === 'poll' ?
-                            <Tooltip title={t('The device or service will be periodically asked')}>
-                                <ArrowUpwardIcon className={classes.classPoll} />
+                            <Tooltip title={t('Adapter does not use the cloud for these devices/service')}>
+                                <CloudOffIcon />
+                            </Tooltip> : '')}
+                {dataSource && <div className={classes.marginLeft5}>
+                    {(dataSource === 'poll' ?
+                        <Tooltip title={t('The device or service will be periodically asked')}>
+                            <ArrowUpwardIcon className={classes.classPoll} />
+                        </Tooltip> :
+                        dataSource === 'push' ?
+                            <Tooltip title={t('The device or service delivers the new state actively')}>
+                                <ArrowDownwardIcon className={classes.classPush} />
                             </Tooltip> :
-                            dataSource === 'push' ?
-                                <Tooltip title={t('The device or service delivers the new state actively')}>
-                                    <ArrowDownwardIcon className={classes.classPush} />
-                                </Tooltip> :
-                                dataSource === 'assumption' ?
-                                    <Tooltip title={t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
-                                        <RemoveIcon className={classes.classAssumption} /></Tooltip> : null
-                    )}</div>
-                }
+                            dataSource === 'assumption' ?
+                                <Tooltip title={t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
+                                    <RemoveIcon className={classes.classAssumption} />
+                                </Tooltip> : null)}
+                </div>}
                 {sentry && <div className={classes.marginLeft5}>
                     <Tooltip title="sentry">
                         <CardMedia
@@ -456,44 +474,54 @@ const AdapterTile = ({
                 </div>}
             </div>
             <div className={classes.cardMargin10}>
-                {!!installedCount && <Typography component={'span'} className={classes.cardContentFlexBetween}>
-                    <div>{t('Installed instances')}:</div>
+                {!!installedCount && <Typography component="span" className={classes.cardContentFlexBetween}>
+                    <div>
+                        {t('Installed instances')}
+                        :
+                    </div>
                     <div>{installedCount}</div>
                 </Typography>}
                 <IsVisible value={allowAdapterUpdate}>
-                    <Typography component={'span'} className={classes.availableVersion}>
+                    <Typography component="span" className={classes.availableVersion}>
                         <div>{t('Available version:')}</div>
-                        <div className={Utils.clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                        <div className={Utils.clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)}>
                             {!commandRunning && updateAvailable ?
 
                                 <Tooltip title={t('Update')}>
-                                    <div onClick={onUpdate} className={classes.buttonUpdate}><IconButton
-                                        className={classes.buttonUpdateIcon}
-                                        size="small"
-                                    >
-                                        <RefreshIcon />
-                                    </IconButton>{version}</div>
+                                    <div onClick={onUpdate} className={classes.buttonUpdate}>
+                                        <IconButton
+                                            className={classes.buttonUpdateIcon}
+                                            size="small"
+                                        >
+                                            <RefreshIcon />
+                                        </IconButton>
+                                        {version}
+                                    </div>
                                 </Tooltip> :
-                                version
-                            }</div>
+                                version}
+                        </div>
                     </Typography>
                 </IsVisible>
-                {installedVersion && <Typography component={'span'} className={classes.cardContentFlexBetween}>
-                    <div>{t('Installed version')}:</div>
-                    <div className={classes.cardContentFlex}>{installedFrom && !installedFrom.startsWith(`iobroker.${name}@`) &&
+                {installedVersion && <Typography component="span" className={classes.cardContentFlexBetween}>
+                    <div>
+                        {t('Installed version')}
+                        :
+                    </div>
+                    <div className={classes.cardContentFlex}>
+                        {installedFrom && !installedFrom.startsWith(`iobroker.${name}@`) &&
                         <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
                             <GitHubIcon
                                 fontSize="small"
                                 className={classes.versionWarn}
                             />
-                        </Tooltip>
-                    }{installedVersion}
+                        </Tooltip>}
+                        {installedVersion}
                     </div>
-                    </Typography>}
+                </Typography>}
             </div>
         </CardContent>
     </Card>;
-}
+};
 
 AdapterTile.propTypes = {
     commandRunning: PropTypes.bool,

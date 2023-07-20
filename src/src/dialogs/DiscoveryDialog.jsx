@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
         height: 'auto',
         display: 'flex',
         borderRadius: 4,
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     paper: {
         maxWidth: 1000,
@@ -52,10 +52,10 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
     },
     overflowHidden: {
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     overflowAuto: {
-        overflowY: 'auto'
+        overflowY: 'auto',
     },
     pre: {
         overflow: 'auto',
@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
         position: 'absolute',
         display: 'flex',
         alignItems: 'center',
-        color: 'silver'
+        color: 'silver',
     },
     img: {
         marginLeft: 10,
@@ -89,26 +89,26 @@ const useStyles = makeStyles(theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     message: {
         justifyContent: 'space-between',
         display: 'flex',
         width: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     column: {
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     headerText: {
         fontWeight: 'bold',
-        fontSize: 15
+        fontSize: 15,
     },
     descriptionHeaderText: {
-        margin: '10px 0'
+        margin: '10px 0',
     },
     silver: {
-        color: 'silver'
+        color: 'silver',
     },
     button: {
         paddingTop: 18,
@@ -116,12 +116,12 @@ const useStyles = makeStyles(theme => ({
         position: 'sticky',
         bottom: 0,
         background: 'white',
-        zIndex: 3
+        zIndex: 3,
     },
     terminal: {
         fontFamily: 'monospace',
         fontSize: 14,
-        marginLeft: 20
+        marginLeft: 20,
     },
     img2: {
         width: 25,
@@ -140,22 +140,22 @@ const useStyles = makeStyles(theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     heading: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     headerBlock: {
         backgroundColor: '#272727',
         padding: 13,
-        fontSize: 16
+        fontSize: 16,
     },
     headerBlockDisplay: {
         backgroundColor: '#272727',
         padding: 13,
         fontSize: 16,
-        display: 'flex'
+        display: 'flex',
     },
     headerBlockDisplayItem: {
         padding: 5,
@@ -165,30 +165,30 @@ const useStyles = makeStyles(theme => ({
         border: '1px solid #c0c0c045',
         borderRadius: 4,
         alignItems: 'center',
-        transition: 'background .5s, color .5s'
+        transition: 'background .5s, color .5s',
     },
     activeBlock: {
         background: '#c0c0c021',
-        border: '1px solid #4dabf5'
+        border: '1px solid #4dabf5',
     },
     pointer: {
-        cursor: 'pointer'
+        cursor: 'pointer',
     },
     hover: {
         '&:hover': {
             background: '#c0c0c021',
-        }
+        },
     },
     installSuccess: {
         opacity: 0.7,
-        color: '#5ef05e'
+        color: '#5ef05e',
     },
     installError: {
         opacity: 0.7,
-        color: '#ffc14f'
+        color: '#ffc14f',
     },
     width200: {
-        width: 200
+        width: 200,
     },
     table: {
         // '& *': {
@@ -202,7 +202,7 @@ const useStyles = makeStyles(theme => ({
     wrapperSwitch: {
         display: 'flex',
         margin: 10,
-        marginTop: 0
+        marginTop: 0,
     },
     divSwitch: {
         display: 'flex',
@@ -210,27 +210,27 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
         fontSize: 10,
         marginLeft: 0,
-        color: 'silver'
+        color: 'silver',
     },
     marginLeft: {
         marginLeft: 40
     },
     stepper: {
         padding: 0,
-        background: 'inherit'
+        background: 'inherit',
     },
     instanceIcon: {
         width: 30,
         height: 30,
-        margin: 3
+        margin: 3,
     },
     instanceId: {
-        marginLeft: 10
+        marginLeft: 10,
     },
     instanceWrapper: {
         display: 'flex',
-        alignItems: 'center'
-    }
+        alignItems: 'center',
+    },
 }));
 
 const TabPanel = ({ classes, children, value, index, title, custom, boxHeight, black, ...props }) => {
@@ -265,9 +265,6 @@ const headCells = [
 
 function EnhancedTableHead(props) {
     const { numSelected, rowCount, onSelectAllClick } = props;
-    const createSortHandler = property => event => {
-        //   onRequestSort(event, property);
-    };
 
     return <TableHead>
         <TableRow>
@@ -279,15 +276,13 @@ function EnhancedTableHead(props) {
                     inputProps={{ 'aria-label': 'select all desserts' }}
                 />
             </TableCell>
-            {headCells.map((headCell) => (
+            {headCells.map(headCell => (
                 <TableCell
                     key={headCell.id}
                     align={headCell.numeric ? 'right' : 'left'}
                     padding={headCell.disablePadding ? 'none' : 'normal'}
                 >
-                    <TableSortLabel
-                        onClick={createSortHandler(headCell.id)}
-                    >
+                    <TableSortLabel>
                         {headCell.label}
                     </TableSortLabel>
                 </TableCell>
@@ -621,16 +616,18 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     onClose();
                 }
             }}
-            open
+            open={!0}
             classes={{ paper: classes.paper }}
         >
             <h2 className={classes.heading}>
-                <VisibilityIcon style={{
-                    color: 'rgb(77 171 245)',
-                    fontSize: 36,
-                    marginLeft: 25,
-                    marginRight: 10
-                }} />
+                <VisibilityIcon
+                    style={{
+                        color: 'rgb(77 171 245)',
+                        fontSize: 36,
+                        marginLeft: 25,
+                        marginRight: 10
+                    }}
+                />
                 {I18n.t('Find devices and services')}
             </h2>
             <Stepper className={classes.stepper} alternativeLabel activeStep={step}>

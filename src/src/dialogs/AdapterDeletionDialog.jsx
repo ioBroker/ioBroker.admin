@@ -19,7 +19,7 @@ import CheckIcon from '@mui/icons-material/Check';
 
 const styles = theme => ({
     formControl: {
-        marginTop: theme.spacing(3)
+        marginTop: theme.spacing(3),
     },
     closeButton: {
         position: 'absolute',
@@ -28,12 +28,11 @@ const styles = theme => ({
         color: theme.palette.grey[500],
     },
     typography: {
-        paddingRight: 30
-    }
+        paddingRight: 30,
+    },
 });
 
 class AdapterDeletionDialog extends Component {
-
     constructor(props) {
         super(props);
 
@@ -47,10 +46,10 @@ class AdapterDeletionDialog extends Component {
     componentDidMount() {
         this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM')
             .then(deleteCustomSupported => {
-                deleteCustomSupported && this.props.socket.getObject('system.adapter.' + this.props.adapter)
+                deleteCustomSupported && this.props.socket.getObject(`system.adapter.${this.props.adapter}`)
                     .then(obj => {
                         if (obj && obj.common) {
-                            obj.common.supportCustoms && this.setState({ deleteCustomSupported: obj.common.supportCustoms })
+                            obj.common.supportCustoms && this.setState({ deleteCustomSupported: obj.common.supportCustoms });
                         } else {
                             this.setState({ deleteCustomSupported: true });
                         }
@@ -78,7 +77,10 @@ class AdapterDeletionDialog extends Component {
                     {this.t('Are you sure you want to delete adapter %s?', this.props.adapter)}
                 </Typography>
                 {this.state.deleteCustomSupported && <FormControlLabel
-                    control={<Checkbox checked={this.state.deleteCustom} onChange={e => this.setState({deleteCustom: e.target.checked})} />}
+                    control={<Checkbox
+                        checked={this.state.deleteCustom}
+                        onChange={e => this.setState({ deleteCustom: e.target.checked })}
+                    />}
                     label={this.t('Delete all custom object settings of this adapter too')}
                 />}
             </DialogContent>
@@ -114,7 +116,7 @@ AdapterDeletionDialog.propTypes = {
     adapter: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired
-}
+    onClose: PropTypes.func.isRequired,
+};
 
 export default withStyles(styles)(AdapterDeletionDialog);

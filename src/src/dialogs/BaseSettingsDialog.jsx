@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {withStyles} from '@mui/styles';
+import React, { Component } from 'react';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
 import Dialog from '@mui/material/Dialog';
@@ -15,6 +15,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import BaseSettingsSystem from '../components/BaseSettings/BaseSettingsSystem';
 import BaseSettingsMultihost from '../components/BaseSettings/BaseSettingsMultihost';
 import BaseSettingsObjects from '../components/BaseSettings/BaseSettingsObjects';
@@ -23,8 +25,6 @@ import BaseSettingsLog from '../components/BaseSettings/BaseSettingsLog';
 import BaseSettingsPlugins from '../components/BaseSettings/BaseSettingsPlugins';
 
 // icons
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
 
 const styles = theme => ({
     content: {
@@ -72,24 +72,25 @@ class BaseSettingsDialog extends Component {
             return <ConfirmDialog
                 text={this.props.t('Discard unsaved changes?')}
                 onClose={result =>
-                    this.setState({confirmExit: false}, () =>
+                    this.setState({ confirmExit: false }, () =>
                         result && this.props.onClose())}
             />;
-        } else {
-            return null;
         }
+        return null;
     }
 
     renderRestartDialog() {
         if (this.state.showRestart) {
             return <ConfirmDialog
                 title={this.props.t('Please confirm')}
-                text={<><div>{this.props.t('Restart works only if controller started as system service.')}</div>
-                <div>{this.props.t('Would you like to restart the controller for your changes to take effect?')}</div></>}
+                text={<>
+                    <div>{this.props.t('Restart works only if controller started as system service.')}</div>
+                    <div>{this.props.t('Would you like to restart the controller for your changes to take effect?')}</div>
+                </>}
                 ok={this.props.t('Restart')}
                 cancel={this.props.t('No restart')}
                 onClose={result =>
-                    this.setState({showRestart: false}, () => {
+                    this.setState({ showRestart: false }, () => {
                         if (result) {
                             this.props.socket.restartController(this.props.currentHost)
                                 .then(() =>
@@ -101,9 +102,8 @@ class BaseSettingsDialog extends Component {
                         this.props.onClose();
                     })}
             />;
-        } else {
-            return null;
         }
+        return null;
     }
 
     getSettings(host) {
@@ -129,7 +129,7 @@ class BaseSettingsDialog extends Component {
         };
 
         // merge with some new settings, that may be not yet supported by Admin
-        const newSettings = Object.assign({}, this.originalSettings, settings);
+        const newSettings = { ...this.originalSettings, ...settings };
 
         this.setState({ saving: true }, () => {
             this.props.socket.writeBaseSettings(host || this.state.currentHost, newSettings)
@@ -139,7 +139,7 @@ class BaseSettingsDialog extends Component {
                     this.setState({ hasChanges: [], showRestart: true, saving: false });
                 })
                 .catch(error => {
-                    window.alert('Cannot save settings: ' + error);
+                    window.alert(`Cannot save settings: ${error}`);
                     this.setState({ saving: false });
                 });
         });
@@ -156,7 +156,7 @@ class BaseSettingsDialog extends Component {
             hasChanges.splice(pos, 1);
         }
 
-        this.setState({[name]: settings, hasChanges});
+        this.setState({ [name]: settings, hasChanges });
     }
 
     renderSystem() {
@@ -238,7 +238,12 @@ class BaseSettingsDialog extends Component {
             maxWidth="xl"
             aria-labelledby="base-settings-dialog-title"
         >
-            {<DialogTitle id="base-settings-dialog-title">{this.props.t('Host Base Settings')}: {this.props.currentHostName || this.props.currentHost}</DialogTitle>}
+            <DialogTitle id="base-settings-dialog-title">
+                {this.props.t('Host Base Settings')}
+:
+                {' '}
+                {this.props.currentHostName || this.props.currentHost}
+            </DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
                     <Tabs
@@ -247,13 +252,17 @@ class BaseSettingsDialog extends Component {
                         aria-label="system tabs"
                         indicatorColor="secondary"
                     >
-                        <Tab label={this.props.t('System')} id={'system-tab'} aria-controls={'simple-tabpanel-0'} classes={{ selected: this.props.classes.selected }} />
-                        <Tab label={this.props.t('Multi-host')} id={'multihost-tab'}  classes={{ selected: this.props.classes.selected }}
-                             aria-controls={'simple-tabpanel-1'} />
-                        <Tab label={this.props.t('Objects')} id={'objects-tab'} aria-controls={'simple-tabpanel-3'}  classes={{ selected: this.props.classes.selected }} />
-                        <Tab label={this.props.t('States')} id={'states-tab'} aria-controls={'simple-tabpanel-4'}  classes={{ selected: this.props.classes.selected }} />
-                        <Tab label={this.props.t('Log')} id={'log-tab'} aria-controls={'simple-tabpanel-5'}  classes={{ selected: this.props.classes.selected }} />
-                        <Tab label={this.props.t('Plugins')} id={'plugins-tab'} aria-controls={'simple-tabpanel-6'}  classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('System')} id="system-tab" aria-controls="simple-tabpanel-0" classes={{ selected: this.props.classes.selected }} />
+                        <Tab
+                            label={this.props.t('Multi-host')}
+                            id="multihost-tab"
+                            classes={{ selected: this.props.classes.selected }}
+                            aria-controls="simple-tabpanel-1"
+                        />
+                        <Tab label={this.props.t('Objects')} id="objects-tab" aria-controls="simple-tabpanel-3" classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('States')} id="states-tab" aria-controls="simple-tabpanel-4" classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('Log')} id="log-tab" aria-controls="simple-tabpanel-5" classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('Plugins')} id="plugins-tab" aria-controls="simple-tabpanel-6" classes={{ selected: this.props.classes.selected }} />
                     </Tabs>
                 </AppBar>
                 {this.state.loading ? <LinearProgress /> : null}
@@ -279,17 +288,20 @@ class BaseSettingsDialog extends Component {
                     onClick={() => this.onSave()}
                     color="primary"
                     startIcon={<CheckIcon />}
-                >{this.props.t('Save & Close')}</Button>
+                >
+                    {this.props.t('Save & Close')}
+                </Button>
                 <Button
                     variant="contained"
                     color="grey"
                     disabled={this.state.saving}
-                    onClick={() => this.state.hasChanges.length ? this.setState({confirmExit: true}) : this.props.onClose()}
+                    onClick={() => (this.state.hasChanges.length ? this.setState({ confirmExit: true }) : this.props.onClose())}
                     startIcon={<CloseIcon />}
-                >{this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close')}
+                >
+                    {this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close')}
                 </Button>
             </DialogActions>
-        </Dialog>
+        </Dialog>;
     }
 }
 
@@ -298,7 +310,6 @@ BaseSettingsDialog.propTypes = {
     currentHost: PropTypes.string,
     currentHostName: PropTypes.string,
     hosts: PropTypes.array,
-    lang: PropTypes.string,
     socket: PropTypes.object,
     themeName: PropTypes.string,
     onClose: PropTypes.func.isRequired,

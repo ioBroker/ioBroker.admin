@@ -22,18 +22,20 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import npmIcon from '../assets/npm.png';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 import UrlIcon from '@mui/icons-material/Language';
 import SmsIcon from '@mui/icons-material/Sms';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import { I18n, Icon } from '@iobroker/adapter-react-v5';
+
+import npmIcon from '../assets/npm.png';
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const {
+        children, value, index, ...other
+    } = props;
 
     return <div
         role="tabpanel"
@@ -104,16 +106,18 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-// some older browsers do not have flat
+// some older browsers do not have `flat`
 if (!Array.prototype.flat) {
     // eslint-disable-next-line
     Object.defineProperty(Array.prototype, 'flat', {
         configurable: true,
         value: function flat() {
-            const depth = isNaN(arguments[0]) ? 1 : Number(arguments[0]);
+            // eslint-disable-next-line
+            const depth = Number.isNaN(arguments[0]) ? 1 : Number(arguments[0]);
 
-            return depth ? Array.prototype.reduce.call(this, function (acc, cur) {
+            return depth ? Array.prototype.reduce.call(this, (acc, cur) => {
                 if (Array.isArray(cur)) {
+                    // eslint-disable-next-line prefer-spread
                     acc.push.apply(acc, flat.call(cur, depth - 1));
                 } else {
                     acc.push(cur);
@@ -122,11 +126,13 @@ if (!Array.prototype.flat) {
                 return acc;
             }, []) : Array.prototype.slice.call(this);
         },
-        writable: true
+        writable: true,
     });
 }
 
-const GitHubInstallDialog = ({ categories, repository, onClose, open, installFromUrl, t }) => {
+const GitHubInstallDialog = ({
+    categories, repository, onClose, open, installFromUrl, t,
+}) => {
     t = t || I18n.t;
 
     const classes = useStyles();
@@ -168,12 +174,11 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         nogit: !!adapter.nogit,
                         title: el,
                     };
-                } else {
-                    return null;
                 }
+                return null;
             })
             .filter(it => it)
-            .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
     }, [categories, repository]);
 
     const closeInit = () => {
@@ -226,7 +231,8 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         />
                     </Tabs>
                 </AppBar>
-                <div className={classes.title}>{t('Install or update the adapter from %s', currentTab || 'npm')}
+                <div className={classes.title}>
+                    {t('Install or update the adapter from %s', currentTab || 'npm')}
                 </div>
                 {currentTab === 'npm' ? <Paper className={classes.tabPaper}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -237,7 +243,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                     onChange={e => {
                                         (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                         setDebug(e.target.checked);
-                                    }} />}
+                                    }}
+                                />
+                            }
                             label={t('Debug outputs')}
                         />
                     </div>
@@ -253,7 +261,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             options={_list}
                             getOptionLabel={option => option.name}
                             renderInput={params => {
-                                const _params = {...params};
+                                const _params = { ...params };
                                 _params.InputProps = _params.InputProps || {};
                                 _params.InputProps.startAdornment = <InputAdornment position="start">
                                     <Icon src={autocompleteValue?.icon || ''} className={classes.listIcon} />
@@ -271,16 +279,19 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                     sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
                                     {...props}
                                 >
-                                <Icon src={option.icon || ''} className={classes.listIconWithMargin} />
-                                {option.name}
-                            </Box>}
+                                    <Icon src={option.icon || ''} className={classes.listIconWithMargin} />
+                                    {option.name}
+                                </Box>}
                         />
                     </div>
                     <div style={{
                         fontSize: 24,
                         fontWeight: 'bold',
-                        marginTop: 40
-                    }}>{t('Warning!')}</div>
+                        marginTop: 40,
+                    }}
+                    >
+                        {t('Warning!')}
+                    </div>
                     <div className={classes.warningText}>
                         {t('npm_warning', 'NPM', 'NPM')}
                     </div>
@@ -294,11 +305,12 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             control={
                                 <Checkbox
                                     checked={debug}
-                                    onChange={(e) => {
+                                    onChange={e => {
                                         (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                         setDebug(e.target.checked);
                                     }}
-                                />}
+                                />
+                            }
                             label={t('Debug outputs')}
                         />
                     </div>
@@ -314,14 +326,14 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                     sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
                                     {...props}
                                 >
-                                <Icon src={option.icon || ''} className={classes.listIconWithMargin}/>
-                                {option.name}
-                                {option.nogit && <div
-                                    className={classes.errorTextNoGit}
-                                >
-                                    {I18n.t('This adapter cannot be installed from git as must be built before installation.')}
-                                </div>}
-                            </Box>}
+                                    <Icon src={option.icon || ''} className={classes.listIconWithMargin} />
+                                    {option.name}
+                                    {option.nogit && <div
+                                        className={classes.errorTextNoGit}
+                                    >
+                                        {I18n.t('This adapter cannot be installed from git as must be built before installation.')}
+                                    </div>}
+                                </Box>}
                             onChange={(_, newValue) => {
                                 (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
                                 setAutocompleteValue(newValue);
@@ -329,7 +341,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             options={_list}
                             getOptionLabel={option => option.name}
                             renderInput={params => {
-                                const _params = {...params};
+                                const _params = { ...params };
                                 _params.InputProps = _params.InputProps || {};
                                 _params.InputProps.startAdornment = <InputAdornment position="start">
                                     <Icon src={autocompleteValue?.icon || ''} className={classes.listIconWithMargin} />
@@ -346,8 +358,11 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     <div style={{
                         fontSize: 24,
                         fontWeight: 'bold',
-                        marginTop: 40
-                    }}>{t('Warning!')}</div>
+                        marginTop: 40,
+                    }}
+                    >
+                        {t('Warning!')}
+                    </div>
                     <div className={classes.warningText}>
                         {t('github_warning', 'GitHub', 'GitHub')}
                     </div>
@@ -384,23 +399,25 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                     >
                                         <CloseIcon />
                                     </IconButton>
-                                </InputAdornment> : null
+                                </InputAdornment> : null,
                             }}
                         />
                     </div>
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                    }}>
+                    }}
+                    >
                         <FormControlLabel
                             control={
                                 <Checkbox
                                     checked={debug}
-                                    onChange={(e) => {
+                                    onChange={e => {
                                         (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                         setDebug(e.target.checked);
                                     }}
-                                />}
+                                />
+                            }
                             label={t('Debug outputs')}
                         />
                     </div>
@@ -430,7 +447,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                 onClick={() => {
                     if (currentTab === 'GitHub') {
                         const parts = (autocompleteValue?.value || '').split('/');
-                        //const _url = 'https://github.com/' + parts[1] + '/ioBroker.' + parts[0] + '/tarball/master';
+                        // const _url = 'https://github.com/' + parts[1] + '/ioBroker.' + parts[0] + '/tarball/master';
                         const _url = `${parts[1]}/ioBroker.${parts[0]}`;
                         installFromUrl(_url, debug, true);
                     } else if (currentTab === 'URL') {
@@ -468,6 +485,6 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
             </Button>
         </DialogActions>
     </Dialog>;
-}
+};
 
 export default GitHubInstallDialog;

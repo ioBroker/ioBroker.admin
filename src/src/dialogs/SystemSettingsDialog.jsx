@@ -18,6 +18,8 @@ import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import Router from '@iobroker/adapter-react-v5/Components/Router';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
 import LicensesDialog from './SystemSettingsTabs/LicensesDialog';
@@ -27,10 +29,8 @@ import ACLDialog from './SystemSettingsTabs/ACLDialog';
 import StatisticsDialog from './SystemSettingsTabs/StatisticsDialog';
 
 // icons
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
 
-//style
+// style
 import '../assets/css/style.css';
 
 const SOME_PASSWORD = '__SOME_PASSWORD__';
@@ -39,7 +39,7 @@ const styles = theme => ({
     tabPanel: {
         width: '100%',
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     tab: {
         // backgroundColor:'#FFF',
@@ -54,14 +54,14 @@ const styles = theme => ({
     dialog: {
         width: '100%',
         height: '100%',
-        maxWidth: '100%'
+        maxWidth: '100%',
     },
     content: {
-        padding: '0 !important'
+        padding: '0 !important',
     },
     selected: {
         color: theme.palette.mode === 'dark' ? '#FFF !important' : '#222 !important',
-    }
+    },
 });
 
 class SystemSettingsDialog extends Component {
@@ -85,11 +85,9 @@ class SystemSettingsDialog extends Component {
     componentDidMount() {
         this.props.socket.checkFeatureSupported('CONTROLLER_MULTI_REPO')
             .then(multipleRepos => this.props.socket.checkFeatureSupported('CONTROLLER_LICENSE_MANAGER')
-                    .then(licenseManager => {
-                        return this.props.socket.getCurrentInstance()
-                            .then(namespace => this.props.socket.getObject('system.adapter.' + namespace))
-                                .then(obj => this.setState({host: obj.common.host, multipleRepos, licenseManager}));
-                    }));
+                .then(licenseManager => this.props.socket.getCurrentInstance()
+                    .then(namespace => this.props.socket.getObject(`system.adapter.${namespace}`))
+                    .then(obj => this.setState({ host: obj.common.host, multipleRepos, licenseManager }))));
     }
 
     getSettings() {
@@ -132,7 +130,7 @@ class SystemSettingsDialog extends Component {
                     state: 1636,
                     file: 1632,
                     owner: 'system.user.admin',
-                    ownerGroup: 'system.group.administrator'
+                    ownerGroup: 'system.group.administrator',
                 };
 
                 systemConfig.common.firstDayOfWeek = systemConfig.common.firstDayOfWeek || 'monday';
@@ -142,7 +140,7 @@ class SystemSettingsDialog extends Component {
             /**/
             .then(diagData => {
                 newState.diagData = diagData;
-                return this.props.socket.getUsers()
+                return this.props.socket.getUsers();
             })
             .then(users => {
                 newState.users = users;
@@ -156,8 +154,8 @@ class SystemSettingsDialog extends Component {
                 newState.histories = Object.values(instances)
                     .filter(instance => instance.common.getHistory)
                     .map(instance => {
-                        let id = instance._id.split('.');
-                        return id[id.length - 2] + '.' + id[id.length - 1];
+                        const id = instance._id.split('.');
+                        return `${id[id.length - 2]}.${id[id.length - 1]}`;
                     });
 
                 return this.props.socket.getObject('system.certificates');
@@ -183,7 +181,7 @@ class SystemSettingsDialog extends Component {
                     systemLicenses.native.password = SOME_PASSWORD;
                 }
 
-                this.originalLicenses = JSON.stringify({login: systemLicenses.native.login, password: systemLicenses.native.password});
+                this.originalLicenses = JSON.stringify({ login: systemLicenses.native.login, password: systemLicenses.native.password });
                 newState.systemLicenses = systemLicenses;
                 this.setState(newState);
             })
@@ -198,9 +196,8 @@ class SystemSettingsDialog extends Component {
                     this.setState({ confirmExit: false }, () =>
                         result && this.props.onClose())}
             />;
-        } else {
-            return null;
         }
+        return null;
     }
 
     onSave() {
@@ -264,10 +261,8 @@ class SystemSettingsDialog extends Component {
                         } catch (error) {
                             window.alert(this.props.t('Cannot update licenses: %s', error));
                         }
-                    } else {
-                        if (!this.state.systemLicenses.native.password) {
-                            systemLicenses.native.password = '';
-                        }
+                    } else if (!this.state.systemLicenses.native.password) {
+                        systemLicenses.native.password = '';
                     }
                     try {
                         await this.props.socket.setObject('system.licenses', systemLicenses);
@@ -360,7 +355,7 @@ class SystemSettingsDialog extends Component {
                 dataAux: 'diagData',
                 name: 'tabStatistics',
                 handle: type => this.onChangeDiagType(type),
-            }
+            },
         ];
     }
 
@@ -377,7 +372,7 @@ class SystemSettingsDialog extends Component {
                         },
                     },
                 }));
-    }
+    };
 
     getDialogContent(tabsList) {
         if (this.state.loading) {
@@ -413,11 +408,11 @@ class SystemSettingsDialog extends Component {
 
     onTabChanged = (event, newTab) => {
         Router.doNavigate(null, 'system', newTab);
-    }
+    };
 
     onChangedTab(id, data, idAux, dataAux, cb) {
         if (data || dataAux) {
-            let state = { ...this.state };
+            const state = { ...this.state };
             if (data) {
                 state[id] = data;
             }
@@ -432,13 +427,13 @@ class SystemSettingsDialog extends Component {
         const changed = !(JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
             JSON.stringify(this.state.systemConfig) === this.originalConfig &&
             JSON.stringify(this.state.systemCertificates) === this.originalCertificates &&
-            JSON.stringify({login: this.state.systemLicenses.native.login, password: this.state.systemLicenses.native.password}) === this.originalLicenses);
+            JSON.stringify({ login: this.state.systemLicenses.native.login, password: this.state.systemLicenses.native.password }) === this.originalLicenses);
 
         const tabsList = this.getTabs().filter(tab => {
             if (!this.state.licenseManager && tab.name === 'tabLicenses') {
                 return false;
             }
-            return this.props.adminGuiConfig.admin.settings[tab.name] !== false
+            return this.props.adminGuiConfig.admin.settings[tab.name] !== false;
         });
 
         const tabs = tabsList
@@ -485,11 +480,12 @@ class SystemSettingsDialog extends Component {
                         >
                             {tabs}
                         </Tabs>
-                        <IconButton size="large"
+                        <IconButton
+                            size="large"
                             disabled={this.state.saving}
                             edge="start"
                             color="inherit"
-                            onClick={() => changed ? this.setState({ confirmExit: true }) : this.props.onClose()}
+                            onClick={() => (changed ? this.setState({ confirmExit: true }) : this.props.onClose())}
                             aria-label="close"
                         >
                             <CloseIcon />
@@ -512,7 +508,7 @@ class SystemSettingsDialog extends Component {
                 <Button
                     variant="contained"
                     disabled={this.state.saving}
-                    onClick={() => changed ? this.setState({ confirmExit: true }) : this.props.onClose()}
+                    onClick={() => (changed ? this.setState({ confirmExit: true }) : this.props.onClose())}
                     startIcon={<CloseIcon />}
                     color="grey"
                 >
@@ -539,7 +535,9 @@ SystemSettingsDialog.propTypes = {
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const {
+        children, value, index, ...other
+    } = props;
 
     return <div
         role="tabpanel"

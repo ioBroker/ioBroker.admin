@@ -20,7 +20,7 @@ class Files extends Component {
     componentDidMount() {
         this.props.socket.getObjects(true, true)
             .then(objects =>
-                this.objects = objects)
+                this.objects = objects);
     }
 
     translate = (word, arg1, arg2) => {
@@ -33,7 +33,7 @@ class Files extends Component {
         }
 
         return this.wordCache[word];
-    }
+    };
 
     render() {
         if (!this.props.ready) {
@@ -56,7 +56,7 @@ class Files extends Component {
                     allowCreateFolder
                     allowDelete
                     expertMode={this.props.expertMode}
-                    modalEditOfAccessControl={(context, objData) =>
+                    modalEditOfAccessControl={(context /* , objData */) =>
                         <FileEditOfAccessControl
                             open={context.state.modalEditOfAccess}
                             themeType={this.props.themeType}
@@ -73,26 +73,26 @@ class Files extends Component {
                                         });
                                 } else if (file) {
                                     if ((data.owner || data.ownerGroup) && data.permissions) {
-                                        promise = this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup})
-                                            .then(() => this.props.socket.chmodFile(adapter, file, {mode: data.permissions}));
+                                        promise = this.props.socket.chownFile(adapter, file, { owner: data.owner, ownerGroup: data.ownerGroup })
+                                            .then(() => this.props.socket.chmodFile(adapter, file, { mode: data.permissions }));
                                     } else
-                                    if (data.permissions) {
-                                        promise = this.props.socket.chmodFile(adapter, file, {mode: data.permissions});
-                                    } else if (data.owner || data.ownerGroup) {
-                                        promise = this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup});
-                                    }
+                                        if (data.permissions) {
+                                            promise = this.props.socket.chmodFile(adapter, file, { mode: data.permissions });
+                                        } else if (data.owner || data.ownerGroup) {
+                                            promise = this.props.socket.chownFile(adapter, file, { owner: data.owner, ownerGroup: data.ownerGroup });
+                                        }
                                 }
 
                                 if (promise) {
                                     const result = await promise;
                                     if (result.entries) {
                                         if (result?.entries) {
-                                            for ( let i = 0; i < result?.entries.length; i++) {
-                                                await context.updateItemsAcl([{id: adapter + '/' + (result.entries[i].path ? result.entries[i].path + '/' : '') + result.entries[i].file, acl: result.entries[i].acl}]);
+                                            for (let i = 0; i < result?.entries.length; i++) {
+                                                await context.updateItemsAcl([{ id: `${adapter}/${result.entries[i].path ? `${result.entries[i].path}/` : ''}${result.entries[i].file}`, acl: result.entries[i].acl }]);
                                             }
                                         }
                                     } else if (result) {
-                                        await context.updateItemsAcl([{id: result._id, acl: result.acl}]);
+                                        await context.updateItemsAcl([{ id: result._id, acl: result.acl }]);
                                     }
                                 }
                             }}
@@ -102,8 +102,8 @@ class Files extends Component {
                             socket={this.props.socket}
                             t={this.t}
                             onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
-                            onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })} />
-                    }
+                            onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
+                        />}
                 />
             </TabContent>
         </TabContainer>;

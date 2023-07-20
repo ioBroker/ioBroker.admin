@@ -32,12 +32,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import PauseIcon from '@mui/icons-material/Pause';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import ClearIcon from '@mui/icons-material/Close';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ErrorIcon from '@mui/icons-material/ErrorOutline';
 import WarningIcon from '@mui/icons-material/Warning';
 import CheckIcon from '@mui/icons-material/Check';
-import {FaPalette as ColorsIcon} from 'react-icons/fa';
+import { FaPalette as ColorsIcon } from 'react-icons/fa';
 
 import amber from '@mui/material/colors/amber';
 import grey from '@mui/material/colors/grey';
@@ -208,7 +207,7 @@ const styles = theme => ({
             '& > *': {
                 fontSize: '10px !important',
             },
-        }
+        },
     },
     badge: {
         top: 10,
@@ -272,7 +271,6 @@ const COLORS_DARK = [
     'rgba(255,255,105,0.2)',
 ];
 
-
 // Number prototype is read only, properties should not be added
 function padding2(num) {
     let s = num.toString();
@@ -309,7 +307,7 @@ class Logs extends Component {
             logWarnings: 0,
             estimatedSize: true,
             pause: 0,
-            pauseCount: 0,
+            // pauseCount: 0,
             pid: (window._localStorage || window.localStorage).getItem('Logs.pid') === 'true',
             colors: (window._localStorage || window.localStorage).getItem('Logs.colors') === 'true',
             adapters: {},
@@ -319,16 +317,14 @@ class Logs extends Component {
         };
 
         this.severities = {
-            'silly': 0,
-            'debug': 1,
-            'info': 2,
-            'warn': 3,
-            'error': 4,
+            silly: 0,
+            debug: 1,
+            info: 2,
+            warn: 3,
+            error: 4,
         };
 
         this.t = props.t;
-
-        this.words = {};
     }
 
     readLogs(force, logFiles, cb) {
@@ -344,7 +340,7 @@ class Logs extends Component {
                     let logWarnings = 0;
                     let logErrors = 0;
                     let lastOdd = true;
-                    let sources = JSON.parse(JSON.stringify(this.state.sources));
+                    const sources = JSON.parse(JSON.stringify(this.state.sources));
                     Object.values(sources).forEach(source => source.active = false);
 
                     logs.forEach(item => {
@@ -362,7 +358,7 @@ class Logs extends Component {
                             logWarnings++;
                         }
 
-                        let adapterName = item.from.replace(/\.\d+$/, '');
+                        const adapterName = item.from.replace(/\.\d+$/, '');
                         let icon = this.state.adapters[adapterName]?.icon;
                         if (icon) {
                             if (!icon.startsWith('data:image')) {
@@ -374,23 +370,27 @@ class Logs extends Component {
                         item.icon = icon || null;
 
                         if (!sources[item.from]) {
-                            sources[item.from] = {active: true, icon: item.icon};
+                            sources[item.from] = { active: true, icon: item.icon };
                         } else {
                             sources[item.from].active = true;
                         }
                     });
 
                     let color = 0;
-                    let COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
-                    Object.keys(sources).sort().forEach((id, i) => {
+                    const COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
+                    Object.keys(sources).sort().forEach(id => {
                         sources[id].color = COLORS[color % COLORS.length];
                         color++;
                     });
 
                     if (logFiles) {
-                        this.setState({ logFiles, logs, logSize, estimatedSize: false, logErrors, logWarnings, sources }, () => cb && cb());
+                        this.setState({
+                            logFiles, logs, logSize, estimatedSize: false, logErrors, logWarnings, sources,
+                        }, () => cb && cb());
                     } else {
-                        this.setState({ logs, logSize, estimatedSize: false, logErrors, logWarnings, sources }, () => cb && cb());
+                        this.setState({
+                            logs, logSize, estimatedSize: false, logErrors, logWarnings, sources,
+                        }, () => cb && cb());
                     }
                 });
         } else if (logFiles) {
@@ -413,7 +413,7 @@ class Logs extends Component {
                         if (name[0] <= '9') {
                             logFiles.push({
                                 path: file,
-                                name: name
+                                name,
                             });
                         }
                     });
@@ -433,9 +433,8 @@ class Logs extends Component {
                     });
 
                     return logFiles;
-                } else {
-                    return [];
                 }
+                return [];
             });
     }
 
@@ -482,7 +481,7 @@ class Logs extends Component {
         let lastOdd = false;
         let sources;
         let color = Object.keys(this.state.sources);
-        let COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
+        const COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
 
         logs.forEach(item => {
             if (item.odd !== undefined) {
@@ -502,7 +501,7 @@ class Logs extends Component {
                 logWarnings++;
             }
             if (item.icon === undefined) {
-                let adapterName = item.from.replace(/\.\d+$/, '');
+                const adapterName = item.from.replace(/\.\d+$/, '');
                 let icon = this.state.adapters[adapterName]?.icon;
                 if (icon) {
                     if (!icon.startsWith('data:image')) {
@@ -519,7 +518,7 @@ class Logs extends Component {
                 sources[item.from] = {
                     active: true,
                     color: COLORS[color % COLORS.length],
-                    icon: item.icon
+                    icon: item.icon,
                 };
                 color++;
             } else {
@@ -528,18 +527,22 @@ class Logs extends Component {
             }
         });
 
-        const newState = { logs, logSize: this.state.logSize + size, estimatedSize: true, logWarnings, logErrors };
+        const newState = {
+            logs, logSize: this.state.logSize + size, estimatedSize: true, logWarnings, logErrors,
+        };
         if (sources) {
             newState.sources = sources;
         }
 
         this.setState(newState);
-    }
+    };
 
     clearLog() {
         this.props.logsWorker && this.props.logsWorker.clearLines();
         this.props.clearErrors();
-        this.setState({ logs: [], logSize: null, logErrors: 0, logWarnings: 0 });
+        this.setState({
+            logs: [], logSize: null, logErrors: 0, logWarnings: 0,
+        });
     }
 
     handleMessageChange(event) {
@@ -587,7 +590,7 @@ class Logs extends Component {
         this.setState({ pause: this.state.pause ? 0 : this.state.logs.length });
     }
 
-    openTab(path) {
+    static openTab(path) {
         const tab = window.open(path, '_blank');
         tab.focus();
     }
@@ -595,24 +598,22 @@ class Logs extends Component {
     getLogFiles() {
         const { classes } = this.props;
 
-        return this.state.logFiles.map(entry => {
-            return <MenuItem
-                className={classes.downloadEntry}
-                key={entry.name}
-                onClick={() => {
-                    this.openTab(entry.path.fileName);
-                    this.closeLogDownload();
-                }}
+        return this.state.logFiles.map(entry => <MenuItem
+            className={classes.downloadEntry}
+            key={entry.name}
+            onClick={() => {
+                Logs.openTab(entry.path.fileName);
+                this.closeLogDownload();
+            }}
+        >
+            {entry.name}
+            <Typography
+                className={classes.downloadLogSize}
+                variant="caption"
             >
-                {entry.name}
-                <Typography
-                    className={classes.downloadLogSize}
-                    variant="caption"
-                >
-                    {Utils.formatBytes(entry.path.size) || '-'}
-                </Typography>
-            </MenuItem>;
-        });
+                {Utils.formatBytes(entry.path.size) || '-'}
+            </Typography>
+        </MenuItem>);
     }
 
     getSeverities() {
@@ -637,12 +638,10 @@ class Logs extends Component {
             >
                 {id === '1' ?
                     null :
-                    <Icon src={this.state.sources[id].icon} className={this.props.classes.iconSelect} />
-                }
+                    <Icon src={this.state.sources[id].icon} className={this.props.classes.iconSelect} />}
                 {id === '1' ?
                     this.t('Source') :
-                    id
-                }
+                    id}
             </MenuItem>);
     }
 
@@ -669,7 +668,7 @@ class Logs extends Component {
             let id = '';
 
             if (typeof message !== 'object') {
-                const regExp = new RegExp(row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(') + ' \\(\\d+\\) ', 'g');
+                const regExp = new RegExp(`${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `, 'g');
                 const matches = message.match(regExp);
 
                 if (matches) {
@@ -695,33 +694,33 @@ class Logs extends Component {
             previousKey = row.key;
 
             rows.push(<TableRow
-                    className={UtilsCommon.clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
-                    style={this.state.colors ? {backgroundColor: this.state.sources[row.from]?.color || undefined} : {}}
-                    key={key}
-                    hover
+                className={UtilsCommon.clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
+                style={this.state.colors ? { backgroundColor: this.state.sources[row.from]?.color || undefined } : {}}
+                key={key}
+                hover
+            >
+                <TableCell className={UtilsCommon.clsx(classes.cell, classes.cellName)}>
+                    <div className={classes.iconAndName}>
+                        <Icon src={row.icon} className={classes.icon} />
+                        <div className={classes.name}>{row.from}</div>
+                    </div>
+                </TableCell>
+                {this.state.pid && <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                    {id}
+                </TableCell>}
+                <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                    {row.time}
+                </TableCell>
+                <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                    {row.severity}
+                </TableCell>
+                <TableCell
+                    className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}
+                    title={typeof message === 'object' ? message.original : message}
                 >
-                    <TableCell className={UtilsCommon.clsx(classes.cell, classes.cellName)}>
-                        <div className={classes.iconAndName}>
-                            {<Icon src={row.icon} className={classes.icon} />}<div className={classes.name}>{row.from}</div>
-                        </div>
-                    </TableCell>
-                    {this.state.pid && <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
-                        {id}
-                    </TableCell>}
-                    <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
-                        {row.time}
-                    </TableCell>
-                    <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
-                        {row.severity}
-                    </TableCell>
-                    <TableCell
-                        className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}
-                        title={typeof message === 'object' ? message.original : message}
-                    >
-                        {typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}
-                    </TableCell>
-                </TableRow>
-            );
+                    {typeof message === 'object' ? message.parts.map((item, idx) => <span key={idx} style={item.style}>{item.text}</span>) : message}
+                </TableCell>
+            </TableRow>);
         }
 
         if (!this.lastRowRender || Date.now() - this.lastRowRender > 1000) {
@@ -810,7 +809,8 @@ class Logs extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Pause output')}>
-                    <IconButton size="large"
+                    <IconButton
+                        size="large"
                         className={classes.pauseButton}
                         onClick={() => this.handleLogPause()}
                     >
@@ -828,7 +828,8 @@ class Logs extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Show/hide PID')}>
-                    <IconButton size="large"
+                    <IconButton
+                        size="large"
                         onClick={() => this.changePid()}
                         color={!this.state.pid ? 'default' : 'primary'}
                     >
@@ -836,10 +837,11 @@ class Logs extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Show/hide colors')}>
-                    <IconButton size="large"
+                    <IconButton
+                        size="large"
                         onClick={() => {
                             (window._localStorage || window.localStorage).setItem('Logs.colors', this.state.colors ? 'false' : 'true');
-                            this.setState({colors: !this.state.colors});
+                            this.setState({ colors: !this.state.colors });
                         }}
                         color={!this.state.colors ? 'default' : 'primary'}
                     >
@@ -852,14 +854,16 @@ class Logs extends Component {
                         color="error"
                         classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeError) }}
                     >
-                        <IconButton size="large"
+                        <IconButton
+                            size="large"
                             onClick={() => {
                                 if (this.state.severity === 'error') {
                                     this.setState({ severity: 'debug' });
                                 } else {
-                                    this.setState({ severity: 'error', logErrors: 0 })
+                                    this.setState({ severity: 'error', logErrors: 0 });
                                 }
-                            }} color={this.state.severity === 'error' ? 'primary' : 'default'}
+                            }}
+                            color={this.state.severity === 'error' ? 'primary' : 'default'}
                         >
                             <ErrorIcon />
                         </IconButton>
@@ -871,12 +875,13 @@ class Logs extends Component {
                         color="default"
                         classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeWarn) }}
                     >
-                        <IconButton size="large"
+                        <IconButton
+                            size="large"
                             onClick={() => {
                                 if (this.state.severity === 'warn') {
                                     this.setState({ severity: 'debug' });
                                 } else {
-                                    this.setState({ severity: 'warn', logWarnings: 0 })
+                                    this.setState({ severity: 'warn', logWarnings: 0 });
                                 }
                             }}
                             color={this.state.severity === 'warn' ? 'primary' : 'default'}
@@ -905,15 +910,16 @@ class Logs extends Component {
                         >
                             {this.getLogFiles()}
                         </Menu>
-                    </div>
-                }
+                    </div>}
                 <div className={classes.grow} />
                 <Typography
                     variant="body2"
                     title={this.state.estimatedSize ? this.props.t('Estimated size') : ''}
                     className={classes.logSize}
                 >
-                    {this.t('Log size:')} <span className={this.state.estimatedSize ? classes.logEstimated : ''}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
+                    {this.t('Log size:')}
+                    {' '}
+                    <span className={this.state.estimatedSize ? classes.logEstimated : ''}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
                 </Typography>
             </TabHeader>
             <TabContent>
@@ -927,7 +933,7 @@ class Logs extends Component {
                                         <Select
                                             variant="standard"
                                             labelId="source-label"
-                                            value={sources.includes(this.state.source) ? this.state.source : '1' }
+                                            value={sources.includes(this.state.source) ? this.state.source : '1'}
                                             onChange={event => this.handleSourceChange(event)}
                                         >
                                             {this.getSources()}
@@ -965,11 +971,12 @@ class Logs extends Component {
                                                 endAdornment:
                                                     this.state.message ? <IconButton
                                                         size="small"
-                                                        onClick={e => {
+                                                        onClick={() => {
                                                             (window._localStorage || window.localStorage).removeItem('Log.message');
                                                             this.setState({ message: '' });
-                                                        }}>
-                                                        <ClearIcon />
+                                                        }}
+                                                    >
+                                                        <CloseIcon />
                                                     </IconButton> : null,
                                             }}
                                         />
@@ -993,8 +1000,6 @@ Logs.propTypes = {
     currentHost: PropTypes.string,
     clearErrors: PropTypes.func,
     logsWorker: PropTypes.object,
-    hostsWorker: PropTypes.object,
-    lang: PropTypes.string,
     themeType: PropTypes.string,
     t: PropTypes.func,
 };

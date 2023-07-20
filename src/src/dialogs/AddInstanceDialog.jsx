@@ -23,7 +23,7 @@ import HostSelectors from '../components/HostSelectors';
 
 const styles = theme => ({
     formControl: {
-        marginTop: theme.spacing(3)
+        marginTop: theme.spacing(3),
     },
     closeButton: {
         position: 'absolute',
@@ -32,11 +32,11 @@ const styles = theme => ({
         color: theme.palette.grey[500],
     },
     paper: {
-        //minWidth: 600
+        // minWidth: 600
     },
     typography: {
-        paddingRight: 30
-    }
+        paddingRight: 30,
+    },
 });
 
 class AddInstanceDialog extends Component {
@@ -55,10 +55,9 @@ class AddInstanceDialog extends Component {
                     .filter(id => instances[id]?.common?.name === this.props.adapter)
                     .map(id => id.substring(id.lastIndexOf('.') + 1));
 
-                this.setState({instanceNumbers});
+                this.setState({ instanceNumbers });
             });
     }
-
 
     getAvailableInstances() {
         const result = [];
@@ -77,8 +76,8 @@ class AddInstanceDialog extends Component {
         if (!dependencies) {
             return '';
         }
-        let array = []
-        for (let adapter of dependencies) {
+        const array = [];
+        for (const adapter of dependencies) {
             if (!adapter.installedVersion) {
                 array.push(this.props.t('Latest available version of "%s" is required, but nothing installed. Please install first "%s" and then retry.', adapter.name, adapter.name));
             } else if (!adapter.rightVersion) {
@@ -86,7 +85,7 @@ class AddInstanceDialog extends Component {
             }
         }
         return array.length ? array.map(el => <div key={el}>{el}</div>) : '';
-    }
+    };
 
     render() {
         const { classes } = this.props;
@@ -100,7 +99,9 @@ class AddInstanceDialog extends Component {
         >
             <DialogTitle>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                    {this.t('You are going to add new instance:')} {this.props.adapter}
+                    {this.t('You are going to add new instance:')}
+                    {' '}
+                    {this.props.adapter}
                     <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
@@ -135,8 +136,11 @@ class AddInstanceDialog extends Component {
                 <div style={{
                     margin: 10,
                     fontSize: 16,
-                    color: this.props.themeType === 'dark' ? '#e70000' : '#840101'
-                }}>{checkDeps}</div>
+                    color: this.props.themeType === 'dark' ? '#e70000' : '#840101',
+                }}
+                >
+                    {checkDeps}
+                </div>
             </DialogContent>
             <DialogActions>
                 <Button
@@ -177,7 +181,7 @@ AddInstanceDialog.propTypes = {
     onClick: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
     onHostChange: PropTypes.func.isRequired,
-    onInstanceChange: PropTypes.func.isRequired
-}
+    onInstanceChange: PropTypes.func.isRequired,
+};
 
 export default withStyles(styles)(AddInstanceDialog);

@@ -24,10 +24,10 @@ import Select from '@mui/material/Select';
 import CloseIcon from '@mui/icons-material/Close';
 
 // icons
-import IntroCard from '../components/IntroCard';
-import UploadImage from '../components/UploadImage';
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
+import IntroCard from '../components/IntroCard';
+import UploadImage from '../components/UploadImage';
 
 const styles = theme => ({
     formControl: {
@@ -43,7 +43,7 @@ const styles = theme => ({
         color: theme.palette.grey[500],
     },
     paper: {
-        //minWidth: 600
+        // minWidth: 600
     },
     typography: {
         paddingRight: 30,
@@ -112,25 +112,22 @@ const styles = theme => ({
 });
 
 class EditIntroLinkDialog extends Component {
-
     constructor(props) {
         super(props);
 
-        let state = Object.assign({
+        this.state = {
             image: '',
             name: props.t('New link'),
             link: 'http://',
             linkName: '',
             color: '',
             desc: '',
-            enabled: true,
             addTs: true,
             interval: 5000,
             camera: 'text',
             cameraList: [],
-        }, props.link);
-
-        this.state = state;
+            ...props.link,
+        };
     }
 
     componentDidMount() {
@@ -140,7 +137,6 @@ class EditIntroLinkDialog extends Component {
     getCamerasInstances() {
         this.props.socket.getAdapterInstances('cameras', true)
             .then(list => {
-
                 const cameraList = [];
                 const promises = [];
                 list.forEach(obj => {
@@ -149,13 +145,13 @@ class EditIntroLinkDialog extends Component {
                     if (obj.common && obj.common.enabled) {
                         promises.push(
                             // if instance is alive
-                            this.props.socket.getState(obj._id + '.alive')
+                            this.props.socket.getState(`${obj._id}.alive`)
                                 // get the list of cameras
                                 .then(state => state && state.val && this.props.socket.sendTo(instance, 'list', null))
                                 .then(result =>
                                     result && result.list && result.list.forEach(cam =>
-                                        cameraList.push({ id: cam.id, name: `${cam.desc} [${instance}/${cam.name}]` }))));
-
+                                        cameraList.push({ id: cam.id, name: `${cam.desc} [${instance}/${cam.name}]` }))),
+                        );
                     }
                 });
 
@@ -165,7 +161,7 @@ class EditIntroLinkDialog extends Component {
             });
     }
 
-    getLinkNameFromLink(link) {
+    static getLinkNameFromLink(link) {
         const m = link.trim().match(/^https?:\/\/([^/:]+)(:\d+)?/);
         if (m) {
             return m[1] + (m[2] || '');
@@ -197,11 +193,13 @@ class EditIntroLinkDialog extends Component {
                     container
                     direction="row"
                 >
-                    <Grid item
+                    <Grid
+                        item
                         xs={12}
                         sm={6}
                         md={8}
-                        lg={9}>
+                        lg={9}
+                    >
                         <Grid
                             container
                             direction="column"
@@ -226,9 +224,9 @@ class EditIntroLinkDialog extends Component {
                                 value={this.state.link}
                                 className={this.props.classes.editItem}
                                 onChange={e => {
-                                    const oldLinkName = this.getLinkNameFromLink(this.state.link);
+                                    const oldLinkName = EditIntroLinkDialog.getLinkNameFromLink(this.state.link);
                                     if (oldLinkName && (!this.state.linkName || oldLinkName === this.state.linkName)) {
-                                        this.setState({ link: e.target.value, linkName: this.getLinkNameFromLink(e.target.value) });
+                                        this.setState({ link: e.target.value, linkName: EditIntroLinkDialog.getLinkNameFromLink(e.target.value) });
                                     } else {
                                         this.setState({ link: e.target.value });
                                     }
@@ -247,18 +245,19 @@ class EditIntroLinkDialog extends Component {
 
                             {this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField variant="standard" className={this.props.classes.editItem} label={this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description')} value={this.state.desc || ''} onChange={e => this.setState({ desc: e.target.value })} /> : null}
 
-                            {this.state.camera === 'custom' ? <FormControlLabel className={this.props.classes.editItem}
+                            {this.state.camera === 'custom' ? <FormControlLabel
+                                className={this.props.classes.editItem}
                                 control={<Checkbox checked={this.state.addTs} onChange={e => this.setState({ addTs: e.target.checked })} />}
                                 label={this.props.t('Add timestamp to URL')}
                             /> : null}
 
                             {this.state.camera !== 'text' ? <Typography className={this.props.classes.labelSlider} gutterBottom>
                                 Polling interval in ms
-                                </Typography> : null}
+                            </Typography> : null}
                             {this.state.camera !== 'text' ? <Slider
                                 className={this.props.classes.editItemSlider}
                                 value={this.state.interval}
-                                getAriaValueText={() => this.state.interval + 'ms'}
+                                getAriaValueText={() => `${this.state.interval}ms`}
                                 onChange={(e, interval) => this.setState({ interval })}
                                 step={100}
                                 min={500}
@@ -275,7 +274,7 @@ class EditIntroLinkDialog extends Component {
                                 maxSize={256 * 1024}
                                 icon={this.state.image}
                                 removeIconFunc={() => this.setState({ image: '' })}
-                                onChange={(base64) => this.setState({ image: base64 })}
+                                onChange={base64 => this.setState({ image: base64 })}
                                 t={this.props.t}
                             />
                         </Grid>
@@ -334,7 +333,6 @@ class EditIntroLinkDialog extends Component {
 EditIntroLinkDialog.propTypes = {
     t: PropTypes.func.isRequired,
     socket: PropTypes.object.isRequired,
-    lang: PropTypes.string.isRequired,
     link: PropTypes.object.isRequired,
     onClose: PropTypes.func.isRequired,
     isNew: PropTypes.bool,

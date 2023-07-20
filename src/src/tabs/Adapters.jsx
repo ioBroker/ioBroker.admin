@@ -247,7 +247,6 @@ class Adapters extends Component {
             nodeJsVersion: '',
             init: false,
             addInstanceDialog: false,
-            addInstanceError: false,
             addInstanceAdapter: '',
             addInstanceId: 'auto',
             addInstanceHostName: '',
@@ -281,7 +280,7 @@ class Adapters extends Component {
             triggerUpdate: props.triggerUpdate,
         };
 
-        this.rebuildSupported = false;
+        // this.rebuildSupported = false;
         this.inputRef = createRef();
         this.countRef = createRef();
 
@@ -310,21 +309,20 @@ class Adapters extends Component {
     renderSlowConnectionWarning() {
         if (!this.state.showSlowConnectionWarning) {
             return null;
-        } else {
-            return (
-                <SlowConnectionWarningDialog
-                    readTimeoutMs={this.state.readTimeoutMs}
-                    t={this.t}
-                    onClose={readTimeoutMs => {
-                        if (readTimeoutMs) {
-                            this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () => this.updateAll());
-                        } else {
-                            this.setState({ showSlowConnectionWarning: false });
-                        }
-                    }}
-                />
-            );
         }
+        return (
+            <SlowConnectionWarningDialog
+                readTimeoutMs={this.state.readTimeoutMs}
+                t={this.t}
+                onClose={readTimeoutMs => {
+                    if (readTimeoutMs) {
+                        this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () => this.updateAll());
+                    } else {
+                        this.setState({ showSlowConnectionWarning: false });
+                    }
+                }}
+            />
+        );
     }
 
     componentDidMount() {
@@ -339,8 +337,7 @@ class Adapters extends Component {
 
     updateAll(update, bigUpdate, indicateUpdate) {
         return this.getAdapters(update, bigUpdate, indicateUpdate).then(() =>
-            this.getAdaptersInfo(update, indicateUpdate)
-        );
+            this.getAdaptersInfo(update, indicateUpdate));
     }
 
     componentDidUpdate() {
@@ -376,7 +373,7 @@ class Adapters extends Component {
 
         events.forEach(event => {
             // detect if adapter or instance
-            let isInstance = !!event.id.match(/\.\d+$/);
+            const isInstance = !!event.id.match(/\.\d+$/);
             if (isInstance) {
                 if (event.type === 'deleted' || !event.obj) {
                     delete this.tempInstances[event.id];
@@ -387,29 +384,27 @@ class Adapters extends Component {
                         name: event.obj.common.name,
                     };
                 }
-            } else {
-                if (event.type === 'deleted' || !event.obj) {
-                    // extract name from id
-                    const p = event.id.split('.');
+            } else if (event.type === 'deleted' || !event.obj) {
+                // extract name from id
+                const p = event.id.split('.');
 
-                    // remove from installed
-                    delete this.tempInstalled[p[2]];
-                    delete this.tempAdapters[event.id];
+                // remove from installed
+                delete this.tempInstalled[p[2]];
+                delete this.tempAdapters[event.id];
+            } else {
+                const name = event.obj.common.name;
+                if (this.tempInstalled[name]) {
+                    // Update attributes
+                    Object.keys(this.tempInstalled[name]).forEach(attr => {
+                        if (event.obj.common[attr] !== undefined && attr !== 'installedFrom') {
+                            this.tempInstalled[name][attr] = event.obj.common[attr];
+                        }
+                    });
                 } else {
-                    const name = event.obj.common.name;
-                    if (this.tempInstalled[name]) {
-                        // Update attributes
-                        Object.keys(this.tempInstalled[name]).forEach(attr => {
-                            if (event.obj.common[attr] !== undefined && attr !== 'installedFrom') {
-                                this.tempInstalled[name][attr] = event.obj.common[attr];
-                            }
-                        });
-                    } else {
-                        // new
-                        this.tempInstalled[event.id.split('.').pop()] = JSON.parse(JSON.stringify(event.obj.common));
-                    }
-                    this.tempAdapters[event.id] = event.obj;
+                    // new
+                    this.tempInstalled[event.id.split('.').pop()] = JSON.parse(JSON.stringify(event.obj.common));
                 }
+                this.tempAdapters[event.id] = event.obj;
             }
         });
 
@@ -458,7 +453,7 @@ class Adapters extends Component {
                 installed,
                 repository,
             },
-            () => cb && cb()
+            () => cb && cb(),
         );
     }
 
@@ -482,7 +477,7 @@ class Adapters extends Component {
                 adapters = _adapters;
                 return this.props.socket.getInstalled(currentHost, update, this.state.readTimeoutMs).catch(e => {
                     window.alert(
-                        `Cannot getInstalled from "${currentHost}" (timeout ${this.state.readTimeoutMs}ms): ${e}`
+                        `Cannot getInstalled from "${currentHost}" (timeout ${this.state.readTimeoutMs}ms): ${e}`,
                     );
                     e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                     return null;
@@ -495,7 +490,7 @@ class Adapters extends Component {
                         currentHost,
                         { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate || indicateUpdate },
                         update,
-                        this.state.readTimeoutMs
+                        this.state.readTimeoutMs,
                     )
                     .catch(e => {
                         window.alert(`Cannot getRepository: ${e}`);
@@ -509,20 +504,18 @@ class Adapters extends Component {
     getWordVotes(votes) {
         if (votes === 1) {
             return this.t('vote');
-        } else if (votes >= 2 && votes <= 4) {
+        } if (votes >= 2 && votes <= 4) {
             return this.t('votes2');
-        } else if (votes >= 5 && votes <= 20) {
+        } if (votes >= 5 && votes <= 20) {
             return this.t('votes');
-        } else {
-            const v = votes % 10;
-            if (v === 1) {
-                return this.t('vote21');
-            } else if (v >= 2 && v <= 4) {
-                return this.t('votes2');
-            } else {
-                return this.t('votes');
-            }
         }
+        const v = votes % 10;
+        if (v === 1) {
+            return this.t('vote21');
+        } if (v >= 2 && v <= 4) {
+            return this.t('votes2');
+        }
+        return this.t('votes');
     }
 
     calculateInfo(instances, ratings, hostData, compactRepositories) {
@@ -598,8 +591,8 @@ class Adapters extends Component {
                     } ${this.getWordVotes(adapter.rating.rating.c)})`,
                     _installed && _installed.version && adapter.rating[_installed.version]
                         ? `${this.t('Rating for')} v${_installed.version}: ${adapter.rating[_installed.version].r} (${
-                              adapter.rating[_installed.version].c
-                          } ${this.getWordVotes(adapter.rating.rating.c)})`
+                            adapter.rating[_installed.version].c
+                        } ${this.getWordVotes(adapter.rating.rating.c)})`
                         : '',
                 ]
                     .filter(i => i)
@@ -624,7 +617,7 @@ class Adapters extends Component {
                 if (!categories[type]) {
                     categories[type] = {
                         name: type,
-                        translation: this.t(type + '_group'),
+                        translation: this.t(`${type}_group`),
                         count: 1,
                         installed: installedInGroup ? 1 : 0,
                         adapters: [value],
@@ -643,15 +636,14 @@ class Adapters extends Component {
             .sort((a, b) => {
                 if (a === 'general' && b !== 'general') {
                     return -1;
-                } else if (a !== 'general' && b === 'general') {
+                } if (a !== 'general' && b === 'general') {
                     return 1;
-                } else if (categories[a].translation > categories[b].translation) {
+                } if (categories[a].translation > categories[b].translation) {
                     return 1;
-                } else if (categories[a].translation < categories[b].translation) {
+                } if (categories[a].translation < categories[b].translation) {
                     return -1;
-                } else {
-                    return 0;
                 }
+                return 0;
             })
             .forEach(value => categoriesSorted.push(categories[value]));
 
@@ -678,38 +670,38 @@ class Adapters extends Component {
                     }
 
                     return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-                } else if (installed[a]) {
+                } if (installed[a]) {
                     return -1;
-                } else if (installed[b]) {
+                } if (installed[b]) {
                     return 1;
-                } else {
-                    // sort by real language name and not by adapter name
-                    if (!_titles[a]) {
-                        let title = repository[a].titleLang || repository[a].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[a] = title.toLowerCase();
-                    }
-                    if (!_titles[b]) {
-                        let title = repository[b].titleLang || repository[b].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[b] = title.toLowerCase();
-                    }
-
-                    return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
                 }
-            })
-        );
+                // sort by real language name and not by adapter name
+                if (!_titles[a]) {
+                    let title = repository[a].titleLang || repository[a].title;
+                    if (typeof title === 'object') {
+                        title = title[this.props.lang] || title.en;
+                    }
+                    title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                    _titles[a] = title.toLowerCase();
+                }
+                if (!_titles[b]) {
+                    let title = repository[b].titleLang || repository[b].title;
+                    if (typeof title === 'object') {
+                        title = title[this.props.lang] || title.en;
+                    }
+                    title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                    _titles[b] = title.toLowerCase();
+                }
+
+                return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
+            }));
 
         let installedList = false;
         try {
             installedList = JSON.parse((window._localStorage || window.localStorage).getItem('Adapters.installedList'));
-        } catch (error) {}
+        } catch (error) {
+            // ignore
+        }
         const list = (window._localStorage || window.localStorage).getItem('Adapters.list') === 'true';
         const viewMode = (window._localStorage || window.localStorage).getItem('Adapters.viewMode') === 'true';
         const updateList = (window._localStorage || window.localStorage).getItem('Adapters.updateList') === 'true';
@@ -720,7 +712,7 @@ class Adapters extends Component {
 
         this.cache.listOfVisibleAdapter = null;
 
-        return new Promise(resolve =>
+        return new Promise(resolve => {
             this.setState(
                 {
                     repository,
@@ -743,14 +735,14 @@ class Adapters extends Component {
                     init: true,
                     update: false,
                 },
-                () => resolve()
-            )
-        );
+                () => resolve(),
+            );
+        });
     }
 
     getAdaptersInfo = (update, indicateUpdate) => {
         if (!this.state.currentHost) {
-            return;
+            return Promise.resolve();
         }
 
         // Do not update too often
@@ -774,15 +766,14 @@ class Adapters extends Component {
                     this.props.socket.getHostInfo(currentHost, update, this.state.readTimeoutMs).catch(e => {
                         window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
                         e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
-                    })
-                )
+                    }))
                 .then(_hostData => {
                     hostData = _hostData;
-                    /*return this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD')
+                    /* return this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD')
                         .catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
                 })
                 .then(_rebuild => {
-                    rebuild = _rebuild;*/
+                    rebuild = _rebuild; */
                     if (this.props.adminGuiConfig.adapters?.allowAdapterRating === false) {
                         return Promise.resolve({});
                     }
@@ -813,9 +804,9 @@ class Adapters extends Component {
                     return this.calculateInfo(instances, ratings, hostData, compactRepositories);
                 })
                 .catch(error => window.alert(`Cannot get adapters info: ${error}`));
-        } else {
-            return Promise.resolve();
         }
+
+        return Promise.resolve();
     };
 
     async addInstance(adapter, instance, debug = false, customUrl = false) {
@@ -830,7 +821,8 @@ class Adapters extends Component {
                 const instances = this.props.instancesWorker.getInstances();
                 // if the instance already exists
                 if (instances[`system.adapter.${adapter}.${instance}`]) {
-                    return this.setState({ addInstanceError: true });
+                    window.alert(this.props.t('Instance %s already exists', `${adapter}.${instance}`));
+                    return;
                 }
             }
             const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
@@ -839,7 +831,7 @@ class Adapters extends Component {
                     debug || this.props.expertMode ? '--debug' : ''
                 }`,
                 host,
-                true
+                true,
             );
         }
     }
@@ -848,13 +840,13 @@ class Adapters extends Component {
         this.props.executeCommand(`upload ${adapter}${this.props.expertMode ? ' --debug' : ''}`);
     }
 
-    /*rebuild(adapter) {
+    /* rebuild(adapter) {
         this.props.executeCommand('rebuild ' + adapter)
-    }*/
+    } */
 
     delete(adapter, deleteCustom) {
         this.props.executeCommand(
-            `del ${adapter}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`
+            `del ${adapter}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`,
         );
     }
 
@@ -891,7 +883,7 @@ class Adapters extends Component {
 
             (window._localStorage || window.localStorage).setItem(
                 'Adapters.expandedCategories',
-                JSON.stringify(categoriesExpanded)
+                JSON.stringify(categoriesExpanded),
             );
 
             return { categoriesExpanded };
@@ -917,7 +909,7 @@ class Adapters extends Component {
 
     getDependencies = value => {
         const adapter = this.state.repository[value];
-        let result = [];
+        const result = [];
 
         if (adapter) {
             if (adapter.dependencies && !Array.isArray(adapter.dependencies)) {
@@ -1010,8 +1002,8 @@ class Adapters extends Component {
                                 result = installed
                                     ? checkVersion
                                         ? semver.satisfies(installed.version, dependency[name], {
-                                              includePrerelease: true,
-                                          })
+                                            includePrerelease: true,
+                                        })
                                         : true
                                     : false;
                             } catch (e) {
@@ -1028,8 +1020,8 @@ class Adapters extends Component {
                                 result = installed
                                     ? checkVersion
                                         ? semver.satisfies(installed.version, dependency[dependency], {
-                                              includePrerelease: true,
-                                          })
+                                            includePrerelease: true,
+                                        })
                                         : true
                                     : false;
                             } catch (e) {
@@ -1058,13 +1050,13 @@ class Adapters extends Component {
         const adapter = this.state.repository[value];
 
         if (adapter?.os) {
-            return !!adapter.os.find(value => this.state.hostOs === value);
+            return !!adapter.os.find(_value => this.state.hostOs === _value);
         }
 
         return true;
     }
 
-    openInfoDialog(adapter) {
+    static openInfoDialog(adapter) {
         Router.doNavigate('tab-adapters', 'readme', adapter);
     }
 
@@ -1100,9 +1092,8 @@ class Adapters extends Component {
                     uuid={this.uuid}
                 />
             );
-        } else {
-            return null;
         }
+        return null;
     }
 
     getNews(value, all = false) {
@@ -1141,7 +1132,7 @@ class Adapters extends Component {
                 this.filterAdapters(value);
             },
             300,
-            event.target.value
+            event.target.value,
         );
     }
 
@@ -1158,7 +1149,7 @@ class Adapters extends Component {
 
             (window._localStorage || window.localStorage).setItem(
                 'Adapters.expandedCategories',
-                JSON.stringify(categoriesExpanded)
+                JSON.stringify(categoriesExpanded),
             );
 
             return { categoriesExpanded };
@@ -1170,14 +1161,14 @@ class Adapters extends Component {
 
         (window._localStorage || window.localStorage).setItem(
             'Adapters.expandedCategories',
-            JSON.stringify(categoriesExpanded)
+            JSON.stringify(categoriesExpanded),
         );
 
         this.setState({ categoriesExpanded });
     }
 
     listTable() {
-        let list = !this.state.list;
+        const list = !this.state.list;
         if (list) {
             this.expandAll();
         }
@@ -1187,14 +1178,14 @@ class Adapters extends Component {
 
     changeViewMode() {
         this.cache.listOfVisibleAdapter = null;
-        let viewMode = !this.state.viewMode;
+        const viewMode = !this.state.viewMode;
         (window._localStorage || window.localStorage).setItem('Adapters.viewMode', viewMode ? 'true' : 'false');
         this.setState({ viewMode });
     }
 
     changeUpdateList() {
         this.cache.listOfVisibleAdapter = null;
-        let updateList = !this.state.updateList;
+        const updateList = !this.state.updateList;
         (window._localStorage || window.localStorage).setItem('Adapters.updateList', updateList ? 'true' : 'false');
         this.setState({ updateList });
     }
@@ -1251,8 +1242,7 @@ class Adapters extends Component {
                         adapter.keywords &&
                             adapter.keywords.forEach(value => value.includes(search) && filteredList.push(name));
                     }
-                })
-            );
+                }));
         } else {
             filteredList = null;
         }
@@ -1266,14 +1256,14 @@ class Adapters extends Component {
             const installed = this.state.installed[value];
 
             if (cached.title instanceof Object || !cached.desc) {
-                console.warn('[ADAPTERS] ' + value);
+                console.warn(`[ADAPTERS] ${value}`);
             }
 
             return (
                 <AdapterRow
                     t={this.t}
                     descHidden={descHidden}
-                    key={'adapter-' + value}
+                    key={`adapter-${value}`}
                     connectionType={cached.connectionType}
                     dataSource={adapter.dataSource}
                     description={cached.desc}
@@ -1294,7 +1284,7 @@ class Adapters extends Component {
                     rightDependencies={cached.rightDependencies}
                     rightOs={cached.rightOs}
                     sentry={cached.sentry}
-                    //rebuild={this.rebuildSupported}
+                    // rebuild={this.rebuildSupported}
                     commandRunning={this.props.commandRunning}
                     rating={adapter.rating}
                     onSetRating={() =>
@@ -1304,8 +1294,7 @@ class Adapters extends Component {
                                 version: installed && installed.version,
                                 rating: adapter.rating,
                             },
-                        })
-                    }
+                        })}
                     onAddInstance={() => {
                         let url = adapter.extIcon || adapter.icon || '';
                         if (url.includes('/main')) {
@@ -1318,11 +1307,11 @@ class Adapters extends Component {
                             adapter.license === 'MIT',
                             this.props.theme,
                             async result => result && (await this.addInstance(value)),
-                            url
+                            url,
                         );
                     }}
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
-                    onInfo={() => this.openInfoDialog(value)}
+                    onInfo={() => Adapters.openInfoDialog(value)}
                     // onRebuild={() => this.rebuild(value)}
                     onUpdate={() => this.openUpdateDialog(value)}
                     openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
@@ -1338,7 +1327,7 @@ class Adapters extends Component {
                             adapter.license === 'MIT',
                             this.props.theme,
                             result => result && this.upload(value),
-                            url
+                            url,
                         );
                     }}
                     allowAdapterDelete={
@@ -1360,10 +1349,10 @@ class Adapters extends Component {
                     }
                 />
             );
-        } else {
-            return null;
         }
+        return null;
     }
+
     clearAllFilters() {
         (window._localStorage || window.localStorage).removeItem('Adapter.search');
         (window._localStorage || window.localStorage).removeItem('Adapters.installedList');
@@ -1379,7 +1368,7 @@ class Adapters extends Component {
                 installedList: false,
                 search: '',
             },
-            () => this.filterAdapters()
+            () => this.filterAdapters(),
         );
     }
 
@@ -1399,7 +1388,7 @@ class Adapters extends Component {
             });
         } else {
             rows = this.state.categories.map(category => {
-                let showCategory = category.adapters.find(value => this.cache.listOfVisibleAdapter.includes(value));
+                const showCategory = category.adapters.find(value => this.cache.listOfVisibleAdapter.includes(value));
                 if (!showCategory) {
                     return null;
                 }
@@ -1411,7 +1400,7 @@ class Adapters extends Component {
                     <Fragment key={`category-${categoryName} ${category.adapters.length}`}>
                         <AdapterRow
                             descHidden={descHidden}
-                            key={'category-' + categoryName + 1}
+                            key={`category-${categoryName}${1}`}
                             category
                             categoryName={categoryName}
                             count={category.count}
@@ -1435,27 +1424,23 @@ class Adapters extends Component {
         }
 
         if (!count) {
-            return (
-                !this.state.update && (
-                    <tr>
-                        <td
-                            colSpan={4}
-                            style={{
-                                padding: 16,
-                                fontSize: 18,
-                                cursor: 'pointer',
-                            }}
-                            title={this.t('Click to clear all filters')}
-                            onClick={() => this.clearAllFilters()}
-                        >
-                            {this.t('all items are filtered out')}
-                        </td>
-                    </tr>
-                )
-            );
-        } else {
-            return rows;
+            return !this.state.update && <tr>
+                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+                <td
+                    colSpan={4}
+                    style={{
+                        padding: 16,
+                        fontSize: 18,
+                        cursor: 'pointer',
+                    }}
+                    title={this.t('Click to clear all filters')}
+                    onClick={() => this.clearAllFilters()}
+                >
+                    {this.t('all items are filtered out')}
+                </td>
+            </tr>;
         }
+        return rows;
     }
 
     buildCache() {
@@ -1477,14 +1462,14 @@ class Adapters extends Component {
                     this.state.viewMode ||
                     !this.state.categoriesTiles ||
                     this.state.categoriesTiles === 'All' ||
-                    cat.name === this.state.categoriesTiles
+                    cat.name === this.state.categoriesTiles,
             )
             .forEach(category =>
                 category.adapters.forEach(value => {
                     const adapter = this.state.repository[value];
 
                     if (value === 'admin') {
-                        console.log('[ADAPTERS] ' + value);
+                        console.log(`[ADAPTERS] ${value}`);
                     }
 
                     if (adapter && !adapter.controller) {
@@ -1521,11 +1506,11 @@ class Adapters extends Component {
                             this.cache.adapters[value] = {
                                 title,
                                 desc: adapter.desc
-                                    ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc
+                                    ? adapter.desc[this.props.lang] || adapter.desc.en || adapter.desc
                                     : '',
                                 image:
-                                    installed && this.state.adapters['system.adapter.' + value]
-                                        ? '.' + installed.localIcon
+                                    installed && this.state.adapters[`system.adapter.${value}`]
+                                        ? `.${installed.localIcon}`
                                         : adapter.extIcon,
                                 connectionType: adapter.connectionType ? adapter.connectionType : '-',
                                 updateAvailable: this.state.updateAvailable.includes(value),
@@ -1539,16 +1524,15 @@ class Adapters extends Component {
                                         ? daysAgo === 0
                                             ? textDaysAgo0
                                             : _daysAgo10 === 1
-                                            ? textDaysAgo1.replace('%d', daysAgo)
-                                            : _daysAgo10 === 2 || _daysAgo10 === 3 || _daysAgo10 === 4
-                                            ? textDaysAgo2.replace('%d', daysAgo)
-                                            : textDaysAgo.replace('%d', daysAgo)
+                                                ? textDaysAgo1.replace('%d', daysAgo)
+                                                : _daysAgo10 === 2 || _daysAgo10 === 3 || _daysAgo10 === 4
+                                                    ? textDaysAgo2.replace('%d', daysAgo)
+                                                    : textDaysAgo.replace('%d', daysAgo)
                                         : '',
                             };
                         }
                     }
-                })
-            );
+                }));
 
         this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length;
 
@@ -1561,10 +1545,10 @@ class Adapters extends Component {
         this.cache.listOfVisibleAdapter.sort((a, b) => {
             if (sortPopularFirst) {
                 return repo[b].stat - repo[a].stat;
-            } else if (sortRecentlyUpdated) {
+            } if (sortRecentlyUpdated) {
                 if (!adapters[a]) {
                     return -1;
-                } else if (!adapters[b]) {
+                } if (!adapters[b]) {
                     return 1;
                 }
                 if (adapters[a].daysAgo === adapters[b].daysAgo) {
@@ -1586,55 +1570,52 @@ class Adapters extends Component {
                     }
 
                     return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-                } else {
-                    return adapters[a].daysAgo - adapters[b].daysAgo;
                 }
-            } else {
-                if (installed[a] && installed[b]) {
-                    if (!_titles[a]) {
-                        let title = adapters[a].titleLang || adapters[a].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[a] = title.toLowerCase();
-                    }
-                    if (!_titles[b]) {
-                        let title = adapters[b].titleLang || adapters[b].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[b] = title.toLowerCase();
-                    }
-
-                    return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-                } else if (installed[a]) {
-                    return -1;
-                } else if (installed[b]) {
-                    return 1;
-                } else {
-                    // sort by real language name and not by adapter name
-                    if (!_titles[a]) {
-                        let title = adapters[a].titleLang || adapters[a].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[a] = title.toLowerCase();
-                    }
-                    if (!_titles[b]) {
-                        let title = adapters[b].titleLang || adapters[b].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[b] = title.toLowerCase();
-                    }
-
-                    return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-                }
+                return adapters[a].daysAgo - adapters[b].daysAgo;
             }
+            if (installed[a] && installed[b]) {
+                if (!_titles[a]) {
+                    let title = adapters[a].titleLang || adapters[a].title;
+                    if (typeof title === 'object') {
+                        title = title[this.props.lang] || title.en;
+                    }
+                    title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                    _titles[a] = title.toLowerCase();
+                }
+                if (!_titles[b]) {
+                    let title = adapters[b].titleLang || adapters[b].title;
+                    if (typeof title === 'object') {
+                        title = title[this.props.lang] || title.en;
+                    }
+                    title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                    _titles[b] = title.toLowerCase();
+                }
+
+                return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
+            } if (installed[a]) {
+                return -1;
+            } if (installed[b]) {
+                return 1;
+            }
+            // sort by real language name and not by adapter name
+            if (!_titles[a]) {
+                let title = adapters[a].titleLang || adapters[a].title;
+                if (typeof title === 'object') {
+                    title = title[this.props.lang] || title.en;
+                }
+                title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                _titles[a] = title.toLowerCase();
+            }
+            if (!_titles[b]) {
+                let title = adapters[b].titleLang || adapters[b].title;
+                if (typeof title === 'object') {
+                    title = title[this.props.lang] || title.en;
+                }
+                title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                _titles[b] = title.toLowerCase();
+            }
+
+            return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
         });
 
         // console.log('[ADAPTERS] Update cache!');
@@ -1658,142 +1639,139 @@ class Adapters extends Component {
                     </div>
                 )
             );
-        } else {
-            return this.cache.listOfVisibleAdapter.map(value => {
-                const adapter = this.state.repository[value];
-                const installed = this.state.installed[value];
-                const cached = this.cache.adapters[value];
-
-                if (cached.title instanceof Object || !cached.desc) {
-                    console.warn(`[ADAPTERS] ${JSON.stringify(adapter)}`);
-                }
-
-                return (
-                    <AdapterTile
-                        t={this.t}
-                        commandRunning={this.props.commandRunning}
-                        key={'adapter-' + value}
-                        image={cached.image}
-                        name={cached.title}
-                        dataSource={adapter.dataSource}
-                        adapter={value}
-                        stat={cached.stat}
-                        versionDate={cached.daysAgoText}
-                        connectionType={cached.connectionType}
-                        description={cached.desc}
-                        enabledCount={installed && installed.enabled}
-                        expertMode={this.props.expertMode}
-                        installedCount={installed && installed.count}
-                        installedFrom={installed && installed.installedFrom}
-                        installedVersion={installed && installed.version}
-                        keywords={adapter.keywords}
-                        license={adapter.license}
-                        updateAvailable={cached.updateAvailable}
-                        version={adapter.version}
-                        hidden={false}
-                        rightDependencies={cached.rightDependencies}
-                        rightOs={cached.rightOs}
-                        sentry={cached.sentry}
-                        //rebuild={this.rebuildSupported}
-                        rating={adapter.rating}
-                        onSetRating={() =>
-                            this.setState({
-                                showSetRating: {
-                                    adapter: value,
-                                    version: installed && installed.version,
-                                    rating: adapter.rating,
-                                },
-                            })
-                        }
-                        onAddInstance={() => {
-                            let url = adapter.extIcon || adapter.icon || '';
-                            if (url.includes('/main')) {
-                                url = `${url.split('/main')[0]}/main/LICENSE`;
-                            } else {
-                                url = `${url.split('/master')[0]}/master/LICENSE`;
-                            }
-
-                            licenseDialogFunc(
-                                adapter.license === 'MIT',
-                                this.props.theme,
-                                async result => result && (await this.addInstance(value)),
-                                url
-                            );
-                        }}
-                        onDeletion={() => this.openAdapterDeletionDialog(value)}
-                        onInfo={() => this.openInfoDialog(value)}
-                        // onRebuild={() => this.rebuild(value)}
-                        onUpdate={() => this.openUpdateDialog(value)}
-                        openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                        onUpload={() => {
-                            let url = adapter.extIcon || adapter.icon || '';
-                            if (url.includes('/main')) {
-                                url = `${url.split('/main')[0]}/main/LICENSE`;
-                            } else {
-                                url = `${url.split('/master')[0]}/master/LICENSE`;
-                            }
-
-                            licenseDialogFunc(
-                                adapter.license === 'MIT',
-                                this.props.theme,
-                                result => result && this.upload(value),
-                                url
-                            );
-                        }}
-                        allowAdapterDelete={
-                            this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true
-                        }
-                        allowAdapterInstall={
-                            this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true
-                        }
-                        allowAdapterUpdate={
-                            this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true
-                        }
-                        allowAdapterReadme={
-                            this.state.repository[value] ? this.state.repository[value].allowAdapterReadme : true
-                        }
-                        allowAdapterRating={
-                            this.props.adminGuiConfig.admin.adapters
-                                ? this.props.adminGuiConfig.admin.adapters.allowAdapterRating
-                                : true
-                        }
-                    />
-                );
-            });
         }
+        return this.cache.listOfVisibleAdapter.map(value => {
+            const adapter = this.state.repository[value];
+            const installed = this.state.installed[value];
+            const cached = this.cache.adapters[value];
+
+            if (cached.title instanceof Object || !cached.desc) {
+                console.warn(`[ADAPTERS] ${JSON.stringify(adapter)}`);
+            }
+
+            return (
+                <AdapterTile
+                    t={this.t}
+                    commandRunning={this.props.commandRunning}
+                    key={`adapter-${value}`}
+                    image={cached.image}
+                    name={cached.title}
+                    dataSource={adapter.dataSource}
+                    adapter={value}
+                    stat={cached.stat}
+                    versionDate={cached.daysAgoText}
+                    connectionType={cached.connectionType}
+                    description={cached.desc}
+                    enabledCount={installed && installed.enabled}
+                    expertMode={this.props.expertMode}
+                    installedCount={installed && installed.count}
+                    installedFrom={installed && installed.installedFrom}
+                    installedVersion={installed && installed.version}
+                    keywords={adapter.keywords}
+                    license={adapter.license}
+                    updateAvailable={cached.updateAvailable}
+                    version={adapter.version}
+                    hidden={false}
+                    rightDependencies={cached.rightDependencies}
+                    rightOs={cached.rightOs}
+                    sentry={cached.sentry}
+                    // rebuild={this.rebuildSupported}
+                    rating={adapter.rating}
+                    onSetRating={() =>
+                        this.setState({
+                            showSetRating: {
+                                adapter: value,
+                                version: installed && installed.version,
+                                rating: adapter.rating,
+                            },
+                        })}
+                    onAddInstance={() => {
+                        let url = adapter.extIcon || adapter.icon || '';
+                        if (url.includes('/main')) {
+                            url = `${url.split('/main')[0]}/main/LICENSE`;
+                        } else {
+                            url = `${url.split('/master')[0]}/master/LICENSE`;
+                        }
+
+                        licenseDialogFunc(
+                            adapter.license === 'MIT',
+                            this.props.theme,
+                            result => result && this.addInstance(value),
+                            url,
+                        );
+                    }}
+                    onDeletion={() => this.openAdapterDeletionDialog(value)}
+                    onInfo={() => Adapters.openInfoDialog(value)}
+                    // onRebuild={() => this.rebuild(value)}
+                    onUpdate={() => this.openUpdateDialog(value)}
+                    openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
+                    onUpload={() => {
+                        let url = adapter.extIcon || adapter.icon || '';
+                        if (url.includes('/main')) {
+                            url = `${url.split('/main')[0]}/main/LICENSE`;
+                        } else {
+                            url = `${url.split('/master')[0]}/master/LICENSE`;
+                        }
+
+                        licenseDialogFunc(
+                            adapter.license === 'MIT',
+                            this.props.theme,
+                            result => result && this.upload(value),
+                            url,
+                        );
+                    }}
+                    allowAdapterDelete={
+                        this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true
+                    }
+                    allowAdapterInstall={
+                        this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true
+                    }
+                    allowAdapterUpdate={
+                        this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true
+                    }
+                    allowAdapterReadme={
+                        this.state.repository[value] ? this.state.repository[value].allowAdapterReadme : true
+                    }
+                    allowAdapterRating={
+                        this.props.adminGuiConfig.admin.adapters
+                            ? this.props.adminGuiConfig.admin.adapters.allowAdapterRating
+                            : true
+                    }
+                />
+            );
+        });
     }
 
     getUpdater() {
         if (!this.state.showUpdater) {
             return null;
-        } else {
-            return (
-                <AdaptersUpdaterDialog
-                    onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
-                    t={this.props.t}
-                    currentHost={this.state.currentHost}
-                    lang={this.props.lang}
-                    installed={this.state.installed}
-                    repository={this.state.repository}
-                    toggleTranslation={this.props.toggleTranslation}
-                    noTranslation={this.props.noTranslation}
-                    onClose={reload =>
-                        this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))
-                    }
-                    socket={this.props.socket}
-                />
-            );
         }
+        return (
+            <AdaptersUpdaterDialog
+                onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
+                t={this.props.t}
+                currentHost={this.state.currentHost}
+                lang={this.props.lang}
+                installed={this.state.installed}
+                repository={this.state.repository}
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
+                onClose={reload =>
+                    this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
+                socket={this.props.socket}
+            />
+        );
     }
 
     getDescWidth() {
         if (this.props.menuOpened) {
             return document.body.scrollWidth - SUM - 180 + 15;
-        } else if (this.props.menuClosed) {
-            return document.body.scrollWidth - SUM;
-        } else if (this.props.menuCompact) {
-            return document.body.scrollWidth - SUM - 50 + 15;
         }
+        if (this.props.menuClosed) {
+            return document.body.scrollWidth - SUM;
+        }
+        // if (this.props.menuCompact) {
+        return document.body.scrollWidth - SUM - 50 + 15;
     }
 
     getStatistics() {
@@ -1803,15 +1781,21 @@ class Adapters extends Component {
                     <DialogTitle>{this.t('Statistics')}</DialogTitle>
                     <DialogContent style={{ fontSize: 16 }}>
                         <div className={this.props.classes.counters}>
-                            {this.t('Total adapters')}:{' '}
+                            {this.t('Total adapters')}
+:
+                            {' '}
                             <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.allAdapters}</span>
                         </div>
                         <div className={this.props.classes.counters}>
-                            {this.t('Installed adapters')}:{' '}
+                            {this.t('Installed adapters')}
+:
+                            {' '}
                             <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.installedAdapters}</span>
                         </div>
                         <div className={this.props.classes.counters}>
-                            {this.t('Last month updated adapters')}:{' '}
+                            {this.t('Last month updated adapters')}
+:
+                            {' '}
                             <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span>
                         </div>
                     </DialogContent>
@@ -1828,9 +1812,8 @@ class Adapters extends Component {
                     </DialogActions>
                 </Dialog>
             );
-        } else {
-            return null;
         }
+        return null;
     }
 
     render() {
@@ -1896,7 +1879,7 @@ class Adapters extends Component {
                             currentHost: this.props.currentHost,
                             forceUpdateAdapters: this.props.forceUpdateAdapters,
                         },
-                        async () => await this.updateAll(false, false, true)
+                        () => this.updateAll(false, false, true),
                     );
                 }, 200);
         }
@@ -1906,17 +1889,16 @@ class Adapters extends Component {
                 .toString()
                 .split('\n')
                 .map(line =>
-                    line.trim().replace(/^\*+/, '').replace(/^-/, '').replace(/\*+$/, '').replace(/\r/g, '').trim()
-                )
+                    line.trim().replace(/^\*+/, '').replace(/^-/, '').replace(/\*+$/, '')
+                        .replace(/\r/g, '')
+                        .trim())
                 .filter(line => line);
 
-            return (
-                <ul>
-                    {lines.map((line, index) => (
-                        <li key={index}>{line}</li>
-                    ))}
-                </ul>
-            );
+            return <ul>
+                {lines.map((line, index) => (
+                    <li key={index}>{line}</li>
+                ))}
+            </ul>;
         };
 
         // fast check if active repo is stable
@@ -1945,7 +1927,7 @@ class Adapters extends Component {
                 stableRepo = !this.props.systemConfig.common.activeRepo.find(
                     repo =>
                         !repo.toLowerCase().startsWith('stable') &&
-                        (!repositories[repo] || !repositories[repo].json?._repoInfo?.stable)
+                        (!repositories[repo] || !repositories[repo].json?._repoInfo?.stable),
                 );
             }
         }
@@ -1954,10 +1936,12 @@ class Adapters extends Component {
             repoName = Array.isArray(this.props.systemConfig.common.activeRepo)
                 ? this.props.systemConfig.common.activeRepo.join(', ')
                 : this.props.systemConfig.common.activeRepo;
+
             // old style with just one active repository
             if (typeof this.props.systemConfig.common.activeRepo === 'string') {
                 const repoInfo =
                     repositories && repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
+
                 if (repoInfo?.name) {
                     if (repoInfo.name && typeof repoInfo.name === 'object') {
                         repoName = repoInfo.name[this.props.lang] || repoInfo.name.en;
@@ -1966,6 +1950,7 @@ class Adapters extends Component {
                     }
                 }
             }
+
             // new style with multiple active repositories
             else if (
                 this.props.systemConfig.common.activeRepo &&
@@ -1977,9 +1962,8 @@ class Adapters extends Component {
                         if (repoInfo?.name) {
                             if (repoInfo.name && typeof repoInfo.name === 'object') {
                                 return repoInfo.name[this.props.lang] || repoInfo.name.en;
-                            } else {
-                                return repoInfo.name;
                             }
+                            return repoInfo.name;
                         }
                         return repo;
                     })
@@ -2027,11 +2011,11 @@ class Adapters extends Component {
                         </Tooltip>
                     )}
 
-                    {/*<Tooltip title={this.t('Filter local connection type')}>
+                    {/* <Tooltip title={this.t('Filter local connection type')}>
                     <IconButton size="large" onClick={() => this.toggleConnectionTypeFilter()}>
                         <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
                     </IconButton>
-                 </Tooltip>*/}
+                 </Tooltip> */}
                     {this.state.updateList ? (
                         <IconButton size="large" onClick={() => this.changeInstalledList(true)}>
                             <StarIcon
@@ -2045,8 +2029,8 @@ class Adapters extends Component {
                                 !this.state.installedList
                                     ? 'Show only installed'
                                     : this.state.installedList < 2
-                                    ? 'Showed only installed adapters'
-                                    : 'Showed only installed adapters without instance.'
+                                        ? 'Showed only installed adapters'
+                                        : 'Showed only installed adapters without instance.',
                             )}
                         >
                             <IconButton size="large" onClick={() => this.changeInstalledList()}>
@@ -2116,7 +2100,7 @@ class Adapters extends Component {
                             t={this.t}
                             icons
                             contained={this.state.categoriesTiles !== 'All'}
-                            translateSuffix={'_group'}
+                            translateSuffix="_group"
                             arrayItem={[{ name: 'All' }, ...this.state.categories]}
                             onClick={value => this.changeCategoriesTiles(value)}
                             value={this.state.categoriesTiles}
@@ -2142,13 +2126,19 @@ class Adapters extends Component {
                                     <div ref={this.countRef} />
                                 </div>
                                 <div className={classes.counters}>
-                                    {this.t('Total adapters')}:<div>{this.allAdapters}</div>
+                                    {this.t('Total adapters')}
+:
+                                    <div>{this.allAdapters}</div>
                                 </div>
                                 <div className={classes.counters}>
-                                    {this.t('Installed adapters')}:<div>{this.installedAdapters}</div>
+                                    {this.t('Installed adapters')}
+:
+                                    <div>{this.installedAdapters}</div>
                                 </div>
                                 <div className={classes.counters}>
-                                    {this.t('Last month updated adapters')}:<div>{this.recentUpdatedAdapters}</div>
+                                    {this.t('Last month updated adapters')}
+:
+                                    <div>{this.recentUpdatedAdapters}</div>
                                 </div>
                             </div>
                         </Hidden>
@@ -2164,7 +2154,7 @@ class Adapters extends Component {
                         <TableContainer
                             className={Utils.clsx(
                                 classes.container,
-                                !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight
+                                !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight,
                             )}
                         >
                             <Table stickyHeader size="small" className={classes.table}>
@@ -2211,15 +2201,15 @@ class Adapters extends Component {
                 {!this.state.viewMode &&
                     this.props.systemConfig.common &&
                     this.props.systemConfig.common.activeRepo && (
-                        <>
-                            {!stableRepo ? (
-                                <div className={this.props.classes.notStableRepo}>
-                                    {this.t('Active repo is "%s"', repoName)}
-                                </div>
-                            ) : null}
-                            <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
-                        </>
-                    )}
+                    <>
+                        {!stableRepo ? (
+                            <div className={this.props.classes.notStableRepo}>
+                                {this.t('Active repo is "%s"', repoName)}
+                            </div>
+                        ) : null}
+                        <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
+                    </>
+                )}
 
                 {this.state.addInstanceDialog && (
                     <AddInstanceDialog
@@ -2231,12 +2221,10 @@ class Adapters extends Component {
                         instancesWorker={this.props.instancesWorker}
                         repository={this.state.repository}
                         dependencies={this.getDependencies(this.state.addInstanceAdapter)}
-                        currentHost={'system.host.' + this.state.addInstanceHostName}
+                        currentHost={`system.host.${this.state.addInstanceHostName}`}
                         currentInstance={this.state.addInstanceId}
                         t={this.t}
-                        onClick={async () =>
-                            await this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)
-                        }
+                        onClick={() => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
                         onClose={() => this.closeAddInstanceDialog()}
                         onHostChange={hostName => this.handleHostsChange(hostName)}
                         onInstanceChange={event => this.handleInstanceChange(event)}
@@ -2257,9 +2245,8 @@ class Adapters extends Component {
                         t={this.t}
                         open={this.state.gitHubInstallDialog}
                         categories={this.state.categories}
-                        installFromUrl={async (value, debug, customUrl) =>
-                            await this.addInstance(value, undefined, debug, customUrl)
-                        }
+                        installFromUrl={(value, debug, customUrl) =>
+                            this.addInstance(value, undefined, debug, customUrl)}
                         repository={this.state.repository}
                         onClose={() => {
                             this.setState({ gitHubInstallDialog: false });
@@ -2286,11 +2273,11 @@ class Adapters extends Component {
                             const adapter = this.state.adapterToUpdate;
                             this.closeAdapterUpdateDialog(() => {
                                 this.props.socket
-                                    .getObject('system.adapter.' + adapter)
+                                    .getObject(`system.adapter.${adapter}`)
                                     .then(obj => {
                                         if (obj) {
                                             obj.common.ignoreVersion = ignoreVersion;
-                                            return this.props.socket.setObject(obj._id, obj);
+                                            this.props.socket.setObject(obj._id, obj);
                                         } else {
                                             window.alert(`Adapter "${adapter}" does not exist!`);
                                         }
@@ -2318,20 +2305,18 @@ class Adapters extends Component {
                         noTranslation={this.props.noTranslation}
                     >
                         <div className={classes.containerVersion}>
-                            {this.getNews(this.state.adapterInstallVersion, true).map(({ version, news }) => {
-                                return (
-                                    <div
-                                        key={version}
-                                        className={classes.currentVersion}
-                                        onClick={() => {
-                                            this.update(this.state.adapterInstallVersion, version);
-                                            this.setState({ adapterInstallVersion: '' });
-                                        }}
-                                    >
-                                        <ListItemText primary={version} secondary={formatNews(news)} />
-                                    </div>
-                                );
-                            })}
+                            {this.getNews(this.state.adapterInstallVersion, true).map(({ version, news }) => (
+                                <div
+                                    key={version}
+                                    className={classes.currentVersion}
+                                    onClick={() => {
+                                        this.update(this.state.adapterInstallVersion, version);
+                                        this.setState({ adapterInstallVersion: '' });
+                                    }}
+                                >
+                                    <ListItemText primary={version} secondary={formatNews(news)} />
+                                </div>
+                            ))}
                         </div>
                     </CustomModal>
                 )}
@@ -2345,7 +2330,7 @@ Adapters.propTypes = {
     commandRunning: PropTypes.bool,
     menuOpened: PropTypes.bool,
     menuClosed: PropTypes.bool,
-    menuCompact: PropTypes.bool,
+    // menuCompact: PropTypes.bool,
     adaptersWorker: PropTypes.object,
     instancesWorker: PropTypes.object,
     theme: PropTypes.object,
@@ -2353,7 +2338,6 @@ Adapters.propTypes = {
     themeType: PropTypes.string,
     systemConfig: PropTypes.object,
     socket: PropTypes.object,
-    hosts: PropTypes.array,
     currentHost: PropTypes.string,
     hostsWorker: PropTypes.object,
     ready: PropTypes.bool,

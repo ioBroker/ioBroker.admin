@@ -1530,5 +1530,6 @@
   "js-controller was successfully updated to %s": "js-controller was successfully updated to %s",
   "updating js-controller to %s...": "updating js-controller to %s...",
   "Site name": "Site name",
-  "This name will be shown in admin's header. Just to identify the whole installation": "This name will be shown in admin's header. Just to identify the whole installation"
+  "This name will be shown in admin's header. Just to identify the whole installation": "This name will be shown in admin's header. Just to identify the whole installation",
+  "Instance %s already exists": "Instance \"%s\" already exists"
 }

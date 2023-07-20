@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import semver from 'semver';
@@ -18,28 +18,30 @@ import {
     DialogTitle,
     Grid,
     IconButton,
-    Typography
+    Typography,
 } from '@mui/material';
 
-import AdapterUpdateDialog from '../../dialogs/AdapterUpdateDialog';
 import CloseIcon from '@mui/icons-material/Close';
 import LanguageIcon from '@mui/icons-material/Language';
 import InfoIcon from '@mui/icons-material/Info';
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
+import AdapterUpdateDialog from '../../dialogs/AdapterUpdateDialog';
+
 const styles = theme => ({
     smallAvatar: {
         width: theme.spacing(3),
-        height: theme.spacing(3)
+        height: theme.spacing(3),
     },
     listItem: {
         marginBottom: 2,
-        background: theme.palette.background
+        background: theme.palette.background,
     },
     toVersion: {
         color: theme.palette.mode === 'dark' ? '#00dc00' : '#008100',
         fontWeight: 'bold',
+        marginLeft: 4,
     },
     updateDone: {
         background: '#5ef05e80',
@@ -47,16 +49,16 @@ const styles = theme => ({
     },
     '@media screen and (max-width: 400px)': {
         minWidth:{
-            minWidth:32
+            minWidth: 32,
         },
         listItem:{
-            paddingLeft:2
-        }
+            paddingLeft: 2,
+        },
     },
     wrapperButton: {
     },
     typography: {
-        paddingRight: 30
+        paddingRight: 30,
     },
     versions: {
         minWidth: 110,
@@ -71,17 +73,17 @@ const styles = theme => ({
     languageButton: {
         position: 'absolute',
         right: 52 + parseInt(theme.spacing(1), 10),
-        top: theme.spacing(1)
+        top: theme.spacing(1),
     },
     languageButtonActive: {
-        color: theme.palette.primary.main
+        color: theme.palette.primary.main,
     },
     versionHeader: {
         background: '#4dabf5',
         borderRadius: 3,
         paddingLeft: 10,
         fontWeight: 'bold',
-        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
 });
 
@@ -103,9 +105,9 @@ class AdaptersUpdater extends Component {
         this.props.onUpdateSelected([...this.updateAvailable], this.updateAvailable);
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.current !== this.state.current) {
-            this.setState({current: nextProps.current});
+            this.setState({ current: nextProps.current });
             setTimeout(() =>
                 this.currentRef.current?.scrollIntoView(), 200);
         }
@@ -155,7 +157,7 @@ class AdaptersUpdater extends Component {
                     if (semver.gt(version, installed.version)) {
                         news.push({
                             version,
-                            news: this.props.noTranslation ? adapterObj.news[version].en : (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en)
+                            news: this.props.noTranslation ? adapterObj.news[version].en : (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en),
                         });
                     }
                 } catch (e) {
@@ -174,10 +176,10 @@ class AdaptersUpdater extends Component {
             return null;
         }
         if (!this.props.installed[adapter]) {
-            // during installation this adapter was uninstalled
+            // during installation, this adapter was uninstalled
             return null;
         }
-        const image = '.' + this.props.installed[adapter].localIcon;
+        const image = `.${this.props.installed[adapter].localIcon}`;
 
         return <React.Fragment key={adapter}>
             <ListItem
@@ -199,16 +201,21 @@ class AdaptersUpdater extends Component {
                     title={this.getNews(adapter).map(item => `${item.version}: ${item.news}`).join('\n')}
                     secondary={<span>
                         <div className={this.props.classes.versions}>
-                            {this.initialVersions[adapter]} → <span className={this.props.classes.toVersion}>{this.props.repository[adapter].version}</span>
+                            {this.initialVersions[adapter]}
+                            {' '}
+                            →
+                            <span className={this.props.classes.toVersion}>{this.props.repository[adapter].version}</span>
                         </div>
                         <IconButton
                             title={I18n.t('Show change log')}
                             onClick={() =>
-                                this.setState({ showNews: {
-                                    adapter,
-                                    version: this.props.repository[adapter].version,
-                                    fromVersion: this.initialVersions[adapter]
-                                }})}
+                                this.setState({
+                                    showNews: {
+                                        adapter,
+                                        version: this.props.repository[adapter].version,
+                                        fromVersion: this.initialVersions[adapter],
+                                    },
+                                })}
                             size="small"
                         >
                             <InfoIcon />
@@ -236,7 +243,7 @@ class AdaptersUpdater extends Component {
                     />
                 </ListItemSecondaryAction>}
                 {this.state.current === adapter && !this.props.stoppedOnError && !this.props.finished && <ListItemSecondaryAction>
-                    <CircularProgress/>
+                    <CircularProgress />
                 </ListItemSecondaryAction>}
             </ListItem>
 
@@ -263,20 +270,22 @@ class AdaptersUpdater extends Component {
                                 .replace(/^\*\s?/, '')
                                 .replace(/<!--[^>]*->/, '')
                                 .replace(/<! -[^>]*->/, '')
-                                .trim()
-                            )
+                                .trim())
                             .filter(line => !!line);
 
                         result.push(<Grid item key={version}>
                             <Typography className={this.props.classes.versionHeader}>
-                                {version}{this.props.adapterObject?.version === version ?
-                                    <span className={this.props.classes.versionTime}>({moment(this.props.adapterObject.versionDate).fromNow()})</span> : ''}
+                                {version}
+                                {this.props.adapterObject?.version === version ?
+                                    <span className={this.props.classes.versionTime}>
+                                        (
+                                        {moment(this.props.adapterObject.versionDate).fromNow()}
+)
+                                    </span> : ''}
                             </Typography>
-                            {news.map((value, index) => {
-                                return <Typography key={`${version}-${index}`} component="div" variant="body2">
-                                    { `• ${value}`}
-                                </Typography>;
-                            })}
+                            {news.map((value, index) => <Typography key={`${version}-${index}`} component="div" variant="body2">
+                                { `• ${value}`}
+                            </Typography>)}
                         </Grid>);
                     }
                 } catch (e) {
@@ -299,7 +308,7 @@ class AdaptersUpdater extends Component {
             >
                 <DialogTitle>
                     <Typography component="h2" variant="h6" classes={{ root: this.props.classes.typography }}>
-                        <div style={{ width: 'calc(100% - 60px)'}}>{I18n.t('Update "%s" to v%s', this.state.showNews.adapter, this.state.showNews.version)}</div>
+                        <div style={{ width: 'calc(100% - 60px)' }}>{I18n.t('Update "%s" to v%s', this.state.showNews.adapter, this.state.showNews.version)}</div>
                         <IconButton size="large" className={this.props.classes.closeButton} onClick={() => this.setState({ showNews: null })}>
                             <CloseIcon />
                         </IconButton>
@@ -344,9 +353,8 @@ class AdaptersUpdater extends Component {
                     </Button>
                 </DialogActions>
             </Dialog>;
-        } else {
-            return null;
         }
+        return null;
     }
 
     render() {
@@ -360,9 +368,7 @@ class AdaptersUpdater extends Component {
 AdaptersUpdater.propTypes = {
     inProcess: PropTypes.bool.isRequired,
     lang: PropTypes.string.isRequired,
-    t: PropTypes.func.isRequired,
     stoppedOnError: PropTypes.bool.isRequired,
-    socket: PropTypes.object.isRequired,
     repository: PropTypes.object.isRequired,
     installed: PropTypes.object.isRequired,
     onUpdateSelected: PropTypes.func.isRequired,
@@ -372,6 +378,6 @@ AdaptersUpdater.propTypes = {
     finished: PropTypes.bool.isRequired,
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
-}
+};
 
 export default withStyles(styles)(AdaptersUpdater);

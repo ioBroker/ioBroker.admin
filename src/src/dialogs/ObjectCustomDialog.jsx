@@ -19,7 +19,6 @@ import I18n from '@iobroker/adapter-react-v5/i18n';
 import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
 
-
 import ObjectCustomEditor from '../components/Object/ObjectCustomEditor';
 import ObjectHistoryData from '../components/Object/ObjectHistoryData';
 import ObjectChart from '../components/Object/ObjectChart';
@@ -39,14 +38,14 @@ const styles = theme => ({
     tabPanel: {
         width: '100%',
         overflow: 'hidden',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
     },
     tabSelected: {
         color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#FFFFFF !important',
     },
     tabsIndicator: {
         backgroundColor: theme.palette.secondary.main,
-    }
+    },
 });
 
 export const EXTENSIONS = {
@@ -90,7 +89,7 @@ class ObjectCustomDialog extends MobileDialog {
             const id = this.props.objectIDs[0];
             if (this.props.objects[id] && this.props.objects[id].common && this.props.objects[id].common.custom && this.props.objects[id].common.custom) {
                 chartAvailable = Object.keys(this.props.objects[id].common.custom).find(inst => {
-                    const obj = this.props.objects['system.adapter.' + inst];
+                    const obj = this.props.objects[`system.adapter.${inst}`];
                     return obj && obj.common && obj.common.getHistory;
                 });
             } else {
@@ -102,7 +101,7 @@ class ObjectCustomDialog extends MobileDialog {
 
     renderCharts() {
         return <ObjectChart
-            id={'chart-tabpanel'}
+            id="chart-tabpanel"
             isFloatComma={this.props.isFloatComma}
             showJumpToEchart
             t={this.props.t}
@@ -118,7 +117,7 @@ class ObjectCustomDialog extends MobileDialog {
 
     renderTable() {
         return <ObjectHistoryData
-            id={'table-tabpanel'}
+            id="table-tabpanel"
             t={this.props.t}
             isFloatComma={this.props.isFloatComma}
             lang={this.props.lang}
@@ -133,8 +132,8 @@ class ObjectCustomDialog extends MobileDialog {
 
     renderCustomEditor() {
         return <ObjectCustomEditor
-            id={'custom-settings-tabpanel'}
-            registerSaveFunc={func => this.saveFunc = func }
+            id="custom-settings-tabpanel"
+            registerSaveFunc={func => this.saveFunc = func}
             t={this.props.t}
             lang={this.props.lang}
             expertMode={this.props.expertMode}
@@ -142,7 +141,7 @@ class ObjectCustomDialog extends MobileDialog {
             objectIDs={this.props.objectIDs}
             customsInstances={this.props.customsInstances}
             objects={this.props.objects}
-            onProgress={progressRunning => this.setState({progressRunning})}
+            onProgress={progressRunning => this.setState({ progressRunning })}
             reportChangedIds={this.props.reportChangedIds}
             onChange={(hasChanges, update) => {
                 this.setState({ hasChanges }, () => {
@@ -166,10 +165,10 @@ class ObjectCustomDialog extends MobileDialog {
             return null;
         }
         return <ConfirmDialog
-            title={ I18n.t('You have unsaved changes') }
-            text={ I18n.t('Discard?') }
-            ok={ I18n.t('Yes') }
-            cancel={ I18n.t('Cancel') }
+            title={I18n.t('You have unsaved changes')}
+            text={I18n.t('Discard?')}
+            ok={I18n.t('Yes')}
+            cancel={I18n.t('Cancel')}
             onClose={isYes =>
                 this.setState({ confirmDialog: false }, () => isYes && this.props.onClose())}
         />;
@@ -196,11 +195,13 @@ class ObjectCustomDialog extends MobileDialog {
             aria-labelledby="form-dialog-title"
         >
             {this.renderConfirmDialog()}
-            <DialogTitle>{
-                this.props.objectIDs.length > 1 ?
-                    this.props.t('Edit config for %s states', this.props.objectIDs.length) :
-                    this.props.t('Edit config: %s', this.props.objectIDs[0])
-            }</DialogTitle>
+            <DialogTitle>
+                {
+                    this.props.objectIDs.length > 1 ?
+                        this.props.t('Edit config for %s states', this.props.objectIDs.length) :
+                        this.props.t('Edit config: %s', this.props.objectIDs[0])
+                }
+            </DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
                     <Tabs
@@ -216,22 +217,22 @@ class ObjectCustomDialog extends MobileDialog {
                         <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('Custom settings')}
-                            id={'custom-settings-tab'}
-                            aria-controls={'simple-tabpanel-0'}
+                            id="custom-settings-tab"
+                            aria-controls="simple-tabpanel-0"
                             classes={{ selected: this.props.classes.tabSelected }}
                         />
                         {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('History data')}
-                            id={'history-data-tab'}
-                            aria-controls={'simple-tabpanel-1'}
+                            id="history-data-tab"
+                            aria-controls="simple-tabpanel-1"
                             classes={{ selected: this.props.classes.tabSelected }}
                         /> : null}
                         {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('Chart')}
-                            id={'chart-tab'}
-                            aria-controls={'simple-tabpanel-2'}
+                            id="chart-tab"
+                            aria-controls="simple-tabpanel-2"
                             classes={{ selected: this.props.classes.tabSelected }}
                         /> : null}
                     </Tabs>
@@ -247,7 +248,7 @@ class ObjectCustomDialog extends MobileDialog {
                     disabled={!this.state.hasChanges || this.state.progressRunning}
                     onClick={() => this.saveFunc && this.saveFunc()}
                 >
-                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
+                    {MobileDialog.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
                 </Button>}
                 {this.state.currentTab === 0 && <Button
                     variant="contained"
@@ -261,7 +262,7 @@ class ObjectCustomDialog extends MobileDialog {
                         }
                     }}
                 >
-                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
+                    {MobileDialog.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
                 </Button>}
                 <Button
                     disabled={this.state.progressRunning}
@@ -269,7 +270,7 @@ class ObjectCustomDialog extends MobileDialog {
                     onClick={() => this.onClose()}
                     color="grey"
                 >
-                    {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}
+                    {MobileDialog.getButtonTitle(<CloseIcon />, this.props.t('Close'))}
                 </Button>
             </DialogActions>
         </Dialog>;

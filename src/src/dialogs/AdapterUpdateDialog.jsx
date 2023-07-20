@@ -6,14 +6,9 @@ import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
 
-import { Button } from '@mui/material';
-import { Dialog } from '@mui/material';
-import { DialogActions } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { DialogTitle } from '@mui/material';
-import { Grid } from '@mui/material';
-import { IconButton } from '@mui/material';
-import { Typography } from '@mui/material';
+import {
+    Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Typography,
+} from '@mui/material';
 
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
@@ -23,10 +18,10 @@ import IconInfo from '@mui/icons-material/Info';
 import IconWeb from '@mui/icons-material/Public';
 import LanguageIcon from '@mui/icons-material/Language';
 
-import State from '../components/State';
-import {MOBILE_WIDTH} from '../helpers/MobileDialog';
 import I18n from '@iobroker/adapter-react-v5/i18n';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import State from '../components/State';
+import { MOBILE_WIDTH } from '../helpers/MobileDialog';
 
 import 'moment/locale/de';
 import 'moment/locale/es';
@@ -55,7 +50,7 @@ const styles = theme => ({
         color: theme.palette.primary.main,
     },
     typography: {
-        paddingRight: 30
+        paddingRight: 30,
     },
     version: {
         background: '#4dabf5',
@@ -142,7 +137,7 @@ class AdapterUpdateDialog extends Component {
             showMessageDialog: false,
         };
 
-        const messages = false; /*[
+        const messages = false; /* [
             {
                 "condition": {
                     "operand": "and",
@@ -180,12 +175,13 @@ class AdapterUpdateDialog extends Component {
                 "level": "warn",
                 "buttons": ["agree", "cancel"]
             }
-        ]*/
+        ]
+        */
 
         this.messages = AdapterUpdateDialog.checkCondition(
             this.props.adapterObject && (this.props.adapterObject.messages || messages),
             this.props.installedVersion,
-            this.props.adapterObject?.version
+            this.props.adapterObject?.version,
         );
         this.lang = I18n.getLanguage();
         moment.locale(this.lang);
@@ -195,14 +191,12 @@ class AdapterUpdateDialog extends Component {
         const result = [];
 
         this.props.dependencies && this.props.dependencies.forEach(dependency => {
-            result.push(
-                <State
-                    key={dependency.name}
-                    state={dependency.rightVersion}
-                >
-                    {`${dependency.name}${dependency.version ? ` (${dependency.version})` : ''}: ${dependency.installed ? dependency.installedVersion : '-'}`}
-                </State>
-            );
+            result.push(<State
+                key={dependency.name}
+                state={dependency.rightVersion}
+            >
+                {`${dependency.name}${dependency.version ? ` (${dependency.version})` : ''}: ${dependency.installed ? dependency.installedVersion : '-'}`}
+            </State>);
         });
 
         return result;
@@ -218,8 +212,7 @@ class AdapterUpdateDialog extends Component {
                     .replace(/^\*\s?/, '')
                     .replace(/<!--[^>]*->/, '')
                     .replace(/<! -[^>]*->/, '')
-                    .trim()
-                )
+                    .trim())
                 .filter(line => !!line);
 
             if (this.props.adapterObject?.version && entry.version &&
@@ -229,13 +222,16 @@ class AdapterUpdateDialog extends Component {
 
             result.push(<Grid item key={entry.version}>
                 <Typography className={this.props.classes.version}>
-                    {entry.version}{this.props.adapterObject?.version === entry.version ? <span className={this.props.classes.versionTime}>({moment(this.props.adapterObject.versionDate).fromNow()})</span> : ''}
+                    {entry.version}
+                    {this.props.adapterObject?.version === entry.version ? <span className={this.props.classes.versionTime}>
+(
+                        {moment(this.props.adapterObject.versionDate).fromNow()}
+)
+                    </span> : ''}
                 </Typography>
-                {news.map((value, index) => {
-                    return <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
-                        {`• ${value}`}
-                    </Typography>;
-                })}
+                {news.map((value, index) => <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
+                    {`• ${value}`}
+                </Typography>)}
             </Grid>);
         });
 
@@ -297,20 +293,19 @@ class AdapterUpdateDialog extends Component {
                             try {
                                 if (op === '==') {
                                     return semver.eq(version, ver);
-                                } else if (op === '>') {
+                                } if (op === '>') {
                                     return semver.gt(version, ver);
-                                } else if (op === '<') {
+                                } if (op === '<') {
                                     return semver.lt(version, ver);
-                                } else if (op === '>=') {
+                                } if (op === '>=') {
                                     return semver.gte(version, ver);
-                                } else if (op === '<=') {
+                                } if (op === '<=') {
                                     return semver.lte(version, ver);
-                                } else if (op === '!=') {
+                                } if (op === '!=') {
                                     return semver.neq(version, ver);
-                                } else {
-                                    console.warn(`Unknown rule ${version}${rule}`);
-                                    return false;
                                 }
+                                console.warn(`Unknown rule ${version}${rule}`);
+                                return false;
                             } catch (e) {
                                 console.warn(`Cannot compare ${version}${rule}`);
                                 return false;
@@ -344,12 +339,10 @@ class AdapterUpdateDialog extends Component {
         if (text && typeof text === 'object') {
             if (noTranslation) {
                 return text.en;
-            } else {
-                return text[this.lang] || text.en;
             }
-        } else {
-            return text;
+            return text[this.lang] || text.en;
         }
+        return text;
     }
 
     renderOneMessage(message, index) {
@@ -357,7 +350,7 @@ class AdapterUpdateDialog extends Component {
             <Typography className={this.props.classes[`messageTitle_${message.level || 'warn'}`]}>
                 {this.getText(message.title, this.props.noTranslation) || ''}
             </Typography>
-            <Typography component="div" variant="body2"  className={this.props.classes.messageText}>
+            <Typography component="div" variant="body2" className={this.props.classes.messageText}>
                 {this.getText(message.text, this.props.noTranslation) || ''}
             </Typography>
             {message.link ?
@@ -369,9 +362,11 @@ class AdapterUpdateDialog extends Component {
                     startIcon={<IconWeb />}
                     variant="contained"
                     color="grey"
-                >{this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}</Button>
+                >
+                    {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
+                </Button>
                 : null}
-        </Grid>
+        </Grid>;
     }
 
     renderMessages() {
@@ -384,85 +379,84 @@ class AdapterUpdateDialog extends Component {
             >
                 {this.messages.map((message, i) => this.renderOneMessage(message, i))}
             </Grid>;
-        } else {
-            return null;
         }
+        return null;
     }
 
     renderMessageDialog() {
         if (!this.state.showMessageDialog) {
             return null;
-        } else {
-            const message = this.messages.find(m => m.buttons);
-            const version = this.props.adapterObject?.version;
-            const classes = this.props.classes;
-
-            return <Dialog
-                onClose={() => this.setState({ showMessageDialog: false })}
-                open={!0}
-            >
-                <DialogTitle className={classes.messageDialogTitle}>
-                    {this.getText(message.title, this.props.noTranslation) || this.props.t('Please confirm')}
-                </DialogTitle>
-                <DialogContent className={classes.messageDialogText}>
-                    {message.level === 'warn' ? <IconWarning className={Utils.clsx(classes.messageIcon, classes.messageColor_warn)} /> : null}
-                    {message.level === 'error' ? <IconError className={Utils.clsx(classes.messageIcon, classes.messageColor_error)} /> : null}
-                    {message.level === 'info' ? <IconInfo className={Utils.clsx(classes.messageIcon, classes.messageColor_info)} /> : null}
-                    {this.getText(message.text, this.props.noTranslation)}
-                </DialogContent>
-                <DialogActions>
-                    {message.link ?
-                        <Button
-                            onClick={() => {
-                                const w = window.open(message.link, '_blank');
-                                w.focus();
-                            }}
-                            startIcon={<IconWeb />}
-                            variant="contained"
-                            color="secondary"
-                        >{this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}</Button>
-                        : null
-                    }
-                    {message.link ? <div style={{flexGrow: 1}} /> : null}
-                    {message.buttons.map(button => {
-                        if (button === 'ok') {
-                            return <Button
-                                variant="contained"
-                                onClick={() =>
-                                    this.setState({ showMessageDialog: false }, () =>
-                                        this.props.onUpdate(version))}
-                                color="primary"
-                                startIcon={<CheckIcon />}
-                            >
-                                {this.t('Update')}
-                            </Button>
-                        } else if (button === 'agree') {
-                            return <Button
-                                className={classes[`messageTitle_${message.level || 'warn'}`]}
-                                variant="contained"
-                                onClick={() =>
-                                    this.setState({ showMessageDialog: false }, () =>
-                                        this.props.onUpdate(version))}
-                                color="primary"
-                                startIcon={<CheckIcon />}
-                            >
-                                {this.t('Agree')}
-                            </Button>
-                        } else if (button === 'cancel') {
-                            return <Button
-                                variant="contained"
-                                onClick={() => this.setState({ showMessageDialog: false })}
-                                startIcon={<CloseIcon />}
-                                color="grey"
-                            >
-                                {this.t('Cancel')}
-                            </Button>
-                        }
-                        return null;
-                    })}
-                </DialogActions>
-            </Dialog>;
         }
+        const message = this.messages.find(m => m.buttons);
+        const version = this.props.adapterObject?.version;
+        const classes = this.props.classes;
+
+        return <Dialog
+            onClose={() => this.setState({ showMessageDialog: false })}
+            open={!0}
+        >
+            <DialogTitle className={classes.messageDialogTitle}>
+                {this.getText(message.title, this.props.noTranslation) || this.props.t('Please confirm')}
+            </DialogTitle>
+            <DialogContent className={classes.messageDialogText}>
+                {message.level === 'warn' ? <IconWarning className={Utils.clsx(classes.messageIcon, classes.messageColor_warn)} /> : null}
+                {message.level === 'error' ? <IconError className={Utils.clsx(classes.messageIcon, classes.messageColor_error)} /> : null}
+                {message.level === 'info' ? <IconInfo className={Utils.clsx(classes.messageIcon, classes.messageColor_info)} /> : null}
+                {this.getText(message.text, this.props.noTranslation)}
+            </DialogContent>
+            <DialogActions>
+                {message.link ?
+                    <Button
+                        onClick={() => {
+                            const w = window.open(message.link, '_blank');
+                            w.focus();
+                        }}
+                        startIcon={<IconWeb />}
+                        variant="contained"
+                        color="secondary"
+                    >
+                        {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
+                    </Button>
+                    : null}
+                {message.link ? <div style={{ flexGrow: 1 }} /> : null}
+                {message.buttons.map(button => {
+                    if (button === 'ok') {
+                        return <Button
+                            variant="contained"
+                            onClick={() =>
+                                this.setState({ showMessageDialog: false }, () =>
+                                    this.props.onUpdate(version))}
+                            color="primary"
+                            startIcon={<CheckIcon />}
+                        >
+                            {this.t('Update')}
+                        </Button>;
+                    } if (button === 'agree') {
+                        return <Button
+                            className={classes[`messageTitle_${message.level || 'warn'}`]}
+                            variant="contained"
+                            onClick={() =>
+                                this.setState({ showMessageDialog: false }, () =>
+                                    this.props.onUpdate(version))}
+                            color="primary"
+                            startIcon={<CheckIcon />}
+                        >
+                            {this.t('Agree')}
+                        </Button>;
+                    } if (button === 'cancel') {
+                        return <Button
+                            variant="contained"
+                            onClick={() => this.setState({ showMessageDialog: false })}
+                            startIcon={<CloseIcon />}
+                            color="grey"
+                        >
+                            {this.t('Cancel')}
+                        </Button>;
+                    }
+                    return null;
+                })}
+            </DialogActions>
+        </Dialog>;
     }
 
     render() {
@@ -479,7 +473,7 @@ class AdapterUpdateDialog extends Component {
             {this.renderMessageDialog()}
             <DialogTitle>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                    <div style={{ width: 'calc(100% - 60px)'}}>{this.t('Update "%s" to v%s', this.props.adapter, version) }</div>
+                    <div style={{ width: 'calc(100% - 60px)' }}>{this.t('Update "%s" to v%s', this.props.adapter, version) }</div>
                     <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
@@ -505,8 +499,7 @@ class AdapterUpdateDialog extends Component {
                         <Grid item>
                             <Typography variant="h6" gutterBottom>{this.t('Dependencies')}</Typography>
                             {this.getDependencies()}
-                        </Grid>
-                    }
+                        </Grid>}
                     {news.length ? <Grid item>
                         <Typography variant="h6" gutterBottom>{this.t('Change log')}</Typography>
                         <Grid
@@ -571,7 +564,7 @@ AdapterUpdateDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     rightDependencies: PropTypes.bool,
     installedVersion: PropTypes.string,
-    t: PropTypes.func.isRequired
-}
+    t: PropTypes.func.isRequired,
+};
 
 export default withStyles(styles)(AdapterUpdateDialog);

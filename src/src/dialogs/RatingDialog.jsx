@@ -32,10 +32,10 @@ const styles = theme => ({
         fontStyle: 'italic',
     },
     list: {
-        //maxHeight: 200,
+        // maxHeight: 200,
     },
     listOwn: {
-        backgroundColor: theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark
+        backgroundColor: theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark,
     },
     listTitle: {
         backgroundColor: theme.palette.primary.dark,
@@ -43,7 +43,7 @@ const styles = theme => ({
         paddingBottom: 4,
         marginBottom: 4,
         color: '#ffffff',
-        textAlign: 'center'
+        textAlign: 'center',
     },
     languageFilter: {
         width: 300,
@@ -58,58 +58,62 @@ const styles = theme => ({
     noComments: {
         width: '100%',
         textAlign: 'center',
-        marginTop: theme.spacing(2)
+        marginTop: theme.spacing(2),
     },
     commentCount: {
         marginTop: 2,
         marginLeft: theme.spacing(1),
         opacity: 0.8,
         fontSize: 10,
-        float: 'right'
-    }
+        float: 'right',
+    },
 });
 
 const LANGUAGES = [
     {
         id: 'en',
-        title: 'English'
+        title: 'English',
     },
     {
         id: 'de',
-        title: 'Deutsch'
+        title: 'Deutsch',
     },
     {
         id: 'ru',
-        title: 'русский'
+        title: 'русский',
     },
     {
         id: 'pt',
-        title: 'Portugues'
+        title: 'Portugues',
     },
     {
         id: 'nl',
-        title: 'Nederlands'
+        title: 'Nederlands',
     },
     {
         id: 'fr',
-        title: 'français'
+        title: 'français',
     },
     {
         id: 'it',
-        title: 'Italiano'
+        title: 'Italiano',
     },
     {
         id: 'es',
-        title: 'Espanol'
+        title: 'Espanol',
     },
     {
         id: 'pl',
-        title: 'Polski'
+        title: 'Polski',
+    },
+    {
+        id: 'uk',
+        title: 'Українська',
     },
     {
         id: 'zh-ch',
-        title: '简体中文'
-    }
+        title: '简体中文',
+    },
 ];
 
 class RatingDialog extends Component {
@@ -127,17 +131,17 @@ class RatingDialog extends Component {
     }
 
     componentDidMount() {
-        fetch('https://rating.iobroker.net/adapter/' + this.props.adapter + '?uuid=' + this.props.uuid)
+        fetch(`https://rating.iobroker.net/adapter/${this.props.adapter}?uuid=${this.props.uuid}`)
             .then(res => res.json())
             .then(votings => {
                 votings = votings || {};
                 votings.rating = votings.rating || {};
                 const versions = Object.keys(votings.rating);
-                versions.sort((a, b) => votings.rating[a].ts > votings.rating[b].ts ? -1 : (votings.rating[a].ts < votings.rating[b].ts ? 1 : 0));
+                versions.sort((a, b) => (votings.rating[a].ts > votings.rating[b].ts ? -1 : (votings.rating[a].ts < votings.rating[b].ts ? 1 : 0)));
                 const commentsByLanguage = {};
 
                 if (votings.comments) {
-                    votings.comments.sort((a, b) => a.ts > b.ts ? -1 : (a.ts < b.ts ? 1 : 0));
+                    votings.comments.sort((a, b) => (a.ts > b.ts ? -1 : (a.ts < b.ts ? 1 : 0)));
 
                     votings.comments.forEach(comment => {
                         commentsByLanguage[comment.lang] = commentsByLanguage[comment.lang] || 0;
@@ -147,7 +151,7 @@ class RatingDialog extends Component {
 
                 if (versions.length) {
                     const item = votings.rating[versions[0]];
-                    this.setState({ votings, ratingNumber: item ? item.r : 0, commentsByLanguage});
+                    this.setState({ votings, ratingNumber: item ? item.r : 0, commentsByLanguage });
                 } else {
                     this.setState({ votings, commentsByLanguage });
                 }
@@ -159,28 +163,30 @@ class RatingDialog extends Component {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             redirect: 'follow',
-            body: JSON.stringify({ uuid: this.props.uuid, adapter, version, rating, comment, lang})
+            body: JSON.stringify({
+                uuid: this.props.uuid, adapter, version, rating, comment, lang,
+            }),
         })
             .then(res => res.json())
             .then(update => {
-                window.alert(this.props.t('Vote:') + ' ' + adapter + '@' + version + '=' + rating);
+                window.alert(`${this.props.t('Vote:')} ${adapter}@${version}=${rating}`);
                 const repository = JSON.parse(JSON.stringify(this.props.repository));
                 repository[adapter].rating = update;
                 return repository;
             })
             .catch(e => {
-                window.alert('Cannot vote: ' + e);
+                window.alert(`Cannot vote: ${e}`);
                 return null;
             });
     }
 
     renderComments() {
         if (this.state.votings?.comments && this.state.votings.comments.length) {
-            let found = this.state.votings.comments.find(comment =>
+            const found = this.state.votings.comments.find(comment =>
                 !(this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang));
 
-            return <div style={{ width: '100%', textAlign: 'left'}}>
-                <h3 className={this.props.classes.listTitle} >{this.props.t('Comments')}</h3>
+            return <div style={{ width: '100%', textAlign: 'left' }}>
+                <h3 className={this.props.classes.listTitle}>{this.props.t('Comments')}</h3>
                 <FormControl variant="standard" className={this.props.classes.languageFilter}>
                     <InputLabel>{this.props.t('Show comments in language')}</InputLabel>
                     <Select
@@ -188,42 +194,50 @@ class RatingDialog extends Component {
                         value={this.state.filterLang}
                         onChange={e => {
                             (window._localStorage || window.localStorage).setItem('app.commentLang', e.target.value);
-                            this.setState({filterLang: e.target.value})
+                            this.setState({ filterLang: e.target.value });
                         }}
                     >
-                        <MenuItem value={'_'}>{this.props.t('All')} <span className={this.props.classes.commentCount}>{this.state.votings.comments.length}</span></MenuItem>
+                        <MenuItem value="_">
+                            {this.props.t('All')}
+                            {' '}
+                            <span className={this.props.classes.commentCount}>{this.state.votings.comments.length}</span>
+                        </MenuItem>
                         {LANGUAGES.map(item => <MenuItem
                             key={item.id}
                             value={item.id}
-                        >{item.title} {this.state.commentsByLanguage[item.id] ? <span className={this.props.classes.commentCount}>{this.state.commentsByLanguage[item.id]}</span> : null}</MenuItem>)}
+                        >
+                            {item.title}
+                            {' '}
+                            {this.state.commentsByLanguage[item.id] ? <span className={this.props.classes.commentCount}>{this.state.commentsByLanguage[item.id]}</span> : null}
+                        </MenuItem>)}
                     </Select>
                 </FormControl>
                 <List classes={{ root: this.props.classes.list }} dense disablePadding>
                     {found && this.state.votings.comments.map((comment, i) => {
                         if (this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang) {
                             return null;
-                        } else {
-                            return comment ? <ListItem
-                                key={i}
-                                title={comment.uuid ? this.props.t('Your comment') : ''}
-                                classes={{ root: comment.uuid ? this.props.classes.listOwn : undefined }} dense>
-                                <ListItemAvatar classes={{ root: this.props.classes.listRating }}>
-                                    <Rating readOnly defaultValue={comment.rating} size="small" />
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={comment.comment}
-                                    secondary={new Date(comment.ts).toLocaleString() + ' / v' + comment.version}
-                                    classes={{ secondary: this.props.classes.listTime }}
-                                />
-                            </ListItem> : null;
                         }
+                        return comment ? <ListItem
+                            key={i}
+                            title={comment.uuid ? this.props.t('Your comment') : ''}
+                            classes={{ root: comment.uuid ? this.props.classes.listOwn : undefined }}
+                            dense
+                        >
+                            <ListItemAvatar classes={{ root: this.props.classes.listRating }}>
+                                <Rating readOnly defaultValue={comment.rating} size="small" />
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={comment.comment}
+                                secondary={`${new Date(comment.ts).toLocaleString()} / v${comment.version}`}
+                                classes={{ secondary: this.props.classes.listTime }}
+                            />
+                        </ListItem> : null;
                     })}
                     {!found && <div className={this.props.classes.noComments}>{this.props.t('No comments in selected language')}</div>}
                 </List>
-            </div>
-        } else {
-            return null;
+            </div>;
         }
+        return null;
     }
 
     render() {
@@ -232,7 +246,7 @@ class RatingDialog extends Component {
         if (this.state.votings) {
             const votings = this.state.votings.rating;
             versions = Object.keys(votings);
-            versions.sort((a, b) => votings[a].ts > votings[b].ts ? -1 : (votings[a].ts < votings[b].ts ? 1 : 0));
+            versions.sort((a, b) => (votings[a].ts > votings[b].ts ? -1 : (votings[a].ts < votings[b].ts ? 1 : 0)));
             if (versions.length) {
                 item = votings[versions[0]];
             }
@@ -242,7 +256,7 @@ class RatingDialog extends Component {
             open={!0}
             onClose={() => this.props.onClose()}
         >
-            <DialogTitle>{`${this.props.t('Review')} ${this.props.adapter}${this.props.version ? '@' + this.props.version : ''}`}</DialogTitle>
+            <DialogTitle>{`${this.props.t('Review')} ${this.props.adapter}${this.props.version ? `@${this.props.version}` : ''}`}</DialogTitle>
             <DialogContent style={{ textAlign: 'center' }} title={(this.props.currentRating && this.props.currentRating.title) || ''}>
                 <Rating
                     className={this.props.classes.rating}
@@ -253,7 +267,7 @@ class RatingDialog extends Component {
                     onChange={(event, newValue) =>
                         this.setState({ ratingNumber: newValue })}
                 />
-                {this.props.version ? <div style={{width: '100%', textAlign: 'left'}}>
+                {this.props.version ? <div style={{ width: '100%', textAlign: 'left' }}>
                     <TextField
                         variant="standard"
                         className={this.props.classes.ratingTextControl}
@@ -269,7 +283,7 @@ class RatingDialog extends Component {
                         <Select
                             variant="standard"
                             value={this.state.ratingLang}
-                            onChange={e => this.setState({ratingLang: e.target.value})}
+                            onChange={e => this.setState({ ratingLang: e.target.value })}
                         >
                             {LANGUAGES.map(item => <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>)}
                         </Select>

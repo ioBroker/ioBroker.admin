@@ -28,7 +28,7 @@ const styles = theme => ({
         width: '100%',
         overflow: 'hidden',
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
-    }
+    },
 });
 
 export const EXTENSIONS = {
@@ -46,12 +46,13 @@ class ObjectEditDialog extends Component {
             changed: false,
         };
     }
-    editorDidMount(editor, monaco) {
+
+    static editorDidMount(editor /* , monaco */) {
         console.log('editorDidMount', editor);
         editor.focus();
     }
 
-    onChange(newValue, e) {
+    static onChange(newValue, e) {
         console.log('onChange', newValue, e);
     }
 
@@ -68,9 +69,11 @@ class ObjectEditDialog extends Component {
             fullScreen
             aria-labelledby="object-edit-dialog-title"
         >
-            <DialogTitle id="object-edit-dialog-title">{
-                this.props.t('Edit object: %s', this.props.obj._id)
-            }</DialogTitle>
+            <DialogTitle id="object-edit-dialog-title">
+                {
+                    this.props.t('Edit object: %s', this.props.obj._id)
+                }
+            </DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 <MonacoEditor
                     width="100%"
@@ -79,8 +82,8 @@ class ObjectEditDialog extends Component {
                     theme={this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light'}
                     value={this.state.code}
                     options={{ selectOnLineNumbers: true }}
-                    onChange={(newValue, e) => this.onChange(newValue, e)}
-                    editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco)}
+                    onChange={(newValue, e) => ObjectEditDialog.onChange(newValue, e)}
+                    editorDidMount={(editor, monaco) => ObjectEditDialog.editorDidMount(editor, monaco)}
                 />
             </DialogContent>
             <DialogActions>
@@ -108,9 +111,6 @@ class ObjectEditDialog extends Component {
 
 ObjectEditDialog.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
-    expertMode: PropTypes.bool,
-    socket: PropTypes.object,
     themeName: PropTypes.string,
     obj: PropTypes.object,
     onClose: PropTypes.func.isRequired,

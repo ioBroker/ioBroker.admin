@@ -9,7 +9,7 @@ import TabContent from '../components/TabContent';
 class Users extends Component {
     render() {
         return <TabContainer>
-            <TabContent style={{display: 'flex', flexDirection: 'column', overflow:"auto" }}>
+            <TabContent style={{ display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                 <UsersList {...this.props} />
             </TabContent>
         </TabContainer>;

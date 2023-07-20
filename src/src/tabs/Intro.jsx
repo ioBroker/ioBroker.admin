@@ -5,7 +5,9 @@ import semver from 'semver';
 
 import { withStyles } from '@mui/styles';
 
-import { Fab, Snackbar, Tooltip, Grid, LinearProgress, Skeleton } from '@mui/material';
+import {
+    Fab, Snackbar, Tooltip, Grid, LinearProgress, Skeleton,
+} from '@mui/material';
 
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
@@ -77,10 +79,10 @@ const styles = theme => ({
 });
 
 const formatInfo = {
-    'Uptime':        Utils.formatSeconds,
+    Uptime:        Utils.formatSeconds,
     'System uptime': Utils.formatSeconds,
-    'RAM':           Utils.formatRam,
-    'Speed':         Utils.formatSpeed,
+    RAM:           Utils.formatRam,
+    Speed:         Utils.formatSpeed,
     'Disk size':     Utils.formatBytes,
     'Disk free':     Utils.formatBytes,
 };
@@ -105,7 +107,6 @@ class Intro extends Component {
         };
 
         this.currentProxyPath = window.location.pathname; // e.g. /admin/
-        this.promises = {};
 
         this.introLinksOriginal = null;
         this.deactivatedOriginal = null;
@@ -120,7 +121,7 @@ class Intro extends Component {
                 this.props.hostsWorker.registerHandler(this.updateHosts);
                 this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
                 // read reverse proxy settings
-                this.props.socket.getObject('system.adapter.' + this.props.adminInstance)
+                this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`)
                     .then(obj =>
                         this.setState({ reverseProxy: obj?.native?.reverseProxy || [] }));
             });
@@ -135,22 +136,22 @@ class Intro extends Component {
     }
 
     updateHostsAlive = events => {
-        let alive = JSON.parse(JSON.stringify(this.state.alive));
-        let hostsId = [];
+        const alive = JSON.parse(JSON.stringify(this.state.alive));
+        const hostsId = [];
 
         // if some host deleted
         if (events.find(event => event.type === 'delete')) {
             // get all information anew
-            return this.getDataDelayed();
-        } else {
-            // update alive status
-            events.forEach(event => {
-                if ((!!alive[event.id]) !== (!!event.alive)) {
-                    alive[event.id] = event.alive;
-                    hostsId.push(event.id);
-                }
-            });
+            this.getDataDelayed();
+            return;
         }
+        // update alive status
+        events.forEach(event => {
+            if ((!!alive[event.id]) !== (!!event.alive)) {
+                alive[event.id] = event.alive;
+                hostsId.push(event.id);
+            }
+        });
 
         if (hostsId.length) {
             const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
@@ -171,10 +172,11 @@ class Intro extends Component {
 
         // if host deleted
         if (events.find(event => !event.obj)) {
-            return this.getDataDelayed();
-        } else {
-            hostsId = events.map(event => event.id);
+            this.getDataDelayed();
+            return;
         }
+        hostsId = events.map(event => event.id);
+
         if (hostsId.length) {
             const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
 
@@ -258,9 +260,10 @@ class Intro extends Component {
                     linkText = linkText.substring(0, pos);
                 }
 
-                let isShowInstance = isFinite(instance.id.split('.').pop());
+                // eslint-disable-next-line no-restricted-properties
+                let isShowInstance = window.isFinite(instance.id.split('.').pop());
                 if (isShowInstance) {
-                    // try to find second instance of same type
+                    // try to find second instance of a same type
                     isShowInstance = !!this.state.instances.find(inst =>
                         inst.id !== instance.id && instance.name === inst.name && instance.id.split('.')[0] === inst.id.split('.')[0]);
                 }
@@ -276,7 +279,8 @@ class Intro extends Component {
                             {instance.name}
                         </span>
                         {isShowInstance ? <span className={this.props.classes.instanceNumber}>
-                            .{instance.id.split('.').pop()}
+                            .
+                            {instance.id.split('.').pop()}
                         </span> : null}
                     </>}
                     action={{ link: instance.link, text: linkText }}
@@ -315,40 +319,36 @@ class Intro extends Component {
         return this.state.introLinks.map((item, i) => {
             if (!item.enabled && !this.state.edit) {
                 return null;
-            } else {
-                return <IntroCard
-                    key={`link${i}`}
-                    image={item.image}
-                    title={item.name}
-                    action={{ link: item.link, text: item.linkName }}
-                    t={this.props.t}
-                    socket={this.props.socket}
-                    color={item.color}
-                    edit={this.state.edit}
-                    interval={item.interval}
-                    camera={item.camera}
-                    addTs={item.addTs}
-
-                    onEdit={() => this.setState({
-                        editLink: true,
-                        editLinkIndex: i,
-                        link: JSON.parse(JSON.stringify(this.state.introLinks[i]))
-                    })}
-
-                    onRemove={() => {
-                        const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
-                        introLinks.splice(i, 1);
-                        const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
-                            JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
-                        this.setState({ introLinks, hasUnsavedChanges });
-                    }}
-
-                    enabled={item.enabled}
-                    toggleActivation={() => this.toggleLinkCard(i)}
-                >
-                    {item.desc || ''}
-                </IntroCard>;
             }
+            return <IntroCard
+                key={`link${i}`}
+                image={item.image}
+                title={item.name}
+                action={{ link: item.link, text: item.linkName }}
+                t={this.props.t}
+                socket={this.props.socket}
+                color={item.color}
+                edit={this.state.edit}
+                interval={item.interval}
+                camera={item.camera}
+                addTs={item.addTs}
+                onEdit={() => this.setState({
+                    editLink: true,
+                    editLinkIndex: i,
+                    link: JSON.parse(JSON.stringify(this.state.introLinks[i])),
+                })}
+                onRemove={() => {
+                    const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
+                    introLinks.splice(i, 1);
+                    const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
+                            JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
+                    this.setState({ introLinks, hasUnsavedChanges });
+                }}
+                enabled={item.enabled}
+                toggleActivation={() => this.toggleLinkCard(i)}
+            >
+                {item.desc || ''}
+            </IntroCard>;
         });
     }
 
@@ -373,11 +373,14 @@ class Intro extends Component {
                         const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
                             JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
 
-                        this.setState({ introLinks, editLink: false, hasUnsavedChanges, link: null });
+                        this.setState({
+                            introLinks, editLink: false, hasUnsavedChanges, link: null,
+                        });
                     } else {
                         this.setState({ editLink: false });
                     }
-                }} />;
+                }}
+            />;
         }
 
         return null;
@@ -462,41 +465,38 @@ class Intro extends Component {
             });
     }
 
-    getHostData(hostId, isAlive) {
-        return new Promise((resolve, reject) => {
-            if (isAlive !== undefined) {
-                return resolve({ val: isAlive });
-            } else {
-                return this.props.socket.getState(`${hostId}.alive`)
-                    .then(state => resolve(state))
-                    .catch(e => reject(e));
+    async getHostData(hostId, isAlive) {
+        let alive;
+        if (isAlive !== undefined) {
+            alive = { val: isAlive };
+        } else {
+            try {
+                alive = await this.props.socket.getState(`${hostId}.alive`);
+            } catch (e) {
+                console.error(`Cannot get state ${hostId}.alive: ${e}`);
+                alive = { val: false };
             }
-        })
-            .then(alive => {
-                if (alive && alive.val) {
-                    return this.props.socket.getHostInfo(hostId, false, 10000);
-                } else {
-                    return { alive: false };
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                return error;
-            })
-            .then(data => {
+        }
+
+        let data;
+        if (alive && alive.val) {
+            try {
+                data = await this.props.socket.getHostInfo(hostId, false, 10000);
                 if (data && typeof data === 'object' && data.alive !== false) {
                     data.alive = true;
                 }
+            } catch (e) {
+                console.error(`Cannot get host info for ${hostId}: ${e}`);
+                data = { alive: false };
+            }
+        }
 
-                return this.props.socket.getForeignStates(`${hostId}.versions.*`)
-                    .then(states => {
-                        Object.keys(states).forEach(id =>
-                            data['_' + id.split('.').pop()] = states[id].val);
-                        return data;
-                    });
-            })
-            .then(data =>
-                ({ id: hostId, data }));
+        const states = await this.props.socket.getForeignStates(`${hostId}.versions.*`);
+
+        Object.keys(states).forEach(id =>
+            data[`_${id.split('.').pop()}`] = states[id].val);
+
+        return { id: hostId, data };
     }
 
     getHostsData(hosts) {
@@ -514,7 +514,7 @@ class Intro extends Component {
             });
     }
 
-    applyReverseProxy(webReverseProxyPath, instances, instance) {
+    static applyReverseProxy(webReverseProxyPath, instances, instance) {
         webReverseProxyPath && webReverseProxyPath.paths.forEach(item => {
             if (item.instance === instance.id) {
                 instance.link = item.path;
@@ -553,9 +553,9 @@ class Intro extends Component {
             instance.link = _urls[0].url;
             instance.port = _urls[0].port;
 
-            this.applyReverseProxy(webReverseProxyPath, instances, instance);
+            Intro.applyReverseProxy(webReverseProxyPath, instances, instance);
 
-            // if link already exists => ignore
+            // if a link already exists => ignore
             const lll = introInstances.find(item => item.link === instance.link);
             if (!lll) {
                 introInstances.push(instance);
@@ -565,10 +565,10 @@ class Intro extends Component {
         } else if (_urls.length > 1) {
             _urls.forEach(url => {
                 const lll = introInstances.find(item => item.link === url.url);
-                this.applyReverseProxy(webReverseProxyPath, instances, url);
+                Intro.applyReverseProxy(webReverseProxyPath, instances, url);
 
                 if (!lll) {
-                    introInstances.push({...instance, link: url.url, port: url.port});
+                    introInstances.push({ ...instance, link: url.url, port: url.port });
                 } else {
                     console.log(`Double links: "${instance.id}" and "${lll.id}"`);
                 }
@@ -600,17 +600,16 @@ class Intro extends Component {
                         if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
                         if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
                         return 0;
-                    } else if (a.order === undefined) {
+                    } if (a.order === undefined) {
                         return -1;
-                    } else if (b.order === undefined) {
+                    } if (b.order === undefined) {
                         return 1;
-                    } else {
-                        if (a.order > b.order) return 1;
-                        if (a.order < b.order) return -1;
-                        if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                        if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-                        return 0;
                     }
+                    if (a.order > b.order) return 1;
+                    if (a.order < b.order) return -1;
+                    if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                    if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                    return 0;
                 });
 
                 instances.forEach(obj => {
@@ -623,13 +622,13 @@ class Intro extends Component {
 
                     if (common.name && common.name === 'admin' && common.localLink === (this.props.hostname || '')) {
                         return;
-                    } else if (common.name && common.name === 'web') {
+                    } if (common.name && common.name === 'web') {
                         return;
-                    } else if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
+                    } if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
                         return;
-                    } else if (common.name && common.name.match(/^icons-/)) {
+                    } if (common.name && common.name.match(/^icons-/)) {
                         return;
-                    } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
+                    } if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
                         let links = common.localLinks || common.localLink || '';
                         if (typeof links === 'string') {
                             links = { _default: links };
@@ -642,24 +641,24 @@ class Intro extends Component {
                                 link = { link };
                             }
 
-                            instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ' ' + linkName);
-                            instance.name        = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
+                            instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`);
+                            instance.name        = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ` ${linkName}`);
                             instance.color       = link.color || '';
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                             instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
 
-                            /*let protocol = this.props.protocol;
+                            /* let protocol = this.props.protocol;
                             let port     = this.props.port;
                             let hostname = Intro.getHostname(obj, objects, hosts, this.props.hostname, this.adminInstance);
 
                             if (!hostname) {
                                 return;
-                            }*/
+                            } */
                             this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
                         });
                     }
                     if (common && (common.enabled || common.onlyWWW) && common.name !== 'admin' && (common.welcomeScreen || common.welcomeScreenPro)) {
-                        let links = [];
+                        const links = [];
                         common.welcomeScreen && links.push(common.welcomeScreen);
                         common.welcomeScreenPro && links.push(common.welcomeScreenPro);
 
@@ -689,7 +688,7 @@ class Intro extends Component {
                         b.order = b.order === undefined ? 1000 : b.order;
                         if (a.order < b.order) {
                             return -1;
-                        } else if (a.order > b.order) {
+                        } if (a.order > b.order) {
                             return 1;
                         }
                     }
@@ -701,7 +700,7 @@ class Intro extends Component {
                         return -1;
                     }
                     return 0;
-                })
+                });
 
                 Object.keys(hosts).forEach(key => {
                     const obj = hosts[key];
@@ -748,90 +747,118 @@ class Intro extends Component {
         let npmUpdate = '';
         if (hostData) {
             try {
-                if (hostData['_nodeNewest'] && hostData['Node.js'] && semver.gt(hostData['_nodeNewest'], hostData['Node.js'].replace(/^v/, ''))) {
-                    nodeUpdate = hostData['_nodeNewest'];
+                if (hostData._nodeNewest && hostData['Node.js'] && semver.gt(hostData._nodeNewest, hostData['Node.js'].replace(/^v/, ''))) {
+                    nodeUpdate = hostData._nodeNewest;
                 }
             } catch (e) {
                 // ignore
             }
             try {
-                if (hostData['_nodeNewest'] !== hostData['_nodeNewestNext'] &&
-                    hostData['_nodeNewestNext'] &&
+                if (hostData._nodeNewest !== hostData._nodeNewestNext &&
+                    hostData._nodeNewestNext &&
                     hostData['Node.js'] &&
-                    hostData['_nodeNewest'] &&
-                    semver.gt(hostData['_nodeNewestNext'], hostData['Node.js'].replace(/^v/, '')) &&
-                    semver.gt(hostData['_nodeNewestNext'], hostData['_nodeNewest'])
+                    hostData._nodeNewest &&
+                    semver.gt(hostData._nodeNewestNext, hostData['Node.js'].replace(/^v/, '')) &&
+                    semver.gt(hostData._nodeNewestNext, hostData._nodeNewest)
                 ) {
-                    nodeUpdate += (nodeUpdate ? ' / ' : '') + hostData['_nodeNewestNext'];
+                    nodeUpdate += (nodeUpdate ? ' / ' : '') + hostData._nodeNewestNext;
                 }
             } catch (e) {
                 // ignore
             }
             if (nodeUpdate) {
-                nodeUpdate = <Tooltip title={this.props.t('Some updates available')}><span className={this.props.classes.nodeUpdate}>({nodeUpdate})</span></Tooltip>;
+                nodeUpdate = <Tooltip title={this.props.t('Some updates available')}>
+                    <span className={this.props.classes.nodeUpdate}>
+(
+                        {nodeUpdate}
+)
+                    </span>
+                </Tooltip>;
             }
 
             try {
-                if (hostData['_npmNewest'] && hostData['NPM'] && semver.gt(hostData['_npmNewest'], hostData['NPM'])) {
-                    npmUpdate = hostData['_npmNewest'];
+                if (hostData._npmNewest && hostData.NPM && semver.gt(hostData._npmNewest, hostData.NPM)) {
+                    npmUpdate = hostData._npmNewest;
                 }
             } catch (e) {
                 // ignore
             }
             try {
-                if (hostData['_npmNewest'] !== hostData['_npmNewestNext'] &&
-                    hostData['_npmNewestNext'] &&
-                    hostData['NPM'] &&
-                    hostData['_npmNewest'] &&
-                    semver.gt(hostData['_npmNewestNext'], hostData['NPM']) &&
-                    semver.gt(hostData['_npmNewestNext'], hostData['_npmNewest'])
+                if (hostData._npmNewest !== hostData._npmNewestNext &&
+                    hostData._npmNewestNext &&
+                    hostData.NPM &&
+                    hostData._npmNewest &&
+                    semver.gt(hostData._npmNewestNext, hostData.NPM) &&
+                    semver.gt(hostData._npmNewestNext, hostData._npmNewest)
                 ) {
-                    npmUpdate += (npmUpdate ? ' / ' : '') + hostData['_npmNewestNext'];
+                    npmUpdate += (npmUpdate ? ' / ' : '') + hostData._npmNewestNext;
                 }
             } catch (e) {
                 // ignore
             }
             if (npmUpdate) {
-                npmUpdate = <Tooltip title={this.props.t('Some updates available')}><span className={this.props.classes.nodeUpdate}>({npmUpdate})</span></Tooltip>;
+                npmUpdate = <Tooltip title={this.props.t('Some updates available')}>
+                    <span className={this.props.classes.nodeUpdate}>
+(
+                        {npmUpdate}
+)
+                    </span>
+                </Tooltip>;
             }
         }
 
         return hostData && typeof hostData === 'object' ?
-                <ul style={{ textTransform: 'none'}}>
-                    <li>
-                        <span>
-                            <span className={classes.bold}>{this.t('Platform')}: </span>
-                            {hostData['Platform'] || '--'}
+            <ul style={{ textTransform: 'none' }}>
+                <li>
+                    <span>
+                        <span className={classes.bold}>
+                            {this.t('Platform')}
+:
+                            {' '}
                         </span>
-                    </li>
-                    <li>
-                        <span>
-                            <span className={classes.bold}>{this.t('RAM')}: </span>
-                            {formatInfo['RAM'](hostData['RAM'])}
+                        {hostData.Platform || '--'}
+                    </span>
+                </li>
+                <li>
+                    <span>
+                        <span className={classes.bold}>
+                            {this.t('RAM')}
+:
+                            {' '}
                         </span>
-                    </li>
-                    <li>
-                        <span>
-                            <span className={classes.bold}>{this.t('Node.js')}: </span>
-                            <span className={UtilsCommon.clsx(nodeUpdate ? this.props.classes.updateExists : this.props.classes.updateNo)}>{hostData['Node.js'] || '--'}</span>
-                            {nodeUpdate}
+                        {formatInfo.RAM(hostData.RAM)}
+                    </span>
+                </li>
+                <li>
+                    <span>
+                        <span className={classes.bold}>
+                            {this.t('Node.js')}
+:
+                            {' '}
                         </span>
-                    </li>
-                    <li>
-                        <span>
-                            <span className={classes.bold}>{this.t('NPM')}: </span>
-                            <span className={UtilsCommon.clsx(npmUpdate ? this.props.classes.updateExists : this.props.classes.updateNo)}>{hostData['NPM'] || '--'}</span>
-                            {npmUpdate}
+                        <span className={UtilsCommon.clsx(nodeUpdate ? this.props.classes.updateExists : this.props.classes.updateNo)}>{hostData['Node.js'] || '--'}</span>
+                        {nodeUpdate}
+                    </span>
+                </li>
+                <li>
+                    <span>
+                        <span className={classes.bold}>
+                            {this.t('NPM')}
+:
+                            {' '}
                         </span>
-                    </li>
-                </ul>
+                        <span className={UtilsCommon.clsx(npmUpdate ? this.props.classes.updateExists : this.props.classes.updateNo)}>{hostData.NPM || '--'}</span>
+                        {npmUpdate}
+                    </span>
+                </li>
+            </ul>
             :
-                <ul>
-                    <Skeleton />
-                    <Skeleton />
-                    <Skeleton />
-                    <Skeleton />
-                </ul>;
+            <ul>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+            </ul>;
     }
 
     getHostDescriptionAll(id) {
@@ -839,22 +866,24 @@ class Intro extends Component {
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
         return [
-            <ul style={{ textTransform: 'none'}}>
+            <ul style={{ textTransform: 'none' }}>
                 {hostData && typeof hostData === 'object' && Object.keys(hostData)
-                    .filter(id => !id.startsWith('_'))
+                    .filter(_id => !_id.startsWith('_'))
                     .map(value => <li key={value}>
                         {hostData && typeof hostData === 'object' ?
                             <span>
-                                <span className={classes.bold}>{this.t(value)}: </span>
+                                <span className={classes.bold}>
+                                    {this.t(value)}
+:
+                                    {' '}
+                                </span>
                                 {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
                             </span>
                             :
-                            <Skeleton />
-                        }
-                    </li>)
-                }
+                            <Skeleton />}
+                    </li>)}
             </ul>,
-            hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => acom + `${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`)
+            hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => `${acom}${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`),
         ];
     }
 
@@ -864,7 +893,7 @@ class Intro extends Component {
             this.getDataTimeout = null;
             this.getData(true);
         }, 300);
-    }
+    };
 
     getData(update) {
         let hosts;
@@ -884,15 +913,15 @@ class Intro extends Component {
                     instances: data.instances,
                     hosts,
                     deactivated: data.deactivated,
-                    introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : []
+                    introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [],
                 });
                 // hosts data could last a long time, so show some results to user now and then get the info about hosts
                 return this.getHostsData(hosts);
             })
-            .then(newState =>
-                new Promise(resolve =>
-                    this.setState(newState, () =>
-                        resolve())))
+            .then(newState => new Promise(resolve => {
+                this.setState(newState, () =>
+                    resolve());
+            }))
             .catch(error => window.alert(`Cannot get data: ${error}`));
     }
 
@@ -934,18 +963,9 @@ Intro.propTypes = {
      * Link and text
      * {link: 'https://example.com', text: 'example.com'}
      */
-    action: PropTypes.object,
-    children: PropTypes.node,
-    color: PropTypes.string,
-    edit: PropTypes.bool,
-    enabled: PropTypes.bool,
     socket: PropTypes.object,
-    image: PropTypes.string,
-    reveal: PropTypes.node,
-    title: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
-    toggleActivation: PropTypes.func,
     instancesWorker: PropTypes.object,
     hostsWorker: PropTypes.object,
 

@@ -31,7 +31,9 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import EditIcon from '@mui/icons-material/Edit';
 import { green, red } from '@mui/material/colors';
 
-import { Router, Utils, Icon, Confirm as ConfirmDialog } from '@iobroker/adapter-react-v5';
+import {
+    Router, Utils, Icon, Confirm as ConfirmDialog,
+} from '@iobroker/adapter-react-v5';
 
 import JsonConfig from '../components/JsonConfig';
 
@@ -98,14 +100,14 @@ const styles = theme => ({
     logLevel: {
         fontSize: 12,
         marginLeft: 10,
-    }
+    },
 });
 
 class Config extends Component {
     constructor(props) {
         super(props);
 
-        this.state ={
+        this.state = {
             checkedExist: false,
             showStopAdminDialog: false,
             running: false,
@@ -123,7 +125,7 @@ class Config extends Component {
         this.registered = false;
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(/* prevProps, prevState, snapshot */) {
         if (!this.registered && this.refIframe.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
@@ -144,7 +146,7 @@ class Config extends Component {
                     } else {
                         return this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab_m.html')
                             .then(exist =>
-                                exist ? this.setState({ checkedExist: 'tab_m.html' }) : window.alert('Cannot find tab(_m).html'));
+                                (exist ? this.setState({ checkedExist: 'tab_m.html' }) : window.alert('Cannot find tab(_m).html')));
                     }
                 });
         } else {
@@ -173,7 +175,8 @@ class Config extends Component {
 
                     this.setState({
                         checkedExist: true,
-                        running: obj?.common?.onlyWWW || obj?.common?.enabled, canStart: !obj?.common?.onlyWWW,
+                        running: obj?.common?.onlyWWW || obj?.common?.enabled,
+                        canStart: !obj?.common?.onlyWWW,
                         alive: alive?.val || false,
                         connectedToHost: connectedToHost?.val || false,
                         connected: connected ? connected.val : null,
@@ -229,11 +232,11 @@ class Config extends Component {
 
         this.registered && this.props.onUnregisterIframeRef(this.refIframe);
         this.refIframe = null;
-   }
+    }
 
     closeConfig(event) {
         if (event.data === 'close' || event.message === 'close') {
-            if (this.props.easyMode){
+            if (this.props.easyMode) {
                 Router.doNavigate('easy');
             } else {
                 Router.doNavigate('tab-instances');
@@ -247,22 +250,27 @@ class Config extends Component {
 
     renderHelpButton() {
         if (this.props.jsonConfig) {
-            return <div style={{ display: 'inline-block', position: 'absolute', right: 0, top: 5 }}>
+            return <div style={{
+                display: 'inline-block', position: 'absolute', right: 0, top: 5,
+            }}
+            >
                 <Tooltip size="small" title={this.props.t('Show help for this adapter')}>
-                    <Fab classes={{ root: this.props.classes.button }} onClick={() => {
-                        let lang = this.props.lang;
-                        if (lang !== 'en' && lang !== 'de' && lang !== 'ru' && lang !== 'zh-cn') {
-                            lang = 'en';
-                        }
-                        window.open(`https://www.iobroker.net/#${lang}/adapters/adapterref/iobroker.${this.props.adapter}/README.md`, 'help');
-                    }}>
+                    <Fab
+                        classes={{ root: this.props.classes.button }}
+                        onClick={() => {
+                            let lang = this.props.lang;
+                            if (lang !== 'en' && lang !== 'de' && lang !== 'ru' && lang !== 'zh-cn') {
+                                lang = 'en';
+                            }
+                            window.open(`https://www.iobroker.net/#${lang}/adapters/adapterref/iobroker.${this.props.adapter}/README.md`, 'help');
+                        }}
+                    >
                         <HelpIcon />
                     </Fab>
                 </Tooltip>
             </div>;
-        } else {
-            return null;
         }
+        return null;
     }
 
     getConfigurator() {
@@ -281,28 +289,27 @@ class Config extends Component {
                 configStored={this.props.configStored}
                 t={this.props.t}
             />;
-        } else {
-            const src = `adapter/${this.props.adapter}/` +
+        }
+        const src = `adapter/${this.props.adapter}/` +
                 `${this.props.tab ? this.state.checkedExist : (this.props.materialize ? 'index_m.html' : 'index.html')}?` +
                 `${this.props.instance || 0}&newReact=true&${this.props.instance || 0}&react=${this.props.themeName}`;
 
-            if (this.state.checkedExist) {
-                return <iframe
-                    ref={el => this && (this.refIframe = el)}
-                    title="config"
-                    className={this.props.className}
-                    src={src}>
-                </iframe>;
-            } else {
-                return null;
-            }
+        if (this.state.checkedExist) {
+            return <iframe
+                ref={el => this && (this.refIframe = el)}
+                title="config"
+                className={this.props.className}
+                src={src}
+            >
+            </iframe>;
         }
+        return null;
     }
 
     extendObject = (id, data) => {
         this.props.socket.extendObject(id, data)
             .catch(error => window.alert(error));
-    }
+    };
 
     returnStopAdminDialog() {
         return this.state.showStopAdminDialog ? <ConfirmDialog
@@ -339,7 +346,7 @@ class Config extends Component {
                         </MenuItem>)}
                     </Select>
                 </FormControl>
-                <FormControl className={this.props.classes.formControl} variant="outlined" >
+                <FormControl className={this.props.classes.formControl} variant="outlined">
                     <FormControlLabel
                         control={<Checkbox checked={this.state.logOnTheFlyValue} onChange={e => this.setState({ logOnTheFlyValue: e.target.checked })} />}
                         label={this.props.t('Without restart')}
@@ -352,18 +359,23 @@ class Config extends Component {
                     color="primary"
                     variant="contained"
                     onClick={() => {
-                    if (this.state.logOnTheFlyValue) {
-                        this.props.socket.setState(`system.adapter.${this.props.adapter}.${this.props.instance}.logLevel`, this.state.logLevelValue);
-                    } else {
-                        this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, { common: { loglevel: this.state.logLevelValue } });
-                    }
-                    this.setState({ showLogLevelDialog: false });
-                }}>{this.props.t('Ok')}</Button>
+                        if (this.state.logOnTheFlyValue) {
+                            this.props.socket.setState(`system.adapter.${this.props.adapter}.${this.props.instance}.logLevel`, this.state.logLevelValue);
+                        } else {
+                            this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, { common: { loglevel: this.state.logLevelValue } });
+                        }
+                        this.setState({ showLogLevelDialog: false });
+                    }}
+                >
+                    {this.props.t('Ok')}
+                </Button>
                 <Button
                     color="grey"
                     variant="contained"
                     onClick={() => this.setState({ showLogLevelDialog: false })}
-                >{this.props.t('Cancel')}</Button>
+                >
+                    {this.props.t('Cancel')}
+                </Button>
             </DialogActions>
         </Dialog>;
     }
@@ -382,7 +394,11 @@ class Config extends Component {
                             this.props.classes.version,
                             this.state.alive && this.state.connectedToHost && this.props.classes.versionAliveConnected,
                             this.state.alive && !this.state.connectedToHost && this.props.classes.versionAliveNotConnected,
-                        )}>v{this.props.version}</span> : null}
+                        )}
+                        >
+v
+                            {this.props.version}
+                        </span> : null}
                         <Tooltip title={this.props.t('Start/stop')}>
                             <span>
                                 <IconButton
@@ -441,7 +457,7 @@ class Config extends Component {
                                 <EditIcon style={{ width: 20, height: 20 }} />
                             </IconButton>
                         </Tooltip>
-                        {/*<IsVisible config={item} name="allowInstanceLink">
+                        {/* <IsVisible config={item} name="allowInstanceLink">
                             <Tooltip title={this.props.t('Instance link %s', this.props.instanceItem?.id)}>
                                 <span>
                                     <IconButton
@@ -465,7 +481,7 @@ class Config extends Component {
                                     </IconButton>
                                 </div>
                             </Tooltip>
-                        </IsVisible>*/}
+                        </IsVisible> */}
                     </Typography>
                     {this.renderHelpButton()}
                 </Toolbar>

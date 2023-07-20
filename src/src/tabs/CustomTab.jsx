@@ -1,23 +1,23 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
-import { Component } from 'react';
+
 import PropTypes from 'prop-types';
 
 import LinearProgress from '@mui/material/LinearProgress';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 import Utils from '../Utils';
 
 const styles = () => ({
     root: {
-        //border:     '0 solid #FFF',
+        // border:     '0 solid #FFF',
         display:    'block',
         left:       0,
         top:        0,
         width:      '100%',
         height:     '100%',
-        //background: 'white',
+        // background: 'white',
         color:      'black',
         borderRadius: 4,
         boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
@@ -56,9 +56,9 @@ export function getHref(instancesWorker, tab, hostname, protocol, port, hosts, a
 
             if (!href) {
                 if (instance.common.materializeTab) {
-                    href = `adapter/${adapter}/tab_m.html${instNum !== null && instNum !== undefined ? '?' + instNum : ''}`;
+                    href = `adapter/${adapter}/tab_m.html${instNum !== null && instNum !== undefined ? `?${instNum}` : ''}`;
                 } else {
-                    href = `adapter/${adapter}/tab.html${instNum !== null && instNum !== undefined ? '?' + instNum : ''}`;
+                    href = `adapter/${adapter}/tab.html${instNum !== null && instNum !== undefined ? `?${instNum}` : ''}`;
                 }
             }
 
@@ -86,7 +86,7 @@ export function getHref(instancesWorker, tab, hostname, protocol, port, hosts, a
             }
 
             // add at the end the instance, as some adapters make bullshit like: window.location.search.slice(-1) || 0;
-            href += `${href.includes('?') ? '&' : '?'}newReact=true${instNum !== null && instNum !== undefined ? '&' + instNum : ''}&react=${themeName}`;
+            href += `${href.includes('?') ? '&' : '?'}newReact=true${instNum !== null && instNum !== undefined ? `&${instNum}` : ''}&react=${themeName}`;
 
             return href;
         });
@@ -118,7 +118,7 @@ class CustomTab extends Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(/* prevProps, prevState, snapshot */) {
         if (!this.registered && this.refIframe.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
@@ -144,8 +144,6 @@ class CustomTab extends Component {
 }
 
 CustomTab.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
     themeName: PropTypes.string,
     tab: PropTypes.string.isRequired,
     instancesWorker: PropTypes.object.isRequired,
@@ -156,7 +154,6 @@ CustomTab.propTypes = {
     adminInstance: PropTypes.string,
     hosts: PropTypes.array,
 
-    expertMode: PropTypes.bool,
     onRegisterIframeRef: PropTypes.func,
     onUnregisterIframeRef: PropTypes.func,
 };

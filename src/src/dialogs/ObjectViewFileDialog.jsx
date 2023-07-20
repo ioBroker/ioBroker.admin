@@ -30,18 +30,18 @@ const styles = theme => ({
     tabPanel: {
         width: '100%',
         overflow: 'hidden',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
     },
     error: {
-        color: theme.palette.mode === 'dark' ? '#ff7777' : '#c20000'
+        color: theme.palette.mode === 'dark' ? '#ff7777' : '#c20000',
     },
     image: {
         height: '100%',
-        width: 'auto'
+        width: 'auto',
     },
     text: {
         fontFamily: 'Lucida Console, Courier, monospace',
-        width: '100%'
+        width: '100%',
     },
     download: {
         textDecoration: 'none',
@@ -52,7 +52,7 @@ const styles = theme => ({
         borderRadius: 5,
         padding: '8px 16px',
         marginRight: theme.spacing(1),
-    }
+    },
 });
 
 export const EXTENSIONS = {
@@ -69,11 +69,10 @@ class ObjectViewFileDialog extends Component {
 
         this.state = {
             error: '',
-            sound: null,
             image: null,
             text: null,
             binary: null,
-            fileName: parts[parts.length - 2] + '.' + parts[parts.length - 1]
+            fileName: `${parts[parts.length - 2]}.${parts[parts.length - 1]}`,
         };
 
         this.audioRef = React.createRef();
@@ -90,41 +89,45 @@ class ObjectViewFileDialog extends Component {
                 }
 
                 if (ext === 'jpg') {
-                    this.setState({image: true, binary: data, mime: 'image/jpeg'});
+                    this.setState({ image: true, binary: data, mime: 'image/jpeg' });
                 } else if (ext === 'svg') {
-                    this.setState({image: true, binary: data, mime: 'image/svg+xml'});
+                    this.setState({ image: true, binary: data, mime: 'image/svg+xml' });
                 } else if (ext === 'png' || ext === 'bmp') {
-                    this.setState({image: true, binary: data, mime: 'image/' + ext});
+                    this.setState({ image: true, binary: data, mime: `image/${ext}` });
                 } else if (ext === 'mp3') {
-                    this.setState({audio: true, binary: data, mime: 'audio/mpeg'});
+                    this.setState({ audio: true, binary: data, mime: 'audio/mpeg' });
                 } else if (ext === 'ogg') {
-                    this.setState({audio: true, binary: data, mime: 'audio/ogg'});
+                    this.setState({ audio: true, binary: data, mime: 'audio/ogg' });
                 } else if (ext === 'txt' || ext === 'log') {
                     try {
                         const text = btoa(data);
-                        this.setState({text, binary: data, mime: 'text/plain'});
+                        this.setState({ text, binary: data, mime: 'text/plain' });
                     } catch (error) {
+                        // ignore
                     }
                 }
             })
-            .catch(error => this.setState({error}));
+            .catch(error => this.setState({ error }));
     }
 
     render() {
         return <Dialog
             className={this.props.classes.dialog}
             open={!0}
-            maxWidth={ this.state.audio ? 'sm' : 'md'}
+            maxWidth={this.state.audio ? 'sm' : 'md'}
             onClose={() => this.props.onClose()}
             fullWidth
             aria-labelledby="object-view-dialog-title"
         >
-            <DialogTitle id="object-view-dialog-title">{
-                this.props.t('View file in state: %s', this.props.obj._id)
-            }</DialogTitle>
+            <DialogTitle id="object-view-dialog-title">
+                {
+                    this.props.t('View file in state: %s', this.props.obj._id)
+                }
+            </DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 { this.state.error ? <div className={this.props.classes.error}>{this.state.error === 'State is not binary' ? this.props.t('No file stored yet') : this.props.t(this.state.error)}</div> : null}
-                { this.state.audio ? <audio ref={this.audioRef} src={ `data:${this.state.mime};base64,${this.state.binary}` } /> : null }
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                { this.state.audio ? <audio ref={this.audioRef} src={`data:${this.state.mime};base64,${this.state.binary}`} /> : null }
                 { this.state.audio ? <Fab color="primary" onClick={() => this.audioRef.current && this.audioRef.current.play()}>
                     <PlayIcon />
                 </Fab> : null }
@@ -132,7 +135,7 @@ class ObjectViewFileDialog extends Component {
                 { this.state.text !== null ? <pre className={this.props.classes.text}>{this.state.text}</pre> : null}
             </DialogContent>
             <DialogActions>
-                <a className={this.props.classes.download} download={this.state.fileName} href={ `data:${this.state.mime};base64,${this.state.binary}` }>
+                <a className={this.props.classes.download} download={this.state.fileName} href={`data:${this.state.mime};base64,${this.state.binary}`}>
                     <DownloadIcon style={{ paddingRight: 8, height: 12 }} />
                     <span>{this.props.t('Download')}</span>
                 </a>
@@ -151,10 +154,7 @@ class ObjectViewFileDialog extends Component {
 
 ObjectViewFileDialog.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
-    expertMode: PropTypes.bool,
     socket: PropTypes.object,
-    themeType: PropTypes.string,
     obj: PropTypes.object,
     onClose: PropTypes.func.isRequired,
 };

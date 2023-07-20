@@ -13,15 +13,15 @@ import CloseIcon from '@mui/icons-material/Close';
 import TimeIcon from '@mui/icons-material/AccessTime';
 import CheckIcon from '@mui/icons-material/Check';
 
-import {MOBILE_WIDTH} from '../helpers/MobileDialog';
+import { MOBILE_WIDTH } from '../helpers/MobileDialog';
 
-const styles = theme => ({
+const styles = () => ({
     buttonLabel: {
         whiteSpace: 'nowrap',
     },
     input: {
-        minWidth: 150
-    }
+        minWidth: 150,
+    },
 });
 
 class SlowConnectionWarningDialog extends Component {
@@ -42,9 +42,8 @@ class SlowConnectionWarningDialog extends Component {
     static saveReadTimeoutMs(readTimeoutMs) {
         if (readTimeoutMs) {
             return (window._localStorage || window.localStorage).setItem('App.readTimeoutMs', readTimeoutMs.toString());
-        } else {
-            return (window._localStorage || window.localStorage).removeItem('App.readTimeoutMs');
         }
+        return (window._localStorage || window.localStorage).removeItem('App.readTimeoutMs');
     }
 
     render() {
@@ -60,18 +59,18 @@ class SlowConnectionWarningDialog extends Component {
                 </DialogContentText>
                 <TextField
                     variant="standard"
-                    classes={{root: this.props.classes.input}}
+                    classes={{ root: this.props.classes.input }}
                     label={this.props.t('Read timeout')}
                     value={this.state.readTimeoutSec}
-                    onChange={e => this.setState({readTimeoutSec: e.target.value})}
+                    onChange={e => this.setState({ readTimeoutSec: e.target.value })}
                     type="number"
-                    inputProps={{min: 5, max: 600}}
+                    inputProps={{ min: 5, max: 600 }}
                     helperText={this.props.t('in seconds')}
                 />
             </DialogContent>
             <DialogActions>
                 <Button
-                    classes={{label: this.props.classes.buttonLabel}}
+                    classes={{ label: this.props.classes.buttonLabel }}
                     variant="contained"
                     onClick={() => {
                         SlowConnectionWarningDialog.saveReadTimeoutMs(60000);

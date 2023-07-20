@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import { AppBar } from '@mui/material';
-import { Button } from '@mui/material';
-import { Grid } from '@mui/material';
-import { Toolbar } from '@mui/material';
+import {
+    AppBar, Button, Grid, Toolbar,
+} from '@mui/material';
 
 import CloseIcon from '@mui/icons-material/Close';
 import LinkIcon from '@mui/icons-material/Link';
@@ -29,23 +28,22 @@ const styles = {
 };
 
 class AdapterInfoDialog extends Component {
-
     constructor(props) {
         super(props);
 
-        const uri = `https://www.iobroker.net/${I18n.getLanguage()}/adapterref/iobroker.${props.adapter}/README.md`;
-        //this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
-        const uriGithub = this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
-        const rawUri = uriGithub.replace('blob/', '').substring(0, uriGithub.lastIndexOf('/') + 1);
+        // const uri = `https://www.iobroker.net/${I18n.getLanguage()}/adapterref/iobroker.${props.adapter}/README.md`;
+        // this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
+        // const uriGithub = this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
+        // const rawUri = uriGithub.replace('blob/', '').substring(0, uriGithub.lastIndexOf('/') + 1);
 
-        this.state = {
-            tab: 0,
-            readme: '',
-            uri,
-            rawUri,
-            uriGithub,
-            text: null,
-        };
+        // this.state = {
+        //     tab: 0,
+        //     readme: '',
+        //     uri,
+        //     rawUri,
+        //     uriGithub,
+        //     text: null,
+        // };
 
         this.t = props.t;
     }
@@ -58,7 +56,8 @@ class AdapterInfoDialog extends Component {
         try {
             const data = await fetch(link);
             let readme = await data.text();
-            /*const lines = readme.split('\n');
+            /*
+            const lines = readme.split('\n');
             if (lines[0].trim() === '---') {
                 let i = 1;
                 while(lines[i] !== '---') i++;
@@ -68,131 +67,135 @@ class AdapterInfoDialog extends Component {
                 lines.unshift('# ioBroker.' + this.props.adapter);
                 lines.unshift('');
             }
-            const split = this.splitReadMe(readme);*/
+            const split = this.splitReadMe(readme);
+            */
             readme = readme.replace(/\(([-\w]+)\/adapterref\//g, '(https://www.iobroker.net/$1/adapterref/');
-            /*readme = readme.replace(/\(en\/adapterref\//g, '(https://www.iobroker.net/en/adapterref/');
+            /*
+            readme = readme.replace(/\(en\/adapterref\//g, '(https://www.iobroker.net/en/adapterref/');
             readme = readme.replace(/\(de\/adapterref\//g, '(https://www.iobroker.net/de/adapterref/');
             readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');
-            readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');*/
+            readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');
+            */
             readme = readme.replace(/src="([-\w]+)\/adapterref\//g, 'src="https://www.iobroker.net/zh-cn/adapterref/');
             // readme = readme.replace(/(<meta[^>]+>)/g, '\\$1');
 
             this.setState({ text: readme });
-        } catch(error) {
+        } catch (error) {
             window.alert(error);
         }
     }
 
-    trimArr(lines) {
-        let j = lines.length - 1;
+    // static trimArr(lines) {
+    //     let j = lines.length - 1;
+    //
+    //     while (j >= 0 && !lines[j]) {
+    //         j--;
+    //     }
+    //
+    //     if (j !== lines.length - 1) {
+    //         lines.splice(j + 1);
+    //     }
+    //
+    //     return lines;
+    // }
 
-        while (j >= 0 && !lines[j]) {
-            j--;
-        }
+    // static splitReadMe(html, link) {
+    //     const result = {
+    //         logo: '', readme: [], changelog: [], license: [],
+    //     };
+    //     const lines = html.trim().split(/\r\n|\n/);
+    //
+    //     // second line is main title
+    //     if (lines[2].match(/^#\sio/)) {
+    //         lines.splice(2, 1);
+    //     }
+    //
+    //     if (lines[1].match(/^#\sio/)) {
+    //         lines.splice(1, 1);
+    //     }
+    //     // first line is logo
+    //     if (lines[0].match(/!\[[-_\w\d]*]\([-._\w\d/]+\.png\)/)) {
+    //         result.logo = link + lines[0].match(/\((.+)\)/)[1];
+    //         lines.splice(0, 1);
+    //     }
+    //
+    //     let part = 'readme';
+    //
+    //     for (let i = 0; i < lines.length; i++) {
+    //         if (lines[i].match(/^====/)) {
+    //             continue;
+    //         }
+    //
+    //         if (lines[i].match(/^###?\s+Changelog/)) {
+    //             part = 'changelog';
+    //             continue;
+    //         } else if (lines[i].match(/^###?\s+License/)) {
+    //             part = 'license';
+    //             continue;
+    //         } else if (lines[i].match(/^##?\s+.+/)) {
+    //             part = 'readme';
+    //         }
+    //
+    //         if (!result[part].length && !lines[i]) {
+    //             continue;
+    //         }
+    //
+    //         result[part].push(lines[i]);
+    //     }
+    //
+    //     if (result.logo) {
+    //         // that.$divLogo.html('<img src="' + result.logo + '" />').show();
+    //     } else {
+    //         // that.$divLogo.html('').hide();
+    //     }
+    //
+    //     this.trimArr(result.readme);
+    //     this.trimArr(result.changelog);
+    //     this.trimArr(result.license);
+    //
+    //     if (result.readme.length) {
+    //         result.readme = result.readme.join('\n');
+    //     } else {
+    //         result.readme = '';
+    //     }
+    //     if (result.changelog.length) {
+    //         result.changelog = result.changelog.join('\n');
+    //     } else {
+    //         delete result.changelog;
+    //     }
+    //     if (result.license.length) {
+    //         result.license[0] = `## ${result.license[0]}`;
+    //         result.license = result.license.join('\n');
+    //     } else {
+    //         delete result.license;
+    //     }
+    //
+    //     return result;
+    // }
 
-        if (j !== lines.length - 1) {
-            lines.splice(j + 1);
-        }
+    // changeTab(event, newValue) {
+    //     this.setState({ tab: newValue });
+    // }
 
-        return lines;
-    }
+    // openTab(path) {
+    //     const tab = window.open(path, '_blank');
+    //     tab.focus();
+    // }
 
-    splitReadMe(html, link) {
-        const result = { logo: '', readme: [], changelog: [], license: [] };
-        let lines = html.trim().split(/\r\n|\n/);
-
-        // second line is main title
-        if (lines[2].match(/^#\sio/)) {
-            lines.splice(2, 1);
-        }
-
-        if (lines[1].match(/^#\sio/)) {
-            lines.splice(1, 1);
-        }
-        // first line is logo
-        if (lines[0].match(/!\[[-_\w\d]*]\([-._\w\d/]+\.png\)/)) {
-            result.logo = link + lines[0].match(/\((.+)\)/)[1];
-            lines.splice(0, 1);
-        }
-
-        let part = 'readme';
-
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].match(/^====/)) {
-                continue;
-            }
-
-            if (lines[i].match(/^###?\s+Changelog/)) {
-                part = 'changelog';
-                continue;
-
-            } else if (lines[i].match(/^###?\s+License/)) {
-                part = 'license';
-                continue;
-            } else if (lines[i].match(/^##?\s+.+/)) {
-                part = 'readme';
-            }
-
-            if (!result[part].length && !lines[i]) {
-                continue;
-            }
-
-            result[part].push(lines[i]);
-        }
-
-        if (result.logo) {
-           // that.$divLogo.html('<img src="' + result.logo + '" />').show();
-        } else {
-           // that.$divLogo.html('').hide();
-        }
-
-        this.trimArr(result.readme);
-        this.trimArr(result.changelog);
-        this.trimArr(result.license);
-
-        if (result.readme.length) {
-            result.readme = result.readme.join('\n');
-        } else {
-            result.readme = '';
-        }
-        if (result.changelog.length) {
-            result.changelog = result.changelog.join('\n');
-        } else {
-            delete result.changelog;
-        }
-        if (result.license.length) {
-            result.license[0] = `## ${result.license[0]}`;
-            result.license = result.license.join('\n');
-        } else {
-            delete result.license;
-        }
-
-        return result;
-    }
-
-    changeTab(event, newValue) {
-        this.setState({ tab: newValue });
-    }
-
-    openTab(path) {
-        const tab = window.open(path, '_blank');
-        tab.focus();
-    }
-
-    closeDialog() {
+    static closeDialog() {
         Router.doNavigate('tab-adapters');
     }
-
-    transformUri(uri) {
-        return (uri && uri.startsWith('http') ? '' : this.state.rawUri) + uri;
-    }
+    //
+    // transformUri(uri) {
+    //     return (uri && uri.startsWith('http') ? '' : this.state.rawUri) + uri;
+    // }
 
     render() {
         if (!this.state.text) {
             return <Loader theme={this.props.theme} />;
         }
         const { classes } = this.props;
-        //const { tab } = this.state;
+        // const { tab } = this.state;
 
         return <Grid
             item
@@ -201,7 +204,7 @@ class AdapterInfoDialog extends Component {
             wrap="nowrap"
             className={classes.root}
         >
-            {/*<AppBar color="default" position="static">
+            {/* <AppBar color="default" position="static">
                 <Tabs value={ this.state.tab } onChange={ (event, newValue) => this.changeTab(event, newValue) }>
                     <Tab label="README" disabled={ !this.state.readme }/>
                     <Tab label="Changelog" disabled={ !this.state.changelog }/>
@@ -216,7 +219,7 @@ class AdapterInfoDialog extends Component {
                     transformImageUri={ (uri) => this.transformUri(uri) }
                     escapeHtml={ false }
                 />
-            </Box>*/}
+            </Box> */}
             <Markdown
                 className={classes.scroll}
                 text={this.state.text}
@@ -231,7 +234,7 @@ class AdapterInfoDialog extends Component {
                 //                https://github.com/ioBroker/ioBroker.admin/blob/master/README.md =>
                 // https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/README.md
                 link={this.props.link.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/')}
-                //onNavigate={(language, tab, page, chapter) => this.onNavigate(language, tab, page, chapter)}
+                // onNavigate={(language, tab, page, chapter) => this.onNavigate(language, tab, page, chapter)}
             />
             <AppBar color="default" position="static">
                 <Toolbar>
@@ -250,7 +253,7 @@ class AdapterInfoDialog extends Component {
                             <Button
                                 variant="contained"
                                 color="grey"
-                                onClick={() => this.closeDialog()}
+                                onClick={() => AdapterInfoDialog.closeDialog()}
                                 startIcon={<CloseIcon />}
                             >
                                 {this.t('Close')}

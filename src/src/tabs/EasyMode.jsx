@@ -2,7 +2,9 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@mui/material';
+import {
+    AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar,
+} from '@mui/material';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -21,7 +23,7 @@ const styles = theme => ({
     },
     wrapperEasyMode: {
         height: '100%',
-        borderRadius: 0
+        borderRadius: 0,
     },
     wrapperCard: {
         padding: '80px 20px 20px',
@@ -31,7 +33,7 @@ const styles = theme => ({
     controlHeight: {
         display: 'flex',
         flexFlow: 'wrap',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     img: {
         width: 60,
@@ -44,7 +46,7 @@ const styles = theme => ({
     },
     wrapperHeader: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
 
     },
     headerName: {
@@ -53,11 +55,11 @@ const styles = theme => ({
     },
     toolBar: {
         justifyContent: 'space-between',
-        margin: '5px 0'
+        margin: '5px 0',
     },
     paper: {
         height: '100%',
-        paddingTop: 80
+        paddingTop: 80,
     },
     iframe: {
         height: '100%',
@@ -65,14 +67,14 @@ const styles = theme => ({
         background: '#FFF',
         color: '#000',
         borderRadius: 5,
-        border: '1px solid #888'
+        border: '1px solid #888',
     },
     IconButtons: {
-        display: 'flex'
+        display: 'flex',
     },
     logoPointer: {
-        cursor: 'pointer'
-    }
+        cursor: 'pointer',
+    },
 });
 
 class EasyMode extends Component {
@@ -124,7 +126,7 @@ class EasyMode extends Component {
             >
                 <Toolbar className={classes.toolBar}>
                     <div className={classes.wrapperHeader}>
-                        <CardMedia onClick={(strictMode && !getLocation().dialog) || currentInstance?.tab ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro') : null} className={Utils.clsx(classes.img, themeName === 'colored' && classes.logoWhite, ((strictMode && !getLocation().dialog) || currentInstance?.tab) && classes.logoPointer)} component="img" image={'img/no-image.png'} />
+                        <CardMedia onClick={(strictMode && !getLocation().dialog) || currentInstance?.tab ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro') : null} className={Utils.clsx(classes.img, themeName === 'colored' && classes.logoWhite, ((strictMode && !getLocation().dialog) || currentInstance?.tab) && classes.logoPointer)} component="img" image="img/no-image.png" />
                         <div className={classes.headerName}>{t('Easy Admin')}</div>
                     </div>
                     <div className={classes.IconButtons}>
@@ -154,8 +156,7 @@ class EasyMode extends Component {
                         configStored={configStored}
                         dateFormat={dateFormat}
                         isFloatComma={isFloatComma}
-                        // version={currentInstance.version} We don't need version in easy mode
-
+                        // version={currentInstance.version} We don't need a version in easy mode
                         onRegisterIframeRef={ref => this.props.onRegisterIframeRef(ref)}
                         onUnregisterIframeRef={ref => this.props.onUnregisterIframeRef(ref)}
                     />
@@ -163,7 +164,7 @@ class EasyMode extends Component {
                 <div className={classes.wrapperCard}>
                     <div className={classes.controlHeight}>
                         {configs
-                            .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+                            .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
                             .map(el => <EasyModeCard
                                 key={el.id}
                                 lang={this.props.lang}
@@ -171,8 +172,7 @@ class EasyMode extends Component {
                                 {...el}
                             />)}
                     </div>
-                </div>
-            }
+                </div>}
         </Paper>;
     }
 }
