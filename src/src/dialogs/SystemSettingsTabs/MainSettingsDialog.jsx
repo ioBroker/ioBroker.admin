@@ -38,8 +38,8 @@ const styles = theme => ({
         marginTop: theme.spacing(2),
     },
     map: {
-        borderRadius: 5
-    }
+        borderRadius: 5,
+    },
 });
 
 function MyMapComponent(props) {
@@ -52,9 +52,7 @@ class MainSettingsDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            values: [],
-            data: {},
-            zoom: 14
+            zoom: 14,
         };
     }
 
@@ -67,49 +65,49 @@ class MainSettingsDialog extends Component {
                 values: [
                     {
                         id: 'en',
-                        title: 'English'
+                        title: 'English',
                     },
                     {
                         id: 'de',
-                        title: 'Deutsch'
+                        title: 'Deutsch',
                     },
                     {
                         id: 'ru',
-                        title: 'русский'
+                        title: 'русский',
                     },
                     {
                         id: 'uk',
-                        title: 'український'
+                        title: 'український',
                     },
                     {
                         id: 'pt',
-                        title: 'Portugues'
+                        title: 'Portugues',
                     },
                     {
                         id: 'nl',
-                        title: 'Nederlands'
+                        title: 'Nederlands',
                     },
                     {
                         id: 'fr',
-                        title: 'français'
+                        title: 'français',
                     },
                     {
                         id: 'it',
-                        title: 'Italiano'
+                        title: 'Italiano',
                     },
                     {
                         id: 'es',
-                        title: 'Espanol'
+                        title: 'Espanol',
                     },
                     {
                         id: 'pl',
-                        title: 'Polski'
+                        title: 'Polski',
                     },
                     {
                         id: 'zh-ch',
-                        title: '简体中文'
-                    }
-                ]
+                        title: '简体中文',
+                    },
+                ],
             },
             {
                 id: 'tempUnit',
@@ -118,13 +116,13 @@ class MainSettingsDialog extends Component {
                 values: [
                     {
                         id: '°C',
-                        title: '°C'
+                        title: '°C',
                     },
                     {
                         id: '°F',
-                        title: '°F'
-                    }
-                ]
+                        title: '°F',
+                    },
+                ],
             },
             {
                 id: 'currency',
@@ -135,25 +133,25 @@ class MainSettingsDialog extends Component {
                 values: [
                     {
                         id: '€',
-                        title: '€'
+                        title: '€',
                     },
                     {
                         id: '$',
-                        title: '$'
+                        title: '$',
                     },
                     {
                         id: '₽',
-                        title: '₽'
+                        title: '₽',
                     },
                     {
                         id: '₤',
-                        title: '₤'
+                        title: '₤',
                     },
                     {
                         id: 'CHF',
-                        title: 'CHF'
-                    }
-                ]
+                        title: 'CHF',
+                    },
+                ],
             },
             {
                 id: 'dateFormat',
@@ -162,17 +160,17 @@ class MainSettingsDialog extends Component {
                 values: [
                     {
                         id: 'DD.MM.YYYY',
-                        title: 'DD.MM.YYYY'
+                        title: 'DD.MM.YYYY',
                     },
                     {
                         id: 'YYYY.MM.DD',
-                        title: 'YYYY.MM.DD'
+                        title: 'YYYY.MM.DD',
                     },
                     {
                         id: 'MM/DD/YYYY',
-                        title: 'MM/DD/YYYY'
-                    }
-                ]
+                        title: 'MM/DD/YYYY',
+                    },
+                ],
             },
             {
                 id: 'isFloatComma',
@@ -181,23 +179,21 @@ class MainSettingsDialog extends Component {
                 values: [
                     {
                         id: true,
-                        title: 'comma'
+                        title: 'comma',
                     },
                     {
                         id: false,
-                        title: 'point'
-                    }
-                ]
+                        title: 'point',
+                    },
+                ],
             },
             {
                 id: 'defaultHistory',
                 title: 'Default History',
-                values: [{ id: '', title: this.props.t('None') }, ...this.props.histories.map(history => {
-                    return {
-                        id: history,
-                        title: history
-                    }
-                })]
+                values: [{ id: '', title: this.props.t('None') }, ...this.props.histories.map(history => ({
+                    id: history,
+                    title: history,
+                }))],
             },
             {
                 id: 'activeRepo',
@@ -206,36 +202,39 @@ class MainSettingsDialog extends Component {
                 values: Utils.objectMap(this.props.dataAux.native.repositories, (repo, name) =>
                     ({
                         id: name,
-                        title: name
-                    }))
+                        title: name,
+                    })),
             },
             {
                 id: 'expertMode',
                 title: 'Expert mode',
-                values: [{ id: true, title: 'on' }, { id: false, title: 'off (default)' }]
+                values: [{ id: true, title: 'on' }, { id: false, title: 'off (default)' }],
             },
             {
                 id: 'defaultLogLevel',
                 title: 'Default log level',
                 help: 'for new instances',
                 translate: false,
-                values: [{ id: 'debug', title: 'debug' }, { id: 'info', title: 'info' }, { id: 'warn', title: 'warn' }, { id: 'error', title: 'error' }]
+                values: [{ id: 'debug', title: 'debug' }, { id: 'info', title: 'info' }, { id: 'warn', title: 'warn' }, { id: 'error', title: 'error' }],
             },
             {
                 id: 'firstDayOfWeek',
                 title: 'First day of week',
                 translate: true,
-                values: [{ id: 'monday', title: 'Monday' }, { id: 'sunday', title: 'Sunday' }]
-            }
+                values: [{ id: 'monday', title: 'Monday' }, { id: 'sunday', title: 'Sunday' }],
+            },
         ];
     }
 
     onMap = map => {
+        if (this.props.saving) {
+            return;
+        }
         if (!this.map || this.map !== map) {
             this.map = map;
             const center = [
                 parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
-                parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0
+                parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0,
             ];
 
             this.marker = window.L.marker(
@@ -244,14 +243,14 @@ class MainSettingsDialog extends Component {
                     draggable: true,
                     title: 'Resource location',
                     alt: 'Resource Location',
-                    riseOnHover: true
-                }
+                    riseOnHover: true,
+                },
             )
                 .addTo(map)
                 .bindPopup('Popup for any custom information.')
                 .on({ dragend: evt => this.onMarkerDragend(evt) });
         }
-    }
+    };
 
     getSelect(e, i) {
         const { classes } = this.props;
@@ -275,6 +274,7 @@ class MainSettingsDialog extends Component {
                 <Autocomplete
                     variant="standard"
                     freeSolo
+                    disabled={this.props.saving}
                     options={e.values}
                     inputValue={value.toString()}
                     onChange={(evt, newValue) => {
@@ -285,8 +285,12 @@ class MainSettingsDialog extends Component {
                         const id = this.getSettings()[i].id;
                         this.doChange(id, newValue);
                     }}
-                    getOptionLabel={option =>
-                        e.translate ? this.props.t(option.title || option.id) : option.title || option.id}
+                    getOptionLabel={option => {
+                        if (e.translate) {
+                            return this.props.t(option.title || option.id);
+                        }
+                        return option.title || option.id;
+                    }}
                     renderOption={(props, option) => <li {...props}>{e.translate ? this.props.t(option.title || option.id) : option.title || option.id}</li>}
                     renderInput={params =>
                         <TextField {...params} variant="standard" label={this.props.t(e.title)} />}
@@ -302,6 +306,7 @@ class MainSettingsDialog extends Component {
                         {this.props.t(e.title)}
                     </InputLabel>
                     <TextField
+                        disabled={this.props.saving}
                         variant="standard"
                         id={e.id}
                         value={value.toString()}
@@ -324,6 +329,7 @@ class MainSettingsDialog extends Component {
                     {this.props.t(e.title)}
                 </InputLabel>
                 <Select
+                    disabled={this.props.saving}
                     variant="standard"
                     className={classes.formControl}
                     id={e.id}
@@ -351,9 +357,9 @@ class MainSettingsDialog extends Component {
                     });
                 }}
             />;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     getCounters = () => {
@@ -363,13 +369,14 @@ class MainSettingsDialog extends Component {
         </MenuItem>);
 
         return <FormControl className={classes.formControl} variant="standard">
-            <InputLabel shrink id={'country-label'}>
+            <InputLabel shrink id="country-label">
                 {this.props.t('Country:')}
             </InputLabel>
             <Select
+                disabled={this.props.saving}
                 variant="standard"
                 className={classes.formControl}
-                id={'country'}
+                id="country"
                 value={this.props.data.common.country}
                 onChange={this.handleChangeCountry}
                 displayEmpty
@@ -377,13 +384,13 @@ class MainSettingsDialog extends Component {
                 {items}
             </Select>
         </FormControl>;
-    }
+    };
 
     handleChangeCountry = evt => {
         const value = evt.target.value;
         const id = 'country';
         this.doChange(id, value);
-    }
+    };
 
     onChangeText = (evt, id) => {
         const value = evt.target.value;
@@ -397,7 +404,7 @@ class MainSettingsDialog extends Component {
                 this.marker.setLatLng([this.props.data.common.latitude, this.props.data.common.longitude]);
             }, 500);
         }
-    }
+    };
 
     onChangeInput = (value, id, cb) =>
         this.doChange(id, value, cb);
@@ -420,13 +427,11 @@ class MainSettingsDialog extends Component {
                                     this.onChangeInput(23, 'zoom', () => {
                                         this.map.flyTo([results[0].y, results[0].x]);
                                         this.marker.setLatLng([results[0].y, results[0].x]);
-                                    })
-                                )
-                            ), 1200);
+                                    }))), 1200);
                     }
                 });
         }, 500);
-    }
+    };
 
     handleChange = (evt, selectId) => {
         const value = evt.target.value;
@@ -437,20 +442,20 @@ class MainSettingsDialog extends Component {
         } else {
             this.doChange(id, value);
         }
-    }
+    };
 
     doChange = (name, value, cb) => {
-        let newData = JSON.parse(JSON.stringify(this.props.data))
+        const newData = JSON.parse(JSON.stringify(this.props.data));
         newData.common[name] = value;
         this.props.onChange(newData, null, () =>
             cb && cb());
-    }
+    };
 
     onMarkerDragend = evt => {
         const ll = JSON.parse(JSON.stringify(evt.target._latlng));
         this.doChange('latitude',  ll.lat, () =>
             this.doChange('longitude', ll.lng));
-    }
+    };
 
     render() {
         const { classes } = this.props;
@@ -458,7 +463,7 @@ class MainSettingsDialog extends Component {
 
         const center = [
             parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
-            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0
+            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0,
         ];
 
         const { zoom } = this.state;
@@ -470,6 +475,7 @@ class MainSettingsDialog extends Component {
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
                             <TextField
+                                disabled={this.props.saving}
                                 fullWidth
                                 variant="standard"
                                 id="siteName"
@@ -507,10 +513,11 @@ class MainSettingsDialog extends Component {
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}>
                     <FormControl className={classes.formControl} variant="standard">
-                        <InputLabel shrink id={'city-label'}>
+                        <InputLabel shrink id="city-label">
                             {this.props.t('City:')}
                         </InputLabel>
                         <TextField
+                            disabled={this.props.saving}
                             variant="standard"
                             id="city"
                             label={this.props.t('City:')}
@@ -527,6 +534,7 @@ class MainSettingsDialog extends Component {
                             {this.props.t('Latitude:')}
                         </InputLabel>
                         <TextField
+                            disabled={this.props.saving}
                             variant="standard"
                             id="latitude"
                             label={this.props.t('Latitude:')}
@@ -543,6 +551,7 @@ class MainSettingsDialog extends Component {
                             {this.props.t('Longitude:')}
                         </InputLabel>
                         <TextField
+                            disabled={this.props.saving}
                             variant="standard"
                             id="longitude"
                             label={this.props.t('Longitude:')}
@@ -563,6 +572,7 @@ MainSettingsDialog.propTypes = {
     data: PropTypes.object,
     dataAux: PropTypes.object,
     adminGuiConfig: PropTypes.object,
+    saving: PropTypes.bool,
 };
 
 export default withWidth()(withStyles(styles)(MainSettingsDialog));

@@ -69,23 +69,21 @@ class CertificatesDialog extends Component {
         super(props);
 
         this.state = {
-            chClass: false
+            chClass: false,
         };
     }
 
-    certToArray(certs) {
-        return Utils.objectMap(certs, (cert, name) => {
-            return {
-                title: name,
-                data: cert
-            }
-        });
+    static certToArray(certs) {
+        return Utils.objectMap(certs, (cert, name) => ({
+            title: name,
+            data: cert,
+        }));
     }
 
-    arrayToCert(array) {
-        let result = {};
-        for (let k in array) {
-            result[array[k].title] = array[k].data
+    static arrayToCert(array) {
+        const result = {};
+        for (const k in array) {
+            result[array[k].title] = array[k].data;
         }
 
         return result;
@@ -96,18 +94,17 @@ class CertificatesDialog extends Component {
 
         if (name.includes('public') || name.includes('cert')) {
             return 'public';
-        } else if (name.includes('priv') || name.includes('key')) {
+        } if (name.includes('priv') || name.includes('key')) {
             return 'private';
-        } else if (name.includes('chain') || name.includes('ca')) {
+        } if (name.includes('chain') || name.includes('ca')) {
             return 'chained';
-        } else {
-            return '';
         }
+        return '';
     }
 
     render() {
         const { classes } = this.props;
-        const arr = this.certToArray(this.props.data.native.certificates);
+        const arr = CertificatesDialog.certToArray(this.props.data.native.certificates);
 
         const rows = arr.map((e, i) => {
             const type = CertificatesDialog.detectType(e.title);
@@ -118,18 +115,20 @@ class CertificatesDialog extends Component {
                 </TableCell>
                 <TableCell className={`${this.props.classes.nameRow} float_cell`}>
                     <TextField
+                        disabled={this.props.saving}
                         variant="standard"
                         value={e.title}
-                        InputLabelProps={{shrink: true}}
-                        InputProps={{readOnly: false}}
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{ readOnly: false }}
                         className={`${this.props.classes.input} xs-centered`}
                         onChange={evt => this.onChangeText(evt.target.value, e.title, 'title')}
                         error={!type}
-                        helperText={type || I18n.t('Unknown type: use in name "private", "public" or "chained" to define the certificate type') }
+                        helperText={type || I18n.t('Unknown type: use in name "private", "public" or "chained" to define the certificate type')}
                     />
                 </TableCell>
                 <TableCell className="grow_cell float_cell">
                     <TextField
+                        disabled={this.props.saving}
                         variant="standard"
                         id={`default_${i}`}
                         value={e.data}
@@ -139,7 +138,7 @@ class CertificatesDialog extends Component {
                         onChange={evt => {
                             let value = evt.target.value.replace(/\r/g, '').replace(/\n/g, '');
                             if (value.startsWith('--')) {
-                                let parts = value.split('-----');
+                                const parts = value.split('-----');
                                 parts[2] = parts[2].replace(/\s/g, '');
                                 value = `-----${parts[1]}-----\r\n${parts[2]}\r\n-----${parts[3]}-----`;
                             }
@@ -150,6 +149,7 @@ class CertificatesDialog extends Component {
                 </TableCell>
                 <TableCell className={`${this.props.classes.littleRow} float_cell`}>
                     <Fab
+                        disabled={this.props.saving}
                         size="small"
                         color="secondary"
                         aria-label="add"
@@ -158,22 +158,28 @@ class CertificatesDialog extends Component {
                         <DeleteIcon />
                     </Fab>
                 </TableCell>
-            </TableRow>
-        })
+            </TableRow>;
+        });
         return <div className={classes.tabPanel}>
             <Dropzone noClick>
-                {({ getRootProps, getInputProps, acceptedFiles, fileRejections }) => (
+                {({
+                    getRootProps, getInputProps, acceptedFiles, fileRejections,
+                }) => (
                     <div {...getRootProps({
                         className: this.state.chClass ? 'drop-container drop-dop' : 'drop-container',
                         onDragEnter: () => this.setState({ chClass: true }),
                         onDragLeave: () => this.setState({ chClass: false }),
                         onDrop: () => {
+                            if (this.props.saving) {
+                                // ignore
+                                return;
+                            }
                             if (fileRejections.length) {
-                                let msg = [];
+                                const msg = [];
                                 // eslint-disable-next-line array-callback-return
                                 fileRejections.map((e => {
-                                    let m = `${e.file.name}: `;
-                                    let mm = [];
+                                    const m = `${e.file.name}: `;
+                                    const mm = [];
                                     e.errors.forEach(ee => mm.push(ee.message));
                                     msg.push(m + mm.join(','));
                                 }));
@@ -188,20 +194,22 @@ class CertificatesDialog extends Component {
                                     reader.onload = async e =>
                                         this.onAdd(file.name, e.target.result);
                                     reader.readAsText(file);
-                                })
+                                });
                             } else if (!fileRejections.length) {
                                 alert(this.props.t('No files exists'));
                             }
 
                             this.setState({ chClass: false });
-                        }
-                    })}>
+                        },
+                    })}
+                    >
                         <input {...getInputProps()} />
                     </div>
                 )}
             </Dropzone>
             <div className={classes.buttonPanel}>
                 <Fab
+                    disabled={this.props.saving}
                     size="small"
                     className="small_size"
                     color="primary"
@@ -237,25 +245,25 @@ class CertificatesDialog extends Component {
     }
 
     onChangeText = (value, id, name) => {
-        let newData = JSON.parse(JSON.stringify(this.props.data))
-        let array = this.certToArray(newData.native.certificates);
+        const newData = JSON.parse(JSON.stringify(this.props.data));
+        const array = CertificatesDialog.certToArray(newData.native.certificates);
         array.find(element => element.title === id)[name] = value;
-        newData.native.certificates = this.arrayToCert(array);
+        newData.native.certificates = CertificatesDialog.arrayToCert(array);
         this.props.onChange(newData);
-    }
+    };
 
     onDelete = id => {
-        let newData = JSON.parse(JSON.stringify(this.props.data))
-        let array = this.certToArray(newData.native.certificates);
-        let index = array.findIndex(element => element.title === id);
+        const newData = JSON.parse(JSON.stringify(this.props.data));
+        const array = CertificatesDialog.certToArray(newData.native.certificates);
+        const index = array.findIndex(element => element.title === id);
         delete array[index];
-        newData.native.certificates = this.arrayToCert(array);
+        newData.native.certificates = CertificatesDialog.arrayToCert(array);
         this.props.onChange(newData);
-    }
+    };
 
     onAdd = (title, data) => {
-        let newData = JSON.parse(JSON.stringify(this.props.data))
-        let array = this.certToArray(newData.native.certificates);
+        const newData = JSON.parse(JSON.stringify(this.props.data));
+        const array = CertificatesDialog.certToArray(newData.native.certificates);
         if (!title) {
             let i = 1;
             // eslint-disable-next-line
@@ -267,20 +275,18 @@ class CertificatesDialog extends Component {
 
         array.push({
             title: title || '__',
-            data:  data || ''
+            data:  data || '',
         });
-        newData.native.certificates = this.arrayToCert(array);
+        newData.native.certificates = CertificatesDialog.arrayToCert(array);
         this.props.onChange(newData);
-    }
+    };
 }
 
 CertificatesDialog.propTypes = {
     t: PropTypes.func,
     data: PropTypes.object,
     onChange: PropTypes.func,
+    saving: PropTypes.bool,
 };
 
 export default withWidth()(withStyles(styles)(CertificatesDialog));
-
-
-

@@ -17,7 +17,7 @@ const styles = theme => ({
         overflow: 'auto',
         overflowX: 'hidden',
         padding: 15,
-        //backgroundColor: blueGrey[ 50 ]
+        // backgroundColor: blueGrey[ 50 ]
     },
     buttonPanel: {
         paddingBottom: 50,
@@ -72,6 +72,7 @@ class SSLDialog extends Component {
                         <TextField
                             variant="standard"
                             id="email"
+                            disabled={this.props.saving}
                             label={this.props.t('Email for account:')}
                             value={letsEncrypt ? letsEncrypt.email : ''}
                             InputLabelProps={{
@@ -85,6 +86,7 @@ class SSLDialog extends Component {
                 <Grid item md={3} xs={12}>
                     <FormControl variant="standard" className={classes.formControl}>
                         <TextField
+                            disabled={this.props.saving}
                             variant="standard"
                             id="domains"
                             label={this.props.t('Domains:')}
@@ -102,6 +104,7 @@ class SSLDialog extends Component {
                         <TextField
                             variant="standard"
                             id="path"
+                            disabled={this.props.saving}
                             label={this.props.t('Path to storage:')}
                             value={letsEncrypt ? letsEncrypt.path : ''}
                             InputLabelProps={{
@@ -122,7 +125,7 @@ class SSLDialog extends Component {
     };
 
     doChange = (name, value) => {
-        let newData = JSON.parse(JSON.stringify(this.props.data));
+        const newData = JSON.parse(JSON.stringify(this.props.data));
         newData.native.letsEncrypt = newData.native.letsEncrypt || {};
         newData.native.letsEncrypt[name] = value;
         this.props.onChange(newData);
@@ -133,6 +136,7 @@ SSLDialog.propTypes = {
     t: PropTypes.func,
     data: PropTypes.object,
     onChange: PropTypes.func,
+    saving: PropTypes.bool,
 };
 
 export default withWidth()(withStyles(styles)(SSLDialog));

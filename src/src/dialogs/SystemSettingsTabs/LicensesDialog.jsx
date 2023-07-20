@@ -73,13 +73,10 @@ class LicensesDialog extends Component {
         super(props);
 
         this.state = {
-            confirm: false,
-            confirmValue: null,
-            host: '',
             uuid: '',
             requesting: false,
             licenses: this.props.data.native.licenses || [],
-            readTime: this.props.data.native.readTime || 0,
+            // readTime: this.props.data.native.readTime || 0,
         };
     }
 
@@ -90,7 +87,7 @@ class LicensesDialog extends Component {
             obj.native.licenses = obj.native.licenses || [];
             if (JSON.stringify(obj.native.licenses) !== JSON.stringify(this.state.licenses)) {
                 window.alert(this.props.t('New licenses were stored'));
-                this.setState({licenses: obj.native.licenses, readTime: obj.native.licenses.readTime || 0});
+                this.setState({ licenses: obj.native.licenses /* , readTime: obj.native.licenses.readTime || 0 */ });
             } else {
                 window.alert(this.props.t('Licenses have not changed'));
             }
@@ -101,7 +98,7 @@ class LicensesDialog extends Component {
         this.props.socket.getObject('system.meta.uuid')
             .then(obj => {
                 this.props.socket.subscribeObject('system.licenses', this.onLicensesChanged);
-                this.setState({uuid: obj.native.uuid});
+                this.setState({ uuid: obj.native.uuid });
             });
     }
 
@@ -110,24 +107,22 @@ class LicensesDialog extends Component {
     }
 
     doChange = (name, value) => {
-        let newData = JSON.parse(JSON.stringify(this.props.data))
+        const newData = JSON.parse(JSON.stringify(this.props.data));
         newData.native[name] = value;
         this.props.onChange(newData);
-    }
+    };
 
     static requestLicensesByHost(socket, host, login, password, t) {
         return new Promise((resolve, reject) => {
             socket.getRawSocket().emit('updateLicenses', login, password, (err, licenses) => {
                 if (err === 'permissionError') {
                     reject(t('May not trigger "updateLicenses"'));
+                } else if (err && err.error) {
+                    reject(t(err.error));
+                } else if (err) {
+                    reject(t(err));
                 } else {
-                    if (err && err.error) {
-                        reject(t(err.error));
-                    } else if (err) {
-                        reject(t(err));
-                    } else {
-                        resolve(licenses);
-                    }
+                    resolve(licenses);
                 }
             });
         });
@@ -137,7 +132,7 @@ class LicensesDialog extends Component {
         this.setState({ requesting: true });
         try {
             let password = this.props.data.native.password;
-            // if password was not changed
+            // if the password was not changed
             if (password === '__SOME_PASSWORD__') {
                 const obj = await this.props.socket.getObject('system.licenses');
                 // if login was changed
@@ -173,7 +168,7 @@ class LicensesDialog extends Component {
         return <div className={this.props.classes.tableDiv}>
             <TableContainer>
                 <Table stickyHeader size="small">
-                    <TableHead className={this.props.classes.tableName} >
+                    <TableHead className={this.props.classes.tableName}>
                         <TableRow>
                             <TableCell className={this.props.classes.tableName}>{this.props.t('Product')}</TableCell>
                             <TableCell className={this.props.classes.tableDate}>{this.props.t('Ordered at')}</TableCell>
@@ -199,12 +194,13 @@ class LicensesDialog extends Component {
     }
 
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
 
         return <div className={classes.tabPanel}>
             <TextField
                 variant="standard"
                 className={this.props.classes.input}
+                disabled={this.props.saving || this.state.requesting}
                 value={this.props.data.native.login}
                 helperText={this.props.t('for ioBroker.net portal')}
                 label={this.props.t('Login/Email')}
@@ -216,6 +212,7 @@ class LicensesDialog extends Component {
             />
             <TextField
                 variant="standard"
+                disabled={this.props.saving || this.state.requesting}
                 className={this.props.classes.input}
                 type="password"
                 value={this.props.data.native.password}
@@ -240,7 +237,9 @@ class LicensesDialog extends Component {
                 onClick={() => this.requestLicenses()}
                 className={this.props.classes.button}
                 color="grey"
-            >{this.props.t('Check')}</Button>
+            >
+                {this.props.t('Check')}
+            </Button>
             {this.renderLicenses()}
         </div>;
     }
