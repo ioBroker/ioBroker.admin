@@ -89,12 +89,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed "Let's Encrypt" link not being clickable inside system settings
 * (foxriver76) fixed false positives for "not much space left on device" warning
 * (foxriver76) fixed issue with npm version determination on some installations
+* (foxriver76) reset the logout timer UI if session is extended
+* (rovo89) apply button color change of v6.6.1 for all buttons
 
 ### 6.6.1 (2023-07-17)
 * (foxriver76) Many GUI improvements
 * (bluefox) New json config component added: license agreement
-
-### 6.6.0.5 (2023-07-17)
 * (foxriver76) also show non-stable repo warning on the hosts tab
 * (foxriver76) fixed jsonConfig slider with different max/min values than 0/100
 * (foxriver76) fixed jsonConfig number element arrows

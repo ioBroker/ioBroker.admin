@@ -1133,6 +1133,7 @@ class App extends Router {
                 this.setState({ expireWarningMode: true });
             }
         } else if (this.state.expireWarningMode) {
+            this.refUserDiv.current.innerHTML = this.state.user.name;
             this.setState({ expireWarningMode: false });
         }
 
