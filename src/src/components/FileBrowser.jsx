@@ -700,12 +700,13 @@ class FileBrowser extends Component {
 
         if (_newFolders[folderId] && !force) {
             if (!_checkEmpty) {
-                return new Promise((resolve, reject) =>
+                return new Promise((resolve, reject) => {
                     Promise.all(_newFolders[folderId].filter(item => item.folder).map(item =>
                         this.browseFolder(item.id, _newFolders, true)
                             .catch(() => { })))
                         .then(() => resolve(_newFolders))
-                        .catch(error => reject(error)));
+                        .catch(error => reject(error));
+                });
             }
 
             return Promise.resolve(_newFolders);

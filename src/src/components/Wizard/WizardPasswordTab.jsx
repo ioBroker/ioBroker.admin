@@ -1,9 +1,10 @@
 import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
+
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Grid';
+import Toolbar from '@mui/material/Toolbar';
 
 import Button from '@mui/material/Button';
 import Paper from  '@mui/material/Paper';
@@ -155,7 +156,6 @@ class WizardPasswordTab extends Component {
 
 WizardPasswordTab.propTypes = {
     t: PropTypes.func,
-    socket: PropTypes.object,
     onDone: PropTypes.func.isRequired,
 };
 

@@ -195,7 +195,7 @@ class FileViewer extends Component {
         const adapter = parts[0];
         const name = parts.splice(1).join('/');
         this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString('base64'))
-            .then(_ => this.props.onClose())
+            .then(() => this.props.onClose())
             .catch(e => window.alert(`Cannot write file: ${e}`));
     };
 
@@ -230,7 +230,8 @@ class FileViewer extends Component {
                 src={`${this.props.href}?ts=${this.state.forceUpdate}`}
                 alt={this.props.href}
             />;
-        } if (this.state.code !== null || this.state.text !== null || this.state.editing) {
+        }
+        if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             return <AceEditor
                 mode={FileViewer.getEditFile(this.props.formatEditFile)}
                 width="100%"
@@ -249,6 +250,7 @@ class FileViewer extends Component {
                 editorProps={{ $blockScrolling: true }}
             />;
         }
+        return null;
     }
 
     render() {
@@ -310,8 +312,6 @@ class FileViewer extends Component {
 
 FileViewer.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
-    expertMode: PropTypes.bool,
     onClose: PropTypes.func,
     href: PropTypes.string.isRequired,
     supportSubscribes: PropTypes.bool,

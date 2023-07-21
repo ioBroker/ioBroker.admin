@@ -46,14 +46,13 @@ class Command extends Component {
             init: false,
             max: null,
             value: null,
-            progressText: '',
+            // progressText: '',
             moreChecked: true,
             stopped: false,
         };
 
         this.logRef = React.createRef();
 
-        this.t = props.t;
         const pattern = ['error', 'warn', 'info'];
         this.regExp = new RegExp(pattern.join('|'), 'i');
     }
@@ -63,12 +62,12 @@ class Command extends Component {
             console.log(`STARTED: ${this.props.cmd}`);
             this.executeCommand();
         }
-        try {
-            const closeOnReady = JSON.parse((window._localStorage || window.localStorage).getItem('CommandDialog.closeOnReady')) || false;
-            this.setState({ closeOnReady });
-        } catch (error) {
-            this.setState({ closeOnReady: false });
-        }
+        // try {
+        //     const closeOnReady = JSON.parse((window._localStorage || window.localStorage).getItem('CommandDialog.closeOnReady')) || false;
+        //     this.setState({ closeOnReady });
+        // } catch (error) {
+        //     this.setState({ closeOnReady: false });
+        // }
     }
 
     componentDidUpdate() {
@@ -82,7 +81,7 @@ class Command extends Component {
     }
 
     executeCommand() {
-        this.setState({ init: true }, () => this.props.onSetCommandRunning(true));
+        this.setState({ init: true }, () => this.props.onSetCommandRunning && this.props.onSetCommandRunning(true));
 
         this.props.socket.registerCmdStdoutHandler(this.cmdStdoutHandler.bind(this));
         this.props.socket.registerCmdStderrHandler(this.cmdStderrHandler.bind(this));
@@ -108,18 +107,18 @@ class Command extends Component {
 
             let max = this.state.max;
             let value = null;
-            let progressText = '';
+            // let progressText = '';
 
             if (upload) {
                 max = max || parseInt(upload[1], 10);
                 value = parseInt(upload[1], 10);
             } else if (gotAdmin) {
                 // upload of admin
-                progressText = this.t('Upload admin started');
+                // progressText = this.t('Upload admin started');
                 max = null;
             } else if (gotWww) {
                 // upload of www
-                progressText = this.t('Upload www started');
+                // progressText = this.t('Upload www started');
                 max = null;
             }
 
@@ -127,7 +126,7 @@ class Command extends Component {
                 log,
                 max,
                 value,
-                progressText,
+                // progressText,
             });
 
             console.log('cmdStdout');
@@ -167,7 +166,7 @@ class Command extends Component {
             log.push(`${exitCode !== 0 ? 'ERROR: ' : ''}Process exited with code ${exitCode}`);
 
             this.setState({ log, stopped: true }, () => {
-                this.props.onSetCommandRunning(false);
+                this.props.onSetCommandRunning && this.props.onSetCommandRunning(false);
                 if (exitCode !== 0) {
                     this.props.errorFunc && this.props.errorFunc(exitCode, this.state.log);
                 } else {
@@ -289,7 +288,6 @@ class Command extends Component {
 }
 
 Command.defaultProps = {
-    onSetCommandRunning: () => { },
     showElement: true,
 };
 
@@ -307,6 +305,7 @@ Command.propTypes = {
     performed: PropTypes.func,
     cmd: PropTypes.string.isRequired,
     onSetCommandRunning: PropTypes.func.isRequired,
+    showElement: PropTypes.bool,
 };
 
 export default withStyles(styles)(Command);

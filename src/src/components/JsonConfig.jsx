@@ -51,6 +51,7 @@ const styles = {
 function decryptLegacy(key, value) {
     let result = '';
     for (let i = 0; i < value.length; i++) {
+        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -64,6 +65,7 @@ function decryptLegacy(key, value) {
 function encryptLegacy(key, value) {
     let result = '';
     for (let i = 0; i < value.length; i++) {
+        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -323,6 +325,7 @@ class JsonConfig extends Router {
                     return JSON5.parse(data);
                 } catch (e) {
                     window.alert('[JsonConfig] Cannot parse json5 config!');
+                    return null;
                 }
             })
             .catch(e => !this.state.schema && window.alert(`[JsonConfig] Cannot read file: ${e}`));
@@ -393,6 +396,8 @@ class JsonConfig extends Router {
                 }
             }
         }
+
+        return null;
     }
 
     async onSave(doSave, close) {
@@ -439,10 +444,9 @@ class JsonConfig extends Router {
                 originalData: JSON.parse(JSON.stringify(obj.native)),
             }, () =>
                 close && Router.doNavigate(null));
+        } else if (this.state.changed) {
+            this.setState({ confirmDialog: true });
         } else {
-            if (this.state.changed) {
-                return this.setState({ confirmDialog: true });
-            }
             Router.doNavigate(null);
         }
     }
@@ -474,7 +478,6 @@ class JsonConfig extends Router {
                 instance={this.props.instance}
                 isFloatComma={this.props.isFloatComma}
                 dateFormat={this.props.dateFormat}
-
                 schema={this.state.schema}
                 common={this.state.common}
                 data={this.state.data}
@@ -504,8 +507,8 @@ class JsonConfig extends Router {
                 noTextOnButtons={this.props.width === 'xs' || this.props.width === 'sm' || this.props.width === 'md'}
                 changed={this.state.error || this.state.changed}
                 error={this.state.error}
-                onSave={async close => await this.onSave(true, close)}
-                onClose={async () => await this.onSave(false)}
+                onSave={close => this.onSave(true, close)}
+                onClose={() => this.onSave(false)}
             />
         </div>;
     }

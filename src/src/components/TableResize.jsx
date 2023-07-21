@@ -1,5 +1,5 @@
 /**
- * Copyright 2022, bluefox <dogafox@gmail.com>
+ * Copyright 2022-2023, bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -11,7 +11,7 @@ import { withStyles } from '@mui/styles';
 import Table from '@mui/material/Table';
 import Skeleton from '@mui/material/Skeleton';
 
-const styles = theme => ({
+const styles = () => ({
     table: {
         display: 'grid',
         '& tr': {
@@ -90,7 +90,8 @@ class TableResize extends Component {
                     const tableWidth = this.resizerRefTable.current.offsetWidth;
                     let storedWidth = 0;
                     for (let w = 0; w < this.resizerCurrentWidths.length; w++) {
-                        if (isFinite(this.resizerCurrentWidths[w])) {
+                        // eslint-disable-next-line no-restricted-properties
+                        if (window.isFinite(this.resizerCurrentWidths[w])) {
                             storedWidth += this.resizerCurrentWidths[w];
                         } else {
                             storedWidth = null;

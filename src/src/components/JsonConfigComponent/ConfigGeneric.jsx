@@ -255,6 +255,7 @@ class ConfigGeneric extends Component {
                                     confirmDepNewValue: null,
                                     confirmNewValue: null,
                                     confirmAttr: null,
+                                    // eslint-disable-next-line react/no-unused-state
                                     confirmOldValue: null,
                                     confirmData: null,
                                 },
@@ -267,6 +268,7 @@ class ConfigGeneric extends Component {
                                 confirmDepNewValue: null,
                                 confirmNewValue: null,
                                 confirmAttr: null,
+                                // eslint-disable-next-line react/no-unused-state
                                 confirmOldValue: null,
                                 confirmData: null,
                             });

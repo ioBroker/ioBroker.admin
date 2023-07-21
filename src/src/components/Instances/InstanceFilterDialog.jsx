@@ -340,7 +340,7 @@ const InstanceFilterDialog = ({
     </ThemeProvider>;
 };
 
-export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getModeIcon, theme) => {
+export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, _getModeIcon, theme) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
@@ -350,7 +350,7 @@ export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getMo
 
     return root.render(<StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-            <InstanceFilterDialog cb={cb} getModeIcon={getModeIcon} filterMode={filterMode} theme={theme} filterStatus={filterStatus} />
+            <InstanceFilterDialog cb={cb} getModeIcon={_getModeIcon} filterMode={filterMode} theme={theme} filterStatus={filterStatus} />
         </ThemeProvider>
     </StyledEngineProvider>);
 };

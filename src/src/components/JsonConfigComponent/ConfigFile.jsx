@@ -65,17 +65,19 @@ class ConfigFile extends ConfigGeneric {
             const path = this.state.value.substring(pos + 1);
             return this.props.socket.readFile(adapter, path, true);
         }
+
+        return Promise.resolve(null);
     }
 
     play() {
         this.loadFile()
             .then(data => {
-                if (typeof AudioContext !== 'undefined') {
+                if (typeof AudioContext !== 'undefined' && data?.file) {
                     const context = new AudioContext();
                     const buf = ConfigFileSelector.base64ToArrayBuffer(data.file);
                     context.decodeAudioData(buf, buffer => {
                         const source = context.createBufferSource(); // creates a sound source
-                        source.buffer = buffer;                      // tell the source which sound to play
+                        source.buffer = buffer;                      // tell the source which sounds to play
                         source.connect(context.destination);         // connect the source to the context's destination (the speakers)
                         source.start(0);
                     }, err => window.alert(`Cannot play: ${err}`));
@@ -129,7 +131,7 @@ class ConfigFile extends ConfigGeneric {
         />;
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         const icon = this.getIcon();
 
         return <div className={this.props.classes.fullWidth}>

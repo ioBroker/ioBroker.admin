@@ -177,9 +177,9 @@ const JsControllerDialog = ({
                         const parts = [];
                         _readme.forEach(chapter => {
                             if (chapter.includes('-->')) {
-                                const parts = chapter.split('-->');
-                                let button = parts[0];
-                                const text = parts[1];
+                                const parts_ = chapter.split('-->');
+                                let button = parts_[0];
+                                const text = parts_[1];
                                 let small = false;
                                 if (button.startsWith(' small')) {
                                     button = button.replace(/^ {2}small /, '');

@@ -116,7 +116,6 @@ DrawerItem.propTypes = {
     selected: PropTypes.bool,
     compact: PropTypes.bool,
     text: PropTypes.string,
-    themeType: PropTypes.string,
     badgeContent: PropTypes.number,
     badgeColor: PropTypes.oneOf(['', 'default', 'primary', 'secondary', 'error', 'warn']),
 };

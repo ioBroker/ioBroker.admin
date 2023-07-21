@@ -373,8 +373,6 @@ const CONVERTER_OPTIONS = {
     backslashEscapesHTMLTags: true,
 };
 
-let title;
-
 const ADAPTER_CARD = ['version', 'authors', 'keywords', 'mode', 'materialize', 'compact'];
 
 const EXPAND_LANGUAGE = {
@@ -403,10 +401,6 @@ class Markdown extends Component {
             adapterNews: null,
             hideContent: window.localStorage ? (window._localStorage || window.localStorage).getItem('Docs.hideContent') === 'true' : false,
         };
-
-        if (!title) {
-            title = window.title;
-        }
 
         this.mounted = false;
 
@@ -463,40 +457,43 @@ class Markdown extends Component {
             if (_level === 1) {
                 return <h1 id={id}>
                     <span>{text}</span>
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                     <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
                 </h1>;
             } if (_level === 2) {
                 return <h2 id={id}>
                     <span>{text}</span>
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                     <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
                 </h2>;
             } if (_level === 3) {
                 return <h3 id={id}>
                     <span>{text}</span>
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                     <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
                 </h3>;
             } if (_level === 4) {
                 return <h4 id={id}>
                     <span>{text}</span>
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                     <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
                 </h4>;
             } if (_level === 5) {
                 return <h5 id={id}>
                     <span>{text}</span>
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                     <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
                 </h5>;
             }
             return <h6 id={id}>
                 <span>{text}</span>
+                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                 <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
             </h6>;
         };
-        this.meta = ({
-            text, id, level, prefix,
-        }) => 'meta';
-        this.link = ({
-            text, id, level, prefix,
-        }) => <div>linkAAAAA</div>;
+        this.meta = () => 'meta'; // text, id, level, prefix,
+
+        this.link = () => <div>linkAAAAA</div>; // text, id, level, prefix,
     }
 
     componentDidMount() {
@@ -506,7 +503,7 @@ class Markdown extends Component {
             .then(repo => this.setState({ adapterNews: repo[this.props.adapter]?.news }));
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
+    UNSAFE_componentWillReceiveProps(nextProps/* , nextContext */) {
         if (this.props.path !== nextProps.path) {
             this.mounted && this.setState({ notFound: false, parts: [] });
             this.load(nextProps.path);
@@ -536,7 +533,7 @@ class Markdown extends Component {
         }
     } */
 
-    onNavigate(id, link) {
+    static onNavigate(id, link) {
         if (link && link.match(/^https?:\/\//)) {
             Utils.openLink(link);
         } else if (id) {
@@ -583,7 +580,7 @@ class Markdown extends Component {
         }
     }
 
-    parseChangeLog(changeLog) {
+    static parseChangeLog(changeLog) {
         const lines = changeLog.split('\n');
         const entries = {};
         let oneEntry;
@@ -629,8 +626,9 @@ class Markdown extends Component {
             this.editText = text;
         }
         if (!text || text.startsWith('<!DOCTYPE html>')) {
-            // page not found
-            return this.setState({ notFound: true });
+            // page isn't found
+            this.setState({ notFound: true });
+            return;
         }
 
         const {
@@ -656,7 +654,7 @@ class Markdown extends Component {
         // try to add missing news
         if (changeLog) {
             // split news
-            _changeLog = this.parseChangeLog(changeLog);
+            _changeLog = Markdown.parseChangeLog(changeLog);
             if (_changeLog && typeof _changeLog === 'object' && this.state.adapterNews) {
                 const lang = I18n.getLanguage();
                 Object.keys(this.state.adapterNews).forEach(version => {
@@ -699,10 +697,12 @@ class Markdown extends Component {
 
     format(text) {
         text = (text || '').trim();
-        let { header, body } = Utils.extractHeader(text);
+        const result = Utils.extractHeader(text);
+        const header = result.header;
+        let body = result.body;
 
         if (body.startsWith('# ')) {
-            // there is no header and readme starts with
+            // there is no header, and readme starts with
             // ![Logo](admin/iot.png)
             // # ioBroker IoT Adapter
         }
@@ -810,7 +810,7 @@ class Markdown extends Component {
                     <List>
                         {
                             ADAPTER_CARD
-                                .filter(attr => this.state.header.hasOwnProperty(attr))
+                                .filter(attr => Object.prototype.hasOwnProperty.call(this.state.header.hasOwnProperty, attr))
                                 .map(attr =>
                                     <ListItem key={attr} className={this.props.classes.adapterCardListItem}>
                                         <div className={this.props.classes.adapterCardAttr}>
@@ -884,7 +884,7 @@ class Markdown extends Component {
                     const ch   = this.state.content[item].children;
                     const link = this.state.content[item].external && this.state.content[item].link;
                     return <li>
-                        <span onClick={() => this.onNavigate(item, link)} className={this.props.classes.contentLinks}>{this.state.content[item].title}</span>
+                        <span onClick={() => Markdown.onNavigate(item, link)} className={this.props.classes.contentLinks}>{this.state.content[item].title}</span>
                         {ch ? this._renderSubContent(this.state.content[item]) : null}
                     </li>;
                 }).filter(e => e)
@@ -940,7 +940,7 @@ class Markdown extends Component {
                         const   title = this.state.content[item].title.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
 
                         return <li key={title} style={{ fontSize: 16 - level * 2, paddingLeft: level * 8, fontWeight: !level ? 'bold' : 'normal' }}>
-                            <span onClick={() => this.onNavigate(item, link)} className={this.props.classes.contentLinks}>{title}</span>
+                            <span onClick={() => Markdown.onNavigate(item, link)} className={this.props.classes.contentLinks}>{title}</span>
                             {this.state.content[item].children ? this._renderSubContent(this.state.content[item]) : null}
                         </li>;
                     }).filter(e => e)
@@ -1127,7 +1127,7 @@ class Markdown extends Component {
                                 key={'link' + i}
                                 className={this.props.classes.mdLink + ' md-link'}
                                 title={link}
-                                onClick={() => this.onNavigate(link)}>
+                                onClick={() => Markdown.onNavigate(link)}>
                                 {item.props.children ? item.props.children[0] : ''}
                             </div>);
                         } else {
@@ -1140,7 +1140,7 @@ class Markdown extends Component {
                                 key={'link' + i}
                                 className={this.props.classes.mdLink + ' md-link'}
                                 title={oldLink}
-                                onClick={() => this.onNavigate(null, link)}>
+                                onClick={() => Markdown.onNavigate(null, link)}>
                                 {item.props.children ? item.props.children[0] : ''}
                             </div>);
                         }
@@ -1154,7 +1154,7 @@ class Markdown extends Component {
         } */
     }
 
-    makeHeadersAsLink(line, prefix) {
+    static makeHeadersAsLink(line, prefix) {
         if (!line) {
             return '';
         }
@@ -1251,7 +1251,7 @@ class Markdown extends Component {
             // Detect "[iobroker repo \[repoName\]](#iobroker-repo)"
 
             line = this.replaceHref(line);
-            line = this.makeHeadersAsLink(line, prefix);
+            line = Markdown.makeHeadersAsLink(line, prefix);
 
             // replace <- with &lt;
             line = line.replace(/<-/g, '&lt;-');
@@ -1300,10 +1300,7 @@ Markdown.propTypes = {
     language: PropTypes.string,
     onNavigate: PropTypes.func,
     theme: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
     mobile: PropTypes.bool,
-    rootPath:  PropTypes.string,
     path:  PropTypes.string,
     text:  PropTypes.string,
     editMode: PropTypes.bool,

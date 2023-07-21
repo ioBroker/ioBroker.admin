@@ -166,6 +166,7 @@ class EditIntroLinkDialog extends Component {
         if (m) {
             return m[1] + (m[2] || '');
         }
+        return '';
     }
 
     render() {

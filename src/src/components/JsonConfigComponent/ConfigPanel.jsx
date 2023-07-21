@@ -13,6 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
+// eslint-disable-next-line import/no-cycle
 import ConfigAccordion from './ConfigAccordion';
 import ConfigAlive from './ConfigAlive';
 import ConfigAutocomplete from './ConfigAutocomplete';
@@ -53,6 +54,7 @@ import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticImage from './ConfigStaticImage';
 import ConfigStaticText from './ConfigStaticText';
+// eslint-disable-next-line import/no-cycle
 import ConfigTable from './ConfigTable';
 import ConfigText from './ConfigText';
 import ConfigTextSendTo from './ConfigTextSendTo';

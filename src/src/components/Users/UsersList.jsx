@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -15,6 +14,8 @@ import Fab from '@mui/material/Fab';
 
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
+
+import { Utils } from '@iobroker/adapter-react-v5';
 
 import UserBlock from './UserBlock';
 import GroupBlock from './GroupBlock';
@@ -71,7 +72,7 @@ const styles = theme => ({
         backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.primary.main,
         padding: 4,
         borderRadius: 2,
-        color:'#EEE',
+        color: '#EEE',
     },
     userCardContent: {
         height:'100%',
@@ -86,7 +87,7 @@ const styles = theme => ({
         padding: 5,
     },
     userGroupUserID: {
-        opacity:0.7,
+        opacity: 0.7,
         padding: 5,
     },
     description: {
@@ -296,7 +297,7 @@ class UsersList extends Component {
             this.updateData());
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(/* prevProps, prevState, snapshot */) {
         if (!window.innerWidth !== this.state.innerWidth) {
             setTimeout(() => this.setState({ innerWidth: window.innerWidth }), 100);
         }
@@ -354,7 +355,7 @@ class UsersList extends Component {
     changeGroupFormData = group =>
         this.setState({ groupEditDialog: group });
 
-    saveUser = originalId => {
+    saveUser = async originalId => {
         const user = JSON.parse(JSON.stringify(this.state.userEditDialog));
         const originalUser = this.state.users.find(element => element._id === user._id);
         const newPassword = user.common.password && user.common.password !== PASSWORD_SET ? user.common.password : '';
@@ -367,42 +368,43 @@ class UsersList extends Component {
 
         delete user.common.passwordRepeat;
 
-        this.props.socket.setObject(user._id, user)
-            .then(() => {
-                if (originalId && originalId !== this.state.userEditDialog._id) {
-                    return this.props.socket.delObject(originalId)
-                        .then(() => Promise.all(this.state.groups.map(group => {
-                            if (group.common.members.includes(originalId)) {
-                                const groupChanged = JSON.parse(JSON.stringify(group));
-                                groupChanged.common.members[groupChanged.common.members.indexOf(originalId)] = user._id;
-                                return this.props.socket.setObject(groupChanged._id, groupChanged);
-                            }
-                            return Promise.resolve(null);
-                        })))
-                        .catch(e => window.alert(`Cannot delete user: ${e}`));
+        await this.props.socket.setObject(user._id, user);
+        if (originalId && originalId !== this.state.userEditDialog._id) {
+            try {
+                await this.props.socket.delObject(originalId);
+                for (let i = 0; i < this.state.groups.length; i++) {
+                    const group = this.state.groups[i];
+                    if (group.common.members.includes(originalId)) {
+                        const groupChanged = JSON.parse(JSON.stringify(group));
+                        groupChanged.common.members[groupChanged.common.members.indexOf(originalId)] = user._id;
+                        await this.props.socket.setObject(groupChanged._id, groupChanged);
+                    }
                 }
-            })
-            .then(() => {
-                if (newPassword) {
-                    return this.props.socket.changePassword(user._id, newPassword)
-                        .catch(e => window.alert(`Cannot change password: ${e}`));
-                }
-            })
-            .then(() =>
-                this.setState({ userEditDialog: false }, () =>
-                    this.updateData()));
+            } catch (e) {
+                window.alert(`Cannot delete user: ${e}`);
+            }
+        }
+        if (newPassword) {
+            try {
+                await this.props.socket.changePassword(user._id, newPassword);
+            } catch (e) {
+                window.alert(`Cannot change password: ${e}`);
+            }
+        }
+        this.setState({ userEditDialog: false }, () =>
+            this.updateData());
     };
 
-    saveGroup = originalId => {
-        this.props.socket.setObject(this.state.groupEditDialog._id, this.state.groupEditDialog)
-            .then(() => {
-                if (originalId && originalId !== this.state.groupEditDialog._id) {
-                    return this.props.socket.delObject(originalId)
-                        .catch(e => window.alert(`Cannot delete user: ${e}`));
-                }
-            })
-            .then(() =>
-                this.setState({ groupEditDialog: false }, () => this.updateData()));
+    saveGroup = async originalId => {
+        await this.props.socket.setObject(this.state.groupEditDialog._id, this.state.groupEditDialog);
+        if (originalId && originalId !== this.state.groupEditDialog._id) {
+            try {
+                await this.props.socket.delObject(originalId);
+            } catch (e) {
+                window.alert(`Cannot delete user: ${e}`);
+            }
+        }
+        this.setState({ groupEditDialog: false }, () => this.updateData());
     };
 
     showUserDeleteDialog = user =>
@@ -435,7 +437,7 @@ class UsersList extends Component {
             .catch(e => window.alert(`Cannot delete user: ${e}`));
 
     addUserToGroup = (userId, groupId) => {
-        const group = this.state.groups.find(group => group._id === groupId);
+        const group = this.state.groups.find(g => g._id === groupId);
         const members = group.common.members;
         if (!members.includes(userId)) {
             members.push(userId);
@@ -447,7 +449,7 @@ class UsersList extends Component {
     };
 
     removeUserFromGroup = (userId, groupId) => {
-        const group = this.state.groups.find(group => group._id === groupId);
+        const group = this.state.groups.find(g => g._id === groupId);
         const members = group.common.members;
         if (members.includes(userId)) {
             members.splice(members.indexOf(userId), 1);
@@ -481,7 +483,7 @@ class UsersList extends Component {
                 {this.props.t('You can drag users to groups.')}
             </div>
             <Grid container spacing={2} className={this.props.classes.mainGridCont}>
-                <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
+                <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
                     <div className={this.props.classes.headContainer}>
                         <Fab
                             size="small"
@@ -524,7 +526,7 @@ class UsersList extends Component {
                         }
                     </div>
                 </Grid>
-                <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
+                <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
                     <div className={this.props.classes.headContainer}>
                         <Fab
                             size="small"

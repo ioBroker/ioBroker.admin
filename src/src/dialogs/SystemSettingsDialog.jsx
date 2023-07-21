@@ -379,7 +379,7 @@ class SystemSettingsDialog extends Component {
             return <LinearProgress />;
         }
 
-        const tab = tabsList.find(tab => tab.name === this.props.currentTab.id) || tabsList[0];
+        const tab = tabsList.find(t => t.name === this.props.currentTab.id) || tabsList[0];
 
         const MyComponent = tab.component;
         const { groups, users, histories } = this.state;
@@ -406,7 +406,7 @@ class SystemSettingsDialog extends Component {
         </div>;
     }
 
-    onTabChanged = (event, newTab) => {
+    static onTabChanged = (event, newTab) => {
         Router.doNavigate(null, 'system', newTab);
     };
 
@@ -474,7 +474,7 @@ class SystemSettingsDialog extends Component {
                             className={this.props.classes.tab}
                             indicatorColor="secondary"
                             value={this.props.currentTab.id || 'tabConfig'}
-                            onChange={(event, newTab) => this.onTabChanged(event, newTab)}
+                            onChange={(event, newTab) => SystemSettingsDialog.onTabChanged(event, newTab)}
                             variant="scrollable"
                             scrollButtons="auto"
                         >
@@ -521,7 +521,6 @@ class SystemSettingsDialog extends Component {
 
 SystemSettingsDialog.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
     socket: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
@@ -529,7 +528,6 @@ SystemSettingsDialog.propTypes = {
     currentTab: PropTypes.object,
     width: PropTypes.string,
     adminGuiConfig: PropTypes.object,
-    instance: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));

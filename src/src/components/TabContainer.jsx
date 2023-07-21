@@ -26,7 +26,7 @@ class TabContainer extends Component {
         const { classes } = this.props;
 
         return <Paper
-            elevation={!isNaN(this.props.elevation) ? this.props.elevation : 1}
+            elevation={!Number.isNaN(this.props.elevation) ? this.props.elevation : 1}
             className={Utils.clsx(classes.root, { [classes.overflowHidden]: this.props.overflow !== 'visible' }, this.props.className)}
         >
             <Grid

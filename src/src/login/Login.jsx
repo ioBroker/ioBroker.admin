@@ -101,6 +101,7 @@ class Login extends Component {
         const motto = window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : ('Discover awesome. ');
 
         if (window.login !== 'true') {
+            // eslint-disable-next-line no-debugger
             debugger;
             window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
         }

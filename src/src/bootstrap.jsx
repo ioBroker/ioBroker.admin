@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import pack from '../package.json';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
@@ -11,6 +10,8 @@ import { Utils } from '@iobroker/adapter-react-v5';
 import './index.css';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+
+import pack from '../package.json';
 import { ContextWrapperProvider } from './components/ContextWrapper';
 import App from './App';
 
@@ -85,7 +86,7 @@ if (!window.disableDataReporting && window.location.port !== '3000') {
         },
     });
 } else {
-    window.onerror = function (error) {
+    window.onerror = error => {
         const errText = error.toString();
         if (errText && versionChanged.find(e => errText.includes(e))) {
             const message = error.message;
@@ -98,7 +99,7 @@ if (!window.disableDataReporting && window.location.port !== '3000') {
         }
         throw error;
     };
-    window.onunhandledrejection = function (error) {
+    window.onunhandledrejection = error => {
         const errText = error.toString();
         if (errText && versionChanged.find(e => errText.includes(e))) {
             const message = error.message;

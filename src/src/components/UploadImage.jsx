@@ -321,7 +321,7 @@ const cropperStyles = `
 }
 `;
 
-const styles = theme => ({
+const styles = () => ({
     dropZone: {
         width: '100%',
         height: 100,
@@ -436,14 +436,15 @@ class UploadImage extends Component {
                 ext = 'image/svg+xml';
             }
             if (file.size > maxSize) {
-                return window.alert(t('ra_File is too big. Max %sk allowed. Try use SVG.', Math.round(maxSize / 1024)));
-            }
-            const base64 = `data:${ext};base64,${btoa(
-                new Uint8Array(reader.result)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), ''),
-            )}`;
+                window.alert(t('ra_File is too big. Max %sk allowed. Try use SVG.', Math.round(maxSize / 1024)));
+            } else {
+                const base64 = `data:${ext};base64,${btoa(
+                    new Uint8Array(reader.result)
+                        .reduce((data, byte) => data + String.fromCharCode(byte), ''),
+                )}`;
 
-            onChange(base64);
+                onChange(base64);
+            }
         };
         reader.readAsArrayBuffer(file);
     }
@@ -466,7 +467,7 @@ class UploadImage extends Component {
                 if (!acceptedFiles.length) {
                     window.alert((errors && errors[0] && errors[0].errors && errors[0].errors[0] && errors[0].errors[0].message) || t('ra_Cannot upload'));
                 } else {
-                    return this.onDrop(acceptedFiles);
+                    this.onDrop(acceptedFiles);
                 }
             }}
         >
@@ -576,6 +577,8 @@ UploadImage.propTypes = {
     crop: PropTypes.bool,
     error: PropTypes.bool,
     onChange: PropTypes.func,
+    icon: PropTypes.string,
+    removeIconFunc: PropTypes.func,
     accept: PropTypes.object,
     t: PropTypes.func,
 };

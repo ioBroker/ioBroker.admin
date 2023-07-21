@@ -1,8 +1,9 @@
 import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
+
 import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Grid';
+import Toolbar from '@mui/material/Toolbar';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -114,10 +115,6 @@ class WizardSettingsTab extends Component {
         super(props);
 
         this.state = {
-            password:       '',
-            passwordRepeat: '',
-            errorPassword:  false,
-            errorPasswordRepeat: false,
             tempUnit:       '°C',
             currency:       '€',
             dateFormat:     'DD.MM.YYYY',
@@ -162,7 +159,8 @@ class WizardSettingsTab extends Component {
                 let changed = false;
 
                 if (!data || !data[0]) {
-                    return window.alert(this.props.t('Nothing found'));
+                    window.alert(this.props.t('Nothing found'));
+                    return;
                 }
 
                 let latitude = parseFloat(this.state.latitude);

@@ -31,6 +31,7 @@ import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
+// eslint-disable-next-line import/no-cycle
 import ConfigPanel from './ConfigPanel';
 
 const MAX_SIZE = 1024 * 1024; // 1MB
@@ -302,7 +303,8 @@ class ConfigTable extends ConfigGeneric {
     static descendingComparator(a, b, orderBy) {
         if (b[orderBy] < a[orderBy]) {
             return -1;
-        } if (b[orderBy] > a[orderBy]) {
+        }
+        if (b[orderBy] > a[orderBy]) {
             return 1;
         }
         return 0;
@@ -828,7 +830,7 @@ class ConfigTable extends ConfigGeneric {
                             >
                                 {schema.items && schema.items.map(headCell =>
                                     <TableCell key={`${headCell.attr}_${idx}`} align="left">
-                                        {this.itemTable(headCell.attr, value[idx], idx)}
+                                        {this.itemTable(headCell.attr, this.state.value[idx], idx)}
                                     </TableCell>)}
                                 {!schema.noDelete && <TableCell align="left" className={classes.buttonCell}>
                                     {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')}>
@@ -867,7 +869,7 @@ class ConfigTable extends ConfigGeneric {
                             </TableRow> : null}
                     </TableBody>
                 </Table>
-                {!visibleValue.length && value.length ?
+                {!visibleValue.length && this.state.value.length ?
                     <div className={classes.filteredOut}>
                         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                             {I18n.t('ra_All items are filtered out')}

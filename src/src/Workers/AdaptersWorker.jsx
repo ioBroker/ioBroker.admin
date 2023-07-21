@@ -123,7 +123,7 @@ class AdaptersWorker {
         }
     }
 
-    repoChangeHandler = (id, obj) => {
+    repoChangeHandler = (/* id, obj */) => {
         this.repoTimer && clearTimeout(this.repoTimer);
         this.repoTimer = setTimeout(() => {
             this.repoTimer = null;

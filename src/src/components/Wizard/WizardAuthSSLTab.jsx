@@ -3,7 +3,7 @@ import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Grid';
+import Toolbar from '@mui/material/Toolbar';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
@@ -124,7 +124,6 @@ WizardAuthSSLTab.propTypes = {
     auth: PropTypes.bool,
     secure: PropTypes.bool,
     t: PropTypes.func,
-    socket: PropTypes.object,
     onDone: PropTypes.func.isRequired,
 };
 

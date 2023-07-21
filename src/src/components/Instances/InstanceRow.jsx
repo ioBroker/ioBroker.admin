@@ -830,8 +830,8 @@ const InstanceRow = ({
                 </div>
                 <MenuItem value="controller">{t('with controller')}</MenuItem>
                 <MenuItem value="default">{t('default group')}</MenuItem>
-                {Array(maxCompactGroupNumberValue - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
-                    {idx + 2}
+                {Array(maxCompactGroupNumberValue - 1).fill().map((_, idxx) => <MenuItem key={idxx} value={idxx + 2}>
+                    {idxx + 2}
                 </MenuItem>)}
             </Select>
         </FormControl>}
@@ -1000,9 +1000,9 @@ CRON:
                 <div className={classes.gridStyle}>
                     {stateTooltip.length ?
                         <Tooltip
+                            classes={{ popper: classes.tooltip }}
                             title={<span
                                 style={{ display: 'flex', flexDirection: 'column' }}
-                                classes={{ popper: classes.tooltip }}
                             >
                                 {stateTooltip}
                             </span>}

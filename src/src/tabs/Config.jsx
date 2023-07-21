@@ -144,9 +144,9 @@ class Config extends Component {
                     if (exist) {
                         this.setState({ checkedExist: 'tab.html' });
                     } else {
-                        return this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab_m.html')
-                            .then(exist =>
-                                (exist ? this.setState({ checkedExist: 'tab_m.html' }) : window.alert('Cannot find tab(_m).html')));
+                        this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab_m.html')
+                            .then(exists =>
+                                (exists ? this.setState({ checkedExist: 'tab_m.html' }) : window.alert('Cannot find tab(_m).html')));
                     }
                 });
         } else {
@@ -508,7 +508,6 @@ Config.propTypes = {
     dateFormat: PropTypes.string,
     className: PropTypes.string,
     icon: PropTypes.string,
-    readme: PropTypes.string,
     lang: PropTypes.string,
     easyMode: PropTypes.bool,
     adminInstance: PropTypes.string,

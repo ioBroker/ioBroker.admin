@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardMedia } from '@mui/material';
 import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
 
 import { Utils } from '@iobroker/adapter-react-v5';
 
@@ -105,7 +104,6 @@ const EasyModeCard = ({
 </Card>;
 
 EasyModeCard.propTypes = {
-    t: PropTypes.func,
 };
 
 export default withStyles(styles)(EasyModeCard);

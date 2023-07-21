@@ -435,6 +435,20 @@ const DiscoveryDialog = ({
     const [scanRunning, setScanRunning] = useState(false);
     const [servicesProgress, setServicesProgress] = useState(0);
     const [selected, setSelected] = useState([]);
+    const [installProgress, setInstallProgress] = useState(false);
+    const [currentInstall, setCurrentInstall] = useState(1);
+    const [installStatus, setInstallStatus] = useState({});
+    const [cmdName, setCmdName] = useState('install');
+    const [suggested, setSuggested] = useStateLocal(true, 'discovery.suggested');
+    const [showAll, setShowAll] = useStateLocal(true, 'discovery.showAll');
+
+    const black = themeType === 'dark';
+
+    const [instancesInputsParams, setInstancesInputsParams] = useState({});
+    const steps = ['Select methods', 'Create instances', 'Installation process'];
+    const [logs, setLogs] = useState({});
+    const [finishInstall, setFinishInstall] = useState(false);
+    const [selectLogsIndex, setSelectLogsIndex] = useState(1);
 
     const handlerInstall = (name, value) => {
         if (!value) {
@@ -442,17 +456,23 @@ const DiscoveryDialog = ({
         }
         switch (name) {
             case 'discovery.0.devicesFound':
-                return setDevicesFound(value.val);
+                setDevicesFound(value.val);
+                break;
             case 'discovery.0.devicesProgress':
-                return setDevicesProgress(value.val);
+                setDevicesProgress(value.val);
+                break;
             case 'discovery.0.instancesFound':
-                return setInstancesFound(value.val);
+                setInstancesFound(value.val);
+                break;
             case 'discovery.0.scanRunning':
-                return setScanRunning(value.val);
+                setScanRunning(value.val);
+                break;
             case 'discovery.0.servicesProgress':
-                return setServicesProgress(value.val);
+                setServicesProgress(value.val);
+                break;
             case 'system.discovery':
-                return setDiscoveryData(value);
+                setDiscoveryData(value);
+                break;
             default:
         }
     };
@@ -527,7 +547,7 @@ const DiscoveryDialog = ({
     };
 
     const checkLicenseAndInputs = (objName, cb) => {
-        const obj = JSON.parse(JSON.stringify(discoveryData?.native?.newInstances.find(obj => obj._id === objName)));
+        const obj = JSON.parse(JSON.stringify(discoveryData?.native?.newInstances.find(ob => ob._id === objName)));
         let license = true;
         if (obj && obj.comment && obj.comment.license && obj.comment.license !== 'MIT') {
             license = false;
@@ -544,7 +564,7 @@ const DiscoveryDialog = ({
 
         licenseDialogFunc(license, theme, result => {
             if (!result) {
-                // license not accepted, go to the next instance
+                // license isn't accepted, go to the next instance
                 const index = selected.indexOf(obj._id) + 1;
                 setInstallStatus(status => ({ ...status, [index]: 'error' }));
 
@@ -594,11 +614,6 @@ const DiscoveryDialog = ({
         }, obj?.common?.licenseUrl);
     };
 
-    const [installProgress, setInstallProgress] = useState(false);
-    const [currentInstall, setCurrentInstall] = useState(1);
-    const [installStatus, setInstallStatus] = useState({});
-    const [cmdName, setCmdName] = useState('install');
-
     const resetStateBack = () => {
         setSelected([]);
         setInstallProgress(false);
@@ -614,17 +629,6 @@ const DiscoveryDialog = ({
             setInstallProgress(true);
         });
     };
-
-    const [suggested, setSuggested] = useStateLocal(true, 'discovery.suggested');
-    const [showAll, setShowAll] = useStateLocal(true, 'discovery.showAll');
-
-    const black = themeType === 'dark';
-
-    const [instancesInputsParams, setInstancesInputsParams] = useState({});
-    const steps = ['Select methods', 'Create instances', 'Installation process'];
-    const [logs, setLogs] = useState({});
-    const [finishInstall, setFinishInstall] = useState(false);
-    const [selectLogsIndex, setSelectLogsIndex] = useState(1);
 
     return <ThemeProvider theme={theme}>
         <Dialog
@@ -794,7 +798,7 @@ const DiscoveryDialog = ({
                                             <TableCell align="right" padding="checkbox">
                                                 <Checkbox
                                                     checked={!!obj?.comment?.ack}
-                                                    onClick={e => {
+                                                    onClick={() => {
                                                         const newInstances = JSON.parse(JSON.stringify(discoveryData?.native.newInstances));
                                                         newInstances[idx].comment = { ...newInstances[idx].comment, ack: !newInstances[idx].comment.ack };
                                                         extendObject('system.discovery', { native: { newInstances } });
@@ -919,7 +923,8 @@ const DiscoveryDialog = ({
                                     }}
                                     errorFunc={(el, logsError) => {
                                         if (el === 51 && cmdName === 'install') {
-                                            return setCmdName('upload');
+                                            setCmdName('upload');
+                                            return;
                                         }
                                         if (selected.length > currentInstall && cmdName === 'upload') {
                                             checkLicenseAndInputs(selected[currentInstall], () =>
@@ -940,7 +945,7 @@ const DiscoveryDialog = ({
                                                 const dataDiscovery = JSON.parse(JSON.stringify(discoveryData));
                                                 if (dataDiscovery) {
                                                     dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(({ _id }) => {
-                                                        const find = selected.find(el => el === _id);
+                                                        const find = selected.find(ele => ele === _id);
                                                         if (!find) {
                                                             return true;
                                                         }

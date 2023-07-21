@@ -153,10 +153,10 @@ class LogsWorker {
     _processLine(line, lastKey) {
         // do not update logs before the first logs from host received
         if (!this.logs) {
-            return;
+            return null;
         }
         if (!line) {
-            return;
+            return null;
         }
         /* const line = {
             "severity": "error",
@@ -226,7 +226,7 @@ class LogsWorker {
         }
 
         if (!obj) {
-            return;
+            return null;
         }
 
         if (typeof obj.message !== 'object') {

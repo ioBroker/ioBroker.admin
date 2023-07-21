@@ -49,9 +49,9 @@ class Utils {
      * @returns {String}
      */
     static formatRam(bytes) {
-        const GB = Math.floor(bytes / (1024 * 1024 * 1024) * 10) / 10;
+        const GB = Math.floor((bytes / (1024 * 1024 * 1024)) * 10) / 10;
         bytes %= (1024 * 1024 * 1024);
-        const MB = Math.floor(bytes / (1024 * 1024) * 10) / 10;
+        const MB = Math.floor(((bytes / (1024 * 1024)) * 10)) / 10;
         let text = '';
 
         if (GB > 1) {
@@ -207,6 +207,7 @@ class Utils {
     }
 
     static ip2int(ip) {
+        // eslint-disable-next-line no-bitwise
         return ip.split('.').reduce((ipInt, octet) => (ipInt << 8) + parseInt(octet, 10), 0) >>> 0;
     }
 
@@ -228,8 +229,11 @@ class Utils {
                 }
                 if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
                     hostIp = ip.address;
-                } else if (ip.family === 'IPv4' && localIp.includes('.') &&
-                        (Utils.ip2int(localIp) & Utils.ip2int(ip.netmask)) === (Utils.ip2int(ip.address) & Utils.ip2int(ip.netmask))) {
+                } else if (
+                    ip.family === 'IPv4' && localIp.includes('.') &&
+                    // eslint-disable-next-line no-bitwise
+                    (Utils.ip2int(localIp) & Utils.ip2int(ip.netmask)) === (Utils.ip2int(ip.address) & Utils.ip2int(ip.netmask))
+                ) {
                     hostIp = ip.address;
                 } else {
                     hostIp = ip.address;

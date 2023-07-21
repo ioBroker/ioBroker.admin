@@ -2195,7 +2195,7 @@ class App extends Router {
                 {' '}
                 and not the normal file name,
                 <br />
-                please try to reproduce an error with opened browser console. In this case the special "map" files
+                please try to reproduce an error with opened browser console. In this case the special &quot;map&quot; files
                 will be loaded and the developers can see the real name of functions and files.
                 <div style={{ color: '#F88', fontSize: 14, marginTop: 20 }}>{message}</div>
                 <pre

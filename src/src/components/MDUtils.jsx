@@ -29,7 +29,10 @@ class MDUtils {
     }
 
     static getTitle(text) {
-        let { body, header } = MDUtils.extractHeader(text);
+        const result = MDUtils.extractHeader(text);
+        const header = result.header;
+        let body = result.body;
+
         if (!header.title) {
             // remove {docsify-bla}
             body = body.replace(/{[^}]*}/g, '');
@@ -56,10 +59,10 @@ class MDUtils {
                     if (!line.trim()) {
                         return;
                     }
-                    const pos = line.indexOf(':');
-                    if (pos !== -1) {
-                        const attr = line.substring(0, pos).trim();
-                        attrs[attr] = line.substring(pos + 1).trim();
+                    const pos_ = line.indexOf(':');
+                    if (pos_ !== -1) {
+                        const attr = line.substring(0, pos_).trim();
+                        attrs[attr] = line.substring(pos_ + 1).trim();
                         attrs[attr] = attrs[attr].replace(/^['"]|['"]$/g, '');
                         if (attrs[attr] === 'true') {
                             attrs[attr] = true;
@@ -236,7 +239,7 @@ class MDUtils {
         return { body: newLines.join('\n'), license: license.join('\n'), changelog: changelog.join('\n') };
     }
 
-    static findTitleFromH1(line, level, path) {
+    static findTitleFromH1(/* line, level, path */) {
 
     }
 
@@ -294,7 +297,8 @@ class MDUtils {
             if (Array.isArray(mix)) {
                 for (k = 0; k < mix.length; k++) {
                     if (mix[k]) {
-                        if ((y = MDUtils._toVal(mix[k]))) {
+                        y = MDUtils._toVal(mix[k]);
+                        if (y) {
                             str && (str += ' ');
                             str += y;
                         }
@@ -326,8 +330,11 @@ class MDUtils {
         let x;
         let str = '';
         while (i < arguments.length) {
-            if ((tmp = arguments[i++])) {
-                if ((x = MDUtils._toVal(tmp))) {
+            // eslint-disable-next-line prefer-rest-params
+            tmp = arguments[i++];
+            if (tmp) {
+                x = MDUtils._toVal(tmp);
+                if (x) {
                     str && (str += ' ');
                     str += x;
                 }

@@ -65,6 +65,7 @@
         "react-inlinesvg": "^3.0.2",
         "react-leaflet": "^4.2.1",
         "react-markdown": "^8.0.7",
+        "react-monaco-editor": "^0.41.2",
         "react-scripts": "^5.0.1",
         "react-showdown": "^2.3.1",
         "react-sortable-hoc": "^2.0.0",

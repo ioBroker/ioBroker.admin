@@ -510,6 +510,7 @@ class ObjectBrowserEditObject extends Component {
                 if (arg !== null) {
                     try {
                         const result = jsFunc(arg);
+                        // eslint-disable-next-line valid-typeof
                         return result !== null && typeof result !== finalType
                             ? this.props.t('Type of result is not as expected: %s', finalType)
                             : '';

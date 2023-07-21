@@ -49,9 +49,9 @@ const LicenseDialog = ({ url, cb, theme }) => {
         setText('');
         fetch(url)
             .then(el => el.text())
-            .then(text => {
+            .then(txt => {
                 setLoading(false);
-                setText(text);
+                setText(txt);
             })
             .catch(() => setLoading(false));
     }, [url]);

@@ -335,21 +335,21 @@ const GenerateInputsModal = ({
                     disabled={isError()}
                     onClick={() => {
                         let obj = {};
-                        let error = false;
+                        let err = false;
                         Object.keys(schema.items).forEach(key => {
                             if (schema.items[key].required) {
                                 if (!schemaData[key] && schema.items[key].type !== 'checkbox') {
-                                    error = true;
+                                    err = true;
                                     alert(`no data ${schema.items[key].label}`);
                                 } else {
                                     obj = generateObj(obj, schema.items[key].name, schemaData[key]);
                                 }
                             } else if (schema.items[key].name) {
-                                error = false;
+                                err = false;
                                 obj = generateObj(obj, schema.items[key].name, schemaData[key]);
                             }
                         });
-                        if (!error) {
+                        if (!err) {
                             onApplyModal(obj);
                             onClose();
                         }

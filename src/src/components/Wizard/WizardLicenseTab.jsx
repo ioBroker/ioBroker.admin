@@ -1,6 +1,7 @@
 import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
+
 import Toolbar from '@mui/material/Toolbar';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
@@ -191,7 +192,6 @@ class WizardLicenseTab extends Component {
 
 WizardLicenseTab.propTypes = {
     t: PropTypes.func,
-    socket: PropTypes.object,
     onDone: PropTypes.func.isRequired,
 };
 

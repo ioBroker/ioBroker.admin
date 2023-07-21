@@ -128,7 +128,7 @@ class HostSelectors extends Component {
                 if (!alive[this.props.currentHost]) {
                     const aliveHost = Object.keys(alive).find(id => alive[id]);
                     if (aliveHost) {
-                        const obj = this.state.hosts.find(obj => obj._id === aliveHost);
+                        const obj = this.state.hosts.find(ob => ob._id === aliveHost);
                         if (obj) {
                             this.props.setCurrentHost(
                                 obj.common?.name || aliveHost.replace('system.host.', ''),
@@ -194,7 +194,7 @@ class HostSelectors extends Component {
                     if (!alive[this.props.currentHost]) {
                         const aliveHost = Object.keys(alive).find(id => alive[id]);
                         if (aliveHost) {
-                            const obj = this.state.hosts.find(obj => obj._id === aliveHost);
+                            const obj = this.state.hosts.find(ob => ob._id === aliveHost);
                             if (obj) {
                                 this.props.setCurrentHost(
                                     obj.common?.name || aliveHost.replace('system.host.', ''),

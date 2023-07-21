@@ -1,6 +1,6 @@
 import React, {
     createContext,
-    useEffect,
+    useEffect, useMemo,
     useState,
 } from 'react';
 
@@ -18,13 +18,13 @@ export const ContextWrapperProvider = ({ children }) => {
         installed:      null,
     });
 
-    const setStateContext = obj => {
+    const setStateContext = useMemo(() => obj => {
         setState(prevState =>
             (Object.keys(prevState).length === Object.keys(obj).length ?
                 { ...obj }
                 :
                 { ...prevState, ...obj }));
-    };
+    }, [setState]);
 
     useEffect(() => {
         if (stateContext.hosts) {

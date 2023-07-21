@@ -717,18 +717,18 @@ class ObjectCustomEditor extends Component {
     onSave = cb => {
         if (this.props.objectIDs.length > 10 && !this.state.confirmed) {
             this.cb = cb;
-            return this.setState({ showConfirmation: true });
-        }
-
-        this.saveOneState([...this.props.objectIDs], () => {
-            this.cachedNewValues = {};
-            this.commonConfig = this.getCommonConfig();
-            this.setState({ confirmed: false, hasChanges: false, newValues: {} }, () => {
-                this.props.reportChangedIds(this.changedIds);
-                this.props.onChange(false, true);
-                cb && setTimeout(() => cb(), 100);
+            this.setState({ showConfirmation: true });
+        } else {
+            this.saveOneState([...this.props.objectIDs], () => {
+                this.cachedNewValues = {};
+                this.commonConfig = this.getCommonConfig();
+                this.setState({ confirmed: false, hasChanges: false, newValues: {} }, () => {
+                    this.props.reportChangedIds(this.changedIds);
+                    this.props.onChange(false, true);
+                    cb && setTimeout(() => cb(), 100);
+                });
             });
-        });
+        }
     };
 
     render() {
@@ -762,7 +762,6 @@ ObjectCustomEditor.propTypes = {
     t: PropTypes.func,
     onChange: PropTypes.func, // function onChange(haveChanges)
     lang: PropTypes.string,
-    expertMode: PropTypes.bool,
     objects: PropTypes.object,
     customsInstances: PropTypes.array,
     socket: PropTypes.object,

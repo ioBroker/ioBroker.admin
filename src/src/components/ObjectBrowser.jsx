@@ -6152,13 +6152,13 @@ class ObjectBrowser extends Component {
         />;
     }
 
-    extendObject = (id, data) =>
-        this.props.socket.extendObject(id, data)
-            .catch(error => window.alert(error));
+    // extendObject = (id, data) =>
+    //     this.props.socket.extendObject(id, data)
+    //         .catch(error => window.alert(error));
 
-    setObject = (id, data) =>
-        this.props.socket.setObject(id, data)
-            .catch(error => window.alert(error));
+    // setObject = (id, data) =>
+    //     this.props.socket.setObject(id, data)
+    //         .catch(error => window.alert(error));
 
     /**
      * The rendering method of this component.
@@ -6303,16 +6303,15 @@ ObjectBrowser.propTypes = {
     ]),
     types: PropTypes.array,             // optional ['state', 'instance', 'channel']
     columns: PropTypes.array,           // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+    // eslint-disable-next-line react/no-unused-prop-types
     root: PropTypes.string,             // optional, shows only elements of this root
 
     objectsWorker: PropTypes.object,    // optional cache of objects
     filterFunc: PropTypes.func,         // function to filter out all unnecessary objects. It cannot be used together with "types"
     // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
 
-    dragSettings: PropTypes.object,
     DragWrapper: PropTypes.func,
     dragEnabled: PropTypes.bool,
-    useDrag: PropTypes.func,
 };
 
 /** @type {typeof ObjectBrowser} */

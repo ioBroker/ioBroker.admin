@@ -165,18 +165,18 @@ class HostsWorker {
         }
     }
 
-    onNotificationHandler = (id, state) => {
+    onNotificationHandler = (id /* , state */) => {
         const host = id.replace(/\.notifications\..+$/, '');
 
         // ignore subscribe events
         if (!this.subscribeTs || Date.now() - this.subscribeTs > 500) {
             this.notificationTimer && clearTimeout(this.notificationTimer);
 
-            this.notificationTimer = setTimeout(host => {
+            this.notificationTimer = setTimeout(host_ => {
                 this.notificationTimer = null;
-                this.notificationPromises[host] = this._getNotificationsFromHots(host, true);
+                this.notificationPromises[host_] = this._getNotificationsFromHots(host_, true);
 
-                this.notificationPromises[host].then(notifications =>
+                this.notificationPromises[host_].then(notifications =>
                     this.notificationsHandlers.forEach(cb => cb(notifications)));
             }, 300, host);
         }

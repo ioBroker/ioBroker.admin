@@ -6,7 +6,7 @@ export function useStateLocal(defaultValue, key) {
         try {
             defaultValue = JSON.parse(data);
         } catch (error) {
-
+            // ignore
         }
     }
 

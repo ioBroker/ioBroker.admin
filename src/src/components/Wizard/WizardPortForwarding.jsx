@@ -1,8 +1,9 @@
 import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
+
 import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Grid';
+import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Paper from  '@mui/material/Paper';
 
@@ -64,11 +65,6 @@ class WizardPortForwarding extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            auth: true,
-            secure: false,
-        };
-
         this.focusRef = createRef();
     }
 
@@ -126,7 +122,6 @@ WizardPortForwarding.propTypes = {
     auth: PropTypes.bool,
     secure: PropTypes.bool,
     t: PropTypes.func,
-    socket: PropTypes.object,
     onDone: PropTypes.func.isRequired,
 };
 

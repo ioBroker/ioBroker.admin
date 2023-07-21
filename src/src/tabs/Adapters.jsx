@@ -1136,9 +1136,9 @@ class Adapters extends Component {
         );
     }
 
-    toggleConnectionTypeFilter() {
-        this.setState({ filterConnectionType: !this.state.filterConnectionType });
-    }
+    // toggleConnectionTypeFilter() {
+    //     this.setState({ filterConnectionType: !this.state.filterConnectionType });
+    // }
 
     expandAll() {
         this.setState(oldState => {
@@ -1306,7 +1306,7 @@ class Adapters extends Component {
                         licenseDialogFunc(
                             adapter.license === 'MIT',
                             this.props.theme,
-                            async result => result && (await this.addInstance(value)),
+                            result => result && this.addInstance(value),
                             url,
                         );
                     }}
@@ -1907,18 +1907,8 @@ class Adapters extends Component {
         // if repositories are available
         const repositories = this.state.compactRepositories?.native?.repositories;
         if (repositories) {
-            // old style with just one active repository
-            if (typeof this.props.systemConfig.common.activeRepo === 'string') {
-                // Todo (BF 2022.08.19): remove this check after one month. Flag will be stored in _repoInfo
-                if (
-                    !this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') &&
-                    repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo
-                ) {
-                    stableRepo = repositories[this.props.systemConfig.common.activeRepo].json?._repoInfo.stable;
-                }
-            }
             // new style with multiple active repositories
-            else if (
+            if (
                 this.props.systemConfig.common.activeRepo &&
                 typeof this.props.systemConfig.common.activeRepo !== 'string'
             ) {

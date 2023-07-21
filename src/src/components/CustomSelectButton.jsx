@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 
 import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     button: {
         marginLeft: 10,
         marginRight: 10,
@@ -48,7 +48,7 @@ const CustomSelectButton = ({
                 className={`tag-card-${name}`}
                 style={{ placeContent: 'space-between' }}
                 value={name}
-                onClick={e => {
+                onClick={() => {
                     onClick(name);
                     setAnchorEl(null);
                 }}

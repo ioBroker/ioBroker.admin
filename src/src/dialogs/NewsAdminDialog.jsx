@@ -153,7 +153,7 @@ function checkConditions(condition, installedVersion) {
     lang
 } */
 
-export const checkMessages = function (messages, lastMessageId, context) {
+export const checkMessages = (messages, lastMessageId, context) => {
     const messagesToShow = [];
 
     try {
@@ -233,14 +233,14 @@ export const checkMessages = function (messages, lastMessageId, context) {
             }
         }
     } catch (err) {
-
+        //  ignore
     }
 
     return messagesToShow;
 };
 
 const NewsAdminDialog = ({
-    newsArr, current, callback, themeType, theme,
+    newsArr, current, callback, theme,
 }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);

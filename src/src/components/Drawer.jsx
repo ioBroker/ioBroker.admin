@@ -185,8 +185,6 @@ class Drawer extends Component {
             adaptersUpdate: Drawer.calculateAdapterUpdates(this.props.installed, this.props.repository),
         };
 
-        this.instances = null;
-
         this.refEditButton = React.createRef();
 
         this.getTabs();
@@ -238,9 +236,7 @@ class Drawer extends Component {
         return 0;
     }
 
-    instanceChangedHandler = changes => {
-        this.getTabs(true);
-    };
+    instanceChangedHandler = () => this.getTabs(true);
 
     componentDidMount() {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
@@ -289,7 +285,7 @@ class Drawer extends Component {
                 const obj = notifications[host].result.system.categories;
 
                 Object.keys(obj).forEach(nameTab =>
-                    Object.keys(obj[nameTab].instances).forEach(_ => count++));
+                    Object.keys(obj[nameTab].instances).forEach(() => count++));
             }
         });
 
@@ -443,10 +439,10 @@ class Drawer extends Component {
 
                             if (JSON.stringify(tabsVisible) !== JSON.stringify(systemConfig.common.tabsVisible)) {
                                 this.props.socket.getSystemConfig(true)
-                                    .then(systemConfig => {
-                                        systemConfig.common.tabsVisible = tabsVisible;
+                                    .then(_systemConfig => {
+                                        _systemConfig.common.tabsVisible = tabsVisible;
 
-                                        return this.props.socket.setSystemConfig(systemConfig)
+                                        return this.props.socket.setSystemConfig(_systemConfig)
                                             .catch(e => window.alert(`Cannot set system config: ${e}`));
                                     });
                             }
@@ -503,26 +499,27 @@ v
         return this.props.width === 'xs' || this.props.width === 'sm';
     }
 
-    tabsEditSystemConfig = idx => {
+    tabsEditSystemConfig = async idx => {
         const { tabs } = this.state;
         const { socket } = this.props;
         const newTabs = JSON.parse(JSON.stringify(tabs));
         if (idx !== undefined) {
             newTabs[idx].visible = !newTabs[idx].visible;
         }
-        return this.props.socket.getSystemConfig(true)
-            .then(newObjCopy => {
-                newObjCopy.common.tabsVisible = newTabs.map(({ name, visible }) => ({ name, visible }));
+        const newObjCopy = await this.props.socket.getSystemConfig(true);
+        newObjCopy.common.tabsVisible = newTabs.map(({ name, visible }) => ({ name, visible }));
 
-                if (idx !== undefined) {
-                    this.setState({ tabs: newTabs }, () =>
-                        socket.setSystemConfig(newObjCopy)
-                            .catch(e => window.alert(`Cannot set system config: ${e}`)));
-                } else {
-                    return socket.setSystemConfig(newObjCopy)
-                        .catch(e => window.alert(`Cannot set system config: ${e}`));
-                }
-            });
+        if (idx !== undefined) {
+            this.setState({ tabs: newTabs }, () =>
+                socket.setSystemConfig(newObjCopy)
+                    .catch(e => window.alert(`Cannot set system config: ${e}`)));
+        } else {
+            try {
+                await socket.setSystemConfig(newObjCopy);
+            } catch (e) {
+                window.alert(`Cannot set system config: ${e}`);
+            }
+        }
     };
 
     getNavigationItems() {
@@ -532,8 +529,9 @@ v
         const {
             systemConfig, currentTab, state, classes, handleNavigation,
         } = this.props;
+
         if (!systemConfig) {
-            return;
+            return null;
         }
         return tabs.map((tab, idx) => {
             if (!editList && !tab.visible) {
@@ -596,9 +594,10 @@ v
 
     badge = tab => {
         switch (tab.name) {
-            case 'tab-logs':
+            case 'tab-logs': {
                 const { logErrors, logWarnings } = this.state;
                 return { content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' };
+            }
 
             case 'tab-adapters':
                 return { content: this.state.adaptersUpdate || 0, color: 'primary' };
@@ -696,15 +695,11 @@ Drawer.propTypes = {
     onStateChange: PropTypes.func,
     onLogout: PropTypes.func,
     systemConfig: PropTypes.object,
-    logoutTitle: PropTypes.string,
     isSecure: PropTypes.bool,
     currentTab: PropTypes.string,
-    themeName: PropTypes.string,
     themeType: PropTypes.string,
     socket: PropTypes.object,
-    ready: PropTypes.bool,
     versionAdmin: PropTypes.string,
-    expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,
 
     instancesWorker: PropTypes.object,

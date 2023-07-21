@@ -285,7 +285,7 @@ class RatingDialog extends Component {
                             value={this.state.ratingLang}
                             onChange={e => this.setState({ ratingLang: e.target.value })}
                         >
-                            {LANGUAGES.map(item => <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>)}
+                            {LANGUAGES.map(it => <MenuItem key={it.id} value={it.id}>{it.title}</MenuItem>)}
                         </Select>
                     </FormControl>
                 </div> : null}

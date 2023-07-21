@@ -214,8 +214,6 @@ class IntroCard extends Component {
         this.cameraUpdateTimer = null;
 
         this.interval = this.props.interval;
-        this.camera = this.props.camera;
-        this.t = props.t;
     }
 
     updateCamera() {
@@ -350,9 +348,11 @@ class IntroCard extends Component {
                 {this.state.error &&
                     <ErrorIcon fontSize="large" />}
             </Grid>;
-        } if (this.props.camera.startsWith('cameras.')) {
+        }
+        if (this.props.camera.startsWith('cameras.')) {
             return <img ref={this.cameraRef} src="" alt="camera" className={this.props.classes.cameraImg} />;
         }
+        return null;
     }
 
     render() {
@@ -383,6 +383,7 @@ class IntroCard extends Component {
             lg={3}
             className={classes.root}
         >
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <Link
                 href={!this.props.edit && this.props.action && this.props.action.link ? this.props.action.link : null}
                 underline="none"
@@ -513,10 +514,6 @@ IntroCard.propTypes = {
     camera: PropTypes.string,
     addTs: PropTypes.bool,
     interval: PropTypes.number,
-    ready: PropTypes.bool,
-    instances: PropTypes.object,
-    updateIntro: PropTypes.string,
-    openLinksInNewWindow: PropTypes.bool,
     onEdit: PropTypes.func,
     socket: PropTypes.object,
     offline: PropTypes.bool,

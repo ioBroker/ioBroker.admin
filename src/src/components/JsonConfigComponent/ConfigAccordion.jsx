@@ -21,6 +21,7 @@ import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
+// eslint-disable-next-line import/no-cycle
 import ConfigPanel from './ConfigPanel';
 
 const styles = theme => ({

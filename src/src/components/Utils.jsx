@@ -65,7 +65,7 @@ class Utils {
     }
 
     static formatSeconds(seconds) {
-        const days = Math.floor(seconds / (3600 * 24));
+        const days_ = Math.floor(seconds / (3600 * 24));
         seconds %= 3600 * 24;
         let hours = Math.floor(seconds / 3600);
         if (hours < 10) {
@@ -82,8 +82,8 @@ class Utils {
             seconds = `0${seconds}`;
         }
         let text = '';
-        if (days) {
-            text += `${days} ${I18n.t('ra_daysShortText')} `;
+        if (days_) {
+            text += `${days_} ${I18n.t('ra_daysShortText')} `;
         }
         text += `${hours}:${minutes}:${seconds}`;
 
@@ -101,7 +101,7 @@ class Utils {
      */
     static getObjectName(objects, id, settings, options, isDesc) {
         const item = objects[id];
-        let text = id;
+        let text;
         const attr = isDesc ? 'desc' : 'name';
 
         if (typeof settings === 'string' && !options) {
@@ -192,7 +192,7 @@ class Utils {
      * @returns {string | null}
      */
     static getSettingsOrder(obj, forEnumId, options) {
-        if (obj && obj.hasOwnProperty('common')) {
+        if (obj && Object.prototype.hasOwnProperty.call(obj, 'common')) {
             obj = obj.common;
         }
         let settings;
@@ -218,7 +218,7 @@ class Utils {
      * @param {{ user: string; }} options
      */
     static getSettingsCustomURLs(obj, forEnumId, options) {
-        if (obj && obj.hasOwnProperty('common')) {
+        if (obj && Object.prototype.hasOwnProperty.call(obj, 'common')) {
             obj = obj.common;
         }
         let settings;
@@ -259,7 +259,7 @@ class Utils {
     static getSettings(obj, options, defaultEnabling) {
         let settings;
         const id = (obj && obj._id) || (options && options.id);
-        if (obj && obj.hasOwnProperty('common')) {
+        if (obj && Object.prototype.hasOwnProperty.call(obj, 'common')) {
             obj = obj.common;
         }
         if (obj && obj.custom) {
@@ -269,27 +269,27 @@ class Utils {
             settings = { enabled: defaultEnabling === undefined ? true : defaultEnabling, useCustom: false };
         }
 
-        if (!settings.hasOwnProperty('enabled')) {
+        if (!Object.prototype.hasOwnProperty.call(settings, 'enabled')) {
             settings.enabled = defaultEnabling === undefined ? true : defaultEnabling;
         }
 
-        if (false && settings.useCommon) {
-            if (obj.color) settings.color = obj.color;
-            if (obj.icon)  settings.icon  = obj.icon;
-            if (obj.name)  settings.name  = obj.name;
-        } else {
-            if (options) {
-                if (!settings.name  && options.name)  settings.name  = options.name;
-                if (!settings.icon  && options.icon)  settings.icon  = options.icon;
-                if (!settings.color && options.color) settings.color = options.color;
-            }
-
-            if (obj) {
-                if (!settings.color && obj.color) settings.color = obj.color;
-                if (!settings.icon  && obj.icon)  settings.icon  = obj.icon;
-                if (!settings.name  && obj.name)  settings.name  = obj.name;
-            }
+        // if (false && settings.useCommon) {
+        //     if (obj.color) settings.color = obj.color;
+        //     if (obj.icon)  settings.icon  = obj.icon;
+        //     if (obj.name)  settings.name  = obj.name;
+        // } else {
+        if (options) {
+            if (!settings.name  && options.name)  settings.name  = options.name;
+            if (!settings.icon  && options.icon)  settings.icon  = options.icon;
+            if (!settings.color && options.color) settings.color = options.color;
         }
+
+        if (obj) {
+            if (!settings.color && obj.color) settings.color = obj.color;
+            if (!settings.icon  && obj.icon)  settings.icon  = obj.icon;
+            if (!settings.name  && obj.name)  settings.name  = obj.name;
+        }
+        // }
 
         if (typeof settings.name === 'object') {
             settings.name = settings.name[options.language] || settings.name.en;
@@ -413,39 +413,39 @@ class Utils {
      * @returns {string}
      */
     static splitCamelCase(text) {
-        if (false && text !== text.toUpperCase()) {
-            const words = text.split(/\s+/);
-            for (let i = 0; i < words.length; i++) {
-                const word = words[i];
-                if (word.toLowerCase() !== word && word.toUpperCase() !== word) {
-                    let z = 0;
-                    const ww = [];
-                    let start = 0;
-                    while (z < word.length) {
-                        if (word[z].match(/[A-ZÜÄÖА-Я]/)) {
-                            ww.push(word.substring(start, z));
-                            start = z;
-                        }
-                        z++;
-                    }
-                    if (start !== z) {
-                        ww.push(word.substring(start, z));
-                    }
-                    for (let k = 0; k < ww.length; k++) {
-                        words.splice(i + k, 0, ww[k]);
-                    }
-                    i += ww.length;
-                }
-            }
-
-            return words.map(w => {
-                w = w.trim();
-                if (w) {
-                    return w[0].toUpperCase() + w.substring(1).toLowerCase();
-                }
-                return '';
-            }).join(' ');
-        }
+        // if (false && text !== text.toUpperCase()) {
+        //     const words = text.split(/\s+/);
+        //     for (let i = 0; i < words.length; i++) {
+        //         const word = words[i];
+        //         if (word.toLowerCase() !== word && word.toUpperCase() !== word) {
+        //             let z = 0;
+        //             const ww = [];
+        //             let start = 0;
+        //             while (z < word.length) {
+        //                 if (word[z].match(/[A-ZÜÄÖА-Я]/)) {
+        //                     ww.push(word.substring(start, z));
+        //                     start = z;
+        //                 }
+        //                 z++;
+        //             }
+        //             if (start !== z) {
+        //                 ww.push(word.substring(start, z));
+        //             }
+        //             for (let k = 0; k < ww.length; k++) {
+        //                 words.splice(i + k, 0, ww[k]);
+        //             }
+        //             i += ww.length;
+        //         }
+        //     }
+        //
+        //     return words.map(w => {
+        //         w = w.trim();
+        //         if (w) {
+        //             return w[0].toUpperCase() + w.substring(1).toLowerCase();
+        //         }
+        //         return '';
+        //     }).join(' ');
+        // }
         return Utils.CapitalWords(text);
     }
 
@@ -501,7 +501,7 @@ class Utils {
      */
     static getTimeString(seconds) {
         seconds = parseFloat(seconds);
-        if (isNaN(seconds)) {
+        if (Number.isNaN(seconds)) {
             return '--:--';
         }
         const hours = Math.floor(seconds / 3600);
@@ -529,40 +529,55 @@ class Utils {
      */
     static getWindDirection(angle) {
         if (angle >= 0 && angle < 11.25) {
-            return 'N'
-        } if (angle >= 11.25 && angle < 33.75) {
-            return 'NNE'
-        } if (angle >= 33.75 && angle < 56.25) {
-            return 'NE'
-        } if (angle >= 56.25 && angle < 78.75) {
-            return 'ENE'
-        } if (angle >= 78.75 && angle < 101.25) {
-            return 'E'
-        } if (angle >= 101.25 && angle < 123.75) {
-            return 'ESE'
-        } if (angle >= 123.75 && angle < 146.25) {
-            return 'SE'
-        } if (angle >= 146.25 && angle < 168.75) {
-            return 'SSE'
-        } if (angle >= 168.75 && angle < 191.25) {
-            return 'S'
-        } if (angle >= 191.25 && angle < 213.75) {
-            return 'SSW'
-        } if (angle >= 213.75 && angle < 236.25) {
-            return 'SW'
-        } else if (angle >= 236.25 && angle < 258.75) {
-            return 'WSW'
-        } else if (angle >= 258.75 && angle < 281.25) {
-            return 'W'
-        } else if (angle >= 281.25 && angle < 303.75) {
-            return 'WNW'
-        } else if (angle >= 303.75 && angle < 326.25) {
-            return 'NW'
-        } else if (angle >= 326.25 && angle < 348.75) {
-            return 'NNW'
-        } else if (angle >= 348.75) {
-            return 'N'
+            return 'N';
         }
+        if (angle >= 11.25 && angle < 33.75) {
+            return 'NNE';
+        }
+        if (angle >= 33.75 && angle < 56.25) {
+            return 'NE';
+        }
+        if (angle >= 56.25 && angle < 78.75) {
+            return 'ENE';
+        }
+        if (angle >= 78.75 && angle < 101.25) {
+            return 'E';
+        }
+        if (angle >= 101.25 && angle < 123.75) {
+            return 'ESE';
+        }
+        if (angle >= 123.75 && angle < 146.25) {
+            return 'SE';
+        }
+        if (angle >= 146.25 && angle < 168.75) {
+            return 'SSE';
+        }
+        if (angle >= 168.75 && angle < 191.25) {
+            return 'S';
+        }
+        if (angle >= 191.25 && angle < 213.75) {
+            return 'SSW';
+        }
+        if (angle >= 213.75 && angle < 236.25) {
+            return 'SW';
+        }
+        if (angle >= 236.25 && angle < 258.75) {
+            return 'WSW';
+        }
+        if (angle >= 258.75 && angle < 281.25) {
+            return 'W';
+        }
+        if (angle >= 281.25 && angle < 303.75) {
+            return 'WNW';
+        }
+        if (angle >= 303.75 && angle < 326.25) {
+            return 'NW';
+        }
+        if (angle >= 326.25 && angle < 348.75) {
+            return 'NNW';
+        }
+        // if (angle >= 348.75) {
+        return 'N';
     }
 
     /**
@@ -611,27 +626,24 @@ class Utils {
                 const a = [parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10)];
                 const year = a.find(y => y > 31);
                 a.splice(a.indexOf(year), 1);
-                const day = a.find(m => m > 12);
+                const day = a.find(mm => mm > 12);
                 if (day) {
                     a.splice(a.indexOf(day), 1);
                     now = new Date(year, a[0] - 1, day);
-                } else {
+                } else if (Utils.dateFormat[0][0] === 'M' && Utils.dateFormat[1][0] === 'D') {
                     // MM DD
-                    if (Utils.dateFormat[0][0] === 'M' && Utils.dateFormat[1][0] === 'D') {
+                    now = new Date(year, a[0] - 1, a[1]);
+                    if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
+                        now = new Date(year, a[1] - 1, a[0]);
+                    }
+                } else if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
+                    // DD MM
+                    now = new Date(year, a[1] - 1, a[0]);
+                    if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
                         now = new Date(year, a[0] - 1, a[1]);
-                        if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
-                            now = new Date(year, a[1] - 1, a[0]);
-                        }
-                    } else
-                        // DD MM
-                        if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
-                            now = new Date(year, a[1] - 1, a[0]);
-                            if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
-                                now = new Date(year, a[0] - 1, a[1]);
-                            }
-                        } else {
-                            now = new Date(now);
-                        }
+                    }
+                } else {
+                    now = new Date(now);
                 }
             } else {
                 now = new Date(now);
@@ -872,7 +884,7 @@ class Utils {
                 let empty = true;
                 // Check if the structure has any definitions
                 for (const key in smartName) {
-                    if (smartName.hasOwnProperty(key)) {
+                    if (Object.prototype.hasOwnProperty.call(smartName, key)) {
                         empty = false;
                         break;
                     }
@@ -1074,17 +1086,16 @@ class Utils {
                     parseInt(m[2], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0');
             }
-        } else if (hex.startsWith('rgba')) {
+        } else if (hex.startsWith('rgb')) {
             const m = hex.match(/rgb?\((\d+),\s*(\d+),\s*(\d+)\)/);
             if (m) {
                 hex = parseInt(m[1], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0');
             }
-        } else
-            if (hex.startsWith('#')) {
-                hex = hex.slice(1);
-            }
+        } else if (hex.startsWith('#')) {
+            hex = hex.slice(1);
+        }
         // convert 3-digit hex to 6-digits.
         if (hex.length === 3) {
             hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
@@ -1205,8 +1216,11 @@ class Utils {
         let x;
         let str = '';
         while (i < arguments.length) {
-            if ((tmp = arguments[i++])) {
-                if ((x = Utils._toVal(tmp))) {
+            // eslint-disable-next-line prefer-rest-params
+            tmp = arguments[i++];
+            if (tmp) {
+                x = Utils._toVal(tmp);
+                if (x) {
                     str && (str += ' ');
                     str += x;
                 }
@@ -1435,7 +1449,9 @@ class Utils {
     }
 
     static MDgetTitle(text) {
-        let { body, header } = Utils.extractHeader(text);
+        const result = Utils.extractHeader(text);
+        const header = result.header;
+        let body = result.body;
         if (!header.title) {
             // remove {docsify-bla}
             body = body.replace(/{[^}]*}/g, '');
@@ -1462,10 +1478,10 @@ class Utils {
                     if (!line.trim()) {
                         return;
                     }
-                    const pos = line.indexOf(':');
-                    if (pos !== -1) {
-                        const attr = line.substring(0, pos).trim();
-                        attrs[attr] = line.substring(pos + 1).trim();
+                    const pos_ = line.indexOf(':');
+                    if (pos_ !== -1) {
+                        const attr = line.substring(0, pos_).trim();
+                        attrs[attr] = line.substring(pos_ + 1).trim();
                         attrs[attr] = attrs[attr].replace(/^['"]|['"]$/g, '');
                         if (attrs[attr] === 'true') {
                             attrs[attr] = true;
@@ -1495,6 +1511,7 @@ class Utils {
     /**
      * Generate the json file on the file for download.
      * @param {string} filename file name
+     * @param {string} json file data
      * @returns {object} json structure (not stringified)
      */
     static generateFile(filename, json) {
@@ -1516,19 +1533,25 @@ class Utils {
      * @returns {array<string>} lines that decode quality
      */
     static quality2text(quality) {
+        // eslint-disable-next-line no-bitwise
         const custom = quality & 0xFFFF0000;
         const text = QUALITY_BITS[quality];
         let result;
         if (text) {
             result = [text];
+            // eslint-disable-next-line no-bitwise
         } else if (quality & 0x01) {
+            // eslint-disable-next-line no-bitwise
             result = [QUALITY_BITS[0x01], `0x${(quality & (0xFFFF & ~1)).toString(16)}`];
+            // eslint-disable-next-line no-bitwise
         } else if (quality & 0x02) {
+            // eslint-disable-next-line no-bitwise
             result = [QUALITY_BITS[0x02], `0x${(quality & (0xFFFF & ~2)).toString(16)}`];
         } else {
             result = [`0x${quality.toString(16)}`];
         }
         if (custom) {
+            // eslint-disable-next-line no-bitwise
             result.push(`0x${(custom >> 16).toString(16).toUpperCase()}`);
         }
         return result;
@@ -1596,6 +1619,7 @@ class Utils {
             .then(response => response.blob())
             .then(blob => new Promise(resolve => {
                 const reader = new FileReader();
+                // eslint-disable-next-line func-names
                 reader.onload = function () { // do not optimize this function. "this" is important.
                     resolve(this.result);
                 };
