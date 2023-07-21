@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import ConfigGeneric from './ConfigGeneric';
 import { TimePicker } from '@mui/x-date-pickers';
+import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     indeterminate: {
         opacity: 0.5,
     },
@@ -18,7 +18,7 @@ class ConfigTimePicker extends ConfigGeneric {
         this.setState({ value });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         return <TimePicker
             fullWidth
             margin="normal"
@@ -36,7 +36,7 @@ class ConfigTimePicker extends ConfigGeneric {
             placeholder={this.getText(this.props.schema.placeholder)}
             label={this.getText(this.props.schema.label)}
             helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-        />
+        />;
     }
 }
 

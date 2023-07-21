@@ -2,18 +2,20 @@
  * Notice: Some code was adapted from Material-UI's text field.
  *         Copyright (c) 2014 Call-Em-All (https://github.com/callemall/material-ui)
  */
-import React from 'react'
-import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
-import Input from '@mui/material/Input'
-import FilledInput from '@mui/material/FilledInput/FilledInput'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import InputLabel from '@mui/material/InputLabel'
-import Chip from '@mui/material/Chip'
-import withStyles from '@mui/styles/withStyles'
-import blue from '@mui/material/colors/blue'
-import FormControl from '@mui/material/FormControl'
-import FormHelperText from '@mui/material/FormHelperText'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
+import { withStyles } from '@mui/styles';
+
+import Input from '@mui/material/Input';
+import FilledInput from '@mui/material/FilledInput/FilledInput';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import Chip from '@mui/material/Chip';
+import blue from '@mui/material/colors/blue';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+
 import Utils from '../Utils';
 
 const variantComponent = {
@@ -167,7 +169,7 @@ const styles = theme => {
             float: 'left',
         },
         marginDense: {},
-    }
+    };
 };
 
 const keyCodes = {
@@ -177,20 +179,39 @@ const keyCodes = {
     RIGHT_ARROW: 39,
 };
 
-class ChipInput extends React.Component {
-    state = {
-        chips: [],
-        errorText: undefined,
-        focusedChip: null,
-        inputValue: '',
-        isClean: true,
-        isFocused: false,
-        chipsUpdated: false,
-        prevPropsValue: [],
-    };
+export const defaultChipRenderer = ({
+    text,
+    isFocused,
+    isDisabled,
+    isReadOnly,
+    handleClick,
+    handleDelete,
+    className,
+}, key) =>
+    <Chip
+        key={key}
+        className={className}
+        style={{
+            pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
+            backgroundColor: isFocused ? blue[300] : undefined,
+        }}
+        onClick={handleClick}
+        onDelete={handleDelete}
+        label={text}
+    />;
 
+class ChipInput extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            chips: [],
+            focusedChip: null,
+            inputValue: '',
+            isFocused: false,
+            chipsUpdated: false,
+            prevPropsValue: [],
+        };
+
         if (props.defaultValue) {
             this.state.chips = props.defaultValue;
         }
@@ -200,6 +221,7 @@ class ChipInput extends React.Component {
 
     componentDidMount() {
         if (this.props.variant === 'outlined') {
+            // eslint-disable-next-line react/no-find-dom-node
             this.labelNode = ReactDOM.findDOMNode(this.labelRef.current);
             this.forceUpdate();
         }
@@ -239,11 +261,11 @@ class ChipInput extends React.Component {
      * Blurs this component.
      * @public
      */
-    blur() {
-        if (this.input) {
-            this.actualInput.blur();
-        }
-    }
+    // blur() {
+    //     if (this.input) {
+    //         this.actualInput.blur();
+    //     }
+    // }
 
     /**
      * Focuses this component.
@@ -254,7 +276,7 @@ class ChipInput extends React.Component {
         if (this.state.focusedChip) {
             this.setState({ focusedChip: null });
         }
-    }
+    };
 
     handleInputBlur = event => {
         if (this.props.onBlur) {
@@ -296,14 +318,14 @@ class ChipInput extends React.Component {
             default:
                 break;
         }
-    }
+    };
 
     handleInputFocus = event => {
         this.setState({ isFocused: true });
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
-    }
+    };
 
     handleKeyDown = event => {
         const { focusedChip } = this.state;
@@ -350,14 +372,14 @@ class ChipInput extends React.Component {
                 }
                 break;
             case keyCodes.LEFT_ARROW:
-                if (focusedChip == null && event.target.value === '' && chips.length) {
+                if (focusedChip === null && event.target.value === '' && chips.length) {
                     this.setState({ focusedChip: chips.length - 1 });
-                } else if (focusedChip != null && focusedChip > 0) {
+                } else if (focusedChip !== null && focusedChip > 0) {
                     this.setState({ focusedChip: focusedChip - 1 });
                 }
                 break;
             case keyCodes.RIGHT_ARROW:
-                if (focusedChip != null && focusedChip < chips.length - 1) {
+                if (focusedChip !== null && focusedChip < chips.length - 1) {
                     this.setState({ focusedChip: focusedChip + 1 });
                 } else {
                     this.setState({ focusedChip: null });
@@ -367,7 +389,7 @@ class ChipInput extends React.Component {
                 this.setState({ focusedChip: null });
                 break;
         }
-    }
+    };
 
     handleKeyUp = event => {
         if (!this._preventChipCreation && (this.props.newChipKeyCodes.indexOf(event.keyCode) >= 0 || this.props.newChipKeys.indexOf(event.key) >= 0) && this._keyPressed) {
@@ -378,24 +400,24 @@ class ChipInput extends React.Component {
         if (this.props.onKeyUp) {
             this.props.onKeyUp(event);
         }
-    }
+    };
 
     handleKeyPress = event => {
         this._keyPressed = true;
         if (this.props.onKeyPress) {
             this.props.onKeyPress(event);
         }
-    }
+    };
 
     handleUpdateInput = e => {
-        if (this.props.inputValue == null) {
+        if (this.props.inputValue === null) {
             this.updateInput(e.target.value);
         }
 
         if (this.props.onUpdateInput) {
             this.props.onUpdateInput(e);
         }
-    }
+    };
 
     /**
      * Handles adding a chip.
@@ -491,7 +513,7 @@ class ChipInput extends React.Component {
     setActualInputRef = ref => {
         this.actualInput = ref;
         this.props.inputRef && this.props.inputRef(ref);
-    }
+    };
 
     render() {
         const {
@@ -546,18 +568,18 @@ class ChipInput extends React.Component {
         if (!Array.isArray(chips)) {
             chips = (chips || '').toString().split(/[,\s]+/).map(c => c.trim());
         }
-        const actualInputValue = inputValue != null ? inputValue : this.state.inputValue;
+        const actualInputValue = inputValue !== null ? inputValue : this.state.inputValue;
 
         const hasInput = (this.props.value || actualInputValue).length || actualInputValue.length;
-        const shrinkFloatingLabel = InputLabelProps.shrink != null
+        const shrinkFloatingLabel = InputLabelProps.shrink !== null
             ? InputLabelProps.shrink
-            : (label != null && (hasInput || this.state.isFocused || chips.length));
+            : (label !== null && (hasInput || this.state.isFocused || chips.length));
 
         const chipComponents = chips.map((chip, i) => {
-            const value = dataSourceConfig ? chip[dataSourceConfig.value] : chip;
+            const value_ = dataSourceConfig ? chip[dataSourceConfig.value] : chip;
             return chipRenderer(
                 {
-                    value,
+                    value: value_,
                     text: dataSourceConfig ? chip[dataSourceConfig.text] : chip,
                     chip,
                     isDisabled: !!disabled,
@@ -567,11 +589,11 @@ class ChipInput extends React.Component {
                     handleDelete: () => this.handleDeleteChip(chip, i),
                     className: classes.chip,
                 },
-                i
+                i,
             );
         });
 
-        const InputMore = {}
+        const InputMore = {};
         if (variant === 'outlined') {
             InputMore.notched = shrinkFloatingLabel;
             InputMore.labelWidth =
@@ -580,7 +602,7 @@ class ChipInput extends React.Component {
         }
 
         if (variant !== 'standard') {
-            InputMore.startAdornment = <React.Fragment>{chipComponents}</React.Fragment>;
+            InputMore.startAdornment = chipComponents;
         } else {
             InputProps.disableUnderline = true;
         }
@@ -600,7 +622,7 @@ class ChipInput extends React.Component {
         >
             {label && <InputLabel
                 htmlFor={id}
-                classes={{root: Utils.clsx(classes[variant], classes.label), shrink: classes.labelShrink}}
+                classes={{ root: Utils.clsx(classes[variant], classes.label), shrink: classes.labelShrink }}
                 shrink={shrinkFloatingLabel}
                 focused={this.state.isFocused}
                 variant={variant}
@@ -618,7 +640,7 @@ class ChipInput extends React.Component {
                     !disableUnderline && variant === 'standard' && classes.underline,
                     disabled && classes.disabled,
                     label && classes.labeled,
-                    error && classes.error
+                    error && classes.error,
                 )}
             >
                 {variant === 'standard' && chipComponents}
@@ -639,7 +661,7 @@ class ChipInput extends React.Component {
                     inputRef={this.setActualInputRef}
                     disabled={disabled}
                     fullWidth={fullWidthInput}
-                    placeholder={(!hasInput && (shrinkFloatingLabel || label == null)) || alwaysShowPlaceholder ? placeholder : null}
+                    placeholder={(!hasInput && (shrinkFloatingLabel || label === null)) || alwaysShowPlaceholder ? placeholder : null}
                     readOnly={readOnly}
                     {...InputProps}
                     {...InputMore}
@@ -671,7 +693,7 @@ ChipInput.propTypes = {
     /** Config for objects list dataSource, e.g. `{ text: 'text', value: 'value' }`. If not specified, the `dataSource` must be a flat array of strings or a custom `chipRenderer` must be set to handle the objects. */
     dataSourceConfig: PropTypes.shape({
         text: PropTypes.string.isRequired,
-        value: PropTypes.string.isRequired
+        value: PropTypes.string.isRequired,
     }),
     /** The chips to display by default (for uncontrolled mode). */
     defaultValue: PropTypes.array,
@@ -721,7 +743,7 @@ ChipInput.propTypes = {
     value: PropTypes.array,
     /** The variant of the Input component */
     variant: PropTypes.oneOf(['outlined', 'standard', 'filled']),
-}
+};
 
 ChipInput.defaultProps = {
     allowDuplicates: false,
@@ -734,26 +756,4 @@ ChipInput.defaultProps = {
     variant: 'standard',
 };
 
-export default withStyles(styles, {name: 'WAMuiChipInput'})(ChipInput);
-
-export const defaultChipRenderer = ({
-    value,
-    text,
-    isFocused,
-    isDisabled,
-    isReadOnly,
-    handleClick,
-    handleDelete,
-    className,
-}, key) =>
-    <Chip
-        key={key}
-        className={className}
-        style={{
-            pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
-            backgroundColor: isFocused ? blue[300] : undefined,
-        }}
-        onClick={handleClick}
-        onDelete={handleDelete}
-        label={text}
-    />;
+export default withStyles(styles, { name: 'WAMuiChipInput' })(ChipInput);

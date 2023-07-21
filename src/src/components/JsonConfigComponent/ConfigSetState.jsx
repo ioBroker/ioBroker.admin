@@ -4,11 +4,11 @@ import { withStyles } from '@mui/styles';
 
 import Button from '@mui/material/Button';
 
-import ConfigGeneric from './ConfigGeneric';
 import IconWarning from '@mui/icons-material/Warning';
 import IconError from '@mui/icons-material/Error';
 import IconInfo from '@mui/icons-material/Info';
 
+import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';
 import Icon from './wrapper/Components/Icon';
 import ConfirmDialog from './wrapper/Dialogs/Confirm';
@@ -38,7 +38,7 @@ class ConfigSetState extends ConfigGeneric {
         }
 
         try {
-            await this.props.socket.setState(this.props.schema.id, {val, ack: !!this.props.schema.ack});
+            await this.props.socket.setState(this.props.schema.id, { val, ack: !!this.props.schema.ack });
             this.props.schema.okText && window.alert(this.getText(this.props.schema.okText));
         } catch (e) {
             if (this.props.schema.error && this.props.schema.error[e.toString()]) {
@@ -64,19 +64,18 @@ class ConfigSetState extends ConfigGeneric {
         }
 
         return <ConfirmDialog
-            title={ this.getText(confirm.title) || I18n.t('ra_Please confirm') }
-            text={ this.getText(confirm.text) }
-            ok={ this.getText(confirm.ok) || I18n.t('ra_Ok') }
-            cancel={ this.getText(confirm.cancel) || I18n.t('ra_Cancel') }
+            title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
+            text={this.getText(confirm.text)}
+            ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
+            cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
             icon={icon}
             onClose={isOk =>
-                this.setState({ confirmDialog: false }, async () =>
-                    isOk && (await this._onClick()))
-            }
+                this.setState({ confirmDialog: false }, () =>
+                    isOk && this._onClick())}
         />;
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         return <Button
             variant={this.props.schema.variant || undefined}
             color={this.props.schema.color || 'grey'}

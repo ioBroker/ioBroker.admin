@@ -19,7 +19,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import Fab from '@mui/material/Fab';
 
-//Icons
+// Icons
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import IconPlus from '@mui/icons-material/Add';
 import IconDelete from '@mui/icons-material/Delete';
@@ -27,9 +27,8 @@ import IconHttp from '@mui/icons-material/Language';
 import IconFile from '@mui/icons-material/InsertDriveFile';
 import IconSyslog from '@mui/icons-material/Computer';
 import IconStream from '@mui/icons-material/Send';
-import IconSeq from '../../assets/seq.png';
-
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import IconSeq from '../../assets/seq.png';
 
 const styles = theme => ({
     paper: {
@@ -40,9 +39,9 @@ const styles = theme => ({
         padding: theme.spacing(1),
     },
     gridSettings: {
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
         width: '100%',
-        overflow: 'auto'
+        overflow: 'auto',
     },
     controlItem: {
         width: 400,
@@ -64,7 +63,7 @@ const styles = theme => ({
     headingIcon: {
         height: 24,
         marginRight: theme.spacing(1),
-    }
+    },
 });
 
 class BaseSettingsLog extends Component {
@@ -75,7 +74,7 @@ class BaseSettingsLog extends Component {
         settings.transport = settings.transport || {};
         Object.keys(settings.transport).forEach(id => {
             if (settings.transport[id].type === 'file') {
-                let multiplier = typeof settings.transport[id].maxSize === 'string' ? (settings.transport[id].maxSize.includes('k') ? 0.1 : (settings.transport[id].maxSize.includes('g') ? 10 : 1)) : 1;
+                const multiplier = typeof settings.transport[id].maxSize === 'string' ? (settings.transport[id].maxSize.includes('k') ? 0.1 : (settings.transport[id].maxSize.includes('g') ? 10 : 1)) : 1;
                 settings.transport[id].maxSize = (parseInt(settings.transport[id].maxSize, 10) || 0) * multiplier;
                 settings.transport[id].level = settings.transport[id].level || '';
                 settings.transport[id].maxFiles = settings.transport[id].maxFiles || 0;
@@ -128,7 +127,7 @@ class BaseSettingsLog extends Component {
             level: this.state.level,
             maxDays: parseInt(this.state.maxDays, 10),
             noStdout: this.state.noStdout,
-            transport: {}
+            transport: {},
         };
 
         Object.keys(this.state.transport).forEach(id => {
@@ -138,7 +137,7 @@ class BaseSettingsLog extends Component {
                 settings.transport[id].maxSize = parseInt(settings.transport[id].maxSize, 10) || null;
                 if (settings.transport[id].maxSize) {
                     // 'k', 'm', or 'g'
-                    settings.transport[id].maxSize = settings.transport[id].maxSize.toString() + 'm';
+                    settings.transport[id].maxSize = `${settings.transport[id].maxSize.toString()}m`;
                 }
                 settings.transport[id].maxFiles = parseInt(settings.transport[id].maxFiles, 10) || null;
             } else if (this.state.transport[id].type === 'syslog') {
@@ -180,11 +179,11 @@ class BaseSettingsLog extends Component {
                         onChange={e => {
                             const transport = JSON.parse(JSON.stringify(this.state.transport));
                             transport[name].enabled = e.target.checked;
-                            this.setState({ transport }, () => this.onChange())
+                            this.setState({ transport }, () => this.onChange());
                         }}
                     />
                 }
-                label={this.props.t(`Enabled`)}
+                label={this.props.t('Enabled')}
             />
         </Grid>;
     }
@@ -212,21 +211,25 @@ class BaseSettingsLog extends Component {
                 </Select>
                 <FormHelperText>{this.props.t('Level of messages that this transport should log (default: level set on parent logger)')}</FormHelperText>
             </FormControl>
-        </Grid> : null
+        </Grid> : null;
     }
 
     renderSyslog(name) {
-        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
-            const expanded = [...this.state.expanded];
-            const pos = expanded.indexOf(name);
-            if (pos === -1) {
-                expanded.push(name);
-            } else {
-                expanded.splice(pos, 1);
-            }
+        return <Accordion
+            key={name}
+            expanded={this.state.expanded.includes(name)}
+            onChange={() => {
+                const expanded = [...this.state.expanded];
+                const pos = expanded.indexOf(name);
+                if (pos === -1) {
+                    expanded.push(name);
+                } else {
+                    expanded.splice(pos, 1);
+                }
 
-            this.setState({ expanded });
-        }}>
+                this.setState({ expanded });
+            }}
+        >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative', background: 'rgba(128, 128, 128, 0.3)' }}>
                 <IconSyslog className={this.props.classes.headingIcon} />
                 <Typography className={this.props.classes.heading}>{name}</Typography>
@@ -245,7 +248,7 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].host = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('File name')}
                         />
@@ -293,7 +296,7 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].path = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('Path')}
                         />
@@ -370,21 +373,25 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                 </Grid>
             </AccordionDetails>
-        </Accordion>
+        </Accordion>;
     }
 
     renderFile(name) {
-        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
-            const expanded = [...this.state.expanded];
-            const pos = expanded.indexOf(name);
-            if (pos === -1) {
-                expanded.push(name);
-            } else {
-                expanded.splice(pos, 1);
-            }
+        return <Accordion
+            key={name}
+            expanded={this.state.expanded.includes(name)}
+            onChange={() => {
+                const expanded = [...this.state.expanded];
+                const pos = expanded.indexOf(name);
+                if (pos === -1) {
+                    expanded.push(name);
+                } else {
+                    expanded.splice(pos, 1);
+                }
 
-            this.setState({ expanded });
-        }}>
+                this.setState({ expanded });
+            }}
+        >
             <AccordionSummary style={{ background: 'rgba(128, 128, 128, 0.3)' }} expandIcon={<ExpandMoreIcon />}>
                 <IconFile className={this.props.classes.headingIcon} />
                 <Typography className={this.props.classes.heading}>{name}</Typography>
@@ -402,7 +409,7 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].filename = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('File name')}
                         />
@@ -416,7 +423,7 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].fileext = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('File extension')}
                         />
@@ -432,7 +439,7 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].maxSize = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('Maximal size of one file')}
                         />
@@ -447,28 +454,32 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].maxFiles = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('Maximal number of files')}
                         />
                     </Grid> : null}
                 </Grid>
             </AccordionDetails>
-        </Accordion>
+        </Accordion>;
     }
 
     renderHttp(name) {
-        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
-            const expanded = [...this.state.expanded];
-            const pos = expanded.indexOf(name);
-            if (pos === -1) {
-                expanded.push(name);
-            } else {
-                expanded.splice(pos, 1);
-            }
+        return <Accordion
+            key={name}
+            expanded={this.state.expanded.includes(name)}
+            onChange={() => {
+                const expanded = [...this.state.expanded];
+                const pos = expanded.indexOf(name);
+                if (pos === -1) {
+                    expanded.push(name);
+                } else {
+                    expanded.splice(pos, 1);
+                }
 
-            this.setState({ expanded });
-        }}>
+                this.setState({ expanded });
+            }}
+        >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative', background: 'rgba(128, 128, 128, 0.3)' }}>
                 <IconHttp className={this.props.classes.headingIcon} />
                 <Typography className={this.props.classes.heading}>{name}</Typography>
@@ -487,7 +498,7 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].host = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('Host')}
                         />
@@ -544,30 +555,34 @@ class BaseSettingsLog extends Component {
                                     onChange={e => {
                                         const transport = JSON.parse(JSON.stringify(this.state.transport));
                                         transport[name].ssl = e.target.checked;
-                                        this.setState({ transport }, () => this.onChange())
+                                        this.setState({ transport }, () => this.onChange());
                                     }}
                                 />
                             }
-                            label={this.props.t(`SSL`)}
+                            label={this.props.t('SSL')}
                         />
                     </Grid> : null}
                 </Grid>
             </AccordionDetails>
-        </Accordion>
+        </Accordion>;
     }
 
     renderStream(name) {
-        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
-            const expanded = [...this.state.expanded];
-            const pos = expanded.indexOf(name);
-            if (pos === -1) {
-                expanded.push(name);
-            } else {
-                expanded.splice(pos, 1);
-            }
+        return <Accordion
+            key={name}
+            expanded={this.state.expanded.includes(name)}
+            onChange={() => {
+                const expanded = [...this.state.expanded];
+                const pos = expanded.indexOf(name);
+                if (pos === -1) {
+                    expanded.push(name);
+                } else {
+                    expanded.splice(pos, 1);
+                }
 
-            this.setState({ expanded });
-        }}>
+                this.setState({ expanded });
+            }}
+        >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative', background: 'rgba(128, 128, 128, 0.3)' }}>
                 <IconStream className={this.props.classes.headingIcon} />
                 <Typography className={this.props.classes.heading}>{name}</Typography>
@@ -585,7 +600,7 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].stream = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('File name')}
                         />
@@ -599,11 +614,11 @@ class BaseSettingsLog extends Component {
                                     onChange={e => {
                                         const transport = JSON.parse(JSON.stringify(this.state.transport));
                                         transport[name].silent = e.target.checked;
-                                        this.setState({ transport }, () => this.onChange())
+                                        this.setState({ transport }, () => this.onChange());
                                     }}
                                 />
                             }
-                            label={this.props.t(`Silent`)}
+                            label={this.props.t('Silent')}
                         />
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
@@ -615,28 +630,32 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].eol = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('EOL')}
                         />
                     </Grid> : null}
                 </Grid>
             </AccordionDetails>
-        </Accordion>
+        </Accordion>;
     }
 
     renderSEQ(name) {
-        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
-            const expanded = [...this.state.expanded];
-            const pos = expanded.indexOf(name);
-            if (pos === -1) {
-                expanded.push(name);
-            } else {
-                expanded.splice(pos, 1);
-            }
+        return <Accordion
+            key={name}
+            expanded={this.state.expanded.includes(name)}
+            onChange={() => {
+                const expanded = [...this.state.expanded];
+                const pos = expanded.indexOf(name);
+                if (pos === -1) {
+                    expanded.push(name);
+                } else {
+                    expanded.splice(pos, 1);
+                }
 
-            this.setState({ expanded });
-        }}>
+                this.setState({ expanded });
+            }}
+        >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative', background: 'rgba(128, 128, 128, 0.3)' }}>
                 <img className={this.props.classes.headingIcon} src={IconSeq} alt="seq" />
                 <Typography className={this.props.classes.heading}>{name}</Typography>
@@ -655,7 +674,7 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].serverUrl = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('Server URL')}
                         />
@@ -669,14 +688,14 @@ class BaseSettingsLog extends Component {
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
                                 transport[name].apiKey = e.target.value;
-                                this.setState({ transport }, () => this.onChange())
+                                this.setState({ transport }, () => this.onChange());
                             }}
                             label={this.props.t('API key')}
                         />
                     </Grid> : null}
                 </Grid>
             </AccordionDetails>
-        </Accordion>
+        </Accordion>;
     }
 
     add(type) {
@@ -695,7 +714,7 @@ class BaseSettingsLog extends Component {
                 filename: 'log/iobroker',
                 fileext: '.log',
                 maxSize: 0,
-                maxFiles: 0
+                maxFiles: 0,
             };
             this.setState({ transport }, () => this.onChange());
         } else if (type === 'syslog') {
@@ -720,7 +739,7 @@ class BaseSettingsLog extends Component {
                 app_name: '',
                 eol: '',
             };
-            this.setState({ transport }, () => this.onChange())
+            this.setState({ transport }, () => this.onChange());
         } else if (type === 'http') {
             let i = 1;
             // eslint-disable-next-line
@@ -739,7 +758,7 @@ class BaseSettingsLog extends Component {
                 auth: 'None',
                 ssl: false,
             };
-            this.setState({ transport }, () => this.onChange())
+            this.setState({ transport }, () => this.onChange());
         } else if (type === 'stream') {
             let i = 1;
             // eslint-disable-next-line
@@ -757,7 +776,7 @@ class BaseSettingsLog extends Component {
                 silent: false,
                 eol: '',
             };
-            this.setState({ transport }, () => this.onChange())
+            this.setState({ transport }, () => this.onChange());
         } else if (type === 'seq') {
             let i = 1;
             // eslint-disable-next-line
@@ -774,7 +793,7 @@ class BaseSettingsLog extends Component {
                 serverUrl: 'http://IP:PORT',
                 apiKey: '',
             };
-            this.setState({ transport }, () => this.onChange())
+            this.setState({ transport }, () => this.onChange());
         }
     }
 
@@ -818,7 +837,7 @@ class BaseSettingsLog extends Component {
                                     onChange={e => this.setState({ noStdout: e.target.checked }, () => this.onChange())}
                                 />
                             }
-                            label={this.props.t(`No stdout outputs`)}
+                            label={this.props.t('No stdout outputs')}
                         />
                     </Grid>
                     {Object.keys(this.state.transport).map(id => {
@@ -845,11 +864,26 @@ class BaseSettingsLog extends Component {
                 </Grid>
             </Grid>
             <Toolbar>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('file')} startIcon={<IconPlus />}><IconFile className={this.props.classes.buttonIcon} />{this.props.t('File log')}</Button>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('syslog')} startIcon={<IconPlus />}><IconSyslog className={this.props.classes.buttonIcon} />{this.props.t('Syslog')}</Button>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('http')} startIcon={<IconPlus />}><IconHttp className={this.props.classes.buttonIcon} />{this.props.t('HTTP log')}</Button>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('stream')} startIcon={<IconPlus />}><IconStream className={this.props.classes.buttonIcon} />{this.props.t('Stream log')}</Button>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('seq')} startIcon={<IconPlus />}><img src={IconSeq} className={this.props.classes.buttonIcon} alt="seq" />{this.props.t('SEQ log')}</Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('file')} startIcon={<IconPlus />}>
+                    <IconFile className={this.props.classes.buttonIcon} />
+                    {this.props.t('File log')}
+                </Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('syslog')} startIcon={<IconPlus />}>
+                    <IconSyslog className={this.props.classes.buttonIcon} />
+                    {this.props.t('Syslog')}
+                </Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('http')} startIcon={<IconPlus />}>
+                    <IconHttp className={this.props.classes.buttonIcon} />
+                    {this.props.t('HTTP log')}
+                </Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('stream')} startIcon={<IconPlus />}>
+                    <IconStream className={this.props.classes.buttonIcon} />
+                    {this.props.t('Stream log')}
+                </Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('seq')} startIcon={<IconPlus />}>
+                    <img src={IconSeq} className={this.props.classes.buttonIcon} alt="seq" />
+                    {this.props.t('SEQ log')}
+                </Button>
             </Toolbar>
         </Paper>;
     }
@@ -859,7 +893,6 @@ BaseSettingsLog.propTypes = {
     t: PropTypes.func,
     onChange: PropTypes.func.isRequired,
     settings: PropTypes.object.isRequired,
-    currentHost: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(BaseSettingsLog));

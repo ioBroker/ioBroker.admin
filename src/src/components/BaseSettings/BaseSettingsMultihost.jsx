@@ -1,5 +1,5 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
@@ -27,7 +27,7 @@ const styles = theme => ({
     RAM: {
         width: 400,
         marginRight: theme.spacing(1),
-    }
+    },
 });
 
 class BaseSettingsMultihost extends Component {
@@ -71,40 +71,40 @@ class BaseSettingsMultihost extends Component {
     }
 
     render() {
-        return <Paper className={ this.props.classes.paper }>
-            <form className={ this.props.classes.form } noValidate autoComplete="off">
-                <Grid item className={ this.props.classes.gridSettings }>
+        return <Paper className={this.props.classes.paper}>
+            <form className={this.props.classes.form} noValidate autoComplete="off">
+                <Grid item className={this.props.classes.gridSettings}>
                     <Grid container direction="column">
-                        <Grid item className={ this.props.classes.controlItem }>
+                        <Grid item className={this.props.classes.controlItem}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={ this.state.enabled }
-                                        onChange={ e => this.setState( { enabled: e.target.checked }, () => this.onChange()) }
+                                        checked={this.state.enabled}
+                                        onChange={e => this.setState({ enabled: e.target.checked }, () => this.onChange())}
                                     />
                                 }
-                                label={ this.props.t('Allow slave connections') }
+                                label={this.props.t('Allow slave connections')}
                             />
                             <div>{ this.props.t('When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.')}</div>
                         </Grid>
-                        <Grid item className={ this.props.classes.controlItem }>
+                        <Grid item className={this.props.classes.controlItem}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={ this.state.secure }
-                                        onChange={ e => this.setState( {secure: e.target.checked }, () => this.onChange()) }
+                                        checked={this.state.secure}
+                                        onChange={e => this.setState({ secure: e.target.checked }, () => this.onChange())}
                                     />
                                 }
-                                label={ this.props.t(`With password`) }
+                                label={this.props.t('With password')}
                             />
                             <div>{ this.props.t('Ask password by connection establishment') }</div>
                         </Grid>
                         { this.state.secure ? <Grid item>
                             <TextField
                                 variant="standard"
-                                label={ this.props.t('Multi-host password') }
-                                className={ this.props.classes.controlItem }
-                                value={ this.state.password }
+                                label={this.props.t('Multi-host password')}
+                                className={this.props.classes.controlItem}
+                                value={this.state.password}
                                 type="password"
                                 inputProps={{
                                     autoComplete: 'new-password',
@@ -113,7 +113,7 @@ class BaseSettingsMultihost extends Component {
                                     },
                                 }}
                                 autoComplete="off"
-                                onChange={ e => this.setState( {password: e.target.value }, () => this.onChange()) }
+                                onChange={e => this.setState({ password: e.target.value }, () => this.onChange())}
                             />
                         </Grid> : null }
                     </Grid>

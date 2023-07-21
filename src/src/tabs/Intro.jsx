@@ -479,7 +479,7 @@ class Intro extends Component {
         }
 
         let data;
-        if (alive && alive.val) {
+        if (alive?.val) {
             try {
                 data = await this.props.socket.getHostInfo(hostId, false, 10000);
                 if (data && typeof data === 'object' && data.alive !== false) {
@@ -489,6 +489,8 @@ class Intro extends Component {
                 console.error(`Cannot get host info for ${hostId}: ${e}`);
                 data = { alive: false };
             }
+        } else {
+            data = { alive: false };
         }
 
         const states = await this.props.socket.getForeignStates(`${hostId}.versions.*`);

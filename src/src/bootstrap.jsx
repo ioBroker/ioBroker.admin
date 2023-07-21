@@ -7,12 +7,12 @@ import * as SentryIntegrations from '@sentry/integrations';
 import theme from '@iobroker/adapter-react-v5/Theme';
 // import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import { Utils } from '@iobroker/adapter-react-v5';
-import App from './App';
 
 import './index.css';
-import { ContextWrapperProvider } from './components/ContextWrapper';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { ContextWrapperProvider } from './components/ContextWrapper';
+import App from './App';
 
 window.adapterName = 'admin';
 
@@ -30,11 +30,12 @@ function build() {
                         <App onThemeChange={_themeName => {
                             themeName = _themeName;
                             build();
-                        }} />
+                        }}
+                        />
                     </ContextWrapperProvider>
                 </LocalizationProvider>
             </ThemeProvider>
-        </StyledEngineProvider>
+        </StyledEngineProvider>,
     );
 }
 
@@ -69,7 +70,7 @@ if (!window.disableDataReporting && window.location.port !== '3000') {
         dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
         release: `iobroker.${window.adapterName}@${pack.version}`,
         integrations: [
-            new SentryIntegrations.Dedupe()
+            new SentryIntegrations.Dedupe(),
         ],
         beforeSend(event) {
             // Modify the event here
@@ -81,7 +82,7 @@ if (!window.disableDataReporting && window.location.port !== '3000') {
                 return null;
             }
             return event;
-        }
+        },
     });
 } else {
     window.onerror = function (error) {
@@ -96,7 +97,7 @@ if (!window.disableDataReporting && window.location.port !== '3000') {
             return;
         }
         throw error;
-    }
+    };
     window.onunhandledrejection = function (error) {
         const errText = error.toString();
         if (errText && versionChanged.find(e => errText.includes(e))) {
@@ -109,7 +110,7 @@ if (!window.disableDataReporting && window.location.port !== '3000') {
             return;
         }
         throw error;
-    }
+    };
 }
 
 build();

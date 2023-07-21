@@ -54,7 +54,7 @@ class ConfigUser extends ConfigGeneric {
             });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
         return <FormControl variant="standard" className={this.props.classes.fullWidth}>
@@ -73,7 +73,10 @@ class ConfigUser extends ConfigGeneric {
                     error={!!error}
                     disabled={!!disabled}
                     value={value}
-                    renderValue={val => <span>{this.state.users && this.state.users[val]?.icon ? <Icon src={this.state.users && this.state.users[val]?.icon} className={this.props.classes.icon} /> : null}{(this.state.users && this.state.users[val]?.name) || val || ''}</span>}
+                    renderValue={val => <span>
+                        {this.state.users && this.state.users[val]?.icon ? <Icon src={this.state.users && this.state.users[val]?.icon} className={this.props.classes.icon} /> : null}
+                        {(this.state.users && this.state.users[val]?.name) || val || ''}
+                    </span>}
                     style={{ color: (this.state.users && this.state.users[value]?.color) || undefined, backgroundColor: Utils.getInvertedColor(this.state.users && this.state.users[value]?.color, this.props.themeType) }}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
                 >
@@ -81,8 +84,7 @@ class ConfigUser extends ConfigGeneric {
                         {this.state.users[id].icon ? <Icon src={this.state.users[id].icon} className={this.props.classes.icon} /> : null}
                         {this.state.users[id].name}
                     </MenuItem>)}
-                </Select>
-            }
+                </Select>}
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }

@@ -17,8 +17,8 @@ import {
     Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
-import JsonConfigComponent from './JsonConfigComponent';
 import ConfigGeneric from '@iobroker/adapter-react-v5/Components/JsonConfigComponent/ConfigGeneric';
+import JsonConfigComponent from './JsonConfigComponent';
 import Utils from './Utils';
 
 const styles = {
@@ -30,7 +30,7 @@ const styles = {
     },
     scroll: {
         height: 'calc(100% - 48px - 48px)',
-        overflowY: 'auto'
+        overflowY: 'auto',
     },
     exportImportButtons: {
         position: 'absolute',
@@ -39,8 +39,8 @@ const styles = {
         zIndex: 3,
     },
     button: {
-        marginRight: 5
-    }
+        marginRight: 5,
+    },
 };
 
 /**
@@ -92,7 +92,7 @@ function decrypt(key, value) {
     }
 
     // if not encrypted as aes-192 or key not a valid 48 digit hex -> fallback
-    if (!value.startsWith(`$/aes-192-cbc:`) || !/^[0-9a-f]{48}$/.test(key)) {
+    if (!value.startsWith('$/aes-192-cbc:') || !/^[0-9a-f]{48}$/.test(key)) {
         return decryptLegacy(key, value);
     }
 
@@ -160,9 +160,8 @@ function loadScript(src, id) {
             script.src = src;
             document.getElementsByTagName('head')[0].appendChild(script);
         });
-    } else {
-        return document.getElementById(id).onload;
     }
+    return document.getElementById(id).onload;
 }
 
 class JsonConfig extends Router {
@@ -225,13 +224,13 @@ class JsonConfig extends Router {
      * @param {object} evt
      */
     handleFileSelect = evt => {
-        let f = evt.target.files[0];
+        const f = evt.target.files[0];
         if (f) {
-            let r = new FileReader();
+            const r = new FileReader();
             r.onload = async e => {
                 const contents = e.target.result;
                 try {
-                    let data = JSON.parse(contents);
+                    const data = JSON.parse(contents);
                     this.setState({ data, changed: JSON.stringify(data) !== JSON.stringify(this.state.originalData) });
                 } catch (err) {
                     window.alert(I18n.t('[JsonConfig] Failed to parse JSON file'));
@@ -241,26 +240,34 @@ class JsonConfig extends Router {
         } else {
             window.alert(I18n.t('[JsonConfig] Failed to open JSON File'));
         }
-    }
+    };
 
     getExportImportButtons() {
         return <div className={this.props.classes.exportImportButtons}>
             <Tooltip title={this.props.t('Import settings from JSON file')}>
-                <Fab size="small" classes={{root: this.props.classes.button}} onClick={() => {
-                    const input = document.createElement('input');
-                    input.setAttribute('type', 'file');
-                    input.setAttribute('id', 'files');
-                    input.setAttribute('opacity', 0);
-                    input.addEventListener('change', e => this.handleFileSelect(e), false);
-                    input.click();
-                }}>
+                <Fab
+                    size="small"
+                    classes={{ root: this.props.classes.button }}
+                    onClick={() => {
+                        const input = document.createElement('input');
+                        input.setAttribute('type', 'file');
+                        input.setAttribute('id', 'files');
+                        input.setAttribute('opacity', 0);
+                        input.addEventListener('change', e => this.handleFileSelect(e), false);
+                        input.click();
+                    }}
+                >
                     <PublishIcon />
                 </Fab>
             </Tooltip>
             <Tooltip title={this.props.t('Export setting to JSON file')}>
-                <Fab size="small" classes={{root: this.props.classes.button}} onClick={() => {
-                    Utils.generateFile(`${this.props.adapterName}.${this.props.instance}.json`, this.state.data);
-                }}>
+                <Fab
+                    size="small"
+                    classes={{ root: this.props.classes.button }}
+                    onClick={() => {
+                        Utils.generateFile(`${this.props.adapterName}.${this.props.instance}.json`, this.state.data);
+                    }}
+                >
                     <PublishIcon style={{ transform: 'rotate(180deg)' }} />
                 </Fab>
             </Tooltip>
@@ -271,13 +278,13 @@ class JsonConfig extends Router {
         if (id === `${this.props.adapterName}.admin` && size) {
             if (fileName === this.fileLangSubscribed)  {
                 JsonConfigComponent.loadI18n(this.props.socket, this.state.schema?.i18n, this.props.adapterName)
-                    .then(() => this.setState({hash: `${this.state.hash}1`}))
+                    .then(() => this.setState({ hash: `${this.state.hash}1` }))
                     .catch(() => {
                     }); // ignore errors
             } else if (fileName === this.fileSubscribed) {
                 this.getConfigFile(this.fileSubscribed)
                     .then(schema => this.setState({ schema, hash: MD5(JSON.stringify(schema)) }))
-                    .catch(() => { }) // ignore errors
+                    .catch(() => { }); // ignore errors
             }
         }
     };
@@ -298,8 +305,8 @@ class JsonConfig extends Router {
                 }
                 if (data?.type === 'Buffer') {
                     let binary = '';
-                    let bytes = new Uint8Array(data.data);
-                    let len = bytes.byteLength;
+                    const bytes = new Uint8Array(data.data);
+                    const len = bytes.byteLength;
                     for (let i = 0; i < len; i++) {
                         binary += String.fromCharCode(bytes[i]);
                     }
@@ -338,9 +345,8 @@ class JsonConfig extends Router {
                             });
                             return obj;
                         });
-                } else {
-                    return obj;
                 }
+                return obj;
             })
             .catch(e => window.alert(`[JsonConfig] Cannot read instance object: ${e}`));
     }
@@ -362,16 +368,15 @@ class JsonConfig extends Router {
     renderSaveConfigDialog() {
         if (!this.state.saveConfigDialog) {
             return null;
-        } else {
-            return <ConfirmDialog
-                title={I18n.t('ra_Please confirm')}
-                text={typeof this.state.saveConfigDialog === 'string' ? this.state.saveConfigDialog : I18n.t('Save configuration?')}
-                ok={I18n.t('ra_Save')}
-                cancel={I18n.t('ra_Cancel')}
-                onClose={isYes =>
-                    this.setState({ saveConfigDialog: false }, () => isYes && this.onSave(true))}
-            />;
         }
+        return <ConfirmDialog
+            title={I18n.t('ra_Please confirm')}
+            text={typeof this.state.saveConfigDialog === 'string' ? this.state.saveConfigDialog : I18n.t('Save configuration?')}
+            ok={I18n.t('ra_Save')}
+            cancel={I18n.t('ra_Cancel')}
+            onClose={isYes =>
+                this.setState({ saveConfigDialog: false }, () => isYes && this.onSave(true))}
+        />;
     }
 
     findAttr(attr, schema) {
@@ -379,13 +384,12 @@ class JsonConfig extends Router {
         if (schema.items) {
             if (schema.items[attr]) {
                 return schema.items[attr];
-            } else {
-                const keys = Object.keys(schema.items);
-                for (let k = 0; k < keys.length; k++) {
-                    const item = this.findAttr(attr, schema.items[keys[k]]);
-                    if (item) {
-                        return item;
-                    }
+            }
+            const keys = Object.keys(schema.items);
+            for (let k = 0; k < keys.length; k++) {
+                const item = this.findAttr(attr, schema.items[keys[k]]);
+                if (item) {
+                    return item;
                 }
             }
         }
@@ -432,23 +436,22 @@ class JsonConfig extends Router {
                 changed: false,
                 data: obj.native,
                 updateData: this.state.updateData + 1,
-                originalData: JSON.parse(JSON.stringify(obj.native))
+                originalData: JSON.parse(JSON.stringify(obj.native)),
             }, () =>
                 close && Router.doNavigate(null));
         } else {
             if (this.state.changed) {
-                return this.setState({confirmDialog: true});
-            } else {
-                Router.doNavigate(null);
+                return this.setState({ confirmDialog: true });
             }
+            Router.doNavigate(null);
         }
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (prevState.changed !== this.state.changed){
+        if (prevState.changed !== this.state.changed) {
             this.props.configStored(!this.state.changed);
         }
-    }
+    };
 
     render() {
         const { classes } = this.props;
@@ -462,7 +465,7 @@ class JsonConfig extends Router {
             {this.renderSaveConfigDialog()}
             <JsonConfigComponent
                 key={this.state.hash}
-                className={ classes.scroll }
+                className={classes.scroll}
                 socket={this.props.socket}
                 theme={this.props.theme}
                 themeName={this.props.themeName}

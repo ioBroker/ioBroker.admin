@@ -11,7 +11,7 @@ import DialogCron from './wrapper/Dialogs/Cron';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
         width: '100%',
     },
@@ -33,7 +33,7 @@ class ConfigCRON extends ConfigGeneric {
         this.setState({ value, showDialog: false });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         const { classes, schema, attr } = this.props;
         const { value, showDialog } = this.state;
 
@@ -51,8 +51,8 @@ class ConfigCRON extends ConfigGeneric {
                         label={this.getText(schema.label)}
                         helperText={this.renderHelp(schema.help, schema.helpLink, schema.noTranslation)}
                         onChange={e => {
-                            const value = e.target.value;
-                            this.setState({ value }, () => this.onChange(attr, value));
+                            const value_ = e.target.value;
+                            this.setState({ value: value_ }, () => this.onChange(attr, value_));
                         }}
                     />
                     <Button
@@ -75,7 +75,7 @@ class ConfigCRON extends ConfigGeneric {
                         onClose={() => this.setState({ showDialog: false })}
                         cancel={I18n.t('ra_Cancel')}
                         ok={I18n.t('ra_Ok')}
-                        onOk={value => this.setState({ showDialog: false, value }, () => this.onChange(attr, value))}
+                        onOk={value_ => this.setState({ showDialog: false, value: value_ }, () => this.onChange(attr, value_))}
                     />
                 ) : null}
             </FormControl>

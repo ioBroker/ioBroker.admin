@@ -132,10 +132,8 @@ class ConfigFileSelector extends ConfigGeneric {
         if (this.path) {
             if (this.path === '/') {
                 this.path = '';
-            } else {
-                if (!this.path.endsWith('/')) {
-                    this.path = `${this.path}/`;
-                }
+            } else if (!this.path.endsWith('/')) {
+                this.path = `${this.path}/`;
             }
         }
 
@@ -169,11 +167,11 @@ class ConfigFileSelector extends ConfigGeneric {
                     } else if (filter === '.*' && file.file.startsWith('.')) {
                         ok = true;
                     } else {
-                        const regExp = new RegExp('^' + filter.replace(/\./g, '\\.').replace(/\*/g,'.*') + '$');
+                        const regExp = new RegExp(`^${filter.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
                         ok = regExp.test(file.file);
                     }
 
-                    ok && files.push({ name: folderName + file.file, size: file.stats ? Utils.formatBytes(file.stats.size) : '--' })
+                    ok && files.push({ name: folderName + file.file, size: file.stats ? Utils.formatBytes(file.stats.size) : '--' });
                 }
             }
         } catch (e) {
@@ -201,11 +199,11 @@ class ConfigFileSelector extends ConfigGeneric {
             // read all folders
             await this.readFolder('/', files, filter);
         } else {
-            const pos = pattern.lastIndexOf('/');
-            if (pos === -1) {
+            const pos_ = pattern.lastIndexOf('/');
+            if (pos_ === -1) {
                 await this.readFolder('/', files, filter);
             } else {
-                const folder = pattern.substring(0, pos + 1);
+                const folder = pattern.substring(0, pos_ + 1);
                 await this.readFolder(folder, files, filter);
             }
         }
@@ -228,11 +226,13 @@ class ConfigFileSelector extends ConfigGeneric {
                 ext = 'image/svg+xml';
             }
             if (file.size > maxSize) {
-                return window.alert(I18n.t('File is too big. Max %sk allowed. Try use SVG.', Math.round(maxSize / 1024)));
+                window.alert(I18n.t('File is too big. Max %sk allowed. Try use SVG.', Math.round(maxSize / 1024)));
+                return;
             }
             const base64 = `data:${ext};base64,${btoa(
                 new Uint8Array(reader.result)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
+                    .reduce((data, byte) => data + String.fromCharCode(byte), ''),
+            )}`;
 
             this.props.socket.writeFile64(this.objectID, this.path + file.name, base64)
                 .then(() => this.updateFiles())
@@ -246,13 +246,13 @@ class ConfigFileSelector extends ConfigGeneric {
             return null;
         }
         return <ConfirmDialog
-            title={ I18n.t('ra_Are you sure?') }
-            text={ I18n.t('ra_File will be deleted') }
-            ok={ I18n.t('ra_Delete') }
-            cancel={ I18n.t('ra_Cancel') }
+            title={I18n.t('ra_Are you sure?')}
+            text={I18n.t('ra_File will be deleted')}
+            ok={I18n.t('ra_Delete')}
+            cancel={I18n.t('ra_Cancel')}
             onClose={isOk => {
                 const deleteFile = this.state.deleteFile;
-                this.setState({deleteFile: false}, () => {
+                this.setState({ deleteFile: false }, () => {
                     if (isOk) {
                         this.props.socket.deleteFile(this.objectID, deleteFile)
                             .then(() => this.updateFiles())
@@ -288,7 +288,7 @@ class ConfigFileSelector extends ConfigGeneric {
                         source.buffer = buffer;                      // tell the source which sound to play
                         source.connect(context.destination);         // connect the source to the context's destination (the speakers)
                         source.start(0);
-                    }, err => window.alert('Cannot play: ' + err));
+                    }, err => window.alert(`Cannot play: ${err}`));
                 }
             });
     }
@@ -298,28 +298,31 @@ class ConfigFileSelector extends ConfigGeneric {
             return null;
         }
         if (IMAGE_EXT.includes(item.extension)) {
-            return <div className={this.props.classes.selectedImage} style={{
-                backgroundImage: `url(${this.imagePrefix}/${this.objectID}/${item.value})`,
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-            }} />;
-        } else if (AUDIO_EXT.includes(item.extension)) {
+            return <div
+                className={this.props.classes.selectedImage}
+                style={{
+                    backgroundImage: `url(${this.imagePrefix}/${this.objectID}/${item.value})`,
+                    backgroundSize: 'contain',
+                    backgroundRepeat: 'no-repeat',
+                }}
+            />;
+        } if (AUDIO_EXT.includes(item.extension)) {
             return <IconAudio />;
-        } else if (DOC_EXT.includes(item.extension)) {
+        } if (DOC_EXT.includes(item.extension)) {
             return <IconText />;
-        } else if (VIDEO_EXT.includes(item.extension)) {
+        } if (VIDEO_EXT.includes(item.extension)) {
             return <IconVideo />;
-        } else if (JS_EXT.includes(item.extension)) {
+        } if (JS_EXT.includes(item.extension)) {
             return <IconCode />;
         }
         return null;
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.files) {
             return null;
         }
-        let folders = [];
+        const folders = [];
         if (!this.props.schema.withFolder) {
             this.state.files.forEach(file => {
                 const pos = file.name.lastIndexOf('/');
@@ -339,12 +342,12 @@ class ConfigFileSelector extends ConfigGeneric {
         const selectOptions = this.state.files
             .map(file => ({
                 value: file.name,
-                label: !this.props.schema.withFolder && folders.length === 1 ? `${file.name.substring(folders[0].length)}` : `${file.name}` + (this.props.schema.noSize ? '' : `(${file.size})`),
+                label: !this.props.schema.withFolder && folders.length === 1 ? `${file.name.substring(folders[0].length)}` : `${file.name}${this.props.schema.noSize ? '' : `(${file.size})`}`,
                 extension: file.name.toLowerCase().split('.').pop(),
             }));
 
         if (!this.props.schema.noNone) {
-            selectOptions.unshift({label: I18n.t('ra_none'), value: ''});
+            selectOptions.unshift({ label: I18n.t('ra_none'), value: '' });
         }
 
         // eslint-disable-next-line
@@ -358,38 +361,41 @@ class ConfigFileSelector extends ConfigGeneric {
         if (this.props.schema.refresh) {
             buttons++;
         }
-        let play = this.state.value && (this.state.value.endsWith('.mp3') || this.state.value.endsWith('.ogg') || this.state.value.endsWith('.wav'));
+        const play = this.state.value && (this.state.value.endsWith('.mp3') || this.state.value.endsWith('.ogg') || this.state.value.endsWith('.wav'));
         // show play button
         if (play) {
             buttons++;
         }
 
         const element = <div className={this.props.classes.fullWidth}>
-            <FormControl variant="standard" style={{width: `calc(100% - ${buttons * 42}px)`}}>
+            <FormControl variant="standard" style={{ width: `calc(100% - ${buttons * 42}px)` }}>
                 {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
                 <Select
                     variant="standard"
                     error={!!error}
                     disabled={!!disabled}
                     value={this.state.value || '_'}
-                    renderValue={() => <>{this.getIcon(item)}<span>{item?.label || ''}</span></>}
+                    renderValue={() => <>
+                        {this.getIcon(item)}
+                        <span>{item?.label || ''}</span>
+                    </>}
                     onChange={e => {
                         this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () =>
                             this.onChange(this.props.attr, this.state.value));
                     }}
                 >
-                    {selectOptions.map(item => {
-                        return <MenuItem key={item.value} value={item.value}>
-                            <ListItemIcon>{this.getIcon(item)}</ListItemIcon>
-                            <ListItemText>{item.label}</ListItemText>
-                            {this.props.schema.delete && item.value ?
-                                <IconButton
-                                    className={this.props.classes.deleteButton}
-                                    size="small"
-                                    onClick={() => this.setState({ deleteFile: item.value })}><IconDelete/>
-                                </IconButton> : null}
-                        </MenuItem>;
-                    })}
+                    {selectOptions.map(it => <MenuItem key={it.value} value={it.value}>
+                        <ListItemIcon>{this.getIcon(item)}</ListItemIcon>
+                        <ListItemText>{item.label}</ListItemText>
+                        {this.props.schema.delete && item.value ?
+                            <IconButton
+                                className={this.props.classes.deleteButton}
+                                size="small"
+                                onClick={() => this.setState({ deleteFile: item.value })}
+                            >
+                                <IconDelete />
+                            </IconButton> : null}
+                    </MenuItem>)}
                 </Select>
                 {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
             </FormControl>
@@ -399,93 +405,98 @@ class ConfigFileSelector extends ConfigGeneric {
         </div>;
 
         if (!this.props.schema.upload) {
-            return <>{element}{this.renderDeleteDialog()}</>;
-        } else {
-            let accept = {'*/*': []};
-            if (this.props.schema.fileTypes === 'image') {
+            return <>
+                {element}
+                {this.renderDeleteDialog()}
+            </>;
+        }
+        let accept = { '*/*': [] };
+        if (this.props.schema.fileTypes === 'image') {
+            accept = {
+                'image/*': ['.png', '.jpg', '.svg'],
+            };
+        } else if (this.props.schema.fileTypes === 'audio') {
+            accept = {
+                'audio/*': ['.mp3', '.ogg', '.wav', '.mp4'],
+            };
+        } else if (this.props.schema.fileTypes === 'text') {
+            accept = {
+                'text/plain': ['.txt'],
+            };
+        }
+        if (this.props.schema.pattern) {
+            const last = this.props.schema.pattern.split('/').pop().toLowerCase().replace(/.*\./, '');
+            if (last === 'png' || last === 'jpg' || last === 'svg') {
                 accept = {
                     'image/*': ['.png', '.jpg', '.svg'],
                 };
-            } else if (this.props.schema.fileTypes === 'audio') {
+            } else if (last === 'mp3' || last === 'ogg' || last === 'wav') {
                 accept = {
                     'audio/*': ['.mp3', '.ogg', '.wav', '.mp4'],
                 };
-            } else if (this.props.schema.fileTypes === 'text') {
+            } else if (last === 'ics') {
+                accept = {
+                    'text/calendar': ['.ics'],
+                };
+            } else if (last === 'txt') {
                 accept = {
                     'text/plain': ['.txt'],
                 };
+            } else if (last === 'pem') {
+                accept = {
+                    'text/plain': ['.pem'],
+                };
+            } else {
+                accept = {
+                    '*/*': [`.${last}`],
+                };
             }
-            if (this.props.schema.pattern) {
-                const last = this.props.schema.pattern.split('/').pop().toLowerCase().replace(/.*\./, '');
-                if (last === 'png' || last === 'jpg' || last === 'svg') {
-                    accept = {
-                        'image/*': ['.png', '.jpg', '.svg']
-                    };
-                } else if (last === 'mp3' || last === 'ogg' || last === 'wav') {
-                    accept = {
-                        'audio/*': ['.mp3', '.ogg', '.wav', '.mp4'],
-                    };
-                } else if (last === 'ics') {
-                    accept = {
-                        'text/calendar': ['.ics'],
-                    };
-                } else if (last === 'txt') {
-                    accept = {
-                        'text/plain': ['.txt'],
-                    };
-                } else if (last === 'pem') {
-                    accept = {
-                        'text/plain': ['.pem'],
-                    };
-                } else {
-                    accept = {
-                        '*/*': [`.${last}`],
-                    };
-                }
-            }
-
-            return <Dropzone
-                ref={this.dropzoneRef}
-                multiple={false}
-                accept={accept}
-                noKeyboard
-                noClick
-                maxSize={this.props.schema.maxSize || 2 * 1024 * 1024}
-                onDragEnter={() => {
-                    this.setState({ uploadFile: 'dragging' });
-                }}
-                onDragLeave={() => this.setState({ uploadFile: true })}
-                onDrop={(acceptedFiles, errors) => {
-                    this.setState({ uploadFile: false });
-                    if (!acceptedFiles.length) {
-                        window.alert((errors && errors[0] && errors[0].errors && errors[0].errors[0] && errors[0].errors[0].message) || I18n.t('Cannot upload'));
-                    } else {
-                        return this.onDrop(acceptedFiles);
-                    }
-                }}
-            >
-                {({ getRootProps, getInputProps }) => <div
-                    className={Utils.clsx(
-                        this.props.classes.uploadDiv,
-                        this.state.uploadFile === 'dragging' && this.props.classes.uploadDivDragging,
-                        disabled && this.props.classes.disabledOpacity,
-                    )}
-                    {...getRootProps()}
-                >
-                    <input {...getInputProps()} />
-                    {this.state.uploadFile === 'dragging' ? <div className={Utils.clsx(this.props.classes.uploadCenterDiv, this.state.uploadError && this.props.classes.error)}>
-                        <div className={this.props.classes.uploadCenterTextAndIcon}>
-                            <UploadIcon className={this.props.classes.uploadCenterIcon} />
-                            <div className={this.props.classes.uploadCenterText}>{
-                                this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
-                                    I18n.t('ra_Place your files here or click here to open the browse dialog')}</div>
-                        </div>
-                    </div> : null}
-                    {element}
-                    {this.renderDeleteDialog()}
-                </div>}
-            </Dropzone>;
         }
+
+        return <Dropzone
+            ref={this.dropzoneRef}
+            multiple={false}
+            accept={accept}
+            noKeyboard
+            noClick
+            maxSize={this.props.schema.maxSize || 2 * 1024 * 1024}
+            onDragEnter={() => {
+                this.setState({ uploadFile: 'dragging' });
+            }}
+            onDragLeave={() => this.setState({ uploadFile: true })}
+            onDrop={(acceptedFiles, errors) => {
+                this.setState({ uploadFile: false });
+                if (!acceptedFiles.length) {
+                    window.alert((errors && errors[0] && errors[0].errors && errors[0].errors[0] && errors[0].errors[0].message) || I18n.t('Cannot upload'));
+                } else {
+                    this.onDrop(acceptedFiles);
+                }
+            }}
+        >
+            {({ getRootProps, getInputProps }) => <div
+                className={Utils.clsx(
+                    this.props.classes.uploadDiv,
+                    this.state.uploadFile === 'dragging' && this.props.classes.uploadDivDragging,
+                    disabled && this.props.classes.disabledOpacity,
+                )}
+                {...getRootProps()}
+            >
+                <input {...getInputProps()} />
+                {this.state.uploadFile === 'dragging' ? <div className={Utils.clsx(this.props.classes.uploadCenterDiv, this.state.uploadError && this.props.classes.error)}>
+                    <div className={this.props.classes.uploadCenterTextAndIcon}>
+                        <UploadIcon className={this.props.classes.uploadCenterIcon} />
+                        <div className={this.props.classes.uploadCenterText}>
+                            {
+                                this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
+                                    I18n.t('ra_Place your files here or click here to open the browse dialog')
+                            }
+                        </div>
+                    </div>
+                </div> : null}
+                {element}
+                {this.renderDeleteDialog()}
+            </div>}
+        </Dropzone>;
     }
 }
 

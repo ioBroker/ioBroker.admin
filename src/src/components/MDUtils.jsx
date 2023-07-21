@@ -3,8 +3,8 @@
  *
  * MIT License
  *
- **/
-//import React from 'react';
+ * */
+// import React from 'react';
 import { Utils } from '@iobroker/adapter-react-v5';
 
 class MDUtils {
@@ -29,7 +29,7 @@ class MDUtils {
     }
 
     static getTitle(text) {
-        let {body, header} = MDUtils.extractHeader(text);
+        let { body, header } = MDUtils.extractHeader(text);
         if (!header.title) {
             // remove {docsify-bla}
             body = body.replace(/{[^}]*}/g, '');
@@ -41,9 +41,8 @@ class MDUtils {
                 }
             }
             return '';
-        } else {
-            return header.title;
         }
+        return header.title;
     }
 
     static extractHeader(text) {
@@ -76,7 +75,7 @@ class MDUtils {
                 text = text.substring(pos + 7);
             }
         }
-        return {header: attrs, body: text};
+        return { header: attrs, body: text };
     }
 
     static removeDocsify(text) {
@@ -94,11 +93,11 @@ class MDUtils {
     static decorateText(text, header, path) {
         path = path || '';
 
-        let {body, license, changelog} = MDUtils.extractLicenseAndChangelog(text, true);
+        const { body, license, changelog } = MDUtils.extractLicenseAndChangelog(text, true);
 
         const lines = body.split('\n');
         const content = {};
-        let current = [null, null, null, null];
+        const current = [null, null, null, null];
 
         const parts = [];
         while (lines.length && !lines[0].trim()) lines.shift();
@@ -113,78 +112,78 @@ class MDUtils {
             if (line.startsWith('=========')) {
                 // ignore it
             } else
-            //<h1><img src="ru/adapterref/iobroker.linkeddevices/admin/linkeddevices.png" width="32" /> ioBroker.linkeddevices</h1>
-            if (line.match(/^<h1>.+<\/h1>/)) {
+            // <h1><img src="ru/adapterref/iobroker.linkeddevices/admin/linkeddevices.png" width="32" /> ioBroker.linkeddevices</h1>
+                if (line.match(/^<h1>.+<\/h1>/)) {
                 // skip
-            } else
-            if (line.match(/^# /)) {
-                const cont = MDUtils.findTitle(line, -1, path);
-                title = cont.title;
-            } else
-            if (line.trim().startsWith('|')) {
-                if (!parts[last] || parts[last].type !== 'table') {
-                    parts.push({type: 'table', lines: [line]});
-                } else {
-                    parts[last].lines.push(line);
-                }
-            } else
-            if (line.match(/^##+ /)) {
-                parts.push({lines: [line], type: 'chapter'});
-                last++;
-                let level = line.split('#').length - 3;
-                const cont = MDUtils.findTitle(line, level, path);
-                content[cont.href] = cont;
-                current[level] = cont;
-                level++;
-                while(current[level] !== undefined) level = null;
-            } else
-            if (line.startsWith('@@@')) {
-                line = line.substring(3).trim();
-                parts.push({lines: [line], type: '@@@'});
-                last++;
-                if (line.trim().endsWith('@@@')) {
-                    parts[last].lines[0] = line.substring(0, line.length - 3);
-                } else {
-                    while(i + 1 < lines.length && !lines[i + 1].trim().endsWith('@@@')) {
-                        parts[last].lines.push(lines[i + 1].trim());
-                        i++;
-                    }
-                }
-            } else if (line.trim().startsWith('```')) {
-                parts.push({lines: [line], type: 'code'});
-                last++;
-                if (!line.substring(3).trim().endsWith('```')) {
-                    while(i + 1 < lines.length && !lines[i + 1].trim().endsWith('```')) {
-                        parts[last].lines.push(lines[i + 1]);
-                        i++;
-                    }
-                    parts[last].lines.push(lines[i + 1]);
-                    i++;
-                }
-            } else if (line.startsWith('?> ') || line.startsWith('!> ')) {
-                parts.push({lines: [line.substring(3)], type: line.startsWith('?>') ? 'warn' : 'alarm'});
-                last++;
-                while(i + 1 < lines.length && lines[i + 1].trim()) {
-                    parts[last].lines.push(lines[i + 1]);
-                    i++;
-                }
-            } else if (line.startsWith('> ')) {
-                parts.push({lines: [line.substring(2)], type: 'notice'});
-                last++;
-                while(i + 1 < lines.length && lines[i + 1].trim()) {
-                    parts[last].lines.push(lines[i + 1]);
-                    i++;
-                }
-            } else if (line.trim()) {
-                parts.push({lines: [line], type: 'p'});
-                last++;
-                while(i + 1 < lines.length && //lines[i + 1].trim() &&
-                //!lines[i + 1].trim().match(/^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)) {
+                } else
+                    if (line.match(/^# /)) {
+                        const cont = MDUtils.findTitle(line, -1, path);
+                        title = cont.title;
+                    } else
+                        if (line.trim().startsWith('|')) {
+                            if (!parts[last] || parts[last].type !== 'table') {
+                                parts.push({ type: 'table', lines: [line] });
+                            } else {
+                                parts[last].lines.push(line);
+                            }
+                        } else
+                            if (line.match(/^##+ /)) {
+                                parts.push({ lines: [line], type: 'chapter' });
+                                last++;
+                                let level = line.split('#').length - 3;
+                                const cont = MDUtils.findTitle(line, level, path);
+                                content[cont.href] = cont;
+                                current[level] = cont;
+                                level++;
+                                while (current[level] !== undefined) level = null;
+                            } else
+                                if (line.startsWith('@@@')) {
+                                    line = line.substring(3).trim();
+                                    parts.push({ lines: [line], type: '@@@' });
+                                    last++;
+                                    if (line.trim().endsWith('@@@')) {
+                                        parts[last].lines[0] = line.substring(0, line.length - 3);
+                                    } else {
+                                        while (i + 1 < lines.length && !lines[i + 1].trim().endsWith('@@@')) {
+                                            parts[last].lines.push(lines[i + 1].trim());
+                                            i++;
+                                        }
+                                    }
+                                } else if (line.trim().startsWith('```')) {
+                                    parts.push({ lines: [line], type: 'code' });
+                                    last++;
+                                    if (!line.substring(3).trim().endsWith('```')) {
+                                        while (i + 1 < lines.length && !lines[i + 1].trim().endsWith('```')) {
+                                            parts[last].lines.push(lines[i + 1]);
+                                            i++;
+                                        }
+                                        parts[last].lines.push(lines[i + 1]);
+                                        i++;
+                                    }
+                                } else if (line.startsWith('?> ') || line.startsWith('!> ')) {
+                                    parts.push({ lines: [line.substring(3)], type: line.startsWith('?>') ? 'warn' : 'alarm' });
+                                    last++;
+                                    while (i + 1 < lines.length && lines[i + 1].trim()) {
+                                        parts[last].lines.push(lines[i + 1]);
+                                        i++;
+                                    }
+                                } else if (line.startsWith('> ')) {
+                                    parts.push({ lines: [line.substring(2)], type: 'notice' });
+                                    last++;
+                                    while (i + 1 < lines.length && lines[i + 1].trim()) {
+                                        parts[last].lines.push(lines[i + 1]);
+                                        i++;
+                                    }
+                                } else if (line.trim()) {
+                                    parts.push({ lines: [line], type: 'p' });
+                                    last++;
+                                    while (i + 1 < lines.length && // lines[i + 1].trim() &&
+                //! lines[i + 1].trim().match(/^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)) {
                 !lines[i + 1].trim().match(/^```|^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)) {
-                    parts[last].lines.push(lines[i + 1].trimRight());
-                    i++;
-                }
-            }
+                                        parts[last].lines.push(lines[i + 1].trimRight());
+                                        i++;
+                                    }
+                                }
         }
 
         return {
@@ -192,7 +191,7 @@ class MDUtils {
             content,
             title,
             changeLog: changelog,
-            license
+            license,
         };
     }
 
@@ -202,7 +201,7 @@ class MDUtils {
         let changelogA = false;
         const license = [];
         let licenseA = false;
-        let newLines = [];
+        const newLines = [];
         lines.forEach(line => {
             if (line.match(/#+\sChangelog/i)) {
                 !ignoreHeaders && changelog.push('## Changelog');
@@ -234,7 +233,7 @@ class MDUtils {
         while (license.length && !license[0].trim()) license.shift();
         while (license.length && !license[license.length - 1].trim()) license.pop();
 
-        return {body: newLines.join('\n'), license: license.join('\n'), changelog: changelog.join('\n')};
+        return { body: newLines.join('\n'), license: license.join('\n'), changelog: changelog.join('\n') };
     }
 
     static findTitleFromH1(line, level, path) {
@@ -263,7 +262,7 @@ class MDUtils {
             title: link ? link.name : name,
             link: link ? link.link : t,
             href: t,
-            external: !!link
+            external: !!link,
         };
     }
 
@@ -272,10 +271,9 @@ class MDUtils {
         if (m) {
             const parts = path.split('/');
             parts.pop();
-            return {link: parts.join('/') + '/' + m[2], name: m[1]};
-        } else {
-            return null;
+            return { link: `${parts.join('/')}/${m[2]}`, name: m[1] };
         }
+        return null;
     }
 
     // https://github.com/lukeed/clsx/blob/master/src/index.js
@@ -287,13 +285,14 @@ class MDUtils {
      * @returns {string}
      */
     static _toVal(mix) {
-        let k, y, str='';
+        let k; let y; let
+            str = '';
 
         if (typeof mix === 'string' || typeof mix === 'number') {
             str += mix;
         } else if (typeof mix === 'object') {
             if (Array.isArray(mix)) {
-                for (k=0; k < mix.length; k++) {
+                for (k = 0; k < mix.length; k++) {
                     if (mix[k]) {
                         if ((y = MDUtils._toVal(mix[k]))) {
                             str && (str += ' ');
@@ -321,7 +320,7 @@ class MDUtils {
      * Convert any object to a string with its values.
      * @returns {string}
      */
-    static clsx () {
+    static clsx() {
         let i = 0;
         let tmp;
         let x;
@@ -330,7 +329,7 @@ class MDUtils {
             if ((tmp = arguments[i++])) {
                 if ((x = MDUtils._toVal(tmp))) {
                     str && (str += ' ');
-                    str += x
+                    str += x;
                 }
             }
         }

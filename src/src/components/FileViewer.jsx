@@ -62,8 +62,8 @@ export const EXTENSIONS = {
 
 function bufferToBase64(buffer, isFull) {
     let binary = '';
-    let bytes = new Uint8Array(buffer);
-    let len = bytes.byteLength;
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
     for (let i = 0; i < len && (isFull || i < 50); i++) {
         binary += String.fromCharCode(bytes[i]);
     }
@@ -197,7 +197,7 @@ class FileViewer extends Component {
         this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString('base64'))
             .then(_ => this.props.onClose())
             .catch(e => window.alert(`Cannot write file: ${e}`));
-    }
+    };
 
     static getEditFile(ext) {
         switch (ext) {
@@ -220,18 +220,17 @@ class FileViewer extends Component {
         if (EXTENSIONS.images.includes(this.state.ext)) {
             if (this.state.imgError) {
                 return <IconNoIcon className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())} />;
-            } else {
-                return <img
-                    onError={e => {
-                        e.target.onerror = null;
-                        this.setState({ imgError: true });
-                    }}
-                    className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
-                    src={`${this.props.href}?ts=${this.state.forceUpdate}`}
-                    alt={this.props.href}
-                />;
             }
-        } else if (this.state.code !== null || this.state.text !== null || this.state.editing) {
+            return <img
+                onError={e => {
+                    e.target.onerror = null;
+                    this.setState({ imgError: true });
+                }}
+                className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
+                src={`${this.props.href}?ts=${this.state.forceUpdate}`}
+                alt={this.props.href}
+            />;
+        } if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             return <AceEditor
                 mode={FileViewer.getEditFile(this.props.formatEditFile)}
                 width="100%"
@@ -263,16 +262,16 @@ class FileViewer extends Component {
             aria-labelledby="form-dialog-title"
         >
             <div className={this.props.classes.dialogTitle}>
-                <DialogTitle id="form-dialog-title">{this.props.t(this.state.editing ? 'Edit' : 'View') + ': ' + this.props.href}</DialogTitle>
+                <DialogTitle id="form-dialog-title">{`${this.props.t(this.state.editing ? 'Edit' : 'View')}: ${this.props.href}`}</DialogTitle>
                 {EXTENSIONS.images.includes(this.state.ext) && <div>
-                    <IconButton size="large"
-                        color={'inherit'}
+                    <IconButton
+                        size="large"
+                        color="inherit"
                         onClick={this.props.setStateBackgroundImage}
                     >
                         <Brightness5Icon />
                     </IconButton>
-                </div>
-                }
+                </div>}
             </div>
             <DialogContent className={this.props.classes.content}>
                 {this.getContent()}

@@ -8,7 +8,7 @@ import Tab from '@mui/material/Tab';
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
 
-const styles = theme => ({
+const styles = () => ({
     tabs: {
         height: '100%',
         width: '100%',
@@ -24,7 +24,7 @@ class ConfigTabs extends ConfigGeneric {
     constructor(props) {
         super(props);
 
-        let tab = (window._localStorage || window.localStorage).getItem((this.props.dialogName || 'App') + '.' + this.props.adapterName) || Object.keys(this.props.schema.items)[0];
+        let tab = (window._localStorage || window.localStorage).getItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`) || Object.keys(this.props.schema.items)[0];
         if (!Object.keys(this.props.schema.items).includes(tab)) {
             tab = Object.keys(this.props.schema.items)[0];
         }
@@ -40,9 +40,10 @@ class ConfigTabs extends ConfigGeneric {
             <Tabs
                 value={this.state.tab}
                 onChange={(e, tab) => {
-                    (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.' + this.props.adapterName, tab);
-                    this.setState({tab});
-                }}>
+                    (window._localStorage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`, tab);
+                    this.setState({ tab });
+                }}
+            >
                 {Object.keys(items).map(name => {
                     let disabled;
                     if (this.props.custom) {
@@ -58,7 +59,7 @@ class ConfigTabs extends ConfigGeneric {
                         }
                         disabled = this.execute(items[name].disabled, false);
                     }
-                    return <Tab wrapped disabled={disabled} key={name} value={name} label={this.getText(items[name].label)} />
+                    return <Tab wrapped disabled={disabled} key={name} value={name} label={this.getText(items[name].label)} />;
                 })}
             </Tabs>
             <ConfigPanel
@@ -88,15 +89,12 @@ class ConfigTabs extends ConfigGeneric {
                 isFloatComma={this.props.isFloatComma}
                 // disabled={disabled}
                 imagePrefix={this.props.imagePrefix}
-
                 changeLanguage={this.props.changeLanguage}
                 forceUpdate={this.props.forceUpdate}
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
-
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
-
                 schema={items[this.state.tab]}
             />
         </div>;

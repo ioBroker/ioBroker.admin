@@ -84,7 +84,7 @@ const styles = theme => ({
         top: 20,
         transition: 'all 0.6s ease',
         '&:hover': {
-            transform: 'rotate(90deg)'
+            transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
@@ -93,7 +93,7 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)'
+            transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
@@ -126,7 +126,6 @@ class HostEdit extends Component {
             text: JSON.stringify(this.props.obj, null, 2),
             error: false,
             changed: false,
-            tab: (window._localStorage || window.localStorage).getItem((this.props.dialogName || 'App') + '.editTab') || 'object',
         };
 
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
@@ -173,27 +172,30 @@ class HostEdit extends Component {
     }
 
     removeCommonItem(json, name) {
-        delete json.common[name]
+        delete json.common[name];
         this.onChange(JSON.stringify(json, null, 2));
     }
 
     buttonAddKey(nameKey, cb) {
         const { t, classes } = this.props;
         return <div
-            className={classes.marginBlock}>
+            className={classes.marginBlock}
+        >
             <Button
                 className={classes.buttonAdd}
                 variant="contained"
                 color="secondary"
                 onClick={cb}
                 startIcon={<IconAdd />}
-            >{t(`Add ${nameKey}`)}</Button>
-        </div>
+            >
+                {t(`Add ${nameKey}`)}
+            </Button>
+        </div>;
     }
 
     buttonRemoveKey(nameKey, cb) {
         const { t, classes } = this.props;
-        return <Tooltip title={t(`Remove ${nameKey}`)}><div className={classes.close} onClick={cb} /></Tooltip>
+        return <Tooltip title={t(`Remove ${nameKey}`)}><div className={classes.close} onClick={cb} /></Tooltip>;
     }
 
     renderCommonEdit() {
@@ -211,10 +213,9 @@ class HostEdit extends Component {
                             className={Utils.clsx(classes.marginBlock, classes.textField)}
                             fullWidth
                             value={json.common.title}
-                            onChange={(el) => this.setCommonItem(json, 'title', el.target.value)}
+                            onChange={el => this.setCommonItem(json, 'title', el.target.value)}
                         /> :
-                        this.buttonAddKey('title', () => this.setCommonItem(json, 'title', ''))
-                    }
+                        this.buttonAddKey('title', () => this.setCommonItem(json, 'title', ''))}
                     {typeof json.common.color !== 'undefined' ?
                         <div className={classes.flex}>
                             <TextField
@@ -224,11 +225,11 @@ class HostEdit extends Component {
                                 label={t('Color')}
                                 type="color"
                                 value={json.common.color}
-                                onChange={el => this.setCommonItem(json, 'color', el.target.value)} />
+                                onChange={el => this.setCommonItem(json, 'color', el.target.value)}
+                            />
                             {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
                         </div> :
-                        this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
-                    }
+                        this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))}
                 </div>
                 {typeof json.common.icon !== 'undefined' ?
                     <div className={classes.flexDrop}>
@@ -238,16 +239,15 @@ class HostEdit extends Component {
                             maxSize={256 * 1024}
                             icon={json.common.icon}
                             removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
-                            onChange={(base64) => this.setCommonItem(json, 'icon', base64)}
+                            onChange={base64 => this.setCommonItem(json, 'icon', base64)}
                             t={t}
                         />
                         {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
                     </div> :
                     <div className={classes.flexDrop}>
                         {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
-                    </div>
-                }
-            </div>
+                    </div>}
+            </div>;
         } catch (e) {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
@@ -267,7 +267,9 @@ class HostEdit extends Component {
             aria-describedby="edit-value-dialog-description"
         >
             <DialogTitle id="edit-value-dialog-title">
-                {this.props.t('Edit host settings')}: <span className={this.props.classes.id}>{this.props.obj._id}</span>
+                {this.props.t('Edit host settings')}
+:
+                <span className={this.props.classes.id}>{this.props.obj._id}</span>
             </DialogTitle>
             <DialogContent>
                 {this.renderCommonEdit()}
@@ -282,12 +284,8 @@ class HostEdit extends Component {
 
 HostEdit.propTypes = {
     classes: PropTypes.object,
-    socket: PropTypes.object,
     obj: PropTypes.object,
-    expertMode: PropTypes.bool,
     onClose: PropTypes.func.isRequired,
-    dialogName: PropTypes.string,
-    objects: PropTypes.object,
 
     t: PropTypes.func,
 };

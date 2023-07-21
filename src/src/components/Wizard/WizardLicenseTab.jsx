@@ -1,5 +1,5 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
 import MenuItem from '@mui/material/MenuItem';
@@ -35,11 +35,11 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     gridDiv: {
-        height: 'calc(100% - ' + TOOLBAR_HEIGHT + 'px)',
+        height: `calc(100% - ${TOOLBAR_HEIGHT}px)`,
         width: '100%',
         overflow: 'hidden',
         padding: theme.spacing(2),
-        textAlign: 'center'
+        textAlign: 'center',
     },
     languageSelect: {
         minWidth: 200,
@@ -69,7 +69,7 @@ const styles = theme => ({
     },
     toolbar: {
         height: TOOLBAR_HEIGHT,
-        lineHeight: TOOLBAR_HEIGHT + 'px',
+        lineHeight: `${TOOLBAR_HEIGHT}px`,
     },
     licenseTextDiv: {
         width: '100%',
@@ -79,7 +79,7 @@ const styles = theme => ({
     },
     licenseText: {
         marginBottom: 15,
-    }
+    },
 });
 
 class WizardLicenseTab extends Component {
@@ -105,24 +105,26 @@ class WizardLicenseTab extends Component {
         }
         return <Dialog
             open={!0}
-            onClose={() => this.setState({ notAgree: false }) }
+            onClose={() => this.setState({ notAgree: false })}
         >
-            <DialogTitle >{ this.props.t('Message') }</DialogTitle>
+            <DialogTitle>{ this.props.t('Message') }</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                    <span role="img" aria-label="unhappy">😒</span> { this.props.t('Sorry, you cannot use ioBroker.')}
+                    <span role="img" aria-label="unhappy">😒</span>
+                    {' '}
+                    { this.props.t('Sorry, you cannot use ioBroker.')}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button
-                    onClick={() => this.setState({ notAgree: false }) }
+                    onClick={() => this.setState({ notAgree: false })}
                     color="primary"
-                    startIcon={<IconCheck/>}
+                    startIcon={<IconCheck />}
                 >
                     { I18n.t('Understand') }
                 </Button>
             </DialogActions>
-        </Dialog>
+        </Dialog>;
     }
 
     renderLicenseText() {
@@ -132,17 +134,20 @@ class WizardLicenseTab extends Component {
     }
 
     render() {
-        return <Paper className={ this.props.classes.paper }>
-            <Grid container className={ this.props.classes.gridDiv } direction="column">
+        return <Paper className={this.props.classes.paper}>
+            <Grid container className={this.props.classes.gridDiv} direction="column">
                 <Grid item>
-                    <FormControl variant="standard" className={ this.props.classes.languageSelect }>
-                        <InputLabel><IconWorld/>{ this.props.t('Language') }</InputLabel>
+                    <FormControl variant="standard" className={this.props.classes.languageSelect}>
+                        <InputLabel>
+                            <IconWorld />
+                            { this.props.t('Language') }
+                        </InputLabel>
                         <Select
                             variant="standard"
-                            value={ I18n.getLanguage() }
+                            value={I18n.getLanguage()}
                             onChange={e => {
                                 I18n.setLanguage(e.target.value);
-                                this.setState( { lang: e.target.value });
+                                this.setState({ lang: e.target.value });
                             }}
                         >
                             <MenuItem value="en">English</MenuItem>
@@ -157,27 +162,27 @@ class WizardLicenseTab extends Component {
                             <MenuItem value="zh-cn">简体中文</MenuItem>
                         </Select>
                     </FormControl>
-                    <div className={ this.props.classes.statAcceptDiv }>
+                    <div className={this.props.classes.statAcceptDiv}>
                         <FormControlLabel
-                            className={ this.props.classes.statAccept }
-                            control={<Checkbox ref={ this.focusRef } checked={ this.state.statisticsAccepted } onChange={e => this.setState({statisticsAccepted: e.target.checked }) } />}
-                            label={ this.props.t('I agree with the collection of anonymous statistics.') }
+                            className={this.props.classes.statAccept}
+                            control={<Checkbox ref={this.focusRef} checked={this.state.statisticsAccepted} onChange={e => this.setState({ statisticsAccepted: e.target.checked })} />}
+                            label={this.props.t('I agree with the collection of anonymous statistics.')}
                         />
-                        <div className={ this.props.classes.statAcceptNote }>{ this.props.t('(This can be disabled later in settings)') }</div>
+                        <div className={this.props.classes.statAcceptNote}>{ this.props.t('(This can be disabled later in settings)') }</div>
                     </div>
                 </Grid>
                 <Grid item>
                     <h1>{ this.props.t('License terms') }</h1>
                 </Grid>
-                <Grid item className={ this.props.classes.licenseDiv }>
+                <Grid item className={this.props.classes.licenseDiv}>
                     {this.renderLicenseText()}
                 </Grid>
             </Grid>
-            <Toolbar className={ this.props.classes.toolbar }>
-                <div className={ this.props.classes.grow }/>
-                <Button variant="contained" color="grey" onClick={ () => this.setState({notAgree: true}) } startIcon={<IconCancel/>}>{ this.props.t('Not agree') }</Button>
-                <Button variant="contained" color="primary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone({lang: this.state.lang}) } startIcon={<IconCheck/>}>{ this.props.t('Agree') }</Button>
-                <div className={ this.props.classes.grow }/>
+            <Toolbar className={this.props.classes.toolbar}>
+                <div className={this.props.classes.grow} />
+                <Button variant="contained" color="grey" onClick={() => this.setState({ notAgree: true })} startIcon={<IconCancel />}>{ this.props.t('Not agree') }</Button>
+                <Button variant="contained" color="primary" className={this.props.classes.greenButton} disabled={!this.state.statisticsAccepted} onClick={() => this.props.onDone({ lang: this.state.lang })} startIcon={<IconCheck />}>{ this.props.t('Agree') }</Button>
+                <div className={this.props.classes.grow} />
             </Toolbar>
             { this.renderNotAgree() }
         </Paper>;

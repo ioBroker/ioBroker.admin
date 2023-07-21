@@ -42,8 +42,8 @@ class ConfigCoordinates extends ConfigGeneric {
                 setTimeout(() => this.getCoordinates(), 300);
             }
         } else {
-            const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-            if (!value && this.props.schema.autoInit) {
+            const value_ = ConfigGeneric.getValue(this.props.data, this.props.attr);
+            if (!value_ && this.props.schema.autoInit) {
                 setTimeout(() => this.getCoordinates(), 300);
             }
         }
@@ -63,7 +63,7 @@ class ConfigCoordinates extends ConfigGeneric {
                         async () => {
                             await this.onChange(this.props.schema.longitudeName, (obj.common.longitude || '').trim());
                             await this.onChange(this.props.schema.latitudeName, (obj.common.latitude || '').trim());
-                        }
+                        },
                     );
                 } else {
                     const value = obj.common.latitude + (this.props.schema.divider || ',') + obj.common.longitude;
@@ -73,14 +73,14 @@ class ConfigCoordinates extends ConfigGeneric {
                         },
                         () => {
                             this.onChange(this.props.attr, value);
-                        }
+                        },
                     );
                 }
             } else {
                 window.alert(
                     I18n.t(
-                        'ra_Cannot determine position: System settings are empty and GPS detection is disabled in browser'
-                    )
+                        'ra_Cannot determine position: System settings are empty and GPS detection is disabled in browser',
+                    ),
                 );
             }
         });
@@ -100,10 +100,10 @@ class ConfigCoordinates extends ConfigGeneric {
                                 async () => {
                                     await this.onChange(
                                         this.props.schema.longitudeName,
-                                        position.coords.longitude || ''
+                                        position.coords.longitude || '',
                                     );
                                     await this.onChange(this.props.schema.latitudeName, position.coords.latitude || '');
-                                }
+                                },
                             );
                         } else {
                             const value =
@@ -121,14 +121,14 @@ class ConfigCoordinates extends ConfigGeneric {
                 error => {
                     console.error(`Cannot determine coordinates from browser: ${error}`);
                     this.getSystemCoordinates();
-                }
+                },
             );
         } else {
             this.getSystemCoordinates();
         }
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         return (
             <>
                 {this.props.schema.useSystemName ? (
@@ -142,8 +142,7 @@ class ConfigCoordinates extends ConfigGeneric {
                                         this.getSystemCoordinates();
                                     }
                                     this.setState({ useSystem }, () =>
-                                        this.onChange(this.props.schema.useSystemName, useSystem)
-                                    );
+                                        this.onChange(this.props.schema.useSystemName, useSystem));
                                 }}
                             />
                         }
@@ -176,8 +175,7 @@ class ConfigCoordinates extends ConfigGeneric {
                         onChange={e => {
                             const latitude = e.target.value;
                             this.setState({ latitude }, () =>
-                                this.onChange(this.props.schema.latitudeName, (latitude || '').trim())
-                            );
+                                this.onChange(this.props.schema.latitudeName, (latitude || '').trim()));
                         }}
                         label={I18n.t('ra_Latitude')}
                     />
@@ -200,7 +198,7 @@ class ConfigCoordinates extends ConfigGeneric {
                         helperText={this.renderHelp(
                             this.props.schema.help,
                             this.props.schema.helpLink,
-                            this.props.schema.noTranslation
+                            this.props.schema.noTranslation,
                         )}
                     />
                 ) : null}

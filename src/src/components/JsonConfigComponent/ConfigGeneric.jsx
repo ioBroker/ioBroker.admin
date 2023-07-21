@@ -13,10 +13,14 @@ import ConfirmDialog from './wrapper/Dialogs/Confirm';
 
 class ConfigGeneric extends Component {
     static DIFFERENT_VALUE = '__different__';
+
     static DIFFERENT_LABEL = 'ra___different__';
+
     static NONE_VALUE = '';
+
     static NONE_LABEL = 'ra_none';
-    static AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+
+    static AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
     constructor(props) {
         super(props);
@@ -34,23 +38,23 @@ class ConfigGeneric extends Component {
             if (props.custom) {
                 this.defaultValue = props.schema.defaultFunc
                     ? this.executeCustom(
-                          props.schema.defaultFunc,
-                          props.schema.default,
-                          props.data,
-                          props.instanceObj,
-                          props.arrayIndex,
-                          props.globalData,
-                      )
+                        props.schema.defaultFunc,
+                        props.schema.default,
+                        props.data,
+                        props.instanceObj,
+                        props.arrayIndex,
+                        props.globalData,
+                    )
                     : props.schema.default;
             } else {
                 this.defaultValue = props.schema.defaultFunc
                     ? this.execute(
-                          props.schema.defaultFunc,
-                          props.schema.default,
-                          props.data,
-                          props.arrayIndex,
-                          props.globalData,
-                      )
+                        props.schema.defaultFunc,
+                        props.schema.default,
+                        props.data,
+                        props.arrayIndex,
+                        props.globalData,
+                    )
                     : props.schema.default;
             }
         }
@@ -71,14 +75,12 @@ class ConfigGeneric extends Component {
                 setTimeout(() => {
                     if (this.props.custom) {
                         this.props.onChange(this.props.attr, this.defaultValue, () =>
-                            setTimeout(() => this.props.forceUpdate([this.props.attr], this.props.data), 100)
-                        );
-                        //this.onChange(this.props.attr, this.defaultValue);
+                            setTimeout(() => this.props.forceUpdate([this.props.attr], this.props.data), 100));
+                        // this.onChange(this.props.attr, this.defaultValue);
                     } else {
                         ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
                         this.props.onChange(this.props.data, undefined, () =>
-                            this.props.forceUpdate([this.props.attr], this.props.data)
-                        );
+                            this.props.forceUpdate([this.props.attr], this.props.data));
                     }
                 }, 100);
             }
@@ -96,7 +98,7 @@ class ConfigGeneric extends Component {
                 try {
                     data = JSON.parse(data);
                 } catch (e) {
-                    console.error('Cannot parse json data: ' + data);
+                    console.error(`Cannot parse json data: ${data}`);
                 }
             } else {
                 data = {
@@ -115,14 +117,12 @@ class ConfigGeneric extends Component {
                     if (value !== null && value !== undefined) {
                         if (this.props.custom) {
                             this.props.onChange(this.props.attr, value, () =>
-                                this.props.forceUpdate([this.props.attr], this.props.data)
-                            );
-                            //this.onChange(this.props.attr, this.defaultValue);
+                                this.props.forceUpdate([this.props.attr], this.props.data));
+                            // this.onChange(this.props.attr, this.defaultValue);
                         } else {
                             ConfigGeneric.setValue(this.props.data, this.props.attr, value);
                             this.props.onChange(this.props.data, undefined, () =>
-                                this.props.forceUpdate([this.props.attr], this.props.data)
-                            );
+                                this.props.forceUpdate([this.props.attr], this.props.data));
                         }
                     }
                 });
@@ -160,37 +160,34 @@ class ConfigGeneric extends Component {
     static getValue(data, attr) {
         if (typeof attr === 'string') {
             return ConfigGeneric.getValue(data, attr.split('.'));
-        } else {
-            if (attr.length === 1) {
-                return data[attr[0]];
-            } else {
-                const part = attr.shift();
-                if (typeof data[part] === 'object') {
-                    return ConfigGeneric.getValue(data[part], attr);
-                } else {
-                    return null;
-                }
-            }
         }
+        if (attr.length === 1) {
+            return data[attr[0]];
+        }
+        const part = attr.shift();
+        if (typeof data[part] === 'object') {
+            return ConfigGeneric.getValue(data[part], attr);
+        }
+        return null;
     }
 
     static setValue(data, attr, value) {
         if (typeof attr === 'string') {
-            return ConfigGeneric.setValue(data, attr.split('.'), value);
-        } else {
-            if (attr.length === 1) {
-                if (value === null) {
-                    delete data[attr[0]];
-                } else {
-                    data[attr[0]] = value;
-                }
+            ConfigGeneric.setValue(data, attr.split('.'), value);
+            return;
+        }
+        if (attr.length === 1) {
+            if (value === null) {
+                delete data[attr[0]];
             } else {
-                const part = attr.shift();
-                if (!data[part] || typeof data[part] === 'object') {
-                    data[part] = data[part] || {};
-                }
-                return ConfigGeneric.setValue(data[part], attr, value);
+                data[attr[0]] = value;
             }
+        } else {
+            const part = attr.shift();
+            if (!data[part] || typeof data[part] === 'object') {
+                data[part] = data[part] || {};
+            }
+            ConfigGeneric.setValue(data[part], attr, value);
         }
     }
 
@@ -203,21 +200,22 @@ class ConfigGeneric extends Component {
             text = noTranslation ? text : I18n.t(text);
             if (text.includes('${')) {
                 return this.getPattern(text);
-            } else {
-                return text;
             }
-        } else if (text && typeof text === 'object') {
+            return text;
+        }
+        if (text && typeof text === 'object') {
             if (text.func) {
                 // calculate pattern
                 if (typeof text.func === 'object') {
                     return this.getPattern(text.func[this.lang] || text.func.en || '');
-                } else {
-                    this.getPattern(text.func);
                 }
-            } else {
-                return text[this.lang] || text.en || '';
+                return this.getPattern(text.func);
             }
+
+            return text[this.lang] || text.en || '';
         }
+
+        return text.toString();
     }
 
     renderConfirmDialog() {
@@ -260,7 +258,7 @@ class ConfigGeneric extends Component {
                                     confirmOldValue: null,
                                     confirmData: null,
                                 },
-                                () => this.props.onChange(data)
+                                () => this.props.onChange(data),
                             );
                         } else {
                             this.setState({
@@ -273,8 +271,7 @@ class ConfigGeneric extends Component {
                                 confirmData: null,
                             });
                         }
-                    })
-                }
+                    })}
             />
         );
     }
@@ -287,6 +284,7 @@ class ConfigGeneric extends Component {
      * @param {(() => void)?} cb optional callback function, else returns a Promise
      * @return {Promise<void>}
      */
+    // eslint-disable-next-line react/no-unused-class-component-methods
     onChange(attr, newValue, cb) {
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
@@ -309,145 +307,145 @@ class ConfigGeneric extends Component {
                         } else {
                             resolve();
                         }
-                    }
+                    },
                 );
             });
-        } else {
-            // find any inputs with confirmation
-            if (this.props.schema.confirmDependsOn) {
-                for (let z = 0; z < this.props.schema.confirmDependsOn.length; z++) {
-                    const dep = this.props.schema.confirmDependsOn[z];
-                    if (dep.confirm) {
-                        const val = ConfigGeneric.getValue(data, dep.attr);
+        }
+        // find any inputs with confirmation
+        if (this.props.schema.confirmDependsOn) {
+            for (let z = 0; z < this.props.schema.confirmDependsOn.length; z++) {
+                const dep = this.props.schema.confirmDependsOn[z];
+                if (dep.confirm) {
+                    const val = ConfigGeneric.getValue(data, dep.attr);
 
-                        if (
-                            this.execute(
-                                dep.confirm.condition,
-                                false,
-                                data,
-                                this.props.arrayIndex,
-                                this.props.globalData
-                            )
-                        ) {
-                            return new Promise(resolve => {
-                                this.setState(
-                                    {
-                                        confirmDialog: true,
-                                        confirmNewValue: newValue,
-                                        confirmAttr: attr,
-                                        confirmDepNewValue: val,
-                                        confirmDepAttr: dep.attr,
-                                        confirmData: dep.confirm,
-                                    },
-                                    () => {
-                                        if (typeof cb === 'function') {
-                                            cb();
-                                        } else {
-                                            resolve();
-                                        }
+                    if (
+                        this.execute(
+                            dep.confirm.condition,
+                            false,
+                            data,
+                            this.props.arrayIndex,
+                            this.props.globalData,
+                        )
+                    ) {
+                        return new Promise(resolve => {
+                            this.setState(
+                                {
+                                    confirmDialog: true,
+                                    confirmNewValue: newValue,
+                                    confirmAttr: attr,
+                                    confirmDepNewValue: val,
+                                    confirmDepAttr: dep.attr,
+                                    confirmData: dep.confirm,
+                                },
+                                () => {
+                                    if (typeof cb === 'function') {
+                                        cb();
+                                    } else {
+                                        resolve();
                                     }
-                                );
-                            });
-                        }
+                                },
+                            );
+                        });
                     }
                 }
-            }
-
-            const changed = [];
-            if (this.props.schema.onChangeDependsOn) {
-                for (let z = 0; z < this.props.schema.onChangeDependsOn.length; z++) {
-                    const dep = this.props.schema.onChangeDependsOn[z];
-                    if (dep.onChange) {
-                        const val = ConfigGeneric.getValue(data, dep.attr);
-
-                        let _newValue;
-                        if (this.props.custom) {
-                            _newValue = this.executeCustom(
-                                dep.onChange.calculateFunc,
-                                data,
-                                this.props.customObj,
-                                this.props.instanceObj,
-                                this.props.arrayIndex,
-                                this.props.globalData
-                            );
-                        } else {
-                            _newValue = this.execute(
-                                dep.onChange.calculateFunc,
-                                val,
-                                data,
-                                this.props.arrayIndex,
-                                this.props.globalData
-                            );
-                        }
-
-                        if (_newValue !== val) {
-                            ConfigGeneric.setValue(data, dep.attr, _newValue);
-                            changed.push(dep.attr);
-                        }
-                    }
-                }
-            }
-
-            if (this.props.schema.hiddenDependsOn) {
-                for (let z = 0; z < this.props.schema.hiddenDependsOn.length; z++) {
-                    const dep = this.props.schema.hiddenDependsOn[z];
-                    dep.hidden && changed.push(dep.attr);
-                }
-            }
-
-            if (this.props.schema.labelDependsOn) {
-                for (let z = 0; z < this.props.schema.labelDependsOn.length; z++) {
-                    const dep = this.props.schema.labelDependsOn[z];
-                    dep.hidden && changed.push(dep.attr);
-                }
-            }
-
-            if (this.props.schema.helpDependsOn) {
-                for (let z = 0; z < this.props.schema.helpDependsOn.length; z++) {
-                    const dep = this.props.schema.helpDependsOn[z];
-                    dep.hidden && changed.push(dep.attr);
-                }
-            }
-
-            if (this.props.schema.onChange && !this.props.schema.onChange.ignoreOwnChanges) {
-                const val = ConfigGeneric.getValue(data, this.props.attr);
-
-                const newValue = this.props.custom
-                    ? this.executeCustom(
-                          this.props.schema.onChange.calculateFunc,
-                          data,
-                          this.props.customObj,
-                          this.props.instanceObj,
-                          this.props.arrayIndex,
-                          this.props.globalData
-                      )
-                    : this.execute(
-                          this.props.schema.onChange.calculateFunc,
-                          val,
-                          data,
-                          this.props.arrayIndex,
-                          this.props.globalData
-                      );
-                if (newValue !== val) {
-                    ConfigGeneric.setValue(data, this.props.attr, newValue);
-                }
-            }
-
-            if (this.props.custom) {
-                this.props.onChange(attr, newValue, () => cb && cb());
-
-                changed &&
-                    changed.length &&
-                    changed.forEach((_attr, i) =>
-                        setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, _attr)), i * 50)
-                    );
-            } else {
-                this.props.onChange(data, undefined, () => {
-                    changed.length && this.props.forceUpdate(changed, data);
-                    cb && cb();
-                });
             }
         }
+
+        const changed = [];
+        if (this.props.schema.onChangeDependsOn) {
+            for (let z = 0; z < this.props.schema.onChangeDependsOn.length; z++) {
+                const dep = this.props.schema.onChangeDependsOn[z];
+                if (dep.onChange) {
+                    const val = ConfigGeneric.getValue(data, dep.attr);
+
+                    let _newValue;
+                    if (this.props.custom) {
+                        _newValue = this.executeCustom(
+                            dep.onChange.calculateFunc,
+                            data,
+                            this.props.customObj,
+                            this.props.instanceObj,
+                            this.props.arrayIndex,
+                            this.props.globalData,
+                        );
+                    } else {
+                        _newValue = this.execute(
+                            dep.onChange.calculateFunc,
+                            val,
+                            data,
+                            this.props.arrayIndex,
+                            this.props.globalData,
+                        );
+                    }
+
+                    if (_newValue !== val) {
+                        ConfigGeneric.setValue(data, dep.attr, _newValue);
+                        changed.push(dep.attr);
+                    }
+                }
+            }
+        }
+
+        if (this.props.schema.hiddenDependsOn) {
+            for (let z = 0; z < this.props.schema.hiddenDependsOn.length; z++) {
+                const dep = this.props.schema.hiddenDependsOn[z];
+                dep.hidden && changed.push(dep.attr);
+            }
+        }
+
+        if (this.props.schema.labelDependsOn) {
+            for (let z = 0; z < this.props.schema.labelDependsOn.length; z++) {
+                const dep = this.props.schema.labelDependsOn[z];
+                dep.hidden && changed.push(dep.attr);
+            }
+        }
+
+        if (this.props.schema.helpDependsOn) {
+            for (let z = 0; z < this.props.schema.helpDependsOn.length; z++) {
+                const dep = this.props.schema.helpDependsOn[z];
+                dep.hidden && changed.push(dep.attr);
+            }
+        }
+
+        if (this.props.schema.onChange && !this.props.schema.onChange.ignoreOwnChanges) {
+            const val = ConfigGeneric.getValue(data, this.props.attr);
+
+            const newValue_ = this.props.custom
+                ? this.executeCustom(
+                    this.props.schema.onChange.calculateFunc,
+                    data,
+                    this.props.customObj,
+                    this.props.instanceObj,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                )
+                : this.execute(
+                    this.props.schema.onChange.calculateFunc,
+                    val,
+                    data,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                );
+            if (newValue_ !== val) {
+                ConfigGeneric.setValue(data, this.props.attr, newValue_);
+            }
+        }
+
+        if (this.props.custom) {
+            this.props.onChange(attr, newValue, () => cb && cb());
+
+            changed &&
+                    changed.length &&
+                    changed.forEach((_attr, i) =>
+                        setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, _attr)), i * 50));
+        } else {
+            this.props.onChange(data, undefined, () => {
+                changed.length && this.props.forceUpdate(changed, data);
+                cb && cb();
+            });
+        }
+
+        return Promise.resolve();
     }
 
     execute(func, defaultValue, data, arrayIndex, globalData) {
@@ -457,37 +455,35 @@ class ConfigGeneric extends Component {
 
         if (!func) {
             return defaultValue;
-        } else {
-            try {
-                // eslint-disable-next-line no-new-func
-                const f = new Function(
-                    'data',
-                    'originalData',
-                    '_system',
-                    '_alive',
-                    '_common',
-                    '_socket',
-                    '_instance',
-                    'arrayIndex',
-                    'globalData',
-                    func.includes('return') ? func : 'return ' + func
-                );
-                const result = f(
-                    data || this.props.data,
-                    this.props.originalData,
-                    this.props.systemConfig,
-                    this.props.alive,
-                    this.props.common,
-                    this.props.socket,
-                    this.props.instance,
-                    arrayIndex,
-                    globalData
-                );
-                return result;
-            } catch (e) {
-                console.error(`Cannot execute ${func}: ${e}`);
-                return defaultValue;
-            }
+        }
+        try {
+            // eslint-disable-next-line no-new-func
+            const f = new Function(
+                'data',
+                'originalData',
+                '_system',
+                '_alive',
+                '_common',
+                '_socket',
+                '_instance',
+                'arrayIndex',
+                'globalData',
+                func.includes('return') ? func : `return ${func}`,
+            );
+            return f(
+                data || this.props.data,
+                this.props.originalData,
+                this.props.systemConfig,
+                this.props.alive,
+                this.props.common,
+                this.props.socket,
+                this.props.instance,
+                arrayIndex,
+                globalData,
+            );
+        } catch (e) {
+            console.error(`Cannot execute ${func}: ${e}`);
+            return defaultValue;
         }
     }
 
@@ -498,35 +494,33 @@ class ConfigGeneric extends Component {
 
         if (!func) {
             return null;
-        } else {
-            try {
-                // eslint-disable-next-line no-new-func
-                const f = new Function(
-                    'data',
-                    'originalData',
-                    '_system',
-                    'instanceObj',
-                    'customObj',
-                    '_socket',
-                    'arrayIndex',
-                    'globalData',
-                    func.includes('return') ? func : 'return ' + func
-                );
-                const result = f(
-                    data || this.props.data,
-                    this.props.originalData,
-                    this.props.systemConfig,
-                    instanceObj,
-                    customObj,
-                    this.props.socket,
-                    arrayIndex,
-                    globalData
-                );
-                return result;
-            } catch (e) {
-                console.error(`Cannot execute ${func}: ${e}`);
-                return null;
-            }
+        }
+        try {
+            // eslint-disable-next-line no-new-func
+            const f = new Function(
+                'data',
+                'originalData',
+                '_system',
+                'instanceObj',
+                'customObj',
+                '_socket',
+                'arrayIndex',
+                'globalData',
+                func.includes('return') ? func : `return ${func}`,
+            );
+            return f(
+                data || this.props.data,
+                this.props.originalData,
+                this.props.systemConfig,
+                instanceObj,
+                customObj,
+                this.props.socket,
+                arrayIndex,
+                globalData,
+            );
+        } catch (e) {
+            console.error(`Cannot execute ${func}: ${e}`);
+            return null;
         }
     }
 
@@ -539,43 +533,43 @@ class ConfigGeneric extends Component {
         if (this.props.custom) {
             error = schema.validator
                 ? !this.executeCustom(
-                      schema.validator,
-                      this.props.data,
-                      this.props.customObj,
-                      this.props.instanceObj,
-                      this.props.arrayIndex,
-                      this.props.globalData
-                  )
+                    schema.validator,
+                    this.props.data,
+                    this.props.customObj,
+                    this.props.instanceObj,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                )
                 : false;
             disabled = schema.disabled
                 ? this.executeCustom(
-                      schema.disabled,
-                      this.props.data,
-                      this.props.customObj,
-                      this.props.instanceObj,
-                      this.props.arrayIndex,
-                      this.props.globalData
-                  )
+                    schema.disabled,
+                    this.props.data,
+                    this.props.customObj,
+                    this.props.instanceObj,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                )
                 : false;
             hidden = schema.hidden
                 ? this.executeCustom(
-                      schema.hidden,
-                      this.props.data,
-                      this.props.customObj,
-                      this.props.instanceObj,
-                      this.props.arrayIndex,
-                      this.props.globalData
-                  )
+                    schema.hidden,
+                    this.props.data,
+                    this.props.customObj,
+                    this.props.instanceObj,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                )
                 : false;
             defaultValue = schema.defaultFunc
                 ? this.executeCustom(
-                      schema.defaultFunc,
-                      this.props.data,
-                      this.props.customObj,
-                      this.props.instanceObj,
-                      this.props.arrayIndex,
-                      this.props.globalData
-                  )
+                    schema.defaultFunc,
+                    this.props.data,
+                    this.props.customObj,
+                    this.props.instanceObj,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                )
                 : schema.default;
         } else {
             error = schema.validator
@@ -589,16 +583,18 @@ class ConfigGeneric extends Component {
                 : false;
             defaultValue = schema.defaultFunc
                 ? this.execute(
-                      schema.defaultFunc,
-                      schema.default,
-                      this.props.data,
-                      this.props.arrayIndex,
-                      this.props.globalData
-                  )
+                    schema.defaultFunc,
+                    schema.default,
+                    this.props.data,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                )
                 : schema.default;
         }
 
-        return { error, disabled, hidden, defaultValue };
+        return {
+            error, disabled, hidden, defaultValue,
+        };
     }
 
     onError(attr, error) {
@@ -611,10 +607,11 @@ class ConfigGeneric extends Component {
         this.props.onError && this.props.onError(attr, error);
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(/* error, disabled, defaultValue */) {
         return this.getText(this.props.schema.label) || this.getText(this.props.schema.text);
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderHelp(text, link, noTranslation) {
         if (!link) {
             text = this.getText(text, noTranslation) || '';
@@ -623,94 +620,88 @@ class ConfigGeneric extends Component {
                 (text.includes('<a ') || text.includes('<br') || text.includes('<b>') || text.includes('<i>'))
             ) {
                 return Utils.renderTextWithA(text);
-            } else {
-                return text;
             }
-        } else {
-            return (
-                <a
-                    href={link}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                        color: this.props.themeType === 'dark' ? '#a147ff' : '#5b238f',
-                        textDecoration: 'underline',
-                    }}
-                >
-                    {this.getText(text, noTranslation)}
-                </a>
-            );
+            return text;
         }
+        return <a
+            href={link}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+                color: this.props.themeType === 'dark' ? '#a147ff' : '#5b238f',
+                textDecoration: 'underline',
+            }}
+        >
+            {this.getText(text, noTranslation)}
+        </a>;
     }
 
     getPattern(pattern, data) {
         data = data || this.props.data;
         if (!pattern) {
             return '';
-        } else {
-            if (typeof pattern === 'object') {
-                if (pattern.func) {
-                    pattern = pattern.func;
-                } else {
-                    console.log(`Object must be stringified: ${JSON.stringify(pattern)}`);
-                    pattern = JSON.stringify(pattern);
-                }
+        }
+        if (typeof pattern === 'object') {
+            if (pattern.func) {
+                pattern = pattern.func;
+            } else {
+                console.log(`Object must be stringified: ${JSON.stringify(pattern)}`);
+                pattern = JSON.stringify(pattern);
             }
+        }
 
-            try {
-                if (this.props.custom) {
-                    // eslint-disable-next-line no-new-func
-                    const f = new Function(
-                        'data',
-                        'originalData',
-                        'arrayIndex',
-                        'globalData',
-                        '_system',
-                        'instanceObj',
-                        'customObj',
-                        '_socket',
-                        'return `' + pattern.replace(/`/g, '\\`') + '`'
-                    );
-                    return f(
-                        data,
-                        this.props.originalData,
-                        this.props.arrayIndex,
-                        this.props.globalData,
-                        this.props.systemConfig,
-                        this.props.instanceObj,
-                        this.props.customObj,
-                        this.props.socket,
-                        this.props.arrayIndex,
-                        this.props.globalData
-                    );
-                } else {
-                    // eslint-disable-next-line no-new-func
-                    const f = new Function(
-                        'data',
-                        'originalData',
-                        'arrayIndex',
-                        'globalData',
-                        '_system',
-                        '_alive',
-                        '_common',
-                        '_socket',
-                        'return `' + pattern.replace(/`/g, '\\`') + '`'
-                    );
-                    return f(
-                        data,
-                        this.props.originalData,
-                        this.props.arrayIndex,
-                        this.props.globalData,
-                        this.props.systemConfig,
-                        this.props.alive,
-                        this.props.common,
-                        this.props.socket
-                    );
-                }
-            } catch (e) {
-                console.error(`Cannot execute ${pattern}: ${e}`);
-                return pattern;
+        try {
+            if (this.props.custom) {
+                // eslint-disable-next-line no-new-func
+                const f = new Function(
+                    'data',
+                    'originalData',
+                    'arrayIndex',
+                    'globalData',
+                    '_system',
+                    'instanceObj',
+                    'customObj',
+                    '_socket',
+                    `return \`${pattern.replace(/`/g, '\\`')}\``,
+                );
+                return f(
+                    data,
+                    this.props.originalData,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                    this.props.systemConfig,
+                    this.props.instanceObj,
+                    this.props.customObj,
+                    this.props.socket,
+                    this.props.arrayIndex,
+                    this.props.globalData,
+                );
             }
+            // eslint-disable-next-line no-new-func
+            const f = new Function(
+                'data',
+                'originalData',
+                'arrayIndex',
+                'globalData',
+                '_system',
+                '_alive',
+                '_common',
+                '_socket',
+                `return \`${pattern.replace(/`/g, '\\`')}\``,
+            );
+            return f(
+                data,
+                this.props.originalData,
+                this.props.arrayIndex,
+                this.props.globalData,
+                this.props.systemConfig,
+                this.props.alive,
+                this.props.common,
+                this.props.socket,
+            );
+        } catch (e) {
+            console.error(`Cannot execute ${pattern}: ${e}`);
+            return pattern;
         }
     }
 
@@ -728,7 +719,9 @@ class ConfigGeneric extends Component {
             }, 200);
         }
 
-        const { error, disabled, hidden, defaultValue } = this.calculate(schema);
+        const {
+            error, disabled, hidden, defaultValue,
+        } = this.calculate(schema);
 
         if (hidden) {
             // Remove all errors if element is hidden
@@ -736,7 +729,7 @@ class ConfigGeneric extends Component {
                 setTimeout(
                     isError => Object.keys(isError).forEach(attr => this.props.onError(attr)),
                     100,
-                    JSON.parse(JSON.stringify(this.isError))
+                    JSON.parse(JSON.stringify(this.isError)),
                 );
                 this.isError = {};
             }
@@ -749,12 +742,12 @@ class ConfigGeneric extends Component {
                         lg={schema.lg || undefined}
                         md={schema.md || undefined}
                         sm={schema.sm || undefined}
-                        style={Object.assign(
-                            {},
-                            { marginBottom: 0, /*marginRight: 8, */ textAlign: 'left' },
-                            schema.style,
-                            this.props.themeType === 'dark' ? schema.darkStyle : {}
-                        )}
+                        style={({
+                            marginBottom: 0, /* marginRight: 8, */
+                            textAlign: 'left',
+                            ...schema.style,
+                            ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                        })}
                     />
                 );
 
@@ -765,107 +758,100 @@ class ConfigGeneric extends Component {
                             {item}
                         </>
                     );
-                } else {
-                    return item;
                 }
-            } else {
-                return null;
+                return item;
             }
-        } else {
-            // Add error
-            if (schema.validatorNoSaveOnError) {
-                if (error && !Object.keys(this.isError).length) {
-                    this.isError = {
-                        [this.props.attr]: schema.validatorErrorText ? I18n.t(schema.validatorErrorText) : true,
-                    };
-                    setTimeout(
-                        isError => Object.keys(isError).forEach(attr => this.props.onError(attr, isError[attr])),
-                        100,
-                        JSON.parse(JSON.stringify(this.isError))
-                    );
-                } else if (!error && Object.keys(this.isError).length) {
-                    setTimeout(
-                        isError => Object.keys(isError).forEach(attr => this.props.onError(attr)),
-                        100,
-                        JSON.parse(JSON.stringify(this.isError))
-                    );
-                    this.isError = {};
-                }
+            return null;
+        }
+        // Add error
+        if (schema.validatorNoSaveOnError) {
+            if (error && !Object.keys(this.isError).length) {
+                this.isError = {
+                    [this.props.attr]: schema.validatorErrorText ? I18n.t(schema.validatorErrorText) : true,
+                };
+                setTimeout(
+                    isError => Object.keys(isError).forEach(attr => this.props.onError(attr, isError[attr])),
+                    100,
+                    JSON.parse(JSON.stringify(this.isError)),
+                );
+            } else if (!error && Object.keys(this.isError).length) {
+                setTimeout(
+                    isError => Object.keys(isError).forEach(attr => this.props.onError(attr)),
+                    100,
+                    JSON.parse(JSON.stringify(this.isError)),
+                );
+                this.isError = {};
             }
+        }
 
-            const renderedItem = this.renderItem(
-                error,
-                disabled || this.props.commandRunning || this.props.disabled,
-                defaultValue,
-            );
+        const renderedItem = this.renderItem(
+            error,
+            disabled || this.props.commandRunning || this.props.disabled,
+            defaultValue,
+        );
 
-            if (this.noPlaceRequired) {
-                return renderedItem;
-            }
+        if (this.noPlaceRequired) {
+            return renderedItem;
+        }
 
-            const item = <Grid
-                item
-                title={this.getText(schema.tooltip)}
-                xs={schema.xs || undefined}
-                lg={schema.lg || undefined}
-                md={schema.md || undefined}
-                sm={schema.sm || undefined}
-                style={Object.assign(
-                    {},
-                    {
-                        marginBottom: 0,
-                        // marginRight: 8,
-                        textAlign: 'left',
-                        width:
+        const item = <Grid
+            item
+            title={this.getText(schema.tooltip)}
+            xs={schema.xs || undefined}
+            lg={schema.lg || undefined}
+            md={schema.md || undefined}
+            sm={schema.sm || undefined}
+            style={({
+
+                marginBottom: 0,
+                // marginRight: 8,
+                textAlign: 'left',
+                width:
                             schema.type === 'divider' || schema.type === 'header'
                                 ? schema.width || '100%'
                                 : undefined,
-                    },
-                    schema.style,
-                    this.props.themeType === 'dark' ? schema.darkStyle : {}
-                )}
-            >
-                {this.props.schema.defaultSendTo && this.props.schema.button ?
-                    <Grid container style={{ width: '100%' }}>
-                        <Grid item flex={1}>
-                            {renderedItem}
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                variant="outlined"
-                                onClick={() => this.sendTo()}
-                                title={
-                                    this.props.schema.buttonTooltip
-                                        ? this.getText(
-                                              this.props.schema.buttonTooltip,
-                                              this.props.schema.buttonTooltipNoTranslation
-                                          )
-                                        : I18n.t('ra_Request data by instance')
-                                }
-                            >
-                                {this.getText(this.props.schema.button)}
-                            </Button>
-                        </Grid>
-                    </Grid> : renderedItem}
-            </Grid>;
+                ...schema.style,
+                ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+            })}
+        >
+            {this.props.schema.defaultSendTo && this.props.schema.button ?
+                <Grid container style={{ width: '100%' }}>
+                    <Grid item flex={1}>
+                        {renderedItem}
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            variant="outlined"
+                            onClick={() => this.sendTo()}
+                            title={
+                                this.props.schema.buttonTooltip
+                                    ? this.getText(
+                                        this.props.schema.buttonTooltip,
+                                        this.props.schema.buttonTooltipNoTranslation,
+                                    )
+                                    : I18n.t('ra_Request data by instance')
+                            }
+                        >
+                            {this.getText(this.props.schema.button)}
+                        </Button>
+                    </Grid>
+                </Grid> : renderedItem}
+        </Grid>;
 
-            if (schema.newLine) {
-                return <>
-                    <div style={{ flexBasis: '100%', height: 0 }} />
-                    {this.renderConfirmDialog()}
-                    {item}
-                </>;
-            } else {
-                if (this.state.confirmDialog) {
-                    return <>
-                        {this.renderConfirmDialog()}
-                        {item}
-                    </>;
-                } else {
-                    return item;
-                }
-            }
+        if (schema.newLine) {
+            return <>
+                <div style={{ flexBasis: '100%', height: 0 }} />
+                {this.renderConfirmDialog()}
+                {item}
+            </>;
         }
+        if (this.state.confirmDialog) {
+            return <>
+                {this.renderConfirmDialog()}
+                {item}
+            </>;
+        }
+        return item;
     }
 }
 
@@ -875,11 +861,14 @@ ConfigGeneric.propTypes = {
     originalData: PropTypes.object,
     schema: PropTypes.object,
     attr: PropTypes.string,
+    // eslint-disable-next-line react/no-unused-prop-types
     value: PropTypes.any,
+    // eslint-disable-next-line react/no-unused-prop-types
     themeName: PropTypes.string,
     style: PropTypes.object,
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    // eslint-disable-next-line react/no-unused-prop-types
     customs: PropTypes.object,
     forceUpdate: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
@@ -889,7 +878,9 @@ ConfigGeneric.propTypes = {
     common: PropTypes.object,
     adapterName: PropTypes.string,
     instance: PropTypes.number,
+    // eslint-disable-next-line react/no-unused-prop-types
     dateFormat: PropTypes.string,
+    // eslint-disable-next-line react/no-unused-prop-types
     isFloatComma: PropTypes.bool,
 
     customObj: PropTypes.object,

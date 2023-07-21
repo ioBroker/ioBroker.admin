@@ -29,15 +29,14 @@ class ConfigCertificateSelect extends ConfigGeneric {
 
                 if (name.includes(el.type)) {
                     return true;
-                } else if (el.type === 'public' && name.includes('cert')) {
-                    return true;
-                } else if (el.type === 'private' && (name.includes('priv') || name.includes('key'))) {
-                    return true;
-                } else if (el.type === 'chained' && (name.includes('chain') || name.includes('ca'))) {
+                }
+                if (el.type === 'public' && name.includes('cert')) {
                     return true;
                 }
-
-                return false;
+                if (el.type === 'private' && (name.includes('priv') || name.includes('key'))) {
+                    return true;
+                }
+                return !!(el.type === 'chained' && (name.includes('chain') || name.includes('ca')));
             })
             .map(el => ({ label: el.name, value: el.name }));
 
@@ -46,7 +45,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
         this.setState({ value, selectOptions });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
@@ -61,18 +60,21 @@ class ConfigCertificateSelect extends ConfigGeneric {
                 displayEmpty
                 disabled={!!disabled}
                 value={this.state.value}
-                renderValue={val => this.getText(item?.label, this.props.schema.noTranslation !== false)}
+                renderValue={() => this.getText(item?.label, this.props.schema.noTranslation !== false)}
                 onChange={e =>
                     this.setState({ value: e.target.value }, () =>
                         this.onChange(this.props.attr, this.state.value))}
             >
-                {this.state.selectOptions?.map(item =>
+                {this.state.selectOptions?.map(item_ =>
                     <MenuItem
-                        key={item.value}
-                        value={item.value}
-                        style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}>{
-                            this.getText(item.label, this.props.schema.noTranslation !== false)
-                        }</MenuItem>)}
+                        key={item_.value}
+                        value={item_.value}
+                        style={item_.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
+                    >
+                        {
+                            this.getText(item_.label, this.props.schema.noTranslation !== false)
+                        }
+                    </MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;

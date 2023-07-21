@@ -27,8 +27,8 @@ const styles = theme => ({
         minWidth: 150,
     },
     quality: {
-        width: '100%'
-    }
+        width: '100%',
+    },
 });
 
 class ObjectBrowserEditRole extends Component {
@@ -38,7 +38,7 @@ class ObjectBrowserEditRole extends Component {
         this.state = {
             role: null,
             initRole: null,
-            roleInput: null
+            roleInput: null,
         };
     }
 

@@ -11,7 +11,7 @@ import Select from '@mui/material/Select';
 import I18n from './wrapper/i18n';
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
         width: '100%',
     },
@@ -29,28 +29,26 @@ class ConfigInstanceSelect extends ConfigGeneric {
 
         this.props.socket.getAdapterInstances(adapter, true)
             .then(async instances => {
-                let selectOptions;
                 if (this.props.schema.adapter === '_dataSources') {
                     // get only "data-sources", like history, sql, influx
                     instances = instances.filter(instance => instance && instance.common && instance.common.getHistory);
                 } else if (this.props.schema.adapter) {
-                    instances = instances.filter(instance => instance && instance._id.startsWith('system.adapter.' + this.props.schema.adapter + '.'));
+                    instances = instances.filter(instance => instance && instance._id.startsWith(`system.adapter.${this.props.schema.adapter}.`));
                 }
 
-                selectOptions = instances.map(instance => ({
+                const selectOptions = instances.map(instance => ({
                     value: this.props.schema.long ? instance._id :
                         (this.props.schema.short ? instance._id.split('.').pop() : instance._id.replace(/^system\.adapter\./, '')),
-                    label: `${instance.common.name} [${instance._id.replace(/^system\.adapter\./, '')}]`
+                    label: `${instance.common.name} [${instance._id.replace(/^system\.adapter\./, '')}]`,
                 }));
 
                 selectOptions.sort((a, b) => {
                     if (a.value > b.value) {
                         return 1;
-                    } else if (a.value < b.value) {
+                    } if (a.value < b.value) {
                         return -1;
-                    } else {
-                        return 0;
                     }
+                    return 0;
                 });
 
                 if (this.props.schema.allowDeactivate !== false) {
@@ -102,20 +100,20 @@ class ConfigInstanceSelect extends ConfigGeneric {
                 selectOptions.push({
                     value: this.props.schema.long ? obj._id :
                         (this.props.schema.short ? obj._id.split('.').pop() : obj._id.replace(/^system\.adapter\./, '')),
-                    label: `${obj.common.name} [${obj._id.replace(/^system\.adapter\./, '')}]`
+                    label: `${obj.common.name} [${obj._id.replace(/^system\.adapter\./, '')}]`,
                 });
-                selectOptions.sort((a, b) => a.label > b.label ? 1 : (a.label < b.label ? -1 : 0));
+                selectOptions.sort((a, b) => (a.label > b.label ? 1 : (a.label < b.label ? -1 : 0)));
                 this.setState({ selectOptions });
             }
         }
-    }
+    };
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
 
-        const item = this.state.selectOptions?.find(item => item.value === this.state.value);
+        const item = this.state.selectOptions?.find(it => it.value === this.state.value);
 
         return <FormControl className={this.props.classes.fullWidth} key={this.props.attr} variant="standard">
             {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null }
@@ -125,15 +123,15 @@ class ConfigInstanceSelect extends ConfigGeneric {
                 displayEmpty
                 disabled={!!disabled}
                 value={this.state.value}
-                renderValue={val => this.getText(item?.label, true)}
+                renderValue={() => this.getText(item?.label, true)}
                 onChange={e =>
                     this.setState({ value: e.target.value }, () =>
                         this.onChange(this.props.attr, this.state.value))}
             >
-                {this.state.selectOptions.map(item =>
-                    <MenuItem key={item.value} value={item.value} style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}>{
-                        this.getText(item.label, true)
-                    }</MenuItem>)}
+                {this.state.selectOptions.map(it =>
+                    <MenuItem key={it.value} value={it.value} style={it.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}>
+                        {this.getText(it.label, true)}
+                    </MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;

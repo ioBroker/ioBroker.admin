@@ -9,7 +9,7 @@ import I18n from './wrapper/i18n';
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
 
-const styles = theme => ({
+const styles = () => ({
     root: {
         width: '100%',
         height: '100%',
@@ -22,6 +22,7 @@ class JsonConfigComponent extends Component {
 
         this.state = {
             originalData: JSON.stringify(this.props.data),
+            // eslint-disable-next-line react/no-unused-state
             changed: false,
             errors: {},
             updateData: this.props.updateData,
@@ -45,9 +46,8 @@ class JsonConfigComponent extends Component {
                 originalData: JSON.stringify(props.data),
                 schema: JSON.parse(JSON.stringify(props.schema)),
             };
-        } else {
-            return null;
         }
+        return null;
     }
 
     static async loadI18n(socket, i18n, adapterName) {
@@ -90,27 +90,25 @@ class JsonConfigComponent extends Component {
                     return '';
                 }
                 return fileName;
-            } else {
-                console.warn(`Cannot find i18n for ${adapterName} / ${fileName}`);
-                return '';
             }
-        } else if (i18n && typeof i18n === 'object') {
+            console.warn(`Cannot find i18n for ${adapterName} / ${fileName}`);
+            return '';
+        } if (i18n && typeof i18n === 'object') {
             I18n.extendTranslations(i18n);
             return '';
-        } else {
-            return '';
         }
+        return '';
     }
 
-    onCommandRunning = commandRunning => this.setState( { commandRunning });
+    onCommandRunning = commandRunning => this.setState({ commandRunning });
 
     readSettings() {
         if ((this.props.custom || this.props.common) && this.props.data) {
             return Promise.resolve();
-        } else {
-            return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
-                .then(obj => this.setState({ common: obj.common, data: this.props.data || obj.native }));
         }
+        return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
+            // eslint-disable-next-line react/no-unused-state
+            .then(obj => this.setState({ common: obj.common, data: this.props.data || obj.native }));
     }
 
     readData() {
@@ -132,31 +130,29 @@ class JsonConfigComponent extends Component {
         if ((state?.val || false) !== this.state.alive) {
             this.setState({ alive: state?.val || false });
         }
-    }
+    };
 
     onChange = (data, value, cb, saveConfig) => {
         if (this.props.onValueChange) {
             this.props.onValueChange(data, value, saveConfig);
             cb && cb();
-        } else {
-            if (data) {
-                const newState = { data };
+        } else if (data) {
+            const newState = { data };
 
-                const _data = {};
-                // remove all attributes starting with "_"
-                Object.keys(data).forEach(attr => !attr.startsWith('_') && (_data[attr] = data[attr]));
+            const _data = {};
+            // remove all attributes starting with "_"
+            Object.keys(data).forEach(attr => !attr.startsWith('_') && (_data[attr] = data[attr]));
 
-                newState.changed = JSON.stringify(_data) !== this.state.originalData;
+            newState.changed = JSON.stringify(_data) !== this.state.originalData;
 
-                this.setState(newState, () => {
-                    this.props.onChange(_data, newState.changed, saveConfig);
-                    cb && cb();
-                });
-            } else if (saveConfig) {
-                this.props.onChange(null, null, saveConfig);
-            }
+            this.setState(newState, () => {
+                this.props.onChange(_data, newState.changed, saveConfig);
+                cb && cb();
+            });
+        } else if (saveConfig) {
+            this.props.onChange(null, null, saveConfig);
         }
-    }
+    };
 
     onError = (attr, error) => {
         this.errorChached = this.errorChached || JSON.parse(JSON.stringify(this.state.errors));
@@ -178,7 +174,7 @@ class JsonConfigComponent extends Component {
         } else {
             this.errorChached = null;
         }
-    }
+    };
 
     flatten(schema, _list) {
         _list = _list || {};
@@ -306,19 +302,17 @@ class JsonConfigComponent extends Component {
                 isFloatComma={this.props.isFloatComma}
                 multiEdit={this.props.multiEdit}
                 imagePrefix={this.props.imagePrefix}
-
                 custom={this.props.custom}
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
-
                 changeLanguage={this.changeLanguage}
                 forceUpdate={this.forceAttrUpdate}
                 registerOnForceUpdate={this.registerOnForceUpdate}
-
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
             />;
-        } else if (item.type === 'panel' || !item.type) {
+        }
+        if (item.type === 'panel' || !item.type) {
             return <ConfigPanel
                 index={1000}
                 isParentTab
@@ -340,35 +334,32 @@ class JsonConfigComponent extends Component {
                 isFloatComma={this.props.isFloatComma}
                 multiEdit={this.props.multiEdit}
                 imagePrefix={this.props.imagePrefix}
-
                 custom={this.props.custom}
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
-
                 changeLanguage={this.changeLanguage}
                 forceUpdate={this.forceAttrUpdate}
                 registerOnForceUpdate={this.registerOnForceUpdate}
-
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
             />;
         }
+
+        return null;
     }
 
     changeLanguage = () => {
         this.forceUpdate();
-    }
+    };
 
     forceAttrUpdate = (attr, data) => {
         if (Array.isArray(attr)) {
             attr.forEach(a =>
                 this.forceUpdateHandlers[a] && this.forceUpdateHandlers[a](data));
-        } else {
-            if (this.forceUpdateHandlers[attr]) {
-                this.forceUpdateHandlers[attr](data);
-            }
+        } else if (this.forceUpdateHandlers[attr]) {
+            this.forceUpdateHandlers[attr](data);
         }
-    }
+    };
 
     registerOnForceUpdate = (attr, cb) => {
         if (cb) {
@@ -376,7 +367,7 @@ class JsonConfigComponent extends Component {
         } else if (this.forceUpdateHandlers[attr]) {
             delete this.forceUpdateHandlers[attr];
         }
-    }
+    };
 
     render() {
         if (!this.state.systemConfig) {
@@ -407,8 +398,6 @@ JsonConfigComponent.propTypes = {
 
     themeType: PropTypes.string,
     themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
     data: PropTypes.object.isRequired,
     updateData: PropTypes.number,
     schema: PropTypes.object,

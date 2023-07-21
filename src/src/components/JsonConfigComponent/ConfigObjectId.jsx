@@ -32,11 +32,13 @@ class ConfigObjectId extends ConfigGeneric {
         this.setState({ value, initialized: true });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.initialized) {
             return null;
         }
-        const { classes, schema, socket, attr } = this.props;
+        const {
+            classes, schema, socket, attr,
+        } = this.props;
         const { value, showSelectId } = this.state;
 
         return <FormControl className={classes.fullWidth} variant="standard">
@@ -52,9 +54,9 @@ class ConfigObjectId extends ConfigGeneric {
                     label={this.getText(schema.label)}
                     helperText={this.renderHelp(schema.help, schema.helpLink, schema.noTranslation)}
                     onChange={e => {
-                        const value = e.target.value;
-                        this.setState({ value }, () =>
-                            this.onChange(attr, value));
+                        const value_ = e.target.value;
+                        this.setState({ value: value_ }, () =>
+                            this.onChange(attr, value_));
                     }}
                 />
                 <Button
@@ -63,7 +65,9 @@ class ConfigObjectId extends ConfigGeneric {
                     size="small"
                     variant="outlined"
                     onClick={() => this.setState({ showSelectId: true })}
-                >...</Button>
+                >
+...
+                </Button>
             </div>
             {showSelectId ? <DialogSelectID
                 imagePrefix={this.props.imagePrefix === undefined ? '../..' : this.props.imagePrefix}
@@ -79,9 +83,9 @@ class ConfigObjectId extends ConfigGeneric {
                 selected={value}
                 root={schema.root}
                 onClose={() => this.setState({ showSelectId: false })}
-                onOk={value =>
-                    this.setState({ showSelectId: false, value }, () =>
-                        this.onChange(attr, value))}
+                onOk={value_ =>
+                    this.setState({ showSelectId: false, value: value_ }, () =>
+                        this.onChange(attr, value_))}
             /> : null}
         </FormControl>;
     }

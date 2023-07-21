@@ -53,7 +53,7 @@ class ConfigTextSendTo extends ConfigGeneric {
         return JSON.stringify(context);
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(/* error, disabled, defaultValue */) {
         if (this.state.text === undefined) {
             return null;
         }
@@ -76,8 +76,9 @@ class ConfigTextSendTo extends ConfigGeneric {
                             onClick={() => {
                                 Utils.copyToClipboard(this.state.text);
                                 window.alert('Copied');
-                            }}>
-                            <CopyIcon/>
+                            }}
+                        >
+                            <CopyIcon />
                         </IconButton>
                         : undefined,
                 }}
@@ -85,9 +86,8 @@ class ConfigTextSendTo extends ConfigGeneric {
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
-        } else {
-            return <div className={this.props.classes.fullWidth}>{this.state.text}</div>;
         }
+        return <div className={this.props.classes.fullWidth}>{this.state.text}</div>;
     }
 }
 

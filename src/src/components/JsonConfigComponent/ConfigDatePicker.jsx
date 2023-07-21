@@ -6,7 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     indeterminate: {
         opacity: 0.5,
     },
@@ -19,11 +19,11 @@ class ConfigDatePicker extends ConfigGeneric {
         this.setState({ value });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         return <DatePicker
             fullWidth
             margin="normal"
-            format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm','MM')}
+            format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
             error={!!error}
             disabled={!!disabled}
             value={this.state.value === null || this.state.value === undefined ? new Date() : this.state.value}

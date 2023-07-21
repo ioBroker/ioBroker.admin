@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@mui/styles';
 import { ChromePicker } from 'react-color';
 
 import IconButton from '@mui/material/IconButton';
@@ -14,13 +13,12 @@ import ColorPicker from './wrapper/Components/ColorPicker';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({});
-
 class ConfigColor extends ConfigGeneric {
     renderColorDialog() {
         return !!this.state.showColorDialog && <Dialog
             onClose={() => this.setState({ showColorDialog: false })}
-            open={this.state.showColorDialog}>
+            open={this.state.showColorDialog}
+        >
             <ChromePicker
                 color={this.state.colorDialogValue}
                 onChange={value =>
@@ -30,7 +28,7 @@ class ConfigColor extends ConfigGeneric {
         </Dialog>;
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         let textColor = Utils.isUseBright(value, null);
         if (textColor === null) {
@@ -51,12 +49,13 @@ class ConfigColor extends ConfigGeneric {
                 }}
                 inputProps={{
                     style: {
-                        //paddingLeft: noPadding ? 0 : 8,
+                        // paddingLeft: noPadding ? 0 : 8,
                         backgroundColor: value,
                         color: textColor ? '#FFF' : '#000',
                     },
                     readOnly: this.props.schema.readOnly || false,
                 }}
+                // eslint-disable-next-line react/jsx-no-duplicate-props
                 InputProps={{
                     endAdornment: value ?
                         <IconButton
@@ -65,8 +64,9 @@ class ConfigColor extends ConfigGeneric {
                             onClick={e => {
                                 e.stopPropagation();
                                 this.onChange(this.props.attr, '');
-                            }}>
-                            <ClearIcon/>
+                            }}
+                        >
+                            <ClearIcon />
                         </IconButton>
                         : undefined,
                 }}
@@ -88,4 +88,4 @@ ConfigColor.propTypes = {
     onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(ConfigColor);
+export default ConfigColor;

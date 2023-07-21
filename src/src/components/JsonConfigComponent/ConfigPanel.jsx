@@ -164,14 +164,14 @@ class ConfigPanel extends ConfigGeneric {
                 // url
                 if (items[attr].url) {
                     ItemComponent = ConfigCustom;
-                } else
-                if (this.props.customs && this.props.customs[items[attr].component]) {
+                } else if (this.props.customs && this.props.customs[items[attr].component]) {
                     ItemComponent = this.props.customs[items[attr].component];
                 } else {
                     console.error(`Cannot find custom component: ${items[attr].component}`);
                     ItemComponent = ConfigGeneric;
                 }
             } else if (type === 'panel') {
+                // eslint-disable-next-line no-use-before-define
                 ItemComponent = ConfigPanelStyled;
             } else {
                 ItemComponent = components[type] || ConfigGeneric;
@@ -203,15 +203,12 @@ class ConfigPanel extends ConfigGeneric {
                 isFloatComma={this.props.isFloatComma}
                 disabled={disabled}
                 imagePrefix={this.props.imagePrefix}
-
                 changeLanguage={this.props.changeLanguage}
                 forceUpdate={this.props.forceUpdate}
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
-
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
-
                 schema={items[attr]}
                 attr={attr}
             />;
@@ -239,30 +236,27 @@ class ConfigPanel extends ConfigGeneric {
                     lg={schema.lg || undefined}
                     md={schema.md || undefined}
                     sm={schema.sm || undefined}
-                    style={Object.assign(
-                        {},
-                        { marginBottom: 0, /*marginRight: 8, */textAlign: 'left' },
-                        schema.style,
-                        this.props.themaType === 'dark' ? schema.darkStyle : {}
-                    )}
+                    style={({
+
+                        marginBottom: 0, /* marginRight: 8, */
+                        textAlign: 'left',
+                        ...schema.style,
+                        ...(this.props.themaType === 'dark' ? schema.darkStyle : {}),
+                    })}
                 />;
 
                 if (schema.newLine) {
                     return <>
                         <div style={{ flexBasis: '100%', height: 0 }} />
                         {item}
-                    </>
-                } else {
-                    return item;
+                    </>;
                 }
-            } else {
-                return null;
+                return item;
             }
-        } else
-        if (this.props.table) {
+            return null;
+        } if (this.props.table) {
             return this.renderItems(items, disabled);
-        } else
-        if (this.props.custom) {
+        } if (this.props.custom) {
             return <Grid
                 key={`${this.props.attr}_${this.props.index}`}
                 container
@@ -272,67 +266,65 @@ class ConfigPanel extends ConfigGeneric {
             >
                 {this.renderItems(items, disabled)}
             </Grid>;
-        } else {
-            let content;
-            if (schema.collapsable) {
-                content = <Accordion
-                    key={`${this.props.attr}_${this.props.index}`}
-                    className={classes.fullWidth}
-                    expanded={!!this.state.expanded}
-                    onChange={() => {
-                        (window._localStorage || window.localStorage).setItem(`${this.props.adapterName}.${this.props.attr}`, this.state.expanded ? 'false' : 'true');
-                        this.setState({ expanded: !this.state.expanded });
-                    }}
+        }
+        let content;
+        if (schema.collapsable) {
+            content = <Accordion
+                key={`${this.props.attr}_${this.props.index}`}
+                className={classes.fullWidth}
+                expanded={!!this.state.expanded}
+                onChange={() => {
+                    (window._localStorage || window.localStorage).setItem(`${this.props.adapterName}.${this.props.attr}`, this.state.expanded ? 'false' : 'true');
+                    this.setState({ expanded: !this.state.expanded });
+                }}
+            >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    style={({ ...schema.style, ...(this.props.themeType ? schema.darkStyle : {}) })}
+                    className={Utils.clsx(classes.fullWidth, schema.color === 'primary' && classes.primary, schema.color === 'secondary' && classes.secondary)}
                 >
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        style={Object.assign({}, schema.style, this.props.themeType ? schema.darkStyle : {})}
-                        className={Utils.clsx(classes.fullWidth, schema.color === 'primary' && classes.primary, schema.color === 'secondary' && classes.secondary)}
-                    >
-                        <Typography className={classes.heading}>{this.getText(schema.label)}</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Grid container className={`${classes.fullWidth} ${classes.padding}`} spacing={2} style={style}>
-                            {this.renderItems(items, disabled)}
-                        </Grid>
-                    </AccordionDetails>
-                </Accordion>
-            } else {
-                content = <div
-                    key={`${this.props.attr}_${this.props.index}`}
-                    className={Utils.clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
-                    style={style}
-                >
-                    <Grid container className={Utils.clsx(classes.fullWidth, this.props.isParentTab && classes.padding)} spacing={2}>
+                    <Typography className={classes.heading}>{this.getText(schema.label)}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Grid container className={`${classes.fullWidth} ${classes.padding}`} spacing={2} style={style}>
                         {this.renderItems(items, disabled)}
                     </Grid>
-                </div>;
-            }
-
-            if (!this.props.isParentTab) {
-                const item = <Grid
-                    item
-                    title={this.getText(schema.tooltip)}
-                    xs={schema.xs || undefined}
-                    lg={schema.lg || undefined}
-                    md={schema.md || undefined}
-                    sm={schema.sm || undefined}
-                    style={Object.assign({}, { marginBottom: 0, /*marginRight: 8, */textAlign: 'left' }, schema.style)}>
-                    {content}
-                </Grid>;
-
-                if (schema.newLine) {
-                    return <>
-                        <div style={{ flexBasis: '100%', height: 0 }} />
-                        {item}
-                    </>;
-                } else {
-                    return item;
-                }
-            } else {
-                return content;
-            }
+                </AccordionDetails>
+            </Accordion>;
+        } else {
+            content = <div
+                key={`${this.props.attr}_${this.props.index}`}
+                className={Utils.clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
+                style={style}
+            >
+                <Grid container className={Utils.clsx(classes.fullWidth, this.props.isParentTab && classes.padding)} spacing={2}>
+                    {this.renderItems(items, disabled)}
+                </Grid>
+            </div>;
         }
+
+        if (!this.props.isParentTab) {
+            const item = <Grid
+                item
+                title={this.getText(schema.tooltip)}
+                xs={schema.xs || undefined}
+                lg={schema.lg || undefined}
+                md={schema.md || undefined}
+                sm={schema.sm || undefined}
+                style={({ marginBottom: 0, /* marginRight: 8, */textAlign: 'left', ...schema.style })}
+            >
+                {content}
+            </Grid>;
+
+            if (schema.newLine) {
+                return <>
+                    <div style={{ flexBasis: '100%', height: 0 }} />
+                    {item}
+                </>;
+            }
+            return item;
+        }
+        return content;
     }
 }
 

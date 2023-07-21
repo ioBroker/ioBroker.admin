@@ -1,6 +1,6 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
-import { /*lighten,*/ withStyles } from '@mui/styles';
+import { /* lighten, */ withStyles } from '@mui/styles';
 import Dropzone from 'react-dropzone';
 
 import FormHelperText from '@mui/material/FormHelperText';
@@ -37,7 +37,7 @@ const MAX_SIZE = 1024 * 1024; // 1MB
 
 const styles = theme => ({
     fullWidth: {
-        width: '100%'
+        width: '100%',
     },
     root: {
         width: '100%',
@@ -45,10 +45,10 @@ const styles = theme => ({
     paper: {
         width: '100%',
         marginBottom: theme.spacing(2),
-        backgroundColor: `rgba(255, 255, 255, 0.1)`,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
     headerText: {
-        width: '100%'
+        width: '100%',
     },
     table: {
         minWidth: 750,
@@ -95,7 +95,7 @@ const styles = theme => ({
     filteredOut: {
         padding: 10,
         display: 'flex',
-        textAlign: 'center'
+        textAlign: 'center',
     },
     buttonEmpty: {
         width: 34,
@@ -120,11 +120,11 @@ const styles = theme => ({
         opacity: 0.9,
         marginTop: 30,
         cursor: 'pointer',
-        outline: 'none'
+        outline: 'none',
     },
     uploadDivDragging: {
         opacity: 1,
-        background: 'rgba(128,255,128,0.1)'
+        background: 'rgba(128,255,128,0.1)',
     },
     image: {
         objectFit: 'contain',
@@ -141,7 +141,7 @@ const styles = theme => ({
         height: 'calc(100% - 10px)',
         minHeight: 300,
         position: 'relative',
-        display: 'flex'
+        display: 'flex',
     },
     uploadCenterIcon: {
         paddingTop: 10,
@@ -161,12 +161,12 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     buttonRemoveWrapper: {
         position: 'absolute',
         zIndex: 222,
-        right: 0
+        right: 0,
     },
     error: {
         border: '2px solid red',
@@ -217,7 +217,7 @@ function arrayToObject(array, nameOfFirstAttr, nameOfSecondAttr) {
 
 class ConfigTable extends ConfigGeneric {
     constructor(props) {
-        super(props)
+        super(props);
         this.filterRefs = {};
         this.props.schema.items = this.props.schema.items || [];
         this.props.schema.items.forEach(el => {
@@ -243,7 +243,7 @@ class ConfigTable extends ConfigGeneric {
         this.setState({
             value,
             visibleValue: null,
-            orderBy: /*this.props.schema.items.length ? this.props.schema.items[0].attr : */'',
+            orderBy: /* this.props.schema.items.length ? this.props.schema.items[0].attr : */'',
             order: 'asc',
             iteration: 0,
             filterOn: [],
@@ -251,7 +251,7 @@ class ConfigTable extends ConfigGeneric {
     }
 
     componentWillUnmount() {
-        this.typingTimer && clearTimeout(this.typingTimer)
+        this.typingTimer && clearTimeout(this.typingTimer);
         this.typingTimer = null;
         super.componentWillUnmount();
     }
@@ -293,7 +293,7 @@ class ConfigTable extends ConfigGeneric {
                 const newObj = JSON.parse(JSON.stringify(value));
                 newObj[idx][attr] = valueChange;
                 this.setState({ value: newObj }, () =>
-                    this.onChangeWrapper(newObj,true));
+                    this.onChangeWrapper(newObj, true));
             }}
             onError={(error, attr) => this.onError(error, attr)}
         />;
@@ -302,11 +302,10 @@ class ConfigTable extends ConfigGeneric {
     static descendingComparator(a, b, orderBy) {
         if (b[orderBy] < a[orderBy]) {
             return -1;
-        } else if (b[orderBy] > a[orderBy]) {
+        } if (b[orderBy] > a[orderBy]) {
             return 1;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     static getComparator(order, orderBy) {
@@ -324,7 +323,7 @@ class ConfigTable extends ConfigGeneric {
             this.setState({ order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 }, () =>
                 this.applyFilter(false, newValue));
         }
-    }
+    };
 
     stableSort = (order, orderBy) => {
         const { value } = this.state;
@@ -332,16 +331,15 @@ class ConfigTable extends ConfigGeneric {
         const stabilizedThis = value.map((el, index) => [el, index]);
 
         stabilizedThis.sort((a, b) => {
-            const order = comparator(a[0], b[0]);
-            if (order !== 0) {
-                return order;
-            } else {
-                return a[1] - b[1];
+            const order_ = comparator(a[0], b[0]);
+            if (order_ !== 0) {
+                return order_;
             }
+            return a[1] - b[1];
         });
 
         return stabilizedThis.map(el => el[0]);
-    }
+    };
 
     enhancedTableHead(buttonsWidth, doAnyFilterSet) {
         const { schema, classes } = this.props;
@@ -414,9 +412,13 @@ class ConfigTable extends ConfigGeneric {
                                 {this.state.filterOn.includes(headCell.attr) ? <IconFilterOff /> : <IconFilterOn />}
                             </IconButton> : null}
                         </div>
-                    </TableCell>
-                )}
-                {!schema.noDelete && <TableCell style={{ paddingLeft: 20, paddingRight: 20, width: buttonsWidth, textAlign: 'right' }} padding="checkbox">
+                    </TableCell>)}
+                {!schema.noDelete && <TableCell
+                    style={{
+                        paddingLeft: 20, paddingRight: 20, width: buttonsWidth, textAlign: 'right',
+                    }}
+                    padding="checkbox"
+                >
                     {schema.import ? <IconButton
                         style={{ marginRight: 10 }}
                         size="small"
@@ -469,8 +471,10 @@ class ConfigTable extends ConfigGeneric {
         const el = document.createElement('a');
         el.setAttribute('href', `data:text/csv;charset=utf-8,${encodeURIComponent(lines.join('\n'))}`);
         const now = new Date();
-        el.setAttribute('download',
-            `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${this.props.adapterName}.${this.props.instance}_${this.props.attr}.csv`);
+        el.setAttribute(
+            'download',
+            `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}_${this.props.adapterName}.${this.props.instance}_${this.props.attr}.csv`,
+        );
 
         el.style.display = 'none';
         document.body.appendChild(el);
@@ -502,6 +506,7 @@ class ConfigTable extends ConfigGeneric {
                     parts[p] = true;
                 } else if (parts[p] === 'false') {
                     parts[p] = false;
+                    // eslint-disable-next-line no-restricted-properties
                 } else if (window.isFinite(parts[p])) {
                     const attr = this.props.schema.items.find(it => it.attr === header[p]);
                     if (attr && attr.type === 'number') {
@@ -550,12 +555,12 @@ class ConfigTable extends ConfigGeneric {
         this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () =>
             this.applyFilter(false, null, () =>
                 this.onChangeWrapper(newValue)));
-    }
+    };
 
     onChangeWrapper = (newValue, updateVisible = false) => {
         this.typingTimer && clearTimeout(this.typingTimer);
 
-        this.typingTimer = setTimeout((value, updateVisible) => {
+        this.typingTimer = setTimeout((value, _updateVisible) => {
             this.typingTimer = null;
 
             if (this.props.schema.objKeyName) {
@@ -565,12 +570,12 @@ class ConfigTable extends ConfigGeneric {
                 this.onChange(this.props.attr, value);
             }
 
-            if (updateVisible) {
+            if (_updateVisible) {
                 this.applyFilter(false, value);
                 this.handleRequestSort(this.state.orderBy, true);
             }
         }, 300, newValue, updateVisible);
-    }
+    };
 
     onAdd = () => {
         const { schema } = this.props;
@@ -596,7 +601,7 @@ class ConfigTable extends ConfigGeneric {
         this.setState({ value: newValue }, () =>
             this.applyFilter(false, null, () =>
                 this.onChangeWrapper(newValue)));
-    }
+    };
 
     isAnyFilterSet() {
         return Object.keys(this.filterRefs).find(attr => this.filterRefs[attr].current?.children[0].children[0].value);
@@ -629,7 +634,7 @@ class ConfigTable extends ConfigGeneric {
         } else {
             cb && cb();
         }
-    }
+    };
 
     onMoveUp(idx) {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
@@ -659,7 +664,8 @@ class ConfigTable extends ConfigGeneric {
         reader.onerror = () => console.log('file reading has failed');
         reader.onload = () => {
             if (file.size > MAX_SIZE) {
-                return window.alert(I18n.t('ra_File is too big. Max %sk allowed. Try use SVG.', Math.round(MAX_SIZE / 1024)));
+                window.alert(I18n.t('ra_File is too big. Max %sk allowed. Try use SVG.', Math.round(MAX_SIZE / 1024)));
+                return;
             }
             const text = new Uint8Array(reader.result)
                 .reduce((data, byte) => data + String.fromCharCode(byte), '');
@@ -693,7 +699,7 @@ class ConfigTable extends ConfigGeneric {
                         this.setState({
                             value,
                             iteration: this.state.iteration + 10000,
-                            showTypeOfImportDialog: false
+                            showTypeOfImportDialog: false,
                         }, () =>
                             this.applyFilter(false, null, () =>
                                 this.onChangeWrapper(value)));
@@ -710,7 +716,7 @@ class ConfigTable extends ConfigGeneric {
                         this.setState({
                             value,
                             iteration: this.state.iteration + 10000,
-                            showTypeOfImportDialog: false
+                            showTypeOfImportDialog: false,
                         }, () =>
                             this.applyFilter(false, null, () =>
                                 this.onChangeWrapper(value)));
@@ -745,7 +751,7 @@ class ConfigTable extends ConfigGeneric {
                         if (!acceptedFiles.length) {
                             window.alert((errors && errors[0] && errors[0].errors && errors[0].errors[0] && errors[0].errors[0].message) || I18n.t('ra_Cannot upload'));
                         } else {
-                            return this.onDrop(acceptedFiles);
+                            this.onDrop(acceptedFiles);
                         }
                     }}
                 >
@@ -756,14 +762,18 @@ class ConfigTable extends ConfigGeneric {
                             this.props.classes.dropZone,
                             !this.state.icon && this.props.classes.dropZoneEmpty,
                         )}
-                        {...getRootProps()}>
+                        {...getRootProps()}
+                    >
                         <input {...getInputProps()} />
                         <div className={Utils.clsx(this.props.classes.uploadCenterDiv)}>
                             <div className={this.props.classes.uploadCenterTextAndIcon}>
                                 <ImportIcon className={this.props.classes.uploadCenterIcon} />
-                                <div className={this.props.classes.uploadCenterText}>{
-                                    this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
-                                        I18n.t('ra_Place your files here or click here to open the browse dialog')}</div>
+                                <div className={this.props.classes.uploadCenterText}>
+                                    {
+                                        this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
+                                            I18n.t('ra_Place your files here or click here to open the browse dialog')
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>}
@@ -782,15 +792,15 @@ class ConfigTable extends ConfigGeneric {
         </Dialog>;
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(/* error, disabled, defaultValue */) {
         const { classes, schema } = this.props;
-        let { value, visibleValue } = this.state;
+        let { visibleValue } = this.state;
 
-        if (!value) {
+        if (!this.state.value) {
             return null;
         }
 
-        visibleValue = visibleValue || value.map((_, i) => i);
+        visibleValue = visibleValue || this.state.value.map((_, i) => i);
 
         const doAnyFilterSet = this.isAnyFilterSet();
 
@@ -819,19 +829,18 @@ class ConfigTable extends ConfigGeneric {
                                 {schema.items && schema.items.map(headCell =>
                                     <TableCell key={`${headCell.attr}_${idx}`} align="left">
                                         {this.itemTable(headCell.attr, value[idx], idx)}
-                                    </TableCell>
-                                )}
+                                    </TableCell>)}
                                 {!schema.noDelete && <TableCell align="left" className={classes.buttonCell}>
                                     {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')}>
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
                                             <UpIcon />
                                         </IconButton>
-                                    </Tooltip> : <div className={classes.buttonEmpty}/>) : null}
+                                    </Tooltip> : <div className={classes.buttonEmpty} />) : null}
                                     {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')}>
                                         <IconButton size="small" onClick={() => this.onMoveDown(idx)}>
                                             <DownIcon />
                                         </IconButton>
-                                    </Tooltip> : <div className={classes.buttonEmpty}/> ) : null}
+                                    </Tooltip> : <div className={classes.buttonEmpty} />) : null}
                                     <Tooltip title={I18n.t('ra_Delete current row')}>
                                         <IconButton size="small" onClick={this.onDelete(idx)}>
                                             <DeleteIcon />

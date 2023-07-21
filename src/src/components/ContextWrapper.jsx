@@ -15,16 +15,15 @@ export const ContextWrapperProvider = ({ children }) => {
 
         hosts:          null,
         repository:     null,
-        installed:      null
+        installed:      null,
     });
 
     const setStateContext = obj => {
         setState(prevState =>
-            Object.keys(prevState).length === Object.keys(obj).length ?
+            (Object.keys(prevState).length === Object.keys(obj).length ?
                 { ...obj }
                 :
-                { ...prevState, ...obj }
-        );
+                { ...prevState, ...obj }));
     };
 
     useEffect(() => {
@@ -57,7 +56,6 @@ export const ContextWrapperProvider = ({ children }) => {
 
             setStateContext({ adaptersUpdate: count });
         }
-
     }, [stateContext.hosts, stateContext.installed, stateContext.repository]);
 
     return <ContextWrapper.Provider value={{ stateContext, setStateContext }}>

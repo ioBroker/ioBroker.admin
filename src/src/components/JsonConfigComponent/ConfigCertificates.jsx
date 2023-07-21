@@ -66,7 +66,7 @@ class ConfigCertificates extends ConfigGeneric {
         });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.certsPublicOptions || !this.state.certsPrivateOptions || !this.state.certsChainOptions) {
             return null;
         }
@@ -81,7 +81,7 @@ class ConfigCertificates extends ConfigGeneric {
 
         return <div className={this.props.classes.fullWidth}>
             {this.state.collectionsOptions ? <FormControl className={this.props.classes.leWidth} variant="standard">
-                <InputLabel shrink>Let's encrypt</InputLabel>
+                <InputLabel shrink>Let&apos;s encrypt</InputLabel>
                 <Select
                     variant="standard"
                     error={!!error}
@@ -90,7 +90,7 @@ class ConfigCertificates extends ConfigGeneric {
                     value={leCollection}
                     onChange={e => this.onChange(
                         this.props.schema.leCollectionName || 'leCollection',
-                        e.target.value === 'false' ? false : (e.target.value === 'true' ? true: e.target.value)
+                        e.target.value === 'false' ? false : (e.target.value === 'true' ? true : e.target.value),
                     )}
                 >
                     <MenuItem

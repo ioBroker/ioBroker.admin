@@ -12,11 +12,11 @@ import Avatar from '@mui/material/Avatar';
 
 import Utils from '../Utils';
 
-const styles = theme => ({
+const styles = () => ({
     img: {
         width: '100%',
         height: '100%',
-    }
+    },
 });
 
 class LinksDialog extends Component {
@@ -33,7 +33,7 @@ class LinksDialog extends Component {
                 {this.props.links.map(link => <ListItemButton
                     style={link.color ? {
                         backgroundColor: link.color,
-                        color: Utils.getInvertedColor(link.color, this.props.themeType, true)
+                        color: Utils.getInvertedColor(link.color, this.props.themeType, true),
                     } : {}}
                     onClick={e => {
                         e.stopPropagation();
@@ -47,7 +47,7 @@ class LinksDialog extends Component {
                 >
                     <ListItemAvatar>
                         <Avatar variant="rounded">
-                            <img className={this.props.classes.img} src={this.props.image} alt={this.props.instanceId}/>
+                            <img className={this.props.classes.img} src={this.props.image} alt={this.props.instanceId} />
                         </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={link.name + (showPort ? ` [:${link.port}]` : '')} />

@@ -1,13 +1,15 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 import PropTypes from 'prop-types';
 
-import Grid from '@mui/material/Grid';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import TextField from '@mui/material/TextField';
-import Paper from  '@mui/material/Paper';
+import {
+    Grid,
+    FormControlLabel,
+    Checkbox,
+    TextField,
+    Paper,
+} from '@mui/material';
 
 const styles = theme => ({
     paper: {
@@ -26,7 +28,7 @@ const styles = theme => ({
     RAM: {
         width: 400,
         marginRight: theme.spacing(1),
-    }
+    },
 });
 
 class BaseSettingsSystem extends Component {
@@ -70,100 +72,100 @@ class BaseSettingsSystem extends Component {
     }
 
     render() {
-        return <Paper className={ this.props.classes.paper }>
-            <Grid item className={ this.props.classes.gridSettings }>
+        return <Paper className={this.props.classes.paper}>
+            <Grid item className={this.props.classes.gridSettings}>
                 <Grid container direction="column">
                     <Grid item>
                         <TextField
                             variant="standard"
-                            label={ this.props.t('Host name') }
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.hostname || this.props.currentHost.replace('system.host.', '') }
-                            onChange={ e => this.setState( {hostname: e.target.value }, () => this.onChange()) }
-                            helperText={ this.props.t('You can change the host name, but be aware, that all instances must be assigned anew') }
+                            label={this.props.t('Host name')}
+                            className={this.props.classes.controlItem}
+                            value={this.state.hostname || this.props.currentHost.replace('system.host.', '')}
+                            onChange={e => this.setState({ hostname: e.target.value }, () => this.onChange())}
+                            helperText={this.props.t('You can change the host name, but be aware, that all instances must be assigned anew')}
                         />
                     </Grid>
                     <Grid item>
                         <TextField
                             variant="standard"
-                            label={ this.props.t('Check disk space interval') }
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.checkDiskInterval }
+                            label={this.props.t('Check disk space interval')}
+                            className={this.props.classes.controlItem}
+                            value={this.state.checkDiskInterval}
                             type="number"
-                            min={ 1000 }
-                            onChange={ e => this.setState( {checkDiskInterval: parseInt(e.target.value, 10) }, () => this.onChange()) }
-                            helperText={ this.props.t('How oft the disk will be checked. Do not set it to low, because it can affect system performance. Value is in ms') }
+                            min={1000}
+                            onChange={e => this.setState({ checkDiskInterval: parseInt(e.target.value, 10) }, () => this.onChange())}
+                            helperText={this.props.t('How oft the disk will be checked. Do not set it to low, because it can affect system performance. Value is in ms')}
                         />
                     </Grid>
                     <Grid item>
                         <TextField
                             variant="standard"
-                            label={ this.props.t('Instance statistics update interval') }
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.statisticsInterval }
+                            label={this.props.t('Instance statistics update interval')}
+                            className={this.props.classes.controlItem}
+                            value={this.state.statisticsInterval}
                             type="number"
-                            min={ 5000 }
-                            onChange={ e => this.setState( {statisticsInterval: parseInt(e.target.value, 10) }, () => this.onChange()) }
-                            helperText={ this.props.t('How oft the instance statistics will be updated. Used RAM, CPU and so on. Value is in ms') }
+                            min={5000}
+                            onChange={e => this.setState({ statisticsInterval: parseInt(e.target.value, 10) }, () => this.onChange())}
+                            helperText={this.props.t('How oft the instance statistics will be updated. Used RAM, CPU and so on. Value is in ms')}
                         />
                     </Grid>
-                    <Grid item className={ this.props.classes.controlItem }>
+                    <Grid item className={this.props.classes.controlItem}>
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={ this.state.compact }
-                                    onChange={ e => this.setState( { compact: e.target.checked }, () => this.onChange()) }
+                                    checked={this.state.compact}
+                                    onChange={e => this.setState({ compact: e.target.checked }, () => this.onChange())}
                                 />
                             }
-                            label={ this.props.t('Compact mode') }
+                            label={this.props.t('Compact mode')}
                         />
                         <div>{ this.props.t('When enabled adapter instances can run in one or few processes to save RAM usage.') }</div>
                     </Grid>
-                    <Grid item className={ this.props.classes.controlItem }>
+                    <Grid item className={this.props.classes.controlItem}>
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={ this.state.allowShellCommands }
-                                    onChange={ e => this.setState( {allowShellCommands: e.target.checked }, () => this.onChange()) }
+                                    checked={this.state.allowShellCommands}
+                                    onChange={e => this.setState({ allowShellCommands: e.target.checked }, () => this.onChange())}
                                 />
                             }
-                            label={ this.props.t(`Allow shell's commands`) }
+                            label={this.props.t('Allow shell\'s commands')}
                         />
                         <div>{ this.props.t('Allow execution of sendToHost("shell", "cli command")') }</div>
                     </Grid>
                     <Grid item>
                         <TextField
                             variant="standard"
-                            label={ this.props.t('Limit RAM size for controller') }
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.memoryLimitMB }
+                            label={this.props.t('Limit RAM size for controller')}
+                            className={this.props.classes.controlItem}
+                            value={this.state.memoryLimitMB}
                             type="number"
-                            onChange={ e => this.setState( {memoryLimitMB: parseInt(e.target.value, 10) }, () => this.onChange()) }
-                            helperText={ this.props.t('MB') }
+                            onChange={e => this.setState({ memoryLimitMB: parseInt(e.target.value, 10) }, () => this.onChange())}
+                            helperText={this.props.t('MB')}
                         />
                     </Grid>
                     <Grid item>
-                        <Grid container direction="row" className={ this.props.classes.controlItem }>
+                        <Grid container direction="row" className={this.props.classes.controlItem}>
                             <Grid item>
                                 <TextField
                                     variant="standard"
-                                    label={ this.props.t('Show warning im log if RAM less than') }
-                                    className={ this.props.classes.RAM }
-                                    value={ this.state.memLimitWarn }
+                                    label={this.props.t('Show warning im log if RAM less than')}
+                                    className={this.props.classes.RAM}
+                                    value={this.state.memLimitWarn}
                                     type="number"
-                                    onChange={ e => this.setState( {memLimitWarn: parseInt(e.target.value, 10) }, () => this.onChange()) }
-                                    helperText={ this.props.t('MB') }
+                                    onChange={e => this.setState({ memLimitWarn: parseInt(e.target.value, 10) }, () => this.onChange())}
+                                    helperText={this.props.t('MB')}
                                 />
                             </Grid>
                             <Grid item>
                                 <TextField
                                     variant="standard"
-                                    label={ this.props.t('Show error in log if RAM less than') }
-                                    className={ this.props.classes.RAM }
-                                    value={ this.state.memLimitError }
+                                    label={this.props.t('Show error in log if RAM less than')}
+                                    className={this.props.classes.RAM}
+                                    value={this.state.memLimitError}
                                     type="number"
-                                    onChange={ e => this.setState( {memLimitError: parseInt(e.target.value, 10) }, () => this.onChange()) }
-                                    helperText={ this.props.t('MB') }
+                                    onChange={e => this.setState({ memLimitError: parseInt(e.target.value, 10) }, () => this.onChange())}
+                                    helperText={this.props.t('MB')}
                                 />
                             </Grid>
                         </Grid>

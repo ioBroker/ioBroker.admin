@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
-import {Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField} from '@mui/material';
+import {
+    Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField,
+} from '@mui/material';
 import { withStyles } from '@mui/styles';
 
 import CheckIcon from '@mui/icons-material/Check';
@@ -18,7 +20,7 @@ const styles = theme => ({
     },
     overflowHidden: {
         display: 'flex',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     titleIcon: {
         marginRight: 5,
@@ -29,14 +31,16 @@ const styles = theme => ({
     languageButton: {
         position: 'absolute',
         right: theme.spacing(1),
-        top: theme.spacing(1)
+        top: theme.spacing(1),
     },
     languageButtonActive: {
-        color: theme.palette.primary.main
+        color: theme.palette.primary.main,
     },
 });
 
-const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
+const CustomModal = ({
+    toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden,
+}) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
@@ -54,7 +58,7 @@ const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help,
         fullWidth={!!fullWidth}
         disableEscapeKeyDown={false}
         onClose={onClose}
-        classes={{ paper: classes.modalDialog, /*paper: classes.background*/ }}
+        classes={{ paper: classes.modalDialog /* paper: classes.background */ }}
     >
         {title && <DialogTitle>
             {icon ? <Icon className={classes.titleIcon} /> : null}
@@ -79,7 +83,7 @@ const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help,
                 // rows={10}
                 multiline
                 value={value}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={e => setValue(e.target.value)}
                 // customValue
             />}
             {children}
@@ -106,7 +110,7 @@ const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help,
             </Button>
         </DialogActions>
     </Dialog>;
-}
+};
 
 CustomModal.defaultProps = {
     open: false,
@@ -117,7 +121,7 @@ CustomModal.defaultProps = {
     titleButtonClose: 'Cancel',
     titleButtonApply: 'Ok',
     overflowHidden: false,
-    help: ''
+    help: '',
 };
 
 CustomModal.propTypes = {

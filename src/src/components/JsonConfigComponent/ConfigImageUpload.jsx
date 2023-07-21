@@ -11,7 +11,7 @@ import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
         width: '100%',
     },
@@ -26,6 +26,7 @@ class ConfigImageUpload extends ConfigGeneric {
         this.imageRef = React.createRef();
         this.index = Date.now();
     }
+
     async componentDidMount() {
         super.componentDidMount();
 
@@ -33,7 +34,7 @@ class ConfigImageUpload extends ConfigGeneric {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
             this.setState({ value });
         } else {
-            this.props.socket.fileExists(this.props.adapterName + '.' + this.props.instance, this.props.attr)
+            this.props.socket.fileExists(`${this.props.adapterName}.${this.props.instance}`, this.props.attr)
                 .then(exist => {
                     if (exist && this.imageRef.current) {
                         this.imageRef.current.src = this._getUrl();
@@ -55,7 +56,7 @@ class ConfigImageUpload extends ConfigGeneric {
         return url;
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         // eslint-disable-next-line
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
             {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
@@ -72,7 +73,7 @@ class ConfigImageUpload extends ConfigGeneric {
                             this.onChange(this.props.attr, this.state.value));
                     } else {
                         // delete file to /instance/attr
-                        this.props.socket.deleteFile(this.props.adapterName + '.' + this.props.instance, this.props.attr);
+                        this.props.socket.deleteFile(`${this.props.adapterName}.${this.props.instance}`, this.props.attr);
                         // update image
                         if (this.imageRef.current) {
                             this.imageRef.current.style.display = 'none';
@@ -89,7 +90,7 @@ class ConfigImageUpload extends ConfigGeneric {
                             base64 = base64.split(',')[1];
                         }
                         // upload file to /instance/attr
-                        this.props.socket.writeFile64(this.props.adapterName + '.' + this.props.instance, this.props.attr, base64)
+                        this.props.socket.writeFile64(`${this.props.adapterName}.${this.props.instance}`, this.props.attr, base64)
                             .then(() => {
                                 if (this.imageRef.current) {
                                     this.imageRef.current.style.display = 'block';
@@ -105,7 +106,7 @@ class ConfigImageUpload extends ConfigGeneric {
                 src={this._getUrl()}
                 ref={this.imageRef}
                 className={this.props.classes.image}
-                style={{display: 'none'}}
+                style={{ display: 'none' }}
                 alt="Background"
             />}
         </FormControl>;

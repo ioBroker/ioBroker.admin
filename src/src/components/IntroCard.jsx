@@ -2,18 +2,9 @@ import { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import { Button } from '@mui/material';
-import { Card } from '@mui/material';
-import { CardActions } from '@mui/material';
-import { CardContent } from '@mui/material';
-import { CardMedia } from '@mui/material';
-import { Collapse } from '@mui/material';
-import { Divider } from '@mui/material';
-import { Grid } from '@mui/material';
-import { IconButton } from '@mui/material';
-import { Link } from '@mui/material';
-import { Typography } from '@mui/material';
-import { Skeleton } from '@mui/material';
+import {
+    Button, Card, CardActions, CardContent, CardMedia, Collapse, Divider, Grid, IconButton, Link, Typography, Skeleton,
+} from '@mui/material';
 
 import CheckIcon from '@mui/icons-material/Check';
 import EditIcon from '@mui/icons-material/Create';
@@ -36,8 +27,8 @@ const styles = theme => ({
     root: {
         padding: '.75rem',
         [theme.breakpoints.up('xl')]: {
-            flex: '0 1 20%'
-        }
+            flex: '0 1 20%',
+        },
     },
     card: {
         display: 'flex',
@@ -47,8 +38,8 @@ const styles = theme => ({
         maxHeight: '235p',
         '&:hover': {
             overflowY: 'auto',
-            boxShadow: boxShadowHover
-        }
+            boxShadow: boxShadowHover,
+        },
     },
     cardInfo: {
         display: 'flex',
@@ -59,8 +50,8 @@ const styles = theme => ({
         flexDirection: 'column',
         '&:hover': {
             // overflowY: 'auto',
-            boxShadow: boxShadowHover
-        }
+            boxShadow: boxShadowHover,
+        },
     },
     cardInfoHead: {
         position: 'sticky',
@@ -70,41 +61,41 @@ const styles = theme => ({
         width: '100%',
         justifyContent: 'space-between',
         borderBottom: '1px solid',
-        padding: '5px 5px 0px 5px'
+        padding: '5px 5px 0px 5px',
     },
     edit: {
         opacity: '.6',
         userSelect: 'none',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
     },
     media: {
         backgroundColor: '#e2e2e2',
-        maxWidth: '30%'
+        maxWidth: '30%',
     },
     img: {
         width: '120px',
         height: 'auto',
         padding: '2rem .5rem',
-        maxWidth: '100%'
+        maxWidth: '100%',
     },
     contentContainer: {
         display: 'flex',
         flexDirection: 'column',
-        flex: 1
+        flex: 1,
     },
     content: {
         height: '170px',
         flexGrow: 1,
-        overflowY: 'hidden'
+        overflowY: 'hidden',
     },
     action: {
         minHeight: '49px',
-        padding: '16px 24px'
+        padding: '16px 24px',
     },
     expand: {
         position: 'absolute',
         right: '10px',
-        bottom: '10px'
+        bottom: '10px',
     },
     collapse: {
         minHeight: '100%',
@@ -122,10 +113,10 @@ const styles = theme => ({
         // }
     },
     close: {
-        right: '10px'
+        right: '10px',
     },
     save: {
-        right: '50px'
+        right: '50px',
     },
     enabled: {
         color: '#ffffff',
@@ -135,11 +126,11 @@ const styles = theme => ({
         right: theme.spacing(1),
         boxShadow,
         '&:hover': {
-            backgroundColor: blue[300]
+            backgroundColor: blue[300],
         },
         '&:focus': {
-            backgroundColor: blue[500]
-        }
+            backgroundColor: blue[500],
+        },
     },
     disabled: {
         color: '#ffffff',
@@ -149,11 +140,11 @@ const styles = theme => ({
         right: theme.spacing(1),
         boxShadow,
         '&:hover': {
-            backgroundColor: grey[300]
+            backgroundColor: grey[300],
         },
         '&:focus': {
-            backgroundColor: grey[500]
-        }
+            backgroundColor: grey[500],
+        },
     },
     editButton: {
         color: '#ffffff',
@@ -163,11 +154,11 @@ const styles = theme => ({
         right: theme.spacing(1),
         boxShadow,
         '&:hover': {
-            backgroundColor: grey[300]
+            backgroundColor: grey[300],
         },
         '&:focus': {
-            backgroundColor: grey[500]
-        }
+            backgroundColor: grey[500],
+        },
     },
     deleteButton: {
         color: '#ffffff',
@@ -177,11 +168,11 @@ const styles = theme => ({
         right: theme.spacing(1),
         boxShadow,
         '&:hover': {
-            backgroundColor: red[300]
+            backgroundColor: red[300],
         },
         '&:focus': {
-            backgroundColor: red[500]
-        }
+            backgroundColor: red[500],
+        },
 
     },
     cameraImg: {
@@ -192,20 +183,20 @@ const styles = theme => ({
         objectFit: 'contain',
     },
     imgContainer: {
-        height: '100%'
+        height: '100%',
     },
     hidden: {
-        display: 'none'
+        display: 'none',
     },
     contentGrid: {
-        height: '100%'
+        height: '100%',
     },
     imgSkeleton: {
-        transform: 'initial'
+        transform: 'initial',
     },
     colorOrange: {
-        color: '#ffcc80'
-    }
+        color: '#ffcc80',
+    },
 });
 
 class IntroCard extends Component {
@@ -216,7 +207,7 @@ class IntroCard extends Component {
             error: false,
             expanded: false,
             dialog: false,
-            loaded: false
+            loaded: false,
         };
 
         this.cameraRef = createRef();
@@ -233,9 +224,9 @@ class IntroCard extends Component {
                 let url = this.props.children;
                 if (this.props.addTs) {
                     if (url.includes('?')) {
-                        url += '&ts=' + Date.now();
+                        url += `&ts=${Date.now()}`;
                     } else {
-                        url += '?ts=' + Date.now();
+                        url += `?ts=${Date.now()}`;
                     }
                 }
                 this.cameraRef.current.src = url;
@@ -243,13 +234,13 @@ class IntroCard extends Component {
                 const parts = this.props.camera.split('.');
                 const adapter = parts.shift();
                 const instance = parts.shift();
-                this.props.socket.sendTo(adapter + '.' + instance, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
+                this.props.socket.sendTo(`${adapter}.${instance}`, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
                     .then(result => {
                         if (result && result.data && this.cameraRef.current) {
-                            this.cameraRef.current.src = 'data:image/jpeg;base64,' + result.data;
+                            this.cameraRef.current.src = `data:image/jpeg;base64,${result.data}`;
                         }
                     })
-                    .catch(e => window.alert('Cannot send to instance: ' + e));
+                    .catch(e => window.alert(`Cannot send to instance: ${e}`));
             }
         }
     }
@@ -269,33 +260,31 @@ class IntroCard extends Component {
     renderCameraDialog() {
         if (!this.state.dialog) {
             return null;
-        } else {
-            return <CameraIntroDialog
-                socket={this.props.socket}
-                camera={this.props.camera}
-                name={this.props.title}
-                t={this.props.t}
-                onClose={() => {
-                    if (this.props.camera && this.props.camera !== 'text') {
-                        this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
-                        this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
-                        this.updateCamera();
-                    }
-
-                    this.setState({ dialog: false });
-                }}
-            >
-                {this.props.children}
-            </CameraIntroDialog>;
         }
+        return <CameraIntroDialog
+            socket={this.props.socket}
+            camera={this.props.camera}
+            name={this.props.title}
+            t={this.props.t}
+            onClose={() => {
+                if (this.props.camera && this.props.camera !== 'text') {
+                    this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+                    this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
+                    this.updateCamera();
+                }
+
+                this.setState({ dialog: false });
+            }}
+        >
+            {this.props.children}
+        </CameraIntroDialog>;
     }
 
     static getDerivedStateFromProps(props) {
         if (props.edit) {
             return { expanded: false };
-        } else {
-            return null;
         }
+        return null;
     }
 
     handleExpandClick() {
@@ -306,7 +295,7 @@ class IntroCard extends Component {
         if (!this.state.loaded) {
             this.setState({
                 loaded: true,
-                error: false
+                error: false,
             });
         }
     }
@@ -315,7 +304,7 @@ class IntroCard extends Component {
         if (!this.state.error) {
             this.setState({
                 loaded: false,
-                error: true
+                error: true,
             });
         }
     }
@@ -324,16 +313,15 @@ class IntroCard extends Component {
         const { classes } = this.props;
 
         if (!this.props.camera || this.props.camera === 'text') {
-            return this.props.children
-        } else if (this.props.camera === 'custom') {
-
+            return this.props.children;
+        } if (this.props.camera === 'custom') {
             let url = this.props.children;
 
             if (this.props.addTs) {
                 if (url.includes('?')) {
-                    url += '&ts=' + Date.now();
+                    url += `&ts=${Date.now()}`;
                 } else {
-                    url += '?ts=' + Date.now();
+                    url += `?ts=${Date.now()}`;
                 }
             }
 
@@ -358,20 +346,18 @@ class IntroCard extends Component {
                         width="100%"
                         animation="wave"
                         className={classes.imgSkeleton}
-                    />
-                }
+                    />}
                 {this.state.error &&
-                    <ErrorIcon fontSize="large" />
-                }
+                    <ErrorIcon fontSize="large" />}
             </Grid>;
-        } else if (this.props.camera.startsWith('cameras.')) {
+        } if (this.props.camera.startsWith('cameras.')) {
             return <img ref={this.cameraRef} src="" alt="camera" className={this.props.classes.cameraImg} />;
         }
     }
 
     render() {
         const { classes } = this.props;
-        const editClass = this.props.edit ? ' ' + classes.edit : '';
+        const editClass = this.props.edit ? ` ${classes.edit}` : '';
 
         if (this.props.camera && this.props.camera !== 'text') {
             if (this.interval !== this.props.interval) {
@@ -475,12 +461,15 @@ class IntroCard extends Component {
                                         {this.props.t('Info')}
                                     </Typography>
                                     <div>
-                                        <IconButton size="small" onClick={() => {
-                                            Utils.copyToClipboard(this.props.getHostDescriptionAll()[1], {
-                                                format: 'text/plain'
-                                            });
-                                            this.props.openSnackBarFunc();
-                                        }}>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => {
+                                                Utils.copyToClipboard(this.props.getHostDescriptionAll()[1], {
+                                                    format: 'text/plain',
+                                                });
+                                                this.props.openSnackBarFunc();
+                                            }}
+                                        >
                                             <SaveIcon />
                                         </IconButton>
                                         <IconButton size="small" onClick={() => this.handleExpandClick()}>
@@ -488,7 +477,7 @@ class IntroCard extends Component {
                                         </IconButton>
                                     </div>
                                 </div>
-                                <CardContent >
+                                <CardContent>
                                     {this.props.getHostDescriptionAll()[0]}
                                     {/* { this.props.reveal } */}
                                 </CardContent>

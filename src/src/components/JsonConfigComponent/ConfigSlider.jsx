@@ -34,12 +34,12 @@ class ConfigSlider extends ConfigGeneric {
         const _value = ConfigGeneric.getValue(props.data, props.attr);
         if (_value === null || _value === undefined || _value.toString() !== parseFloat(state._value).toString()) {
             return { _value };
-        } else {
-            return null;
         }
+
+        return null;
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         const min = this.props.schema.min || 0;
         const max = this.props.schema.max || 100;
         const unit = this.props.schema.unit || '';

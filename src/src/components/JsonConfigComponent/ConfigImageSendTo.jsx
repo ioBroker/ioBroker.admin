@@ -47,7 +47,7 @@ class ConfigImageSendTo extends ConfigGeneric {
         return JSON.stringify(context);
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(/* error, disabled, defaultValue */) {
         if (this.state.image === undefined) {
             return null;
         }

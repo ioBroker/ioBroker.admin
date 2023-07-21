@@ -132,7 +132,7 @@ class HostSelectors extends Component {
                         if (obj) {
                             this.props.setCurrentHost(
                                 obj.common?.name || aliveHost.replace('system.host.', ''),
-                                aliveHost
+                                aliveHost,
                             );
                         } else {
                             this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
@@ -161,35 +161,33 @@ class HostSelectors extends Component {
                             changed = true;
                         }
                     }
-                } else {
-                    if (host) {
-                        if (host.common.name !== event.obj.common?.name) {
-                            host.common.name = event.obj.common?.name || '';
-                            changed = true;
-                        }
-                        if (host.common.color !== event.obj.common?.color) {
-                            host.common.color = event.obj.common?.color || '';
-                            changed = true;
-                        }
-                        if (host.common.icon !== event.obj.common?.icon) {
-                            host.common.icon = event.obj.common?.icon || '';
-                            changed = true;
-                        }
-                    } else {
+                } else if (host) {
+                    if (host.common.name !== event.obj.common?.name) {
+                        host.common.name = event.obj.common?.name || '';
                         changed = true;
-                        hosts.push({
-                            _id: event.id,
-                            common: {
-                                name: event.obj.common?.name || '',
-                                color: event.obj.common?.color || '',
-                                icon: event.obj.common?.icon || '',
-                            },
-                        });
-                        const state = await this.props.socket.getState(event.id + '.alive');
-                        alive[event.id] = state ? state.val : false;
                     }
+                    if (host.common.color !== event.obj.common?.color) {
+                        host.common.color = event.obj.common?.color || '';
+                        changed = true;
+                    }
+                    if (host.common.icon !== event.obj.common?.icon) {
+                        host.common.icon = event.obj.common?.icon || '';
+                        changed = true;
+                    }
+                } else {
+                    changed = true;
+                    hosts.push({
+                        _id: event.id,
+                        common: {
+                            name: event.obj.common?.name || '',
+                            color: event.obj.common?.color || '',
+                            icon: event.obj.common?.icon || '',
+                        },
+                    });
+                    const state = await this.props.socket.getState(`${event.id}.alive`);
+                    alive[event.id] = state ? state.val : false;
                 }
-            })
+            }),
         ).then(() => {
             if (changed) {
                 this.setState({ hosts, alive }, () => {
@@ -200,7 +198,7 @@ class HostSelectors extends Component {
                             if (obj) {
                                 this.props.setCurrentHost(
                                     obj.common?.name || aliveHost.replace('system.host.', ''),
-                                    aliveHost
+                                    aliveHost,
                                 );
                             } else {
                                 this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
@@ -219,7 +217,7 @@ class HostSelectors extends Component {
         let selectedHostObj;
         if (this.state.hosts.length) {
             selectedHostObj = this.state.hosts.find(
-                host => host._id === this.props.currentHost || host._id === `system.host.${this.props.currentHost}`
+                host => host._id === this.props.currentHost || host._id === `system.host.${this.props.currentHost}`,
             );
         }
 
@@ -247,7 +245,7 @@ class HostSelectors extends Component {
                             <div
                                 className={Utils.clsx(
                                     this.props.classes.width,
-                                    !this.state.alive[this.props.currentHost] && this.props.classes.notAlive
+                                    !this.state.alive[this.props.currentHost] && this.props.classes.notAlive,
                                 )}
                                 style={{
                                     display: 'flex',
@@ -283,7 +281,7 @@ class HostSelectors extends Component {
                                 if (this.props.currentHost !== this.state.hosts[idx]._id) {
                                     this.props.setCurrentHost(
                                         this.state.hosts[idx].common.name,
-                                        this.state.hosts[idx]._id
+                                        this.state.hosts[idx]._id,
                                     );
                                 }
                                 this.setState({ anchorEl: null });

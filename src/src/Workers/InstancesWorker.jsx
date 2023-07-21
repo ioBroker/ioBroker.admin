@@ -40,22 +40,22 @@ class InstancesWorker {
                     type = 'new';
                     this.objects[id] = obj;
                 }
+            } else if (this.objects[id]) {
+                oldObj = this.objects[id];
+                type = 'deleted';
+                delete this.objects[id];
             } else {
-                if (this.objects[id]) {
-                    oldObj = this.objects[id];
-                    type = 'deleted';
-                    delete this.objects[id];
-                } else {
-                    // deleted unknown instance
-                    return;
-                }
+                // deleted unknown instance
+                return;
             }
 
             this.promise = null;
             this.socket.getAdapterInstancesResetCache('');
             this.forceUpdate = true;
 
-            this.handlers.forEach(cb => cb([{ id, obj, type, oldObj }]));
+            this.handlers.forEach(cb => cb([{
+                id, obj, type, oldObj,
+            }]));
         }
     };
 
@@ -78,7 +78,7 @@ class InstancesWorker {
                 objects.forEach(obj => this.objects[obj._id] = obj);
                 return this.objects;
             })
-            .catch(e => window.alert('Cannot get adapter instances: ' + e));
+            .catch(e => window.alert(`Cannot get adapter instances: ${e}`));
 
         return this.promise;
     }
@@ -98,7 +98,7 @@ class InstancesWorker {
         } else if (!isConnected && this.connected) {
             this.connected = false;
         }
-    }
+    };
 
     registerHandler(cb, doNotRequestAdapters) {
         if (!this.handlers.includes(cb)) {

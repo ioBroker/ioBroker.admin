@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -31,8 +30,12 @@ import AddIcon from '@mui/icons-material/Add';
 import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 import IconCopy from '@mui/icons-material/FileCopy';
 
-import { Utils, I18n, SelectID as DialogSelectID, IconFx } from '@iobroker/adapter-react-v5';
-import { FormControl, InputLabel, MenuItem, Select, Tooltip, Autocomplete } from '@mui/material';
+import {
+    Utils, I18n, SelectID as DialogSelectID, IconFx,
+} from '@iobroker/adapter-react-v5';
+import {
+    FormControl, InputLabel, MenuItem, Select, Tooltip, Autocomplete,
+} from '@mui/material';
 import UploadImage from '../UploadImage';
 
 const styles = theme => ({
@@ -473,50 +476,51 @@ class ObjectBrowserEditObject extends Component {
     checkFunction(func, isWrite) {
         if (!func) {
             return '';
-        } else if (func.includes('JSON.parse(')) {
-            // Unable to validate (result is unknown)
+        } if (func.includes('JSON.parse(')) {
+            // Unable to validate (a result is unknown)
             return '';
-        } else {
-            let json;
-            try {
-                json = JSON.parse(this.state.text);
-            } catch (e) {}
+        }
+        let json;
+        try {
+            json = JSON.parse(this.state.text);
+        } catch (e) {
+            // ignore
+        }
 
-            let jsFunc;
-            try {
-                // eslint-disable-next-line no-new-func
-                jsFunc = new Function('val', func.includes('return') ? func : 'return ' + func);
-            } catch (e) {
-                return this.props.t('Cannot parse code!');
-            }
+        let jsFunc;
+        try {
+            // eslint-disable-next-line no-new-func
+            jsFunc = new Function('val', func.includes('return') ? func : `return ${func}`);
+        } catch (e) {
+            return this.props.t('Cannot parse code!');
+        }
 
-            if (json?.common?.type && this.props.objects[json.common?.alias?.id]?.common?.type) {
-                const initialType = isWrite ? json.common.type : this.props.objects[json.common.alias.id].common.type;
-                const finalType = isWrite ? this.props.objects[json.common.alias.id].common.type : json.common.type;
-                if (initialType && finalType) {
-                    let arg = null;
-                    if (initialType === 'boolean') {
-                        arg = true;
-                    } else if (initialType === 'number') {
-                        arg = 1;
-                    } else if (initialType === 'string') {
-                        arg = 'string';
-                    }
-                    if (arg !== null) {
-                        try {
-                            const result = jsFunc(arg);
-                            return result !== null && typeof result !== finalType
-                                ? this.props.t('Type of result is not as expected: %s', finalType)
-                                : '';
-                        } catch (e) {
-                            return `${this.props.t('Cannot execute function')}: ${e.toString()}`;
-                        }
+        if (json?.common?.type && this.props.objects[json.common?.alias?.id]?.common?.type) {
+            const initialType = isWrite ? json.common.type : this.props.objects[json.common.alias.id].common.type;
+            const finalType = isWrite ? this.props.objects[json.common.alias.id].common.type : json.common.type;
+            if (initialType && finalType) {
+                let arg = null;
+                if (initialType === 'boolean') {
+                    arg = true;
+                } else if (initialType === 'number') {
+                    arg = 1;
+                } else if (initialType === 'string') {
+                    arg = 'string';
+                }
+                if (arg !== null) {
+                    try {
+                        const result = jsFunc(arg);
+                        return result !== null && typeof result !== finalType
+                            ? this.props.t('Type of result is not as expected: %s', finalType)
+                            : '';
+                    } catch (e) {
+                        return `${this.props.t('Cannot execute function')}: ${e.toString()}`;
                     }
                 }
             }
-
-            return '';
         }
+
+        return '';
     }
 
     prepareObject(value) {
@@ -642,7 +646,7 @@ class ObjectBrowserEditObject extends Component {
                 onChange={(e, tab) => {
                     (window._localStorage || window.localStorage).setItem(
                         `${this.props.dialogName || 'App'}.editTab`,
-                        tab
+                        tab,
                     );
 
                     if (tab === 'object') {
@@ -662,7 +666,7 @@ class ObjectBrowserEditObject extends Component {
                                 changed = true;
                             }
                             changed && this.setState({ text: JSON.stringify(obj, null, 2) });
-                        } catch (e) {
+                        } catch (err) {
                             // ignore
                         }
                     }
@@ -711,17 +715,17 @@ class ObjectBrowserEditObject extends Component {
                 title={`${this.props.t('Select for')} ${this.props.obj._id}`}
                 selected={id}
                 statesOnly
-                onOk={id => {
+                onOk={idx => {
                     const selectRead = this.state.selectRead;
                     const selectWrite = this.state.selectWrite;
                     const selectId = this.state.selectId;
                     this.setState({ selectId: false, selectRead: false, selectWrite: false }, () => {
                         if (selectRead) {
-                            this.setAliasItem(json, 'id.read', id);
+                            this.setAliasItem(json, 'id.read', idx);
                         } else if (selectWrite) {
-                            this.setAliasItem(json, 'id.write', id);
+                            this.setAliasItem(json, 'id.write', idx);
                         } else if (selectId) {
-                            this.setAliasItem(json, 'id', id);
+                            this.setAliasItem(json, 'id', idx);
                         }
                     });
                 }}
@@ -794,7 +798,9 @@ class ObjectBrowserEditObject extends Component {
             const json = JSON.parse(this.state.text);
             const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
             const disabled = false;
-            const { classes, t, roleArray, obj } = this.props;
+            const {
+                classes, t, roleArray, obj,
+            } = this.props;
             const checkState = obj.type === 'state';
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
 
@@ -827,7 +833,7 @@ class ObjectBrowserEditObject extends Component {
                                 variant="standard"
                                 disabled={disabled}
                                 label={t('Name')}
-                                className={clsx(classes.marginBlock, classes.textField)}
+                                className={Utils.clsx(classes.marginBlock, classes.textField)}
                                 fullWidth
                                 value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), null, false, true)}
                                 onChange={el => this.setCommonItem(json, 'name', el.target.value)}
@@ -926,7 +932,7 @@ class ObjectBrowserEditObject extends Component {
                                 <TextField
                                     variant="standard"
                                     disabled={disabled}
-                                    className={clsx(classes.marginBlock, classes.color)}
+                                    className={Utils.clsx(classes.marginBlock, classes.color)}
                                     label={t('Color')}
                                     type="color"
                                     value={json.common.color}
@@ -944,7 +950,7 @@ class ObjectBrowserEditObject extends Component {
                                         <TextField
                                             variant="standard"
                                             disabled={disabled}
-                                            className={clsx(classes.marginBlock, classes.color)}
+                                            className={Utils.clsx(classes.marginBlock, classes.color)}
                                             label={t('Min')}
                                             value={json.common.min}
                                             onChange={el => this.setCommonItem(json, 'min', el.target.value)}
@@ -963,7 +969,7 @@ class ObjectBrowserEditObject extends Component {
                                         <TextField
                                             variant="standard"
                                             disabled={disabled}
-                                            className={clsx(classes.marginBlock, classes.color)}
+                                            className={Utils.clsx(classes.marginBlock, classes.color)}
                                             label={t('Max')}
                                             value={json.common.max}
                                             onChange={el => this.setCommonItem(json, 'max', el.target.value)}
@@ -982,7 +988,7 @@ class ObjectBrowserEditObject extends Component {
                                         <TextField
                                             variant="standard"
                                             disabled={disabled}
-                                            className={clsx(classes.marginBlock, classes.color)}
+                                            className={Utils.clsx(classes.marginBlock, classes.color)}
                                             label={t('Step')}
                                             value={json.common.step}
                                             onChange={el => this.setCommonItem(json, 'step', el.target.value)}
@@ -1002,7 +1008,7 @@ class ObjectBrowserEditObject extends Component {
                                     <TextField
                                         variant="standard"
                                         disabled={disabled}
-                                        className={clsx(classes.marginBlock, classes.color)}
+                                        className={Utils.clsx(classes.marginBlock, classes.color)}
                                         label={t('Unit')}
                                         value={json.common.unit}
                                         onChange={el => this.setCommonItem(json, 'unit', el.target.value)}
@@ -1259,7 +1265,7 @@ class ObjectBrowserEditObject extends Component {
         window.alert(this.props.t('ra_Copied'));
     }
 
-    onClone(oldId, newId, cb) {
+    onClone(oldId, newId) {
         const newObj = JSON.parse(JSON.stringify(this.props.objects[oldId]));
         delete newObj.from;
         delete newObj.ts;
@@ -1272,49 +1278,48 @@ class ObjectBrowserEditObject extends Component {
     renderCopyDialog() {
         if (!this.state.showCopyDialog) {
             return null;
-        } else {
-            return (
-                <Dialog open={!0} maxWidth="md" fullWidth onClose={() => this.setState({ showCopyDialog: false })}>
-                    <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            variant="standard"
-                            autoFocus
-                            fullWidth
-                            label={this.props.t('New object ID')}
-                            value={this.state.newId}
-                            onKeyDown={e => {
-                                if (e.keyCode === 13 && !this.props.objects[this.state.newId]) {
-                                    this.setState({ showCopyDialog: '' });
-                                    this.onClone(this.state.showCopyDialog, this.state.newId);
-                                }
-                            }}
-                            onChange={e => this.setState({ newId: e.target.value })}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            disabled={!!this.props.objects[this.state.newId]}
-                            onClick={() => {
+        }
+        return (
+            <Dialog open={!0} maxWidth="md" fullWidth onClose={() => this.setState({ showCopyDialog: false })}>
+                <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        variant="standard"
+                        autoFocus
+                        fullWidth
+                        label={this.props.t('New object ID')}
+                        value={this.state.newId}
+                        onKeyDown={e => {
+                            if (e.keyCode === 13 && !this.props.objects[this.state.newId]) {
                                 this.setState({ showCopyDialog: '' });
                                 this.onClone(this.state.showCopyDialog, this.state.newId);
-                            }}
-                            color="primary"
-                            startIcon={<IconCopy />}
-                        >
-                            {this.props.t('Clone')}
-                        </Button>
-                        <Button
-                            color="grey"
-                            onClick={() => this.setState({ showCopyDialog: '' })}
-                            startIcon={<IconClose />}
-                        >
-                            {this.props.t('Cancel')}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            );
-        }
+                            }
+                        }}
+                        onChange={e => this.setState({ newId: e.target.value })}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        disabled={!!this.props.objects[this.state.newId]}
+                        onClick={() => {
+                            this.setState({ showCopyDialog: '' });
+                            this.onClone(this.state.showCopyDialog, this.state.newId);
+                        }}
+                        color="primary"
+                        startIcon={<IconCopy />}
+                    >
+                        {this.props.t('Clone')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        onClick={() => this.setState({ showCopyDialog: '' })}
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
     render() {
@@ -1332,7 +1337,9 @@ class ObjectBrowserEditObject extends Component {
                 aria-describedby="edit-value-dialog-description"
             >
                 <DialogTitle id="edit-value-dialog-title">
-                    {this.props.t('Edit object:')} <span className={this.props.classes.id}>{this.props.obj._id}</span>
+                    {this.props.t('Edit object:')}
+                    {' '}
+                    <span className={this.props.classes.id}>{this.props.obj._id}</span>
                 </DialogTitle>
 
                 {this.renderTabs()}
@@ -1341,10 +1348,10 @@ class ObjectBrowserEditObject extends Component {
                 <DialogContent>
                     {this.state.tab === 'object' ? (
                         <div
-                            className={clsx(
+                            className={Utils.clsx(
                                 this.props.classes.divWithoutTitle,
                                 withAlias && this.props.classes.divWithoutTitleAndTab,
-                                this.state.error && this.props.classes.error
+                                this.state.error && this.props.classes.error,
                             )}
                         >
                             <AceEditor

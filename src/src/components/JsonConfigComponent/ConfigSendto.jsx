@@ -32,6 +32,7 @@ const styles = () => ({
 });
 
 function ip2int(ip) {
+    // eslint-disable-next-line no-bitwise
     return ip.split('.').reduce((ipInt, octet) => (ipInt << 8) + parseInt(octet, 10), 0) >>> 0;
 }
 
@@ -49,9 +50,11 @@ function findNetworkAddressOfHost(obj, localIp) {
         networkInterfaces[inter].forEach(ip => {
             if (ip.internal) {
                 return;
-            } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+            }
+            if (localIp.includes(':') && ip.family !== 'IPv6') {
                 return;
-            } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+            }
+            if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
                 return;
             }
             // if ip4 and not docker or wsl
@@ -59,6 +62,7 @@ function findNetworkAddressOfHost(obj, localIp) {
                 hostIp = ip.address;
             } else if (!hostIp) {
                 if (ip.family === 'IPv4' && localIp.includes('.') &&
+                    // eslint-disable-next-line no-bitwise
                     (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))) {
                     hostIp = ip.address;
                 } else {
@@ -73,15 +77,16 @@ function findNetworkAddressOfHost(obj, localIp) {
             networkInterfaces[inter].forEach(ip => {
                 if (ip.internal) {
                     return;
-                } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                } if (localIp.includes(':') && ip.family !== 'IPv6') {
                     return;
-                } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                } if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
                     return;
                 }
                 if (ip.family === 'IPv6' && (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/))) { // if DNS name
                     hostIp = ip.address;
                 } else if (!hostIp) {
                     if (ip.family === 'IPv4' && localIp.includes('.') &&
+                        // eslint-disable-next-line no-bitwise
                         (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))) {
                         hostIp = ip.address;
                     } else {
@@ -96,9 +101,9 @@ function findNetworkAddressOfHost(obj, localIp) {
             networkInterfaces[inter].forEach(ip => {
                 if (ip.internal) {
                     return;
-                } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                } if (localIp.includes(':') && ip.family !== 'IPv6') {
                     return;
-                } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                } if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
                     return;
                 }
                 if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
@@ -140,34 +145,32 @@ class ConfigSendto extends ConfigGeneric {
                 hostname = `${ip}:${window.location.port}`;
             } else {
                 console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
-                return null;
+                return;
             }
         }
-        this.setState( { _error: '', _message: '', hostname });
+        this.setState({ _error: '', _message: '', hostname });
     }
 
     renderErrorDialog() {
         if (this.state._error) {
             return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({ _error: '' })} />;
-        } else {
-            return null;
         }
+        return null;
     }
 
     renderMessageDialog() {
         if (this.state._message) {
             return <DialogMessage text={this.state._message} classes={undefined} onClose={() => this.setState({ _message: '' })} />;
-        } else {
-            return null;
         }
+        return null;
     }
 
     _onClick() {
         this.props.onCommandRunning(true);
         this.setState({ running: true });
 
-        const _origin = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace(/\/index\.html$/, '')}`
-        const _originIp = `${window.location.protocol}//${this.state.hostname.split(':').length > 3 ? `[${this.state.hostname}]` : this.state.hostname}${window.location.pathname.replace(/\/index\.html$/, '')}`
+        const _origin = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace(/\/index\.html$/, '')}`;
+        const _originIp = `${window.location.protocol}//${this.state.hostname.split(':').length > 3 ? `[${this.state.hostname}]` : this.state.hostname}${window.location.pathname.replace(/\/index\.html$/, '')}`;
 
         let data = this.props.schema.data;
         if (data === undefined && this.props.schema.jsonData) {
@@ -202,7 +205,7 @@ class ConfigSendto extends ConfigGeneric {
         this.props.socket.sendTo(
             `${this.props.adapterName}.${this.props.instance}`,
             this.props.schema.command || 'send',
-            data
+            data,
         )
             .then(response => {
                 if (timeout) {
@@ -223,23 +226,21 @@ class ConfigSendto extends ConfigGeneric {
                     if (response?.openUrl && this.props.schema.openUrl) {
                         window.open(response.openUrl, response.window || this.props.schema.window || '_blank');
                     } else
-                    if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
-                        let text = this.getText(this.props.schema.result[response.result]);
-                        if (response.args) {
-                            response.args.forEach(arg => text = text.replace('%s', arg));
-                        }
-                        window.alert(text);
-                    } if (response?.native && this.props.schema.useNative) {
+                        if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
+                            let text = this.getText(this.props.schema.result[response.result]);
+                            if (response.args) {
+                                response.args.forEach(arg => text = text.replace('%s', arg));
+                            }
+                            window.alert(text);
+                        } if (response?.native && this.props.schema.useNative) {
                         const attrs = Object.keys(response.native);
                         attrs.forEach(attr =>
                             this.onChange(attr, response.native[attr]));
                         setTimeout(() => this.props.forceUpdate(attrs, this.props.data), 300);
+                    } else if (response?.result) {
+                        window.alert(typeof response.result === 'object' ? JSON.stringify(response.result) : response.result);
                     } else {
-                        if (response?.result) {
-                            window.alert(typeof response.result === 'object' ? JSON.stringify(response.result) : response.result);
-                        } else {
-                            window.alert(I18n.t('ra_Ok'));
-                        }
+                        window.alert(I18n.t('ra_Ok'));
                     }
 
                     if (response?.saveConfig) {
@@ -282,8 +283,7 @@ class ConfigSendto extends ConfigGeneric {
             icon={icon}
             onClose={isOk =>
                 this.setState({ confirmDialog: false }, () =>
-                    isOk && this._onClick())
-            }
+                    isOk && this._onClick())}
         />;
     }
 
@@ -310,8 +310,8 @@ class ConfigSendto extends ConfigGeneric {
         return icon;
     }
 
-    renderItem(error, disabled, defaultValue) {
-        let icon = this.getIcon();
+    renderItem(error, disabled /* , defaultValue */) {
+        const icon = this.getIcon();
 
         return <div className={this.props.classes.fullWidth}>
             <Button

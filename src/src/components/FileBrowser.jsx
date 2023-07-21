@@ -31,7 +31,6 @@ import {
 import ErrorDialog from '@iobroker/adapter-react-v5/Dialogs/Error';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import TextInputDialog from '@iobroker/adapter-react-v5/Dialogs/TextInput';
-import FileViewer, { EXTENSIONS } from './FileViewer';
 
 // Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -63,6 +62,7 @@ import IconOpen from '@iobroker/adapter-react-v5/icons/IconOpen';
 import IconNoIcon from '@iobroker/adapter-react-v5/icons/IconNoIcon';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import FileViewer, { EXTENSIONS } from './FileViewer';
 
 const ROW_HEIGHT   = 32;
 const BUTTON_WIDTH = 32;

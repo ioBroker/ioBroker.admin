@@ -11,9 +11,9 @@ import Tooltip from '@mui/material/Tooltip';
 
 import amber from '@mui/material/colors/amber';
 
-import CommonUtils from '../Utils';
 import { Checkbox } from '@mui/material';
 import { Utils } from '@iobroker/adapter-react-v5';
+import CommonUtils from '../Utils';
 
 const styles = theme => ({
     selected: {
@@ -23,7 +23,7 @@ const styles = theme => ({
             color: theme.palette.primary.main,
             '& $selectedIcon': {
                 color: theme.palette.primary.main,
-            }
+            },
         },
     },
     selectedIcon: {
@@ -34,11 +34,11 @@ const styles = theme => ({
     },
     noWrap: {
         flexWrap: 'nowrap',
-        height: 40
+        height: 40,
     },
     warn: {
-        backgroundColor: amber[500]
-    }
+        backgroundColor: amber[500],
+    },
 });
 
 const DrawerItem = props => {
@@ -56,7 +56,7 @@ const DrawerItem = props => {
         editListFunc,
         badgeAdditionalContent,
         badgeAdditionalColor,
-        style
+        style,
     } = props;
 
     let content = text ? text.replace('&gt;', '>') : '';
@@ -67,7 +67,7 @@ const DrawerItem = props => {
         content = 'Text→Cmd';
     }
 
-    return <div style={Object.assign({ display: 'flex' }, style || {})}>
+    return <div style={({ display: 'flex', ...style || {} })}>
         {!!editList && <Checkbox checked={visible} onClick={editListFunc} />}
         <ListItemButton
             className={Utils.clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
@@ -102,13 +102,12 @@ const DrawerItem = props => {
                                     {content}
                                 </Badge>
                             </ListItemText>
-                        </Grid>
-                    }
+                        </Grid>}
                 </Grid>
             </Tooltip>
         </ListItemButton>
     </div>;
-}
+};
 
 DrawerItem.propTypes = {
     icon: PropTypes.object,

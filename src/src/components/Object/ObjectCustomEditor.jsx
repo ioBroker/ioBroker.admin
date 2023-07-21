@@ -1,5 +1,5 @@
 import React, { createRef, Component } from 'react';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import JSON5 from 'json5';
@@ -24,7 +24,7 @@ import JsonConfigComponent from '../JsonConfigComponent';
 import ConfigGeneric from '../JsonConfigComponent/ConfigGeneric';
 import Utils from '../../Utils';
 
-const styles = theme => ({
+const styles = () => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -46,7 +46,7 @@ const styles = theme => ({
     },
     scrollDiv: {
         width: '100%',
-        height: '100%',//`calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
+        height: '100%', // `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
         overflow: 'auto',
     },
     fullWidth: {
@@ -66,39 +66,38 @@ const styles = theme => ({
     },
 
     accordionOdd: {
-        //backgroundColor: 'rgba(128, 128, 128, 0.2)'
+        // backgroundColor: 'rgba(128, 128, 128, 0.2)'
     },
     accordionEven: {
-        backgroundColor: 'rgba(128, 128, 128, 0.1)'
+        backgroundColor: 'rgba(128, 128, 128, 0.1)',
     },
 
     accordionHeaderOdd: {
-        backgroundColor: 'rgba(128, 128, 128, 0.2)'
+        backgroundColor: 'rgba(128, 128, 128, 0.2)',
     },
     accordionHeaderEven: {
-        backgroundColor: 'rgba(128, 128, 128, 0.3)'
+        backgroundColor: 'rgba(128, 128, 128, 0.3)',
     },
 
     accordionHeaderEnabledOdd: {
-        backgroundColor: 'rgba(128, 255, 128, 0.2)'
+        backgroundColor: 'rgba(128, 255, 128, 0.2)',
     },
     accordionHeaderEnabledEven: {
-        backgroundColor: 'rgba(128, 255, 128, 0.2)'
+        backgroundColor: 'rgba(128, 255, 128, 0.2)',
     },
-
 
     enabledVisible: {
-        display: 'inline-block'
+        display: 'inline-block',
     },
     enabledInvisible: {
-        display: 'none'
-    }
+        display: 'none',
+    },
 });
 
 const URL_PREFIX = '.'; // or './' or 'http://localhost:8081' for debug
 
 class ObjectCustomEditor extends Component {
-    static AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+    static AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
     constructor(props) {
         super(props);
@@ -120,24 +119,20 @@ class ObjectCustomEditor extends Component {
             progress: null,
             maxOids: null,
             confirmed: false,
-            showConfirmation: false
+            showConfirmation: false,
         };
 
-        this.scrollDone   = false;
-        this.lastExpanded = (window._localStorage || window.localStorage).getItem('App.customsLastExpanded') || '';
         this.scrollDivRef = createRef();
 
-        this.changedItems = [];
         this.jsonConfigs  = {};
 
-        this.controls     = {};
         this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
 
-        this.customObj    = this.props.objectIDs.length > 1 ? {custom: {}, native: {}} : JSON.parse(JSON.stringify(this.props.objects[this.props.objectIDs[0]] || null));
+        this.customObj    = this.props.objectIDs.length > 1 ? { custom: {}, native: {} } : JSON.parse(JSON.stringify(this.props.objects[this.props.objectIDs[0]] || null));
 
         if (this.customObj) {
-            this.loadAllPromises = this.loadAllCustoms()
+            this.loadAllCustoms()
                 .then(() => {
                     this.commonConfig = this.getCommonConfig();
                     this.setState({ loaded: true, newValues: {} });
@@ -171,17 +166,17 @@ class ObjectCustomEditor extends Component {
                         this.jsonConfigs[adapter].instanceObjs = this.jsonConfigs[adapter].instanceObjs || {};
                         this.jsonConfigs[adapter].instanceObjs[id] = {
                             _id: id,
-                            common: JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + id]?.common)),
-                            native: JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + id]?.native))
-                        }
+                            common: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.common)),
+                            native: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.native)),
+                        };
                     }
                 });
             });
     }
 
-    showError(error) {
-        this.setState({ error });
-    }
+    // showError(error) {
+    //     this.setState({ error });
+    // }
 
     getCustomTemplate(adapter) {
         const ad = this.props.objects[`system.adapter.${adapter}`] ? JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${adapter}`])) : null;
@@ -189,43 +184,40 @@ class ObjectCustomEditor extends Component {
         if (!ad) {
             console.error(`Cannot find adapter "${ad}"`);
             return Promise.resolve(null);
-        } else {
-            Utils.fixAdminUI(ad);
-
-            if (ad.common?.adminUI.custom === 'json') {
-                return this.props.socket.fileExists(adapter + '.admin', 'jsonCustom.json5')
-                    .then(exist => {
-                        if (exist) {
-                            return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json5');
-                        } else {
-                            return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json')
-                        }
-                    })
-                    .then(json => {
-                        if (json.file !== undefined) {
-                            json = json.file;
-                        }
-                        try {
-                            json = JSON5.parse(json);
-                            this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
-                            this.jsonConfigs[adapter].json = json;
-                        } catch (e) {
-                            console.error(`Cannot parse jsonConfig of ${adapter}: ${e}`);
-                            window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
-                        }
-
-                        return JsonConfigComponent.loadI18n(this.props.socket, json.i18n, adapter);
-                    })
-                    .catch(e => {
-                        console.error(`Cannot load jsonConfig of ${adapter}: ${e}`);
-                        window.alert(`Cannot load jsonConfig of ${adapter}: ${e}`);
-                    });
-            } else {
-                console.error(`Adapter ${adapter} is not yet supported by this version of admin`);
-                window.alert(`Adapter ${adapter} is not yet supported by this version of admin`);
-                return Promise.resolve(null);
-            }
         }
+        Utils.fixAdminUI(ad);
+
+        if (ad.common?.adminUI.custom === 'json') {
+            return this.props.socket.fileExists(`${adapter}.admin`, 'jsonCustom.json5')
+                .then(exist => {
+                    if (exist) {
+                        return this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json5');
+                    }
+                    return this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json');
+                })
+                .then(json => {
+                    if (json.file !== undefined) {
+                        json = json.file;
+                    }
+                    try {
+                        json = JSON5.parse(json);
+                        this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
+                        this.jsonConfigs[adapter].json = json;
+                    } catch (e) {
+                        console.error(`Cannot parse jsonConfig of ${adapter}: ${e}`);
+                        window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
+                    }
+
+                    return JsonConfigComponent.loadI18n(this.props.socket, json.i18n, adapter);
+                })
+                .catch(e => {
+                    console.error(`Cannot load jsonConfig of ${adapter}: ${e}`);
+                    window.alert(`Cannot load jsonConfig of ${adapter}: ${e}`);
+                });
+        }
+        console.error(`Adapter ${adapter} is not yet supported by this version of admin`);
+        window.alert(`Adapter ${adapter} is not yet supported by this version of admin`);
+        return Promise.resolve(null);
     }
 
     // See configGeneric _executeCustom
@@ -246,10 +238,9 @@ class ObjectCustomEditor extends Component {
 
         alsoDependsOn.forEach(_attr => {
             if (!items[_attr]) {
-                return console.error(`[JsonConfigComponent] attribute "${_attr}" does not exist!`);
-            } else
-            if (!items[_attr].defaultFunc) {
-                return console.error(`[JsonConfigComponent] attribute "${_attr}" is not required to be includes in "alsoDependsOn" while has static value!`);
+                console.error(`[JsonConfigComponent] attribute "${_attr}" does not exist!`);
+            } else if (!items[_attr].defaultFunc) {
+                console.error(`[JsonConfigComponent] attribute "${_attr}" is not required to be includes in "alsoDependsOn" while has static value!`);
             } else {
                 const result = this._executeCustom(items[_attr].defaultFunc, data, customObj, instanceObj, items, _attr, processed);
                 if (result !== undefined) {
@@ -259,17 +250,19 @@ class ObjectCustomEditor extends Component {
         });
 
         if (!func) {
-            data[attr] = items[attr].default === undefined ? null: items[attr].default;
+            data[attr] = items[attr].default === undefined ? null : items[attr].default;
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
+                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : `return ${func}`);
                 data[attr] = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
-                data[attr] = !items[attr] || items[attr].default === undefined ? null: items[attr].default;
+                data[attr] = !items[attr] || items[attr].default === undefined ? null : items[attr].default;
             }
         }
+
+        return data[attr];
     }
 
     static flattenItems(items, _result) {
@@ -314,7 +307,7 @@ class ObjectCustomEditor extends Component {
         return defaultValues;
     }
 
-    getCommonConfig () {
+    getCommonConfig() {
         const ids     = this.props.objectIDs || [];
         const objects = this.props.objects;
 
@@ -351,7 +344,7 @@ class ObjectCustomEditor extends Component {
                 } else {
                     // const adapter = inst.split('.')[0];
                     // Calculate defaults for this object
-                    let _default = this.getDefaultValues(inst, customObj);
+                    const _default = this.getDefaultValues(inst, customObj);
                     _default.enabled = false;
 
                     Object.keys(_default).forEach(_attr => {
@@ -391,7 +384,7 @@ class ObjectCustomEditor extends Component {
     }
 
     combineNewAndOld(instance, ignoreUnderscore) {
-        const data = Object.assign({}, this.commonConfig[instance] || {}, this.state.newValues[instance] || {});
+        const data = { ...this.commonConfig[instance] || {}, ...this.state.newValues[instance] || {} };
 
         if (ignoreUnderscore) {
             Object.keys(data).forEach(attr => {
@@ -410,7 +403,7 @@ class ObjectCustomEditor extends Component {
     renderOneCustom(instance, instanceObj, customObj, i) {
         const adapter = instance.split('.')[0];
 
-        const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects['system.adapter.' + adapter].common.icon}`;
+        const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects[`system.adapter.${adapter}`].common.icon}`;
         // could be: true, false, [true, false]
         const enabled = this.state.newValues[instance] !== undefined && (!this.state.newValues[instance] || this.state.newValues[instance].enabled !== undefined) ? !!(this.state.newValues[instance] && this.state.newValues[instance].enabled) : (this.state.newValues[instance] === null ? false : this.commonConfig[instance].enabled);
         const isIndeterminate = Array.isArray(enabled) && (!this.state.newValues[instance] || this.state.newValues[instance].enabled === undefined);
@@ -431,11 +424,11 @@ class ObjectCustomEditor extends Component {
         }
 
         return <Accordion
-            key={ instance }
-            id={ 'Accordion_' + instance }
+            key={instance}
+            id={`Accordion_${instance}`}
             className={i % 2 ? this.props.classes.accordionOdd : this.props.classes.accordionEven}
-            expanded={ this.state.expanded.includes(instance) }
-            ref={ this.refTemplate[instance] }
+            expanded={this.state.expanded.includes(instance)}
+            ref={this.refTemplate[instance]}
             onChange={() => {
                 const expanded = [...this.state.expanded];
                 const pos = expanded.indexOf(instance);
@@ -455,22 +448,23 @@ class ObjectCustomEditor extends Component {
                 className={i % 2 ?
                     (enabled ? this.props.classes.accordionHeaderEnabledOdd : this.props.classes.accordionHeaderOdd)
                     :
-                    (enabled ? this.props.classes.accordionHeaderEnabledEven : this.props.classes.accordionHeaderEven)
-            }
+                    (enabled ? this.props.classes.accordionHeaderEnabledEven : this.props.classes.accordionHeaderEven)}
             >
-                <img src={ icon } className={ this.props.classes.headingIcon } alt="" />
-                <Typography className={ this.props.classes.heading }>{ this.props.t('Settings %s', instance)}</Typography>
-                <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible) }>{
-                    this.props.t('Enabled')
-                }</div>
+                <img src={icon} className={this.props.classes.headingIcon} alt="" />
+                <Typography className={this.props.classes.heading}>{ this.props.t('Settings %s', instance)}</Typography>
+                <div className={clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible)}>
+                    {
+                        this.props.t('Enabled')
+                    }
+                </div>
             </AccordionSummary>
-            <AccordionDetails >
+            <AccordionDetails>
                 <div className={this.props.classes.enabledControl}>
                     <FormControlLabel
-                        className={ this.props.classes.formControl }
+                        className={this.props.classes.formControl}
                         control={<Checkbox
-                            indeterminate={ isIndeterminate }
-                            checked={ !!enabled }
+                            indeterminate={isIndeterminate}
+                            checked={!!enabled}
                             disabled={disabled}
                             onChange={e => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
@@ -479,19 +473,18 @@ class ObjectCustomEditor extends Component {
                                 newValues[instance] = newValues[instance] || {};
                                 if (isIndeterminate || e.target.checked) {
                                     newValues[instance].enabled = true;
+                                } else if (enabled) {
+                                    newValues[instance] = null;
                                 } else {
-                                    if (enabled) {
-                                        newValues[instance] = null;
-                                    } else {
-                                        delete newValues[instance];
-                                    }
+                                    delete newValues[instance];
                                 }
                                 this.cachedNewValues = newValues;
                                 this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
                                     this.cachedNewValues = null;
                                     this.props.onChange && this.props.onChange(this.state.hasChanges);
                                 });
-                            }}/>}
+                            }}
+                        />}
                         label={this.props.t('Enabled')}
                     />
                 </div>
@@ -501,7 +494,7 @@ class ObjectCustomEditor extends Component {
                             instanceObj={instanceObj}
                             customObj={customObj}
                             custom
-                            className={ '' }
+                            className=""
                             adapterName={adapter}
                             instance={parseInt(instance.split('.').pop(), 10) || 0}
                             socket={this.props.socket}
@@ -509,11 +502,10 @@ class ObjectCustomEditor extends Component {
                             themeName={this.props.themeName}
                             themeType={this.props.themeType}
                             multiEdit={this.props.objectIDs.length > 1}
-
                             schema={this.jsonConfigs[adapter].json}
                             data={data}
                             onError={error =>
-                                this.setState({error}, () => this.props.onError && this.props.onError(error))}
+                                this.setState({ error }, () => this.props.onError && this.props.onError(error))}
                             onValueChange={(attr, value) => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                 console.log(`${attr} => ${value}`);
@@ -546,23 +538,24 @@ class ObjectCustomEditor extends Component {
         </Accordion>;
     }
 
-    isAllOk() {
-        let allOk = true;
-        /*Object.keys(this.refTemplate).forEach(id => {
-            const adapter = id.replace(/\.\d+$/, '');
-            // post init => add custom logic
-            if (window.customPostOnSave.hasOwnProperty(adapter) && typeof window.customPostOnSave[adapter] === 'function') {
-                // returns true if some problem detected
-                if (window.customPostOnSave[adapter](window.$(this), id)) {
-                    allOk = false;
-                }
-            }
-        });*/
-        return allOk;
-    }
+    // isAllOk() {
+    //     const allOk = true;
+    //     /* Object.keys(this.refTemplate).forEach(id => {
+    //         const adapter = id.replace(/\.\d+$/, '');
+    //         // post init => add custom logic
+    //         if (window.customPostOnSave.hasOwnProperty(adapter) && typeof window.customPostOnSave[adapter] === 'function') {
+    //             // returns true if some problem detected
+    //             if (window.customPostOnSave[adapter](window.$(this), id)) {
+    //                 allOk = false;
+    //             }
+    //         }
+    //     }); */
+    //     return allOk;
+    // }
 
     renderErrorMessage() {
         return !!this.state.error && <DialogError
+            classes={{ }}
             title={this.props.t('Error')}
             text={this.state.error}
             onClose={() => this.setState({ error: '' })}
@@ -572,14 +565,13 @@ class ObjectCustomEditor extends Component {
     getObject(objects, oldObjects, id) {
         if (objects[id]) {
             return Promise.resolve(objects[id]);
-        } else {
-            return this.props.socket.getObject(id)
-                .then(obj => {
-                    oldObjects[id] = JSON.parse(JSON.stringify(obj));
-                    objects[id] = obj;
-                    return obj;
-                });
         }
+        return this.props.socket.getObject(id)
+            .then(obj => {
+                oldObjects[id] = JSON.parse(JSON.stringify(obj));
+                objects[id] = obj;
+                return obj;
+            });
     }
 
     saveOneState(ids, cb, _objects, _oldObjects) {
@@ -599,7 +591,7 @@ class ObjectCustomEditor extends Component {
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
                     !this.changedIds.includes(id) && this.changedIds.push(id);
 
-                    return this.props.socket.setObject(id, _objects[id])
+                    this.props.socket.setObject(id, _objects[id])
                         .then(() => {
                             delete _objects[id];
                             delete _oldObjects[id];
@@ -610,12 +602,12 @@ class ObjectCustomEditor extends Component {
                                         this.saveOneState(ids, cb, _objects, _oldObjects), 0);
                                 });
                         });
-                } else {
-                    delete _objects[id];
-                    delete _oldObjects[id];
-                    return setTimeout(() =>
-                        this.saveOneState(ids, cb, _objects, _oldObjects), 0);
+                    return;
                 }
+                delete _objects[id];
+                delete _oldObjects[id];
+                setTimeout(() =>
+                    this.saveOneState(ids, cb, _objects, _oldObjects), 0);
             }
         } else {
             const maxOids = this.state.maxOids || ids.length;
@@ -631,7 +623,8 @@ class ObjectCustomEditor extends Component {
             this.getObject(_objects, _oldObjects, id)
                 .then(obj => {
                     if (!obj) {
-                        return window.alert(`Invalid object ${id}`);
+                        window.alert(`Invalid object ${id}`);
+                        return;
                     }
 
                     // remove all disabled commons
@@ -670,7 +663,7 @@ class ObjectCustomEditor extends Component {
 
                             if (!obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
                                 // provide defaults
-                                let _default = this.getDefaultValues(instance, obj);
+                                const _default = this.getDefaultValues(instance, obj);
                                 obj.common.custom[instance] = JSON.parse(JSON.stringify(_default || {}));
                                 // remove all temporary values
                                 Object.keys(obj.common.custom[instance]).forEach(attr => {
@@ -702,24 +695,23 @@ class ObjectCustomEditor extends Component {
     renderConfirmationDialog() {
         if (!this.state.showConfirmation) {
             return false;
-        } else {
-            return <ConfirmDialog
-                text={this.props.t('The changes will be applied to %s states. Are you sure?', this.props.objectIDs.length)}
-                ok={this.props.t('Yes')}
-                onClose={result => {
-                    if (result) {
-                        this.setState({showConfirmation: false, confirmed: true}, () => {
-                            const cb = this.cb;
-                            this.cb = null;
-                            this.onSave(cb);
-                        });
-                    } else {
-                        this.cb = null;
-                        this.setState({showConfirmation: false});
-                    }
-                }}
-            />;
         }
+        return <ConfirmDialog
+            text={this.props.t('The changes will be applied to %s states. Are you sure?', this.props.objectIDs.length)}
+            ok={this.props.t('Yes')}
+            onClose={result => {
+                if (result) {
+                    this.setState({ showConfirmation: false, confirmed: true }, () => {
+                        const cb = this.cb;
+                        this.cb = null;
+                        this.onSave(cb);
+                    });
+                } else {
+                    this.cb = null;
+                    this.setState({ showConfirmation: false });
+                }
+            }}
+        />;
     }
 
     onSave = cb => {
@@ -729,10 +721,9 @@ class ObjectCustomEditor extends Component {
         }
 
         this.saveOneState([...this.props.objectIDs], () => {
-            this.changedItems = [];
             this.cachedNewValues = {};
             this.commonConfig = this.getCommonConfig();
-            this.setState({ confirmed: false, hasChanges: false, newValues: {}}, () => {
+            this.setState({ confirmed: false, hasChanges: false, newValues: {} }, () => {
                 this.props.reportChangedIds(this.changedIds);
                 this.props.onChange(false, true);
                 cb && setTimeout(() => cb(), 100);
@@ -742,24 +733,23 @@ class ObjectCustomEditor extends Component {
 
     render() {
         if (this.customObj === null) {
-            return <div style={{color: '#F55', fontSize: 32}}>{this.props.t('Object does not exist!')}</div>;
+            return <div style={{ color: '#F55', fontSize: 32 }}>{this.props.t('Object does not exist!')}</div>;
         }
         if (!this.state.loaded) {
             return <LinearProgress />;
         }
         let index = 0;
 
-        return <Paper className={ this.props.classes.paper }>
+        return <Paper className={this.props.classes.paper}>
             {this.state.maxOids > 1 && <LinearProgress color="secondary" variant="determinate" value={this.state.progress} />}
-            <div className={ this.props.classes.scrollDiv } ref={ this.scrollDivRef }>
+            <div className={this.props.classes.scrollDiv} ref={this.scrollDivRef}>
                 {this.state.maxOids === null && Object.keys(this.jsonConfigs).map(adapter => {
                     if (this.jsonConfigs[adapter]) {
                         return Object.keys(this.jsonConfigs[adapter].instanceObjs)
                             .map(instance =>
                                 this.renderOneCustom(instance, this.jsonConfigs[adapter].instanceObjs[instance], this.customObj, index++));
-                    } else {
-                        return null;
                     }
+                    return null;
                 })}
             </div>
             { this.renderErrorMessage() }

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 import {
     Accordion, AccordionDetails, AccordionSummary,
@@ -23,8 +22,8 @@ const styles = theme => ({
         flexDirection: 'column',
         transition: 'box-shadow 0.5s',
         '&:hover': {
-            boxShadow: boxShadowHover
-        }
+            boxShadow: boxShadowHover,
+        },
     },
     row: {
         paddingLeft: 8,
@@ -32,25 +31,25 @@ const styles = theme => ({
         minHeight: '48px !important',
         height: 48,
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 16,
     },
     iconStyle: {
-        marginRight: 10
+        marginRight: 10,
     },
     wrapperName: {
         margin: '0 10px',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     wrapperChildren: {
-        width: '100%'
+        width: '100%',
     },
     accordionDetails: {
-        padding: 0
+        padding: 0,
     },
     accordion: {
-        margin: '1px 0 !important'
-    }
+        margin: '1px 0 !important',
+    },
 });
 
 const InstanceCategory = ({
@@ -60,35 +59,30 @@ const InstanceCategory = ({
     classes,
     expanded,
     onExpand,
-}) => {
-    return <Accordion
-        expanded={!!expanded}
-        onChange={() => onExpand(!expanded)}
-        classes={{ root: classes.accordion }} key={key} square>
-        <AccordionSummary
-            classes={{ root: classes.row }}
-            expandIcon={<ExpandMoreIcon />}>
-            <div className={classes.wrapperName}>
-                <MaterialDynamicIcon objIconBool iconName={name} className={classes.iconStyle} />{name}
-            </div>
-        </AccordionSummary>
-        <AccordionDetails className={classes.accordionDetails}>
-            <div className={classes.wrapperChildren}>
-                {children}
-            </div>
-        </AccordionDetails>
-    </Accordion>;
-}
+}) => <Accordion
+    expanded={!!expanded}
+    onChange={() => onExpand(!expanded)}
+    classes={{ root: classes.accordion }}
+    key={key}
+    square
+>
+    <AccordionSummary
+        classes={{ root: classes.row }}
+        expandIcon={<ExpandMoreIcon />}
+    >
+        <div className={classes.wrapperName}>
+            <MaterialDynamicIcon objIconBool iconName={name} className={classes.iconStyle} />
+            {name}
+        </div>
+    </AccordionSummary>
+    <AccordionDetails className={classes.accordionDetails}>
+        <div className={classes.wrapperChildren}>
+            {children}
+        </div>
+    </AccordionDetails>
+</Accordion>;
 
 InstanceCategory.propTypes = {
-    t: PropTypes.func,
-    themeType: PropTypes.string,
-    adminInstance: PropTypes.string,
-    hosts: PropTypes.array,
-    setHost: PropTypes.func,
-    host: PropTypes.string,
-    instanceId: PropTypes.string,
 };
-
 
 export default withStyles(styles)(InstanceCategory);

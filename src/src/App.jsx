@@ -2539,17 +2539,17 @@ class App extends Router {
                                                         style={{ maxWidth: '100%', maxHeight: '100%' }}
                                                     />
                                                 </div>
-                                                :
-                                                <Avatar
-                                                    onClick={() => this.handleNavigation('easy')}
-                                                    className={Utils.clsx(
-                                                        (this.state.themeName === 'colored' ||
+                                                    :
+                                                    <Avatar
+                                                        onClick={() => this.handleNavigation('easy')}
+                                                        className={Utils.clsx(
+                                                            (this.state.themeName === 'colored' ||
                                                                 this.state.themeName === 'blue') &&
                                                                 classes.logoWhite,
-                                                    )}
-                                                    alt="ioBroker"
-                                                    src="img/no-image.png"
-                                                />}
+                                                        )}
+                                                        alt="ioBroker"
+                                                        src="img/no-image.png"
+                                                    />}
                                             </a>
                                         </Grid>
                                     </Grid>}

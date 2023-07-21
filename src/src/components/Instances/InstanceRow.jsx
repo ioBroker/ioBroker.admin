@@ -20,9 +20,11 @@ import {
     Accordion, AccordionDetails, AccordionSummary, Avatar,
     Button, CardMedia, FormControl, Grid, Hidden, IconButton,
     InputLabel, MenuItem, Select, Tooltip, Typography,
-    FormControlLabel, Checkbox, FormHelperText
+    FormControlLabel, Checkbox, FormHelperText,
 } from '@mui/material';
-import { amber, blue, green, grey, red, orange } from '@mui/material/colors';
+import {
+    amber, blue, green, grey, red, orange,
+} from '@mui/material/colors';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
 import BuildIcon from '@mui/icons-material/Build';
@@ -34,8 +36,6 @@ import MemoryIcon from '@mui/icons-material/Memory';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import sentry from '../../assets/sentry.svg';
-import noSentry from '../../assets/sentryNo.svg';
 import EditIcon from '@mui/icons-material/Edit';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -47,6 +47,8 @@ import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import TextWithIcon from '@iobroker/adapter-react-v5/Components/TextWithIcon';
 import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import noSentry from '../../assets/sentryNo.svg';
+import sentry from '../../assets/sentry.svg';
 
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
@@ -69,13 +71,13 @@ const styles = theme => ({
         flexDirection: 'column',
         transition: 'box-shadow 0.5s',
         '&:hover': {
-            boxShadow: boxShadowHover
-        }
+            boxShadow: boxShadowHover,
+        },
     },
     row: {
         paddingLeft: 8,
         paddingRight: 16,
-        padding: 0
+        padding: 0,
     },
     imageBlock: {
         background: 'silver',
@@ -102,13 +104,13 @@ const styles = theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     installed: {
-        background: '#77c7ff8c'
+        background: '#77c7ff8c',
     },
     update: {
-        background: '#10ff006b'
+        background: '#10ff006b',
     },
     fab: {
         position: 'absolute',
@@ -132,10 +134,10 @@ const styles = theme => ({
         transition: 'height 0.3s',
         justifyContent: 'space-between',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     collapseOff: {
-        height: 0
+        height: 0,
     },
     close: {
         width: '20px',
@@ -147,7 +149,7 @@ const styles = theme => ({
         marginBottom: 10,
         transition: 'all 0.6s ease',
         '&:hover': {
-            transform: 'rotate(90deg)'
+            transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
@@ -156,7 +158,7 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)'
+            transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
@@ -165,17 +167,17 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)'
+            transform: 'rotate(-45deg)',
         },
     },
     footerBlock: {
         background: theme.palette.background.default,
         padding: 10,
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     hidden: {
-        display: 'none'
+        display: 'none',
     },
     invisible: {
         opacity: 0,
@@ -189,11 +191,11 @@ const styles = theme => ({
         cursor: 'pointer',
         transition: 'background 0.5s',
         '&:hover': {
-            background: '#00800026'
-        }
+            background: '#00800026',
+        },
     },
     versionDate: {
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     adapter: {
         width: '100%',
@@ -202,15 +204,15 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.mode === 'dark' ? '#333' : '#555'
+        color: theme.palette.mode === 'dark' ? '#333' : '#555',
     },
     hide: {
-        visibility: 'hidden'
+        visibility: 'hidden',
     },
     button: {
         padding: 5,
         transition: 'opacity 0.2s',
-        height: 34
+        height: 34,
     },
     hiddenOpacity: {
         opacity: 0,
@@ -219,28 +221,28 @@ const styles = theme => ({
     enabled: {
         color: green[400],
         '&:hover': {
-            backgroundColor: green[200]
-        }
+            backgroundColor: green[200],
+        },
     },
     disabled: {
         color: red[400],
         '&:hover': {
-            backgroundColor: red[200]
-        }
+            backgroundColor: red[200],
+        },
     },
     instanceName: {
         fontSize: 16,
         paddingLeft: 32,
         paddingBottom: 5,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     cardContent: {
         marginTop: 16,
-        paddingTop: 0
+        paddingTop: 0,
     },
     smallAvatar: {
         width: 24,
-        height: 24
+        height: 24,
     },
     statusIndicator: {
         marginTop: 12,
@@ -286,67 +288,67 @@ const styles = theme => ({
         },
         '&:nth-of-type(even)': {
             backgroundColor: grey[200],
-        }
+        },
     },
     state: {
         width: theme.spacing(2),
         height: theme.spacing(2),
-        borderRadius: '100%'
+        borderRadius: '100%',
     },
 
     green: {
-        //backgroundColor: green[700]
-        color: green[700]
+        // backgroundColor: green[700]
+        color: green[700],
     },
     red: {
-        //backgroundColor: red[700]
-        color: red[700]
+        // backgroundColor: red[700]
+        color: red[700],
     },
     grey: {
-        //backgroundColor: grey[700]
-        color: grey[700]
+        // backgroundColor: grey[700]
+        color: grey[700],
     },
     blue: {
-        //backgroundColor: blue[700]
-        color: '#0055a9'//blue[700]
+        // backgroundColor: blue[700]
+        color: '#0055a9', // blue[700]
     },
     orange: {
-        //backgroundColor: orange[700]
-        color: orange[400]
+        // backgroundColor: orange[700]
+        color: orange[400],
     },
     orangeDevice: {
-        //backgroundColor: orange[700]
-        color: orange[300]
+        // backgroundColor: orange[700]
+        color: orange[300],
     },
     transparent: {
         color: 'transparent',
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
     },
     paper: {
-        height: '100%'
+        height: '100%',
     },
     iframe: {
         height: '100%',
         width: '100%',
-        border: 0
+        border: 0,
     },
     silly: {
 
     },
     debug: {
-        backgroundColor: grey[700]
+        backgroundColor: grey[700],
     },
     info: {
-        backgroundColor: blue[700]
+        backgroundColor: blue[700],
     },
     warn: {
-        backgroundColor: amber[700]
+        backgroundColor: amber[700],
     },
     error: {
-        backgroundColor: red[700]
+        backgroundColor: red[700],
     },
     grow: {
-        flexGrow: 1
+        flexGrow: 1,
     },
     tableRender: {
         tableLayout: 'fixed',
@@ -354,8 +356,8 @@ const styles = theme => ({
         '& td': {
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
-        }
+            textOverflow: 'ellipsis',
+        },
     },
     cards: {
         display: 'flex',
@@ -366,67 +368,67 @@ const styles = theme => ({
         width: 24,
         height: 24,
         objectFit: 'fill',
-        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)',
     },
     hidden1250: {
         display: 'flex',
         width: 200,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
     },
     visible1250: {
         display: 'flex',
         width: 200,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
     },
     visible1050: {
-        display: 'none'
+        display: 'none',
     },
     hidden1050: {
-        display: 'flex'
+        display: 'flex',
     },
     hidden800: {
         display: 'flex',
     },
     visible800: {
-        display: 'none'
+        display: 'none',
     },
     hidden570: {
         display: 'flex',
     },
     visible570: {
-        display: 'none'
+        display: 'none',
     },
     '@media screen and (max-width: 1500px)': {
         hidden1250: {
-            display: 'none !important'
+            display: 'none !important',
         },
         visible1250: {
-            display: 'flex !important'
+            display: 'flex !important',
         },
     },
     '@media screen and (max-width: 1300px)': {
         hidden1230: {
-            display: 'none !important'
-        }
+            display: 'none !important',
+        },
     },
     '@media screen and (max-width: 1120px)': {
         hidden1050: {
-            display: 'none !important'
+            display: 'none !important',
         },
         visible1050: {
-            display: 'flex !important'
+            display: 'flex !important',
         },
     },
     '@media screen and (max-width: 800px)': {
         hidden800: {
-            display: 'none !important'
+            display: 'none !important',
         },
         visible800: {
-            display: 'flex !important'
+            display: 'flex !important',
         },
         instanceIcon: {
             height: 28,
@@ -436,41 +438,41 @@ const styles = theme => ({
         },
     },
     hidden380: {
-        display: 'flex'
+        display: 'flex',
     },
     '@media screen and (max-width: 650px)': {
         hidden570: {
-            display: 'none !important'
+            display: 'none !important',
         },
         visible570: {
-            display: 'flex !important'
+            display: 'flex !important',
         },
     },
     '@media screen and (max-width: 380px)': {
         hidden380: {
-            display: 'none !important'
+            display: 'none !important',
         },
         instanceId: {
             width: '70px !important',
-            minWidth: '70px !important'
+            minWidth: '70px !important',
         },
     },
     '@media screen and (max-width: 480px)': {
         gridStyle: {
             minWidth: 'auto !important',
-            marginLeft: 10
+            marginLeft: 10,
         },
         instanceId: {
             width: 100,
         },
         maxWidth300: {
-            width: `250px !important`
-        }
+            width: '250px !important',
+        },
     },
     '@media screen and (max-width: 335px)': {
         gridStyle: {
-            marginLeft: 0
-        }
+            marginLeft: 0,
+        },
     },
     displayFlex: {
         display: 'flex',
@@ -482,16 +484,16 @@ const styles = theme => ({
     secondaryHeadingDiv: {
         display: 'flex',
         alignItems: 'center',
-        width: 200
+        width: 200,
     },
     secondaryHeadingDivDiv: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         padding: 5,
         textOverflow: 'ellipsis',
-        maxWidth: 200
+        maxWidth: 200,
     },
-    /*summaryText: {
+    /* summaryText: {
         display: 'flex',
         minWidth: 200,
         justifyContent: 'space-around'
@@ -500,10 +502,10 @@ const styles = theme => ({
         minWidth: 100,
         marginLeft: 5,
         alignSelf: 'center'
-    },*/
+    }, */
     formControl: {
         width: '100%',
-        marginBottom: 5
+        marginBottom: 5,
     },
     formControl2: {
         marginBottom: 5,
@@ -514,10 +516,10 @@ const styles = theme => ({
         display: 'flex',
         minWidth: 270,
         lineHeight: '34px',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
     },
     wrapperAvatar: {
-        maxWidth: 130
+        maxWidth: 130,
     },
     instanceId: {
         overflow: 'hidden',
@@ -531,61 +533,61 @@ const styles = theme => ({
         flexGrow: 2,
     },
     marginLeft: {
-        marginLeft: 5
+        marginLeft: 5,
     },
     marginRight: {
-        marginRight: 5
+        marginRight: 5,
     },
     selectStyle: {
         display: 'flex',
         margin: 5,
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
     },
     selectWrapper: {
         display: 'flex',
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
     },
     scheduleIcon: {
-        color: '#dc8e00'
+        color: '#dc8e00',
     },
     ram: {
-        color: '#dc8e00'
+        color: '#dc8e00',
     },
     contrast0: {
-        filter: 'contrast(0%)'
+        filter: 'contrast(0%)',
     },
     paddingRight200: {
         // paddingRight: 200
     },
     instanceStateNotEnabled1: {
-        backgroundColor: 'rgba(192, 192, 192, 0.2)'
+        backgroundColor: 'rgba(192, 192, 192, 0.2)',
     },
     instanceStateNotEnabled2: {
-        backgroundColor: 'rgba(192, 192, 192, 0.15)'
+        backgroundColor: 'rgba(192, 192, 192, 0.15)',
     },
     instanceStateNotAlive1: {
-        backgroundColor: 'rgba(255,14,14,0.2)'
+        backgroundColor: 'rgba(255,14,14,0.2)',
     },
     instanceStateNotAlive2: {
-        backgroundColor: 'rgba(255,14,14, 0.15)'
+        backgroundColor: 'rgba(255,14,14, 0.15)',
     },
     instanceStateAliveNotConnected1: {
-        backgroundColor: 'rgba(255, 177, 0, 0.1)'
+        backgroundColor: 'rgba(255, 177, 0, 0.1)',
     },
     instanceStateAliveNotConnected2: {
-        backgroundColor: 'rgba(255, 177, 0, 0.15)'
+        backgroundColor: 'rgba(255, 177, 0, 0.15)',
     },
     instanceStateAliveAndConnected1: {
-        backgroundColor: 'rgba(0, 255, 0, 0.1)'
+        backgroundColor: 'rgba(0, 255, 0, 0.1)',
     },
     instanceStateAliveAndConnected2: {
-        backgroundColor: 'rgba(0, 255, 0, 0.15)'
+        backgroundColor: 'rgba(0, 255, 0, 0.15)',
     },
     maxWidth300: {
-        width: 300
+        width: 300,
     },
     width150: {
-        width: 150
+        width: 150,
     },
     deleting: {
         position: 'relative',
@@ -599,15 +601,15 @@ const styles = theme => ({
             zIndex: 100,
             opacity: '.3 !important',
             background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
-        }
+        },
     },
     desktopRow: {
-        minHeight: 0
+        minHeight: 0,
     },
     desktopIcon: {
         height: 32,
         width: 32,
-        marginTop: 8
+        marginTop: 8,
     },
     desktopRowContent: {
         marginTop: 2,
@@ -773,7 +775,8 @@ const InstanceRow = ({
                 setHostValue(instance.host);
                 setOpenDialogHost(false);
             }
-        }}>
+        }}
+    >
         {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
             <InputLabel>{t('log level')}</InputLabel>
             <Select
@@ -787,34 +790,43 @@ const InstanceRow = ({
                 </MenuItem>)}
             </Select>
         </FormControl>}
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
             <FormControlLabel
                 control={<Checkbox checked={logOnTheFlyValue} onChange={e => setLogOnTheFlyValue(e.target.checked)} />}
                 label={t('Without restart')}
             />
             <FormHelperText>{logOnTheFlyValue ? t('Will be reset to the saved log level after restart of adapter') : t('Log level will be saved permanently')}</FormHelperText>
         </FormControl>}
-        {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined" >
+        {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined">
             <InputLabel>{t('compact groups')}</InputLabel>
             <Select
                 variant="standard"
                 autoWidth
-                onClose={e => setOpenSelectCompactGroup(false)}
-                onOpen={e => setOpenSelectCompactGroup(true)}
+                onClose={() => setOpenSelectCompactGroup(false)}
+                onOpen={() => setOpenSelectCompactGroup(true)}
                 open={openSelectCompactGroup}
                 value={compactValue === 1 ? 'default' : compactValue === '0' || compactValue === 0 ? 'controller' : !compactValue ? 'default' : compactValue || 'default'}
                 onChange={el => setCompactValue(el.target.value)}
             >
-                <div onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                    className={classes.selectStyle}>
-                    <Button color="grey" onClick={() => {
-                        setOpenSelectCompactGroup(false);
-                        setCompactValue(maxCompactGroupNumberValue + 1);
-                        setCompactGroupCountValue(maxCompactGroupNumberValue + 1);
-                    }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                <div
+                    onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }}
+                    className={classes.selectStyle}
+                >
+                    <Button
+                        color="grey"
+                        onClick={() => {
+                            setOpenSelectCompactGroup(false);
+                            setCompactValue(maxCompactGroupNumberValue + 1);
+                            setCompactGroupCountValue(maxCompactGroupNumberValue + 1);
+                        }}
+                        variant="outlined"
+                        stylevariable="outlined"
+                    >
+                        {t('Add compact group')}
+                    </Button>
                 </div>
                 <MenuItem value="controller">{t('with controller')}</MenuItem>
                 <MenuItem value="default">{t('default group')}</MenuItem>
@@ -823,7 +835,7 @@ const InstanceRow = ({
                 </MenuItem>)}
             </Select>
         </FormControl>}
-        {openDialogTier && <FormControl className={classes.formControl} variant="outlined" >
+        {openDialogTier && <FormControl className={classes.formControl} variant="outlined">
             <InputLabel>{t('Tiers')}</InputLabel>
             <Select
                 variant="standard"
@@ -899,14 +911,17 @@ const InstanceRow = ({
 
     const stateTooltip = [
         item.stoppedWhenWebExtension !== undefined ? <State key={1} state>{t('Runs as web-extension')}</State> : '',
-        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
-        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={3} state={item.alive} >{t('Heartbeat')}</State> : '',
+        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.connectedToHost}>{t('Connected to host')}</State> : '',
+        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={3} state={item.alive}>{t('Heartbeat')}</State> : '',
         item.connected !== null && item.stoppedWhenWebExtension === undefined ? <State key={4} state={!!item.connected}>
             {typeof item.connected === 'string' ? `${t('Connected:')} ${item.connected || '-'}` : t('Connected to device or service')}
         </State> : '',
-        cronText ? <State key={5} state={instance.enabled}>CRON: {cronText}</State> : null,
+        cronText ? <State key={5} state={instance.enabled}>
+CRON:
+            {cronText}
+        </State> : null,
         next ? <State key={6} state>{t('Next start: %s', `${next.toLocaleDateString(lang)} ${next.toLocaleTimeString(lang)}`)}</State> : null,
-        prev ? <State key={7} state>{t('Last start: %s', `${prev.toLocaleDateString(lang)} ${prev.toLocaleTimeString(lang)}`)}</State> : null
+        prev ? <State key={7} state>{t('Last start: %s', `${prev.toLocaleDateString(lang)} ${prev.toLocaleTimeString(lang)}`)}</State> : null,
     ].filter(el => el);
 
     const modeIcon = <div
@@ -914,9 +929,10 @@ const InstanceRow = ({
             classes.smallAvatar,
             classes.statusIndicator,
             instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[status] : classes.transparent,
-            item.connectedToHost && item.alive && item.connected === false && classes.orangeDevice
-        )}>
-        {getModeIcon(instance.mode, status, classes['statusIcon_' + status], item.stoppedWhenWebExtension)}
+            item.connectedToHost && item.alive && item.connected === false && classes.orangeDevice,
+        )}
+    >
+        {getModeIcon(instance.mode, status, classes[`statusIcon_${status}`], item.stoppedWhenWebExtension)}
     </div>;
 
     return <Accordion
@@ -937,7 +953,8 @@ const InstanceRow = ({
                 return;
             }
             onExpandRow(instance.id);
-        }}>
+        }}
+    >
         {linksDialog}
         <AccordionSummary
             classes={{
@@ -950,9 +967,10 @@ const InstanceRow = ({
                 item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && (!item.connectedToHost || !item.alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
                 item.running && item.connectedToHost && item.alive && item.connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
                 item.running && item.connectedToHost && item.alive && item.connected !== false && (idx % 2 === 0 ? classes.instanceStateAliveAndConnected1 : classes.instanceStateAliveAndConnected1),
-                desktop && classes.desktopRow
+                desktop && classes.desktopRow,
             )}
-            expandIcon={<ExpandMoreIcon/>}>
+            expandIcon={<ExpandMoreIcon />}
+        >
             {customModal}
             {stopAdminDialog}
             {(openDialogCron || openDialogSchedule) && <ComplexCron
@@ -981,7 +999,14 @@ const InstanceRow = ({
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap" className={classes.rowGridLine}>
                 <div className={classes.gridStyle}>
                     {stateTooltip.length ?
-                        <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }} classes={{ popper: classes.tooltip }}>{stateTooltip}</span>}>
+                        <Tooltip
+                            title={<span
+                                style={{ display: 'flex', flexDirection: 'column' }}
+                                classes={{ popper: classes.tooltip }}
+                            >
+                                {stateTooltip}
+                            </span>}
+                        >
                             {modeIcon}
                         </Tooltip>
                         : modeIcon}
@@ -1001,9 +1026,9 @@ const InstanceRow = ({
                                 event.stopPropagation();
                                 event.preventDefault();
                                 if (item.running && instance.id === adminInstance) {
-                                    setShowStopAdminDialog('system.adapter.' + instance.id);
+                                    setShowStopAdminDialog(`system.adapter.${instance.id}`);
                                 } else {
-                                    extendObject('system.adapter.' + instance.id, { common: { enabled: !item.running } });
+                                    extendObject(`system.adapter.${instance.id}`, { common: { enabled: !item.running } });
                                 }
                             }}
                             onFocus={event => event.stopPropagation()}
@@ -1041,7 +1066,7 @@ const InstanceRow = ({
                             size="small"
                             onClick={event => {
                                 event.stopPropagation();
-                                extendObject('system.adapter.' + instance.id, {});
+                                extendObject(`system.adapter.${instance.id}`, {});
                             }}
                             onFocus={event => event.stopPropagation()}
                             className={Utils.clsx(classes.button, !instance.canStart && classes.hide)}
@@ -1082,7 +1107,8 @@ const InstanceRow = ({
                         onMouseMove={() => handlerEdit(true)}
                         onMouseEnter={() => handlerEdit(true)}
                         onMouseLeave={() => handlerEdit(false)}
-                        className={classes.secondaryHeadingDiv}>
+                        className={classes.secondaryHeadingDiv}
+                    >
                         <div className={classes.secondaryHeadingDivDiv}>{item.name}</div>
                         <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                             <IconButton
@@ -1099,40 +1125,44 @@ const InstanceRow = ({
                     </div>
                 </Typography>
                 {expertMode &&
-                    <div className={Utils.clsx(classes.hidden1250, (instance.mode !== 'daemon' || !item.running) && classes.invisible)} >
+                    <div className={Utils.clsx(classes.hidden1250, (instance.mode !== 'daemon' || !item.running) && classes.invisible)}>
                         <InstanceInfo
                             icon={<ImportExportIcon />}
                             tooltip={t('events')}
                         >
                             <div className={classes.displayFlex}>
                                 <Tooltip title={t('input events')} classes={{ popper: classes.tooltip }}>
-                                    <div className={classes.marginRight}>⇥{item.inputOutput.stateInput}</div>
+                                    <div className={classes.marginRight}>
+⇥
+                                        {item.inputOutput.stateInput}
+                                    </div>
                                 </Tooltip>
                                     /
                                 <Tooltip title={t('output events')} classes={{ popper: classes.tooltip }}>
-                                    <div className={classes.marginLeft}>↦{item.inputOutput.stateOutput}</div>
+                                    <div className={classes.marginLeft}>
+↦
+                                        {item.inputOutput.stateOutput}
+                                    </div>
                                 </Tooltip>
                             </div>
                         </InstanceInfo>
-                    </div>
-                }
+                    </div>}
                 {expertMode &&
                     <Tooltip title={item.logLevelObject === item.logLevel ? `${t('loglevel')} ${item.logLevel}` : `${t('saved:')} ${item.logLevelObject} / ${t('actual:')} ${item.logLevel}`} classes={{ popper: classes.tooltip }}>
                         <Avatar className={Utils.clsx(classes.smallAvatar, classes.hidden380, classes[item.logLevel])}>
                             {item.loglevelIcon}
                         </Avatar>
-                    </Tooltip>
-                }
+                    </Tooltip>}
                 <Grid item className={Utils.clsx(classes.hidden1050, classes.width150, (instance.mode !== 'daemon' || !item.running) && classes.invisible)}>
                     <InstanceInfo
                         icon={<MemoryIcon />}
                         tooltip={t('RAM usage')}
                     >
-                        {(instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--') + ' MB'}
+                        {`${instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--'} MB`}
                     </InstanceInfo>
                 </Grid>
                 {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <Grid item className={Utils.clsx(classes.hidden1230)}>
-                    {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang}/>}
+                    <TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang} />
                 </Grid> : null}
             </Grid>
             <div className={classes.hidden570}>
@@ -1164,7 +1194,7 @@ const InstanceRow = ({
                                 setCompact(instance);
                             }}
                         >
-                            <ViewCompactIcon color={!!item.compact ? 'primary' : 'inherit'} />
+                            <ViewCompactIcon color={item.compact ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
                 </div> : null}
@@ -1174,18 +1204,18 @@ const InstanceRow = ({
                 <Grid item container direction="row" xs={10}>
                     <Grid item container direction="column" xs={12} sm={6} md={4}>
                         <span className={classes.instanceName}>{instance.id}</span>
-                        {item.stoppedWhenWebExtension !== undefined && <State state={item.stoppedWhenWebExtension} >{t('Runs as web-extension')}</State>}
-                        {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.connectedToHost} >{t('Connected to host')}</State>}
-                        {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.alive} >{t('Heartbeat')}</State>}
+                        {item.stoppedWhenWebExtension !== undefined && <State state={item.stoppedWhenWebExtension}>{t('Runs as web-extension')}</State>}
+                        {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.connectedToHost}>{t('Connected to host')}</State>}
+                        {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.alive}>{t('Heartbeat')}</State>}
                         {item.running && item.connected !== null  && item.stoppedWhenWebExtension === undefined &&
                             <State state={!!item.connected}>
                                 {typeof item.connected === 'string' ? `${t('Connected:')} ${item.connected || '-'}` : t('Connected to device or service')}
-                            </State>
-                        }
+                            </State>}
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4}>
                         <InstanceInfo tooltip={t('Installed')}>
-                            v{instance.version}
+                            v
+                            {instance.version}
                         </InstanceInfo>
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
@@ -1211,19 +1241,24 @@ const InstanceRow = ({
                                 <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
                                     <div className={classes.displayFlex}>
                                         <Tooltip title={t('input events')} classes={{ popper: classes.tooltip }}>
-                                            <div className={classes.marginRight}>⇥{item.inputOutput.stateInput}</div>
+                                            <div className={classes.marginRight}>
+⇥
+                                                {item.inputOutput.stateInput}
+                                            </div>
                                         </Tooltip>
                                     /
                                         <Tooltip title={t('output events')} classes={{ popper: classes.tooltip }}>
-                                            <div className={classes.marginLeft}>↦{item.inputOutput.stateOutput}</div>
+                                            <div className={classes.marginLeft}>
+↦
+                                                {item.inputOutput.stateOutput}
+                                            </div>
                                         </Tooltip>
                                     </div>
                                 </InstanceInfo>
-                            </div>
-                        }
+                            </div>}
                         <Grid item className={classes.visible1050}>
                             <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
-                                {(instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--') + ' MB'}
+                                {`${instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--'} MB`}
                             </InstanceInfo>
                         </Grid>
                         {item.modeSchedule && <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
@@ -1255,7 +1290,7 @@ const InstanceRow = ({
                                     <IconButton
                                         size="small"
                                         className={classes.button}
-                                        onClick={(event) => {
+                                        onClick={event => {
                                             event.stopPropagation();
                                             setOpenDialogCron(true);
                                         }}
@@ -1263,15 +1298,14 @@ const InstanceRow = ({
                                         <EditIcon />
                                     </IconButton>
                                 </Tooltip>
-                            </div>
-                        }
+                            </div>}
                         {expertMode &&
                             <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                                 <InstanceInfo
                                     icon={<MemoryIcon className={classes.ram} />}
                                     tooltip={t('RAM limit')}
                                 >
-                                    {(item.memoryLimitMB ? item.memoryLimitMB : '-.--') + ' MB'}
+                                    {`${item.memoryLimitMB ? item.memoryLimitMB : '-.--'} MB`}
                                 </InstanceInfo>
                                 <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                     <IconButton
@@ -1285,12 +1319,11 @@ const InstanceRow = ({
                                         <EditIcon />
                                     </IconButton>
                                 </Tooltip>
-                            </div>
-                        }
+                            </div>}
                         {expertMode && item.checkCompact && item.compact && item.supportCompact &&
                             <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                                 <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
-                                    {item.compactGroup === 1 ? 'default' : item.compactGroup === '0' ? "controller" : !item.compactGroup ? 'default' : item.compactGroup || 'default'}
+                                    {item.compactGroup === 1 ? 'default' : item.compactGroup === '0' ? 'controller' : !item.compactGroup ? 'default' : item.compactGroup || 'default'}
                                 </InstanceInfo>
                                 <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                     <IconButton
@@ -1304,8 +1337,7 @@ const InstanceRow = ({
                                         <EditIcon />
                                     </IconButton>
                                 </Tooltip>
-                            </div>
-                        }
+                            </div>}
                         {expertMode && <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
                                 {instance.adapter === 'admin' ? t('Always first') : t(arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
@@ -1324,7 +1356,7 @@ const InstanceRow = ({
                             </Tooltip> : null}
                         </div>}
                         <div className={Utils.clsx(classes.maxWidth300, classes.visible800)}>
-                            <InstanceInfo >
+                            <InstanceInfo>
                                 {item.name}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
@@ -1342,7 +1374,7 @@ const InstanceRow = ({
                         </div>
                         {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                                {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang}/>}
+                                <TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang} />
                             </InstanceInfo>
                             <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
@@ -1419,7 +1451,7 @@ const InstanceRow = ({
                                         setCompact(instance);
                                     }}
                                 >
-                                    <ViewCompactIcon color={!!item.compact ? 'primary' : 'inherit'} />
+                                    <ViewCompactIcon color={item.compact ? 'primary' : 'inherit'} />
                                 </IconButton>
                             </Tooltip>
                         </div> : null}
@@ -1427,7 +1459,7 @@ const InstanceRow = ({
             </Grid>
         </AccordionDetails>
     </Accordion>;
-}
+};
 
 InstanceRow.propTypes = {
     t: PropTypes.func,
@@ -1441,6 +1473,5 @@ InstanceRow.propTypes = {
     item: PropTypes.object,
     deleteCustomSupported: PropTypes.bool,
 };
-
 
 export default withStyles(styles)(InstanceRow);

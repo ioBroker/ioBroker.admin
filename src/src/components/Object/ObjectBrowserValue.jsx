@@ -37,11 +37,11 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
-import ObjectChart from './ObjectChart';
 import { Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import ObjectChart from './ObjectChart';
 
-const styles = theme => ({
+const styles = () => ({
     input: {
         width: '100%',
     },
@@ -158,7 +158,9 @@ class ObjectBrowserValue extends Component {
                     this.value = JSON.stringify(this.value, null, 2);
                     this.propsValue = this.value;
                     type = 'json';
-                } catch (e) {}
+                } catch (e) {
+                    // ignore
+                }
             }
         } else if (type === 'number') {
             this.value = parseFloat(this.propsValue) || 0;
@@ -187,7 +189,7 @@ class ObjectBrowserValue extends Component {
             this.props.object.common.custom[this.props.defaultHistory]?.enabled
         ) {
             this.props.socket
-                .getState('system.adapter.' + this.props.defaultHistory + '.alive')
+                .getState(`system.adapter.${this.props.defaultHistory}.alive`)
                 .then(state => this.setState({ chart: state && !!state.val }));
         }
 
@@ -209,7 +211,7 @@ class ObjectBrowserValue extends Component {
             if (value === 'null') {
                 value = null;
             } else {
-                let type = this.props.type || typeof this.props.value;
+                const type = this.props.type || typeof this.props.value;
                 value = typeof value === 'object' ? value.value : value;
 
                 if (type === 'number') {
@@ -234,7 +236,9 @@ class ObjectBrowserValue extends Component {
             }
         }
 
-        this.props.onClose({ val: value, ack: this.ack, q: this.q, expire: parseInt(this.expire, 10) || undefined });
+        this.props.onClose({
+            val: value, ack: this.ack, q: this.q, expire: parseInt(this.expire, 10) || undefined,
+        });
     }
 
     renderChart() {
@@ -298,59 +302,56 @@ class ObjectBrowserValue extends Component {
     renderStates() {
         if (!this.props.states) {
             return null;
-        } else {
-            if (
-                this.props.type === 'number' &&
+        }
+        if (
+            this.props.type === 'number' &&
                 this.props.object.common.max !== undefined &&
                 this.props.object.common.min !== undefined
-            ) {
-                const options = Object.keys(this.props.states).map(key => ({
-                    label: this.props.states[key],
-                    value: key,
-                }));
+        ) {
+            const options = Object.keys(this.props.states).map(key => ({
+                label: this.props.states[key],
+                value: key,
+            }));
 
-                return (
-                    <Autocomplete
-                        className={this.props.classes.formControl}
-                        disablePortal
-                        defaultValue={
-                            this.props.states[this.propsValue] !== undefined
-                                ? this.props.states[this.propsValue]
-                                : this.propsValue
-                        }
-                        options={options}
-                        noOptionsText=""
-                        freeSolo
-                        getOptionLabel={option =>
-                            option.label || (option !== undefined && option !== null ? option.toString() : '')
-                        }
-                        onChange={(e, value) => (this.value = value)}
-                        onInputChange={(e, value) => (this.value = value)}
-                        onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
-                        renderInput={params => (
-                            <TextField {...params} label={this.props.t('Value')} variant="standard" />
-                        )}
-                    />
-                );
-            } else {
-                return (
-                    <FormControl variant="standard" className={this.props.classes.formControl}>
-                        <InputLabel>{this.props.t('Value')}</InputLabel>
-                        <Select
-                            variant="standard"
-                            defaultValue={this.propsValue}
-                            onChange={e => (this.value = e.target.value)}
-                        >
-                            {Object.keys(this.props.states).map((key, i) => (
-                                <MenuItem key={i} value={key}>
-                                    {this.props.states[key]}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                );
-            }
+            return (
+                <Autocomplete
+                    className={this.props.classes.formControl}
+                    disablePortal
+                    defaultValue={
+                        this.props.states[this.propsValue] !== undefined
+                            ? this.props.states[this.propsValue]
+                            : this.propsValue
+                    }
+                    options={options}
+                    noOptionsText=""
+                    freeSolo
+                    getOptionLabel={option =>
+                        option.label || (option !== undefined && option !== null ? option.toString() : '')}
+                    onChange={(e, value) => (this.value = value)}
+                    onInputChange={(e, value) => (this.value = value)}
+                    onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
+                    renderInput={params => (
+                        <TextField {...params} label={this.props.t('Value')} variant="standard" />
+                    )}
+                />
+            );
         }
+        return (
+            <FormControl variant="standard" className={this.props.classes.formControl}>
+                <InputLabel>{this.props.t('Value')}</InputLabel>
+                <Select
+                    variant="standard"
+                    defaultValue={this.propsValue}
+                    onChange={e => (this.value = e.target.value)}
+                >
+                    {Object.keys(this.props.states).map((key, i) => (
+                        <MenuItem key={i} value={key}>
+                            {this.props.states[key]}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        );
     }
 
     render() {
@@ -359,13 +360,13 @@ class ObjectBrowserValue extends Component {
                 <FormControlLabel
                     className={Utils.clsx(
                         this.props.classes.formControl,
-                        !this.props.expertMode ? this.props.classes.ackCheckbox : ''
+                        !this.props.expertMode ? this.props.classes.ackCheckbox : '',
                     )}
                     control={<Checkbox defaultChecked={false} onChange={e => (this.ack = e.target.checked)} />}
                     label={this.props.t('Acknowledged')}
                 />
                 <Tooltip title={this.props.t('Acknowledged explanation')}>
-                    <InfoIcon color={'primary'} />
+                    <InfoIcon color="primary" />
                 </Tooltip>
             </div>
         );
@@ -394,9 +395,13 @@ class ObjectBrowserValue extends Component {
                 <DialogTitle id="edit-value-dialog-title">
                     {this.props.t('Write value')}
                     {this.props.object.common?.write === false ? (
-                        <span className={this.props.classes.readOnlyText}>({this.props.t('read only')})</span>
+                        <span className={this.props.classes.readOnlyText}>
+(
+                            {this.props.t('read only')}
+)
+                        </span>
                     ) : null}
-                    {/*this.state.chart ? <div style={{flexGrow: 1}}/> : null*/}
+                    {/* this.state.chart ? <div style={{flexGrow: 1}}/> : null */}
                     {this.state.chart ? (
                         <Fab
                             style={{ float: 'right' }}
@@ -405,7 +410,7 @@ class ObjectBrowserValue extends Component {
                             onClick={() => {
                                 (window._localStorage || window.localStorage).setItem(
                                     'App.chartSetValue',
-                                    this.state.chartEnabled ? 'false' : 'true'
+                                    this.state.chartEnabled ? 'false' : 'true',
                                 );
                                 this.setState({ chartEnabled: !this.state.chartEnabled });
                             }}
@@ -419,7 +424,7 @@ class ObjectBrowserValue extends Component {
                             onClick={() => {
                                 (window._localStorage || window.localStorage).setItem(
                                     'App.fullScreen',
-                                    this.state.fullScreen ? 'false' : 'true'
+                                    this.state.fullScreen ? 'false' : 'true',
                                 );
                                 this.setState({ fullScreen: !this.state.fullScreen });
                             }}
@@ -483,7 +488,7 @@ class ObjectBrowserValue extends Component {
                                         style={{ paddingTop: 0 }}
                                     >
                                         {this.state.type === 'boolean' ? (
-                                            /*<FormControl component="fieldset" className={ this.props.classes.formControl }>
+                                            /* <FormControl component="fieldset" className={ this.props.classes.formControl }>
                                             <FormControlLabel
                                                 className={ this.props.classes.formControl }
                                                 control={<Checkbox
@@ -494,11 +499,12 @@ class ObjectBrowserValue extends Component {
                                                 label={this.props.t('Value')}
                                             />
                                             <FormHelperText>{this.props.t('Press ENTER to write the value, when focused')}</FormHelperText>
-                                        </FormControl>*/
+                                        </FormControl> */
                                             <Typography component="div">
                                                 <Grid component="label" container alignItems="center" spacing={1}>
                                                     <Grid item style={{ marginRight: 10 }}>
-                                                        {this.props.t('Value')}:
+                                                        {this.props.t('Value')}
+:
                                                     </Grid>
                                                     <Grid item>FALSE</Grid>
                                                     <Grid item>
@@ -524,7 +530,7 @@ class ObjectBrowserValue extends Component {
                                                 autoFocus
                                                 inputRef={this.inputRef}
                                                 helperText={this.props.t(
-                                                    'Press ENTER to write the value, when focused'
+                                                    'Press ENTER to write the value, when focused',
                                                 )}
                                                 label={this.props.t('Value')}
                                                 defaultValue={parseFloat(this.propsValue) || 0}
@@ -544,7 +550,7 @@ class ObjectBrowserValue extends Component {
                                                 inputRef={this.inputRef}
                                                 autoFocus
                                                 helperText={this.props.t(
-                                                    'Press CTRL+ENTER to write the value, when focused'
+                                                    'Press CTRL+ENTER to write the value, when focused',
                                                 )}
                                                 label={this.props.t('Value')}
                                                 fullWidth

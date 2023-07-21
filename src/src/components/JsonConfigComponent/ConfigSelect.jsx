@@ -34,14 +34,14 @@ class ConfigSelect extends ConfigGeneric {
         // if __different
         if (Array.isArray(value)) {
             this.initialValue = [...value];
-            selectOptions.unshift({label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE});
-            this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions});
+            selectOptions.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
+            this.setState({ value: ConfigGeneric.DIFFERENT_VALUE, selectOptions });
         } else {
-            this.setState({value, selectOptions});
+            this.setState({ value, selectOptions });
         }
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
@@ -49,15 +49,14 @@ class ConfigSelect extends ConfigGeneric {
         const selectOptions = (this.state.selectOptions || []).filter(item => {
             if (!item.hidden) {
                 return true;
-            } else if (this.props.custom) {
+            } if (this.props.custom) {
                 return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
-            } else {
-                return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
             }
+            return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
         });
 
         // eslint-disable-next-line
-        const item = selectOptions.find(item => item.value == this.state.value); // let "==" be and not ===
+        const item = selectOptions.find(it => it.value == this.state.value); // let "==" be and not ===
 
         return <FormControl
             variant="standard"
@@ -70,7 +69,7 @@ class ConfigSelect extends ConfigGeneric {
                 error={!!error}
                 disabled={!!disabled}
                 value={this.state.value || '_'}
-                renderValue={val => this.getText(item?.label, this.props.schema.noTranslation)}
+                renderValue={() => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
                     this.setState({ value: e.target.value === '_' ? '' : e.target.value }, () => {
                         if (this.state.value === ConfigGeneric.DIFFERENT_VALUE) {
@@ -81,8 +80,10 @@ class ConfigSelect extends ConfigGeneric {
                     });
                 }}
             >
-                {selectOptions.map(item =>
-                    <MenuItem key={item.value} value={item.value} style={item.value === ConfigGeneric.DIFFERENT_VALUE ? {opacity: 0.5} : {}}>{this.getText(item.label, this.props.schema.noTranslation)}</MenuItem>)}
+                {selectOptions.map(it =>
+                    <MenuItem key={it.value} value={it.value} style={it.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}>
+                        {this.getText(it.label, this.props.schema.noTranslation)}
+                    </MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;

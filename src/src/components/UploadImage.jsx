@@ -345,11 +345,11 @@ const styles = theme => ({
         opacity: 0.9,
         marginTop: 30,
         cursor: 'pointer',
-        outline: 'none'
+        outline: 'none',
     },
     uploadDivDragging: {
         opacity: 1,
-        background: 'rgba(128,255,128,0.1)'
+        background: 'rgba(128,255,128,0.1)',
     },
 
     uploadCenterDiv: {
@@ -359,7 +359,7 @@ const styles = theme => ({
         width: 'calc(100% - 10px)',
         height: 'calc(100% - 10px)',
         position: 'relative',
-        display: 'flex'
+        display: 'flex',
     },
     uploadCenterIcon: {
         paddingTop: 10,
@@ -379,27 +379,27 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
 
     },
     disabledOpacity: {
         opacity: 0.3,
-        cursor: 'default'
+        cursor: 'default',
     },
     buttonRemoveWrapper: {
         position: 'absolute',
         zIndex: 222,
-        right: 0
+        right: 0,
     },
     buttonCropWrapper: {
         position: 'absolute',
         zIndex: 222,
         right: 0,
-        top: 50
+        top: 50,
     },
     error: {
-        border: '2px solid red'
-    }
+        border: '2px solid red',
+    },
 });
 
 class UploadImage extends Component {
@@ -429,7 +429,7 @@ class UploadImage extends Component {
         reader.onabort = () => console.log('file reading was aborted');
         reader.onerror = () => console.log('file reading has failed');
         reader.onload = () => {
-            let ext = 'image/' + file.name.split('.').pop().toLowerCase();
+            let ext = `image/${file.name.split('.').pop().toLowerCase()}`;
             if (ext === 'image/jpg') {
                 ext = 'image/jpeg';
             } else if (ext.includes('svg')) {
@@ -440,7 +440,8 @@ class UploadImage extends Component {
             }
             const base64 = `data:${ext};base64,${btoa(
                 new Uint8Array(reader.result)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
+                    .reduce((data, byte) => data + String.fromCharCode(byte), ''),
+            )}`;
 
             onChange(base64);
         };
@@ -448,7 +449,9 @@ class UploadImage extends Component {
     }
 
     render() {
-        const { disabled, maxSize, classes, icon, t, removeIconFunc, accept, error, crop, onChange } = this.props;
+        const {
+            disabled, maxSize, classes, icon, t, removeIconFunc, accept, error, crop, onChange,
+        } = this.props;
         const { uploadFile, anchorEl, cropHandler } = this.state;
         return <Dropzone
             disabled={disabled || cropHandler}
@@ -473,38 +476,49 @@ class UploadImage extends Component {
                     uploadFile === 'dragging' && classes.uploadDivDragging,
                     classes.dropZone,
                     disabled && classes.disabledOpacity,
-                    !icon && classes.dropZoneEmpty
+                    !icon && classes.dropZoneEmpty,
                 )}
-                {...getRootProps()}>
+                {...getRootProps()}
+            >
                 <input {...getInputProps()} />
                 <div className={Utils.clsx(classes.uploadCenterDiv, error && classes.error)}>
                     {!icon ? <div className={classes.uploadCenterTextAndIcon}>
-                            <UploadIcon className={classes.uploadCenterIcon} />
-                            <div className={classes.uploadCenterText}>{
+                        <UploadIcon className={classes.uploadCenterIcon} />
+                        <div className={classes.uploadCenterText}>
+                            {
                                 uploadFile === 'dragging' ? t('ra_Drop file here') :
-                                    t('ra_Place your files here or click here to open the browse dialog')}</div>
+                                    t('ra_Place your files here or click here to open the browse dialog')
+                            }
                         </div>
+                    </div>
                         :
                         removeIconFunc && !cropHandler && <div className={classes.buttonRemoveWrapper}>
                             <Tooltip title={t('ra_Clear')}>
-                                <IconButton size="large" onClick={e => {
-                                    removeIconFunc && removeIconFunc();
-                                    e.stopPropagation();
-                                }}><IconClose />
+                                <IconButton
+                                    size="large"
+                                    onClick={e => {
+                                        removeIconFunc && removeIconFunc();
+                                        e.stopPropagation();
+                                    }}
+                                >
+                                    <IconClose />
                                 </IconButton>
                             </Tooltip>
-                        </div>
-                    }
+                        </div>}
                     {icon && crop && <div className={classes.buttonCropWrapper}>
                         <Tooltip title={t('ra_Crop')}>
-                            <IconButton size="large" onClick={e => {
-                                if (!cropHandler) {
-                                    this.setState({ cropHandler: true });
-                                } else {
-                                    this.setState({ anchorEl: e.currentTarget });
-                                }
-                                e.stopPropagation();
-                            }}><CropIcon color={cropHandler ? 'primary' : 'inherit'} />
+                            <IconButton
+                                size="large"
+                                onClick={e => {
+                                    if (!cropHandler) {
+                                        this.setState({ cropHandler: true });
+                                    } else {
+                                        this.setState({ anchorEl: e.currentTarget });
+                                    }
+                                    e.stopPropagation();
+                                }}
+                            >
+                                <CropIcon color={cropHandler ? 'primary' : 'inherit'} />
                             </IconButton>
                         </Tooltip>
                         <Menu
@@ -516,7 +530,10 @@ class UploadImage extends Component {
                             <MenuItem onClick={() => this.setState({ anchorEl: null, cropHandler: false }, () => {
                                 const imageElement = this.cropperRef?.current?.cropper;
                                 onChange(imageElement.getCroppedCanvas().toDataURL());
-                            })}>{t('ra_Save')}</MenuItem>
+                            })}
+                            >
+                                {t('ra_Save')}
+                            </MenuItem>
                             <MenuItem onClick={() => this.setState({ anchorEl: null, cropHandler: false })}>{t('ra_Close')}</MenuItem>
                         </Menu>
                     </div>}

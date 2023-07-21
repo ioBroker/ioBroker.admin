@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -23,10 +22,8 @@ import ImageIcon from '@mui/icons-material/Image';
 import IconCancel from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
 
+import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
-
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import IconPicker from '@iobroker/adapter-react-v5/Components/IconPicker';
 
 import Group1 from '../../assets/groups/group1.svg';
 import Group2 from '../../assets/groups/group2.svg';
@@ -42,12 +39,10 @@ import Group10 from '../../assets/groups/group10.svg';
 const GROUPS_ICONS = [Group1, Group2, Group3, Group4, Group5, Group6, Group7, Group8, Group9, Group10];
 
 function PermissionsTab(props) {
-    let mapObject = function (object, mapFunction) {
-        return Object.values(object).map((value, index) => {
-            let key = Object.keys(object)[index];
-            return mapFunction(value, key);
-        });
-    }
+    const mapObject = (object, mapFunction) => Object.values(object).map((value, index) => {
+        const key = Object.keys(object)[index];
+        return mapFunction(value, key);
+    });
 
     let acl = props.group.common.acl;
 
@@ -58,45 +53,56 @@ function PermissionsTab(props) {
         read: true,
         list: true,
         write: true,
-        'delete': false,
+        delete: false,
     };
-    acl.object = Object.assign({}, {read: true, list: true, write: true, 'delete': false,}, acl.object);
+    acl.object = {
+        read: true, list: true, write: true, delete: false, ...acl.object,
+    };
 
     acl.state = acl.state || {
         read: true,
         list: true,
         write: true,
-        'delete': false,
+        delete: false,
     };
-    acl.state = Object.assign({}, {read: true, list: true, write: true, 'delete': false,}, acl.state);
+    acl.state = {
+        read: true, list: true, write: true, delete: false, ...acl.state,
+    };
 
     acl.users = acl.users || {
         write: false,
-        'delete': false,
-        create: false
+        delete: false,
+        create: false,
     };
-    acl.users = Object.assign({}, {write: false, 'delete': false, create: false}, acl.users);
+    acl.users = {
+        write: false, delete: false, create: false, ...acl.users,
+    };
 
     acl.other = acl.other || {
         http: false,
         execute: false,
-        sendto: true
+        sendto: true,
     };
-    acl.other = Object.assign({}, {http: false, execute: false, sendto: true}, acl.other);
+    acl.other = {
+        http: false, execute: false, sendto: true, ...acl.other,
+    };
 
     acl.file = acl.file || {
         read: true,
         list: true,
         write: false,
-        'delete': false,
-        create: false
+        delete: false,
+        create: false,
     };
-    acl.file = Object.assign({}, {read: true, list: true, write: false, 'delete': false, create: false}, acl.file);
+    acl.file = {
+        read: true, list: true, write: false, delete: false, create: false, ...acl.file,
+    };
 
-    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermissionsTab">{
+    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermissionsTab">
+        {
             mapObject(props.group.common.acl || {}, (block, blockKey) =>
                 <Grid item xs={12} md={12} key={blockKey}>
-                    <h2 className={props.classes.permHeaders}>{props.t('group_acl_' + blockKey)}</h2>
+                    <h2 className={props.classes.permHeaders}>{props.t(`group_acl_${blockKey}`)}</h2>
                     {mapObject(block, (perm, permKey) =>
                         <FormControlLabel
                             key={permKey}
@@ -104,30 +110,29 @@ function PermissionsTab(props) {
                                 disabled={props.group._id === 'system.group.administrator'}
                                 checked={perm}
                                 onChange={e => {
-                                    let newData = Utils.clone(props.group);
+                                    const newData = Utils.clone(props.group);
                                     newData.common.acl[blockKey][permKey] = e.target.checked;
                                     props.onChange(newData);
                                 }}
                             />}
-                            label={props.t('group_acl_' + permKey)}
+                            label={props.t(`group_acl_${permKey}`)}
                             labelPlacement="top"
-                        />
-                    )}
+                        />)}
                 </Grid>)
         }
     </Grid>;
 }
 
-const styles = theme => ({
+const styles = () => ({
     contentRoot:{
-        padding: '16px 24px'
-    }
+        padding: '16px 24px',
+    },
 });
 
 function GroupEditDialog(props) {
     const [tab, setTab] = useState(0);
 
-    let [originalId, setOriginalId] = useState(null);
+    const [originalId, setOriginalId] = useState(null);
 
     useEffect(() => {
         setOriginalId(props.group._id);
@@ -136,7 +141,7 @@ function GroupEditDialog(props) {
 
             icon && Utils.getSvg(icon)
                 .then(fileBlob => {
-                    let newData = Utils.clone(props.group);
+                    const newData = Utils.clone(props.group);
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 });
@@ -148,8 +153,8 @@ function GroupEditDialog(props) {
         return null;
     }
 
-    let idExists = props.groups.find(group => group._id === props.group._id);
-    let idChanged = props.group._id !== originalId;
+    const idExists = props.groups.find(group => group._id === props.group._id);
+    const idChanged = props.group._id !== originalId;
 
     let canSave = props.group._id !== 'system.group.' &&
         props.group.common.password === props.group.common.passwordRepeat;
@@ -161,32 +166,30 @@ function GroupEditDialog(props) {
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
 
     const changeShortId = (_id, short) => {
-        let idArray = _id.split('.');
-        idArray[idArray.length-1] = short;
+        const idArray = _id.split('.');
+        idArray[idArray.length - 1] = short;
         return idArray.join('.');
-    }
+    };
 
     if (props.isNew) {
         if (idExists) {
             canSave = false;
         }
-    } else {
-        if (idExists && idChanged) {
-            canSave = false;
-        }
+    } else if (idExists && idChanged) {
+        canSave = false;
     }
 
-    let description = props.getText(props.group.common.desc);
-    let name = props.getText(props.group.common.name);
+    const description = props.getText(props.group.common.desc);
+    const name = props.getText(props.group.common.name);
 
-    let mainTab = <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
+    const mainTab = <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
         <Grid item xs={12} md={6}>
             <IOTextField
                 label="Name"
                 t={props.t}
-                value={ name }
+                value={name}
                 onChange={e => {
-                    let newData = Utils.clone(props.group);
+                    const newData = Utils.clone(props.group);
                     if (!props.group.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
                         newData._id = changeShortId(newData._id, name2Id(e.target.value));
                     }
@@ -198,14 +201,14 @@ function GroupEditDialog(props) {
                 classes={props.classes}
             />
         </Grid>
-         <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6}>
             <IOTextField
                 label="ID edit"
                 t={props.t}
                 disabled={props.group.common.dontDelete}
-                value={ props.group._id.split('.')[props.group._id.split('.').length-1] }
+                value={props.group._id.split('.')[props.group._id.split('.').length - 1]}
                 onChange={e => {
-                    let newData = Utils.clone(props.group);
+                    const newData = Utils.clone(props.group);
                     newData._id = changeShortId(newData._id, name2Id(e.target.value));
                     props.onChange(newData);
                 }}
@@ -218,18 +221,18 @@ function GroupEditDialog(props) {
                 label="ID preview"
                 t={props.t}
                 disabled
-                value={ props.group._id }
+                value={props.group._id}
                 icon={PageviewIcon}
                 classes={props.classes}
-        />
+            />
         </Grid>
         <Grid item xs={12} md={6}>
             <IOTextField
                 label="Description"
                 t={props.t}
-                value={ description }
+                value={description}
                 onChange={e => {
-                    let newData = Utils.clone(props.group);
+                    const newData = Utils.clone(props.group);
                     newData.common.desc = e.target.value;
                     props.onChange(newData);
                 }}
@@ -243,9 +246,9 @@ function GroupEditDialog(props) {
                 icons={GROUPS_ICONS}
                 t={props.t}
                 lang={props.lang}
-                value={ props.group.common.icon }
+                value={props.group.common.icon}
                 onChange={fileBlob => {
-                    let newData = Utils.clone(props.group);
+                    const newData = Utils.clone(props.group);
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 }}
@@ -258,10 +261,10 @@ function GroupEditDialog(props) {
             <IOColorPicker
                 label="Color"
                 t={props.t}
-                value={ props.group.common.color }
+                value={props.group.common.color}
                 previewClassName={props.classes.iconPreview}
                 onChange={color => {
-                    let newData = Utils.clone(props.group);
+                    const newData = Utils.clone(props.group);
                     newData.common.color = color;
                     props.onChange(newData);
                 }}
@@ -272,7 +275,7 @@ function GroupEditDialog(props) {
         </Grid>
     </Grid>;
 
-    let selectedTab = [mainTab, PermissionsTab(props)][tab];
+    const selectedTab = [mainTab, PermissionsTab(props)][tab];
 
     return <Dialog
         open={props.open}
@@ -293,10 +296,10 @@ function GroupEditDialog(props) {
                 <Tab label={props.t('Permissions')} value={1} />
             </Tabs>
         </DialogTitle>
-        <DialogContent classes={{root: clsx(props.innerWidth < 500 ? props.classes.narrowContent : '', props.classes.contentRoot)}}>
+        <DialogContent classes={{ root: Utils.clsx(props.innerWidth < 500 ? props.classes.narrowContent : '', props.classes.contentRoot) }}>
             { selectedTab }
         </DialogContent>
-        <DialogActions className={props.classes.dialogActions} >
+        <DialogActions className={props.classes.dialogActions}>
             <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave} startIcon={<IconCheck />}>{props.t('Save')}</Button>
             <Button variant="contained" color="grey" onClick={props.onClose} startIcon={<IconCancel />}>{props.t('Cancel')}</Button>
         </DialogActions>

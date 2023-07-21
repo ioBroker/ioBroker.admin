@@ -16,7 +16,7 @@ class ConfigUUID extends ConfigGeneric {
         super.componentDidMount();
 
         const uuidObj = await this.props.socket.getObject('system.meta.uuid');
-        this.setState( { uuid: uuidObj?.native?.uuid || 'unknown'});
+        this.setState({ uuid: uuidObj?.native?.uuid || 'unknown' });
     }
 
     renderItem(error, disabled) {
@@ -28,13 +28,15 @@ class ConfigUUID extends ConfigGeneric {
             inputProps={{
                 readOnly: true,
             }}
+            // eslint-disable-next-line react/jsx-no-duplicate-props
             InputProps={{
                 endAdornment: <IconButton onClick={() => {
                     Utils.copyToClipboard(this.state.uuid);
                     window.alert(I18n.t('ra_Copied %s', this.state.uuid));
-                }}>
+                }}
+                >
                     <IconCopy />
-                </IconButton>
+                </IconButton>,
             }}
             value={this.state.uuid || ''}
             label={this.getText(this.props.schema.label) || I18n.t('ra_Serial number (UUID)')}

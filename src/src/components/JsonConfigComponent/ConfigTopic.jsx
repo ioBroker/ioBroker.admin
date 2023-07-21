@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import ConfigGeneric from './ConfigGeneric';
 import { TextField } from '@mui/material';
 
-const styles = theme => ({
+import ConfigGeneric from './ConfigGeneric';
+
+const styles = () => ({
     fullWidth: {
         width: '100%',
     },
@@ -32,18 +33,18 @@ class ConfigTopic extends ConfigGeneric {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         if (!value && this.props.customObj && this.props.customObj._id) {
-            let topic = convertID2Topic(this.props.customObj._id, null, `${this.props.adapterName}.${this.props.instance}`);
+            const topic = convertID2Topic(this.props.customObj._id, null, `${this.props.adapterName}.${this.props.instance}`);
             this.setState({ value: topic });
         } else {
             this.setState({ value: value || '' });
         }
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         return <TextField
             variant="standard"
             fullWidth
-            inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}
+            inputProps={{ maxLength: this.props.schema.maxLength || this.props.schema.max || undefined }}
             value={this.state.value}
             error={!!error}
             disabled={disabled}

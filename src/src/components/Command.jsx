@@ -4,7 +4,9 @@ import { withStyles } from '@mui/styles';
 
 import { amber, blue, red } from '@mui/material/colors';
 
-import { Grid, LinearProgress, Paper, Switch, Typography } from '@mui/material';
+import {
+    Grid, LinearProgress, Paper, Switch, Typography,
+} from '@mui/material';
 
 import Router from '@iobroker/adapter-react-v5/Components/Router';
 
@@ -15,24 +17,24 @@ const styles = theme => ({
         height: 400,
         width: 860,
         padding: theme.spacing(1),
-        overflowY: 'auto'
+        overflowY: 'auto',
     },
     logNoSpacing: {
         height: '100%',
         width: 'calc(100% - 8px)',
         marginLeft: 8,
         padding: theme.spacing(1),
-        overflowY: 'auto'
+        overflowY: 'auto',
     },
     error: {
-        color: red[500]
+        color: red[500],
     },
     info: {
-        color: blue[500]
+        color: blue[500],
     },
     warn: {
-        color: amber[500]
-    }
+        color: amber[500],
+    },
 });
 
 class Command extends Component {
@@ -58,7 +60,7 @@ class Command extends Component {
 
     componentDidMount() {
         if (this.props.ready && this.props.cmd) {
-            console.log('STARTED: ' + this.props.cmd);
+            console.log(`STARTED: ${this.props.cmd}`);
             this.executeCommand();
         }
         try {
@@ -90,14 +92,13 @@ class Command extends Component {
 
         this.setState({ activeCmdId });
 
-        this.props.socket.cmdExec(this.props.host.startsWith('system.host.') ? this.props.host : ('system.host.' + this.props.host), this.props.cmd, activeCmdId)
+        this.props.socket.cmdExec(this.props.host.startsWith('system.host.') ? this.props.host : (`system.host.${this.props.host}`), this.props.cmd, activeCmdId)
             .catch(error =>
                 console.log(error));
     }
 
     cmdStdoutHandler(id, text) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
-
             const log = this.state.log.slice();
             log.push(text);
 
@@ -126,7 +127,7 @@ class Command extends Component {
                 log,
                 max,
                 value,
-                progressText
+                progressText,
             });
 
             console.log('cmdStdout');
@@ -135,7 +136,6 @@ class Command extends Component {
 
     cmdStderrHandler(id, text) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
-
             const log = this.state.log.slice();
             log.push(text);
 
@@ -197,21 +197,21 @@ class Command extends Component {
                 if (pos > 0) {
                     const part = text.substring(0, pos);
                     const message = Utils.parseColorMessage(part);
-                    result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}</span>);
+                    result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
                     text = text.replace(part, '');
                 }
 
                 const part = text.substr(0, match.length);
                 if (part) {
                     const message = Utils.parseColorMessage(part);
-                    result.push(<span key={result.length} className={classes[match.toLowerCase()]}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}</span>);
+                    result.push(<span key={result.length} className={classes[match.toLowerCase()]}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
                     text = text.replace(part, '');
                 }
             }
 
             if (text) {
                 const message = Utils.parseColorMessage(text);
-                result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}</span>);
+                result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
             }
 
             return result;
@@ -251,14 +251,15 @@ class Command extends Component {
                 width: '100%',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: this.props.inBackground ? 'space-between' : 'flex-end'
-            }}>
+                justifyContent: this.props.inBackground ? 'space-between' : 'flex-end',
+            }}
+            >
                 <Typography
                     style={this.props.inBackground ? {
                         width: 'calc(100% - 180px)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'nowrap',
                     } : { display: 'none' }}
                     component="div"
                 >
@@ -270,7 +271,7 @@ class Command extends Component {
                         <Grid item>
                             <Switch
                                 checked={this.state.moreChecked}
-                                onChange={(event) => this.setState({ moreChecked: event.target.checked })}
+                                onChange={event => this.setState({ moreChecked: event.target.checked })}
                                 color="primary"
                             />
                         </Grid>
@@ -289,7 +290,7 @@ class Command extends Component {
 
 Command.defaultProps = {
     onSetCommandRunning: () => { },
-    showElement: true
+    showElement: true,
 };
 
 Command.propTypes = {
@@ -305,7 +306,7 @@ Command.propTypes = {
     errorFunc: PropTypes.func,
     performed: PropTypes.func,
     cmd: PropTypes.string.isRequired,
-    onSetCommandRunning: PropTypes.func.isRequired
+    onSetCommandRunning: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Command);

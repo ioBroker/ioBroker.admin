@@ -16,7 +16,7 @@ import SelectFileDialog from './wrapper/Dialogs/SelectFile';
 import ConfigGeneric from './ConfigGeneric';
 import ConfigFileSelector from './ConfigFileSelector';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
         width: '100%',
     },
@@ -54,9 +54,8 @@ class ConfigFile extends ConfigGeneric {
         const value = ConfigGeneric.getValue(props.data, props.attr);
         if (value === null || value === undefined || value.toString().trim() !== (state.value ||  '').toString().trim()) {
             return { value };
-        } else {
-            return null;
         }
+        return null;
     }
 
     loadFile() {
@@ -79,7 +78,7 @@ class ConfigFile extends ConfigGeneric {
                         source.buffer = buffer;                      // tell the source which sound to play
                         source.connect(context.destination);         // connect the source to the context's destination (the speakers)
                         source.start(0);
-                    }, err => window.alert('Cannot play: ' + err));
+                    }, err => window.alert(`Cannot play: ${err}`));
                 }
             });
     }
@@ -87,18 +86,21 @@ class ConfigFile extends ConfigGeneric {
     getIcon() {
         const extension = this.state.value.split('.').pop().toLowerCase();
         if (IMAGE_EXT.includes(extension)) {
-            return <div className={this.props.classes.selectedImage} style={{
-                backgroundImage: `url(${this.imagePrefix}/${this.state.value})`,
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-            }} />;
-        } else if (AUDIO_EXT.includes(extension)) {
+            return <div
+                className={this.props.classes.selectedImage}
+                style={{
+                    backgroundImage: `url(${this.imagePrefix}/${this.state.value})`,
+                    backgroundSize: 'contain',
+                    backgroundRepeat: 'no-repeat',
+                }}
+            />;
+        } if (AUDIO_EXT.includes(extension)) {
             return <IconButton style={{ color: '#00FF00' }} onClick={() => this.play()}><IconPlay /></IconButton>;
-        } else if (DOC_EXT.includes(extension)) {
+        } if (DOC_EXT.includes(extension)) {
             return <IconText />;
-        } else if (VIDEO_EXT.includes(extension)) {
+        } if (VIDEO_EXT.includes(extension)) {
             return <IconVideo />;
-        } else if (JS_EXT.includes(extension)) {
+        } if (JS_EXT.includes(extension)) {
             return <IconCode />;
         }
         return null;
@@ -107,25 +109,24 @@ class ConfigFile extends ConfigGeneric {
     renderFileBrowser() {
         if (!this.state.showFileBrowser) {
             return null;
-        } else {
-            return <SelectFileDialog
-                imagePrefix={this.props.imagePrefix}
-                socket={this.props.socket}
-                selected={this.state.value}
-                onClose={() => this.setState({ showFileBrowser: false})}
-                onOk={value => {
-                    this.setState({ value }, () =>
-                        this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
-                }}
-                selectOnlyFolders={this.props.schema.selectOnlyFolders}
-                allowUpload={this.props.schema.allowUpload}
-                allowDownload={this.props.schema.allowDownload}
-                allowCreateFolder={this.props.schema.allowCreateFolder}
-                allowView={this.props.schema.allowView}
-                showToolbar={this.props.schema.showToolbar}
-                limitPath={this.props.schema.limitPath}
-            />;
         }
+        return <SelectFileDialog
+            imagePrefix={this.props.imagePrefix}
+            socket={this.props.socket}
+            selected={this.state.value}
+            onClose={() => this.setState({ showFileBrowser: false })}
+            onOk={value => {
+                this.setState({ value }, () =>
+                    this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
+            }}
+            selectOnlyFolders={this.props.schema.selectOnlyFolders}
+            allowUpload={this.props.schema.allowUpload}
+            allowDownload={this.props.schema.allowDownload}
+            allowCreateFolder={this.props.schema.allowCreateFolder}
+            allowView={this.props.schema.allowView}
+            showToolbar={this.props.schema.showToolbar}
+            limitPath={this.props.schema.limitPath}
+        />;
     }
 
     renderItem(error, disabled, defaultValue) {
@@ -141,7 +142,7 @@ class ConfigFile extends ConfigGeneric {
                 disabled={!!disabled}
                 inputProps={{
                     maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                    readOnly: !!this.props.schema.disableEdit
+                    readOnly: !!this.props.schema.disableEdit,
                 }}
                 onChange={e => {
                     const value = e.target.value;

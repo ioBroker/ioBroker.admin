@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
@@ -28,12 +28,12 @@ const styles = theme => ({
     },
     divWithoutTitle: {
         width: '100%',
-        height: 'calc(100% - ' + 32 + 'px)',
+        height: `calc(100% - ${32}px)`,
         border: '2px solid #00000000',
     },
     error: {
         border: '2px solid #FF0000',
-    }
+    },
 
 });
 
@@ -47,16 +47,16 @@ class BaseSettingsPlugins extends Component {
         };
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(/* props, state */) {
         return null;
     }
 
-    editorDidMount(editor, monaco) {
-        editor.focus();
-    }
+    // static editorDidMount(editor /* , monaco */) {
+    //     editor.focus();
+    // }
 
     onChange(value) {
-        const newState = {settings: value};
+        const newState = { settings: value };
         try {
             const settings = JSON.parse(value);
 
@@ -65,29 +65,29 @@ class BaseSettingsPlugins extends Component {
             }
 
             this.setState(newState, () => this.props.onChange(settings));
-        } catch(e) {
+        } catch (e) {
             newState.error = true;
             this.setState(newState);
         }
     }
 
     render() {
-        return <Paper className={ this.props.classes.paper }>
-            <div className={ this.props.classes.title }>{ this.props.t('For future use') }</div>
-            <div className={ clsx(this.props.classes.divWithoutTitle, this.state.error && this.props.classes.error) }>
+        return <Paper className={this.props.classes.paper}>
+            <div className={this.props.classes.title}>{ this.props.t('For future use') }</div>
+            <div className={clsx(this.props.classes.divWithoutTitle, this.state.error && this.props.classes.error)}>
                 <AceEditor
                     mode="json"
                     width="100%"
                     height="100%"
-                    theme={ this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome' }
-                    value={ this.state.settings }
-                    onChange={ newValue => this.onChange(newValue) }
+                    theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
+                    value={this.state.settings}
+                    onChange={newValue => this.onChange(newValue)}
                     name="UNIQUE_ID_OF_DIV1"
                     fontSize={14}
                     setOptions={{
                         enableBasicAutocompletion: true,
                         enableLiveAutocompletion: true,
-                        enableSnippets: true
+                        enableSnippets: true,
                     }}
                     editorProps={{ $blockScrolling: true }}
                 />

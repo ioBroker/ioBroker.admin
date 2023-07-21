@@ -32,47 +32,47 @@ class ConfigCertCollection extends ConfigGeneric {
         this.setState({ collectionsOptions });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.collectionsOptions) {
             return null;
         }
         const leCollection = (ConfigGeneric.getValue(this.props.data, this.props.schema.leCollectionName || 'leCollection') || 'false').toString();
 
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
-                {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
-                <Select
-                    variant="standard"
-                    error={!!error}
-                    displayEmpty
-                    disabled={!!disabled}
-                    value={leCollection}
-                    onChange={e => this.onChange(
-                        this.props.schema.attr,
-                        e.target.value === 'false' ? false : (e.target.value === 'true' ? true: e.target.value)
-                    )}
+            {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
+            <Select
+                variant="standard"
+                error={!!error}
+                displayEmpty
+                disabled={!!disabled}
+                value={leCollection}
+                onChange={e => this.onChange(
+                    this.props.schema.attr,
+                    e.target.value === 'false' ? false : (e.target.value === 'true' ? true : e.target.value),
+                )}
+            >
+                <MenuItem
+                    key="_false"
+                    value="false"
+                    style={{ fontWeight: 'bold' }}
                 >
+                    {I18n.t('ra_Do not use let\'s encrypt')}
+                </MenuItem>
+                <MenuItem
+                    key="_true"
+                    value="true"
+                    style={{ fontWeight: 'bold' }}
+                >
+                    {I18n.t('ra_Use all available let\'s encrypt certificates')}
+                </MenuItem>
+                {this.state.collectionsOptions?.map(item =>
                     <MenuItem
-                        key="_false"
-                        value="false"
-                        style={{ fontWeight: 'bold' }}
+                        key={item}
+                        value={item}
                     >
-                        {I18n.t('ra_Do not use let\'s encrypt')}
-                    </MenuItem>
-                    <MenuItem
-                        key="_true"
-                        value="true"
-                        style={{ fontWeight: 'bold' }}
-                    >
-                        {I18n.t('ra_Use all available let\'s encrypt certificates')}
-                    </MenuItem>
-                    {this.state.collectionsOptions?.map(item =>
-                        <MenuItem
-                            key={item}
-                            value={item}
-                        >
-                            {item}
-                        </MenuItem>)}
-                </Select>
+                        {item}
+                    </MenuItem>)}
+            </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }

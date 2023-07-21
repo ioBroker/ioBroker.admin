@@ -29,7 +29,9 @@ import {
     Copy as CopyIcon,
 } from '@mui/icons-material';
 
-import { amber, blue, grey, red } from '@mui/material/colors';
+import {
+    amber, blue, grey, red,
+} from '@mui/material/colors';
 
 import { Utils } from '@iobroker/adapter-react-v5';
 
@@ -105,9 +107,9 @@ const styles = theme => ({
     installed: {
         background: '#77c7ff8c',
     },
-    /*update: {
+    /* update: {
         background: '#10ff006b'
-    },*/
+    }, */
     fab: {
         position: 'absolute',
         bottom: -20,
@@ -220,21 +222,21 @@ const styles = theme => ({
     instanceStateNotAlive1: {
         backgroundColor: 'rgba(192, 192, 192, 0.4)',
     },
-    /*instanceStateNotAlive2: {
+    /* instanceStateNotAlive2: {
         backgroundColor: 'rgb(192 192 192 / 15%)'
-    },*/
+    }, */
     instanceStateAliveNotConnected1: {
         backgroundColor: 'rgba(255, 177, 0, 0.4)',
     },
-    /*instanceStateAliveNotConnected2: {
+    /* instanceStateAliveNotConnected2: {
         backgroundColor: 'rgb(255 177 0  / 14%)'
-    },*/
+    }, */
     instanceStateAliveAndConnected1: {
         backgroundColor: 'rgba(0, 255, 0, 0.4)',
     },
-    /*instanceStateAliveAndConnected2: {
+    /* instanceStateAliveAndConnected2: {
         backgroundColor: 'rgb(0 255 0 / 14%)'
-    }*/
+    } */
     green: {
         background: '#00ce00',
         // border: '1px solid #014a00',
@@ -451,24 +453,22 @@ const HostCard = ({
 
     const formatValue = (state, unit) => {
         if (!state || state.val === null || state.val === undefined) {
-            return '-' + (unit ? ' ' + unit : '');
-        } else if (systemConfig.common.isFloatComma) {
-            return state.val.toString().replace('.', ',') + (unit ? ' ' + unit : '');
-        } else {
-            return state.val + (unit ? ' ' + unit : '');
+            return `-${unit ? ` ${unit}` : ''}`;
+        } if (systemConfig.common.isFloatComma) {
+            return state.val.toString().replace('.', ',') + (unit ? ` ${unit}` : '');
         }
+        return state.val + (unit ? ` ${unit}` : '');
     };
 
-    const warningFunc = (name, state) => {
-        let warning;
-        if (name.endsWith('diskFree')) {
+    const warningFunc = (name_, state) => {
+        if (name_.endsWith('diskFree')) {
             diskFreeCache = state?.val || 0;
-        } else if (name.endsWith('diskSize')) {
+        } else if (name_.endsWith('diskSize')) {
             diskSizeCache = state?.val || 0;
-        } else if (name.endsWith('diskWarning')) {
+        } else if (name_.endsWith('diskWarning')) {
             diskWarningCache = state?.val || 0;
         }
-        warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
+        const warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
         if (refWarning.current) {
             if (warning) {
                 refWarning.current.setAttribute('title', t('Warning: Free space on disk is low'));
@@ -518,15 +518,20 @@ const HostCard = ({
             return count;
         }
         if (Object.keys(result.system.categories).length) {
-            let obj = result.system.categories;
-            Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(_ => count++));
+            const obj = result.system.categories;
+            Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(() => count++));
         }
         return count;
     };
 
     const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
+    const [focused, setFocused] = useState(false);
 
-    const logLevelFunc = (name, state) => {
+    const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
+    const [logLevelValue, setLogLevelValue] = useState(null);
+    const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
+
+    const logLevelFunc = (name_, state) => {
         if (state) {
             setLogLevelValue(state.val);
             setLogLevelValueSelect(state.val);
@@ -547,7 +552,7 @@ const HostCard = ({
                 notifications =>
                     notifications &&
                     notifications[_id] &&
-                    setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) })
+                    setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) }),
             );
 
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
@@ -580,19 +585,12 @@ const HostCard = ({
 
             socket.unsubscribeState(`${_id}.logLevel`, logLevelFunc);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_id, socket, classes]);
-
-    const [focused, setFocused] = useState(false);
-
-    const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
-    const [logLevelValue, setLogLevelValue] = useState(null);
-    const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
 
     const upgradeAvailable = (isCurrentHost || alive) && Adapters.updateAvailable(installed, available);
 
     const onCopy = () => {
-        let text = [];
+        const text = [];
         refCpu.current && text.push(`CPU: ${refCpu.current.innerHTML}`);
         refMem.current && text.push(`RAM: ${refMem.current.innerHTML}`);
         refUptime.current && text.push(`${t('Uptime')}: ${refUptime.current.innerHTML}`);
@@ -604,9 +602,8 @@ const HostCard = ({
             typeof hostData === 'object' &&
             Object.keys(hostData).map(value =>
                 text.push(
-                    `${t(value)}: ${formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--'}`
-                )
-            );
+                    `${t(value)}: ${formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--'}`,
+                ));
 
         Utils.copyToClipboard(text.join('\n'));
         window.alert(t('Copied'));
@@ -622,7 +619,7 @@ const HostCard = ({
     const customModal = showModal ? <CustomModal
         title={titleModal}
         open={!0}
-        onApply={value => {
+        onApply={() => {
             if (openDialogLogLevel) {
                 socket.setState(`${_id}.logLevel`, logLevelValueSelect);
                 setOpenDialogLogLevel(false);
@@ -682,7 +679,7 @@ const HostCard = ({
                 classes.imageBlock,
                 (!connectedToHost || !alive) && classes.instanceStateNotAlive1,
                 connectedToHost && alive && connected === false && classes.instanceStateAliveNotConnected1,
-                connectedToHost && alive && connected !== false && classes.instanceStateAliveAndConnected1
+                connectedToHost && alive && connected !== false && classes.instanceStateAliveAndConnected1,
             )}
         >
             <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
@@ -716,14 +713,14 @@ const HostCard = ({
             </Fab>
         </div>
         <CardContent className={classes.cardContentH5}>
-            {/*<Typography variant="body2" color="textSecondary" component="p">
+            {/* <Typography variant="body2" color="textSecondary" component="p">
             {t('Title')}: {title}
-        </Typography>*/}
+        </Typography> */}
             <Typography variant="body2" color="textSecondary" component="div">
                 <div className={classes.displayFlex}>
                     CPU:
                     <div ref={refCpu} className={classes.marginLeft5}>
-                        {'- %'}
+                        - %
                     </div>
                 </div>
             </Typography>
@@ -731,20 +728,25 @@ const HostCard = ({
                 <div className={classes.displayFlex}>
                     RAM:
                     <div ref={refMem} className={classes.marginLeft5}>
-                        {'- %'}
+                        - %
                     </div>
                 </div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="div">
                 <div className={classes.displayFlex}>
-                    {t('Uptime')}:{' '}
+                    {t('Uptime')}
+:
+                    {' '}
                     <div ref={refUptime} className={classes.marginLeft5}>
-                        {'-d -h'}
+                        -d -h
                     </div>
                 </div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="div" className={classes.wrapperAvailable}>
-                {t('Available')} js-controller:{' '}
+                {t('Available')}
+                {' '}
+js-controller:
+                {' '}
                 <div className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}>
                     {upgradeAvailable ? <Tooltip title={t('Update')}>
                         <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}>
@@ -754,23 +756,28 @@ const HostCard = ({
                             {available}
                         </div>
                     </Tooltip>
-                    :
-                    available}
+                        :
+                        available}
                 </div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-                {t('Installed')} js-controller: {installed}
+                {t('Installed')}
+                {' '}
+js-controller:
+                {installed}
             </Typography>
             <Typography variant="body2" color="textSecondary" component="div">
                 <div className={classes.displayFlex}>
-                    {t('Events')}:{' '}
+                    {t('Events')}
+:
+                    {' '}
                     <div ref={refEvents} className={classes.marginLeft5}>
                         {events}
                     </div>
                 </div>
             </Typography>
             <div className={classes.marginTop10}>
-                <Typography component={'span'} className={classes.enableButton}>
+                <Typography component="span" className={classes.enableButton}>
                     <IconButton size="large" onClick={() => setEditDialog(true)}>
                         <EditIcon />
                     </IconButton>
@@ -788,7 +795,8 @@ const HostCard = ({
                                 disabled={!alive}
                                 onClick={e => {
                                     e.stopPropagation();
-                                    socket.restartController(_id).catch(e => window.alert(`Cannot restart: ${e}`));
+                                    socket.restartController(_id)
+                                        .catch(err => window.alert(`Cannot restart: ${err}`));
                                 }}
                             >
                                 <CachedIcon />
@@ -807,8 +815,8 @@ const HostCard = ({
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
-                    :
-                    <div className={classes.emptyButton} />}
+                        :
+                        <div className={classes.emptyButton} />}
 
                     <Tooltip title={t('Copy')}>
                         <IconButton size="large" onClick={() => onCopy()}>

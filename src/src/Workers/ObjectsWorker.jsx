@@ -37,18 +37,18 @@ class ObjectsWorker {
                 type = 'new';
                 this.objects[id] = obj;
             }
+        } else if (this.objects[id]) {
+            oldObj = this.objects[id];
+            type = 'deleted';
+            delete this.objects[id];
         } else {
-            if (this.objects[id]) {
-                oldObj = this.objects[id];
-                type = 'deleted';
-                delete this.objects[id];
-            } else {
-                // deleted unknown instance
-                type = 'deleted';
-            }
+            // deleted unknown instance
+            type = 'deleted';
         }
 
-        this.handlers.forEach(cb => cb([{ id, obj, type, oldObj }]));
+        this.handlers.forEach(cb => cb([{
+            id, obj, type, oldObj,
+        }]));
     };
 
     // be careful with this object. Do not change them.
@@ -62,7 +62,7 @@ class ObjectsWorker {
                 this.objects = objects;
                 return this.objects;
             })
-            .catch(e => window.alert('Cannot get objects: ' + e));
+            .catch(e => window.alert(`Cannot get objects: ${e}`));
 
         return this.promise;
     }
@@ -82,7 +82,7 @@ class ObjectsWorker {
         } else if (!isConnected && this.connected) {
             this.connected = false;
         }
-    }
+    };
 
     registerHandler(cb) {
         if (!this.handlers.includes(cb)) {

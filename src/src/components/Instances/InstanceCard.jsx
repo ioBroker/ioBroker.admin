@@ -1,7 +1,6 @@
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
 
 import {
     Button,
@@ -17,7 +16,7 @@ import {
     MenuItem,
     Select,
     Tooltip,
-    Typography
+    Typography,
 } from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -38,7 +37,7 @@ import HostIcon from '@mui/icons-material/Storage';
 import { green, red } from '@mui/material/colors';
 
 import ComplexCron from '@iobroker/adapter-react-v5/Dialogs/ComplexCron';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { Utils, I18n } from '@iobroker/adapter-react-v5';
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import TextWithIcon from '@iobroker/adapter-react-v5/Components/TextWithIcon';
 import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
@@ -66,8 +65,8 @@ const styles = theme => ({
         flexDirection: 'column',
         transition: 'box-shadow 0.5s',
         '&:hover': {
-            boxShadow: boxShadowHover
-        }
+            boxShadow: boxShadowHover,
+        },
     },
     imageBlock: {
         background: 'silver',
@@ -94,14 +93,14 @@ const styles = theme => ({
             background: 'url("img/no-image.png") 100% 100% no-repeat',
             backgroundSize: 'cover',
             backgroundColor: '#fff',
-        }
+        },
     },
     installed: {
-        background: '#77c7ff8c'
+        background: '#77c7ff8c',
     },
-    /*update: {
+    /* update: {
         background: '#10ff006b'
-    },*/
+    }, */
     fab: {
         position: 'absolute',
         bottom: -20,
@@ -124,10 +123,10 @@ const styles = theme => ({
         transition: 'height 0.3s',
         justifyContent: 'space-between',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     collapseOff: {
-        height: 0
+        height: 0,
     },
     close: {
         width: '20px',
@@ -139,7 +138,7 @@ const styles = theme => ({
         marginBottom: 10,
         transition: 'all 0.6s ease',
         '&:hover': {
-            transform: 'rotate(90deg)'
+            transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
@@ -148,7 +147,7 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)'
+            transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
@@ -157,17 +156,17 @@ const styles = theme => ({
             height: '20px',
             width: '3px',
             backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)'
+            transform: 'rotate(-45deg)',
         },
     },
     footerBlock: {
         background: theme.palette.background.default,
         padding: 10,
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     hidden: {
-        display: 'none'
+        display: 'none',
     },
     buttonUpdate: {
         border: '1px solid',
@@ -178,11 +177,11 @@ const styles = theme => ({
         cursor: 'pointer',
         transition: 'background 0.5s',
         '&:hover': {
-            background: '#00800026'
-        }
+            background: '#00800026',
+        },
     },
     versionDate: {
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     adapter: {
         width: '100%',
@@ -191,10 +190,10 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.mode === 'dark' ? '#333' : '#555'
+        color: theme.palette.mode === 'dark' ? '#333' : '#555',
     },
     hide: {
-        visibility: 'hidden'
+        visibility: 'hidden',
     },
     button: {
         padding: '5px',
@@ -208,33 +207,33 @@ const styles = theme => ({
     enabled: {
         color: green[400],
         '&:hover': {
-            backgroundColor: green[200]
-        }
+            backgroundColor: green[200],
+        },
     },
     disabled: {
         color: red[400],
         '&:hover': {
-            backgroundColor: red[200]
-        }
+            backgroundColor: red[200],
+        },
     },
     cardContent: {
         marginTop: 16,
-        paddingTop: 0
+        paddingTop: 0,
     },
     sentry: {
         width: 24,
         height: 24,
         objectFit: 'fill',
-        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)',
     },
     cardContentH5: {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     marginTop10: {
-        marginTop: 10
+        marginTop: 10,
     },
     memoryIcon: {
         color: '#dc8e00',
@@ -244,63 +243,63 @@ const styles = theme => ({
     },
     logLevel: {
         width: '100%',
-        marginBottom: 5
+        marginBottom: 5,
     },
     hostInfo: {
-        width: '100%'
+        width: '100%',
     },
     overflowAuto: {
-        overflow: 'auto'
+        overflow: 'auto',
     },
     collapseIcon: {
         position: 'sticky',
         right: 0,
         top: 0,
         background: theme.palette.mode === 'dark' ? '#4a4a4a' : '#d4d4d4',
-        zIndex: 2
+        zIndex: 2,
     },
     addCompact: {
         width: '100%',
-        marginBottom: 5
+        marginBottom: 5,
     },
     addCompactButton: {
         display: 'flex',
         margin: 5,
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
     },
     scheduleIcon: {
-        color: '#dc8e00'
+        color: '#dc8e00',
     },
     marginRight5: {
-        marginRight: 5
+        marginRight: 5,
     },
     marginLeft5: {
-        marginLeft: 5
+        marginLeft: 5,
     },
     enableButton: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     instanceStateNotAlive1: {
-        backgroundColor: 'rgba(192, 192, 192, 0.7)'
+        backgroundColor: 'rgba(192, 192, 192, 0.7)',
     },
-    /*instanceStateNotAlive2: {
+    /* instanceStateNotAlive2: {
         backgroundColor: 'rgb(192 192 192 / 15%)'
-    },*/
+    }, */
     instanceStateAliveNotConnected1: {
-        backgroundColor: 'rgba(255, 177, 0, 0.4)'
+        backgroundColor: 'rgba(255, 177, 0, 0.4)',
     },
-    /*instanceStateAliveNotConnected2: {
+    /* instanceStateAliveNotConnected2: {
         backgroundColor: 'rgb(255 177 0  / 14%)'
-    },*/
+    }, */
     instanceStateAliveAndConnected1: {
-        backgroundColor: 'rgba(0, 255, 0, 0.4)'
+        backgroundColor: 'rgba(0, 255, 0, 0.4)',
     },
     instanceName: {
         fontSize: 16,
         padding: 4,
         paddingBottom: 15,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     deleting: {
         position: 'relative',
@@ -314,14 +313,14 @@ const styles = theme => ({
             zIndex: 100,
             opacity: '.3 !important',
             background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
-        }
+        },
     },
     tooltip: {
         pointerEvents: 'none',
     },
-    /*instanceStateAliveAndConnected2: {
+    /* instanceStateAliveAndConnected2: {
         backgroundColor: 'rgb(0 255 0 / 14%)'
-    }*/
+    } */
 });
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
@@ -434,7 +433,7 @@ const InstanceCard = memo(({
                 onDeleteInstance(instance, deleteCustomValue);
                 setDeleteCustom(false);
             } else if (openDialogMemoryLimit) {
-                setMemoryLimitMB(instance, value)
+                setMemoryLimitMB(instance, value);
                 setOpenDialogMemoryLimit(false);
             } else if (openDialogCompact) {
                 setCompactGroup(instance, compactValue);
@@ -471,7 +470,7 @@ const InstanceCard = memo(({
             }
         }}
     >
-        {openDialogLogLevel && <FormControl className={classes.logLevel} variant="outlined" >
+        {openDialogLogLevel && <FormControl className={classes.logLevel} variant="outlined">
             <InputLabel>{t('log level')}</InputLabel>
             <Select
                 variant="standard"
@@ -484,34 +483,43 @@ const InstanceCard = memo(({
                 </MenuItem>)}
             </Select>
         </FormControl>}
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
             <FormControlLabel
                 control={<Checkbox checked={logOnTheFlyValue} onChange={e => setLogOnTheFlyValue(e.target.checked)} />}
                 label={t('Without restart')}
             />
             <FormHelperText>{logOnTheFlyValue ? t('Will be reset to the saved log level after restart of adapter') : t('Log level will be saved permanently')}</FormHelperText>
         </FormControl>}
-        {openDialogCompact && <FormControl className={classes.addCompact} variant="outlined" >
+        {openDialogCompact && <FormControl className={classes.addCompact} variant="outlined">
             <InputLabel>{t('compact groups')}</InputLabel>
             <Select
                 variant="standard"
                 autoWidth
-                onClose={e => setOpenSelectCompactGroup(false)}
-                onOpen={e => setOpenSelectCompactGroup(true)}
+                onClose={() => setOpenSelectCompactGroup(false)}
+                onOpen={() => setOpenSelectCompactGroup(true)}
                 open={openSelectCompactGroup}
-                value={compactValue === 1 ? 'default' : compactValue === '0' ? "controller" : !compactValue ? 'default' : compactValue || 'default'}
+                value={compactValue === 1 ? 'default' : compactValue === '0' ? 'controller' : !compactValue ? 'default' : compactValue || 'default'}
                 onChange={el => setCompactValue(el.target.value)}
             >
-                <div onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                    className={classes.selectStyle}>
-                    <Button color="grey" onClick={() => {
-                        setOpenSelectCompactGroup(false);
-                        setCompactValue(maxCompactGroupNumberValue + 1);
-                        setCompactGroupCountValue(maxCompactGroupNumberValue + 1);
-                    }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                <div
+                    onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }}
+                    className={classes.selectStyle}
+                >
+                    <Button
+                        color="grey"
+                        onClick={() => {
+                            setOpenSelectCompactGroup(false);
+                            setCompactValue(maxCompactGroupNumberValue + 1);
+                            setCompactGroupCountValue(maxCompactGroupNumberValue + 1);
+                        }}
+                        variant="outlined"
+                        stylevariable="outlined"
+                    >
+                        {t('Add compact group')}
+                    </Button>
                 </div>
                 <MenuItem value="controller">
                     {t('with controller')}
@@ -524,7 +532,7 @@ const InstanceCard = memo(({
                 </MenuItem>)}
             </Select>
         </FormControl>}
-        {openDialogTier && <FormControl className={classes.logLevel} variant="outlined" >
+        {openDialogTier && <FormControl className={classes.logLevel} variant="outlined">
             <InputLabel>{t('Tiers')}</InputLabel>
             <Select
                 variant="standard"
@@ -566,28 +574,28 @@ const InstanceCard = memo(({
     /> : null;
 
     const secondCardInfo = (openCollapse || mouseOver) && !deleting ?
-        <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '', deleting && classes.deleting)}>
+        <div className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : '', deleting && classes.deleting)}>
             <CardContent classes={{ root: classes.cardContent }} className={classes.overflowAuto}>
                 <div className={classes.collapseIcon}>
                     <div className={classes.close} onClick={() => setCollapse(false)} />
                 </div>
-                <Typography gutterBottom component={'span'} variant={'body2'}>
+                <Typography gutterBottom component="span" variant="body2">
                     <span className={classes.instanceName}>{instance.id}</span>
-                    {item.stoppedWhenWebExtension !== undefined && <State state={item.stoppedWhenWebExtension} >{t('Runs as web-extension')}</State>}
-                    {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.connectedToHost} >{t('Connected to host')}</State>}
-                    {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.alive} >{t('Heartbeat')}</State>}
+                    {item.stoppedWhenWebExtension !== undefined && <State state={item.stoppedWhenWebExtension}>{t('Runs as web-extension')}</State>}
+                    {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.connectedToHost}>{t('Connected to host')}</State>}
+                    {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.alive}>{t('Heartbeat')}</State>}
                     {item.running && item.connected !== null && item.stoppedWhenWebExtension === undefined &&
                         <State state={!!item.connected}>
                             {typeof item.connected === 'string' ? `${t('Connected:')} ${item.connected || '-'}` : t('Connected to device or service')}
-                        </State>
-                    }
+                        </State>}
 
                     <InstanceInfo tooltip={t('Installed')}>
-                        v{instance.version}
+                        v
+                        {instance.version}
                     </InstanceInfo>
 
                     {item.running && <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
-                        {(instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--') + ' MB'}
+                        {`${instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--'} MB`}
                     </InstanceInfo>}
 
                     {item.running && expertMode &&
@@ -595,23 +603,28 @@ const InstanceCard = memo(({
                             <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
                                 <div className={classes.displayFlex}>
                                     <Tooltip title={t('input events')}>
-                                        <div className={classes.marginRight5}>⇥{item.inputOutput.stateInput}</div>
+                                        <div className={classes.marginRight5}>
+⇥
+                                            {item.inputOutput.stateInput}
+                                        </div>
                                     </Tooltip>
                                     /
                                     <Tooltip title={t('output events')}>
-                                        <div className={classes.marginLeft5}>↦{item.inputOutput.stateOutput}</div>
+                                        <div className={classes.marginLeft5}>
+↦
+                                            {item.inputOutput.stateOutput}
+                                        </div>
                                     </Tooltip>
                                 </div>
                             </InstanceInfo>
-                        </div>
-                    }
+                        </div>}
 
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo
                             icon={<MemoryIcon className={classes.memoryIcon} />}
                             tooltip={t('RAM limit')}
                         >
-                            {(item.memoryLimitMB ? item.memoryLimitMB : '-.--') + ' MB'}
+                            {`${item.memoryLimitMB ? item.memoryLimitMB : '-.--'} MB`}
                         </InstanceInfo>
                         <Tooltip title={t('Edit')}>
                             <IconButton
@@ -671,13 +684,12 @@ const InstanceCard = memo(({
                                     <EditIcon />
                                 </IconButton>
                             </Tooltip>
-                        </div>
-                    }
+                        </div>}
 
                     {expertMode && item.checkCompact && item.compact && item.supportCompact &&
                         <div className={classes.displayFlex}>
                             <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
-                                {item.compactGroup === 1 ? 'default' : item.compactGroup === '0' ? "controller" : !item.compactGroup ? 'default' : item.compactGroup || 'default'}
+                                {item.compactGroup === 1 ? 'default' : item.compactGroup === '0' ? 'controller' : !item.compactGroup ? 'default' : item.compactGroup || 'default'}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton
@@ -711,9 +723,9 @@ const InstanceCard = memo(({
                         </Tooltip> : null}
                     </div>}
 
-                    {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                    {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                         <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                            {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang}/>}
+                            <TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang} />
                         </InstanceInfo>
                         <Tooltip title={t('Edit')}>
                             <IconButton
@@ -734,7 +746,7 @@ const InstanceCard = memo(({
                             <IconButton
                                 disabled={!instance.config}
                                 size="small"
-                                className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
+                                className={Utils.clsx(classes.button, !instance.config && classes.hiddenOpacity)}
                                 onClick={() => openConfig(id)}
                             >
                                 <BuildIcon />
@@ -767,7 +779,7 @@ const InstanceCard = memo(({
                             onClick={() => setSentry(instance)}
                         >
                             <CardMedia
-                                className={clsx(classes.sentry, !item.sentry && classes.contrast0)}
+                                className={Utils.clsx(classes.sentry, !item.sentry && classes.contrast0)}
                                 component="img"
                                 image={item.sentry ? sentry : noSentry}
                             />
@@ -782,7 +794,7 @@ const InstanceCard = memo(({
                             className={classes.button}
                             onClick={() => setCompact(instance)}
                         >
-                            <ViewCompactIcon color={!!item.compact ? 'primary' : 'inherit'} />
+                            <ViewCompactIcon color={item.compact ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
                 </div>}
@@ -823,19 +835,20 @@ const InstanceCard = memo(({
             }}
         />;
 
-    return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+    return <Card key={key} className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}
         {stopAdminDialog}
         {cronDialog}
         {secondCardInfo}
         {linksDialog}
 
-        <div className={clsx(
+        <div className={Utils.clsx(
             classes.imageBlock,
             (!item.connectedToHost || !item.alive) && classes.instanceStateNotAlive1,
             item.connectedToHost && item.alive && item.connected === false && classes.instanceStateAliveNotConnected1,
-            item.connectedToHost && item.alive && item.connected !== false && classes.instanceStateAliveAndConnected1
-        )}>
+            item.connectedToHost && item.alive && item.connected !== false && classes.instanceStateAliveAndConnected1,
+        )}
+        >
             <CardMedia className={classes.img} component="img" image={instance.image || 'img/no-image.png'} />
             <div className={classes.adapter}>{instance.id}</div>
             <div className={classes.versionDate}>
@@ -861,12 +874,13 @@ const InstanceCard = memo(({
                     onMouseMove={() => handlerEdit(true)}
                     onMouseEnter={() => handlerEdit(true)}
                     onMouseLeave={() => handlerEdit(false)}
-                    className={classes.displayFlex}>
+                    className={classes.displayFlex}
+                >
                     {item.name}
                     <Tooltip title={t('Edit')}>
                         <IconButton
                             size="small"
-                            className={clsx(classes.button, !visibleEdit && classes.hiddenOpacity)}
+                            className={Utils.clsx(classes.button, !visibleEdit && classes.hiddenOpacity)}
                             onClick={() => setOpenDialogText(true)}
                         >
                             <EditIcon />
@@ -876,21 +890,22 @@ const InstanceCard = memo(({
             </Typography>
 
             <div className={classes.marginTop10}>
-                <Typography component={'span'} className={classes.enableButton}>
+                <Typography component="span" className={classes.enableButton}>
                     <Tooltip title={t('Start/stop')}>
-                        <div><IconButton
-                            size="small"
-                            onClick={event => {
-                                event.stopPropagation();
-                                if (!item.running || instance.id !== adminInstance) {
-                                    extendObject('system.adapter.' + instance.id, { common: { enabled: !item.running } });
-                                }
-                            }}
-                            onFocus={event => event.stopPropagation()}
-                            className={clsx(classes.button, instance.canStart ? (item.running ? classes.enabled : classes.disabled) : classes.hide)}
-                        >
-                            {item.running ? <PauseIcon /> : <PlayArrowIcon />}
-                        </IconButton>
+                        <div>
+                            <IconButton
+                                size="small"
+                                onClick={event => {
+                                    event.stopPropagation();
+                                    if (!item.running || instance.id !== adminInstance) {
+                                        extendObject(`system.adapter.${instance.id}`, { common: { enabled: !item.running } });
+                                    }
+                                }}
+                                onFocus={event => event.stopPropagation()}
+                                className={Utils.clsx(classes.button, instance.canStart ? (item.running ? classes.enabled : classes.disabled) : classes.hide)}
+                            >
+                                {item.running ? <PauseIcon /> : <PlayArrowIcon />}
+                            </IconButton>
                         </div>
                     </Tooltip>
                     <Hidden xsDown>
@@ -899,7 +914,7 @@ const InstanceCard = memo(({
                                 <IconButton
                                     disabled={!instance.config}
                                     size="small"
-                                    className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
+                                    className={Utils.clsx(classes.button, !instance.config && classes.hiddenOpacity)}
                                     onClick={() => openConfig(id)}
                                 >
                                     <BuildIcon />
@@ -912,11 +927,11 @@ const InstanceCard = memo(({
                             <IconButton
                                 size="small"
                                 onClick={event => {
-                                    extendObject('system.adapter.' + instance.id, {});
+                                    extendObject(`system.adapter.${instance.id}`, {});
                                     event.stopPropagation();
                                 }}
                                 onFocus={event => event.stopPropagation()}
-                                className={clsx(classes.button, !instance.canStart && classes.hide)}
+                                className={Utils.clsx(classes.button, !instance.canStart && classes.hide)}
                                 disabled={!item.running}
                             >
                                 <RefreshIcon />
@@ -928,10 +943,10 @@ const InstanceCard = memo(({
                             <div>
                                 <IconButton
                                     size="small"
-                                    className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
+                                    className={Utils.clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
                                     disabled={!item.running}
                                     onClick={event => {
-                                        event.stopPropagation()
+                                        event.stopPropagation();
                                         if (instance.links.length === 1) {
                                             // replace http://fe80::ed18:8dyy:f65:cexx:8087/get/ with http://[fe80::ed18:8dyy:f65:cexx]:8087/get/
                                             let url = instance.links[0].link;
@@ -951,8 +966,8 @@ const InstanceCard = memo(({
                 </Typography>
             </div>
         </CardContent>
-    </Card>
-})
+    </Card>;
+});
 
 InstanceCard.propTypes = {
     t: PropTypes.func,

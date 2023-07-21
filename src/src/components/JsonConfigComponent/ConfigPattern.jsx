@@ -20,11 +20,12 @@ class ConfigPattern extends ConfigGeneric {
                 endAdornment: this.props.schema.copyToClipboard ?
                     <IconButton
                         size="small"
-                        onClick={e => {
+                        onClick={() => {
                             Utils.copyToClipboard(this.getPattern(this.props.schema.pattern));
                             window.alert('Copied');
-                        }}>
-                        <CopyIcon/>
+                        }}
+                    >
+                        <CopyIcon />
                     </IconButton>
                     : undefined,
             }}

@@ -8,29 +8,28 @@ function getAttr(obj, attr) {
         attr = attr.split('.');
     }
     const att = attr.shift();
-    let val = obj[att];
+    const val = obj[att];
     if (!attr.length) {
         return val;
-    } else if (typeof val === 'object') {
+    } if (typeof val === 'object') {
         return getAttr(val, attr);
-    } else {
-        return null;
     }
+    return null;
 }
 
 function IsVisible(props) {
-    const { config, children, name, value } = props;
+    const {
+        config, children, name, value,
+    } = props;
 
     if (value !== undefined) {
         return value === false ? null : children;
-    } else
-    if (!config) {
+    } if (!config) {
         return children;
-    } else if (getAttr(config, name) !== false) {
+    } if (getAttr(config, name) !== false) {
         return children;
-    } else {
-        return null;
     }
+    return null;
 }
 
 IsVisible.propTypes = {

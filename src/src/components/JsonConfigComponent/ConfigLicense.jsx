@@ -40,7 +40,9 @@ class ConfigLicense extends ConfigGeneric {
                 fetch(this.props.schema.licenseUrl)
                     .then(res => res.text())
                     .then(text => this.setState({ license: text, loading: false }))
-                    .catch(e => this.setState({ license: e.toString(), loading: false, error: true, scrolledDown: false }));
+                    .catch(e => this.setState({
+                        license: e.toString(), loading: false, error: true, scrolledDown: false,
+                    }));
             } else {
                 this.setState({ showLicenseDialog: true, scrolledDown: false });
             }
@@ -62,7 +64,7 @@ class ConfigLicense extends ConfigGeneric {
         }
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(/* error, disabled, defaultValue */) {
         if (!this.state.showLicenseDialog) {
             return null;
         }
@@ -78,25 +80,29 @@ class ConfigLicense extends ConfigGeneric {
         >
             <DialogTitle>{this.props.schema.title ? I18n.t(this.props.schema.title) : I18n.t('ra_License agreement')}</DialogTitle>
             <DialogContent>
-                    {this.props.schema.licenseUrl ? <>
-                        {this.state.loading ? <LinearProgress /> : null}
-                        <pre
-                            ref={this.scrollRef}
-                            style={{ width: '100%', height: '100%', overflowY: 'auto', fontSize: 14 }}
-                        >
-                            {this.state.license}
-                        </pre>
-                    </> : null}
-                    {!this.props.schema.licenseUrl && this.props.schema.texts ? <div
+                {this.props.schema.licenseUrl ? <>
+                    {this.state.loading ? <LinearProgress /> : null}
+                    <pre
                         ref={this.scrollRef}
-                        style={{ width: '100%', height: '100%', overflowY: 'auto', fontSize: 14 }}
+                        style={{
+                            width: '100%', height: '100%', overflowY: 'auto', fontSize: 14,
+                        }}
                     >
-                        {this.props.schema.texts.map(text => this.props.schema.noTranslation ? <p>{text}</p> : <p>{I18n.t(text)}</p>)}
-                    </div> : null}
+                        {this.state.license}
+                    </pre>
+                </> : null}
+                {!this.props.schema.licenseUrl && this.props.schema.texts ? <div
+                    ref={this.scrollRef}
+                    style={{
+                        width: '100%', height: '100%', overflowY: 'auto', fontSize: 14,
+                    }}
+                >
+                    {this.props.schema.texts.map(text => (this.props.schema.noTranslation ? <p>{text}</p> : <p>{I18n.t(text)}</p>))}
+                </div> : null}
             </DialogContent>
             <DialogActions>
                 {this.props.schema.checkBox ? <FormControlLabel
-                    control={<Checkbox checked={!!this.state.licenseChecked} onClick={() => this.setState({ licenseChecked: !this.state.licenseChecked })}/>}
+                    control={<Checkbox checked={!!this.state.licenseChecked} onClick={() => this.setState({ licenseChecked: !this.state.licenseChecked })} />}
                     label={I18n.t(this.props.schema.checkBox)}
                 /> : null}
                 <Button

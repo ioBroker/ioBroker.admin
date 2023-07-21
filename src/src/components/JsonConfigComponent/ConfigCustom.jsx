@@ -18,6 +18,7 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
                 if (window[remote]) {
                     if (!window[remote].__initialized) {
                         // if share scope doesn't exist (like in webpack 4) then expect shareScope to be a manual object
+                        // eslint-disable-next-line camelcase
                         if (typeof __webpack_share_scopes__ === 'undefined') {
                             // use a default share scope object passed in manually
                             await window[remote].init(shareScope.default);
@@ -31,7 +32,8 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
                     }
                 } else {
                     console.error(`Cannot load ${remote}`);
-                    return reject(`Cannot load ${remote}`);
+                    reject(new Error(`Cannot load ${remote}`));
+                    return;
                 }
                 // resolve promise so marking remote as loaded
                 resolve(window[remote]);
@@ -57,7 +59,7 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
                 d.getElementsByTagName('head')[0].appendChild(script);
             } else {
                 // no remote and no fallback exist, reject
-                reject(`Cannot Find Remote ${remote} to inject`);
+                reject(new Error(`Cannot Find Remote ${remote} to inject`));
             }
         } else {
             // remote already instantiated, resolve
@@ -68,8 +70,7 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
 const loadComponent = (remote, sharedScope, module, url) => async () => {
     const container = await getOrLoadRemote(remote, sharedScope, url);
     const factory = await container.get(module);
-    const Module = factory();
-    return Module;
+    return factory();
 };
 
 class ConfigCustom extends Component {
@@ -94,9 +95,11 @@ class ConfigCustom extends Component {
         }
 
         let url;
-        /*if (this.props.schema.url.startsWith('http:') || this.props.schema.url.startsWith('https:')) {
+        /*
+        if (this.props.schema.url.startsWith('http:') || this.props.schema.url.startsWith('https:')) {
             url = this.props.schema.url;
-        } else */
+        } else
+        */
         if (this.props.schema.url.startsWith('./')) {
             url = `${window.location.protocol}//${window.location.host}${this.props.schema.url.replace(/^\./, '')}`;
         } else {
@@ -121,13 +124,13 @@ class ConfigCustom extends Component {
                 .catch(error => {
                     if (lang !== 'en') {
                         // try to load English
-                        return fetch(`${i18nURL}/i18n/en.json`)
+                        fetch(`${i18nURL}/i18n/en.json`)
                             .then(data => data.json())
                             .then(json => I18n.extendTranslations(json, lang))
-                            .catch(error => console.log(`Cannot load i18n "${file}": ${error}`));
-                    } else {
-                        console.log(`Cannot load i18n "${file}": ${error}`);
+                            .catch(err => console.log(`Cannot load i18n "${file}": ${err}`));
+                        return;
                     }
+                    console.log(`Cannot load i18n "${file}": ${error}`);
                 });
         } else if (this.props.schema.i18n && typeof this.props.schema.i18n === 'object') {
             try {
@@ -156,42 +159,43 @@ class ConfigCustom extends Component {
     }
 
     render() {
-        const Component = this.state.Component;
+        const CustomComponent = this.state.Component;
 
         // render temporary placeholder
-        if (!Component) {
+        if (!CustomComponent) {
             if (this.state.error) {
-                return;
-            } else {
-                const schema = this.props.schema || {};
-
-                const item = <Grid
-                    item
-                    xs={schema.xs || undefined}
-                    lg={schema.lg || undefined}
-                    md={schema.md || undefined}
-                    sm={schema.sm || undefined}
-                    style={Object.assign({}, {
-                        marginBottom: 0,
-                        //marginRight: 8,
-                        textAlign: 'left',
-                        width: schema.type === 'divider' || schema.type === 'header' ? schema.width || '100%' : undefined
-                    }, schema.style, this.props.themeType === 'dark' ? schema.darkStyle : {})}>
-                    {this.state.error ? <div>{this.state.error}</div> : <LinearProgress />}
-                </Grid>;
-
-                if (schema.newLine) {
-                    return <>
-                        <div style={{ flexBasis: '100%', height: 0 }} />
-                        {item}
-                    </>;
-                } else {
-                    return item;
-                }
+                return null;
             }
+            const schema = this.props.schema || {};
+
+            const item = <Grid
+                item
+                xs={schema.xs || undefined}
+                lg={schema.lg || undefined}
+                md={schema.md || undefined}
+                sm={schema.sm || undefined}
+                style={({
+                    marginBottom: 0,
+                    // marginRight: 8,
+                    textAlign: 'left',
+                    width: schema.type === 'divider' || schema.type === 'header' ? schema.width || '100%' : undefined,
+                    ...schema.style,
+                    ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                })}
+            >
+                {this.state.error ? <div>{this.state.error}</div> : <LinearProgress />}
+            </Grid>;
+
+            if (schema.newLine) {
+                return <>
+                    <div style={{ flexBasis: '100%', height: 0 }} />
+                    {item}
+                </>;
+            }
+            return item;
         }
 
-        return <Component {...this.props} />;
+        return <CustomComponent {...this.props} />;
     }
 }
 

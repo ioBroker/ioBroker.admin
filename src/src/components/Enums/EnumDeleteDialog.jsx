@@ -33,10 +33,7 @@ EnumDeleteDialog.propTypes = {
     enum: PropTypes.object,
     onClose: PropTypes.func,
     open: PropTypes.bool,
-    classes: PropTypes.object,
     t: PropTypes.func,
-    lang: PropTypes.string,
-    socket: PropTypes.object,
 };
 
 export default EnumDeleteDialog;

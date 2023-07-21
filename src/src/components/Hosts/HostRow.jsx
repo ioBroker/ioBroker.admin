@@ -25,7 +25,9 @@ import {
     Cached as CachedIcon,
 } from '@mui/icons-material';
 
-import { amber, blue, grey, red } from '@mui/material/colors';
+import {
+    amber, blue, grey, red,
+} from '@mui/material/colors';
 
 import { Utils } from '@iobroker/adapter-react-v5';
 
@@ -340,7 +342,7 @@ let diskSizeCache = 1;
 /** if no disk warning in percentage is configured we are using 1 % */
 let diskWarningCache = 1;
 
-const StyledBadge = withStyles(theme => ({
+const StyledBadge = withStyles(() => ({
     badge: {
         right: -3,
         top: 13,
@@ -358,7 +360,7 @@ function toggleClassName(el, name) {
         el.className = classNames.join(' ');
     }
     classNames.push(name);
-    //el.className = classNames.join(' ');
+    // el.className = classNames.join(' ');
     setTimeout(_classNames => (el.className = _classNames), 100, classNames.join(' '));
 }
 
@@ -434,25 +436,23 @@ const HostRow = ({
 
     const formatValue = (state, unit) => {
         if (!state || state.val === null || state.val === undefined) {
-            return `-${unit ? ' ' + unit : ''}`;
-        } else if (systemConfig.common.isFloatComma) {
-            return state.val.toString().replace('.', ',') + (unit ? ' ' + unit : '');
-        } else {
-            return state.val + (unit ? ` ${unit}` : '');
+            return `-${unit ? ` ${unit}` : ''}`;
+        } if (systemConfig.common.isFloatComma) {
+            return state.val.toString().replace('.', ',') + (unit ? ` ${unit}` : '');
         }
+        return state.val + (unit ? ` ${unit}` : '');
     };
 
-    const warningFunc = (name, state) => {
-        let warning;
-        if (name.endsWith('diskFree')) {
+    const warningFunc = (name_, state) => {
+        if (name_.endsWith('diskFree')) {
             diskFreeCache = state?.val || 0;
-        } else if (name.endsWith('diskSize')) {
+        } else if (name_.endsWith('diskSize')) {
             diskSizeCache = state?.val || 0;
-        } else if (name.endsWith('diskWarning')) {
+        } else if (name_.endsWith('diskWarning')) {
             diskWarningCache = state?.val || 0;
         }
 
-        warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
+        const warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
 
         if (refWarning.current) {
             if (warning) {
@@ -503,16 +503,21 @@ const HostRow = ({
             return count;
         }
         if (Object.keys(result.system.categories).length) {
-            let obj = result.system.categories;
-            Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(_ => count++));
+            const obj = result.system.categories;
+            Object.keys(obj).forEach(nameTab => Object.keys(obj[nameTab].instances).forEach(() => count++));
         }
 
         return count;
     };
 
     const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
+    const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
+    const [logLevelValue, setLogLevelValue] = useState(null);
+    const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
 
-    const logLevelFunc = (name, state) => {
+    const upgradeAvailable = (isCurrentHost || alive) && Adapters.updateAvailable(installed, available);
+
+    const logLevelFunc = (name_, state) => {
         if (state) {
             setLogLevelValue(state.val);
             setLogLevelValueSelect(state.val);
@@ -563,17 +568,10 @@ const HostRow = ({
 
             socket.unsubscribeState(`${_id}.logLevel`, logLevelFunc);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_id, socket, classes]);
 
-    const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
-    const [logLevelValue, setLogLevelValue] = useState(null);
-    const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
-
-    const upgradeAvailable = (isCurrentHost || alive) && Adapters.updateAvailable(installed, available);
-
     const onCopy = () => {
-        let text = [];
+        const text = [];
         refCpu.current && text.push(`CPU: ${refCpu.current.innerHTML}`);
         refMem.current && text.push(`RAM: ${refMem.current.innerHTML}`);
         refUptime.current && text.push(`${t('Uptime')}: ${refUptime.current.innerHTML}`);
@@ -587,9 +585,8 @@ const HostRow = ({
                 text.push(
                     `${t(value)}: ${
                         formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--'
-                    }`
-                )
-            );
+                    }`,
+                ));
 
         Utils.copyToClipboard(text.join('\n'));
         window.alert(t('Copied'));
@@ -605,13 +602,13 @@ const HostRow = ({
     const customModal = showModal ? <CustomModal
         title={titleModal}
         open={!0}
-        onApply={_ => {
+        onApply={() => {
             if (openDialogLogLevel) {
                 socket.setState(`${_id}.logLevel`, logLevelValueSelect);
                 setOpenDialogLogLevel(false);
             }
         }}
-        onClose={_ => {
+        onClose={() => {
             if (openDialogLogLevel) {
                 setLogLevelValueSelect(logLevelValue);
                 setOpenDialogLogLevel(false);
@@ -681,16 +678,16 @@ const HostRow = ({
                 </div>
             </div>
             <CardContent className={classes.cardContentH5}>
-                {/*<Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
+                {/* <Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
                 {title}
-            </Typography>*/}
+            </Typography> */}
                 <Typography
                     className={Utils.clsx(classes.flex, classes.hidden800)}
                     variant="body2"
                     color="textSecondary"
                     component="div"
                 >
-                    <div ref={refCpu}>{'- %'}</div>
+                    <div ref={refCpu}>- %</div>
                 </Typography>
                 <Typography
                     className={Utils.clsx(classes.flex, classes.hidden800)}
@@ -698,7 +695,7 @@ const HostRow = ({
                     color="textSecondary"
                     component="div"
                 >
-                    <div ref={refMem}>{'- %'}</div>
+                    <div ref={refMem}>- %</div>
                 </Typography>
                 <Typography
                     className={Utils.clsx(classes.flex, classes.hidden800)}
@@ -706,7 +703,7 @@ const HostRow = ({
                     color="textSecondary"
                     component="div"
                 >
-                    <div ref={refUptime}>{'-/-'}</div>
+                    <div ref={refUptime}>-/-</div>
                 </Typography>
                 <Typography
                     className={Utils.clsx(classes.flex, classes.hidden1100)}
@@ -731,8 +728,8 @@ const HostRow = ({
                                 {available}
                             </div>
                         </Tooltip>
-                        :
-                        available}
+                            :
+                            available}
                     </div>
                 </Typography>
                 <Typography
@@ -752,7 +749,7 @@ const HostRow = ({
                     <div ref={refEvents}>{events}</div>
                 </Typography>
                 <div className={classes.marginTop10}>
-                    <Typography component={'span'} className={classes.enableButton}>
+                    <Typography component="span" className={classes.enableButton}>
                         <IconButton
                             size="large"
                             onClick={e => {
@@ -786,7 +783,7 @@ const HostRow = ({
                                         e.stopPropagation();
                                         socket
                                             .restartController(_id)
-                                            .catch(e => window.alert(`Cannot restart: ${e}`));
+                                            .catch(err => window.alert(`Cannot restart: ${err}`));
                                     }}
                                 >
                                     <CachedIcon />
@@ -806,8 +803,8 @@ const HostRow = ({
                                 </Avatar>
                             </IconButton>
                         </Tooltip>
-                        :
-                        <div className={classes.emptyButton} />}
+                            :
+                            <div className={classes.emptyButton} />}
                         <Tooltip title={t('Remove')}>
                             <span>
                                 <IconButton

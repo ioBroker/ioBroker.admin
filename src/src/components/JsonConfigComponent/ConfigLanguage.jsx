@@ -18,7 +18,7 @@ const styles = () => ({
     },
 });
 
-const LANGUAGES =[
+const LANGUAGES = [
     {
         value: 'en',
         label: 'English',
@@ -77,12 +77,12 @@ class ConfigLanguage extends ConfigGeneric {
         this.setState({ value: this.props.schema.system ? (value || '') : (value || I18n.getLanguage()), selectOptions: languages });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
 
-        const item = this.state.selectOptions?.find(item => item.value === this.state.value || (!item.value && !this.state.value));
+        const item = this.state.selectOptions?.find(it => it.value === this.state.value || (!it.value && !this.state.value));
 
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
             {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
@@ -119,8 +119,8 @@ class ConfigLanguage extends ConfigGeneric {
                     });
                 }}
             >
-                {this.state.selectOptions?.map(item =>
-                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>)}
+                {this.state.selectOptions?.map(it =>
+                    <MenuItem key={it.value} value={it.value}>{it.label}</MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;

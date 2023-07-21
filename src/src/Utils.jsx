@@ -5,42 +5,42 @@ const ANSI_BOLD = 1;
 const ANSI_RESET_BOLD = 22;
 
 const STYLES = {
-    30: {color: 'black'}, // ANSI_BLACK
-    31: {color: 'red'}, // ANSI_RED
-    32: {color: 'green'}, // ANSI_GREEN
-    33: {color: 'yellow'}, // ANSI_YELLOW
-    34: {color: 'blue'}, // ANSI_BLUE
-    35: {color: 'purple'}, // ANSI_PURPLE
-    36: {color: 'cyan'}, // ANSI_CYAN
-    37: {color: 'white'}, // ANSI_WHITE
+    30: { color: 'black' }, // ANSI_BLACK
+    31: { color: 'red' }, // ANSI_RED
+    32: { color: 'green' }, // ANSI_GREEN
+    33: { color: 'yellow' }, // ANSI_YELLOW
+    34: { color: 'blue' }, // ANSI_BLUE
+    35: { color: 'purple' }, // ANSI_PURPLE
+    36: { color: 'cyan' }, // ANSI_CYAN
+    37: { color: 'white' }, // ANSI_WHITE
 
-    90: {color: 'grey'}, // ANSI_BRIGHT_BLACK
-    91: {color: 'lightred'}, // ANSI_BRIGHT_RED
-    92: {color: 'lightgreen'}, // ANSI_BRIGHT_GREEN
-    93: {color: 'lightyellow'}, // ANSI_BRIGHT_YELLOW
-    94: {color: 'lightblue'}, // ANSI_BRIGHT_BLUE
-    95: {color: 'lightpurple'}, // ANSI_BRIGHT_PURPLE
-    96: {color: 'lightcyan'}, // ANSI_BRIGHT_CYAN
-    97: {color: 'white'}, // ANSI_BRIGHT_WHITE
+    90: { color: 'grey' }, // ANSI_BRIGHT_BLACK
+    91: { color: 'lightred' }, // ANSI_BRIGHT_RED
+    92: { color: 'lightgreen' }, // ANSI_BRIGHT_GREEN
+    93: { color: 'lightyellow' }, // ANSI_BRIGHT_YELLOW
+    94: { color: 'lightblue' }, // ANSI_BRIGHT_BLUE
+    95: { color: 'lightpurple' }, // ANSI_BRIGHT_PURPLE
+    96: { color: 'lightcyan' }, // ANSI_BRIGHT_CYAN
+    97: { color: 'white' }, // ANSI_BRIGHT_WHITE
 
-    40: {backgroundColor: 'black'}, // ANSI_BG_BLACK
-    41: {backgroundColor: 'red'}, // ANSI_BG_RED
-    42: {backgroundColor: 'green'}, // ANSI_BG_GREEN
-    43: {backgroundColor: 'yellow'}, // ANSI_BG_YELLOW
-    44: {backgroundColor: 'blue'}, // ANSI_BG_BLUE
-    45: {backgroundColor: 'purple'}, // ANSI_BG_PURPLE
-    46: {backgroundColor: 'cyan'}, // ANSI_BG_CYAN
-    47: {backgroundColor: 'white'}, // ANSI_BG_WHITE
+    40: { backgroundColor: 'black' }, // ANSI_BG_BLACK
+    41: { backgroundColor: 'red' }, // ANSI_BG_RED
+    42: { backgroundColor: 'green' }, // ANSI_BG_GREEN
+    43: { backgroundColor: 'yellow' }, // ANSI_BG_YELLOW
+    44: { backgroundColor: 'blue' }, // ANSI_BG_BLUE
+    45: { backgroundColor: 'purple' }, // ANSI_BG_PURPLE
+    46: { backgroundColor: 'cyan' }, // ANSI_BG_CYAN
+    47: { backgroundColor: 'white' }, // ANSI_BG_WHITE
 
-    100: {backgroundColor: 'grey'}, // ANSI_BRIGHT_BG_BLACK
-    101: {backgroundColor: 'lightred'}, // ANSI_BRIGHT_BG_RED
-    102: {backgroundColor: 'lightgreen'}, // ANSI_BRIGHT_BG_GREEN
-    103: {backgroundColor: 'lightyellow'}, // ANSI_BRIGHT_BG_YELLOW
-    104: {backgroundColor: 'lightblue'}, // ANSI_BRIGHT_BG_BLUE
-    105: {backgroundColor: 'lightpurple'}, // ANSI_BRIGHT_BG_PURPLE
-    106: {backgroundColor: 'lightcyan'}, // ANSI_BRIGHT_BG_CYAN
-    107: {backgroundColor: 'white'}, // ANSI_BRIGHT_BG_WHITE
-}
+    100: { backgroundColor: 'grey' }, // ANSI_BRIGHT_BG_BLACK
+    101: { backgroundColor: 'lightred' }, // ANSI_BRIGHT_BG_RED
+    102: { backgroundColor: 'lightgreen' }, // ANSI_BRIGHT_BG_GREEN
+    103: { backgroundColor: 'lightyellow' }, // ANSI_BRIGHT_BG_YELLOW
+    104: { backgroundColor: 'lightblue' }, // ANSI_BRIGHT_BG_BLUE
+    105: { backgroundColor: 'lightpurple' }, // ANSI_BRIGHT_BG_PURPLE
+    106: { backgroundColor: 'lightcyan' }, // ANSI_BRIGHT_BG_CYAN
+    107: { backgroundColor: 'white' }, // ANSI_BRIGHT_BG_WHITE
+};
 
 class Utils {
     /**
@@ -49,32 +49,31 @@ class Utils {
      * @returns {String}
      */
     static formatRam(bytes) {
-
         const GB = Math.floor(bytes / (1024 * 1024 * 1024) * 10) / 10;
         bytes %= (1024 * 1024 * 1024);
         const MB = Math.floor(bytes / (1024 * 1024) * 10) / 10;
         let text = '';
 
         if (GB > 1) {
-            text += GB + ' GB';
+            text += `${GB} GB`;
         } else {
-            text += MB + ' MB';
+            text += `${MB} MB`;
         }
 
         return text;
     }
 
     static formatSpeed(mhz) {
-        return mhz + ' MHz';
+        return `${mhz} MHz`;
     }
 
     static formatBytes(bytes) {
         if (Math.abs(bytes) < 1024) {
-            return bytes + ' B';
+            return `${bytes} B`;
         }
 
-        const units = ['KB','MB','GB'];
-        //const units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        const units = ['KB', 'MB', 'GB'];
+        // const units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
         let u = -1;
 
         do {
@@ -82,16 +81,15 @@ class Utils {
             ++u;
         } while (Math.abs(bytes) >= 1024 && u < units.length - 1);
 
-        return bytes.toFixed(1) + ' ' + units[u];
+        return `${bytes.toFixed(1)} ${units[u]}`;
     }
 
     static getFileExtension(fileName) {
         const pos = fileName.lastIndexOf('.');
         if (pos !== -1) {
             return fileName.substring(pos + 1).toLowerCase();
-        } else {
-            return null;
         }
+        return null;
     }
 
     // Big thanks to: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
@@ -124,7 +122,7 @@ class Utils {
         g = (255 - g).toString(16);
         b = (255 - b).toString(16);
         // pad each with zeros and return
-        return '#' + r.padStart(2, '0') + g.padStart(2, '0') + b.padStart(2, '0');
+        return `#${r.padStart(2, '0')}${g.padStart(2, '0')}${b.padStart(2, '0')}`;
     }
 
     /**
@@ -138,23 +136,23 @@ class Utils {
         seconds %= 3600 * 24;
         let hours = Math.floor(seconds / 3600);
         if (hours < 10) {
-            hours = '0' + hours;
+            hours = `0${hours}`;
         }
         seconds %= 3600;
         let minutes = Math.floor(seconds / 60);
         if (minutes < 10) {
-            minutes = '0' + minutes;
+            minutes = `0${minutes}`;
         }
         seconds %= 60;
         seconds = Math.floor(seconds);
         if (seconds < 10) {
-            seconds = '0' + seconds;
+            seconds = `0${seconds}`;
         }
         let text = '';
         if (days) {
-            text += days + ' ' + t('daysShortText') + ' ';
+            text += `${days} ${t('daysShortText')} `;
         }
-        text += hours + ':' + minutes + ':' + seconds;
+        text += `${hours}:${minutes}:${seconds}`;
 
         return text;
     }
@@ -166,7 +164,7 @@ class Utils {
         }
 
         try {
-            const object = objects['system.adapter.' + adapterInstance];
+            const object = objects[`system.adapter.${adapterInstance}`];
 
             if (link && object) {
                 if (attr === 'secure') {
@@ -199,7 +197,7 @@ class Utils {
                     }
                 }
             } else {
-                console.log('Cannot get link ' + attr);
+                console.log(`Cannot get link ${attr}`);
                 link = link.replace(`%${placeholder}%`, '');
             }
         } catch (error) {
@@ -223,20 +221,18 @@ class Utils {
             networkInterfaces[inter].forEach(ip => {
                 if (ip.internal) {
                     return;
-                } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                } if (localIp.includes(':') && ip.family !== 'IPv6') {
                     return;
-                } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                } if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
                     return;
                 }
                 if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
                     hostIp = ip.address;
-                } else {
-                    if (ip.family === 'IPv4' && localIp.includes('.') &&
+                } else if (ip.family === 'IPv4' && localIp.includes('.') &&
                         (Utils.ip2int(localIp) & Utils.ip2int(ip.netmask)) === (Utils.ip2int(ip.address) & Utils.ip2int(ip.netmask))) {
-                        hostIp = ip.address;
-                    } else {
-                        hostIp = ip.address;
-                    }
+                    hostIp = ip.address;
+                } else {
+                    hostIp = ip.address;
                 }
             });
         });
@@ -246,9 +242,9 @@ class Utils {
                 networkInterfaces[inter].forEach(ip => {
                     if (ip.internal) {
                         return;
-                    } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                    } if (localIp.includes(':') && ip.family !== 'IPv6') {
                         return;
-                    } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                    } if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
                         return;
                     }
                     if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
@@ -295,7 +291,7 @@ class Utils {
                 }
             } else {
                 console.warn(`Cannot find host ${instanceObj.common.host} for ${instanceObj._id}`);
-                return null
+                return null;
             }
         } else {
             hostname = currentHostname;
@@ -320,7 +316,7 @@ class Utils {
             const instanceObj = context.objects[`system.adapter.${adapter}.${instance}`];
             const native      = instanceObj?.native || {};
 
-            let placeholders = link.match(/%(\w+)%/g);
+            const placeholders = link.match(/%(\w+)%/g);
 
             if (placeholders) {
                 for (let p = 0; p < placeholders.length; p++) {
@@ -336,7 +332,7 @@ class Utils {
                         if (_urls.length) {
                             _urls.forEach(item => item.url = item.url.replace('%ip%', ip));
                         } else {
-                            link = link.replace('%ip%', ip ||'');
+                            link = link.replace('%ip%', ip || '');
                         }
                     } else if (placeholder === '%protocol%') {
                         let protocol = native.secure === undefined ? native.protocol : native.secure;
@@ -370,13 +366,13 @@ class Utils {
                         // like web.0_port or web_protocol
                         if (!placeholder.includes('_')) {
                             // if only one instance
-                            const adapterInstance = adapter + '.' + instance;
+                            const adapterInstance = `${adapter}.${instance}`;
                             if (_urls.length) {
                                 _urls.forEach(item =>
                                     item.url = Utils._replaceLink(item.url, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance));
                             } else {
                                 link = Utils._replaceLink(link, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance);
-                                port = context.objects['system.adapter.' + adapterInstance]?.native?.port;
+                                port = context.objects[`system.adapter.${adapterInstance}`]?.native?.port;
                             }
                         } else {
                             const [adapterInstance, attr] = placeholder.split('_');
@@ -387,7 +383,7 @@ class Utils {
                                 let ids;
                                 if (adapter === adapterInstance) {
                                     // take only this one instance and that's all
-                                    ids = [adapter + '.' + instance];
+                                    ids = [`${adapter}.${instance}`];
                                 } else {
                                     ids = Object.keys(context.objects)
                                         .filter(id => id.startsWith(`system.adapter.${adapterInstance}.`) && context.objects[id].common.enabled)
@@ -430,14 +426,13 @@ class Utils {
 
         if (_urls.length) {
             return _urls;
-        } else {
-            return [{url: link, port}];
         }
+        return [{ url: link, port }];
     }
 
     static objectMap(object, callback) {
-        let result = [];
-        for (let key in object) {
+        const result = [];
+        for (const key in object) {
             result.push(callback(object[key], key));
         }
         return result;
@@ -512,18 +507,19 @@ class Utils {
                     result.push({ text, style: JSON.parse(JSON.stringify(style)) });
                 }
 
-                return {original, parts: result};
-            } else {
-                return text;
+                return { original, parts: result };
             }
-        } else {
             return text;
         }
+        return text;
     }
 
     static PASSWORD_ERROR_LENGTH = 'Password must be at least 8 characters long and have numbers, upper and lower case letters';
+
     static PASSWORD_ERROR_NOT_EQUAL = 'Repeat password is not equal with password';
+
     static PASSWORD_ERROR_EMPTY = 'Empty password is not allowed';
+
     static PASSWORD_SET = '***********';
 
     static checkPassword(password, passwordRepeat) {
@@ -532,28 +528,24 @@ class Utils {
         if (password && passwordRepeat && password !== Utils.PASSWORD_SET && passwordRepeat !== Utils.PASSWORD_SET) {
             if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
                 return Utils.PASSWORD_ERROR_LENGTH;
-            } else if (password !== passwordRepeat) {
+            } if (password !== passwordRepeat) {
                 return Utils.PASSWORD_ERROR_NOT_EQUAL;
-            } else {
-                return false;
             }
-        } else if (password && password !== Utils.PASSWORD_SET) {
+            return false;
+        } if (password && password !== Utils.PASSWORD_SET) {
             if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
                 return Utils.PASSWORD_ERROR_LENGTH;
-            } else {
-                return false;
             }
-        } else if (passwordRepeat && passwordRepeat !== Utils.PASSWORD_SET) {
+            return false;
+        } if (passwordRepeat && passwordRepeat !== Utils.PASSWORD_SET) {
             if (passwordRepeat.length < 8 || !passwordRepeat.match(/\d/) || !passwordRepeat.match(/[a-z]/) || !passwordRepeat.match(/[A-Z]/)) {
                 return Utils.PASSWORD_ERROR_LENGTH;
-            } else {
-                return false;
             }
-        } else if (password === Utils.PASSWORD_SET || passwordRepeat === Utils.PASSWORD_SET) {
             return false;
-        } else {
-            return Utils.PASSWORD_ERROR_EMPTY;
+        } if (password === Utils.PASSWORD_SET || passwordRepeat === Utils.PASSWORD_SET) {
+            return false;
         }
+        return Utils.PASSWORD_ERROR_EMPTY;
     }
 }
 

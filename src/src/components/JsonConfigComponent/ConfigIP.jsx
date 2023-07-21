@@ -32,25 +32,24 @@ class ConfigIP extends ConfigGeneric {
                 }
                 if (this.props.schema.onlyIp4) {
                     ips = ips.filter(item => item.family === 'ipv4');
-                } else
-                if (this.props.schema.onlyIp6) {
+                } else if (this.props.schema.onlyIp6) {
                     ips = ips.filter(item => item.family === 'ipv6');
                 }
                 ips.forEach(item => {
                     if (item.address === '0.0.0.0') {
                         item.name = `[IPv4] 0.0.0.0 - ${I18n.t('ra_Listen on all IPs')}`;
                     } else
-                    if (item.address === '::') {
-                        item.name = `[IPv6] :: - ${I18n.t('ra_Listen on all IPs')}`;
-                    }
+                        if (item.address === '::') {
+                            item.name = `[IPv6] :: - ${I18n.t('ra_Listen on all IPs')}`;
+                        }
                 });
                 this.setState({ ips });
             });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        const item = this.state.ips?.find(item => item.address === value);
+        const item = this.state.ips?.find(it => it.address === value);
 
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
             {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
@@ -71,8 +70,8 @@ class ConfigIP extends ConfigGeneric {
                     renderValue={val => item?.name || val}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
                 >
-                    {this.state.ips?.map((item, i) =>
-                        <MenuItem key={i} value={item.address}>{item.name}</MenuItem>)}
+                    {this.state.ips?.map((it, i) =>
+                        <MenuItem key={i} value={it.address}>{it.name}</MenuItem>)}
                 </Select>}
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;

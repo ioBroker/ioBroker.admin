@@ -1,5 +1,5 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
@@ -42,15 +42,15 @@ const styles = theme => ({
     inputLine: {
         width: 400,
         margin: 'auto',
-        marginBottom: 50
+        marginBottom: 50,
     },
     grow: {
         flexGrow: 1,
     },
     toolbar: {
         height:     TOOLBAR_HEIGHT,
-        lineHeight: TOOLBAR_HEIGHT + 'px',
-    }
+        lineHeight: `${TOOLBAR_HEIGHT}px`,
+    },
 });
 
 class WizardAuthSSLTab extends Component {
@@ -70,11 +70,11 @@ class WizardAuthSSLTab extends Component {
     }
 
     render() {
-        return <Paper className={ this.props.classes.paper }>
-            <form className={ this.props.classes.form} noValidate autoComplete="off">
+        return <Paper className={this.props.classes.paper}>
+            <form className={this.props.classes.form} noValidate autoComplete="off">
                 <Grid container direction="column">
                     <Grid item>
-                        <h2 className={ this.props.classes.title }>{ this.props.t('It is suggested to enable the authentication in admin') }</h2>
+                        <h2 className={this.props.classes.title}>{ this.props.t('It is suggested to enable the authentication in admin') }</h2>
                     </Grid>
                     <Grid item className={this.props.classes.inputLine}>
                         <FormGroup>
@@ -83,7 +83,7 @@ class WizardAuthSSLTab extends Component {
                                 control={
                                     <Checkbox
                                         checked={this.state.auth}
-                                        onChange={() => this.setState({auth: !this.state.auth})}
+                                        onChange={() => this.setState({ auth: !this.state.auth })}
                                     />
                                 }
                                 label={this.props.t('Authentication in Admin')}
@@ -98,21 +98,23 @@ class WizardAuthSSLTab extends Component {
                             <Select
                                 variant="standard"
                                 value={this.state.secure}
-                                onChange={e => this.setState({secure: e.target.value})}
+                                onChange={e => this.setState({ secure: e.target.value })}
                             >
                                 <MenuItem value={false}>{this.props.t('No SSL')}</MenuItem>
-                                <MenuItem value={true}>{this.props.t('Use self signed certificates')}</MenuItem>
+                                <MenuItem value>{this.props.t('Use self signed certificates')}</MenuItem>
                             </Select>
-                            <FormHelperText>{this.state.secure ?
-                                this.props.t('Browsers will inform you about the problem with self-signed certificates, but the communication is encrypted.') :
-                                this.props.t('Your communication with admin is not encrypted')}</FormHelperText>
+                            <FormHelperText>
+                                {this.state.secure ?
+                                    this.props.t('Browsers will inform you about the problem with self-signed certificates, but the communication is encrypted.') :
+                                    this.props.t('Your communication with admin is not encrypted')}
+                            </FormHelperText>
                         </FormControl>
                     </Grid>
                 </Grid>
             </form>
-            <Toolbar className={ this.props.classes.toolbar }>
-                <div className={ this.props.classes.grow }/>
-                <Button color="primary" variant="contained" onClick={ () => this.props.onDone({auth: this.state.auth, secure: this.state.secure}) } startIcon={<IconCheck/>}>{ this.props.t('Apply') }</Button>
+            <Toolbar className={this.props.classes.toolbar}>
+                <div className={this.props.classes.grow} />
+                <Button color="primary" variant="contained" onClick={() => this.props.onDone({ auth: this.state.auth, secure: this.state.secure })} startIcon={<IconCheck />}>{ this.props.t('Apply') }</Button>
             </Toolbar>
         </Paper>;
     }

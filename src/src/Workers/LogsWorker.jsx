@@ -97,7 +97,7 @@ class LogsWorker {
                 this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
             }
         }
-    }
+    };
 
     connectionHandler = isConnected => {
         if (isConnected && !this.connected) {
@@ -106,7 +106,7 @@ class LogsWorker {
         } else if (!isConnected && this.connected) {
             this.connected = false;
         }
-    }
+    };
 
     registerHandler(cb) {
         if (!this.handlers.includes(cb)) {
@@ -164,7 +164,7 @@ class LogsWorker {
             "message": "host.DESKTOP-PLLTPO1 Invalid request getLogs. \"callback\" or \"from\" is null",
             "from": "host.DESKTOP-PLLTPO1",
             "_id": 48358425
-        };*/
+        }; */
 
         let obj;
         let isNew = true;
@@ -191,7 +191,7 @@ class LogsWorker {
                     ts = new Date(parseInt(tt[1], 10), parseInt(tt[2], 10) - 1, parseInt(tt[3], 10), parseInt(tt[4], 10), parseInt(tt[5], 10), parseInt(tt[6], 10), parseInt(tt[7], 10)).getTime();
                 } else {
                     const tt = time[0].split(' ');
-                    ts = new Date(tt[0] + 'T' + tt[1]).getTime();
+                    ts = new Date(`${tt[0]}T${tt[1]}`).getTime();
                 }
                 let key = ts;
 
@@ -207,7 +207,7 @@ class LogsWorker {
                     from:  from ? from[0].replace(/[ :(]/g, '') : '',
                     message: line.split(/\[\d+m: /)[1],
                     severity: line.match(/\d+m(silly|debug|info|warn|error)/)[0].replace(/[\dm]/g, ''),
-                    ts
+                    ts,
                 };
             } else {
                 isNew = false;
@@ -270,7 +270,7 @@ class LogsWorker {
 
     getLogs(update) {
         if (!this.currentHost) {
-            return Promise.resolve({logs: [], logSize: 0});
+            return Promise.resolve({ logs: [], logSize: 0 });
         }
 
         if (!update && this.promise) {
@@ -287,7 +287,7 @@ class LogsWorker {
 
                     window.alert('Cannot get logs: no permission');
 
-                    return {logs: this.logs, logSize: 0};
+                    return { logs: this.logs, logSize: 0 };
                 }
 
                 let logSize = lines ? lines.pop() : null;
@@ -307,7 +307,7 @@ class LogsWorker {
                 });
 
                 if (lines && lines.length && lines[0].ts) {
-                    lines.sort((a, b) => a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0));
+                    lines.sort((a, b) => (a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0)));
                 }
 
                 this.logSize = logSize;

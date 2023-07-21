@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useRef, useEffect } from 'react';
-import { /*DragPreviewImage, */useDrag } from 'react-dnd';
+import { /* DragPreviewImage, */useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
 import Typography from '@mui/material/Typography';
@@ -23,15 +23,17 @@ function UserBlock(props) {
 
     const textColor = Utils.getInvertedColor(props.user.common.color, props.themeType, true);
 
-    let style = { cursor: 'grab', opacity, overflow: 'hidden', color: textColor }
+    const style = {
+        cursor: 'grab', opacity, overflow: 'hidden', color: textColor,
+    };
     if (props.user.common.color) {
         style.backgroundColor = props.user.common.color;
     }
 
-    /*return <>
-    { <DragPreviewImage connect={preview}/> }*/
+    /* return <>
+    { <DragPreviewImage connect={preview}/> } */
     return <Card
-        style={ style }
+        style={style}
         className={props.classes.userGroupCard2}
     >
         <div className={props.classes.userCardContent}>
@@ -40,16 +42,18 @@ function UserBlock(props) {
                     checked={props.user.common.enabled}
                     style={{ color: textColor }}
                     disabled={props.user.common.dontDelete}
-                    onChange={e => {
+                    onChange={() => {
                         props.socket.extendObject(
                             props.user._id,
-                            { common: {
-                                enabled: !props.user.common.enabled
-                            }
-                        }).then(() =>
+                            {
+                                common: {
+                                    enabled: !props.user.common.enabled,
+                                },
+                            },
+                        ).then(() =>
                             props.updateData());
-                    }
-                }/>
+                    }}
+                />
                 <IconButton
                     size="small"
                     onClick={() => props.showUserEditDialog(props.user, false)}
@@ -69,7 +73,7 @@ function UserBlock(props) {
                     {
                         props.user.common.icon ?
                             <Icon
-                                className={ props.classes.icon }
+                                className={props.classes.icon}
                                 src={props.user.common.icon}
                             />
                             :
@@ -81,23 +85,28 @@ function UserBlock(props) {
                                 {props.getText(props.user.common.name)}
                             </span>
                             <span className={props.classes.userGroupUserID}>
-                                [{props.user._id}]
+                                [
+                                {props.user._id}
+]
                             </span>
                         </div>
                         <span>
-                        {
-                            props.user.common.desc ?
-                                <div className={props.classes.description}>
-                                    {props.getText(props.user.common.desc)}
-                                </div>
-                                : null
-                        }
+                            {
+                                props.user.common.desc ?
+                                    <div className={props.classes.description}>
+                                        {props.getText(props.user.common.desc)}
+                                    </div>
+                                    : null
+                            }
                         </span>
                     </div>
                 </Typography>
                 {props.groups.find(group => group.common.members && group.common.members.includes(props.user._id)) ?
-                    <div>{props.t('In groups')}:</div> : null}
-                <div >
+                    <div>
+                        {props.t('In groups')}
+:
+                    </div> : null}
+                <div>
                     {props.groups.map(group => {
                         if (!group.common.members || !group.common.members.includes(props.user._id)) {
                             return null;
@@ -105,34 +114,34 @@ function UserBlock(props) {
                         const _textColor = group && group.common?.color ? Utils.getInvertedColor(group.common.color, props.themeType, true) : textColor;
 
                         return <Card
-                                key={group._id}
-                                variant="outlined"
-                                className={props.classes.userGroupMember}
-                                style={{color: _textColor, borderColor: _textColor + '80', background: group.common?.color || 'inherit'}}
+                            key={group._id}
+                            variant="outlined"
+                            className={props.classes.userGroupMember}
+                            style={{ color: _textColor, borderColor: `${_textColor}80`, background: group.common?.color || 'inherit' }}
+                        >
+                            {
+                                group.common.icon ?
+                                    <Icon
+                                        className={props.classes.icon}
+                                        src={group.common.icon}
+                                    />
+                                    :
+                                    <GroupIcon className={props.classes.icon} />
+                            }
+                            {props.getText(group.common.name)}
+                            <IconButton
+                                size="small"
+                                onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
                             >
-                                {
-                                    group.common.icon ?
-                                        <Icon
-                                            className={props.classes.icon}
-                                            src={group.common.icon}
-                                        />
-                                        :
-                                        <GroupIcon className={props.classes.icon}/>
-                                }
-                                {props.getText(group.common.name)}
-                                <IconButton
-                                    size="small"
-                                    onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
-                                >
-                                    <ClearIcon style={{color: _textColor}}/>
-                                </IconButton>
-                            </Card>;
+                                <ClearIcon style={{ color: _textColor }} />
+                            </IconButton>
+                        </Card>;
                     })}
                 </div>
             </CardContent>
         </div>
     </Card>;
-    //</>
+    // </>
 }
 
 const UserBlockDrag = props => {
@@ -140,31 +149,30 @@ const UserBlockDrag = props => {
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
             type: 'user',
-            item: () => {return {userId: props.user._id, preview: <div style={{width: widthRef.current.offsetWidth}}><UserBlock {...props}/></div>}},
+            item: () => ({ userId: props.user._id, preview: <div style={{ width: widthRef.current.offsetWidth }}><UserBlock {...props} /></div> }),
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (item && dropResult) {
                     props.addUserToGroup(item.userId, dropResult.groupId);
                 }
             },
-            collect: (monitor) => ({
+            collect: monitor => ({
                 isDragging: monitor.isDragging(),
                 handlerId: monitor.getHandlerId(),
             }),
-        }
+        },
     );
 
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <div ref={dragRef}>
         <div ref={widthRef}>
-            <UserBlock isDragging={isDragging} widthRef={widthRef} {...props}/>
+            <UserBlock isDragging={isDragging} widthRef={widthRef} {...props} />
         </div>
     </div>;
-}
+};
 
 UserBlockDrag.propTypes = {
     t: PropTypes.func,

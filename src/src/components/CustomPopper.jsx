@@ -8,7 +8,7 @@ import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import I18n from '@iobroker/adapter-react-v5/i18n';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     typography: {
         padding: theme.spacing(2),
     },
@@ -22,16 +22,16 @@ const CustomPopper = ({ editList, onClick }) => {
     const [placement, setPlacement] = React.useState();
     const classes = useStyles();
 
-    const handleClick = (newPlacement) => (event) => {
+    const handleClick = newPlacement => event => {
         setAnchorEl(event.currentTarget);
-        setOpen((prev) => placement !== newPlacement || !prev);
+        setOpen(prev => placement !== newPlacement || !prev);
         setPlacement(newPlacement);
     };
     return <>
         <IconButton
             size="large"
             style={editList ? { color: 'red' } : null}
-            onClick={(el) => {
+            onClick={el => {
                 onClick();
                 if (!editList) {
                     handleClick('right')(el);
@@ -41,7 +41,8 @@ const CustomPopper = ({ editList, onClick }) => {
                     clearTimeout(timer);
                 }
             }}
-            title={I18n.t('show/hide item')}>
+            title={I18n.t('show/hide item')}
+        >
             <EditIcon />
         </IconButton>
         <Popper style={{ zIndex: 2222 }} open={open} anchorEl={anchorEl} placement={placement} transition>
@@ -54,6 +55,6 @@ const CustomPopper = ({ editList, onClick }) => {
             )}
         </Popper>
     </>;
-}
+};
 
 export default CustomPopper;

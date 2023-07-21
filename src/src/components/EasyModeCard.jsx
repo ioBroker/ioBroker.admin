@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardMedia, } from '@mui/material';
+import { Card, CardMedia } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
@@ -82,9 +82,8 @@ const styles = theme => ({
 function getText(text, lang) {
     if (text && typeof text === 'object') {
         return text[lang] || text.en || '';
-    } else {
-        return text || '';
     }
+    return text || '';
 }
 
 const EasyModeCard = ({
@@ -94,18 +93,16 @@ const EasyModeCard = ({
     key,
     desc,
     lang,
-    navigate
-}) => {
-    return <Card onClick={navigate} key={key} className={classes.root}>
-        <div className={Utils.clsx(classes.imageBlock, classes.instanceStateNotAlive1)}>
-            <CardMedia className={classes.img} component="img" image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'} />
-        </div>
-        <div className={classes.wrapperDesc}>
-            <div className={classes.desc}>{getText(desc, lang)}</div>
-            <div className={classes.adapter}>{id}</div>
-        </div>
-    </Card>
-}
+    navigate,
+}) => <Card onClick={navigate} key={key} className={classes.root}>
+    <div className={Utils.clsx(classes.imageBlock, classes.instanceStateNotAlive1)}>
+        <CardMedia className={classes.img} component="img" image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'} />
+    </div>
+    <div className={classes.wrapperDesc}>
+        <div className={classes.desc}>{getText(desc, lang)}</div>
+        <div className={classes.adapter}>{id}</div>
+    </div>
+</Card>;
 
 EasyModeCard.propTypes = {
     t: PropTypes.func,

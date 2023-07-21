@@ -43,7 +43,7 @@ class ConfigPort extends ConfigGeneric {
                         if (instance._id === ownId) {
                             return;
                         }
-                        // if letsencrypt is enabled and update is enabled, then add port to check
+                        // if let's encrypt is enabled and update is enabled, then add port to check
                         if (instance?.native &&
                             instance.native.secure &&
                             instance.native.leEnabled &&
@@ -65,7 +65,6 @@ class ConfigPort extends ConfigGeneric {
                                 enabled: instance.common?.enabled,
                             });
                         }
-                        return null;
                     });
                 this.setState({ ports });
             });
@@ -79,12 +78,12 @@ class ConfigPort extends ConfigGeneric {
              _value.toString() !== state.oldValue.toString())
         ) {
             return { _value };
-        } else {
-            return null;
         }
+
+        return null;
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
             this.updateTimeout = setTimeout(() => {
@@ -138,12 +137,13 @@ class ConfigPort extends ConfigGeneric {
             className={warning ? this.props.classes.warning : ''}
             onChange={e => {
                 const _value = e.target.value;
-                if (isFinite(_value)) {
+                // eslint-disable-next-line no-restricted-properties
+                if (window.isFinite(_value)) {
                     if (parseFloat(_value) < min) {
                         this.onError(this.props.attr, I18n.t('ra_Too small'));
                     } else if (parseFloat(_value) > max) {
                         this.onError(this.props.attr, I18n.t('ra_Too big'));
-                    } else if (_value === '-' || isNaN(parseFloat(_value))) {
+                    } else if (_value === '-' || Number.isNaN(parseFloat(_value))) {
                         this.onError(this.props.attr, I18n.t('ra_Not a number'));
                     } else {
                         this.onError(this.props.attr); // clear error

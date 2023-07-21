@@ -14,9 +14,9 @@ import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Feature from 'ol/Feature';
-import {Tile, Vector as LayerVector } from 'ol/layer';
+import { Tile, Vector as LayerVector } from 'ol/layer';
 import { Icon, Style } from 'ol/style';
-import {OSM, Vector as VectorSource} from 'ol/source';
+import { OSM, Vector as VectorSource } from 'ol/source';
 import { Point } from 'ol/geom';
 import { toLonLat, fromLonLat } from 'ol/proj';
 
@@ -25,11 +25,11 @@ import Paper from  '@mui/material/Paper';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
-//Icons
-import {FaCrosshairs as GeoIcon} from 'react-icons/fa';
-import PinSVG from '../../assets/pin.svg';
+// Icons
+import { FaCrosshairs as GeoIcon } from 'react-icons/fa';
 import IconCheck from '@mui/icons-material/Check';
-import Autocomplete from "@mui/material/Autocomplete";
+import Autocomplete from '@mui/material/Autocomplete';
+import PinSVG from '../../assets/pin.svg';
 
 const TOOLBAR_HEIGHT = 64;
 const SETTINGS_WIDTH = 300;
@@ -74,7 +74,7 @@ const styles = theme => ({
         margin: theme.spacing(1),
         textAlign: 'left',
         height: '100%',
-        overflow: 'auto'
+        overflow: 'auto',
     },
     toolbar: {
         height: TOOLBAR_HEIGHT,
@@ -83,7 +83,7 @@ const styles = theme => ({
     settingsGrid: {
         width: '100%',
         height: 'calc(100% - 54px)',
-    }
+    },
 });
 
 const CURRENCY = [
@@ -127,25 +127,25 @@ class WizardSettingsTab extends Component {
             address:        '',
             longitude:      0,
             latitude:       0,
-            firstDayOfWeek: 'monday'
+            firstDayOfWeek: 'monday',
         };
 
         this.focusRef = createRef();
 
         this.props.socket.getCompactSystemConfig(true)
             .then(obj =>
-                    this.setState({
-                        tempUnit:       obj.common.tempUnit,
-                        currency:       obj.common.currency,
-                        dateFormat:     obj.common.dateFormat,
-                        isFloatComma:   obj.common.isFloatComma,
-                        country:        obj.common.country,
-                        city:           obj.common.city,
-                        address:        '',
-                        longitude:      obj.common.longitude,
-                        latitude:       obj.common.latitude,
-                        firstDayOfWeek: obj.common.firstDayOfWeek || 'monday',
-                    }, () => this.updateMap()));
+                this.setState({
+                    tempUnit:       obj.common.tempUnit,
+                    currency:       obj.common.currency,
+                    dateFormat:     obj.common.dateFormat,
+                    isFloatComma:   obj.common.isFloatComma,
+                    country:        obj.common.country,
+                    city:           obj.common.city,
+                    address:        '',
+                    longitude:      obj.common.longitude,
+                    latitude:       obj.common.latitude,
+                    firstDayOfWeek: obj.common.firstDayOfWeek || 'monday',
+                }, () => this.updateMap()));
     }
 
     positionReady(position) {
@@ -156,7 +156,7 @@ class WizardSettingsTab extends Component {
     }
 
     getPositionForAddress() {
-        window.fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(`${this.state.country} ${this.state.city} ${this.state.address}`))
+        window.fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(`${this.state.country} ${this.state.city} ${this.state.address}`)}`)
             .then(data => data.json())
             .then(data => {
                 let changed = false;
@@ -175,7 +175,7 @@ class WizardSettingsTab extends Component {
                     longitude = parseFloat(data[0].lon);
                     changed = true;
                 }
-                changed && this.setState({longitude, latitude}, () =>
+                changed && this.setState({ longitude, latitude }, () =>
                     this.updateMap());
             })
             .catch(e =>
@@ -202,14 +202,14 @@ class WizardSettingsTab extends Component {
                     anchorXUnits: 'fraction',
                     anchorYUnits: 'pixels',
                     opacity: 0.75,
-                    src: PinSVG
-                }))
+                    src: PinSVG,
+                })),
             });
 
             this.OSM.oMap = new Map({
                 target: 'map',
                 layers: [
-                    new Tile({source: new OSM()}),
+                    new Tile({ source: new OSM() }),
                     new LayerVector({
                         source: this.OSM.markerSource,
                         style: this.OSM.markerStyle,
@@ -227,7 +227,7 @@ class WizardSettingsTab extends Component {
 
             this.OSM.oMap.on('singleclick', event => {
                 const lonLat = toLonLat(event.coordinate);
-                this.setState( { longitude: lonLat[0], latitude: lonLat[1] }, () => this.updateMap());
+                this.setState({ longitude: lonLat[0], latitude: lonLat[1] }, () => this.updateMap());
             });
         }
 
@@ -256,7 +256,7 @@ class WizardSettingsTab extends Component {
                                     <Select
                                         variant="standard"
                                         value={this.state.tempUnit}
-                                        onChange={e => this.setState({tempUnit: e.target.value})}
+                                        onChange={e => this.setState({ tempUnit: e.target.value })}
                                     >
                                         <MenuItem value="°C">°C</MenuItem>
                                         <MenuItem value="°F">°F</MenuItem>
@@ -269,8 +269,8 @@ class WizardSettingsTab extends Component {
                                     freeSolo
                                     options={CURRENCY}
                                     inputValue={this.state.currency}
-                                    onChange={(event, newValue) => this.setState( { currency: newValue ? newValue.id : '' })}
-                                    onInputChange={(event, currency) => this.setState( { currency })}
+                                    onChange={(event, newValue) => this.setState({ currency: newValue ? newValue.id : '' })}
+                                    onInputChange={(event, currency) => this.setState({ currency })}
                                     getOptionLabel={option => option.title}
                                     renderOption={(props, option) => <li {...props}>{option.title}</li>}
                                     renderInput={params =>
@@ -283,7 +283,7 @@ class WizardSettingsTab extends Component {
                                     <Select
                                         variant="standard"
                                         value={this.state.dateFormat}
-                                        onChange={e => this.setState({ dateFormat: e.target.value }) }
+                                        onChange={e => this.setState({ dateFormat: e.target.value })}
                                     >
                                         <MenuItem value="DD.MM.YYYY">DD.MM.YYYY</MenuItem>
                                         <MenuItem value="YYYY.MM.DD">YYYY.MM.DD</MenuItem>
@@ -297,10 +297,18 @@ class WizardSettingsTab extends Component {
                                     <Select
                                         variant="standard"
                                         value={this.state.isFloatComma}
-                                        onChange={e => this.setState({isFloatComma: e.target.value})}
+                                        onChange={e => this.setState({ isFloatComma: e.target.value })}
                                     >
-                                        <MenuItem value={true}>{this.props.t('comma')} - 3,14</MenuItem>
-                                        <MenuItem value={false}>{this.props.t('point')} - 3.14</MenuItem>
+                                        <MenuItem value>
+                                            {this.props.t('comma')}
+                                            {' '}
+- 3,14
+                                        </MenuItem>
+                                        <MenuItem value={false}>
+                                            {this.props.t('point')}
+                                            {' '}
+- 3.14
+                                        </MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -310,7 +318,7 @@ class WizardSettingsTab extends Component {
                                     <Select
                                         variant="standard"
                                         value={this.state.country || ''}
-                                        onChange={e => this.setState({ country: e.target.value }) }
+                                        onChange={e => this.setState({ country: e.target.value })}
                                     >
                                         <MenuItem value="">{this.props.t('Please select country')}</MenuItem>
                                         <MenuItem value="Germany">{this.props.t('Germany')}</MenuItem>
@@ -566,7 +574,7 @@ class WizardSettingsTab extends Component {
                                     label={this.props.t('City')}
                                     className={this.props.classes.controlItem}
                                     value={this.state.city}
-                                    onChange={e => this.setState( {city: e.target.value})}
+                                    onChange={e => this.setState({ city: e.target.value })}
                                 />
                             </Grid>
                             <Grid item>
@@ -576,10 +584,10 @@ class WizardSettingsTab extends Component {
                                     className={this.props.classes.controlItemAddress}
                                     value={this.state.address}
                                     onKeyUp={e => e.keyCode === 13 && this.getPositionForAddress()}
-                                    onChange={e => this.setState( { address: e.target.value })}
+                                    onChange={e => this.setState({ address: e.target.value })}
                                     helperText={this.props.t('Used only to calculate position.')}
                                 />
-                                <Fab size="small" onClick={() => this.getPositionForAddress() }><GeoIcon/></Fab>
+                                <Fab size="small" onClick={() => this.getPositionForAddress()}><GeoIcon /></Fab>
                             </Grid>
                             <Grid item>
                                 <TextField
@@ -587,25 +595,25 @@ class WizardSettingsTab extends Component {
                                     label={this.props.t('Longitude')}
                                     className={this.props.classes.controlItem}
                                     value={this.state.longitude}
-                                    onChange={e => this.setState( { longitude: parseFloat(e.target.value.replace(',', '.'))})}
+                                    onChange={e => this.setState({ longitude: parseFloat(e.target.value.replace(',', '.')) })}
                                 />
                             </Grid>
                             <Grid item>
                                 <TextField
                                     variant="standard"
-                                    label={this.props.t('Latitude') }
+                                    label={this.props.t('Latitude')}
                                     className={this.props.classes.controlItem}
                                     value={this.state.latitude}
-                                    onChange={e => this.setState( {latitude: parseFloat(e.target.value.replace(',', '.'))})}
+                                    onChange={e => this.setState({ latitude: parseFloat(e.target.value.replace(',', '.')) })}
                                 />
                             </Grid>
-                            <Grid item style={{textAlign: 'left'}}>
+                            <Grid item style={{ textAlign: 'left' }}>
                                 <FormControl variant="standard" className={this.props.classes.controlItem}>
                                     <InputLabel>{this.props.t('Week starts with')}</InputLabel>
                                     <Select
                                         variant="standard"
                                         value={this.state.firstDayOfWeek}
-                                        onChange={e => this.setState({ firstDayOfWeek: e.target.value }) }
+                                        onChange={e => this.setState({ firstDayOfWeek: e.target.value })}
                                     >
                                         <MenuItem value="monday">{this.props.t('monday')}</MenuItem>
                                         <MenuItem value="sunday">{this.props.t('sunday')}</MenuItem>
@@ -616,11 +624,11 @@ class WizardSettingsTab extends Component {
                     </Grid>
                 </Grid>
                 <Grid item className={this.props.classes.mapGrid}>
-                    <div id="map" className={this.props.classes.map}/>
+                    <div id="map" className={this.props.classes.map} />
                 </Grid>
-                </Grid>
+            </Grid>
             <Toolbar className={this.props.classes.toolbar}>
-                <div className={this.props.classes.grow}/>
+                <div className={this.props.classes.grow} />
                 <Button
                     variant="contained"
                     color="primary"
@@ -634,9 +642,11 @@ class WizardSettingsTab extends Component {
                         longitude:    this.state.longitude,
                         latitude:     this.state.latitude,
                     })}
-                    startIcon={<IconCheck/>}
-                >{this.props.t('Save')}</Button>
-                <div className={ this.props.classes.grow }/>
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('Save')}
+                </Button>
+                <div className={this.props.classes.grow} />
             </Toolbar>
         </Paper>;
     }

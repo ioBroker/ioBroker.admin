@@ -10,7 +10,7 @@ class HostsWorker {
         socket.registerConnectionHandler(this.connectionHandler);
 
         this.connected = this.socket.isConnected();
-        console.log('Connected: ' + this.connected);
+        console.log(`Connected: ${this.connected}`);
         this.objects = {};
         this.aliveStates = {};
         if (this.connected) {
@@ -40,20 +40,20 @@ class HostsWorker {
                     type = 'new';
                     this.objects[id] = obj;
                 }
+            } else if (this.objects[id]) {
+                type = 'deleted';
+                oldObj = this.objects[id];
+                delete this.objects[id];
             } else {
-                if (this.objects[id]) {
-                    type = 'deleted';
-                    oldObj = this.objects[id];
-                    delete this.objects[id];
-                } else {
-                    // deleted unknown instance
-                    return;
-                }
+                // deleted unknown instance
+                return;
             }
 
-            this.handlers.forEach(cb => cb([{id, obj, type, oldObj}]));
+            this.handlers.forEach(cb => cb([{
+                id, obj, type, oldObj,
+            }]));
         }
-    }
+    };
 
     aliveChangeHandler = (id, state) => {
         // if instance
@@ -73,18 +73,16 @@ class HostsWorker {
                     type = 'new';
                     this.aliveStates[id] = !!state?.val;
                 }
+            } else if (this.aliveStates[id]) {
+                type = 'deleted';
+                delete this.aliveStates[id];
             } else {
-                if (this.aliveStates[id]) {
-                    type = 'deleted';
-                    delete this.aliveStates[id];
-                } else {
-                    // deleted unknown instance
-                    return;
-                }
+                // deleted unknown instance
+                return;
             }
-            this.aliveHandlers.forEach(cb => cb([{id, alive: this.aliveStates[id], type}]));
+            this.aliveHandlers.forEach(cb => cb([{ id, alive: this.aliveStates[id], type }]));
         }
-    }
+    };
 
     getHosts(update) {
         if (!update && this.promise) {
@@ -97,7 +95,7 @@ class HostsWorker {
                 objects.forEach(obj => this.objects[obj._id] = obj);
                 return this.objects;
             })
-            .catch(e => window.alert('Cannot get hosts: ' + e));
+            .catch(e => window.alert(`Cannot get hosts: ${e}`));
 
         return this.promise;
     }
@@ -123,7 +121,7 @@ class HostsWorker {
             Object.keys(this.aliveStates)
                 .forEach(id => this.aliveHandlers[id] = false);
         }
-    }
+    };
 
     registerHandler(cb) {
         if (!this.handlers.includes(cb)) {
@@ -189,18 +187,17 @@ class HostsWorker {
             return this.notificationPromises[hostId];
         }
 
-        this.notificationPromises[hostId] = this.socket.getState(hostId + '.alive')
+        this.notificationPromises[hostId] = this.socket.getState(`${hostId}.alive`)
             .then(state => {
                 if (state && state.val) {
                     return this.socket.getNotifications(hostId)
-                        .then(notifications => ({[hostId]: notifications}))
+                        .then(notifications => ({ [hostId]: notifications }))
                         .catch(e => {
                             console.warn(`Cannot read notifications from "${hostId}": ${e}`);
-                            return {[hostId]: null};
+                            return { [hostId]: null };
                         });
-                } else {
-                    return {[hostId]: null};
                 }
+                return { [hostId]: null };
             });
 
         return this.notificationPromises[hostId];
@@ -209,20 +206,19 @@ class HostsWorker {
     getNotifications(hostId, update) {
         if (hostId) {
             return this._getNotificationsFromHots(hostId, update);
-        } else {
-            return this.socket.getCompactHosts(update)
-                .then(hosts => {
-                    const promises = hosts
-                        .map(host => this._getNotificationsFromHots(host._id, update));
-
-                    return Promise.all(promises)
-                        .then(pResults => {
-                            const result = {};
-                            pResults.forEach(r => Object.assign(result, r));
-                            return result;
-                        });
-                });
         }
+        return this.socket.getCompactHosts(update)
+            .then(hosts => {
+                const promises = hosts
+                    .map(host => this._getNotificationsFromHots(host._id, update));
+
+                return Promise.all(promises)
+                    .then(pResults => {
+                        const result = {};
+                        pResults.forEach(r => Object.assign(result, r));
+                        return result;
+                    });
+            });
     }
 
     registerNotificationHandler(cb) {

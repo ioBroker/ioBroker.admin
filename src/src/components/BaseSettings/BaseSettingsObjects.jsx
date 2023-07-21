@@ -2,19 +2,22 @@ import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Select from '@mui/material/Select';
-import Tooltip from '@mui/material/Tooltip';
-import TextField from '@mui/material/TextField';
-import FormGroup from '@mui/material/FormGroup';
-import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import Paper from  '@mui/material/Paper';
-import Switch from  '@mui/material/Switch';
+import {
+    Grid,
+    InputLabel,
+    FormControlLabel,
+    Checkbox,
+    Select,
+    Tooltip,
+    TextField,
+    FormGroup,
+    MenuItem,
+    FormHelperText,
+    FormControl,
+    Paper,
+    Switch,
+    LinearProgress,
+} from '@mui/material';
 
 import { Utils, withWidth, Confirm as DialogConfirm } from '@iobroker/adapter-react-v5';
 
@@ -130,7 +133,7 @@ class BaseSettingsObjects extends Component {
                     textIP = true;
                 }
                 this.setState({ IPs, loading: false, textIP });
-            })
+            });
     }
 
     componentDidMount() {
@@ -169,7 +172,7 @@ class BaseSettingsObjects extends Component {
                     intervalMs: parseInt(this.state.jsonlOptions_throttleFS_intervalMs, 10),
                     maxBufferedCommands: parseInt(this.state.jsonlOptions_throttleFS_maxBufferedCommands, 10),
                 },
-            }
+            },
         };
 
         if (settings.jsonlOptions.autoCompress.sizeFactor < 2) {
@@ -205,20 +208,22 @@ class BaseSettingsObjects extends Component {
                         } else {
                             port = 9001;
                         }
-                        this.setState({type: this.state.toConfirmType, showWarningDialog: false, port},
-                            () => this.onChange());
+                        this.setState(
+                            { type: this.state.toConfirmType, showWarningDialog: false, port },
+                            () => this.onChange(),
+                        );
                     } else {
-                        this.setState({showWarningDialog: false});
+                        this.setState({ showWarningDialog: false });
                     }
                 }}
-            />
-        } else {
-            return null;
+            />;
         }
+        return null;
     }
 
     render() {
-        return <Paper className={ this.props.classes.paper }>
+        return <Paper className={this.props.classes.paper}>
+            {this.state.loading ? <LinearProgress /> : null}
             {this.renderWarning()}
             <Grid item className={Utils.clsx(this.props.classes.gridSettings, this.props.classes.dangerZone)}>
                 <h3 className={this.props.classes.dangerZoneHeader} title={this.props.t('Invalid settings in these fields could lead to dead host')}>{this.props.t('Danger zone')}</h3>
@@ -242,8 +247,10 @@ class BaseSettingsObjects extends Component {
                                             } else {
                                                 port = 9001;
                                             }
-                                            this.setState({type: e.target.value, port},
-                                        () => this.onChange());
+                                            this.setState(
+                                                { type: e.target.value, port },
+                                                () => this.onChange(),
+                                            );
                                         }
                                     }}
                                 >
@@ -286,10 +293,9 @@ class BaseSettingsObjects extends Component {
                                     value={this.state.host}
                                     onChange={e => this.setState({ host: e.target.value }, () => this.onChange())}
                                 >
-                                    { this.state.IPs.map(ip => <MenuItem key={ip} value={ip}>{ip === '0.0.0.0' ? `0.0.0.0 [${ this.props.t('All addresses') }]` : ip}</MenuItem>) }
+                                    { this.state.IPs.map(ip => <MenuItem key={ip} value={ip}>{ip === '0.0.0.0' ? `0.0.0.0 [${this.props.t('All addresses')}]` : ip}</MenuItem>) }
                                 </Select>
-                            </FormControl>
-                        }
+                            </FormControl>}
                     </Grid>
 
                     <Grid item>
@@ -358,10 +364,10 @@ class BaseSettingsObjects extends Component {
                                     control={
                                         <Checkbox
                                             checked={this.state.noFileCache}
-                                            onChange={e => this.setState( { noFileCache: e.target.checked }, () => this.onChange())}
+                                            onChange={e => this.setState({ noFileCache: e.target.checked }, () => this.onChange())}
                                         />
                                     }
-                                    label={this.props.t(`No file cache`)}
+                                    label={this.props.t('No file cache')}
                                 />
                             </FormGroup>
                             <FormHelperText>{this.props.t('Always read files from disk and do not cache them in RAM. Used for debugging.')}</FormHelperText>
@@ -449,7 +455,7 @@ class BaseSettingsObjects extends Component {
                     {this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={ this.props.classes.controlItem }
+                            className={this.props.classes.controlItem}
                             value={this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize}
                             type="number"
                             inputProps={{ min: 0 }}
@@ -492,10 +498,10 @@ class BaseSettingsObjects extends Component {
                                     control={
                                         <Checkbox
                                             checked={this.state.backup_disabled}
-                                            onChange={e => this.setState( { backup_disabled: e.target.checked }, () => this.onChange())}
+                                            onChange={e => this.setState({ backup_disabled: e.target.checked }, () => this.onChange())}
                                         />
                                     }
-                                    label={this.props.t(`No on-the-fly backup`)}
+                                    label={this.props.t('No on-the-fly backup')}
                                 />
                             </FormGroup>
                             <FormHelperText>{this.props.t('By every write the backup of object.json will be created.')}</FormHelperText>

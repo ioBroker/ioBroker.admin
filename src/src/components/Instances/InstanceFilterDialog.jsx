@@ -5,7 +5,9 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, MenuItem, Select } from '@mui/material';
+import {
+    Avatar, Card, Checkbox, DialogTitle, FormControlLabel, MenuItem, Select,
+} from '@mui/material';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
@@ -15,7 +17,9 @@ import SettingsIcon from '@mui/icons-material/Lens';
 import IconCheck from '@mui/icons-material/Check';
 import IconClose from '@mui/icons-material/Close';
 
-import { green, grey, orange, red } from '@mui/material/colors';
+import {
+    green, grey, orange, red,
+} from '@mui/material/colors';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
 
@@ -26,7 +30,7 @@ let node = null;
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
-        padding: 10
+        padding: 10,
     },
     paper: {
         // maxWidth: 1000,
@@ -36,44 +40,44 @@ const useStyles = makeStyles(theme => ({
     },
     overflowHidden: {
         display: 'flex',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     pre: {
         overflow: 'auto',
         whiteSpace: 'pre-wrap',
-        margin: 0
+        margin: 0,
     },
     rowBlock: {
         display: 'flex',
         width: '100%',
         justifyContent: 'space-between',
-        margin: '10px 0'
+        margin: '10px 0',
     },
     select: {
-        minWidth: 200
+        minWidth: 200,
     },
     checkbox: {
-        minWidth: 160
+        minWidth: 160,
     },
     statusIcon_1: { // circle
         border: '2px solid grey',
         borderRadius: 20,
-        color: 'grey'
+        color: 'grey',
     },
     statusIcon_2: { // square
         border: '2px solid grey',
         borderRadius: 20,
-        color: '#d32f2f'
+        color: '#d32f2f',
     },
     statusIcon_3: { // triangle
         border: 0,
         borderRadius: 0,
-        color: '#ffa726'
+        color: '#ffa726',
     },
     statusIcon_4: { // watch
         border: '2px solid grey',
         borderRadius: 20,
-        color: '#0055a9'
+        color: '#0055a9',
     },
     statusIcon_5: { // circle ?
         border: '2px solid grey',
@@ -85,21 +89,21 @@ const useStyles = makeStyles(theme => ({
     },
     menuWrapper: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     iconWrapper: {
-        marginRight: 10
+        marginRight: 10,
     },
     textWrapper: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
     },
     square: {
         width: 24,
         height: 24,
         marginRight: 10,
-        filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)'
+        filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)',
     },
     statusIcon_green: { // square
         border: '2px solid grey',
@@ -130,16 +134,16 @@ const useStyles = makeStyles(theme => ({
         borderRadius: 20,
     },
     green: {
-        color: green[700]
+        color: green[700],
     },
     red: {
-        color: red[700]
+        color: red[700],
     },
     grey: {
-        color: grey[700]
+        color: grey[700],
     },
     blue: {
-        color: '#0055a9'
+        color: '#0055a9',
     },
     orange: {
         color: orange[400],
@@ -151,11 +155,11 @@ const useStyles = makeStyles(theme => ({
         width: 18,
         height: 18,
         marginRight: theme.spacing(1),
-        display: 'inline-block'
+        display: 'inline-block',
     },
     menuValue: {
-        whiteSpace: 'nowrap'
-    }
+        whiteSpace: 'nowrap',
+    },
 }));
 
 const modeArray = ['none', 'daemon', 'schedule', 'once'];
@@ -171,28 +175,34 @@ const modeArray = ['none', 'daemon', 'schedule', 'once'];
 const getModeIcon = (idx, className) => {
     if (idx === 1) {
         return <SettingsIcon className={className} />;
-    } else if (idx === 2) {
+    } if (idx === 2) {
         return <SettingsIcon className={className} />;
-    } else if (idx === 3) {
+    } if (idx === 3) {
         return <WarningIcon className={className} />;
-    } else if (idx === 4) {
-        return <ScheduleIcon className={className} />
-    } else if (idx === 5) {
-        return <div style={{
-            width: 20,
-            height: 20,
-            margin: 2,
-            borderRadius: 2,
-        }} className={className}><div style={{
-            width: 'calc(100% - 2px)',
-            height: 'calc(100% - 2px)',
-            borderRadius: 2,
-            margin: 1,
-            backgroundColor: '#66bb6a',
-        }} /></div>;
+    } if (idx === 4) {
+        return <ScheduleIcon className={className} />;
+    } if (idx === 5) {
+        return <div
+            style={{
+                width: 20,
+                height: 20,
+                margin: 2,
+                borderRadius: 2,
+            }}
+            className={className}
+        >
+            <div style={{
+                width: 'calc(100% - 2px)',
+                height: 'calc(100% - 2px)',
+                borderRadius: 2,
+                margin: 1,
+                backgroundColor: '#66bb6a',
+            }}
+            />
+        </div>;
     }
     return null;
-}
+};
 
 const statusArray = {
     none: { text: 'none', _class: '', status: '' },
@@ -200,10 +210,12 @@ const statusArray = {
     not_alive: { text: 'enabled, but not alive', _class: 'statusIcon_red', status: 'red' },
     alive_not_connected: { text: 'enabled, alive, but not connected to controller', _class: 'statusIcon_orange', status: 'orange' },
     alive_no_device: { text: 'enabled, alive, but not connected to device or service', _class: 'statusIcon_orangeDevice', status: 'orange' },
-    ok: { text: 'enabled and OK', _class: 'statusIcon_green', status: 'green' }
+    ok: { text: 'enabled and OK', _class: 'statusIcon_green', status: 'green' },
 };
 
-const InstanceFilterDialog = ({ cb, filterMode, filterStatus, theme }) => {
+const InstanceFilterDialog = ({
+    cb, filterMode, filterStatus, theme,
+}) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
 
@@ -216,7 +228,7 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus, theme }) => {
             document.body.removeChild(node);
             node = null;
         }
-    }
+    };
 
     return <ThemeProvider theme={theme}>
         <Dialog
@@ -238,7 +250,7 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus, theme }) => {
                             control={
                                 <Checkbox
                                     checked={!!modeCheck}
-                                    onChange={(e) => e.target.checked ? setModeCheck('daemon') : setModeCheck(null)}
+                                    onChange={e => (e.target.checked ? setModeCheck('daemon') : setModeCheck(null))}
                                 />
                             }
                             label={I18n.t('Filter by mode')}
@@ -267,7 +279,7 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus, theme }) => {
                             control={
                                 <Checkbox
                                     checked={!!statusCheck}
-                                    onChange={e => e.target.checked ? setStatusCheck('ok') : setStatusCheck(null)}
+                                    onChange={e => (e.target.checked ? setStatusCheck('ok') : setStatusCheck(null))}
                                 />
                             }
                             label={I18n.t('Filter by status')}
@@ -304,7 +316,7 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus, theme }) => {
                         onClose();
                         cb && cb({
                             filterMode: modeCheck,
-                            filterStatus: statusCheck
+                            filterStatus: statusCheck,
                         });
                     }}
                     color="primary"
@@ -326,7 +338,7 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus, theme }) => {
             </DialogActions>
         </Dialog>
     </ThemeProvider>;
-}
+};
 
 export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getModeIcon, theme) => {
     if (!node) {
@@ -341,4 +353,4 @@ export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getMo
             <InstanceFilterDialog cb={cb} getModeIcon={getModeIcon} filterMode={filterMode} theme={theme} filterStatus={filterStatus} />
         </ThemeProvider>
     </StyledEngineProvider>);
-}
+};

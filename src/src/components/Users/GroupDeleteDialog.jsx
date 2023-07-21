@@ -24,10 +24,10 @@ function GroupDeleteDialog(props) {
                 {props.t('Do you want to delete group %s?', props.group.common.name)}
             </DialogContentText>
         </DialogContent>
-        <DialogActions className={props.classes.dialogActions} >
+        <DialogActions className={props.classes.dialogActions}>
             <Button variant="contained" color="primary" onClick={() => props.deleteGroup(props.group._id)} startIcon={<IconDelete />}>{props.t('Delete')}</Button>
             <Button variant="contained" color="grey" autoFocus onClick={props.onClose} startIcon={<IconCancel />}>{props.t('Cancel')}</Button>
-         </DialogActions>
+        </DialogActions>
     </Dialog>;
 }
 

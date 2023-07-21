@@ -6,11 +6,11 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import { Button } from '@mui/material';
 
+import AceEditor from 'react-ace';
 import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';
 import CustomModal from '../CustomModal';
 
-import AceEditor from 'react-ace';
 import 'ace-builds/src-min-noconflict/mode-json';
 import 'ace-builds/src-min-noconflict/worker-json';
 import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
@@ -43,12 +43,14 @@ class ConfigJsonEditor extends ConfigGeneric {
         this.setState({ value, initialized: true });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(/* error, disabled, defaultValue */) {
         if (!this.state.initialized) {
             return null;
         }
 
-        const { classes, schema, data, attr } = this.props;
+        const {
+            classes, schema, data, attr,
+        } = this.props;
         const { value, showSelectId } = this.state;
 
         return <FormControl className={classes.fullWidth} variant="standard">
@@ -68,8 +70,7 @@ class ConfigJsonEditor extends ConfigGeneric {
                 open={showSelectId}
                 overflowHidden
                 onClose={() =>
-                    this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })
-                }
+                    this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })}
                 onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
             >
                 <div className={classes.wrapper}>
@@ -95,7 +96,7 @@ class ConfigJsonEditor extends ConfigGeneric {
                 {this.renderHelp(
                     this.props.schema.help,
                     this.props.schema.helpLink,
-                    this.props.schema.noTranslation
+                    this.props.schema.noTranslation,
                 )}
             </FormHelperText> : null}
         </FormControl>;

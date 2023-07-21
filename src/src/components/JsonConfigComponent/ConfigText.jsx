@@ -12,7 +12,7 @@ import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     indeterminate: {
         opacity: 0.5,
     },
@@ -50,13 +50,12 @@ class ConfigText extends ConfigGeneric {
 
         if (value === null || value === undefined || (value !== state.value && value !== state.oldValue)) {
             return { value };
-        } else {
-            return null;
         }
+        return null;
     }
 
-    renderItem(error, disabled, defaultValue) {
-        let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
+    renderItem(error, disabled /* , defaultValue */) {
+        const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
@@ -70,7 +69,7 @@ class ConfigText extends ConfigGeneric {
         }
 
         if (isIndeterminate) {
-            const arr = [...this.state.value].map(item => ({label: item.toString(), value: item}));
+            const arr = [...this.state.value].map(item => ({ label: item.toString(), value: item }));
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
             return <Autocomplete
@@ -96,55 +95,53 @@ class ConfigText extends ConfigGeneric {
                     disabled={!!disabled}
                 />}
             />;
-        } else {
-            if (this.props.schema.minRows > 1) {
-                const helper = this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation);
-                return <div style={{ width: '100%' }}>
-                    {this.props.schema.label ? <div className={this.props.classes.label}>{this.getText(this.props.schema.label)}</div> : null}
-                    <TextareaAutosize
-                        variant="standard"
-                        style={{
-                            width: '100%',
-                            resize: 'vertical',
-                            backgroundColor: this.props.themeType === 'dark' ? '#363636' : '#cccccc',
-                            color: this.props.themeType === 'dark' ? '#fff' : '#111',
-                        }}
-                        minRows={this.props.schema.minRows}
-                        maxRows={this.props.schema.maxRows}
-                        value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
-                        disabled={!!disabled}
-                        readOnly={this.props.schema.readOnly || false}
-                        onChange={e => {
-                            const value = e.target.value;
-                            this.setState({value, oldValue: this.state.value}, () =>
-                                this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
-                        }}
-                        placeholder={this.getText(this.props.schema.placeholder)}
-                    />
-                    {helper || error ? <div className={error ? this.props.classes.error : this.props.classes.helper}>{error || helper}</div> : null}
-                </div>
-            } else {
-                return <TextField
+        }
+        if (this.props.schema.minRows > 1) {
+            const helper = this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation);
+            return <div style={{ width: '100%' }}>
+                {this.props.schema.label ? <div className={this.props.classes.label}>{this.getText(this.props.schema.label)}</div> : null}
+                <TextareaAutosize
                     variant="standard"
-                    fullWidth
-                    value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
-                    error={!!error}
-                    disabled={!!disabled}
-                    inputProps={{
-                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
-                        readOnly: this.props.schema.readOnly || false,
+                    style={{
+                        width: '100%',
+                        resize: 'vertical',
+                        backgroundColor: this.props.themeType === 'dark' ? '#363636' : '#cccccc',
+                        color: this.props.themeType === 'dark' ? '#fff' : '#111',
                     }}
+                    minRows={this.props.schema.minRows}
+                    maxRows={this.props.schema.maxRows}
+                    value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
+                    disabled={!!disabled}
+                    readOnly={this.props.schema.readOnly || false}
                     onChange={e => {
                         const value = e.target.value;
                         this.setState({ value, oldValue: this.state.value }, () =>
                             this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
                     }}
                     placeholder={this.getText(this.props.schema.placeholder)}
-                    label={this.getText(this.props.schema.label)}
-                    helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-                />;
-            }
+                />
+                {helper || error ? <div className={error ? this.props.classes.error : this.props.classes.helper}>{error || helper}</div> : null}
+            </div>;
         }
+        return <TextField
+            variant="standard"
+            fullWidth
+            value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
+            error={!!error}
+            disabled={!!disabled}
+            inputProps={{
+                maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                readOnly: this.props.schema.readOnly || false,
+            }}
+            onChange={e => {
+                const value = e.target.value;
+                this.setState({ value, oldValue: this.state.value }, () =>
+                    this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
+            }}
+            placeholder={this.getText(this.props.schema.placeholder)}
+            label={this.getText(this.props.schema.label)}
+            helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+        />;
     }
 }
 

@@ -8,7 +8,7 @@ import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     fullWidth: {
         width: '100%',
     },
@@ -19,37 +19,37 @@ class ConfigAutocomplete extends ConfigGeneric {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        const selectOptions = this.props.schema.options.map(item => typeof item === 'string' ? {label: item, value: item} : JSON.parse(JSON.stringify(item)));
+        const selectOptions = this.props.schema.options.map(item => (typeof item === 'string' ? { label: item, value: item } : JSON.parse(JSON.stringify(item))));
 
         // if __different
         if (Array.isArray(value)) {
-            selectOptions.unshift({label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE});
-            this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions});
+            selectOptions.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
+            this.setState({ value: ConfigGeneric.DIFFERENT_VALUE, selectOptions });
         } else {
-            this.setState({value, selectOptions});
+            this.setState({ value, selectOptions });
         }
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
         let item;
-        let options = JSON.parse(JSON.stringify(this.state.selectOptions));
-        let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
+        const options = JSON.parse(JSON.stringify(this.state.selectOptions));
+        const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (isIndeterminate) {
             [...this.state.value]
                 .filter(val => !options.find(it => it.value === val))
-                .forEach(item => options.push({label: item.toString(), value: item}));
+                .forEach(it => options.push({ label: it.toString(), value: it }));
 
-            item = {label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE};
+            item = { label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE };
             options.unshift(item);
         } else {
             // eslint-disable-next-line
             item = this.state.value !== null && this.state.value !== undefined && options.find(item => item.value == this.state.value); // let "==" be and not ===
             if (this.state.value !== null && this.state.value !== undefined && !item) {
-                item = {value: this.state.value, label: this.state.value};
+                item = { value: this.state.value, label: this.state.value };
                 options.push(item);
             }
         }
@@ -64,14 +64,14 @@ class ConfigAutocomplete extends ConfigGeneric {
                 if (e) {
                     const val = e.target.value;
                     if (val !== this.state.value) {
-                        this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                        this.setState({ value: val }, () => this.onChange(this.props.attr, val));
                     }
                 }
             }}
             onChange={(_, value) => {
                 const val = typeof value === 'object' ? (value ? value.value : '') : value;
                 if (val !== this.state.value) {
-                    this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                    this.setState({ value: val }, () => this.onChange(this.props.attr, val));
                 }
             }}
             options={options}

@@ -64,20 +64,18 @@ const localeMap = {
 
 function padding3(ms) {
     if (ms < 10) {
-        return '00' + ms;
-    } else if (ms < 100) {
-        return '0' + ms;
-    } else {
-        return ms;
+        return `00${ms}`;
+    } if (ms < 100) {
+        return `0${ms}`;
     }
+    return ms;
 }
 
 function padding2(num) {
     if (num < 10) {
-        return '0' + num;
-    } else {
-        return num;
+        return `0${num}`;
     }
+    return num;
 }
 
 const styles = theme => ({
@@ -86,7 +84,7 @@ const styles = theme => ({
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
-        width: '100%'
+        width: '100%',
     },
     chart: {
         width: '100%',
@@ -96,7 +94,7 @@ const styles = theme => ({
         height: `calc(100% - ${theme.mixins.toolbar.minHeight + parseInt(theme.spacing(1), 10)}px)`,
     },
     chartWithoutToolbar: {
-        height: `100%`,
+        height: '100%',
     },
     selectHistoryControl: {
         width: 130,
@@ -109,7 +107,7 @@ const styles = theme => ({
         opacity: 0.5,
     },
     customRange: {
-        color: theme.palette.primary.main
+        color: theme.palette.primary.main,
     },
     splitLineButtonIcon: {
         marginRight: theme.spacing(1),
@@ -138,11 +136,11 @@ const styles = theme => ({
         paddingBottom: theme.spacing(0.5),
         border: '1px dotted #AAAAAA',
         borderRadius: theme.spacing(1),
-        display: 'flex'
+        display: 'flex',
     },
     buttonIcon: {
         width: 24,
-        height: 24
+        height: 24,
     },
     echartsButton: {
         marginRight: theme.spacing(1),
@@ -151,11 +149,11 @@ const styles = theme => ({
     },
     dateInput: {
         width: 140,
-        marginRight: theme.spacing(1)
+        marginRight: theme.spacing(1),
     },
     timeInput: {
         width: 80,
-    }
+    },
 });
 
 const GRID_PADDING_LEFT = 80;
@@ -177,8 +175,8 @@ class ObjectChart extends Component {
             this.end = this.props.end;
         }
         let relativeRange = (window._localStorage || window.localStorage).getItem('App.relativeRange') || '30';
-        let min           = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteStart'), 10) || 0;
-        let max           = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteEnd'), 10)   || 0;
+        const min           = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteStart'), 10) || 0;
+        const max           = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteEnd'), 10)   || 0;
 
         if ((!min || !max) && (!relativeRange || relativeRange === 'absolute')) {
             relativeRange = '30';
@@ -189,7 +187,6 @@ class ObjectChart extends Component {
         }
 
         this.state = {
-            loaded: false,
             historyInstance: this.props.historyInstance || '',
             historyInstances: null,
             defaultHistory: '',
@@ -209,7 +206,7 @@ class ObjectChart extends Component {
         this.chartValues  = null;
         this.rangeValues  = null;
 
-        this.unit         = this.props.obj.common && this.props.obj.common.unit ? ' ' + this.props.obj.common.unit : '';
+        this.unit         = this.props.obj.common && this.props.obj.common.unit ? ` ${this.props.obj.common.unit}` : '';
 
         this.divRef       = createRef();
 
@@ -245,17 +242,16 @@ class ObjectChart extends Component {
             this.timerResize = null;
             this.componentDidUpdate();
         });
-    }
+    };
 
     onChange = (id, state) => {
         if (id === this.props.obj._id &&
             state &&
             this.rangeValues &&
             (!this.rangeValues.length || this.rangeValues[this.rangeValues.length - 1].ts < state.ts)) {
-
             if (!this.state.max || state.ts - this.state.max < 120000) {
-                this.chartValues && this.chartValues.push({val: state.val, ts: state.ts});
-                this.rangeValues.push({val: state.val, ts: state.ts});
+                this.chartValues && this.chartValues.push({ val: state.val, ts: state.ts });
+                this.rangeValues.push({ val: state.val, ts: state.ts });
 
                 // update only if end is near to now
                 if (state.ts >= this.chart.min && state.ts <= this.chart.max + 300000) {
@@ -263,63 +259,60 @@ class ObjectChart extends Component {
                 }
             }
         }
-    }
+    };
 
     prepareData() {
         let list;
 
         if (this.props.noToolbar) {
-            return new Promise(resolve =>
-                this.setState( {
+            return new Promise(resolve => {
+                this.setState({
                     dateFormat: this.props.dateFormat.replace(/D/g, 'd').replace(/Y/g, 'y'),
                     defaultHistory: this.props.defaultHistory,
                     historyInstance: this.props.defaultHistory,
-                }, () => resolve()));
-        } else {
-            return this.getHistoryInstances()
-                .then(_list => {
-                    list = _list;
-                    // read default history
-                    return this.props.socket.getCompactSystemConfig();
-                })
-                .then(config => {
-                    return !this.props.showJumpToEchart ? Promise.resolve([]) : this.props.socket.getAdapterInstances('echarts', true)
-                        .then(instances => {
-                            // collect all echarts instances
-                            const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
-
-                            const defaultHistory = config && config.common && config.common.defaultHistory;
-
-                            // find current history
-                            // first read from localstorage
-                            let historyInstance = (window._localStorage || window.localStorage).getItem('App.historyInstance') || '';
-                            if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                                // try default history
-                                historyInstance = defaultHistory;
-                            }
-                            if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                                // find first alive history
-                                historyInstance = list.find(it => it.alive);
-                                if (historyInstance) {
-                                    historyInstance = historyInstance.id;
-                                }
-                            }
-                            // get first entry
-                            if (!historyInstance && list.length) {
-                                historyInstance = defaultHistory;
-                            }
-
-                            this.setState( {
-                                dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
-                                historyInstances: list,
-                                defaultHistory,
-                                historyInstance,
-                                echartsJump,
-                            });
-                        });
-                });
-
+                }, () => resolve());
+            });
         }
+        return this.getHistoryInstances()
+            .then(_list => {
+                list = _list;
+                // read default history
+                return this.props.socket.getCompactSystemConfig();
+            })
+            .then(config => (!this.props.showJumpToEchart ? Promise.resolve([]) : this.props.socket.getAdapterInstances('echarts', true)
+                .then(instances => {
+                    // collect all echarts instances
+                    const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
+
+                    const defaultHistory = config && config.common && config.common.defaultHistory;
+
+                    // find current history
+                    // first read from localstorage
+                    let historyInstance = (window._localStorage || window.localStorage).getItem('App.historyInstance') || '';
+                    if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+                        // try default history
+                        historyInstance = defaultHistory;
+                    }
+                    if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+                        // find first alive history
+                        historyInstance = list.find(it => it.alive);
+                        if (historyInstance) {
+                            historyInstance = historyInstance.id;
+                        }
+                    }
+                    // get first entry
+                    if (!historyInstance && list.length) {
+                        historyInstance = defaultHistory;
+                    }
+
+                    this.setState({
+                        dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
+                        historyInstances: list,
+                        defaultHistory,
+                        historyInstance,
+                        echartsJump,
+                    });
+                })));
     }
 
     getHistoryInstances() {
@@ -331,9 +324,9 @@ class ObjectChart extends Component {
         }
 
         this.props.customsInstances.forEach(instance => {
-            const instObj = this.props.objects['system.adapter.' + instance];
+            const instObj = this.props.objects[`system.adapter.${instance}`];
             if (instObj && instObj.common && instObj.common.getHistory) {
-                let listObj = {id: instance, alive: false};
+                const listObj = { id: instance, alive: false };
                 list.push(listObj);
                 ids.push(`system.adapter.${instance}.alive`);
             }
@@ -343,16 +336,15 @@ class ObjectChart extends Component {
             return this.props.socket.getForeignStates(ids)
                 .then(alives => {
                     Object.keys(alives).forEach(id => {
-                        const item = list.find(it => id.endsWith(it.id + '.alive'));
+                        const item = list.find(it => id.endsWith(`${it.id}.alive`));
                         if (item) {
                             item.alive = alives[id] && alives[id].val;
                         }
                     });
                     return list;
                 });
-        } else {
-            return Promise.resolve(list);
         }
+        return Promise.resolve(list);
     }
 
     readHistoryRange() {
@@ -363,13 +355,13 @@ class ObjectChart extends Component {
             instance:  this.state.historyInstance,
             start:     oldest.getTime(),
             end:       now.getTime(),
-            //step:      3600000, // hourly
+            // step:      3600000, // hourly
             limit:     1,
             from:      false,
             ack:       false,
             q:         false,
             addID:     false,
-            aggregate: 'none'
+            aggregate: 'none',
         })
             .then(values => {
                 // remove interpolated first value
@@ -381,7 +373,7 @@ class ObjectChart extends Component {
     }
 
     readHistory(start, end) {
-        /*interface GetHistoryOptions {
+        /* interface GetHistoryOptions {
             instance?: string;
             start?: number;
             end?: number;
@@ -395,7 +387,7 @@ class ObjectChart extends Component {
             ignoreNull?: boolean;
             sessionId?: any;
             aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
-        }*/
+        } */
         const options = {
             instance:  this.state.historyInstance,
             start,
@@ -412,15 +404,15 @@ class ObjectChart extends Component {
         if (end - start > 60000 * 24 &&
             !(this.props.obj.common.type === 'boolean' || (this.props.obj.common.type === 'number' && this.props.obj.common.states))) {
             options.aggregate = 'minmax';
-            //options.step = 60000;
+            // options.step = 60000;
         }
 
         return this.props.socket.getHistory(this.props.obj._id, options)
             .then(values => {
                 // merge range and chart
-                let chart = [];
+                const chart = [];
                 let r     = 0;
-                let range = this.rangeValues;
+                const range = this.rangeValues;
                 let minY  = null;
                 let maxY  = null;
 
@@ -428,14 +420,14 @@ class ObjectChart extends Component {
                     if (range) {
                         while (r < range.length && range[r].ts < values[t].ts) {
                             chart.push(range[r]);
-                            //console.log(`add ${new Date(range[r].ts).toISOString()}: ${range[r].val}`);
+                            // console.log(`add ${new Date(range[r].ts).toISOString()}: ${range[r].val}`);
                             r++;
                         }
                     }
                     // if range and details are not equal
                     if (!chart.length || chart[chart.length - 1].ts < values[t].ts) {
                         chart.push(values[t]);
-                        //console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`)
+                        // console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`)
                     } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
                         console.error('Strange data!');
                     }
@@ -456,7 +448,7 @@ class ObjectChart extends Component {
                 }
 
                 // sort
-                chart.sort((a, b) => a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0));
+                chart.sort((a, b) => (a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0)));
 
                 this.chartValues = chart;
                 this.minY = minY;
@@ -483,7 +475,7 @@ class ObjectChart extends Component {
             return data;
         }
         for (let i = 0; i < values.length; i++) {
-            const dp = {value: [values[i].ts, values[i].val]};
+            const dp = { value: [values[i].ts, values[i].val] };
             if (values[i].i) {
                 dp.exact = false;
             }
@@ -526,18 +518,18 @@ class ObjectChart extends Component {
             lineStyle: {
                 color: '#4dabf5',
             },
-            areaStyle: {}
+            areaStyle: {},
         };
 
         const yAxis = {
             type: 'value',
             boundaryGap: [0, '100%'],
             splitLine: {
-                show: this.props.noToolbar || !!this.state.splitLine
+                show: this.props.noToolbar || !!this.state.splitLine,
             },
             splitNumber: Math.round(this.state.chartHeight / 50),
             axisLabel: {
-                formatter: (value, index) => {
+                formatter: value => {
                     let text;
                     if (this.props.isFloatComma) {
                         text = value.toString().replace(',', '.') + this.unit;
@@ -547,7 +539,7 @@ class ObjectChart extends Component {
 
                     if (this.state.maxYLen < text.length) {
                         this.maxYLenTimeout && clearTimeout(this.maxYLenTimeout);
-                        this.maxYLenTimeout = setTimeout(maxYLen => this.setState({maxYLen}), 200, text.length);
+                        this.maxYLenTimeout = setTimeout(maxYLen => this.setState({ maxYLen }), 200, text.length);
                     }
                     return text;
                 },
@@ -556,34 +548,34 @@ class ObjectChart extends Component {
             },
             axisTick: {
                 alignWithLabel: true,
-            }
+            },
         };
 
         if (this.props.obj.common.type === 'boolean') {
             serie.step = 'end';
             yAxis.axisLabel.showMaxLabel = false;
-            yAxis.axisLabel.formatter = value => value === 1 ? 'TRUE' : 'FALSE';
+            yAxis.axisLabel.formatter = value => (value === 1 ? 'TRUE' : 'FALSE');
             yAxis.max = 1.5;
             yAxis.interval = 1;
             widthAxis = 50;
         } else
-        if (this.props.obj.common.type === 'number' &&
+            if (this.props.obj.common.type === 'number' &&
             this.props.obj.common.states) {
-            serie.step = 'end';
-            yAxis.axisLabel.showMaxLabel = false;
-            yAxis.axisLabel.formatter = value => this.props.obj.common.states[value] !== undefined ? this.props.obj.common.states[value] : value;
-            const keys = Object.keys(this.props.obj.common.states);
-            keys.sort();
-            yAxis.max = parseFloat(keys[keys.length - 1]) + 0.5;
-            yAxis.interval = 1;
-            let max = '';
-            for (let i = 0; i < keys.length; i++) {
-                if (typeof this.props.obj.common.states[keys[i]] === 'string' && this.props.obj.common.states[keys[i]].length > max.length) {
-                    max = this.props.obj.common.states[keys[i]];
+                serie.step = 'end';
+                yAxis.axisLabel.showMaxLabel = false;
+                yAxis.axisLabel.formatter = value => (this.props.obj.common.states[value] !== undefined ? this.props.obj.common.states[value] : value);
+                const keys = Object.keys(this.props.obj.common.states);
+                keys.sort();
+                yAxis.max = parseFloat(keys[keys.length - 1]) + 0.5;
+                yAxis.interval = 1;
+                let max = '';
+                for (let i = 0; i < keys.length; i++) {
+                    if (typeof this.props.obj.common.states[keys[i]] === 'string' && this.props.obj.common.states[keys[i]].length > max.length) {
+                        max = this.props.obj.common.states[keys[i]];
+                    }
                 }
+                widthAxis = ((max.length * 9) || 50) + 12;
             }
-            widthAxis = ((max.length * 9) || 50) + 12;
-        }
 
         const splitNumber = this.chart.withSeconds ?
             Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 100)
@@ -599,12 +591,12 @@ class ObjectChart extends Component {
                     0,  // right
                     0,  // down
                     widthAxis ? widthAxis + 10 : GRID_PADDING_LEFT + 10, // left
-                ]
+                ],
             },
             grid: {
                 left: widthAxis || GRID_PADDING_LEFT,
                 top: 8,
-                right: this.props.noToolbar ? 5: GRID_PADDING_RIGHT,
+                right: this.props.noToolbar ? 5 : GRID_PADDING_RIGHT,
                 bottom: 40,
             },
             tooltip: {
@@ -619,30 +611,29 @@ class ObjectChart extends Component {
                     return `${params.exact === false ? 'i' : ''}${date.toLocaleString()}.${padding3(date.getMilliseconds())}: ${value}${this.unit}`;
                 },
                 axisPointer: {
-                    animation: true
-                }
+                    animation: true,
+                },
             },
             xAxis: {
                 type: 'time',
                 splitLine: {
-                    show: false
+                    show: false,
                 },
                 splitNumber,
                 min: this.chart.min,
                 max: this.chart.max,
                 axisTick: { alignWithLabel: true },
                 axisLabel: {
-                    formatter: (value, index) => {
+                    formatter: value => {
                         const date = new Date(value);
                         if (this.chart.withSeconds) {
                             return `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}`;
-                        } else if (this.chart.withTime) {
+                        } if (this.chart.withTime) {
                             return `${padding2(date.getHours())}:${padding2(date.getMinutes())}\n${padding2(date.getDate())}.${padding2(date.getMonth() + 1)}`;
-                        } else {
-                            return `${padding2(date.getDate())}.${padding2(date.getMonth() + 1)}\n${date.getFullYear()}`;
                         }
-                    }
-                }
+                        return `${padding2(date.getDate())}.${padding2(date.getMonth() + 1)}\n${date.getFullYear()}`;
+                    },
+                },
             },
             yAxis,
             toolbox: {
@@ -651,14 +642,14 @@ class ObjectChart extends Component {
                     saveAsImage: {
                         title: this.props.t('Save as image'),
                         show: true,
-                    }
-                }
+                    },
+                },
             },
-            series: [serie]
+            series: [serie],
         };
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(/* props, state */) {
         return null;
     }
 
@@ -688,21 +679,21 @@ class ObjectChart extends Component {
                 this.readHistory(start, end)
                     .then(values => {
                         this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
-                            series: [{data: this.convertData(values)}],
+                            series: [{ data: this.convertData(values) }],
                             xAxis: {
                                 min: this.chart.min,
                                 max: this.chart.max,
-                            }
+                            },
                         });
                         cb && cb();
                     });
             } else {
                 this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
-                    series: [{data: this.convertData()}],
+                    series: [{ data: this.convertData() }],
                     xAxis: {
                         min: this.chart.min,
                         max: this.chart.max,
-                    }
+                    },
                 });
                 cb && cb();
             }
@@ -710,12 +701,12 @@ class ObjectChart extends Component {
     }
 
     setNewRange(readData) {
-        /*if (this.rangeRef.current &&
+        /* if (this.rangeRef.current &&
             this.rangeRef.current.childNodes[1] &&
             this.rangeRef.current.childNodes[1].value) {
             this.rangeRef.current.childNodes[0].innerHTML = '';
             this.rangeRef.current.childNodes[1].value = '';
-        }*/
+        } */
         this.chart.diff        = this.chart.max - this.chart.min;
         this.chart.withTime    = this.chart.diff < 3600000 * 24 * 7;
         this.chart.withSeconds = this.chart.diff < 60000 * 30;
@@ -730,7 +721,7 @@ class ObjectChart extends Component {
                 xAxis: {
                     min: this.chart.min,
                     max: this.chart.max,
-                }
+                },
             });
 
             readData && this.updateChart(this.chart.min, this.chart.max, true);
@@ -776,7 +767,7 @@ class ObjectChart extends Component {
 
             const day = now.getDay() || 7;
             if (day !== 1) {
-              now.setHours(-24 * (day - 1));
+                now.setHours(-24 * (day - 1));
             }
 
             min = now.getTime();
@@ -826,10 +817,9 @@ class ObjectChart extends Component {
             this.timeTimer = null;
             this.updateChart(this.chart.min, this.chart.max, true, cb);
             return;
-        } else {
-            (window._localStorage || window.localStorage).removeItem('App.absoluteStart');
-            (window._localStorage || window.localStorage).removeItem('App.absoluteEnd');
         }
+        (window._localStorage || window.localStorage).removeItem('App.absoluteStart');
+        (window._localStorage || window.localStorage).removeItem('App.absoluteEnd');
 
         const now = new Date();
 
@@ -874,7 +864,7 @@ class ObjectChart extends Component {
 
             const day = now.getDay() || 7;
             if (day !== 1) {
-              now.setHours(-24 * (day - 1));
+                now.setHours(-24 * (day - 1));
             }
 
             this.chart.min = now.getTime();
@@ -902,7 +892,7 @@ class ObjectChart extends Component {
             this.chart.min = this.chart.max - mins * 60000;
         }
 
-        this.setState({min: this.chart.min, max: this.chart.max}, () =>
+        this.setState({ min: this.chart.min, max: this.chart.max }, () =>
             this.updateChart(this.chart.min, this.chart.max, true, cb));
     }
 
@@ -932,7 +922,7 @@ class ObjectChart extends Component {
 
                 const oldDiff = diff;
                 const amount = e.wheelDelta > 0 ? 1.1 : 0.9;
-                diff = diff * amount;
+                diff *= amount;
                 const move = oldDiff - diff;
                 this.chart.max += move * (1 - pos);
                 this.chart.min -= move * pos;
@@ -946,7 +936,7 @@ class ObjectChart extends Component {
                     const diff = this.chart.max - this.chart.min;
                     const width = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
 
-                    const shift = Math.round(moved * diff / width);
+                    const shift = Math.round((moved * diff) / width);
                     this.chart.min += shift;
                     this.chart.max += shift;
                     this.setNewRange();
@@ -994,7 +984,7 @@ class ObjectChart extends Component {
                             const pos = positionX / chartWidth;
 
                             const oldDiff = diff;
-                            diff = diff * amount;
+                            diff *= amount;
                             const move = oldDiff - diff;
 
                             this.chart.max += move * (1 - pos);
@@ -1009,7 +999,7 @@ class ObjectChart extends Component {
                         const diff  = this.chart.max - this.chart.min;
                         const chartWidth = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
 
-                        const shift = Math.round(moved * diff / chartWidth);
+                        const shift = Math.round((moved * diff) / chartWidth);
                         this.chart.min += shift;
                         this.chart.max += shift;
 
@@ -1034,16 +1024,15 @@ class ObjectChart extends Component {
                 opts={{ renderer: 'svg' }}
                 onEvents={{ rendered: () => this.installEventHandlers() }}
             />;
-        } else {
-            return <LinearProgress/>;
         }
+        return <LinearProgress />;
     }
 
     componentDidUpdate() {
         if (this.divRef.current) {
             const width = this.divRef.current.offsetWidth;
             const height = this.divRef.current.offsetHeight;
-            if (this.state.chartHeight !== height) {// || this.state.chartHeight !== height) {
+            if (this.state.chartHeight !== height) { // || this.state.chartHeight !== height) {
                 setTimeout(() => this.setState({ chartHeight: height, chartWidth: width }), 100);
             }
         }
@@ -1108,8 +1097,8 @@ class ObjectChart extends Component {
                 <InputLabel>{this.props.t('History instance')}</InputLabel>
                 <Select
                     variant="standard"
-                    value={ this.state.historyInstance }
-                    onChange={ e => {
+                    value={this.state.historyInstance}
+                    onChange={e => {
                         (window._localStorage || window.localStorage).setItem('App.historyInstance', e.target.value);
                         this.setState({ historyInstance: e.target.value });
                     }}
@@ -1121,24 +1110,24 @@ class ObjectChart extends Component {
                 <InputLabel>{this.props.t('Relative')}</InputLabel>
                 <Select
                     variant="standard"
-                    ref={ this.rangeRef }
-                    value={ this.state.relativeRange }
-                    onChange={ e => this.setRelativeInterval(e.target.value) }
+                    ref={this.rangeRef}
+                    value={this.state.relativeRange}
+                    onChange={e => this.setRelativeInterval(e.target.value)}
                 >
                     <MenuItem key="custom" value="absolute" className={classes.customRange}>{this.props.t('custom range')}</MenuItem>
-                    <MenuItem key="1"  value={10}           >{this.props.t('last 10 minutes')}</MenuItem>
-                    <MenuItem key="2"  value={30}           >{this.props.t('last 30 minutes')}</MenuItem>
-                    <MenuItem key="3"  value={60}           >{this.props.t('last hour')}</MenuItem>
-                    <MenuItem key="4"  value="day"          >{this.props.t('this day')}</MenuItem>
-                    <MenuItem key="5"  value={24 * 60}      >{this.props.t('last 24 hours')}</MenuItem>
-                    <MenuItem key="6"  value="week"         >{this.props.t('this week')}</MenuItem>
-                    <MenuItem key="7"  value={24 * 60 * 7}  >{this.props.t('last week')}</MenuItem>
-                    <MenuItem key="8"  value="2weeks"       >{this.props.t('this 2 weeks')}</MenuItem>
-                    <MenuItem key="9"  value={24 * 60 * 14} >{this.props.t('last 2 weeks')}</MenuItem>
-                    <MenuItem key="10" value="month"        >{this.props.t('this month')}</MenuItem>
-                    <MenuItem key="11" value={30 * 24 * 60} >{this.props.t('last 30 days')}</MenuItem>
-                    <MenuItem key="12" value="year"         >{this.props.t('this year')}</MenuItem>
-                    <MenuItem key="13" value="12months"     >{this.props.t('last 12 months')}</MenuItem>
+                    <MenuItem key="1" value={10}>{this.props.t('last 10 minutes')}</MenuItem>
+                    <MenuItem key="2" value={30}>{this.props.t('last 30 minutes')}</MenuItem>
+                    <MenuItem key="3" value={60}>{this.props.t('last hour')}</MenuItem>
+                    <MenuItem key="4" value="day">{this.props.t('this day')}</MenuItem>
+                    <MenuItem key="5" value={24 * 60}>{this.props.t('last 24 hours')}</MenuItem>
+                    <MenuItem key="6" value="week">{this.props.t('this week')}</MenuItem>
+                    <MenuItem key="7" value={24 * 60 * 7}>{this.props.t('last week')}</MenuItem>
+                    <MenuItem key="8" value="2weeks">{this.props.t('this 2 weeks')}</MenuItem>
+                    <MenuItem key="9" value={24 * 60 * 14}>{this.props.t('last 2 weeks')}</MenuItem>
+                    <MenuItem key="10" value="month">{this.props.t('this month')}</MenuItem>
+                    <MenuItem key="11" value={30 * 24 * 60}>{this.props.t('last 30 days')}</MenuItem>
+                    <MenuItem key="12" value="year">{this.props.t('this year')}</MenuItem>
+                    <MenuItem key="13" value="12months">{this.props.t('last 12 months')}</MenuItem>
                 </Select>
             </FormControl>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
@@ -1150,7 +1139,7 @@ class ObjectChart extends Component {
                         variant="inline"
                         margin="normal"
                         inputFormat={this.state.dateFormat}
-                        //format="fullDate"
+                        // format="fullDate"
                         label={this.props.t('Start date')}
                         value={new Date(this.state.min)}
                         onChange={date => this.setStartDate(date)}
@@ -1160,7 +1149,7 @@ class ObjectChart extends Component {
                         disabled={this.state.relativeRange !== 'absolute'}
                         className={classes.toolbarTime}
                         margin="normal"
-                        //format="fullTime24h"
+                        // format="fullTime24h"
                         ampm={false}
                         label={this.props.t('Start time')}
                         value={new Date(this.state.min)}
@@ -1175,7 +1164,7 @@ class ObjectChart extends Component {
                         disableToolbar
                         inputFormat={this.state.dateFormat}
                         variant="inline"
-                        //format="fullDate"
+                        // format="fullDate"
                         margin="normal"
                         label={this.props.t('End date')}
                         value={new Date(this.state.max)}
@@ -1186,7 +1175,7 @@ class ObjectChart extends Component {
                         disabled={this.state.relativeRange !== 'absolute'}
                         className={classes.toolbarTime}
                         margin="normal"
-                        //format="fullTime24h"
+                        // format="fullTime24h"
                         ampm={false}
                         label={this.props.t('End time')}
                         value={new Date(this.state.max)}
@@ -1202,16 +1191,16 @@ class ObjectChart extends Component {
                 onClick={() => this.openEcharts()}
                 title={this.props.t('Open charts in new window')}
             >
-                <img src={EchartsIcon} alt="echarts" className={classes.buttonIcon}/>
+                <img src={EchartsIcon} alt="echarts" className={classes.buttonIcon} />
             </Fab>}
             <Fab
                 variant="extended"
                 size="small"
-                color={ this.state.splitLine ? 'primary' : 'inherit' }
+                color={this.state.splitLine ? 'primary' : 'inherit'}
                 aria-label="show lines"
                 onClick={() => {
                     (window._localStorage || window.localStorage).setItem('App.splitLine', this.state.splitLine ? 'false' : 'true');
-                    this.setState({splitLine: !this.state.splitLine});
+                    this.setState({ splitLine: !this.state.splitLine });
                 }}
                 className={classes.splitLineButton}
             >
@@ -1226,10 +1215,11 @@ class ObjectChart extends Component {
             return <LinearProgress />;
         }
 
-        return <Paper className={this.props.classes.paper }>
+        return <Paper className={this.props.classes.paper}>
             {this.renderToolbar()}
             <div
-                ref={this.divRef} className={Utils.clsx(this.props.classes.chart, this.props.noToolbar ? this.props.classes.chartWithoutToolbar : this.props.classes.chartWithToolbar)}
+                ref={this.divRef}
+                className={Utils.clsx(this.props.classes.chart, this.props.noToolbar ? this.props.classes.chartWithoutToolbar : this.props.classes.chartWithToolbar)}
             >
                 {this.renderChart()}
             </div>

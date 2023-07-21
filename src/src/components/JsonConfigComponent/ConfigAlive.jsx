@@ -7,7 +7,7 @@ import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
 
-const styles = theme => ({
+const styles = () => ({
     root: {
         width: '100%',
     },
@@ -22,8 +22,8 @@ class ConfigAlive extends ConfigGeneric {
 
         const instance = this.getInstance();
 
-        this.props.socket.getState(instance + '.alive')
-            .then(state => this.setState({alive: !!(state && state.val), instance}));
+        this.props.socket.getState(`${instance}.alive`)
+            .then(state => this.setState({ alive: !!(state && state.val), instance }));
     }
 
     getInstance() {
@@ -32,7 +32,7 @@ class ConfigAlive extends ConfigGeneric {
             instance = this.getPattern(instance);
         }
         if (instance && !instance.startsWith('system.adapter.')) {
-            instance = 'system.adapter.' + instance;
+            instance = `system.adapter.${instance}`;
         }
         return instance;
     }
@@ -42,10 +42,10 @@ class ConfigAlive extends ConfigGeneric {
             setTimeout(() => {
                 const instance = this.getInstance();
                 if (instance) {
-                    this.props.socket.getState(instance + '.alive')
-                        .then(state => this.setState({alive: !!(state && state.val), instance}));
+                    this.props.socket.getState(`${instance}.alive`)
+                        .then(state => this.setState({ alive: !!(state && state.val), instance }));
                 } else {
-                    this.setState({alive: null, instance})
+                    this.setState({ alive: null, instance });
                 }
             }, 200);
         }
@@ -59,8 +59,7 @@ class ConfigAlive extends ConfigGeneric {
             {this.state.alive ?
                 this.props.schema.textAlive !== undefined ? (this.props.schema.textAlive ? I18n.t(this.props.schema.textAlive, instance) : '') : I18n.t('ra_Instance %s is alive', instance)
                 :
-                this.props.schema.textNotAlive !== undefined ? (this.props.schema.textNotAlive ? I18n.t(this.props.schema.textNotAlive, instance) : '') : I18n.t('ra_Instance %s is not alive', instance)
-            }
+                this.props.schema.textNotAlive !== undefined ? (this.props.schema.textNotAlive ? I18n.t(this.props.schema.textNotAlive, instance) : '') : I18n.t('ra_Instance %s is not alive', instance)}
         </div>;
     }
 }

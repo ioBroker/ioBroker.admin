@@ -21,11 +21,11 @@ const TabContent = props => {
 
     return <Grid
         item
-        className={Utils.clsx(classes.root, {[classes.overflowAuto]: props.overflow === 'auto'})}
+        className={Utils.clsx(classes.root, { [classes.overflowAuto]: props.overflow === 'auto' })}
     >
         {props.children}
     </Grid>;
-}
+};
 
 TabContent.propTypes = {
     /**

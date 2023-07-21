@@ -51,7 +51,7 @@ class ConfigPassword extends ConfigGeneric {
             repeatPassword = this.state._repeat;
         }
         const _notEqual = !!this.props.schema.repeat && repeatPassword !== password;
-        this.setState({value: password, _repeat: repeatPassword, _notEqual}, () => {
+        this.setState({ value: password, _repeat: repeatPassword, _notEqual }, () => {
             if (_notEqual) {
                 this.onError(this.props.attr, I18n.t('ra_Passwords are not equal!'));
             } else {
@@ -61,7 +61,7 @@ class ConfigPassword extends ConfigGeneric {
         });
     }
 
-    renderItem(error, disabled, defaultValue) {
+    renderItem(error, disabled /* , defaultValue */) {
         if (this.state._notEqual === undefined) {
             return null;
         }
@@ -77,23 +77,26 @@ class ConfigPassword extends ConfigGeneric {
             label={this.getText(this.props.schema.label)}
             inputProps={{
                 autoComplete: 'new-password',
-                form: {autoComplete: 'off'},
-                maxLength: this.props.schema.maxLength || this.props.schema.max || undefined
+                form: { autoComplete: 'off' },
+                maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
             }}
             helperText={this.state._notEqual ? I18n.t('ra_Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-            InputProps={{endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER && this.props.schema.visible ? <InputAdornment position='end'>
-                    <IconButton size="large"
+            // eslint-disable-next-line react/jsx-no-duplicate-props
+            InputProps={{
+                endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER && this.props.schema.visible ? <InputAdornment position="end">
+                    <IconButton
+                        size="large"
                         tabIndex={-1}
                         onClick={e => {
                             e.preventDefault();
                             e.stopPropagation();
-                            this.setState({_visible: !this.state._visible});
+                            this.setState({ _visible: !this.state._visible });
                         }}
-                        edge='end'
+                        edge="end"
                     >
-                        {this.state._visible ? <VisibilityOff/> : <Visibility/>}
+                        {this.state._visible ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
-                </InputAdornment> : undefined
+                </InputAdornment> : undefined,
             }}
         />;
 
@@ -109,23 +112,26 @@ class ConfigPassword extends ConfigGeneric {
                 label={`${this.getText(this.props.schema.label)} (${I18n.t('ra_repeat')})`}
                 inputProps={{
                     autoComplete: 'new-password',
-                    form: {autoComplete: 'off'},
-                    maxLength: this.props.schema.maxLength || this.props.schema.max || undefined
+                    form: { autoComplete: 'off' },
+                    maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
                 }}
                 helperText={this.state._notEqual ? I18n.t('ra_Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-                InputProps={{endAdornment: this.state._repeat && this.state._repeat !== PASSWORD_PLACEHOLDER ? <InputAdornment position='end'>
-                        <IconButton size="large"
+                // eslint-disable-next-line react/jsx-no-duplicate-props
+                InputProps={{
+                    endAdornment: this.state._repeat && this.state._repeat !== PASSWORD_PLACEHOLDER ? <InputAdornment position="end">
+                        <IconButton
+                            size="large"
                             tabIndex={-1}
                             onClick={e => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                this.setState({_visible: !this.state._visible});
+                                this.setState({ _visible: !this.state._visible });
                             }}
-                            edge='end'
+                            edge="end"
                         >
-                            {this.state._visible ? <VisibilityOff/> : <Visibility/>}
+                            {this.state._visible ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
-                    </InputAdornment> : undefined
+                    </InputAdornment> : undefined,
                 }}
             />;
 
@@ -133,9 +139,8 @@ class ConfigPassword extends ConfigGeneric {
                 <div className={this.props.classes.halfWidth1}>{password}</div>
                 <div className={this.props.classes.halfWidth2}>{passwordRepeat}</div>
             </div>;
-        } else {
-            return password;
         }
+        return password;
     }
 }
 
