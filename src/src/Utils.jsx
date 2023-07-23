@@ -443,7 +443,7 @@ class Utils {
     }
 
     static fixAdminUI(obj) {
-        if (obj && obj.common && !obj.common.adminUI) {
+        if (obj?.common && !obj.common.adminUI) {
             if (obj.common.noConfig) {
                 obj.common.adminUI = obj.common.adminUI || {};
                 obj.common.adminUI.config = 'none';
