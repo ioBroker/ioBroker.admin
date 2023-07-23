@@ -248,7 +248,7 @@ class ObjectCustomDialog extends MobileDialog {
                     disabled={!this.state.hasChanges || this.state.progressRunning}
                     onClick={() => this.saveFunc && this.saveFunc()}
                 >
-                    {MobileDialog.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
+                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
                 </Button>}
                 {this.state.currentTab === 0 && <Button
                     variant="contained"
@@ -262,7 +262,7 @@ class ObjectCustomDialog extends MobileDialog {
                         }
                     }}
                 >
-                    {MobileDialog.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
+                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
                 </Button>}
                 <Button
                     disabled={this.state.progressRunning}
@@ -270,7 +270,7 @@ class ObjectCustomDialog extends MobileDialog {
                     onClick={() => this.onClose()}
                     color="grey"
                 >
-                    {MobileDialog.getButtonTitle(<CloseIcon />, this.props.t('Close'))}
+                    {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}
                 </Button>
             </DialogActions>
         </Dialog>;

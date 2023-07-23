@@ -987,8 +987,8 @@ class Instances extends Component {
                     getInstanceStatus={() => this.getInstanceStatus(instance.obj)}
                     getMemory={this.getMemory}
                     getModeIcon={this.getModeIcon}
-                    getRestartSchedule={() => this.getRestartSchedule(instance.obj)}
-                    getSchedule={() => this.getSchedule(instance.obj)}
+                    getRestartSchedule={() => Instances.getRestartSchedule(instance.obj)}
+                    getSchedule={() => Instances.getSchedule(instance.obj)}
                     onExpandRow={this.onExpandRow}
                     hosts={this.props.hosts}
                     id={id}

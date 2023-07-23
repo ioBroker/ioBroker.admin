@@ -255,8 +255,6 @@ class ObjectHistoryData extends Component {
         }
 
         this.state = {
-            // min: null,
-            // max: null,
             start,
             end,
             values: null,
@@ -482,7 +480,7 @@ class ObjectHistoryData extends Component {
                     // }
                 }
 
-                if (values && values.length) {
+                if (values?.length) {
                     for (let t = 0; t < values.length; t++) {
                         // if range and details are not equal
                         if (values[t] && (!chart.length || chart[chart.length - 1].ts < values[t].ts)) {
@@ -536,7 +534,7 @@ class ObjectHistoryData extends Component {
 
     readHistoryRange() {
         const now = new Date();
-        const oldest = new Date(2000, 0, 1);
+        const oldest = new Date(2_000, 0, 1);
 
         this.setState({ loading: true });
         // this is a code that makes problems. It is no good idea doing this!
@@ -562,8 +560,6 @@ class ObjectHistoryData extends Component {
                     values.forEach(it => it.i = true);
                     this.rangeValues = values;
                     this.setState({
-                        // min: values[0].ts,
-                        // max: values[values.length - 1].ts,
                         loading: false,
                     });
                 } else {
@@ -1278,7 +1274,7 @@ class ObjectHistoryData extends Component {
             </LocalizationProvider>
             <div className={classes.grow} />
 
-            { this.state.values && this.state.values.length ? <IconButton size="large" onClick={() => this.exportData()} title={this.props.t('Save data as csv')}>
+            { this.state.values?.length ? <IconButton size="large" onClick={() => this.exportData()} title={this.props.t('Save data as csv')}>
                 <ExportIcon />
             </IconButton> : null }
 

@@ -35,7 +35,7 @@ class MobileDialog extends Component {
         }, 200);
     };
 
-    static getButtonTitle(icon, text, moreMobileIcon) {
+    getButtonTitle(icon, text, moreMobileIcon) {
         if (icon && text) {
             if (this.state.mobile) {
                 if (moreMobileIcon) {
