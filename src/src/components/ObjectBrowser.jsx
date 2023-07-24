@@ -2146,7 +2146,7 @@ class ObjectBrowser extends Component {
 
     /**
      * @private
-     * @param {ioBroker.EmptyCallback} cb
+     * @param {ioBroker.EmptyCallback?} cb
      */
     expandAllSelected(cb) {
         const expanded = [...this.state.expanded];
@@ -5446,6 +5446,7 @@ class ObjectBrowser extends Component {
         root.data.id && items.push(leaf);
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
+
         if (!root.data.id || isExpanded) {
             if (!this.state.foldersFirst) {
                 root.children &&
@@ -5772,6 +5773,34 @@ class ObjectBrowser extends Component {
             window.addEventListener('mouseup', this.resizerMouseUp);
         }
     };
+
+    /**
+     * Handle keyboard events for navigation
+     *
+     * @param {KeyboardEvent} event
+     */
+    navigateKeyPress(event) {
+        const selectedId = this.state.selectedNonObject || this.state.selected[0];
+
+        if (!selectedId) {
+            return;
+        }
+
+        if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+            event.preventDefault();
+            const ids = [];
+            this.tableRef.current.childNodes.forEach(node => ids.push(node.id));
+            const idx = ids.indexOf(selectedId);
+            const newIdx = event.code === 'ArrowDown' ? idx + 1 : idx - 1;
+            const newId = ids[newIdx] || selectedId;
+            this.onSelect(newId);
+            this.scrollToItem(newId);
+        }
+
+        if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
+            this.toggleExpanded(selectedId);
+        }
+    }
 
     resizerReset = () => {
         this.customWidth = false;
@@ -6206,7 +6235,7 @@ class ObjectBrowser extends Component {
         const classes = this.props.classes;
         const items = this.renderItem(this.root, undefined, classes);
 
-        return <TabContainer key={this.props.dialogName} classes={{}}>
+        return <TabContainer key={this.props.dialogName} classes={{}} onKeyDown={event => this.navigateKeyPress(event)} tabIndex={0}>
             <TabHeader>{this.getToolbar()}</TabHeader>
             <TabContent classes={{}}>
                 {this.renderHeader()}

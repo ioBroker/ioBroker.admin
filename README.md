@@ -92,6 +92,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) reset the logout timer UI if session is extended
 * (rovo89) apply button color change of v6.6.1 for all buttons
 * (foxriver76) correctly display materialized tabs when configured with io-package `adminUi` property
+* (foxriver76) enable keyboard navigation for objects tab
 
 ### 6.6.1 (2023-07-17)
 * (foxriver76) Many GUI improvements
