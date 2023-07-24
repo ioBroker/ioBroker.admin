@@ -43,7 +43,7 @@ import TabHeader from '../components/TabHeader';
 import InstanceCard from '../components/Instances/InstanceCard';
 import InstanceRow from '../components/Instances/InstanceRow';
 import CustomSelectButton from '../components/CustomSelectButton';
-import { instanceFilterDialogCallback } from '../components/Instances/InstanceFilterDialog';
+import InstanceFilterDialog from '../components/Instances/InstanceFilterDialog';
 import InstanceCategory from '../components/Instances/InstanceCategory';
 
 const styles = theme => ({
@@ -569,9 +569,7 @@ class Instances extends Component {
     extendObject = (id, data) => this.props.socket.extendObject(id, data)
         .catch(error => window.alert(error));
 
-    static openConfig = instance => {
-        Router.doNavigate('tab-instances', 'config', instance);
-    };
+    static openConfig = instance => Router.doNavigate('tab-instances', 'config', instance);
 
     // returns:
     // grey   - daemon / disabled
@@ -646,7 +644,7 @@ class Instances extends Component {
 
     static getMemoryLimitMB = obj => obj?.common?.memoryLimitMB;
 
-    static getInstanceHost = obj => obj?.common?.host;
+    // static getInstanceHost = obj => obj?.common?.host;
 
     static getRestartSchedule = obj => (obj?.common?.restartSchedule ? obj.common.restartSchedule : '');
 
@@ -693,11 +691,15 @@ class Instances extends Component {
     getModeIcon = (mode, status, className, stoppedWhenWebExtension) => {
         if (mode === 'daemon') {
             if (stoppedWhenWebExtension) {
-                return <div className={UtilsCommon.clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
+                return <div className={UtilsCommon.clsx(className, this.props.classes.okSymbol)}>
+                    <div className={this.props.classes.okSymbolInner} />
+                </div>;
             } if (status === 'orange') {
                 return <WarningIcon className={className} />;
             } if (status === 'green') {
-                return <div className={UtilsCommon.clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
+                return <div className={UtilsCommon.clsx(className, this.props.classes.okSymbol)}>
+                    <div className={this.props.classes.okSymbolInner} />
+                </div>;
             }
             return <SettingsIcon className={className} />;
         } if (mode === 'schedule') {
@@ -740,7 +742,7 @@ class Instances extends Component {
     }
 
     setSentry = instance => {
-        const disableDataReporting = !!this.isSentry(instance.obj);
+        const disableDataReporting = !!Instances.isSentry(instance.obj);
         this.extendObject(`system.adapter.${instance.id}`, { common: { disableDataReporting } })
             .then(() => this.props.socket.setState(`system.adapter.${instance.id}.plugins.sentry.enabled`, { val: !disableDataReporting, ack: true }));
     };
@@ -782,7 +784,7 @@ class Instances extends Component {
     };
 
     setCompact = instance =>
-        this.extendObject(`system.adapter.${instance.id}`, { common: { runAsCompactMode: !this.isCompact(instance.obj) } });
+        this.extendObject(`system.adapter.${instance.id}`, { common: { runAsCompactMode: !Instances.isCompact(instance.obj) } });
 
     setRestartSchedule = (instance, value) => {
         if (value) {
@@ -895,7 +897,7 @@ class Instances extends Component {
             this._cacheList = this._cacheList.filter(item => item.mode === this.state.filterMode);
         }
         if (this.state.filterStatus) {
-            const status = this.getStatusFilter(this.state.filterStatus);
+            const status = Instances.getStatusFilter(this.state.filterStatus);
             this._cacheList = this._cacheList.filter(item => status === item.status);
         }
 
@@ -948,8 +950,8 @@ class Instances extends Component {
                         expertMode={this.props.expertMode}
                         extendObject={this.extendObject}
                         getMemory={this.getMemory}
-                        getRestartSchedule={() => this.getRestartSchedule(instance.obj)}
-                        getSchedule={() => this.getSchedule(instance.obj)}
+                        getRestartSchedule={() => Instances.getRestartSchedule(instance.obj)}
+                        getSchedule={() => Instances.getSchedule(instance.obj)}
                         hosts={this.props.hosts}
                         id={id}
                         deleteCustomSupported={this.state.deleteCustomSupported}
@@ -1150,6 +1152,26 @@ class Instances extends Component {
         }, 300, event.target.value);
     }
 
+    renderFilterDialog() {
+        if (!this.state.showFilterDialog) {
+            return null;
+        }
+
+        return <InstanceFilterDialog
+            filterMode={this.state.filterMode}
+            filterStatus={this.state.filterStatus}
+            onClose={newState => {
+                if (newState) {
+                    this._cacheList = null;
+                    this.setState(newState);
+                    this.changeSetState('filterMode', newState.filterMode);
+                    this.changeSetState('filterStatus', newState.filterStatus);
+                }
+                this.setState({ showFilterDialog: false });
+            }}
+        />;
+    }
+
     render() {
         if (!this.state.instances) {
             return <LinearProgress />;
@@ -1170,6 +1192,7 @@ class Instances extends Component {
             const instance = this.state.instances[this.state.dialogProp] || null;
             if (instance) {
                 return <Paper className={classes.paper}>
+                    {this.renderFilterDialog()}
                     <Config
                         adapter={instance.id.split('.')[0]}
                         adminInstance={this.props.adminInstance}
@@ -1216,6 +1239,7 @@ class Instances extends Component {
             `[${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.state.processes === 1 ? this.t('process') :  this.t('processes')}]` : null;
 
         return <TabContainer>
+            {this.renderFilterDialog()}
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>
                     <IconButton size="large" onClick={() => this.changeSetStateBool('viewMode')}>
@@ -1283,15 +1307,7 @@ class Instances extends Component {
                 <Tooltip title={this.t('Filter instances')}>
                     <IconButton
                         size="large"
-                        onClick={() =>
-                            instanceFilterDialogCallback(newState => {
-                                if (newState) {
-                                    this._cacheList = null;
-                                    this.setState(newState);
-                                    this.changeSetState('filterMode', newState.filterMode);
-                                    this.changeSetState('filterStatus', newState.filterStatus);
-                                }
-                            }, this.state.filterMode, this.state.filterStatus, this.getModeIcon, this.props.theme)}
+                        onClick={() => this.setState({ showFilterDialog: true })}
                     >
                         <FilterListIcon style={{ width: 16, height: 16 }} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''} />
                     </IconButton>

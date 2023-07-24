@@ -35,6 +35,7 @@ class MobileDialog extends Component {
         }, 200);
     };
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     getButtonTitle(icon, text, moreMobileIcon) {
         if (icon && text) {
             if (this.state.mobile) {

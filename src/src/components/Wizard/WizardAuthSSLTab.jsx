@@ -17,7 +17,7 @@ import FormGroup from '@mui/material/FormGroup';
 
 import IconCheck from '@mui/icons-material/Check';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 const TOOLBAR_HEIGHT = 64;
 

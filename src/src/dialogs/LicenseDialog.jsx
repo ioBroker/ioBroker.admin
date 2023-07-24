@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { DialogTitle, LinearProgress } from '@mui/material';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import IconClose from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-
-let node = null;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -38,9 +34,8 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const LicenseDialog = ({ url, cb, theme }) => {
+const LicenseDialog = ({ url, onClose }) => {
     const classes = useStyles();
-    const [open, setOpen] = useState(true);
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -56,77 +51,43 @@ const LicenseDialog = ({ url, cb, theme }) => {
             .catch(() => setLoading(false));
     }, [url]);
 
-    const onClose = () => {
-        setOpen(false);
-        try {
-            node && window.document.body.removeChild(node);
-        } catch (e) {
-            // ignore
-        }
-        node = null;
-    };
-
-    return <ThemeProvider theme={theme}>
-        <Dialog
-            onClose={onClose}
-            open={open}
-            classes={{ paper: classes.paper }}
-        >
-            <DialogTitle>{I18n.t('License agreement')}</DialogTitle>
-            <DialogContent className={classes.overflowHidden} dividers>
-                <div className={classes.root}>
-                    {loading ?
-                        <LinearProgress />
-                        :
-                        <pre className={classes.pre}>
-                            {text}
-                        </pre>}
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    disabled={loading}
-                    autoFocus
-                    onClick={() => {
-                        onClose();
-                        cb(true);
-                    }}
-                    startIcon={<IconCheck />}
-                    color="primary"
-                >
-                    {I18n.t('Accept')}
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={() => {
-                        onClose();
-                        cb(false);
-                    }}
-                    startIcon={<IconClose />}
-                    color="grey"
-                >
-                    {I18n.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
+    return <Dialog
+        onClose={onClose}
+        open={!0}
+        classes={{ paper: classes.paper }}
+    >
+        <DialogTitle>{I18n.t('License agreement')}</DialogTitle>
+        <DialogContent className={classes.overflowHidden} dividers>
+            <div className={classes.root}>
+                {loading ?
+                    <LinearProgress />
+                    :
+                    <pre className={classes.pre}>
+                        {text}
+                    </pre>}
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <Button
+                variant="contained"
+                disabled={loading}
+                autoFocus
+                onClick={() => onClose(true)}
+                startIcon={<IconCheck />}
+                color="primary"
+            >
+                {I18n.t('Accept')}
+            </Button>
+            <Button
+                variant="contained"
+                onClick={() => onClose()}
+                startIcon={<IconClose />}
+                color="grey"
+            >
+                {I18n.t('Close')}
+            </Button>
+        </DialogActions>
+    </Dialog>;
 };
 
-export const licenseDialogFunc = (license, theme, cb, url) => {
-    if (license) {
-        return cb(true);
-    }
-    if (!node) {
-        node = document.createElement('div');
-        node.id = 'renderModal';
-        document.body.appendChild(node);
-    }
-    const root = createRoot(node);
-
-    return root.render(<StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-            <LicenseDialog url={url} cb={cb} theme={theme} />
-        </ThemeProvider>
-    </StyledEngineProvider>);
-};
+export default LicenseDialog;

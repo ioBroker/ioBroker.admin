@@ -61,7 +61,7 @@ import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import ExpertModeDialog from './dialogs/ExpertModeDialog';
 import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
-import { hostWarningDialogFunc } from './dialogs/HostWarningDialog';
+import HostWarningDialog from './dialogs/HostWarningDialog';
 import ToggleThemeMenu from './components/ToggleThemeMenu';
 import LogsWorker from './Workers/LogsWorker';
 import InstancesWorker from './Workers/InstancesWorker';
@@ -1214,6 +1214,22 @@ class App extends Router {
         });
     };
 
+    renderHostWarningDialog() {
+        if (!this.state.showHostWarning) {
+            return null;
+        }
+
+        return <HostWarningDialog
+            instances={this.state.showHostWarning.instances}
+            messages={this.state.showHostWarning.result.system.categories}
+            dateFormat={this.state.systemConfig.common.dateFormat}
+            themeType={this.state.themeType}
+            themeName={this.state.themeName}
+            ackCallback={name => this.socket.clearNotifications(this.state.showHostWarning.host, name)}
+            onClose={() => this.setState({ showHostWarning: null })}
+        />;
+    }
+
     showAdaptersWarning = (notifications, socket, host) => {
         if (!notifications || !notifications[host] || !notifications[host].result) {
             return Promise.resolve();
@@ -1222,17 +1238,8 @@ class App extends Router {
         const result = notifications[host].result;
 
         if (result && result.system && Object.keys(result.system.categories).length) {
-            return this.instancesWorker.getInstances().then(instances => {
-                hostWarningDialogFunc(
-                    result.system.categories,
-                    this.state.systemConfig.common.dateFormat,
-                    this.state.themeType,
-                    this.state.themeName,
-                    instances,
-                    this.state.theme,
-                    name => socket.clearNotifications(host, name),
-                );
-            });
+            return this.instancesWorker.getInstances()
+                .then(instances => this.setState({ showHostWarning: { host, instances, result } }));
         }
         return Promise.resolve();
     };
@@ -2608,6 +2615,7 @@ class App extends Router {
                     {this.renderWizardDialog()}
                     {this.showRedirectDialog()}
                     {this.renderSlowConnectionWarning()}
+                    {this.renderHostWarningDialog()}
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
                         <Connecting />
                     ) : null}

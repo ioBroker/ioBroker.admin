@@ -54,7 +54,7 @@ import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
-import { licenseDialogFunc } from '../dialogs/LicenseDialog';
+import LicenseDialog from '../dialogs/LicenseDialog';
 import CustomModal from '../components/CustomModal';
 import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 import RatingDialog from '../dialogs/RatingDialog';
@@ -1249,6 +1249,27 @@ class Adapters extends Component {
         this.setState({ filteredList, search });
     }
 
+    renderLicenseDialog() {
+        if (!this.state.showLicenseDialog) {
+            return null;
+        }
+
+        return <LicenseDialog
+            url={this.state.showLicenseDialog.url}
+            onClose={result => {
+                if (result) {
+                    const instance = this.state.showLicenseDialog.instance;
+                    if (this.state.showLicenseDialog.upload) {
+                        this.upload(instance);
+                    } else {
+                        this.addInstance(instance);
+                    }
+                }
+                this.setState({ showLicenseDialog: null });
+            }}
+        />;
+    }
+
     getRow(value, descHidden) {
         const cached = this.cache.adapters[value];
         if (cached) {
@@ -1259,96 +1280,91 @@ class Adapters extends Component {
                 console.warn(`[ADAPTERS] ${value}`);
             }
 
-            return (
-                <AdapterRow
-                    t={this.t}
-                    descHidden={descHidden}
-                    key={`adapter-${value}`}
-                    connectionType={cached.connectionType}
-                    dataSource={adapter.dataSource}
-                    description={cached.desc}
-                    adapter={value}
-                    versionDate={cached.daysAgoText}
-                    enabledCount={installed && installed.enabled}
-                    expertMode={this.props.expertMode}
-                    image={cached.image}
-                    installedCount={installed && installed.count}
-                    installedFrom={installed && installed.installedFrom}
-                    installedVersion={installed && installed.version}
-                    keywords={adapter.keywords}
-                    name={cached.title}
-                    license={adapter.license}
-                    updateAvailable={cached.updateAvailable}
-                    version={adapter.version}
-                    hidden={false}
-                    rightDependencies={cached.rightDependencies}
-                    rightOs={cached.rightOs}
-                    sentry={cached.sentry}
-                    // rebuild={this.rebuildSupported}
-                    commandRunning={this.props.commandRunning}
-                    rating={adapter.rating}
-                    onSetRating={() =>
-                        this.setState({
-                            showSetRating: {
-                                adapter: value,
-                                version: installed && installed.version,
-                                rating: adapter.rating,
-                            },
-                        })}
-                    onAddInstance={() => {
-                        let url = adapter.extIcon || adapter.icon || '';
-                        if (url.includes('/main')) {
-                            url = `${url.split('/main')[0]}/main/LICENSE`;
-                        } else {
-                            url = `${url.split('/master')[0]}/master/LICENSE`;
-                        }
+            return <AdapterRow
+                t={this.t}
+                descHidden={descHidden}
+                key={`adapter-${value}`}
+                connectionType={cached.connectionType}
+                dataSource={adapter.dataSource}
+                description={cached.desc}
+                adapter={value}
+                versionDate={cached.daysAgoText}
+                enabledCount={installed && installed.enabled}
+                expertMode={this.props.expertMode}
+                image={cached.image}
+                installedCount={installed && installed.count}
+                installedFrom={installed && installed.installedFrom}
+                installedVersion={installed && installed.version}
+                keywords={adapter.keywords}
+                name={cached.title}
+                license={adapter.license}
+                updateAvailable={cached.updateAvailable}
+                version={adapter.version}
+                hidden={false}
+                rightDependencies={cached.rightDependencies}
+                rightOs={cached.rightOs}
+                sentry={cached.sentry}
+                // rebuild={this.rebuildSupported}
+                commandRunning={this.props.commandRunning}
+                rating={adapter.rating}
+                onSetRating={() =>
+                    this.setState({
+                        showSetRating: {
+                            adapter: value,
+                            version: installed && installed.version,
+                            rating: adapter.rating,
+                        },
+                    })}
+                onAddInstance={() => {
+                    let url = adapter.extIcon || adapter.icon || '';
+                    if (url.includes('/main')) {
+                        url = `${url.split('/main')[0]}/main/LICENSE`;
+                    } else {
+                        url = `${url.split('/master')[0]}/master/LICENSE`;
+                    }
+                    if (adapter.license === 'MIT') {
+                        this.addInstance(value);
+                    } else {
+                        this.setState({ showLicenseDialog: { url, instance: value } });
+                    }
+                }}
+                onDeletion={() => this.openAdapterDeletionDialog(value)}
+                onInfo={() => Adapters.openInfoDialog(value)}
+                // onRebuild={() => this.rebuild(value)}
+                onUpdate={() => this.openUpdateDialog(value)}
+                openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
+                onUpload={() => {
+                    let url = adapter.extIcon || adapter.icon || '';
+                    if (url.includes('/main')) {
+                        url = `${url.split('/main')[0]}/main/LICENSE`;
+                    } else {
+                        url = `${url.split('/master')[0]}/master/LICENSE`;
+                    }
 
-                        licenseDialogFunc(
-                            adapter.license === 'MIT',
-                            this.props.theme,
-                            result => result && this.addInstance(value),
-                            url,
-                        );
-                    }}
-                    onDeletion={() => this.openAdapterDeletionDialog(value)}
-                    onInfo={() => Adapters.openInfoDialog(value)}
-                    // onRebuild={() => this.rebuild(value)}
-                    onUpdate={() => this.openUpdateDialog(value)}
-                    openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                    onUpload={() => {
-                        let url = adapter.extIcon || adapter.icon || '';
-                        if (url.includes('/main')) {
-                            url = `${url.split('/main')[0]}/main/LICENSE`;
-                        } else {
-                            url = `${url.split('/master')[0]}/master/LICENSE`;
-                        }
-
-                        licenseDialogFunc(
-                            adapter.license === 'MIT',
-                            this.props.theme,
-                            result => result && this.upload(value),
-                            url,
-                        );
-                    }}
-                    allowAdapterDelete={
-                        this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true
+                    if (adapter.license !== 'MIT') {
+                        this.setState({ showLicenseDialog: { url, instance: value, upload: true } });
+                    } else {
+                        this.upload(value);
                     }
-                    allowAdapterInstall={
-                        this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true
-                    }
-                    allowAdapterUpdate={
-                        this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true
-                    }
-                    allowAdapterReadme={
-                        this.state.repository[value] ? this.state.repository[value].allowAdapterReadme : true
-                    }
-                    allowAdapterRating={
-                        this.props.adminGuiConfig.admin.adapters
-                            ? this.props.adminGuiConfig.admin.adapters.allowAdapterRating
-                            : true
-                    }
-                />
-            );
+                }}
+                allowAdapterDelete={
+                    this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true
+                }
+                allowAdapterInstall={
+                    this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true
+                }
+                allowAdapterUpdate={
+                    this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true
+                }
+                allowAdapterReadme={
+                    this.state.repository[value] ? this.state.repository[value].allowAdapterReadme : true
+                }
+                allowAdapterRating={
+                    this.props.adminGuiConfig.admin.adapters
+                        ? this.props.adminGuiConfig.admin.adapters.allowAdapterRating
+                        : true
+                }
+            />;
         }
         return null;
     }
@@ -1627,18 +1643,14 @@ class Adapters extends Component {
         }
 
         if (!this.cache.listOfVisibleAdapter.length) {
-            return (
-                !this.state.update && (
-                    <div
-                        style={{
-                            margin: 20,
-                            fontSize: 26,
-                        }}
-                    >
-                        {this.props.t('all items are filtered out')}
-                    </div>
-                )
-            );
+            return !this.state.update && <div
+                style={{
+                    margin: 20,
+                    fontSize: 26,
+                }}
+            >
+                {this.props.t('all items are filtered out')}
+            </div>;
         }
         return this.cache.listOfVisibleAdapter.map(value => {
             const adapter = this.state.repository[value];
@@ -1649,96 +1661,92 @@ class Adapters extends Component {
                 console.warn(`[ADAPTERS] ${JSON.stringify(adapter)}`);
             }
 
-            return (
-                <AdapterTile
-                    t={this.t}
-                    commandRunning={this.props.commandRunning}
-                    key={`adapter-${value}`}
-                    image={cached.image}
-                    name={cached.title}
-                    dataSource={adapter.dataSource}
-                    adapter={value}
-                    stat={cached.stat}
-                    versionDate={cached.daysAgoText}
-                    connectionType={cached.connectionType}
-                    description={cached.desc}
-                    enabledCount={installed && installed.enabled}
-                    expertMode={this.props.expertMode}
-                    installedCount={installed && installed.count}
-                    installedFrom={installed && installed.installedFrom}
-                    installedVersion={installed && installed.version}
-                    keywords={adapter.keywords}
-                    license={adapter.license}
-                    updateAvailable={cached.updateAvailable}
-                    version={adapter.version}
-                    hidden={false}
-                    rightDependencies={cached.rightDependencies}
-                    rightOs={cached.rightOs}
-                    sentry={cached.sentry}
-                    // rebuild={this.rebuildSupported}
-                    rating={adapter.rating}
-                    onSetRating={() =>
-                        this.setState({
-                            showSetRating: {
-                                adapter: value,
-                                version: installed && installed.version,
-                                rating: adapter.rating,
-                            },
-                        })}
-                    onAddInstance={() => {
-                        let url = adapter.extIcon || adapter.icon || '';
-                        if (url.includes('/main')) {
-                            url = `${url.split('/main')[0]}/main/LICENSE`;
-                        } else {
-                            url = `${url.split('/master')[0]}/master/LICENSE`;
-                        }
+            return <AdapterTile
+                t={this.t}
+                commandRunning={this.props.commandRunning}
+                key={`adapter-${value}`}
+                image={cached.image}
+                name={cached.title}
+                dataSource={adapter.dataSource}
+                adapter={value}
+                stat={cached.stat}
+                versionDate={cached.daysAgoText}
+                connectionType={cached.connectionType}
+                description={cached.desc}
+                enabledCount={installed && installed.enabled}
+                expertMode={this.props.expertMode}
+                installedCount={installed && installed.count}
+                installedFrom={installed && installed.installedFrom}
+                installedVersion={installed && installed.version}
+                keywords={adapter.keywords}
+                license={adapter.license}
+                updateAvailable={cached.updateAvailable}
+                version={adapter.version}
+                hidden={false}
+                rightDependencies={cached.rightDependencies}
+                rightOs={cached.rightOs}
+                sentry={cached.sentry}
+                // rebuild={this.rebuildSupported}
+                rating={adapter.rating}
+                onSetRating={() =>
+                    this.setState({
+                        showSetRating: {
+                            adapter: value,
+                            version: installed && installed.version,
+                            rating: adapter.rating,
+                        },
+                    })}
+                onAddInstance={() => {
+                    let url = adapter.extIcon || adapter.icon || '';
+                    if (url.includes('/main')) {
+                        url = `${url.split('/main')[0]}/main/LICENSE`;
+                    } else {
+                        url = `${url.split('/master')[0]}/master/LICENSE`;
+                    }
 
-                        licenseDialogFunc(
-                            adapter.license === 'MIT',
-                            this.props.theme,
-                            result => result && this.addInstance(value),
-                            url,
-                        );
-                    }}
-                    onDeletion={() => this.openAdapterDeletionDialog(value)}
-                    onInfo={() => Adapters.openInfoDialog(value)}
-                    // onRebuild={() => this.rebuild(value)}
-                    onUpdate={() => this.openUpdateDialog(value)}
-                    openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                    onUpload={() => {
-                        let url = adapter.extIcon || adapter.icon || '';
-                        if (url.includes('/main')) {
-                            url = `${url.split('/main')[0]}/main/LICENSE`;
-                        } else {
-                            url = `${url.split('/master')[0]}/master/LICENSE`;
-                        }
+                    if (adapter.license === 'MIT') {
+                        this.addInstance(value);
+                    } else {
+                        this.setState({ showLicenseDialog: { url, instance: value } });
+                    }
+                }}
+                onDeletion={() => this.openAdapterDeletionDialog(value)}
+                onInfo={() => Adapters.openInfoDialog(value)}
+                // onRebuild={() => this.rebuild(value)}
+                onUpdate={() => this.openUpdateDialog(value)}
+                openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
+                onUpload={() => {
+                    let url = adapter.extIcon || adapter.icon || '';
+                    if (url.includes('/main')) {
+                        url = `${url.split('/main')[0]}/main/LICENSE`;
+                    } else {
+                        url = `${url.split('/master')[0]}/master/LICENSE`;
+                    }
 
-                        licenseDialogFunc(
-                            adapter.license === 'MIT',
-                            this.props.theme,
-                            result => result && this.upload(value),
-                            url,
-                        );
-                    }}
-                    allowAdapterDelete={
-                        this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true
+                    if (adapter.license !== 'MIT') {
+                        this.setState({ showLicenseDialog: { url, instance: value, upload: true } });
+                    } else {
+                        this.upload(value);
                     }
-                    allowAdapterInstall={
-                        this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true
-                    }
-                    allowAdapterUpdate={
-                        this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true
-                    }
-                    allowAdapterReadme={
-                        this.state.repository[value] ? this.state.repository[value].allowAdapterReadme : true
-                    }
-                    allowAdapterRating={
-                        this.props.adminGuiConfig.admin.adapters
-                            ? this.props.adminGuiConfig.admin.adapters.allowAdapterRating
-                            : true
-                    }
-                />
-            );
+                }}
+                allowAdapterDelete={
+                    this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true
+                }
+                allowAdapterInstall={
+                    this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true
+                }
+                allowAdapterUpdate={
+                    this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true
+                }
+                allowAdapterReadme={
+                    this.state.repository[value] ? this.state.repository[value].allowAdapterReadme : true
+                }
+                allowAdapterRating={
+                    this.props.adminGuiConfig.admin.adapters
+                        ? this.props.adminGuiConfig.admin.adapters.allowAdapterRating
+                        : true
+                }
+            />;
         });
     }
 
@@ -1746,21 +1754,19 @@ class Adapters extends Component {
         if (!this.state.showUpdater) {
             return null;
         }
-        return (
-            <AdaptersUpdaterDialog
-                onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
-                t={this.props.t}
-                currentHost={this.state.currentHost}
-                lang={this.props.lang}
-                installed={this.state.installed}
-                repository={this.state.repository}
-                toggleTranslation={this.props.toggleTranslation}
-                noTranslation={this.props.noTranslation}
-                onClose={reload =>
-                    this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
-                socket={this.props.socket}
-            />
-        );
+        return <AdaptersUpdaterDialog
+            onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
+            t={this.props.t}
+            currentHost={this.state.currentHost}
+            lang={this.props.lang}
+            installed={this.state.installed}
+            repository={this.state.repository}
+            toggleTranslation={this.props.toggleTranslation}
+            noTranslation={this.props.noTranslation}
+            onClose={reload =>
+                this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
+            socket={this.props.socket}
+        />;
     }
 
     getDescWidth() {
@@ -1776,42 +1782,40 @@ class Adapters extends Component {
 
     getStatistics() {
         if (this.state.showStatistics) {
-            return (
-                <Dialog open={!0} onClose={() => this.setState({ showStatistics: false })}>
-                    <DialogTitle>{this.t('Statistics')}</DialogTitle>
-                    <DialogContent style={{ fontSize: 16 }}>
-                        <div className={this.props.classes.counters}>
-                            {this.t('Total adapters')}
+            return <Dialog open={!0} onClose={() => this.setState({ showStatistics: false })}>
+                <DialogTitle>{this.t('Statistics')}</DialogTitle>
+                <DialogContent style={{ fontSize: 16 }}>
+                    <div className={this.props.classes.counters}>
+                        {this.t('Total adapters')}
 :
-                            {' '}
-                            <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.allAdapters}</span>
-                        </div>
-                        <div className={this.props.classes.counters}>
-                            {this.t('Installed adapters')}
+                        {' '}
+                        <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.allAdapters}</span>
+                    </div>
+                    <div className={this.props.classes.counters}>
+                        {this.t('Installed adapters')}
 :
-                            {' '}
-                            <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.installedAdapters}</span>
-                        </div>
-                        <div className={this.props.classes.counters}>
-                            {this.t('Last month updated adapters')}
+                        {' '}
+                        <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.installedAdapters}</span>
+                    </div>
+                    <div className={this.props.classes.counters}>
+                        {this.t('Last month updated adapters')}
 :
-                            {' '}
-                            <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span>
-                        </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            variant="contained"
-                            onClick={() => this.setState({ showStatistics: false })}
-                            color="primary"
-                            autoFocus
-                            startIcon={<CloseIcon />}
-                        >
-                            {this.props.t('Close')}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            );
+                        {' '}
+                        <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span>
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ showStatistics: false })}
+                        color="primary"
+                        autoFocus
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>;
         }
         return null;
     }
@@ -1821,7 +1825,7 @@ class Adapters extends Component {
             return <LinearProgress />;
         }
 
-        // update adapters, because repository could be changed
+        // update adapters because the repository could be changed
         if (this.state.triggerUpdate !== this.props.triggerUpdate) {
             setTimeout(() => {
                 this.setState({ triggerUpdate: this.props.triggerUpdate }, () => this.updateAll(true));
@@ -1832,19 +1836,17 @@ class Adapters extends Component {
             const adapter = this.state.repository[this.state.dialogProp] || null;
 
             if (adapter) {
-                return (
-                    <TabContainer className={this.props.classes.tabContainer}>
-                        <AdapterInfoDialog
-                            theme={this.props.theme}
-                            themeName={this.props.themeName}
-                            themeType={this.props.themeType}
-                            adapter={this.state.dialogProp}
-                            link={adapter.readme || ''}
-                            socket={this.props.socket}
-                            t={this.t}
-                        />
-                    </TabContainer>
-                );
+                return <TabContainer className={this.props.classes.tabContainer}>
+                    <AdapterInfoDialog
+                        theme={this.props.theme}
+                        themeName={this.props.themeName}
+                        themeType={this.props.themeType}
+                        adapter={this.state.dialogProp}
+                        link={adapter.readme || ''}
+                        socket={this.props.socket}
+                        t={this.t}
+                    />
+                </TabContainer>;
             }
         }
 
@@ -1939,6 +1941,7 @@ class Adapters extends Component {
                         repoName = repoInfo.name;
                     }
                 }
+                // eslint-disable-next-line brace-style
             }
 
             // new style with multiple active repositories
@@ -1961,357 +1964,321 @@ class Adapters extends Component {
             }
         }
 
-        return (
-            <TabContainer>
-                {this.state.update && (
-                    <Grid item>
-                        <LinearProgress />
-                    </Grid>
-                )}
-                <TabHeader>
-                    <Tooltip title={this.t('Change view mode')}>
-                        <IconButton size="large" onClick={() => this.changeViewMode()}>
-                            {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={this.t('Check adapter for updates')}>
-                        <IconButton size="large" onClick={() => this.updateAll(true, true)}>
-                            <RefreshIcon />
-                        </IconButton>
-                    </Tooltip>
-                    {this.state.viewMode && !this.state.list && (
-                        <>
-                            <Tooltip title={this.t('expand all')}>
-                                <IconButton size="large" onClick={() => this.expandAll()}>
-                                    <FolderOpenIcon />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title={this.t('collapse all')}>
-                                <IconButton size="large" onClick={() => this.collapseAll()}>
-                                    <FolderIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </>
-                    )}
-                    {this.state.viewMode && (
-                        <Tooltip title={this.t('list')}>
-                            <IconButton size="large" onClick={() => this.listTable()}>
-                                <ListIcon color={this.state.list ? 'primary' : 'inherit'} />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-
-                    {/* <Tooltip title={this.t('Filter local connection type')}>
-                    <IconButton size="large" onClick={() => this.toggleConnectionTypeFilter()}>
-                        <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
+        return <TabContainer>
+            {this.state.update && <Grid item>
+                <LinearProgress />
+            </Grid>}
+            <TabHeader>
+                <Tooltip title={this.t('Change view mode')}>
+                    <IconButton size="large" onClick={() => this.changeViewMode()}>
+                        {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
-                 </Tooltip> */}
-                    {this.state.updateList ? (
-                        <IconButton size="large" onClick={() => this.changeInstalledList(true)}>
+                </Tooltip>
+                <Tooltip title={this.t('Check adapter for updates')}>
+                    <IconButton size="large" onClick={() => this.updateAll(true, true)}>
+                        <RefreshIcon />
+                    </IconButton>
+                </Tooltip>
+                {this.state.viewMode && !this.state.list && <>
+                    <Tooltip title={this.t('expand all')}>
+                        <IconButton size="large" onClick={() => this.expandAll()}>
+                            <FolderOpenIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={this.t('collapse all')}>
+                        <IconButton size="large" onClick={() => this.collapseAll()}>
+                            <FolderIcon />
+                        </IconButton>
+                    </Tooltip>
+                </>}
+                {this.state.viewMode && <Tooltip title={this.t('list')}>
+                    <IconButton size="large" onClick={() => this.listTable()}>
+                        <ListIcon color={this.state.list ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>}
+
+                {/* <Tooltip title={this.t('Filter local connection type')}>
+                <IconButton size="large" onClick={() => this.toggleConnectionTypeFilter()}>
+                    <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
+                </IconButton>
+             </Tooltip> */}
+                {this.state.updateList ? <IconButton size="large" onClick={() => this.changeInstalledList(true)}>
+                    <StarIcon
+                        color="primary"
+                        style={{ opacity: 0.3, color: this.state.installedList === 2 ? 'red' : undefined }}
+                    />
+                </IconButton>
+                    :
+                    <Tooltip
+                        title={this.t(
+                            !this.state.installedList
+                                ? 'Show only installed'
+                                : this.state.installedList < 2
+                                    ? 'Showed only installed adapters'
+                                    : 'Showed only installed adapters without instance.',
+                        )}
+                    >
+                        <IconButton size="large" onClick={() => this.changeInstalledList()}>
                             <StarIcon
-                                color="primary"
-                                style={{ opacity: 0.3, color: this.state.installedList === 2 ? 'red' : undefined }}
+                                style={this.state.installedList === 2 ? { color: 'red' } : null}
+                                color={
+                                    this.state.installedList && this.state.installedList < 2 ? 'primary' : 'inherit'
+                                }
                             />
                         </IconButton>
-                    ) : (
-                        <Tooltip
-                            title={this.t(
-                                !this.state.installedList
-                                    ? 'Show only installed'
-                                    : this.state.installedList < 2
-                                        ? 'Showed only installed adapters'
-                                        : 'Showed only installed adapters without instance.',
-                            )}
-                        >
-                            <IconButton size="large" onClick={() => this.changeInstalledList()}>
-                                <StarIcon
-                                    style={this.state.installedList === 2 ? { color: 'red' } : null}
-                                    color={
-                                        this.state.installedList && this.state.installedList < 2 ? 'primary' : 'inherit'
-                                    }
-                                />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.filterUpdates">
-                        <Tooltip title={this.t('Filter adapter with updates')}>
-                            <IconButton size="large" onClick={() => this.changeUpdateList()}>
-                                <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
-                            </IconButton>
-                        </Tooltip>
-                    </IsVisible>
-                    {updateAllButtonAvailable && (
-                        <Tooltip title={this.t('Update all adapters')}>
-                            <IconButton
-                                size="large"
-                                onClick={() => this.setState({ showUpdater: true })}
-                                classes={{ label: this.props.classes.updateAllButton }}
-                            >
-                                <UpdateIcon />
-                                <UpdateIcon className={this.props.classes.updateAllIcon} />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-
-                    {this.props.expertMode && this.props.adminGuiConfig.admin.adapters?.gitHubInstall !== false && (
-                        <Tooltip title={this.t('Install from custom URL')}>
-                            <IconButton size="large" onClick={() => this.setState({ gitHubInstallDialog: true })}>
-                                <GithubIcon />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    <div className={classes.grow} />
-                    <TextField
-                        variant="standard"
-                        inputRef={this.inputRef}
-                        label={this.t('Filter by name')}
-                        defaultValue={this.state.search}
-                        onChange={event => this.handleFilterChange(event)}
-                        InputProps={{
-                            endAdornment: this.state.search ? (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => {
-                                            (window._localStorage || window.localStorage).removeItem('Adapter.search');
-                                            this.inputRef.current.value = '';
-                                            this.setState({ search: '' }, () => this.filterAdapters());
-                                        }}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment>
-                            ) : null,
-                        }}
-                    />
-
-                    {!this.state.viewMode && (
-                        <CustomSelectButton
-                            t={this.t}
-                            icons
-                            contained={this.state.categoriesTiles !== 'All'}
-                            translateSuffix="_group"
-                            arrayItem={[{ name: 'All' }, ...this.state.categories]}
-                            onClick={value => this.changeCategoriesTiles(value)}
-                            value={this.state.categoriesTiles}
-                        />
-                    )}
-                    {!this.state.viewMode && (
-                        <CustomSelectButton
-                            t={this.t}
-                            arrayItem={this.state.arrayFilter}
-                            onClick={value => this.changeFilterTiles(value)}
-                            value={this.state.filterTiles}
-                        />
-                    )}
-                    <div className={classes.grow} />
-                    <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.statistics">
-                        <Hidden only={['xs', 'sm']}>
-                            <div
-                                className={classes.infoAdapters}
-                                onClick={() => this.setState({ showStatistics: true })}
-                            >
-                                <div className={Utils.clsx(classes.counters, classes.greenText)}>
-                                    {this.t('Selected adapters')}
-                                    <div ref={this.countRef} />
-                                </div>
-                                <div className={classes.counters}>
-                                    {this.t('Total adapters')}
-:
-                                    <div>{this.allAdapters}</div>
-                                </div>
-                                <div className={classes.counters}>
-                                    {this.t('Installed adapters')}
-:
-                                    <div>{this.installedAdapters}</div>
-                                </div>
-                                <div className={classes.counters}>
-                                    {this.t('Last month updated adapters')}
-:
-                                    <div>{this.recentUpdatedAdapters}</div>
-                                </div>
-                            </div>
-                        </Hidden>
-                    </IsVisible>
-                </TabHeader>
-                {this.state.viewMode && this.props.systemConfig && this.props.systemConfig.common && (
-                    <TabContent>
-                        {!stableRepo ? (
-                            <div className={this.props.classes.notStableRepo}>
-                                {this.t('Active repo is "%s"', repoName)}
-                            </div>
-                        ) : null}
-                        <TableContainer
-                            className={Utils.clsx(
-                                classes.container,
-                                !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight,
-                            )}
-                        >
-                            <Table stickyHeader size="small" className={classes.table}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell className={classes.emptyBlock}></TableCell>
-                                        <TableCell className={classes.name}>
-                                            <Typography>{this.t('Name')}</Typography>
-                                        </TableCell>
-                                        {!descHidden && (
-                                            <TableCell
-                                                className={classes.description}
-                                                style={{ width: this.state.descWidth }}
-                                            >
-                                                <Typography>{this.t('Description')}</Typography>
-                                            </TableCell>
-                                        )}
-                                        <TableCell className={classes.connectionType} />
-                                        <TableCell className={classes.installed}>
-                                            <Typography>{this.t('Installed')}</Typography>
-                                        </TableCell>
-                                        <TableCell className={classes.available}>
-                                            <Typography>{this.t('Available')}</Typography>
-                                        </TableCell>
-                                        <TableCell className={classes.license}>
-                                            <Typography>{this.t('License')}</Typography>
-                                        </TableCell>
-                                        <TableCell className={classes.install}>
-                                            <Typography>{this.t('Install')}</Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>{this.getRows(descHidden)}</TableBody>
-                            </Table>
-                        </TableContainer>
-                    </TabContent>
-                )}
-
-                {this.getUpdater()}
-                {this.getStatistics()}
-                {this.renderSetRatingDialog()}
-                {this.renderSlowConnectionWarning()}
-
-                {!this.state.viewMode &&
-                    this.props.systemConfig.common &&
-                    this.props.systemConfig.common.activeRepo && (
-                    <>
-                        {!stableRepo ? (
-                            <div className={this.props.classes.notStableRepo}>
-                                {this.t('Active repo is "%s"', repoName)}
-                            </div>
-                        ) : null}
-                        <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
-                    </>
-                )}
-
-                {this.state.addInstanceDialog && (
-                    <AddInstanceDialog
-                        themeType={this.props.themeType}
-                        open={this.state.addInstanceDialog}
-                        adapter={this.state.addInstanceAdapter}
-                        socket={this.props.socket}
-                        hostsWorker={this.props.hostsWorker}
-                        instancesWorker={this.props.instancesWorker}
-                        repository={this.state.repository}
-                        dependencies={this.getDependencies(this.state.addInstanceAdapter)}
-                        currentHost={`system.host.${this.state.addInstanceHostName}`}
-                        currentInstance={this.state.addInstanceId}
-                        t={this.t}
-                        onClick={() => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
-                        onClose={() => this.closeAddInstanceDialog()}
-                        onHostChange={hostName => this.handleHostsChange(hostName)}
-                        onInstanceChange={event => this.handleInstanceChange(event)}
-                    />
-                )}
-                {this.state.adapterDeletionDialog && (
-                    <AdapterDeletionDialog
-                        open={this.state.adapterDeletionDialog}
-                        adapter={this.state.adapterDeletionAdapter}
-                        socket={this.props.socket}
-                        t={this.t}
-                        onClick={deleteCustom => this.delete(this.state.adapterDeletionAdapter, deleteCustom)}
-                        onClose={() => this.closeAdapterDeletionDialog()}
-                    />
-                )}
-                {this.state.gitHubInstallDialog && (
-                    <GitHubInstallDialog
-                        t={this.t}
-                        open={this.state.gitHubInstallDialog}
-                        categories={this.state.categories}
-                        installFromUrl={(value, debug, customUrl) =>
-                            this.addInstance(value, undefined, debug, customUrl)}
-                        repository={this.state.repository}
-                        onClose={() => {
-                            this.setState({ gitHubInstallDialog: false });
-                        }}
-                    />
-                )}
-                {this.state.adapterToUpdate && (
-                    <AdapterUpdateDialog
-                        open={!0}
-                        adapter={this.state.adapterToUpdate}
-                        adapterObject={this.state.repository[this.state.adapterToUpdate]}
-                        t={this.t}
-                        dependencies={this.getDependencies(this.state.adapterToUpdate)}
-                        rightDependencies={this.rightDependencies(this.state.adapterToUpdate)}
-                        news={this.getNews(this.state.adapterToUpdate)}
-                        toggleTranslation={this.props.toggleTranslation}
-                        noTranslation={this.props.noTranslation}
-                        installedVersion={this.state.installed[this.state.adapterToUpdate]?.version}
-                        onUpdate={version => {
-                            const adapter = this.state.adapterToUpdate;
-                            this.closeAdapterUpdateDialog(() => this.update(adapter, version));
-                        }}
-                        onIgnore={ignoreVersion => {
-                            const adapter = this.state.adapterToUpdate;
-                            this.closeAdapterUpdateDialog(() => {
-                                this.props.socket
-                                    .getObject(`system.adapter.${adapter}`)
-                                    .then(obj => {
-                                        if (obj) {
-                                            obj.common.ignoreVersion = ignoreVersion;
-                                            this.props.socket.setObject(obj._id, obj);
-                                        } else {
-                                            window.alert(`Adapter "${adapter}" does not exist!`);
-                                        }
-                                    })
-                                    .then(() => {
-                                        const updateAvailable = [...this.state.updateAvailable];
-                                        const pos = updateAvailable.indexOf(adapter);
-                                        if (pos !== -1) {
-                                            updateAvailable.splice(pos, 1);
-                                            this.setState({ updateAvailable });
-                                        }
-                                    });
-                            });
-                        }}
-                        onClose={() => this.closeAdapterUpdateDialog()}
-                    />
-                )}
-                {this.state.adapterInstallVersion && (
-                    <CustomModal
-                        open={!0}
-                        title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
-                        applyButton={false}
-                        onClose={() => this.setState({ adapterInstallVersion: '' })}
-                        toggleTranslation={this.props.toggleTranslation}
-                        noTranslation={this.props.noTranslation}
+                    </Tooltip>}
+                <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.filterUpdates">
+                    <Tooltip title={this.t('Filter adapter with updates')}>
+                        <IconButton size="large" onClick={() => this.changeUpdateList()}>
+                            <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+                </IsVisible>
+                {updateAllButtonAvailable && <Tooltip title={this.t('Update all adapters')}>
+                    <IconButton
+                        size="large"
+                        onClick={() => this.setState({ showUpdater: true })}
+                        classes={{ label: this.props.classes.updateAllButton }}
                     >
-                        <div className={classes.containerVersion}>
-                            {this.getNews(this.state.adapterInstallVersion, true).map(({ version, news }) => (
-                                <div
-                                    key={version}
-                                    className={classes.currentVersion}
+                        <UpdateIcon />
+                        <UpdateIcon className={this.props.classes.updateAllIcon} />
+                    </IconButton>
+                </Tooltip>}
+
+                {this.props.expertMode && this.props.adminGuiConfig.admin.adapters?.gitHubInstall !== false &&
+                    <Tooltip title={this.t('Install from custom URL')}>
+                        <IconButton size="large" onClick={() => this.setState({ gitHubInstallDialog: true })}>
+                            <GithubIcon />
+                        </IconButton>
+                    </Tooltip>}
+                <div className={classes.grow} />
+                <TextField
+                    variant="standard"
+                    inputRef={this.inputRef}
+                    label={this.t('Filter by name')}
+                    defaultValue={this.state.search}
+                    onChange={event => this.handleFilterChange(event)}
+                    InputProps={{
+                        endAdornment: this.state.search ? (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
                                     onClick={() => {
-                                        this.update(this.state.adapterInstallVersion, version);
-                                        this.setState({ adapterInstallVersion: '' });
+                                        (window._localStorage || window.localStorage).removeItem('Adapter.search');
+                                        this.inputRef.current.value = '';
+                                        this.setState({ search: '' }, () => this.filterAdapters());
                                     }}
                                 >
-                                    <ListItemText primary={version} secondary={formatNews(news)} />
-                                </div>
-                            ))}
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        ) : null,
+                    }}
+                />
+
+                {!this.state.viewMode && <CustomSelectButton
+                    t={this.t}
+                    icons
+                    contained={this.state.categoriesTiles !== 'All'}
+                    translateSuffix="_group"
+                    arrayItem={[{ name: 'All' }, ...this.state.categories]}
+                    onClick={value => this.changeCategoriesTiles(value)}
+                    value={this.state.categoriesTiles}
+                />}
+                {!this.state.viewMode && <CustomSelectButton
+                    t={this.t}
+                    arrayItem={this.state.arrayFilter}
+                    onClick={value => this.changeFilterTiles(value)}
+                    value={this.state.filterTiles}
+                />}
+                <div className={classes.grow} />
+                <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.statistics">
+                    <Hidden only={['xs', 'sm']}>
+                        <div
+                            className={classes.infoAdapters}
+                            onClick={() => this.setState({ showStatistics: true })}
+                        >
+                            <div className={Utils.clsx(classes.counters, classes.greenText)}>
+                                {this.t('Selected adapters')}
+                                <div ref={this.countRef} />
+                            </div>
+                            <div className={classes.counters}>
+                                {this.t('Total adapters')}
+:
+                                <div>{this.allAdapters}</div>
+                            </div>
+                            <div className={classes.counters}>
+                                {this.t('Installed adapters')}
+:
+                                <div>{this.installedAdapters}</div>
+                            </div>
+                            <div className={classes.counters}>
+                                {this.t('Last month updated adapters')}
+:
+                                <div>{this.recentUpdatedAdapters}</div>
+                            </div>
                         </div>
-                    </CustomModal>
-                )}
-            </TabContainer>
-        );
+                    </Hidden>
+                </IsVisible>
+            </TabHeader>
+            {this.state.viewMode && this.props.systemConfig && this.props.systemConfig.common && <TabContent>
+                {!stableRepo ? <div className={this.props.classes.notStableRepo}>
+                    {this.t('Active repo is "%s"', repoName)}
+                </div> : null}
+                <TableContainer
+                    className={Utils.clsx(
+                        classes.container,
+                        !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight,
+                    )}
+                >
+                    <Table stickyHeader size="small" className={classes.table}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell className={classes.emptyBlock}></TableCell>
+                                <TableCell className={classes.name}>
+                                    <Typography>{this.t('Name')}</Typography>
+                                </TableCell>
+                                {!descHidden && (
+                                    <TableCell
+                                        className={classes.description}
+                                        style={{ width: this.state.descWidth }}
+                                    >
+                                        <Typography>{this.t('Description')}</Typography>
+                                    </TableCell>
+                                )}
+                                <TableCell className={classes.connectionType} />
+                                <TableCell className={classes.installed}>
+                                    <Typography>{this.t('Installed')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.available}>
+                                    <Typography>{this.t('Available')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.license}>
+                                    <Typography>{this.t('License')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.install}>
+                                    <Typography>{this.t('Install')}</Typography>
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>{this.getRows(descHidden)}</TableBody>
+                    </Table>
+                </TableContainer>
+            </TabContent>}
+
+            {this.getUpdater()}
+            {this.getStatistics()}
+            {this.renderSetRatingDialog()}
+            {this.renderSlowConnectionWarning()}
+            {this.renderLicenseDialog()}
+
+            {!this.state.viewMode &&
+                this.props.systemConfig.common &&
+                this.props.systemConfig.common.activeRepo && <>
+                {!stableRepo ? <div className={this.props.classes.notStableRepo}>
+                    {this.t('Active repo is "%s"', repoName)}
+                </div> : null}
+                <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
+            </>}
+
+            {this.state.addInstanceDialog && <AddInstanceDialog
+                themeType={this.props.themeType}
+                open={this.state.addInstanceDialog}
+                adapter={this.state.addInstanceAdapter}
+                socket={this.props.socket}
+                hostsWorker={this.props.hostsWorker}
+                instancesWorker={this.props.instancesWorker}
+                repository={this.state.repository}
+                dependencies={this.getDependencies(this.state.addInstanceAdapter)}
+                currentHost={`system.host.${this.state.addInstanceHostName}`}
+                currentInstance={this.state.addInstanceId}
+                t={this.t}
+                onClick={() => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
+                onClose={() => this.closeAddInstanceDialog()}
+                onHostChange={hostName => this.handleHostsChange(hostName)}
+                onInstanceChange={event => this.handleInstanceChange(event)}
+            />}
+            {this.state.adapterDeletionDialog && <AdapterDeletionDialog
+                open={this.state.adapterDeletionDialog}
+                adapter={this.state.adapterDeletionAdapter}
+                socket={this.props.socket}
+                t={this.t}
+                onClick={deleteCustom => this.delete(this.state.adapterDeletionAdapter, deleteCustom)}
+                onClose={() => this.closeAdapterDeletionDialog()}
+            />}
+            {this.state.gitHubInstallDialog && <GitHubInstallDialog
+                t={this.t}
+                open={this.state.gitHubInstallDialog}
+                categories={this.state.categories}
+                installFromUrl={(value, debug, customUrl) =>
+                    this.addInstance(value, undefined, debug, customUrl)}
+                repository={this.state.repository}
+                onClose={() => {
+                    this.setState({ gitHubInstallDialog: false });
+                }}
+            />}
+            {this.state.adapterToUpdate && <AdapterUpdateDialog
+                open={!0}
+                adapter={this.state.adapterToUpdate}
+                adapterObject={this.state.repository[this.state.adapterToUpdate]}
+                t={this.t}
+                dependencies={this.getDependencies(this.state.adapterToUpdate)}
+                rightDependencies={this.rightDependencies(this.state.adapterToUpdate)}
+                news={this.getNews(this.state.adapterToUpdate)}
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
+                installedVersion={this.state.installed[this.state.adapterToUpdate]?.version}
+                onUpdate={version => {
+                    const adapter = this.state.adapterToUpdate;
+                    this.closeAdapterUpdateDialog(() => this.update(adapter, version));
+                }}
+                onIgnore={ignoreVersion => {
+                    const adapter = this.state.adapterToUpdate;
+                    this.closeAdapterUpdateDialog(() => {
+                        this.props.socket
+                            .getObject(`system.adapter.${adapter}`)
+                            .then(obj => {
+                                if (obj) {
+                                    obj.common.ignoreVersion = ignoreVersion;
+                                    this.props.socket.setObject(obj._id, obj);
+                                } else {
+                                    window.alert(`Adapter "${adapter}" does not exist!`);
+                                }
+                            })
+                            .then(() => {
+                                const updateAvailable = [...this.state.updateAvailable];
+                                const pos = updateAvailable.indexOf(adapter);
+                                if (pos !== -1) {
+                                    updateAvailable.splice(pos, 1);
+                                    this.setState({ updateAvailable });
+                                }
+                            });
+                    });
+                }}
+                onClose={() => this.closeAdapterUpdateDialog()}
+            />}
+            {this.state.adapterInstallVersion && <CustomModal
+                open={!0}
+                title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
+                applyButton={false}
+                onClose={() => this.setState({ adapterInstallVersion: '' })}
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
+            >
+                <div className={classes.containerVersion}>
+                    {this.getNews(this.state.adapterInstallVersion, true).map(({ version, news }) => <div
+                        key={version}
+                        className={classes.currentVersion}
+                        onClick={() => {
+                            this.update(this.state.adapterInstallVersion, version);
+                            this.setState({ adapterInstallVersion: '' });
+                        }}
+                    >
+                        <ListItemText primary={version} secondary={formatNews(news)} />
+                    </div>)}
+                </div>
+            </CustomModal>}
+        </TabContainer>;
     }
 }
 
