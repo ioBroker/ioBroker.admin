@@ -2146,7 +2146,7 @@ class ObjectBrowser extends Component {
 
     /**
      * @private
-     * @param {ioBroker.EmptyCallback} cb
+     * @param {ioBroker.EmptyCallback?} cb
      */
     expandAllSelected(cb) {
         const expanded = [...this.state.expanded];
@@ -5772,6 +5772,31 @@ class ObjectBrowser extends Component {
         }
     };
 
+    /**
+     * Select the item
+     *
+     * @param {KeyboardEvent} event
+     */
+    navigateKeyPress(event) {
+        const selectedId = this.state.selectedNonObject || this.state.selected[0];
+
+        if (!selectedId) {
+            return;
+        }
+
+        if (event.code === 'ArrowUp') {
+            console.log(selectedId);
+        }
+
+        if (event.code === 'ArrowDown') {
+            console.log(selectedId);
+        }
+
+        if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
+            this.toggleExpanded(selectedId);
+        }
+    }
+
     resizerReset = () => {
         this.customWidth = false;
         SCREEN_WIDTHS[this.props.width] = JSON.parse(JSON.stringify(this.storedWidths));
@@ -6205,30 +6230,32 @@ class ObjectBrowser extends Component {
         const classes = this.props.classes;
         const items = this.renderItem(this.root, undefined, classes);
 
-        return <TabContainer key={this.props.dialogName} classes={{}}>
-            <TabHeader>{this.getToolbar()}</TabHeader>
-            <TabContent classes={{}}>
-                {this.renderHeader()}
-                <div className={this.props.classes.tableDiv} ref={this.tableRef}>
-                    {items}
-                </div>
-            </TabContent>
-            {this.renderToast()}
-            {this.renderColumnsEditCustomDialog()}
-            {this.renderColumnsSelectorDialog()}
-            {this.renderCustomDialog()}
-            {this.renderEditValueDialog()}
-            {this.renderEditObjectDialog()}
-            {this.renderViewObjectFileDialog()}
-            {this.renderEditRoleDialog()}
-            {this.renderEnumDialog()}
-            {this.renderErrorDialog()}
-            {this.renderExportDialog()}
-            {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)}
-            {this.state.modalEditOfAccess &&
+        return <div onKeyDown={event => this.navigateKeyPress(event)} tabIndex={0}>
+            <TabContainer key={this.props.dialogName} classes={{}}>
+                <TabHeader>{this.getToolbar()}</TabHeader>
+                <TabContent classes={{}}>
+                    {this.renderHeader()}
+                    <div className={this.props.classes.tableDiv} ref={this.tableRef}>
+                        {items}
+                    </div>
+                </TabContent>
+                {this.renderToast()}
+                {this.renderColumnsEditCustomDialog()}
+                {this.renderColumnsSelectorDialog()}
+                {this.renderCustomDialog()}
+                {this.renderEditValueDialog()}
+                {this.renderEditObjectDialog()}
+                {this.renderViewObjectFileDialog()}
+                {this.renderEditRoleDialog()}
+                {this.renderEnumDialog()}
+                {this.renderErrorDialog()}
+                {this.renderExportDialog()}
+                {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)}
+                {this.state.modalEditOfAccess &&
                 this.props.modalEditOfAccessControl &&
                 this.props.modalEditOfAccessControl(this, this.state.modalEditOfAccessObjData)}
-        </TabContainer>;
+            </TabContainer>
+        </div>;
     }
 }
 
