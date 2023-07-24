@@ -28,6 +28,8 @@ class TabContainer extends Component {
         return <Paper
             elevation={!Number.isNaN(this.props.elevation) ? this.props.elevation : 1}
             className={Utils.clsx(classes.root, { [classes.overflowHidden]: this.props.overflow !== 'visible' }, this.props.className)}
+            onKeyDown={this.props.onKeyDown}
+            tabIndex={this.props.tabIndex}
         >
             <Grid
                 container
@@ -45,6 +47,8 @@ TabContainer.propTypes = {
     elevation: PropTypes.number,
     overflow: PropTypes.string,
     className: PropTypes.string,
+    onKeyDown: PropTypes.func,
+    tabIndex: PropTypes.number,
 };
 
 export default withStyles(styles)(TabContainer);
