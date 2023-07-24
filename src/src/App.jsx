@@ -638,6 +638,7 @@ class App extends Router {
                                 this.guiSettings.native.localStorage[name] = window.localStorage.getItem(name);
                             }
                         });
+
                         Object.keys(window.sessionStorage).forEach(name => {
                             if (
                                 name !== 'getItem' &&
@@ -746,7 +747,8 @@ class App extends Router {
                                         cloudReconnect: 10,
                                     });
                                     return;
-                                } if (!version) {
+                                }
+                                if (!version) {
                                     window.alert(err);
                                     return;
                                 }
@@ -1179,20 +1181,18 @@ class App extends Router {
         }
     };
 
-    getDiscoveryModal = () => (
-        <DiscoveryDialog
-            themeType={this.state.themeType}
-            themeName={this.state.themeName}
-            theme={this.state.theme}
-            socket={this.socket}
-            dateFormat={this.state.systemConfig.common.dateFormat}
-            currentHost={this.state.currentHost}
-            defaultLogLevel={this.state.systemConfig.common.defaultLogLevel}
-            repository={this.state.repository}
-            hosts={this.state.hosts}
-            onClose={() => Router.doNavigate(null)}
-        />
-    );
+    getDiscoveryModal = () => <DiscoveryDialog
+        themeType={this.state.themeType}
+        themeName={this.state.themeName}
+        theme={this.state.theme}
+        socket={this.socket}
+        dateFormat={this.state.systemConfig.common.dateFormat}
+        currentHost={this.state.currentHost}
+        defaultLogLevel={this.state.systemConfig.common.defaultLogLevel}
+        repository={this.state.repository}
+        hosts={this.state.hosts}
+        onClose={() => Router.doNavigate(null)}
+    />;
 
     findNewsInstance = () => {
         const maxCount = 200;
@@ -1303,20 +1303,18 @@ class App extends Router {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
-        return (
-            <SlowConnectionWarningDialog
-                readTimeoutMs={this.state.readTimeoutMs}
-                t={I18n.t}
-                onClose={readTimeoutMs => {
-                    if (readTimeoutMs) {
-                        this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () =>
-                            this.readRepoAndInstalledInfo(this.state.currentHost));
-                    } else {
-                        this.setState({ showSlowConnectionWarning: false });
-                    }
-                }}
-            />
-        );
+        return <SlowConnectionWarningDialog
+            readTimeoutMs={this.state.readTimeoutMs}
+            t={I18n.t}
+            onClose={readTimeoutMs => {
+                if (readTimeoutMs) {
+                    this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () =>
+                        this.readRepoAndInstalledInfo(this.state.currentHost));
+                } else {
+                    this.setState({ showSlowConnectionWarning: false });
+                }
+            }}
+        />;
     }
 
     readRepoAndInstalledInfo = async (currentHost, hosts, update) => {
@@ -1506,201 +1504,183 @@ class App extends Router {
                 const opened = !small && this.state.drawerState === DrawerStates.opened;
                 const closed = small || this.state.drawerState === DrawerStates.closed;
 
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Adapters
-                            triggerUpdate={this.state.triggerAdapterUpdate}
-                            key="adapters"
-                            forceUpdateAdapters={this.state.forceUpdateAdapters}
-                            theme={this.state.theme}
-                            themeName={this.state.themeName}
-                            adaptersWorker={this.adaptersWorker}
-                            instancesWorker={this.instancesWorker}
-                            themeType={this.state.themeType}
-                            systemConfig={this.state.systemConfig}
-                            socket={this.socket}
-                            hosts={this.state.hosts}
-                            hostsWorker={this.hostsWorker}
-                            currentHost={this.state.currentHost}
-                            ready={this.state.ready}
-                            t={I18n.t}
-                            lang={I18n.getLanguage()}
-                            expertMode={this.state.expertMode}
-                            executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
-                            commandRunning={this.state.commandRunning}
-                            onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
-                            menuOpened={opened}
-                            menuClosed={closed}
-                            menuCompact={compact}
-                            adminGuiConfig={this.adminGuiConfig}
-                            toggleTranslation={this.toggleTranslation}
-                            noTranslation={this.state.noTranslation}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <Adapters
+                        triggerUpdate={this.state.triggerAdapterUpdate}
+                        key="adapters"
+                        forceUpdateAdapters={this.state.forceUpdateAdapters}
+                        theme={this.state.theme}
+                        themeName={this.state.themeName}
+                        adaptersWorker={this.adaptersWorker}
+                        instancesWorker={this.instancesWorker}
+                        themeType={this.state.themeType}
+                        systemConfig={this.state.systemConfig}
+                        socket={this.socket}
+                        hosts={this.state.hosts}
+                        hostsWorker={this.hostsWorker}
+                        currentHost={this.state.currentHost}
+                        ready={this.state.ready}
+                        t={I18n.t}
+                        lang={I18n.getLanguage()}
+                        expertMode={this.state.expertMode}
+                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                        commandRunning={this.state.commandRunning}
+                        onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
+                        menuOpened={opened}
+                        menuClosed={closed}
+                        menuCompact={compact}
+                        adminGuiConfig={this.adminGuiConfig}
+                        toggleTranslation={this.toggleTranslation}
+                        noTranslation={this.state.noTranslation}
+                    />
+                </Suspense>;
             } if (this.state.currentTab.tab === 'tab-instances') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Instances
-                            key="instances"
-                            menuPadding={
-                                this.state.drawerState === DrawerStates.closed
-                                    ? 0
-                                    : this.state.drawerState === DrawerStates.opened
-                                        ? DRAWER_FULL_WIDTH
-                                        : DRAWER_COMPACT_WIDTH
+                return <Suspense fallback={<Connecting />}>
+                    <Instances
+                        key="instances"
+                        menuPadding={
+                            this.state.drawerState === DrawerStates.closed
+                                ? 0
+                                : this.state.drawerState === DrawerStates.opened
+                                    ? DRAWER_FULL_WIDTH
+                                    : DRAWER_COMPACT_WIDTH
+                        }
+                        socket={this.socket}
+                        instancesWorker={this.instancesWorker}
+                        lang={I18n.getLanguage()}
+                        protocol={this.state.protocol}
+                        hostname={this.state.hostname}
+                        port={this.state.port}
+                        adminInstance={this.adminInstance}
+                        repository={this.state.repository}
+                        hosts={this.state.hosts}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                        theme={this.state.theme}
+                        expertMode={this.state.expertMode}
+                        currentHost={this.state.currentHost}
+                        currentHostName={this.state.currentHostName}
+                        t={I18n.t}
+                        dateFormat={this.state.systemConfig.common.dateFormat}
+                        isFloatComma={this.state.systemConfig.common.isFloatComma}
+                        width={this.props.width}
+                        configStored={value => this.allStored(value)}
+                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                        inBackgroundCommand={this.state.commandError || this.state.performed}
+                        onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
+                        onUnregisterIframeRef={ref => {
+                            if (this.refConfigIframe === ref) {
+                                this.refConfigIframe = null;
                             }
-                            socket={this.socket}
-                            instancesWorker={this.instancesWorker}
-                            lang={I18n.getLanguage()}
-                            protocol={this.state.protocol}
-                            hostname={this.state.hostname}
-                            port={this.state.port}
-                            adminInstance={this.adminInstance}
-                            repository={this.state.repository}
-                            hosts={this.state.hosts}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            theme={this.state.theme}
-                            expertMode={this.state.expertMode}
-                            currentHost={this.state.currentHost}
-                            currentHostName={this.state.currentHostName}
-                            t={I18n.t}
-                            dateFormat={this.state.systemConfig.common.dateFormat}
-                            isFloatComma={this.state.systemConfig.common.isFloatComma}
-                            width={this.props.width}
-                            configStored={value => this.allStored(value)}
-                            executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
-                            inBackgroundCommand={this.state.commandError || this.state.performed}
-                            onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
-                            onUnregisterIframeRef={ref => {
-                                if (this.refConfigIframe === ref) {
-                                    this.refConfigIframe = null;
-                                }
-                            }}
-                        />
-                    </Suspense>
-                );
+                        }}
+                    />
+                </Suspense>;
             } if (this.state.currentTab.tab === 'tab-intro') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Intro
-                            key="intro"
-                            protocol={this.state.protocol}
-                            hostname={this.state.hostname}
-                            port={this.state.port}
-                            adminInstance={this.adminInstance}
-                            instancesWorker={this.instancesWorker}
-                            hostsWorker={this.hostsWorker}
-                            showAlert={(message, type) => this.showAlert(message, type)}
-                            socket={this.socket}
-                            t={I18n.t}
-                            lang={I18n.getLanguage()}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <Intro
+                        key="intro"
+                        protocol={this.state.protocol}
+                        hostname={this.state.hostname}
+                        port={this.state.port}
+                        adminInstance={this.adminInstance}
+                        instancesWorker={this.instancesWorker}
+                        hostsWorker={this.hostsWorker}
+                        showAlert={(message, type) => this.showAlert(message, type)}
+                        socket={this.socket}
+                        t={I18n.t}
+                        lang={I18n.getLanguage()}
+                    />
+                </Suspense>;
             } if (this.state.currentTab.tab === 'tab-logs') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Logs
-                            key="logs"
-                            t={I18n.t}
-                            lang={this.state.lang}
-                            socket={this.socket}
-                            themeType={this.state.themeType}
-                            ready={this.state.ready}
-                            logsWorker={this.logsWorker}
-                            expertMode={this.state.expertMode}
-                            currentHost={this.state.currentHost}
-                            hostsWorker={this.hostsWorker}
-                            clearErrors={cb => this.clearLogErrors(cb)}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <Logs
+                        key="logs"
+                        t={I18n.t}
+                        lang={this.state.lang}
+                        socket={this.socket}
+                        themeType={this.state.themeType}
+                        ready={this.state.ready}
+                        logsWorker={this.logsWorker}
+                        expertMode={this.state.expertMode}
+                        currentHost={this.state.currentHost}
+                        hostsWorker={this.hostsWorker}
+                        clearErrors={cb => this.clearLogErrors(cb)}
+                    />
+                </Suspense>;
             } if (this.state.currentTab.tab === 'tab-files') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Files
-                            key="files"
-                            ready={this.state.ready}
-                            t={I18n.t}
-                            expertMode={this.state.expertMode}
-                            lang={I18n.getLanguage()}
-                            socket={this.socket}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <Files
+                        key="files"
+                        ready={this.state.ready}
+                        t={I18n.t}
+                        expertMode={this.state.expertMode}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                    />
+                </Suspense>;
             } if (this.state.currentTab.tab === 'tab-users') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Users
-                            key="users"
-                            ready={this.state.ready}
-                            t={I18n.t}
-                            expertMode={this.state.expertMode}
-                            lang={I18n.getLanguage()}
-                            socket={this.socket}
-                            themeType={this.state.themeType}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <Users
+                        key="users"
+                        ready={this.state.ready}
+                        t={I18n.t}
+                        expertMode={this.state.expertMode}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                        themeType={this.state.themeType}
+                    />
+                </Suspense>;
             } if (this.state.currentTab.tab === 'tab-enums') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Enums
-                            key="enums"
-                            ready={this.state.ready}
-                            t={I18n.t}
-                            expertMode={this.state.expertMode}
-                            lang={I18n.getLanguage()}
-                            socket={this.socket}
-                            themeType={this.state.themeType}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <Enums
+                        key="enums"
+                        ready={this.state.ready}
+                        t={I18n.t}
+                        expertMode={this.state.expertMode}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                        themeType={this.state.themeType}
+                    />
+                </Suspense>;
             } if (this.state.currentTab.tab === 'tab-objects') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Objects
-                            key="objects"
-                            t={I18n.t}
-                            theme={this.state.theme}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            expertMode={this.state.expertMode}
-                            objectsWorker={this.objectsWorker}
-                            lang={I18n.getLanguage()}
-                            socket={this.socket}
-                            dateFormat={this.state.systemConfig.common.dateFormat}
-                            isFloatComma={this.state.systemConfig.common.isFloatComma}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <Objects
+                        key="objects"
+                        t={I18n.t}
+                        theme={this.state.theme}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                        expertMode={this.state.expertMode}
+                        objectsWorker={this.objectsWorker}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                        dateFormat={this.state.systemConfig.common.dateFormat}
+                        isFloatComma={this.state.systemConfig.common.isFloatComma}
+                    />
+                </Suspense>;
             } if (this.state.currentTab.tab === 'tab-hosts') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Hosts
-                            socket={this.socket}
-                            lang={I18n.getLanguage()}
-                            hostsWorker={this.hostsWorker}
-                            toggleTranslation={this.toggleTranslation}
-                            noTranslation={this.state.noTranslation}
-                            themeName={this.state.themeName}
-                            theme={this.state.theme}
-                            expertMode={this.state.expertMode}
-                            t={I18n.t}
-                            navigate={Router.doNavigate}
-                            currentHost={this.state.currentHost}
-                            executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
-                            systemConfig={this.state.systemConfig}
-                            showAdaptersWarning={this.showAdaptersWarning}
-                            adminInstance={this.adminInstance}
-                            onUpdating={updating => this.setState({ updating })}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <Hosts
+                        socket={this.socket}
+                        lang={I18n.getLanguage()}
+                        hostsWorker={this.hostsWorker}
+                        toggleTranslation={this.toggleTranslation}
+                        noTranslation={this.state.noTranslation}
+                        themeName={this.state.themeName}
+                        theme={this.state.theme}
+                        expertMode={this.state.expertMode}
+                        t={I18n.t}
+                        navigate={Router.doNavigate}
+                        currentHost={this.state.currentHost}
+                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                        systemConfig={this.state.systemConfig}
+                        showAdaptersWarning={this.showAdaptersWarning}
+                        adminInstance={this.adminInstance}
+                        onUpdating={updating => this.setState({ updating })}
+                    />
+                </Suspense>;
             }
             const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
             if (m) {
@@ -1713,30 +1693,28 @@ class App extends Router {
                     } */
 
                 // /adapter/javascript/tab.html
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <CustomTab
-                            key={this.state.currentTab.tab}
-                            t={I18n.t}
-                            protocol={this.state.protocol}
-                            hostname={this.state.hostname}
-                            port={this.state.port}
-                            adminInstance={this.adminInstance}
-                            hosts={this.state.hosts}
-                            instancesWorker={this.instancesWorker}
-                            tab={this.state.currentTab.tab}
-                            themeName={this.state.themeName}
-                            expertMode={this.state.expertMode}
-                            lang={I18n.getLanguage()}
-                            onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
-                            onUnregisterIframeRef={ref => {
-                                if (this.refConfigIframe === ref) {
-                                    this.refConfigIframe = null;
-                                }
-                            }}
-                        />
-                    </Suspense>
-                );
+                return <Suspense fallback={<Connecting />}>
+                    <CustomTab
+                        key={this.state.currentTab.tab}
+                        t={I18n.t}
+                        protocol={this.state.protocol}
+                        hostname={this.state.hostname}
+                        port={this.state.port}
+                        adminInstance={this.adminInstance}
+                        hosts={this.state.hosts}
+                        instancesWorker={this.instancesWorker}
+                        tab={this.state.currentTab.tab}
+                        themeName={this.state.themeName}
+                        expertMode={this.state.expertMode}
+                        lang={I18n.getLanguage()}
+                        onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
+                        onUnregisterIframeRef={ref => {
+                            if (this.refConfigIframe === ref) {
+                                this.refConfigIframe = null;
+                            }
+                        }}
+                    />
+                </Suspense>;
             }
         }
 
@@ -1760,40 +1738,38 @@ class App extends Router {
     }
 
     getSystemSettingsDialog() {
-        return (
-            <SystemSettingsDialog
-                adminGuiConfig={this.adminGuiConfig}
-                width={this.props.width}
-                currentHost={this.state.currentHost}
-                themeName={this.state.themeName}
-                themeType={this.state.themeType}
-                theme={this.state.theme}
-                key="systemSettings"
-                onClose={async repoChanged => {
-                    Router.doNavigate(null);
-                    // read systemConfig anew
-                    const systemConfig = await this.socket.getObject('system.config');
+        return <SystemSettingsDialog
+            adminGuiConfig={this.adminGuiConfig}
+            width={this.props.width}
+            currentHost={this.state.currentHost}
+            themeName={this.state.themeName}
+            themeType={this.state.themeType}
+            theme={this.state.theme}
+            key="systemSettings"
+            onClose={async repoChanged => {
+                Router.doNavigate(null);
+                // read systemConfig anew
+                const systemConfig = await this.socket.getObject('system.config');
 
-                    if (repoChanged) {
-                        this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1, systemConfig });
-                    } else {
-                        this.setState({ systemConfig });
-                    }
-                }}
-                lang={this.state.lang}
-                showAlert={(message, type) => this.showAlert(message, type)}
-                socket={this.socket}
-                currentTab={this.state.currentTab}
-                instance={this.state.instance}
-                expertModeFunc={value => {
-                    (window._sessionStorage || window.sessionStorage).removeItem('App.expertMode');
-                    const systemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
-                    systemConfig.common.expertMode = value;
-                    this.setState({ expertMode: value, systemConfig });
-                }}
-                t={I18n.t}
-            />
-        );
+                if (repoChanged) {
+                    this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1, systemConfig });
+                } else {
+                    this.setState({ systemConfig });
+                }
+            }}
+            lang={this.state.lang}
+            showAlert={(message, type) => this.showAlert(message, type)}
+            socket={this.socket}
+            currentTab={this.state.currentTab}
+            instance={this.state.instance}
+            expertModeFunc={value => {
+                (window._sessionStorage || window.sessionStorage).removeItem('App.expertMode');
+                const systemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
+                systemConfig.common.expertMode = value;
+                this.setState({ expertMode: value, systemConfig });
+            }}
+            t={I18n.t}
+        />;
     }
 
     handleAlertClose(event, reason) {
@@ -1951,115 +1927,105 @@ class App extends Router {
 
     showRedirectDialog() {
         if (this.state.showRedirect) {
-            return (
-                <Dialog open={!0} onClose={() => {}}>
-                    <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {I18n.t('Redirect in %s second(s)', this.state.redirectCountDown)}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        {window.sidebar ||
-                        (window.opera && window.print) ||
-                        (document.all && window.external?.AddFavorite) ? (
-                                <Button
-                                    onClick={() => {
-                                        if (window.sidebar) {
-                                        // Firefox
-                                            window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
-                                        } else if (window.opera && window.print) {
-                                        // Opera
-                                            const elem = document.createElement('a');
-                                            elem.setAttribute('href', this.state.showRedirect);
-                                            elem.setAttribute('title', 'ioBroker.admin');
-                                            elem.setAttribute('rel', 'sidebar');
-                                            elem.click(); // this.title=document.title;
-                                        } else if (document.all) {
-                                        // ie
-                                            window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
-                                        }
-                                    }}
-                                >
-                                    {I18n.t('Bookmark admin')}
-                                </Button>
-                            ) : null}
-                        {this.state.redirectCountDown ? (
-                            <Button variant="contained" onClick={() => (window.location = this.state.showRedirect)}>
-                                {I18n.t('Go to admin now')}
+            return <Dialog open={!0} onClose={() => {}}>
+                <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {I18n.t('Redirect in %s second(s)', this.state.redirectCountDown)}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    {window.sidebar ||
+                    (window.opera && window.print) ||
+                    (document.all && window.external?.AddFavorite) ? (
+                            <Button
+                                onClick={() => {
+                                    if (window.sidebar) {
+                                    // Firefox
+                                        window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
+                                    } else if (window.opera && window.print) {
+                                    // Opera
+                                        const elem = document.createElement('a');
+                                        elem.setAttribute('href', this.state.showRedirect);
+                                        elem.setAttribute('title', 'ioBroker.admin');
+                                        elem.setAttribute('rel', 'sidebar');
+                                        elem.click(); // this.title=document.title;
+                                    } else if (document.all) {
+                                    // ie
+                                        window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
+                                    }
+                                }}
+                            >
+                                {I18n.t('Bookmark admin')}
                             </Button>
                         ) : null}
-                    </DialogActions>
-                </Dialog>
-            );
+                    {this.state.redirectCountDown ? (
+                        <Button variant="contained" onClick={() => (window.location = this.state.showRedirect)}>
+                            {I18n.t('Go to admin now')}
+                        </Button>
+                    ) : null}
+                </DialogActions>
+            </Dialog>;
         }
         return null;
     }
 
     renderCommandDialog() {
-        return this.state.cmd ? (
-            <CommandDialog
-                onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
-                onClose={() => this.closeCmdDialog(() => this.setState({ commandRunning: false }))}
-                visible={this.state.cmdDialog}
-                callback={this.state.callback}
-                header={I18n.t('Command')}
-                onInBackground={() => this.setState({ cmdDialog: false })}
-                cmd={this.state.cmd}
-                errorFunc={() => this.setState({ commandError: true })}
-                performed={() => this.setState({ performed: true })}
-                inBackground={this.state.commandError || this.state.performed}
-                commandError={this.state.commandError}
-                socket={this.socket}
-                host={this.state.commandHost || this.state.currentHost}
-                ready={this.state.ready}
-                t={I18n.t}
-            />
-        ) : null;
+        return this.state.cmd ? <CommandDialog
+            onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
+            onClose={() => this.closeCmdDialog(() => this.setState({ commandRunning: false }))}
+            visible={this.state.cmdDialog}
+            callback={this.state.callback}
+            header={I18n.t('Command')}
+            onInBackground={() => this.setState({ cmdDialog: false })}
+            cmd={this.state.cmd}
+            errorFunc={() => this.setState({ commandError: true })}
+            performed={() => this.setState({ performed: true })}
+            inBackground={this.state.commandError || this.state.performed}
+            commandError={this.state.commandError}
+            socket={this.socket}
+            host={this.state.commandHost || this.state.currentHost}
+            ready={this.state.ready}
+            t={I18n.t}
+        /> : null;
     }
 
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return (
+            return <div
+                title={this.state.user.id}
+                className={Utils.clsx(
+                    this.props.classes.userBadge,
+                    this.state.user.invertBackground && this.props.classes.userBackground,
+                )}
+                ref={this.refUser}
+            >
+                {this.state.systemConfig.common.siteName ?
+                    <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div> : null}
+                {this.state.user.icon ?
+                    <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
+                    :
+                    <UserIcon className={this.props.classes.userIcon} />}
                 <div
-                    title={this.state.user.id}
-                    className={Utils.clsx(
-                        this.props.classes.userBadge,
-                        this.state.user.invertBackground && this.props.classes.userBackground,
-                    )}
-                    ref={this.refUser}
+                    ref={this.refUserDiv}
+                    style={
+                        this.state.expireWarningMode
+                            ? { color: '#F44' }
+                            : { color: this.state.user?.color || undefined }
+                    }
+                    className={this.props.classes.userText}
                 >
-                    {this.state.systemConfig.common.siteName ? (
-                        <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div>
-                    ) : null}
-                    {this.state.user.icon ? (
-                        <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
-                    ) : (
-                        <UserIcon className={this.props.classes.userIcon} />
-                    )}
-                    <div
-                        ref={this.refUserDiv}
-                        style={
-                            this.state.expireWarningMode
-                                ? { color: '#F44' }
-                                : { color: this.state.user?.color || undefined }
-                        }
-                        className={this.props.classes.userText}
-                    >
-                        {this.state.user.name}
-                    </div>
-                    {this.state.expireWarningMode ? (
-                        <IconButton
-                            onClick={async () => {
-                                await this.socket.getCurrentSession();
-                                await this.makePingAuth();
-                            }}
-                        >
-                            <UpdateIcon />
-                        </IconButton>
-                    ) : null}
+                    {this.state.user.name}
                 </div>
-            );
+                {this.state.expireWarningMode ? <IconButton
+                    onClick={async () => {
+                        await this.socket.getCurrentSession();
+                        await this.makePingAuth();
+                    }}
+                >
+                    <UpdateIcon />
+                </IconButton> : null}
+            </div>;
         } if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
             return <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div>;
         }
@@ -2088,17 +2054,13 @@ class App extends Router {
         >
             {I18n.t('Some data are not stored. Discard?')}
         </ConfirmDialog>; */
-        return (
-            this.state.dataNotStoredDialog && (
-                <ConfirmDialog
-                    title={I18n.t('Please confirm')}
-                    text={I18n.t('Some data are not stored. Discard?')}
-                    ok={I18n.t('Ok')}
-                    cancel={I18n.t('Cancel')}
-                    onClose={isYes => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
-                />
-            )
-        );
+        return this.state.dataNotStoredDialog && <ConfirmDialog
+            title={I18n.t('Please confirm')}
+            text={I18n.t('Some data are not stored. Discard?')}
+            ok={I18n.t('Ok')}
+            cancel={I18n.t('Cancel')}
+            onClose={isYes => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
+        />;
     }
 
     renderExpertDialog() {
