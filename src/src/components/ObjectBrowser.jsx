@@ -5775,7 +5775,7 @@ class ObjectBrowser extends Component {
     };
 
     /**
-     * Select the item
+     * Handle keyboard events for navigation
      *
      * @param {KeyboardEvent} event
      */
@@ -6232,8 +6232,6 @@ class ObjectBrowser extends Component {
         }
         const classes = this.props.classes;
         const items = this.renderItem(this.root, undefined, classes);
-
-        console.log(this.root);
 
         return <div onKeyDown={event => this.navigateKeyPress(event)} tabIndex={0}>
             <TabContainer key={this.props.dialogName} classes={{}}>
