@@ -584,7 +584,7 @@ class Adapters extends Component {
 
             adapter.rating = ratings && ratings[value];
 
-            if (adapter.rating && adapter.rating.rating) {
+            if (adapter.rating?.rating) {
                 adapter.rating.title = [
                     `${this.t('Total rating:')} ${adapter.rating.rating.r} (${
                         adapter.rating.rating.c

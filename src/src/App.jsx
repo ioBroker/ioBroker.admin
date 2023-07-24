@@ -1684,14 +1684,6 @@ class App extends Router {
             }
             const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
             if (m) {
-                /* const adapter  = m[1];
-                    const instance = m[2] ? parseInt(m[2], 10) : null;
-
-                    let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
-                    if (tab.common.materializeTab) {
-                        link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
-                    } */
-
                 // /adapter/javascript/tab.html
                 return <Suspense fallback={<Connecting />}>
                     <CustomTab

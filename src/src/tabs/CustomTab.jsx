@@ -45,6 +45,8 @@ export function getHref(instancesWorker, tab, hostname, protocol, port, hosts, a
             }
             instance = instances && instances[instance];
 
+            Utils.fixAdminUI(instance);
+
             if (!instance || !instance.common || !instance.common.adminTab) {
                 console.error(`Cannot find instance ${tab}`);
 
@@ -55,7 +57,7 @@ export function getHref(instancesWorker, tab, hostname, protocol, port, hosts, a
             let href = instance.common.adminTab.link;
 
             if (!href) {
-                if (instance.common.materializeTab) {
+                if (instance.common.adminUI?.tab === 'materialize') {
                     href = `adapter/${adapter}/tab_m.html${instNum !== null && instNum !== undefined ? `?${instNum}` : ''}`;
                 } else {
                     href = `adapter/${adapter}/tab.html${instNum !== null && instNum !== undefined ? `?${instNum}` : ''}`;
