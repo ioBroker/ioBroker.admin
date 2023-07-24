@@ -5444,7 +5444,6 @@ class ObjectBrowser extends Component {
             }
         }
         root.data.id && items.push(leaf);
-        console.log(root.data.id);
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
 
