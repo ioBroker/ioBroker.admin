@@ -39,7 +39,7 @@ const styles = theme => ({
 });
 
 const CustomModal = ({
-    toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden,
+    toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden,
 }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
@@ -53,7 +53,7 @@ const CustomModal = ({
     }
 
     return <Dialog
-        open={open}
+        open={!0}
         maxWidth={maxWidth || 'md'}
         fullWidth={!!fullWidth}
         disableEscapeKeyDown={false}
@@ -113,7 +113,6 @@ const CustomModal = ({
 };
 
 CustomModal.defaultProps = {
-    open: false,
     onApply: () => { },
     onClose: () => { },
     applyButton: true,
@@ -126,7 +125,6 @@ CustomModal.defaultProps = {
 
 CustomModal.propTypes = {
     icon: PropTypes.object,
-    open: PropTypes.bool,
     onClose: PropTypes.func,
     children: PropTypes.any,
     titleButtonClose: PropTypes.string,

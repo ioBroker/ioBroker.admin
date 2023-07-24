@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import {
     Avatar, Card, Checkbox, DialogTitle, FormControlLabel, MenuItem, Select,
 } from '@mui/material';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import WarningIcon from '@mui/icons-material/Warning';
@@ -24,8 +22,6 @@ import {
 import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import filterIcon from '../../assets/filter.svg';
-
-let node = null;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -214,143 +210,115 @@ const statusArray = {
 };
 
 const InstanceFilterDialog = ({
-    cb, filterMode, filterStatus, theme,
+    onClose, filterMode, filterStatus,
 }) => {
     const classes = useStyles();
-    const [open, setOpen] = useState(true);
 
     const [modeCheck, setModeCheck] = useState(filterMode);
     const [statusCheck, setStatusCheck] = useState(filterStatus);
 
-    const onClose = () => {
-        setOpen(false);
-        if (node) {
-            document.body.removeChild(node);
-            node = null;
-        }
-    };
-
-    return <ThemeProvider theme={theme}>
-        <Dialog
-            onClose={onClose}
-            open={open}
-            classes={{ paper: classes.paper }}
-        >
-            <DialogTitle style={{ display: 'flex' }}>
-                <div style={{ display: 'flex' }}>
-                    <Avatar variant="square" className={classes.square} src={filterIcon} />
-                    {I18n.t('Filter instances')}
+    return <Dialog
+        onClose={onClose}
+        open={!0}
+        classes={{ paper: classes.paper }}
+    >
+        <DialogTitle style={{ display: 'flex' }}>
+            <div style={{ display: 'flex' }}>
+                <Avatar variant="square" className={classes.square} src={filterIcon} />
+                {I18n.t('Filter instances')}
+            </div>
+        </DialogTitle>
+        <DialogContent className={classes.overflowHidden} dividers>
+            <Card className={classes.root}>
+                <div className={classes.rowBlock}>
+                    <FormControlLabel
+                        className={classes.checkbox}
+                        control={
+                            <Checkbox
+                                checked={!!modeCheck}
+                                onChange={e => (e.target.checked ? setModeCheck('daemon') : setModeCheck(null))}
+                            />
+                        }
+                        label={I18n.t('Filter by mode')}
+                    />
+                    <Select
+                        disabled={!modeCheck}
+                        variant="standard"
+                        value={modeCheck || 'none'}
+                        className={classes.select}
+                        onChange={el => {
+                            if (el.target.value === 'none') {
+                                setModeCheck(null);
+                            } else {
+                                setModeCheck(el.target.value);
+                            }
+                        }}
+                    >
+                        {modeArray.map(el => <MenuItem key={el} value={el}>
+                            {I18n.t(el)}
+                        </MenuItem>)}
+                    </Select>
                 </div>
-            </DialogTitle>
-            <DialogContent className={classes.overflowHidden} dividers>
-                <Card className={classes.root}>
-                    <div className={classes.rowBlock}>
-                        <FormControlLabel
-                            className={classes.checkbox}
-                            control={
-                                <Checkbox
-                                    checked={!!modeCheck}
-                                    onChange={e => (e.target.checked ? setModeCheck('daemon') : setModeCheck(null))}
-                                />
+                <div className={classes.rowBlock}>
+                    <FormControlLabel
+                        className={classes.checkbox}
+                        control={
+                            <Checkbox
+                                checked={!!statusCheck}
+                                onChange={e => (e.target.checked ? setStatusCheck('ok') : setStatusCheck(null))}
+                            />
+                        }
+                        label={I18n.t('Filter by status')}
+                    />
+                    <Select
+                        disabled={!statusCheck}
+                        variant="standard"
+                        value={statusCheck || 'none'}
+                        className={classes.select}
+                        onChange={el => {
+                            if (el.target.value === 'none') {
+                                setStatusCheck(null);
+                            } else {
+                                setStatusCheck(el.target.value);
                             }
-                            label={I18n.t('Filter by mode')}
-                        />
-                        <Select
-                            disabled={!modeCheck}
-                            variant="standard"
-                            value={modeCheck || 'none'}
-                            className={classes.select}
-                            onChange={el => {
-                                if (el.target.value === 'none') {
-                                    setModeCheck(null);
-                                } else {
-                                    setModeCheck(el.target.value);
-                                }
-                            }}
-                        >
-                            {modeArray.map(el => <MenuItem key={el} value={el}>
-                                {I18n.t(el)}
-                            </MenuItem>)}
-                        </Select>
-                    </div>
-                    <div className={classes.rowBlock}>
-                        <FormControlLabel
-                            className={classes.checkbox}
-                            control={
-                                <Checkbox
-                                    checked={!!statusCheck}
-                                    onChange={e => (e.target.checked ? setStatusCheck('ok') : setStatusCheck(null))}
-                                />
-                            }
-                            label={I18n.t('Filter by status')}
-                        />
-                        <Select
-                            disabled={!statusCheck}
-                            variant="standard"
-                            value={statusCheck || 'none'}
-                            className={classes.select}
-                            onChange={el => {
-                                if (el.target.value === 'none') {
-                                    setStatusCheck(null);
-                                } else {
-                                    setStatusCheck(el.target.value);
-                                }
-                            }}
-                        >
-                            {Object.keys(statusArray).map((name, idx) => <MenuItem key={name} value={name}>
-                                <div className={classes.menuWrapper}>
-                                    {statusArray[name].status ? <div className={classes.iconWrapper}>{getModeIcon(idx, classes[`statusIcon_${idx}`])}</div> : null}
-                                    <div className={classes.textWrapper}>{I18n.t(statusArray[name].text)}</div>
-                                </div>
-                            </MenuItem>)}
-                        </Select>
-                    </div>
-                </Card>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    autoFocus
-                    disabled={modeCheck === filterMode && filterStatus === statusCheck}
-                    onClick={() => {
-                        onClose();
-                        cb && cb({
-                            filterMode: modeCheck,
-                            filterStatus: statusCheck,
-                        });
-                    }}
-                    color="primary"
-                    startIcon={<IconCheck />}
-                >
-                    {I18n.t('Apply')}
-                </Button>
-                <Button
-                    color="grey"
-                    variant="contained"
-                    onClick={() => {
-                        onClose();
-                        cb && cb(false);
-                    }}
-                    startIcon={<IconClose />}
-                >
-                    {I18n.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
+                        }}
+                    >
+                        {Object.keys(statusArray).map((name, idx) => <MenuItem key={name} value={name}>
+                            <div className={classes.menuWrapper}>
+                                {statusArray[name].status ? <div className={classes.iconWrapper}>{getModeIcon(idx, classes[`statusIcon_${idx}`])}</div> : null}
+                                <div className={classes.textWrapper}>{I18n.t(statusArray[name].text)}</div>
+                            </div>
+                        </MenuItem>)}
+                    </Select>
+                </div>
+            </Card>
+        </DialogContent>
+        <DialogActions>
+            <Button
+                variant="contained"
+                autoFocus
+                disabled={modeCheck === filterMode && filterStatus === statusCheck}
+                onClick={() => {
+                    onClose({
+                        filterMode: modeCheck,
+                        filterStatus: statusCheck,
+                    });
+                }}
+                color="primary"
+                startIcon={<IconCheck />}
+            >
+                {I18n.t('Apply')}
+            </Button>
+            <Button
+                color="grey"
+                variant="contained"
+                onClick={() => onClose()}
+                startIcon={<IconClose />}
+            >
+                {I18n.t('Close')}
+            </Button>
+        </DialogActions>
+    </Dialog>;
 };
 
-export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, _getModeIcon, theme) => {
-    if (!node) {
-        node = document.createElement('div');
-        node.id = 'renderModal';
-        document.body.appendChild(node);
-    }
-    const root = createRoot(node);
-
-    return root.render(<StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-            <InstanceFilterDialog cb={cb} getModeIcon={_getModeIcon} filterMode={filterMode} theme={theme} filterStatus={filterStatus} />
-        </ThemeProvider>
-    </StyledEngineProvider>);
-};
+export default InstanceFilterDialog;

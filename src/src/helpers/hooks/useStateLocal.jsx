@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export function useStateLocal(defaultValue, key) {
+function useStateLocal(defaultValue, key) {
     const data = (window._localStorage || window.localStorage).getItem(key);
     if (data) {
         try {
@@ -19,3 +19,5 @@ export function useStateLocal(defaultValue, key) {
 
     return [state, eventsToInstall, !!(window._localStorage || window.localStorage).getItem(key)];
 }
+
+export default useStateLocal;

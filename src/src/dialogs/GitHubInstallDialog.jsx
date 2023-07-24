@@ -131,7 +131,7 @@ if (!Array.prototype.flat) {
 }
 
 const GitHubInstallDialog = ({
-    categories, repository, onClose, open, installFromUrl, t,
+    categories, repository, onClose, installFromUrl, t,
 }) => {
     t = t || I18n.t;
 
@@ -190,7 +190,7 @@ const GitHubInstallDialog = ({
 
     return <Dialog
         onClose={onClose}
-        open={open}
+        open={!0}
         classes={{ paper: classes.paper }}
     >
         <DialogContent dividers>

@@ -56,6 +56,7 @@ class Files extends Component {
                     allowCreateFolder
                     allowDelete
                     expertMode={this.props.expertMode}
+                    // eslint-disable-next-line react/no-unstable-nested-components
                     modalEditOfAccessControl={(context /* , objData */) =>
                         <FileEditOfAccessControl
                             open={context.state.modalEditOfAccess}

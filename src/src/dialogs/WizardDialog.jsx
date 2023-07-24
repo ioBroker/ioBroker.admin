@@ -309,15 +309,17 @@ class WizardDialog extends Component {
             </DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
-                    <Stepper activeStep={this.state.activeStep}>
-                        <Step><StepLabel>{this.props.t('Welcome')}</StepLabel></Step>
-                        <Step><StepLabel>{this.props.t('License agreement')}</StepLabel></Step>
-                        <Step><StepLabel>{this.props.t('Password')}</StepLabel></Step>
-                        <Step><StepLabel>{this.props.t('Authentication')}</StepLabel></Step>
-                        <Step><StepLabel>{this.props.t('Port forwarding')}</StepLabel></Step>
-                        <Step><StepLabel>{this.props.t('Settings')}</StepLabel></Step>
-                        <Step><StepLabel>{this.props.t('Finish')}</StepLabel></Step>
-                    </Stepper>
+                    <Toolbar>
+                        <Stepper activeStep={this.state.activeStep}>
+                            <Step><StepLabel>{this.props.t('Welcome')}</StepLabel></Step>
+                            <Step><StepLabel>{this.props.t('License agreement')}</StepLabel></Step>
+                            <Step><StepLabel>{this.props.t('Password')}</StepLabel></Step>
+                            <Step><StepLabel>{this.props.t('Authentication')}</StepLabel></Step>
+                            <Step><StepLabel>{this.props.t('Port forwarding')}</StepLabel></Step>
+                            <Step><StepLabel>{this.props.t('Settings')}</StepLabel></Step>
+                            <Step><StepLabel>{this.props.t('Finish')}</StepLabel></Step>
+                        </Stepper>
+                    </Toolbar>
                 </AppBar>
                 {this.state.activeStep === 0 ? <div className={this.props.classes.tabPanel}>{this.renderWelcome()       }</div> : null}
                 {this.state.activeStep === 1 ? <div className={this.props.classes.tabPanel}>{this.renderLicense()       }</div> : null}

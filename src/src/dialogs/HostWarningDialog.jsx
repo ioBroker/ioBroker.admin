@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import {
     Accordion, AccordionDetails, AccordionSummary, AppBar, Box, CardMedia, Tab, Tabs, Typography,
 } from '@mui/material';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import UpdateIcon from '@mui/icons-material/Update';
@@ -24,8 +22,6 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
-
-let node = null;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -235,26 +231,13 @@ const TabPanel = ({
 </div>;
 
 const HostWarningDialog = ({
-    message, ackCallback, dateFormat, themeType, instances, theme,
+    messages, onClose, ackCallback, dateFormat, themeType, instances,
 }) => {
     const classes = useStyles();
 
-    const [open, setOpen] = useState(true);
     const [value, setValue] = useState(0);
     const [disabled, setDisabled] = useState([]);
     const [expanded, setExpanded] = useState(false);
-
-    const onClose = () => {
-        setOpen(false);
-        if (node) {
-            try {
-                window.document.body.removeChild(node);
-            } catch (e) {
-                // ignore
-            }
-            node = null;
-        }
-    };
 
     const handleChange = (event, newValue) =>
         setValue(newValue);
@@ -264,158 +247,135 @@ const HostWarningDialog = ({
 
     const black = themeType === 'dark';
 
-    return <ThemeProvider theme={theme}>
-        <Dialog
-            onClose={onClose}
-            open={open}
-            classes={{ paper: classes.paper }}
-        >
-            <h2 className={classes.headingTop}>
-                <Status name="heading" />
-                {I18n.t('Adapter warnings')}
-            </h2>
-            <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
-                <div className={classes.root}>
-                    <AppBar position="static" color="default">
-                        <Tabs
-                            value={value}
-                            onChange={handleChange}
-                            variant="scrollable"
-                            scrollButtons="on"
-                            indicatorColor={black ? 'primary' : 'secondary'}
-                            textColor="primary"
-                        >
-                            {Object.keys(message).map((name, idx) => <Tab
-                                style={black ? null : { color: 'white' }}
-                                disabled={disabled.includes(name)}
-                                key={name}
-                                label={I18n.t(name)}
-                                icon={<Status name={name} />}
-                                {...a11yProps(idx)}
-                            />)}
-                        </Tabs>
-                    </AppBar>
-                    {Object.keys(message).map((name, idx) => <TabPanel
-                        className={classes.overflowAuto}
-                        classNameBox={classes.classNameBox}
-                        key={`tabPanel-${name}`}
-                        style={black ? { color: 'black' } : null}
+    return <Dialog
+        onClose={() => onClose()}
+        open={!0}
+        classes={{ paper: classes.paper }}
+    >
+        <h2 className={classes.headingTop}>
+            <Status name="heading" />
+            {I18n.t('Adapter warnings')}
+        </h2>
+        <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
+            <div className={classes.root}>
+                <AppBar position="static" color="default">
+                    <Tabs
                         value={value}
-                        index={idx}
+                        onChange={handleChange}
+                        variant="scrollable"
+                        scrollButtons="on"
+                        indicatorColor={black ? 'primary' : 'secondary'}
+                        textColor="primary"
                     >
-                        <div className={classes.headerText} style={{ fontWeight: 'bold' }}>
-                            {message[name].name[I18n.getLanguage()]}
-                        </div>
-                        <div className={classes.descriptionHeaderText}>
-                            {message[name].description[I18n.getLanguage()]}
-                        </div>
-                        <div>
-                            {message[name].instances ? Object.keys(message[name].instances).map(nameInst => {
-                                const currentInstance = instances && instances[nameInst];
-                                let icon = 'img/no-image.png';
-                                if (currentInstance?.common?.icon && currentInstance?.common?.name) {
-                                    icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
-                                }
-                                return <Accordion
-                                    style={black ? null : { background: '#c0c0c052' }}
-                                    key={nameInst}
-                                    expanded={expanded === `${name}-${nameInst}`}
-                                    onChange={handleChangeAccordion(`${name}-${nameInst}`)}
-                                >
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon />}
-                                        classes={{ content: classes.content }}
-                                        aria-controls="panel1bh-content"
-                                        id="panel1bh-header"
-                                    >
-                                        <Typography className={classes.heading}>
-                                            <CardMedia className={classes.img2} component="img" image={icon} />
-                                            <div className={classes.textStyle}>
-                                                {nameInst.replace(/^system\.adapter\./, '')}
-                                            </div>
-                                        </Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails className={classes.column}>
-                                        {message[name].instances[nameInst].messages.map(msg =>
-                                            <Typography key={msg.ts} component="div" className={classes.message}>
-                                                <div className={classes.terminal}>{msg.message}</div>
-                                                <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
-                                            </Typography>)}
-                                    </AccordionDetails>
-                                </Accordion>;
-                            }) : null}
-                        </div>
-                        <div className={classes.button}>
-                            <Button
-                                variant="contained"
-                                autoFocus={Object.keys(message).length !== 1}
-                                disabled={disabled.includes(name)}
-                                style={disabled.includes(name) ? { background: 'silver' } : null}
-                                className={classes.buttonStyle}
-                                onClick={() => {
-                                    ackCallback(name);
-                                    setDisabled([...disabled, name]);
-                                }}
-                                color={Object.keys(message).length !== 1 ? 'primary' : 'grey'}
-                                startIcon={<CheckIcon />}
-                            >
-                                {I18n.t('Acknowledge')}
-                            </Button>
-                            {Object.keys(message).length === 1 && <Button
-                                variant="contained"
-                                disabled={disabled.includes(name)}
-                                className={classes.buttonStyle}
-                                style={disabled.includes(name) ? { background: 'silver' } : null}
-                                onClick={() => {
-                                    ackCallback(name);
-                                    setDisabled([...disabled, name]);
-                                    onClose();
-                                }}
-                                startIcon={<>
-                                    <CheckIcon />
-                                    <CloseIcon />
-                                </>}
-                                color="primary"
-                            >
-                                {I18n.t('Acknowledge & close')}
-                            </Button>}
-                        </div>
-                    </TabPanel>)}
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    onClick={onClose}
-                    startIcon={<CloseIcon />}
-                    color="grey"
+                        {Object.keys(messages).map((name, idx) => <Tab
+                            style={black ? null : { color: 'white' }}
+                            disabled={disabled.includes(name)}
+                            key={name}
+                            label={I18n.t(name)}
+                            icon={<Status name={name} />}
+                            {...a11yProps(idx)}
+                        />)}
+                    </Tabs>
+                </AppBar>
+                {Object.keys(messages).map((name, idx) => <TabPanel
+                    className={classes.overflowAuto}
+                    classNameBox={classes.classNameBox}
+                    key={`tabPanel-${name}`}
+                    style={black ? { color: 'black' } : null}
+                    value={value}
+                    index={idx}
                 >
-                    {I18n.t('Ok')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
+                    <div className={classes.headerText} style={{ fontWeight: 'bold' }}>
+                        {messages[name].name[I18n.getLanguage()]}
+                    </div>
+                    <div className={classes.descriptionHeaderText}>
+                        {messages[name].description[I18n.getLanguage()]}
+                    </div>
+                    <div>
+                        {messages[name].instances ? Object.keys(messages[name].instances).map(nameInst => {
+                            const currentInstance = instances && instances[nameInst];
+                            let icon = 'img/no-image.png';
+                            if (currentInstance?.common?.icon && currentInstance?.common?.name) {
+                                icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
+                            }
+                            return <Accordion
+                                style={black ? null : { background: '#c0c0c052' }}
+                                key={nameInst}
+                                expanded={expanded === `${name}-${nameInst}`}
+                                onChange={handleChangeAccordion(`${name}-${nameInst}`)}
+                            >
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    classes={{ content: classes.content }}
+                                    aria-controls="panel1bh-content"
+                                    id="panel1bh-header"
+                                >
+                                    <Typography className={classes.heading}>
+                                        <CardMedia className={classes.img2} component="img" image={icon} />
+                                        <div className={classes.textStyle}>
+                                            {nameInst.replace(/^system\.adapter\./, '')}
+                                        </div>
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails className={classes.column}>
+                                    {messages[name].instances[nameInst].messages.map(msg =>
+                                        <Typography key={msg.ts} component="div" className={classes.message}>
+                                            <div className={classes.terminal}>{msg.message}</div>
+                                            <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
+                                        </Typography>)}
+                                </AccordionDetails>
+                            </Accordion>;
+                        }) : null}
+                    </div>
+                    <div className={classes.button}>
+                        <Button
+                            variant="contained"
+                            autoFocus={Object.keys(messages).length !== 1}
+                            disabled={disabled.includes(name)}
+                            style={disabled.includes(name) ? { background: 'silver' } : null}
+                            className={classes.buttonStyle}
+                            onClick={() => {
+                                ackCallback(name);
+                                setDisabled([...disabled, name]);
+                            }}
+                            color={Object.keys(messages).length !== 1 ? 'primary' : 'grey'}
+                            startIcon={<CheckIcon />}
+                        >
+                            {I18n.t('Acknowledge')}
+                        </Button>
+                        {Object.keys(messages).length === 1 && <Button
+                            variant="contained"
+                            disabled={disabled.includes(name)}
+                            className={classes.buttonStyle}
+                            style={disabled.includes(name) ? { background: 'silver' } : null}
+                            onClick={() => {
+                                setDisabled([...disabled, name]);
+                                ackCallback(name);
+                                onClose();
+                            }}
+                            startIcon={<>
+                                <CheckIcon />
+                                <CloseIcon />
+                            </>}
+                            color="primary"
+                        >
+                            {I18n.t('Acknowledge & close')}
+                        </Button>}
+                    </div>
+                </TabPanel>)}
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <Button
+                variant="contained"
+                onClick={() => onClose()}
+                startIcon={<CloseIcon />}
+                color="grey"
+            >
+                {I18n.t('Ok')}
+            </Button>
+        </DialogActions>
+    </Dialog>;
 };
 
-export const hostWarningDialogFunc = (message, dateFormat, themeType, themeName, instances, theme, ackCallback) => {
-    if (!node) {
-        node = document.createElement('div');
-        node.id = 'renderModal';
-        document.body.appendChild(node);
-    }
-    const root = createRoot(node);
-
-    return root.render(<StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-            <HostWarningDialog
-                instances={instances}
-                message={message}
-                themeName={themeName}
-                theme={theme}
-                themeType={themeType}
-                dateFormat={dateFormat}
-                ackCallback={ackCallback}
-            />
-        </ThemeProvider>
-    </StyledEngineProvider>);
-};
+export default HostWarningDialog;

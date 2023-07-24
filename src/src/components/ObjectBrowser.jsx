@@ -5387,6 +5387,7 @@ class ObjectBrowser extends Component {
                                 // return;
                             } else if (common?.type === 'file') {
                                 this.setState({ viewFileDialog: id });
+                                // eslint-disable-next-line brace-style
                             }
                             // in non-expert mode control button directly
                             else if (!this.state.filter.expertMode && item.data.button) {
