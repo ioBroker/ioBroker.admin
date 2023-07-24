@@ -2183,7 +2183,6 @@ class Adapters extends Component {
 
             {this.state.addInstanceDialog && <AddInstanceDialog
                 themeType={this.props.themeType}
-                open={this.state.addInstanceDialog}
                 adapter={this.state.addInstanceAdapter}
                 socket={this.props.socket}
                 hostsWorker={this.props.hostsWorker}
@@ -2199,7 +2198,6 @@ class Adapters extends Component {
                 onInstanceChange={event => this.handleInstanceChange(event)}
             />}
             {this.state.adapterDeletionDialog && <AdapterDeletionDialog
-                open={this.state.adapterDeletionDialog}
                 adapter={this.state.adapterDeletionAdapter}
                 socket={this.props.socket}
                 t={this.t}
@@ -2208,7 +2206,6 @@ class Adapters extends Component {
             />}
             {this.state.gitHubInstallDialog && <GitHubInstallDialog
                 t={this.t}
-                open={this.state.gitHubInstallDialog}
                 categories={this.state.categories}
                 installFromUrl={(value, debug, customUrl) =>
                     this.addInstance(value, undefined, debug, customUrl)}
@@ -2218,7 +2215,6 @@ class Adapters extends Component {
                 }}
             />}
             {this.state.adapterToUpdate && <AdapterUpdateDialog
-                open={!0}
                 adapter={this.state.adapterToUpdate}
                 adapterObject={this.state.repository[this.state.adapterToUpdate]}
                 t={this.t}
@@ -2258,7 +2254,6 @@ class Adapters extends Component {
                 onClose={() => this.closeAdapterUpdateDialog()}
             />}
             {this.state.adapterInstallVersion && <CustomModal
-                open={!0}
                 title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
                 applyButton={false}
                 onClose={() => this.setState({ adapterInstallVersion: '' })}

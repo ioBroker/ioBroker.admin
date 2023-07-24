@@ -468,7 +468,7 @@ class AdapterUpdateDialog extends Component {
 
         return <Dialog
             onClose={this.props.onClose}
-            open={this.props.open}
+            open={!0}
         >
             {this.renderMessageDialog()}
             <DialogTitle>
@@ -561,7 +561,6 @@ AdapterUpdateDialog.propTypes = {
     onUpdate: PropTypes.func.isRequired,
     onIgnore: PropTypes.func,
     onClose: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired,
     rightDependencies: PropTypes.bool,
     installedVersion: PropTypes.string,
     t: PropTypes.func.isRequired,

@@ -26,14 +26,13 @@ import {
     Edit as EditIcon,
     Cached as CachedIcon,
     Build as BuildIcon,
-    Copy as CopyIcon,
 } from '@mui/icons-material';
 
 import {
     amber, blue, grey, red,
 } from '@mui/material/colors';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { Utils, IconCopy } from '@iobroker/adapter-react-v5';
 
 import Adapters from '../../tabs/Adapters';
 import CustomModal from '../CustomModal';
@@ -820,7 +819,7 @@ js-controller:
 
                     <Tooltip title={t('Copy')}>
                         <IconButton size="large" onClick={() => onCopy()}>
-                            <CopyIcon />
+                            <IconCopy />
                         </IconButton>
                     </Tooltip>
                 </Typography>

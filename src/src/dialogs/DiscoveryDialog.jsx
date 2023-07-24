@@ -572,6 +572,26 @@ const DiscoveryDialog = ({
         }
     };
 
+    const goToNextInstance = (id, reason) => {
+        const index = selected.indexOf(id) + 1;
+        setInstallStatus(status => ({ ...status, [index]: 'error' }));
+
+        if (reason) {
+            setLogs(logsEl => ({ ...logsEl, [selected[index - 1]]: [I18n.t(reason)] }));
+        }
+
+        if (selected.length > index) {
+            setTimeout(() =>
+                checkLicenseAndInputs(selected[index], () => {
+                    setCurrentInstall(index + 1);
+                    setCmdName('install');
+                    setInstallProgress(true);
+                }), 100);
+        } else {
+            setFinishInstall(true);
+        }
+    };
+
     const inputsDialog = showInputsDialog ? <GenerateInputsModal
         socket={socket}
         themeType={themeType}
@@ -585,26 +605,8 @@ const DiscoveryDialog = ({
             if (params) {
                 setInstancesInputsParams(params);
                 cb();
-            }
-
-            // go to the next instance
-            const index = selected.indexOf(obj._id) + 1;
-            setInstallStatus(status => ({ ...status, [index]: 'error' }));
-
-            setLogs(logsEl => ({ ...logsEl, [selected[index - 1]]: [I18n.t('Error: configuration dialog canceled')] }));
-
-            if (selected.length > index) {
-                setTimeout(
-                    () =>
-                        checkLicenseAndInputs(selected[index], () => {
-                            setCurrentInstall(index + 1);
-                            setCmdName('install');
-                            setInstallProgress(true);
-                        }),
-                    100,
-                );
             } else {
-                setFinishInstall(true);
+                goToNextInstance(obj._id, 'Error: configuration dialog canceled');
             }
         }}
     /> : null;
@@ -633,21 +635,7 @@ const DiscoveryDialog = ({
             setShowLicenseDialog(false);
             if (!result) {
                 // license isn't accepted, go to the next instance
-                const index = selected.indexOf(obj._id) + 1;
-                setInstallStatus(status => ({ ...status, [index]: 'error' }));
-
-                setLogs(logsEl => ({ ...logsEl, [selected[index - 1]]: [I18n.t('Error: license not accepted')] }));
-
-                if (selected.length > index) {
-                    setTimeout(() =>
-                        checkLicenseAndInputs(selected[index], () => {
-                            setCurrentInstall(index + 1);
-                            setCmdName('install');
-                            setInstallProgress(true);
-                        }), 100);
-                } else {
-                    setFinishInstall(true);
-                }
+                goToNextInstance(obj._id, 'Error: license not accepted');
             } else if (obj.comment?.inputs) {
                 setShowInputsDialog({ cb, obj });
             } else {
