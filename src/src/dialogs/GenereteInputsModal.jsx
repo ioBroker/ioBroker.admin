@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import {
     AppBar, Box, Paper, Typography,
 } from '@mui/material';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -18,8 +16,6 @@ import CheckIcon from '@mui/icons-material/Check';
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 import ConfigPanel from '../components/JsonConfigComponent/ConfigPanel';
-
-let node = null;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -218,28 +214,10 @@ const generateObj = (obj, path, value) => {
     return obj;
 };
 const GenerateInputsModal = ({
-    themeType, themeName, socket, newInstances, onApplyModal, onCloseModal, theme,
+    themeType, themeName, socket, newInstances, onClose,
 }) => {
     const classes = useStyles();
-
-    const [open, setOpen] = useState(true);
     const [error, setError] = useState({});
-
-    const onClose = () => {
-        setOpen(false);
-        if (node) {
-            try {
-                window.document.body.removeChild(node);
-            } catch (e) {
-                // ignore
-            }
-            node = null;
-        }
-    };
-
-    const isError = () => Object.keys(error).find(attr => error[attr]);
-
-    // const black = themeType === 'dark';
 
     const [schema, setSchema] = useState({
         items: {},
@@ -290,102 +268,83 @@ const GenerateInputsModal = ({
         }
     }, [newInstances]);
 
-    return <ThemeProvider theme={theme}>
-        <Dialog
-            onClose={onClose}
-            open={open}
-            classes={{ paper: classes.paper }}
-        >
-            <h2 className={classes.heading}>
-                <SettingsIcon style={{
-                    color: 'rgb(77 171 245)',
-                    fontSize: 36,
-                    marginLeft: 25,
-                    marginRight: 10,
-                }}
-                />
-                {I18n.t('Instance parameters for %s', newInstances._id.replace('system.adapter.', ''))}
-            </h2>
-            <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
-                <div className={classes.root}>
-                    <TabPanel
-                        value={1}
-                        index={1}
-                        custom
-                        title={I18n.t('Test')}
-                    >
-                        <Paper className={classes.paperTable}>
-                            <ConfigPanel
-                                data={schemaData}
-                                socket={socket}
-                                themeType={themeType}
-                                themeName={themeName}
-                                onChange={setSchemaData}
-                                schema={schema}
-                                onError={(attr, _error) => setError({ ...error, [attr]: _error })}
-                            />
-                        </Paper>
-                    </TabPanel>
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    variant="contained"
-                    autoFocus
-                    disabled={isError()}
-                    onClick={() => {
-                        let obj = {};
-                        let err = false;
-                        Object.keys(schema.items).forEach(key => {
-                            if (schema.items[key].required) {
-                                if (!schemaData[key] && schema.items[key].type !== 'checkbox') {
-                                    err = true;
-                                    alert(`no data ${schema.items[key].label}`);
-                                } else {
-                                    obj = generateObj(obj, schema.items[key].name, schemaData[key]);
-                                }
-                            } else if (schema.items[key].name) {
-                                err = false;
+    return <Dialog
+        onClose={onClose}
+        open={!0}
+        classes={{ paper: classes.paper }}
+    >
+        <h2 className={classes.heading}>
+            <SettingsIcon style={{
+                color: 'rgb(77 171 245)',
+                fontSize: 36,
+                marginLeft: 25,
+                marginRight: 10,
+            }}
+            />
+            {I18n.t('Instance parameters for %s', newInstances._id.replace('system.adapter.', ''))}
+        </h2>
+        <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
+            <div className={classes.root}>
+                <TabPanel
+                    value={1}
+                    index={1}
+                    custom
+                    title={I18n.t('Test')}
+                >
+                    <Paper className={classes.paperTable}>
+                        <ConfigPanel
+                            data={schemaData}
+                            socket={socket}
+                            themeType={themeType}
+                            themeName={themeName}
+                            onChange={setSchemaData}
+                            schema={schema}
+                            onError={(attr, _error) => setError({ ...error, [attr]: _error })}
+                        />
+                    </Paper>
+                </TabPanel>
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <Button
+                variant="contained"
+                autoFocus
+                disabled={!!Object.keys(error).find(attr => error[attr])}
+                onClick={() => {
+                    let obj = {};
+                    let err = false;
+                    Object.keys(schema.items).forEach(key => {
+                        if (schema.items[key].required) {
+                            if (!schemaData[key] && schema.items[key].type !== 'checkbox') {
+                                err = true;
+                                alert(`no data ${schema.items[key].label}`);
+                            } else {
                                 obj = generateObj(obj, schema.items[key].name, schemaData[key]);
                             }
-                        });
-                        if (!err) {
-                            onApplyModal(obj);
-                            onClose();
+                        } else if (schema.items[key].name) {
+                            err = false;
+                            obj = generateObj(obj, schema.items[key].name, schemaData[key]);
                         }
-                    }}
-                    color="primary"
-                    startIcon={<CheckIcon />}
-                >
-                    {I18n.t('Apply')}
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={() => {
-                        onClose();
-                        setTimeout(() => onCloseModal(), 0);
-                    }}
-                    color="grey"
-                    startIcon={<CloseIcon />}
-                >
-                    {I18n.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
+                    });
+                    if (!err) {
+                        onClose(obj);
+                    }
+                }}
+                color="primary"
+                startIcon={<CheckIcon />}
+            >
+                {I18n.t('Apply')}
+            </Button>
+            <Button
+                variant="contained"
+                onClick={() => onClose()}
+                color="grey"
+                startIcon={<CloseIcon />}
+            >
+                {I18n.t('Close')}
+            </Button>
+        </DialogActions>
+    </Dialog>;
 };
 
-export const generateInputsFunc = (themeType, themeName, socket, newInstances, theme, onCloseModal, onApplyModal) => {
-    if (!node) {
-        node = document.createElement('div');
-        node.id = 'renderDiscoveryModal';
-        document.body.appendChild(node);
-    }
-    const root = createRoot(node);
-
-    return root.render(<StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-            <GenerateInputsModal onCloseModal={onCloseModal} newInstances={newInstances} onApplyModal={onApplyModal} themeName={themeName} themeType={themeType} theme={theme} socket={socket} />
-        </ThemeProvider>
-    </StyledEngineProvider>);
-};
+export default GenerateInputsModal;
