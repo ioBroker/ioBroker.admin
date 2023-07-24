@@ -5443,8 +5443,10 @@ class ObjectBrowser extends Component {
             }
         }
         root.data.id && items.push(leaf);
+        console.log(root.data.id);
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
+
         if (!root.data.id || isExpanded) {
             if (!this.state.foldersFirst) {
                 root.children &&
@@ -5784,12 +5786,13 @@ class ObjectBrowser extends Component {
             return;
         }
 
-        if (event.code === 'ArrowUp') {
-            console.log(selectedId);
-        }
-
-        if (event.code === 'ArrowDown') {
-            console.log(selectedId);
+        if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+            const ids = [];
+            this.tableRef.current.childNodes.forEach(node => ids.push(node.id));
+            const idx = ids.indexOf(selectedId);
+            const newIdx = event.code === 'ArrowDown' ? idx + 1 : idx - 1;
+            const newId = ids[newIdx] || selectedId;
+            this.onSelect(newId);
         }
 
         if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
@@ -6229,6 +6232,8 @@ class ObjectBrowser extends Component {
         }
         const classes = this.props.classes;
         const items = this.renderItem(this.root, undefined, classes);
+
+        console.log(this.root);
 
         return <div onKeyDown={event => this.navigateKeyPress(event)} tabIndex={0}>
             <TabContainer key={this.props.dialogName} classes={{}}>
