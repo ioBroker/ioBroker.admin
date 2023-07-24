@@ -2,13 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import AppBar from '@mui/material/AppBar';
-import Paper from '@mui/material/Paper';
-import Fab from '@mui/material/Fab';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
 import {
+    green, grey, orange, red,
+} from '@mui/material/colors';
+
+import {
+    AppBar,
+    Tooltip,
+    Paper,
+    Fab,
+    Toolbar,
+    Typography,
     Checkbox,
     FormControl,
     FormControlLabel,
@@ -29,7 +33,6 @@ import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import EditIcon from '@mui/icons-material/Edit';
-import { green, red } from '@mui/material/colors';
 
 import {
     Router, Utils, Icon, Confirm as ConfirmDialog,
@@ -100,6 +103,24 @@ const styles = theme => ({
     logLevel: {
         fontSize: 12,
         marginLeft: 10,
+    },
+    green: {
+        color: green[700],
+    },
+    red: {
+        color: red[700],
+    },
+    grey: {
+        color: grey[700],
+    },
+    blue: {
+        color: '#0055a9',
+    },
+    orange: {
+        color: orange[400],
+    },
+    orangeDevice: {
+        color: orange[300],
     },
 });
 
@@ -173,16 +194,28 @@ class Config extends Component {
                         connected = null;
                     }
 
+                    let extension;
+                    try {
+                        extension = await this.props.socket.getState(`${this.props.adapter}.${this.props.instance}.info.extension`);
+                        this.props.socket.subscribeState(`${this.props.adapter}.${this.props.instance}.info.extension`, this.onStateChange);
+                    } catch (error) {
+                        // ignore
+                        extension = null;
+                    }
+
                     this.setState({
                         checkedExist: true,
                         running: obj?.common?.onlyWWW || obj?.common?.enabled,
                         canStart: !obj?.common?.onlyWWW,
                         alive: alive?.val || false,
+                        extension: extension ? (extension?.val || false) : null,
                         connectedToHost: connectedToHost?.val || false,
-                        connected: connected ? connected.val : null,
+                        connected: connected ? (connected.val || false) : null,
                         logLevel: obj?.common?.loglevel || 'info',
                         logLevelValue: obj?.common?.loglevel || 'info',
                         tempLogLevel: tempLogLevel?.val || obj?.common?.loglevel || 'info',
+                        common: obj?.common || {},
+                        native: obj?.native || {},
                     });
                 })
                 .catch(error => {
@@ -209,6 +242,37 @@ class Config extends Component {
         }
     };
 
+    // returns:
+    // grey   - daemon / disabled
+    // green  - daemon / run,connected,alive
+    // blue   - schedule
+    // orangeDevice - daemon / run, connected to controller, not connected to device
+    // orange - daemon / run,not connected
+    // red    - daemon / not run, not connected
+    getInstanceStatus() {
+        const mode = this.state.common?.mode || '';
+        let status = mode === 'daemon' ? 'green' : 'blue';
+
+        if (this.state.common?.enabled && (!this.state.common.webExtension || !this.state.native?.webInstance || mode === 'daemon')) {
+            if (this.state.common.webExtension && this.state.native?.webInstance) {
+                if (this.state.extension !== null) {
+                    return this.state.extension ? 'green' : 'red';
+                }
+            }
+
+            if (!this.state.connectedToHost || !this.state.alive) {
+                status = mode === 'daemon' ? 'red' : 'orangeDevice';
+            }
+            if (this.state.connected !== null && !this.state.connected && status !== 'red') {
+                status = 'orange';
+            }
+        } else {
+            status = mode === 'daemon' ? 'grey' : 'blue';
+        }
+
+        return status;
+    }
+
     onStateChange = (id, state) => {
         const instanceId = `system.adapter.${this.props.adapter}.${this.props.instance}`;
         if (id === `${instanceId}.alive`) {
@@ -217,6 +281,8 @@ class Config extends Component {
             this.setState({ connectedToHost: state ? state.val : false });
         } else if (id === `${this.props.adapter}.${this.props.instance}.info.connection`) {
             this.setState({ connected: state ? state.val : null });
+        } else if (id === `${this.props.adapter}.${this.props.instance}.info.extension`) {
+            this.setState({ extension: state ? state.val : null });
         } else if (id === `${instanceId}.logLevel`) {
             this.setState({ tempLogLevel: state ? state.val : null });
         }
@@ -392,8 +458,7 @@ class Config extends Component {
                         {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
                         {this.props.version ? <span className={Utils.clsx(
                             this.props.classes.version,
-                            this.state.alive && this.state.connectedToHost && this.props.classes.versionAliveConnected,
-                            this.state.alive && !this.state.connectedToHost && this.props.classes.versionAliveNotConnected,
+                            this.props.classes[this.getInstanceStatus()],
                         )}
                         >
 v

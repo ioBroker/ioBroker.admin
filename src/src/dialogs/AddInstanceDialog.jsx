@@ -94,7 +94,7 @@ class AddInstanceDialog extends Component {
 
         return <Dialog
             onClose={this.props.onClose}
-            open={this.props.open}
+            open={!0}
             classes={{ paper: classes.paper }}
         >
             <DialogTitle>
@@ -170,7 +170,6 @@ class AddInstanceDialog extends Component {
 }
 
 AddInstanceDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
     themeType: PropTypes.string,
     adapter: PropTypes.string.isRequired,
     instancesWorker: PropTypes.object.isRequired,

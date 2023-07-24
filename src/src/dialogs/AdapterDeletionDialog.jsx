@@ -62,7 +62,7 @@ class AdapterDeletionDialog extends Component {
 
         return <Dialog
             onClose={this.props.onClose}
-            open={this.props.open}
+            open={!0}
         >
             <DialogTitle>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
@@ -112,7 +112,6 @@ class AdapterDeletionDialog extends Component {
 }
 
 AdapterDeletionDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
     adapter: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,

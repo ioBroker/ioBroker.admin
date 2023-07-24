@@ -28,9 +28,9 @@ import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import { I18n, Utils, SelectWithIcon } from '@iobroker/adapter-react-v5';
 
 import Command from '../components/Command';
-import { licenseDialogFunc } from './LicenseDialog';
-import { generateInputsFunc } from './GenereteInputsModal';
-import { useStateLocal } from '../helpers/hooks/useStateLocal';
+import LicenseDialog from './LicenseDialog';
+import GenerateInputsModal from './GenereteInputsModal';
+import useStateLocal from '../helpers/hooks/useStateLocal';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -374,7 +374,6 @@ const DiscoveryDialog = ({
     const [disableScanner, setDisableScanner] = useState(false);
     const [discoveryData, setDiscoveryData] = useState({});
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         async function fetchData() {
             const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
@@ -403,7 +402,6 @@ const DiscoveryDialog = ({
         fetchData();
     }, [socket]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         async function readOldData() {
             const dataDiscovery = await socket.getObject('system.discovery');
@@ -426,7 +424,6 @@ const DiscoveryDialog = ({
         if (Object.keys(aliveHosts).filter(key => aliveHosts[key]).length > 1) {
             setCheckSelectHosts(true);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hosts, socket]);
 
     const [devicesFound, setDevicesFound] = useState(0);
@@ -441,6 +438,8 @@ const DiscoveryDialog = ({
     const [cmdName, setCmdName] = useState('install');
     const [suggested, setSuggested] = useStateLocal(true, 'discovery.suggested');
     const [showAll, setShowAll] = useStateLocal(true, 'discovery.showAll');
+    const [showLicenseDialog, setShowLicenseDialog] = useState(false);
+    const [showInputsDialog, setShowInputsDialog] = useState(false);
 
     const black = themeType === 'dark';
 
@@ -549,7 +548,7 @@ const DiscoveryDialog = ({
     const checkLicenseAndInputs = (objName, cb) => {
         const obj = JSON.parse(JSON.stringify(discoveryData?.native?.newInstances.find(ob => ob._id === objName)));
         let license = true;
-        if (obj && obj.comment && obj.comment.license && obj.comment.license !== 'MIT') {
+        if (obj?.comment?.license && obj.comment.license !== 'MIT') {
             license = false;
             if (!obj.common.licenseUrl) {
                 obj.common.licenseUrl = `https://raw.githubusercontent.com/ioBroker/ioBroker.${obj.common.name}/master/LICENSE`;
@@ -562,57 +561,55 @@ const DiscoveryDialog = ({
             }
         }
 
-        licenseDialogFunc(license, theme, result => {
-            if (!result) {
-                // license isn't accepted, go to the next instance
-                const index = selected.indexOf(obj._id) + 1;
-                setInstallStatus(status => ({ ...status, [index]: 'error' }));
-
-                setLogs(logsEl => ({ ...logsEl, [selected[index - 1]]: [I18n.t('Error: license not accepted')] }));
-
-                if (selected.length > index) {
-                    setTimeout(
-                        () =>
-                            checkLicenseAndInputs(selected[index], () => {
-                                setCurrentInstall(index + 1);
-                                setCmdName('install');
-                                setInstallProgress(true);
-                            }),
-                        100,
-                    );
-                } else {
-                    setFinishInstall(true);
-                }
-            } else
-                if (obj.comment?.inputs) {
-                    generateInputsFunc(themeType, themeName, socket, obj, theme, () => {
-                        const index = selected.indexOf(obj._id) + 1;
-                        setInstallStatus(status => ({ ...status, [index]: 'error' }));
-
-                        setLogs(logsEl => ({ ...logsEl, [selected[index - 1]]: [I18n.t('Error: configuration dialog canceled')] }));
-
-                        if (selected.length > index) {
-                            setTimeout(
-                                () =>
-                                    checkLicenseAndInputs(selected[index], () => {
-                                        setCurrentInstall(index + 1);
-                                        setCmdName('install');
-                                        setInstallProgress(true);
-                                    }),
-                                100,
-                            );
-                        } else {
-                            setFinishInstall(true);
-                        }
-                    }, params => {
-                        setInstancesInputsParams(params);
-                        cb();
-                    });
-                } else {
-                    cb();
-                }
-        }, obj?.common?.licenseUrl);
+        if (license) {
+            if (obj.comment?.inputs) {
+                setShowInputsDialog({ cb, obj });
+            } else {
+                cb();
+            }
+        } else {
+            setShowLicenseDialog({ cb, obj });
+        }
     };
+
+    const goToNextInstance = (id, reason) => {
+        const index = selected.indexOf(id) + 1;
+        setInstallStatus(status => ({ ...status, [index]: 'error' }));
+
+        if (reason) {
+            setLogs(logsEl => ({ ...logsEl, [selected[index - 1]]: [I18n.t(reason)] }));
+        }
+
+        if (selected.length > index) {
+            setTimeout(() =>
+                checkLicenseAndInputs(selected[index], () => {
+                    setCurrentInstall(index + 1);
+                    setCmdName('install');
+                    setInstallProgress(true);
+                }), 100);
+        } else {
+            setFinishInstall(true);
+        }
+    };
+
+    const inputsDialog = showInputsDialog ? <GenerateInputsModal
+        socket={socket}
+        themeType={themeType}
+        themeName={themeName}
+        obj={showInputsDialog.obj}
+        onClose={params => {
+            const cb = showInputsDialog.cb;
+            const obj = showInputsDialog.obj;
+            setShowInputsDialog(false);
+
+            if (params) {
+                setInstancesInputsParams(params);
+                cb();
+            } else {
+                goToNextInstance(obj._id, 'Error: configuration dialog canceled');
+            }
+        }}
+    /> : null;
 
     const resetStateBack = () => {
         setSelected([]);
@@ -630,7 +627,26 @@ const DiscoveryDialog = ({
         });
     };
 
+    const licenseDialog = showLicenseDialog ? <LicenseDialog
+        url={showLicenseDialog.obj.common.licenseUrl}
+        onClose={result => {
+            const cb = showLicenseDialog.cb;
+            const obj = showLicenseDialog.obj;
+            setShowLicenseDialog(false);
+            if (!result) {
+                // license isn't accepted, go to the next instance
+                goToNextInstance(obj._id, 'Error: license not accepted');
+            } else if (obj.comment?.inputs) {
+                setShowInputsDialog({ cb, obj });
+            } else {
+                cb();
+            }
+        }}
+    /> : null;
+
     return <ThemeProvider theme={theme}>
+        {licenseDialog}
+        {inputsDialog}
         <Dialog
             onClose={(event, reason) => {
                 if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {

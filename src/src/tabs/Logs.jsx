@@ -638,7 +638,7 @@ class Logs extends Component {
             >
                 {id === '1' ?
                     null :
-                    <Icon src={this.state.sources[id].icon} className={this.props.classes.iconSelect} />}
+                    <Icon src={this.state.sources[id].icon || ''} className={this.props.classes.iconSelect} />}
                 {id === '1' ?
                     this.t('Source') :
                     id}
@@ -701,7 +701,7 @@ class Logs extends Component {
             >
                 <TableCell className={UtilsCommon.clsx(classes.cell, classes.cellName)}>
                     <div className={classes.iconAndName}>
-                        <Icon src={row.icon} className={classes.icon} />
+                        <Icon src={row.icon || ''} className={classes.icon} />
                         <div className={classes.name}>{row.from}</div>
                     </div>
                 </TableCell>
