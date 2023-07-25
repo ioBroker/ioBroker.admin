@@ -79,9 +79,9 @@ class ObjectBrowserEditRole extends Component {
                     onChange={(event, role) => this.setState({ role, roleInput: role })}
                     onInputChange={(event, role) => this.setState({ roleInput: role })}
                     renderInput={params => <TextField
+                        variant="standard"
                         {...params}
                         label={this.props.t('Role')}
-                        variant="outlined"
                     />}
                 />
             </DialogContent>
