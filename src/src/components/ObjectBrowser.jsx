@@ -6294,16 +6294,16 @@ ObjectBrowser.propTypes = {
     modalEditOfAccessControl: PropTypes.func, // modal Edit Of Access Control
     onObjectDelete: PropTypes.func,     // optional function (id, hasChildren, objectExists, childrenCount+1) {  }
     customFilter: PropTypes.object,     // optional
-                                        // `{common: {custom: true}}` - show only objects with some custom settings
-                                        // `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
-                                        // `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb' or 'sql' or 'history'
-                                        // `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
-                                        // `{type: 'channel'}` - show only channels
-                                        // `{type: ['channel', 'device']}` - show only channels and devices
-                                        // `{common: {type: 'number'}` - show only states of type 'number
-                                        // `{common: {type: ['number', 'string']}` - show only states of type 'number and string
-                                        // `{common: {role: 'switch']}` - show only states with roles starting from switch
-                                        // `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
+    //                                    `{common: {custom: true}}` - show only objects with some custom settings
+    //                                    `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
+    //                                    `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb' or 'sql' or 'history'
+    //                                    `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
+    //                                    `{type: 'channel'}` - show only channels
+    //                                    `{type: ['channel', 'device']}` - show only channels and devices
+    //                                    `{common: {type: 'number'}` - show only states of type 'number
+    //                                    `{common: {type: ['number', 'string']}` - show only states of type 'number and string
+    //                                    `{common: {role: 'switch']}` - show only states with roles starting from switch
+    //                                    `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     objectBrowserEditRole: PropTypes.object, // on Edit role
@@ -6319,7 +6319,7 @@ ObjectBrowser.propTypes = {
 
     objectsWorker: PropTypes.object,    // optional cache of objects
     filterFunc: PropTypes.func,         // function to filter out all unnecessary objects. It cannot be used together with "types"
-                                        // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
+    //                                     Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
 
     DragWrapper: PropTypes.func,
     dragEnabled: PropTypes.bool,

@@ -227,19 +227,21 @@ class ConfigCheckLicense extends ConfigGeneric {
                     new Date(license.validTill).getTime() > now
                 ) {
                     const parts = (license.product || '').split('.');
-                    if (
-                        parts[1] === adapterName &&
-                        (!useLicense || license.invoice !== 'free') &&
-                        (!uuid || !license.uuid || license.uuid === uuid) &&
-                        ConfigCheckLicense.isVersionValid(version, license.version, license.invoice, adapterName)
-                    ) {
+                    const validName = parts[1] === adapterName || (adapterName === 'vis-2' && parts[1] === 'vis');
+                    const validUuid = !uuid || !license.uuid || license.uuid === uuid;
+                    const validVersion = ConfigCheckLicense.isVersionValid(version, license.version, license.invoice, adapterName);
+                    // commercial license has priority over free license
+                    if ((!useLicense || license.invoice !== 'free') && validName && validUuid && validVersion) {
                         useLicense = license;
                     }
                 }
             });
 
+            // TODO: show error with full list of licenses and why they are not valid
             return useLicense?.json;
         }
+
+        // TODO: show error that no onw license found
         return false;
     }
 
@@ -476,10 +478,12 @@ class ConfigCheckLicense extends ConfigGeneric {
             )}
             ok={I18n.t('ra_Yes')}
             onClose={async isYes => {
-                this.setState({ askForUpdate: false });
                 if (isYes) {
-                    await ConfigCheckLicense.updateLicenses();
+                    this.setState({ askForUpdate: false });
+                    await ConfigCheckLicense.updateLicenses(this.props.socket);
                     await this._onClick(true);
+                } else {
+                    this.setState({ askForUpdate: false, running: false });
                 }
             }}
         />;
@@ -492,7 +496,7 @@ class ConfigCheckLicense extends ConfigGeneric {
         if (this.props.data.useLicenseManager) {
             license = await this.findInLicenseManager(adapterName);
             if (!license && !secondRun) {
-                // no suitable license found in license manager
+                // no suitable license found in the license manager
                 // should we read all licenses again?
                 this.setState({ askForUpdate: true });
                 return;

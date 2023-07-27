@@ -10,10 +10,10 @@ iobroker upload admin
 
 ## How to Implement OAuth Authentication flow
 
-Since Admin 6.2.14 there is a convenience support for OAuth authentication flows that send the user to the authorization server and then redirect the user back to complete the process.
+Since Admin 6.2.14, there is a convenience support for OAuth authentication flows that send the user to the authorization server and then redirect the user back to complete the process.
 
 ### Sending user to the Authorization server
-In JSON-Config you can use the sendTo component to send a message to your adapter which then as response return an URL. The component can then open this URL automatically in a new tab/window.
+In JSON-Config you can use the sendTo component to send a message to your adapter which then as response return a URL. The component can then open this URL automatically in a new tab/window.
 
 **This only works if the URL for redirecting back after the authentication do not need to be specified hardcoded in the configurationnof the client!** 
 

@@ -16,6 +16,7 @@ const DragObjectBrowser = props => {
     const [wrapperState, setWrapperState] = useState({ DragWrapper: null });
 
     useEffect(() => {
+        // eslint-disable-next-line react/no-unstable-nested-components
         const DragWrapper = _props => {
             const onDragEnd = (item, monitor) => {
                 const dropResult = monitor.getDropResult();

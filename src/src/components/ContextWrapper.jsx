@@ -58,6 +58,7 @@ export const ContextWrapperProvider = ({ children }) => {
         }
     }, [stateContext.hosts, stateContext.installed, stateContext.repository]);
 
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
     return <ContextWrapper.Provider value={{ stateContext, setStateContext }}>
         {children}
     </ContextWrapper.Provider>;

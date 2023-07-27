@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import { MapContainer, TileLayer } from 'react-leaflet';
+// eslint-disable-next-line import/no-unresolved
 import { useMap } from 'react-leaflet/hooks';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 

@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 6.6.2 (2023-07-27)
+### **WORK IN PROGRESS**
 * (foxriver76) fixed "Let's Encrypt" link not being clickable inside system settings
 * (foxriver76) fixed false positives for "not much space left on device" warning
 * (foxriver76) fixed issue with npm version determination on some installations
