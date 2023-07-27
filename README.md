@@ -84,7 +84,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
 ### **WORK IN PROGRESS**
 * (foxriver76) fixed "Let's Encrypt" link not being clickable inside system settings
 * (foxriver76) fixed false positives for "not much space left on device" warning

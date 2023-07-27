@@ -1531,5 +1531,7 @@
   "updating js-controller to %s...": "更新 js-controller 到 %s...",
   "Site name": "站点名称",
   "This name will be shown in admin's header. Just to identify the whole installation": "该名称将显示在管理员的标题中。只是为了识别整个安装",
-  "Instance %s already exists": "实例“%s”已存在"
+  "Instance %s already exists": "实例“%s”已存在",
+  "Unknown error": "未知错误",
+  "serial number (UUID) in license is for other device": "许可证中的序列号 (UUID) 用于其他设备"
 }

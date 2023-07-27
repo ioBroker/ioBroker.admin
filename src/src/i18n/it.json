@@ -1531,5 +1531,7 @@
   "updating js-controller to %s...": "aggiornamento del controller js a %s...",
   "Site name": "Nome del sito",
   "This name will be shown in admin's header. Just to identify the whole installation": "Questo nome verrà mostrato nell'intestazione dell'amministratore. Giusto per identificare l'intera installazione",
-  "Instance %s already exists": "L'istanza \"%s\" esiste già"
+  "Instance %s already exists": "L'istanza \"%s\" esiste già",
+  "Unknown error": "Errore sconosciuto",
+  "serial number (UUID) in license is for other device": "Numero di serie (UUID) nella licenza è per un altro dispositivo"
 }

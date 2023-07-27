@@ -8,7 +8,7 @@
  * */
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
+import { withStyles } from '@mui/styles';
 import SVG from 'react-inlinesvg';
 
 import {
@@ -5042,13 +5042,11 @@ class ObjectBrowser extends Component {
             if (common.statusStates.errorId && this.states[ids.errorId] && this.states[ids.errorId].val) {
                 checkColor = this.props.themeType === 'dark' ? COLOR_NAME_ERROR_DARK : COLOR_NAME_ERROR_LIGHT;
                 colorSet = true;
-                icons.push(
-                    <IconError
-                        key="error"
-                        title={this.texts.deviceError}
-                        className={this.props.classes.iconDeviceError}
-                    />,
-                );
+                icons.push(<IconError
+                    key="error"
+                    title={this.texts.deviceError}
+                    className={this.props.classes.iconDeviceError}
+                />);
             }
 
             if (ids.onlineId && this.states[ids.onlineId]) {
@@ -5056,42 +5054,34 @@ class ObjectBrowser extends Component {
                     if (this.states[ids.onlineId].val) {
                         checkColor =
                             this.props.themeType === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT;
-                        icons.push(
-                            <IconConnection
-                                key="conn"
-                                title={this.texts.deviceError}
-                                className={this.props.classes.iconDeviceConnected}
-                            />,
-                        );
+                        icons.push(<IconConnection
+                            key="conn"
+                            title={this.texts.deviceError}
+                            className={this.props.classes.iconDeviceConnected}
+                        />);
                     } else {
                         checkColor =
                             this.props.themeType === 'dark'
                                 ? COLOR_NAME_DISCONNECTED_DARK
                                 : COLOR_NAME_DISCONNECTED_LIGHT;
-                        icons.push(
-                            <IconDisconnected
-                                key="disc"
-                                title={this.texts.deviceError}
-                                className={this.props.classes.iconDeviceDisconnected}
-                            />,
-                        );
-                    }
-                } else if (this.states[ids.onlineId].val) {
-                    icons.push(
-                        <IconConnection
-                            key="conn"
-                            title={this.texts.deviceError}
-                            className={this.props.classes.iconDeviceConnected}
-                        />,
-                    );
-                } else {
-                    icons.push(
-                        <IconDisconnected
+                        icons.push(<IconDisconnected
                             key="disc"
                             title={this.texts.deviceError}
                             className={this.props.classes.iconDeviceDisconnected}
-                        />,
-                    );
+                        />);
+                    }
+                } else if (this.states[ids.onlineId].val) {
+                    icons.push(<IconConnection
+                        key="conn"
+                        title={this.texts.deviceError}
+                        className={this.props.classes.iconDeviceConnected}
+                    />);
+                } else {
+                    icons.push(<IconDisconnected
+                        key="disc"
+                        title={this.texts.deviceError}
+                        className={this.props.classes.iconDeviceDisconnected}
+                    />);
                 }
             } else if (ids.offlineId && this.states[ids.offlineId]) {
                 if (!colorSet) {
@@ -5100,40 +5090,32 @@ class ObjectBrowser extends Component {
                             this.props.themeType === 'dark'
                                 ? COLOR_NAME_DISCONNECTED_DARK
                                 : COLOR_NAME_DISCONNECTED_LIGHT;
-                        icons.push(
-                            <IconDisconnected
-                                key="disc"
-                                title={this.texts.deviceError}
-                                className={this.props.classes.iconDeviceDisconnected}
-                            />,
-                        );
-                    } else {
-                        checkColor =
-                            this.props.themeType === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT;
-                        icons.push(
-                            <IconConnection
-                                key="conn"
-                                title={this.texts.deviceError}
-                                className={this.props.classes.iconDeviceConnected}
-                            />,
-                        );
-                    }
-                } else if (this.states[ids.offlineId].val) {
-                    icons.push(
-                        <IconDisconnected
+                        icons.push(<IconDisconnected
                             key="disc"
                             title={this.texts.deviceError}
                             className={this.props.classes.iconDeviceDisconnected}
-                        />,
-                    );
-                } else {
-                    icons.push(
-                        <IconConnection
+                        />);
+                    } else {
+                        checkColor =
+                            this.props.themeType === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT;
+                        icons.push(<IconConnection
                             key="conn"
                             title={this.texts.deviceError}
                             className={this.props.classes.iconDeviceConnected}
-                        />,
-                    );
+                        />);
+                    }
+                } else if (this.states[ids.offlineId].val) {
+                    icons.push(<IconDisconnected
+                        key="disc"
+                        title={this.texts.deviceError}
+                        className={this.props.classes.iconDeviceDisconnected}
+                    />);
+                } else {
+                    icons.push(<IconConnection
+                        key="conn"
+                        title={this.texts.deviceError}
+                        className={this.props.classes.iconDeviceConnected}
+                    />);
                 }
             }
         }
@@ -6312,16 +6294,16 @@ ObjectBrowser.propTypes = {
     modalEditOfAccessControl: PropTypes.func, // modal Edit Of Access Control
     onObjectDelete: PropTypes.func,     // optional function (id, hasChildren, objectExists, childrenCount+1) {  }
     customFilter: PropTypes.object,     // optional
-    // `{common: {custom: true}}` - show only objects with some custom settings
-    // `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
-    // `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb' or 'sql' or 'history'
-    // `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
-    // `{type: 'channel'}` - show only channels
-    // `{type: ['channel', 'device']}` - show only channels and devices
-    // `{common: {type: 'number'}` - show only states of type 'number
-    // `{common: {type: ['number', 'string']}` - show only states of type 'number and string
-    // `{common: {role: 'switch']}` - show only states with roles starting from switch
-    // `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
+                                        // `{common: {custom: true}}` - show only objects with some custom settings
+                                        // `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
+                                        // `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb' or 'sql' or 'history'
+                                        // `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
+                                        // `{type: 'channel'}` - show only channels
+                                        // `{type: ['channel', 'device']}` - show only channels and devices
+                                        // `{common: {type: 'number'}` - show only states of type 'number
+                                        // `{common: {type: ['number', 'string']}` - show only states of type 'number and string
+                                        // `{common: {role: 'switch']}` - show only states with roles starting from switch
+                                        // `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     objectBrowserEditRole: PropTypes.object, // on Edit role
@@ -6337,7 +6319,7 @@ ObjectBrowser.propTypes = {
 
     objectsWorker: PropTypes.object,    // optional cache of objects
     filterFunc: PropTypes.func,         // function to filter out all unnecessary objects. It cannot be used together with "types"
-    // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
+                                        // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
 
     DragWrapper: PropTypes.func,
     dragEnabled: PropTypes.bool,

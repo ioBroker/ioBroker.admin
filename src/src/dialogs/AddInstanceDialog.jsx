@@ -65,7 +65,7 @@ class AddInstanceDialog extends Component {
 
         for (let i = 0; i <= 10; i++) {
             if (!this.state.instanceNumbers.includes(i)) {
-                result.push(<MenuItem value={`${i}`} key={i}>{i}</MenuItem>);
+                result.push(<MenuItem value={i} key={i}>{i}</MenuItem>);
             }
         }
 

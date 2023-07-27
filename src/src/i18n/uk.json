@@ -1531,5 +1531,7 @@
   "updating js-controller to %s...": "оновлення js-контролера до %s...",
   "Site name": "Назва сайту",
   "This name will be shown in admin's header. Just to identify the whole installation": "Це ім'я буде показано в заголовку адміністратора. Просто щоб ідентифікувати всю установку",
-  "Instance %s already exists": "Примірник \"%s\" уже існує"
+  "Instance %s already exists": "Примірник \"%s\" уже існує",
+  "Unknown error": "Невідома помилка",
+  "serial number (UUID) in license is for other device": "Серійний номер (UUID) у ліцензії для іншого пристрою"
 }

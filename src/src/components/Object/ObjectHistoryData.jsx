@@ -628,7 +628,7 @@ class ObjectHistoryData extends Component {
                     <TableCell>...</TableCell>
                     {this.state.ackVisible ? <TableCell /> : null}
                     {this.state.fromVisible ? <TableCell /> : null}
-                    { this.state.lcVisible  ? <TableCell /> : null }
+                    {this.state.lcVisible ? <TableCell /> : null}
                 </TableRow>);
             } else
                 if (state.noData || state.noDataForPeriod) {
@@ -641,7 +641,7 @@ class ObjectHistoryData extends Component {
                         <TableCell>{ state.noData ? this.props.t('No data in history') : this.props.t('No data in history for selected period')}</TableCell>
                         {this.state.ackVisible  ? <TableCell /> : null}
                         {this.state.fromVisible ? <TableCell /> : null}
-                        { this.state.lcVisible  ? <TableCell /> : null }
+                        {this.state.lcVisible  ? <TableCell /> : null}
                     </TableRow>);
                 } else {
                     const interpolated = state.i;
@@ -668,25 +668,25 @@ class ObjectHistoryData extends Component {
                         key={ts + (state.val || '')}
                     >
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
-                            { `${new Date(state.ts).toLocaleDateString()} ${new Date(state.ts).toLocaleTimeString()}.${padding3(state.ts % 1000)}` }
-                            { selected && this.state.lastSelectedColumn === 'ts' ? <div className={classes.rowFocused} /> : ''}
+                            {`${new Date(state.ts).toLocaleDateString()} ${new Date(state.ts).toLocaleTimeString()}.${padding3(state.ts % 1000)}`}
+                            {selected && this.state.lastSelectedColumn === 'ts' ? <div className={classes.rowFocused} /> : ''}
                         </TableCell>
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'val')}>
-                            { val + this.unit }
-                            { selected && this.state.lastSelectedColumn === 'val' ? <div className={classes.rowFocused} /> : ''}
+                            {val + this.unit}
+                            {selected && this.state.lastSelectedColumn === 'val' ? <div className={classes.rowFocused} /> : ''}
                         </TableCell>
-                        { this.state.ackVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')} className={state.ack ? classes.cellAckTrue : classes.cellAckFalse}>
-                            { state.ack ? 'true' : 'false' }
-                            { selected && this.state.lastSelectedColumn === 'ack' ? <div className={classes.rowFocused} /> : ''}
-                        </TableCell> : null }
-                        { this.state.fromVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'from')}>
-                            { state.from || '' }
-                            { selected && this.state.lastSelectedColumn === 'from' ? <div className={classes.rowFocused} /> : ''}
-                        </TableCell> : null }
-                        { this.state.lcVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
-                            { state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${padding3(state.ts % 1000)}` : '' }
-                            { selected && this.state.lastSelectedColumn === 'lc' ? <div className={classes.rowFocused} /> : ''}
-                        </TableCell> : null }
+                        {this.state.ackVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')} className={state.ack ? classes.cellAckTrue : classes.cellAckFalse}>
+                            {state.ack ? 'true' : 'false' }
+                            {selected && this.state.lastSelectedColumn === 'ack' ? <div className={classes.rowFocused} /> : ''}
+                        </TableCell> : null}
+                        {this.state.fromVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'from')}>
+                            {state.from || ''}
+                            {selected && this.state.lastSelectedColumn === 'from' ? <div className={classes.rowFocused} /> : ''}
+                        </TableCell> : null}
+                        {this.state.lcVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
+                            {state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${padding3(state.ts % 1000)}` : ''}
+                            {selected && this.state.lastSelectedColumn === 'lc' ? <div className={classes.rowFocused} /> : ''}
+                        </TableCell> : null}
                     </TableRow>);
                 }
         }
@@ -887,23 +887,23 @@ class ObjectHistoryData extends Component {
                     <TableHead>
                         <TableRow>
                             <TableCell className={classes.colTs}>
-                                { this.props.t('Timestamp') }
+                                {this.props.t('Timestamp')}
                             </TableCell>
                             <TableCell className={classes.colValue}>
-                                { this.props.t('Value') }
+                                {this.props.t('Value')}
                             </TableCell>
                             {this.state.ackVisible  ? <TableCell className={classes.colAck}>
-                                { this.props.t('Ack') }
+                                {this.props.t('Ack')}
                             </TableCell> : null}
                             {this.state.fromVisible ? <TableCell className={classes.colFrom}>
-                                { this.props.t('From') }
+                                {this.props.t('From')}
                             </TableCell> : null}
                             {this.state.lcVisible   ? <TableCell className={classes.colLastChange}>
-                                { this.props.t('lc') }
+                                {this.props.t('lc')}
                             </TableCell> : null}
                         </TableRow>
                     </TableHead>
-                    <TableBody>{ this.getTableRows(classes) }</TableBody>
+                    <TableBody>{this.getTableRows(classes)}</TableBody>
                 </TableResize>
             </TableContainer>;
         }
@@ -1127,8 +1127,7 @@ class ObjectHistoryData extends Component {
                                     onChange={e => this.updateEdit('ms', e.target.value)}
                                 />
                             </Grid>
-                        </LocalizationProvider>
-                        : null }
+                        </LocalizationProvider> : null}
                 </form>
             </DialogContent>
             <DialogActions>
@@ -1142,7 +1141,7 @@ class ObjectHistoryData extends Component {
                     color="primary"
                     autoFocus
                 >
-                    { this.state.updateOpened ? this.props.t('Update') : this.props.t('Add') }
+                    {this.state.updateOpened ? this.props.t('Update') : this.props.t('Add')}
                 </Button>
                 <Button variant="contained" onClick={() => this.setState({ updateOpened: false, insertOpened: false })} color="grey">{ this.props.t('Cancel') }</Button>
             </DialogActions>
@@ -1177,7 +1176,7 @@ class ObjectHistoryData extends Component {
         const classes = this.props.classes;
         return <Toolbar>
             <FormControl variant="standard" className={classes.selectHistoryControl}>
-                <InputLabel>{ this.props.t('History instance') }</InputLabel>
+                <InputLabel>{this.props.t('History instance')}</InputLabel>
                 <Select
                     variant="standard"
                     value={this.state.historyInstance || ''}
@@ -1190,7 +1189,7 @@ class ObjectHistoryData extends Component {
                                     this.readHistory()));
                     }}
                 >
-                    { this.state.historyInstances.map(it => <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{ it.id }</MenuItem>) }
+                    {this.state.historyInstances.map(it => <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{ it.id }</MenuItem>)}
                 </Select>
             </FormControl>
             <FormControl variant="standard" className={classes.selectRelativeTime}>
@@ -1274,11 +1273,11 @@ class ObjectHistoryData extends Component {
             </LocalizationProvider>
             <div className={classes.grow} />
 
-            { this.state.values?.length ? <IconButton size="large" onClick={() => this.exportData()} title={this.props.t('Save data as csv')}>
+            {this.state.values?.length ? <IconButton size="large" onClick={() => this.exportData()} title={this.props.t('Save data as csv')}>
                 <ExportIcon />
-            </IconButton> : null }
+            </IconButton> : null}
 
-            { this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton
+            {this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton
                 size="large"
                 onClick={() => {
                     const time = new Date();
@@ -1302,8 +1301,8 @@ class ObjectHistoryData extends Component {
                 }}
             >
                 <InsertIcon />
-            </IconButton> : null }
-            { this.state.supportedFeatures.includes('update') && this.props.expertMode ? <IconButton
+            </IconButton> : null}
+            {this.state.supportedFeatures.includes('update') && this.props.expertMode ? <IconButton
                 size="large"
                 disabled={this.state.selected.length !== 1}
                 onClick={() => {
@@ -1319,8 +1318,8 @@ class ObjectHistoryData extends Component {
                 }}
             >
                 <EditIcon />
-            </IconButton> : null }
-            { this.state.supportedFeatures.includes('delete') && this.props.expertMode ? <IconButton
+            </IconButton> : null}
+            {this.state.supportedFeatures.includes('delete') && this.props.expertMode ? <IconButton
                 size="large"
                 disabled={!this.state.selected.length}
                 onClick={() => {
@@ -1332,7 +1331,7 @@ class ObjectHistoryData extends Component {
                 }}
             >
                 <IconDelete />
-            </IconButton> : null }
+            </IconButton> : null}
         </Toolbar>;
     }
 
@@ -1369,13 +1368,13 @@ class ObjectHistoryData extends Component {
         }
 
         return <Paper className={this.props.classes.paper}>
-            { this.state.loading ? <LinearProgress /> : <div className={this.props.classes.noLoadingProgress} /> }
-            { this.renderToolbar() }
+            {this.state.loading ? <LinearProgress /> : <div className={this.props.classes.noLoadingProgress} />}
+            {this.renderToolbar()}
             <div className={this.props.classes.tableDiv}>
-                { this.renderTable() }
+                {this.renderTable()}
             </div>
-            { this.renderConfirmDialog() }
-            { this.renderEditDialog() }
+            {this.renderConfirmDialog()}
+            {this.renderEditDialog()}
         </Paper>;
     }
 }

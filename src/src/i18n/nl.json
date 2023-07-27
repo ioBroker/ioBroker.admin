@@ -1531,5 +1531,7 @@
   "updating js-controller to %s...": "js-controller updaten naar %s...",
   "Site name": "Site naam",
   "This name will be shown in admin's header. Just to identify the whole installation": "Deze naam wordt weergegeven in de admin-header. Gewoon om de hele installatie te identificeren",
-  "Instance %s already exists": "Instantie \"%s\" bestaat al"
+  "Instance %s already exists": "Instantie \"%s\" bestaat al",
+  "Unknown error": "Onbekende fout",
+  "serial number (UUID) in license is for other device": "Serienummer (UUID) in licentie is voor ander apparaat"
 }
