@@ -66,6 +66,14 @@ const styles = () => ({
         overflow: 'auto',
         height: 'calc(100% - 75px)',
     },
+    tableCommercial: {
+        width: 100,
+    },
+    licenseId: {
+        fontSize: 10,
+        opacity: 0.5,
+        fontStyle: 'italic',
+    },
 });
 
 class LicensesDialog extends Component {
@@ -168,7 +176,7 @@ class LicensesDialog extends Component {
         return <div className={this.props.classes.tableDiv}>
             <TableContainer>
                 <Table stickyHeader size="small">
-                    <TableHead className={this.props.classes.tableName}>
+                    <TableHead>
                         <TableRow>
                             <TableCell className={this.props.classes.tableName}>{this.props.t('Product')}</TableCell>
                             <TableCell className={this.props.classes.tableDate}>{this.props.t('Ordered at')}</TableCell>
@@ -176,16 +184,21 @@ class LicensesDialog extends Component {
                             <TableCell className={this.props.classes.tableValid}>{this.props.t('Valid till')}</TableCell>
                             <TableCell className={this.props.classes.tableVersion}>{this.props.t('V')}</TableCell>
                             <TableCell className={this.props.classes.tableUsedIn}>{this.props.t('Used by')}</TableCell>
+                            <TableCell className={this.props.classes.tableCommercial}>{this.props.t('ra_Commercial')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {this.state.licenses && this.state.licenses.map(license => <TableRow key={license.id}>
-                            <TableCell className={this.props.classes.tableName}>{license.product}</TableCell>
+                            <TableCell className={this.props.classes.tableName}>
+                                <div>{license.product}</div>
+                                <div className={this.props.classes.licenseId}>{license.id}</div>
+                            </TableCell>
                             <TableCell className={this.props.classes.tableDate}>{new Date(license.time).toLocaleDateString()}</TableCell>
                             <TableCell className={Utils.clsx(this.props.classes.tableUuid, license.uuid && this.state.uuid === license.uuid ? this.props.classes.uuidGreen : (license.uuid ? this.props.classes.uuidGrey : ''))}>{license.uuid || ''}</TableCell>
                             <TableCell className={this.props.classes.tableValid}>{license.validTill === '0000-00-00 00:00:00' ? '' : license.validTill || ''}</TableCell>
                             <TableCell className={this.props.classes.tableVersion}>{license.version || ''}</TableCell>
                             <TableCell className={this.props.classes.tableUsedIn}>{license.usedBy || ''}</TableCell>
+                            <TableCell className={this.props.classes.tableCommercial}>{license.invoice !== 'free' ? (license.invoice === 'MANUALLY_CREATED' ? '✓' : license.invoice) : '-'}</TableCell>
                         </TableRow>)}
                     </TableBody>
                 </Table>

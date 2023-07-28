@@ -3,13 +3,24 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
-    Button, CircularProgress, Dialog, DialogContent, DialogActions, DialogTitle,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogContent,
+    DialogActions,
+    DialogTitle,
+    Table,
+    TableHead,
+    TableCell,
+    TableRow,
+    TableBody,
+    DialogContentText,
+    TableContainer,
 } from '@mui/material';
 
-import IconSend from '@mui/icons-material/Send';
+import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
-import DialogError from './wrapper/Dialogs/Error';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfirmDialog from './wrapper/Dialogs/Confirm';
@@ -60,11 +71,81 @@ class ConfigCheckLicense extends ConfigGeneric {
 
     renderErrorDialog() {
         if (this.state._error && !this.state.showLicenseData) {
-            return <DialogError
-                text={this.state._error}
-                classes={undefined}
-                onClose={() => this.setState({ _error: '' })}
-            />;
+            let content = this.state._error;
+            if (this.state.allLicenses) {
+                content = [
+                    <div key="error">{content}</div>,
+                ];
+                content.push(<Button
+                    key="button"
+                    variant="contained"
+                    onClick={() => window.open('https://iobroker.net/www/account/licenses', '_blank')}
+                >
+                    {I18n.t('iobroker.net')}
+                </Button>);
+                if (!this.state.allLicenses.length) {
+                    content.push(<div key="text1">{I18n.t('ra_No one license found in license manager')}</div>);
+                    content.push(<div key="text2">{I18n.t('ra_Please create license')}</div>);
+                } else {
+                    // license.id,
+                    // validName,
+                    // validUuid,
+                    // validTill,
+                    // validVersion,
+                    // license,
+                    content.push(<TableContainer key="table">
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>{I18n.t('ra_Product')}</TableCell>
+                                    <TableCell>{I18n.t('ra_Version')}</TableCell>
+                                    <TableCell>UUID</TableCell>
+                                    <TableCell>{I18n.t('ra_ValidTill')}</TableCell>
+                                    <TableCell>{I18n.t('ra_Commercial')}</TableCell>
+                                    <TableCell>ID</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {this.state.allLicenses.map(license => <TableRow key={license.id}>
+                                    <TableCell className={license.validName ? '' : this.props.classes.errorText}>{license.license.product}</TableCell>
+                                    <TableCell className={license.validVersion ? '' : this.props.classes.errorText}>{license.license.version}</TableCell>
+                                    <TableCell className={license.validUuid ? '' : this.props.classes.errorText}>{license.license.uuid || '--'}</TableCell>
+                                    <TableCell className={license.validTill ? '' : this.props.classes.errorText}>{license.license.validTill && license.license.validTill !== '0000-00-00 00:00:00' ? new Date(license.license.validTill).toLocaleDateString() : '--'}</TableCell>
+                                    <TableCell>{license.license.invoice !== 'free' ? (license.license.invoice === 'MANUALLY_CREATED' ? '✓' : license.license.invoice) : '-'}</TableCell>
+                                    <TableCell>{license.id}</TableCell>
+                                </TableRow>)}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>);
+                }
+            }
+
+            return <Dialog
+                open={!0}
+                maxWidth="xl"
+                fullWidth={this.props.fullWidth !== undefined ? this.props.fullWidth : true}
+                onClose={() => this.handleOk()}
+            >
+                <DialogTitle>
+                    {I18n.t('ra_Error')}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {content}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ _error: '', allLicenses: null })}
+                        color="primary"
+                        autoFocus
+                        startIcon={<IconCheck />}
+                    >
+                        {I18n.t('ra_Ok')}
+                    </Button>
+                </DialogActions>
+            </Dialog>;
         }
 
         return null;
@@ -203,6 +284,7 @@ class ConfigCheckLicense extends ConfigGeneric {
     async findInLicenseManager(adapterName) {
         // read if the license manager is supported
         const licenses = await this.props.socket.getObject('system.licenses');
+        const errors = [];
         if (licenses?.native?.licenses?.length) {
             // enable license manager
             let useLicense;
@@ -221,28 +303,31 @@ class ConfigCheckLicense extends ConfigGeneric {
 
             // find license for vis
             licenses.native.licenses.forEach(license => {
-                if (
-                    !license.validTill ||
-                    license.validTill === '0000-00-00 00:00:00' ||
-                    new Date(license.validTill).getTime() > now
-                ) {
-                    const parts = (license.product || '').split('.');
-                    const validName = parts[1] === adapterName || (adapterName === 'vis-2' && parts[1] === 'vis');
-                    const validUuid = !uuid || !license.uuid || license.uuid === uuid;
-                    const validVersion = ConfigCheckLicense.isVersionValid(version, license.version, license.invoice, adapterName);
-                    // commercial license has priority over free license
-                    if ((!useLicense || license.invoice !== 'free') && validName && validUuid && validVersion) {
-                        useLicense = license;
-                    }
+                const validTill = !license.validTill || license.validTill === '0000-00-00 00:00:00' || new Date(license.validTill).getTime() > now;
+                const parts = (license.product || '').split('.');
+                const validName = parts[1] === adapterName || (adapterName === 'vis-2' && parts[1] === 'vis');
+                const validUuid = !uuid || !license.uuid || license.uuid === uuid;
+                const validVersion = ConfigCheckLicense.isVersionValid(version, license.version, license.invoice, adapterName);
+                // commercial license has priority over free license
+                if ((!useLicense || license.invoice !== 'free') && validTill && validName && validUuid && validVersion) {
+                    useLicense = license;
                 }
+                errors.push({
+                    id: license.id,
+                    validName,
+                    validUuid,
+                    validVersion,
+                    validTill,
+                    license,
+                });
             });
 
-            // TODO: show error with full list of licenses and why they are not valid
-            return useLicense?.json;
+            if (useLicense) {
+                errors.find(e => e.id === useLicense.id).used = true;
+            }
         }
 
-        // TODO: show error that no onw license found
-        return false;
+        return errors;
     }
 
     static updateLicenses(socket) {
@@ -493,8 +578,13 @@ class ConfigCheckLicense extends ConfigGeneric {
         const adapterName = this.props.adapterName === 'vis-2-beta' ? 'vis' : this.props.adapterName;
         this.setState({ running: true });
         let license;
+        let licenses;
         if (this.props.data.useLicenseManager) {
-            license = await this.findInLicenseManager(adapterName);
+            licenses = await this.findInLicenseManager(adapterName);
+            license = licenses.find(li => li.used);
+            if (license) {
+                license = license.license.json;
+            }
             if (!license && !secondRun) {
                 // no suitable license found in the license manager
                 // should we read all licenses again?
@@ -511,6 +601,7 @@ class ConfigCheckLicense extends ConfigGeneric {
                 _error: I18n.t('ra_Suitable license not found in license manager'),
                 result: false,
                 running: false,
+                allLicenses: licenses,
             });
         } else {
             // this case could not happen
