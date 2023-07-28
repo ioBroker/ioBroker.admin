@@ -6163,13 +6163,20 @@ class ObjectBrowser extends Component {
         />;
     }
 
-    // extendObject = (id, data) =>
-    //     this.props.socket.extendObject(id, data)
-    //         .catch(error => window.alert(error));
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    extendObject = (id, data) =>
+        this.props.socket.extendObject(id, data)
+            .catch(error => window.alert(error));
 
-    // setObject = (id, data) =>
-    //     this.props.socket.setObject(id, data)
-    //         .catch(error => window.alert(error));
+    /**
+     * This method is used when `this` context is passed down
+     * @param {string} id
+     * @param {ioBroker.SettableObject} data
+     */
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    setObject = (id, data) =>
+        this.props.socket.setObject(id, data)
+            .catch(error => window.alert(error));
 
     /**
      * The rendering method of this component.
