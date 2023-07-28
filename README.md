@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.6.4 (2023-07-28)
 * (bluefox) Better licenses handling (especially for vis-2)
 
 ### 6.6.3 (2023-07-27)
@@ -120,9 +120,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.5.9 (2023-06-19)
 * (bluefox) Added support for update of the js-controller slaves
-
-### 6.5.8 (2023-06-12)
-* (foxriver76) The log size will be parsed correctly for controller v5
 
 ## License
 The MIT License (MIT)
