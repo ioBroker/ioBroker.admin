@@ -7,14 +7,16 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Input from '@mui/material/Input';
+import {
+    Input,
+    OutlinedInput,
+    InputLabel,
+    Chip,
+    FormControl,
+    FormHelperText,
+} from '@mui/material';
 import FilledInput from '@mui/material/FilledInput/FilledInput';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import Chip from '@mui/material/Chip';
 import blue from '@mui/material/colors/blue';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
 
 import Utils from '../Utils';
 

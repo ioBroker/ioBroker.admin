@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ChromePicker } from 'react-color';
 
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
+import {
+    IconButton,
+    TextField,
+    Dialog,
+} from '@mui/material';
 
-import ClearIcon from '@mui/icons-material/Close';
+import { Close as ClearIcon } from '@mui/icons-material';
 
 import Utils from './wrapper/Components/Utils';
 import ColorPicker from './wrapper/Components/ColorPicker';

@@ -677,10 +677,10 @@ class ObjectCustomEditor extends Component {
 
                             Object.keys(newValues).forEach(attr => {
                                 // if not different
-                                if (!Array.isArray(newValues[attr]) || (newValues[attr][0] && typeof newValues[attr][0] === 'object')) {
-                                    if (!attr.startsWith('_')) {
-                                        obj.common.custom[instance][attr] = newValues[attr];
-                                    }
+                                if (!attr.startsWith('_')) {
+                                    // if (!Array.isArray(newValues[attr]) || (newValues[attr][0] && typeof newValues[attr][0] === 'object')) {
+                                    obj.common.custom[instance][attr] = newValues[attr];
+                                    // }
                                 }
                             });
                         }

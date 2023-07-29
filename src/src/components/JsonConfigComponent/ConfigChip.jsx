@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
+import {
+    FormHelperText,
+    FormControl,
+} from '@mui/material';
 
 import ConfigGeneric from './ConfigGeneric';
 import ChipInput from './ChipInput';

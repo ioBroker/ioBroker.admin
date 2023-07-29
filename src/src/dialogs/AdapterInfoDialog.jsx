@@ -36,14 +36,14 @@ class AdapterInfoDialog extends Component {
         // const uriGithub = this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
         // const rawUri = uriGithub.replace('blob/', '').substring(0, uriGithub.lastIndexOf('/') + 1);
 
-        // this.state = {
+        this.state = {
         //     tab: 0,
         //     readme: '',
         //     uri,
         //     rawUri,
         //     uriGithub,
-        //     text: null,
-        // };
+            text: null,
+        };
 
         this.t = props.t;
     }

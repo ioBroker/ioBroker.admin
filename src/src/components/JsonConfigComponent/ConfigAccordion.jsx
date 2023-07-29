@@ -2,20 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import FormHelperText from '@mui/material/FormHelperText';
 import {
+    FormHelperText,
     Accordion, AccordionSummary, AccordionDetails,
     IconButton, Paper,
     Toolbar, Tooltip,
     Typography,
 } from '@mui/material';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import UpIcon from '@mui/icons-material/ArrowUpward';
-import DownIcon from '@mui/icons-material/ArrowDownward';
-import CopyContentIcon from '@mui/icons-material/ContentCopy';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+    Add as AddIcon,
+    Delete as DeleteIcon,
+    ArrowUpward as UpIcon,
+    ArrowDownward as DownIcon,
+    ContentCopy as CopyContentIcon,
+    ExpandMore as ExpandMoreIcon,
+} from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';

@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
+import {
+    FormControlLabel,
+    Checkbox,
+    FormHelperText,
+    FormControl,
+} from '@mui/material';
 
 import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';

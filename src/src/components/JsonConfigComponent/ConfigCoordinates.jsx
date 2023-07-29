@@ -2,13 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import TextField from '@mui/material/TextField';
-import Fab from '@mui/material/Fab';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import {
+    TextField,
+    Fab,
+    FormControlLabel,
+    Checkbox,
+} from '@mui/material';
 
-import IconGpsFixed from '@mui/icons-material/GpsFixed';
-import IconLocationOn from '@mui/icons-material/LocationOn';
+import {
+    GpsFixed as IconGpsFixed,
+    LocationOn as IconLocationOn,
+} from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
 
