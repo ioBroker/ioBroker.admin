@@ -84,6 +84,13 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+* (buefox/foxriver76) allow array values to be stored in custom editor
+* (foxriver76) fixed bug which prevented creationg of new objects
+* (bluefox/foxriver76) fixed bug which prevented opening adapter readme
+* (foxriver76) fixed ChipInput jsonConfig component
+
 ### 6.6.4 (2023-07-28)
 * (bluefox) Better licenses handling (especially for vis-2)
 
