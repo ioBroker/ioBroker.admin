@@ -412,7 +412,7 @@ class ChipInput extends React.Component {
     };
 
     handleUpdateInput = e => {
-        if (this.props.inputValue === null) {
+        if (this.props.inputValue === null || this.props.inputValue === undefined) {
             this.updateInput(e.target.value);
         }
 
@@ -570,10 +570,10 @@ class ChipInput extends React.Component {
         if (!Array.isArray(chips)) {
             chips = (chips || '').toString().split(/[,\s]+/).map(c => c.trim());
         }
-        const actualInputValue = inputValue !== null ? inputValue : this.state.inputValue;
+        const actualInputValue = inputValue ?? this.state.inputValue;
 
         const hasInput = (this.props.value || actualInputValue).length || actualInputValue.length;
-        const shrinkFloatingLabel = InputLabelProps.shrink !== null
+        const shrinkFloatingLabel = typeof InputLabelProps.shrink === 'boolean'
             ? InputLabelProps.shrink
             : (label !== null && (hasInput || this.state.isFocused || chips.length));
 
@@ -663,7 +663,7 @@ class ChipInput extends React.Component {
                     inputRef={this.setActualInputRef}
                     disabled={disabled}
                     fullWidth={fullWidthInput}
-                    placeholder={(!hasInput && (shrinkFloatingLabel || label === null)) || alwaysShowPlaceholder ? placeholder : null}
+                    placeholder={(!hasInput && (shrinkFloatingLabel || label === null || label === undefined)) || alwaysShowPlaceholder ? placeholder : null}
                     readOnly={readOnly}
                     {...InputProps}
                     {...InputMore}
