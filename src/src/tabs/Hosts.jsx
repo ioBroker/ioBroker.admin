@@ -246,6 +246,7 @@ class Hosts extends Component {
             readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
             hostUpdate: false,
             updateDialog: false,
+            instructionDialog: false,
             hostUpdateDialog: null,
             editDialog: { index: 0, dialogName: '' },
             baseSettingsDialog: { index: 0, dialogName: '' },
@@ -497,11 +498,11 @@ class Hosts extends Component {
     };
 
     renderUpdateDialog() {
-        if (!this.state.updateDialog) {
+        if (!this.state.updateDialog && !this.state.instructionDialog) {
             return null;
         }
 
-        if (this.state.updateAvailable) {
+        if (this.state.updateAvailable && this.state.updateDialog) {
             return <JsControllerUpdater
                 socket={this.props.socket}
                 hostId={this.state.updateDialog}
@@ -515,10 +516,10 @@ class Hosts extends Component {
 
         return <JsControllerDialog
             socket={this.props.socket}
-            hostId={this.state.updateDialog}
+            hostId={this.state.instructionDialog}
             theme={this.props.theme}
             version={this.state.repository['js-controller'].version}
-            onClose={() => this.setState({ updateDialog: false })}
+            onClose={() => this.setState({ instructionDialog: false })}
         />;
     }
 
@@ -533,6 +534,7 @@ class Hosts extends Component {
             adapterObject={this.state.repository['js-controller']}
             t={this.t}
             textUpdate={this.state.updateAvailable ? this.t('Start update') : this.t('Show instructions')}
+            textInstruction={this.state.updateAvailable ? this.t('Show instructions') : null}
             rightDependencies
             news={this.getNews()}
             toggleTranslation={this.props.toggleTranslation}
@@ -541,6 +543,11 @@ class Hosts extends Component {
                 const hostUpdate = this.state.hostUpdate;
                 this.closeHostUpdateDialog(() =>
                     this.setState({ updateDialog: hostUpdate }));
+            }}
+            onInstruction={async () => {
+                const hostUpdate = this.state.hostUpdate;
+                this.closeHostUpdateDialog(() =>
+                    this.setState({ instructionDialog: hostUpdate }));
             }}
             onClose={() => this.closeHostUpdateDialog()}
         />;
