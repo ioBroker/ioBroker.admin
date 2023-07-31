@@ -5,7 +5,7 @@ let gPage;
 
 describe('admin-gui', () => {
     before(async function (){
-        this.timeout(180000);
+        this.timeout(240_000);
 
         // install js-controller, web and vis-2-beta
         await engineHelper.startIoBroker();
@@ -14,7 +14,7 @@ describe('admin-gui', () => {
     });
 
     it('Check all widgets', async function (){
-        this.timeout(5000);
+        this.timeout(5_000);
         await gPage.waitForSelector('a[href="/#easy"]', { timeout: 5000 });
     });
 
