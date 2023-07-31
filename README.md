@@ -86,6 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 
 ### **WORK IN PROGRESS**
+* (foxriver76) also show js-controller upgrade instructions if UI upgrade is available
 * (buefox/foxriver76) allow array values to be stored in custom editor
 * (foxriver76) fixed bug which prevented creationg of new objects
 * (bluefox/foxriver76) fixed bug which prevented opening adapter readme

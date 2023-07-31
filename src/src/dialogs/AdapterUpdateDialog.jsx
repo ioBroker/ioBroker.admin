@@ -12,6 +12,7 @@ import {
 
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import BookIcon from '@mui/icons-material/Book';
 import IconWarning from '@mui/icons-material/Warning';
 import IconError from '@mui/icons-material/Error';
 import IconInfo from '@mui/icons-material/Info';
@@ -469,6 +470,7 @@ class AdapterUpdateDialog extends Component {
         return <Dialog
             onClose={this.props.onClose}
             open={!0}
+            maxWidth="800px"
         >
             {this.renderMessageDialog()}
             <DialogTitle>
@@ -538,6 +540,22 @@ class AdapterUpdateDialog extends Component {
                 >
                     {this.mobile ? null : (this.props.textUpdate ? this.props.textUpdate : this.t('Update'))}
                 </Button>
+                {this.props.textInstruction ? <Button
+                    variant="contained"
+                    autoFocus
+                    disabled={!this.props.rightDependencies || !version || !this.props.adapterObject}
+                    onClick={() => {
+                        if (this.messages && this.messages.find(message => message.buttons)) {
+                            this.setState({ showMessageDialog: true });
+                        } else {
+                            this.props.onInstruction();
+                        }
+                    }}
+                    color="primary"
+                    startIcon={<BookIcon />}
+                >
+                    {this.mobile ? null : this.props.textInstruction}
+                </Button> : null}
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
@@ -559,11 +577,16 @@ AdapterUpdateDialog.propTypes = {
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
     onUpdate: PropTypes.func.isRequired,
+    /** if textInstructions is given */
+    onInstruction: PropTypes.func,
     onIgnore: PropTypes.func,
     onClose: PropTypes.func.isRequired,
     rightDependencies: PropTypes.bool,
     installedVersion: PropTypes.string,
     t: PropTypes.func.isRequired,
+    textUpdate: PropTypes.string,
+    /** If this is given an additional instruction button is rendered */
+    textInstruction: PropTypes.string,
 };
 
 export default withStyles(styles)(AdapterUpdateDialog);
