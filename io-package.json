@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.6.4",
+    "version": "6.6.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.6.5": {
+        "en": "also show js-controller upgrade instructions if UI upgrade is available\nallow array values to be stored in custom editor\nfixed bug which prevented creationg of new objects\nfixed bug which prevented opening adapter readme\nfixed ChipInput jsonConfig component",
+        "de": "auch js-Controller Upgrade-Anweisungen anzeigen, wenn UI Upgrade verfügbar ist\nermöglichen, array-werte im benutzerdefinierten editor zu speichern\nfehler behoben, der die erstellung neuer objekte verhinderte\nfehler behoben, der das öffnen des adapters verhindert\nchipInput jsonConfig-Komponente",
+        "ru": "также показать JS-контроллер инструкции по обновлению, если обновление UI доступно\nпозволяют значения массива храниться в пользовательском редакторе\nисправлена ошибка, предотвращающая создание новых объектов\nисправлена ошибка, которая предотвратить открытие адаптера readme\nфиксированный ChipInput jsonConfig компонент",
+        "pt": "também mostrar instruções de atualização js-controller se a atualização UI estiver disponível\npermitir que os valores de array sejam armazenados no editor personalizado\nbug fixo que impediu criação de novos objetos\nbug fixo que impediu o readme do adaptador de abertura\ncomponente fixo ChipInput jsonConfig",
+        "nl": "toon ook Js-controller upgrade instructies als UI upgrade beschikbaar is\nvertaling:\nvertaling:\n_\njsonConfig component",
+        "fr": "également afficher les instructions de mise à niveau de js-controller si la mise à niveau de l'interface utilisateur est disponible\npermettre de stocker des valeurs de tableau dans un éditeur personnalisé\nbug fixe qui a empêché la création de nouveaux objets\nbug fixe qui a empêché l'adaptateur d'ouverture readme\ncomposant fixe ChipInput jsonConfig",
+        "it": "mostra anche istruzioni di aggiornamento js-controller se l'aggiornamento dell'interfaccia utente è disponibile\nconsentire la memorizzazione dei valori di array nell'editor personalizzato\nbug fisso che ha impedito il creazioneg di nuovi oggetti\nbug fisso che ha impedito l'apertura dell'adattatore readme\ncomponente fisso ChipInput jsonConfig",
+        "es": "también mostrar js-controller instrucciones de actualización si la actualización UI está disponible\npermite que los valores de array se almacenen en editor personalizado\nfallo fijo que impidió la creación de nuevos objetos\nfallo fijo que impidió la apertura del adaptador readme\ncomponente fijo de ChipInput jsonConfig",
+        "pl": "wykazuje również ulepszenie js-controllerowych instrukcji, jeśli ulepszanie UI jest dostępne\npozwala na przechowywanie wartości w edytorze standardowym\nuruchomiony trąb uniemożliwiający tworzenie nowych obiektów\nbłąd stały, który zapobiegał otwieraniu adapterowi\nchipInput (ang.)",
+        "uk": "також показати інструкції щодо оновлення js-controller, якщо оновлення UI доступний\nдозволяє зберігати значення масиву у користувальницькому редакторі\nвиправлена помилка, яка перешкоджала створенню нових об'єктів\nвиправлена помилка, яка запобігає відкриванню адаптера\njsonConfig компонент",
+        "zh-cn": "如果能提供UI升级的控制性升级指示,也显示防污升级指示。\n允许在习惯编辑中储存各种价值\n防止新目标的设定\nb. 妨碍开端的固定阀\nbhipInput jsonConfig部分"
+      },
       "6.6.4": {
         "en": "Better licenses handling (especially for vis-2)",
         "de": "Bessere Lizenzen (insbesondere für vis-2)",
@@ -95,19 +108,6 @@
         "pl": "Rozmiary logowania będą poprawnie zarezerwowane dla kontrolera v5",
         "uk": "Розмір колоди буде припаркований правильно для контролера v5",
         "zh-cn": "逻辑大小将正确地用于控制容忍 v5"
-      },
-      "6.5.7": {
-        "en": "ZIP archives will be saved in files and not in states",
-        "de": "ZIP-Archive werden in Dateien gespeichert und nicht in Staaten",
-        "ru": "ZIP архивы будут сохранены в файлах и не в государствах",
-        "pt": "Arquivos ZIP serão salvos em arquivos e não em estados",
-        "nl": "ZIP archieven worden gered in dossiers en niet in staat",
-        "fr": "Les archives ZIP seront sauvegardées dans les fichiers et non dans les états",
-        "it": "Gli archivi ZIP saranno salvati nei file e non negli stati",
-        "es": "Los archivos ZIP se guardarán en archivos y no en estados",
-        "pl": "Archiwa ZIP będą przechowywane w plikach i nie w krajach",
-        "uk": "Архіви ZIP будуть збережені в файлах і не в штатах",
-        "zh-cn": "档案馆档案将予保存,而不是在各州。"
       }
     },
     "desc": {

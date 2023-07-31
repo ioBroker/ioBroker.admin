@@ -1,6 +1,13 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.5.9 (2023-06-19)
+* (bluefox) Added support for update of the js-controller slaves
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.5.8 (2023-06-12)
 * (foxriver76) The log size will be parsed correctly for controller v5
 

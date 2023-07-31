@@ -84,8 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 6.6.5 (2023-07-31)
 * (foxriver76) also show js-controller upgrade instructions if UI upgrade is available
 * (buefox/foxriver76) allow array values to be stored in custom editor
 * (foxriver76) fixed bug which prevented creationg of new objects
@@ -125,9 +124,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
 * (bluefox) Added site name and corrected the system dialog
-
-### 6.5.9 (2023-06-19)
-* (bluefox) Added support for update of the js-controller slaves
 
 ## License
 The MIT License (MIT)
