@@ -84,6 +84,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+* (foxriver76) display more specific information about docker installation on host card
+
 ### 6.6.5 (2023-07-31)
 * (foxriver76) also show js-controller upgrade instructions if UI upgrade is available
 * (buefox/foxriver76) allow array values to be stored in custom editor

@@ -145,6 +145,26 @@ const formatInfo = {
     'Disk free': Utils.formatBytes,
 };
 
+/**
+ * Preprocess host data to harmonize information
+ *
+ * @param {Record<string, any>} hostData Host data from controller
+ * @return {Record<string, (string | number)>}
+ */
+function preprocessHostData(hostData) {
+    if (hostData.dockerInformation?.isDocker) {
+        let dockerString = hostData.dockerInformation.isOfficial ? 'official image' : 'unofficial image';
+
+        if (hostData.dockerInformation.isOfficial) {
+            dockerString +=  ` - ${hostData.dockerInformation.officialVersion}`;
+        }
+
+        hostData.Platform = `${hostData.Platform} (${dockerString})`;
+    }
+
+    delete hostData.dockerInformation;
+}
+
 const getHostDescriptionAll = (id, t, classes, hostsData) => {
     const hostData = hostsData ? hostsData[id] : null;
     if (!hostData) {
@@ -289,8 +309,10 @@ class Hosts extends Component {
                         error.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                         return error;
                     })
-                    .then(data =>
-                        ({ id: obj._id, data }));
+                    .then(data => {
+                        preprocessHostData(data);
+                        return { id: obj._id, data };
+                    });
             }
             return { id: obj._id, data: 'offline' };
         });
