@@ -149,7 +149,7 @@ const formatInfo = {
  * Preprocess host data to harmonize information
  *
  * @param {Record<string, any>} hostData Host data from controller
- * @return {Record<string, (string | number | boolean)>}
+ * @return {Record<string, (string | number)>}
  */
 function preprocessHostData(hostData) {
     if (hostData.dockerInformation?.isDocker) {
