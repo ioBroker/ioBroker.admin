@@ -84,8 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 6.7.0 (2023-08-02)
 * (foxriver76) display more specific information about docker installation on host card
 * (foxriver76) allow to download folders in files tab
 
@@ -125,10 +124,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed multiple problems with jsonConfig coordinates when using `useSystemName` and separate `latitude`/`longitutde` states
 * (foxriver76) when adding an icon to an object, to not show already uploaded non-existing image initially
 * (foxriver76) when the session timer falls below the 2 - minute mark, show button to extend the session
-
-### 6.6.0 (2023-07-05)
-* (klein0r) New json config component added: accordion
-* (bluefox) Added site name and corrected the system dialog
 
 ## License
 The MIT License (MIT)

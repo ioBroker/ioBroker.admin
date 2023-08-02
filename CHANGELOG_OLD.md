@@ -1,6 +1,14 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.6.0 (2023-07-05)
+* (klein0r) New json config component added: accordion
+* (bluefox) Added site name and corrected the system dialog
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.5.9 (2023-06-19)
 * (bluefox) Added support for update of the js-controller slaves
 

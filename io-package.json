@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.6.5",
+    "version": "6.7.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.7.0": {
+        "en": "display more specific information about docker installation on host card\nallow to download folders in files tab",
+        "de": "mehr spezifische informationen über die docking-installation auf der hostkarte anzeigen\nordner in dateien tab herunterladen",
+        "ru": "показать более конкретную информацию об установке докера на хост-карте\nпозволяют загружать папки в вкладке файлов",
+        "pt": "exibir informações mais específicas sobre a instalação de docker no cartão host\npermitir baixar pastas na guia arquivos",
+        "nl": "toon meer specifieke informatie over docker installatie op gastkaart\nvouwen in bestanden downloaden",
+        "fr": "afficher plus d'informations spécifiques sur l'installation docker sur la carte hôte\npermettre de télécharger des dossiers dans l'onglet fichiers",
+        "it": "visualizza informazioni più specifiche sull'installazione di docker sulla scheda host\nconsentire di scaricare cartelle nella scheda file",
+        "es": "mostrar más información específica sobre la instalación de docker en la tarjeta host\npermite descargar carpetas en la pestaña archivos",
+        "pl": "informacja o instalacji dockera\npozwala na pobieranie folderów w plikach tabeli",
+        "uk": "показати ще одну конкретну інформацію про встановлення docker на картці\nдозволяє завантажувати папки у вкладці файлів",
+        "zh-cn": "关于在东道国卡里安装的集装箱的更具体的资料\n可在档案表中下载编号"
+      },
       "6.6.5": {
         "en": "also show js-controller upgrade instructions if UI upgrade is available\nallow array values to be stored in custom editor\nfixed bug which prevented creationg of new objects\nfixed bug which prevented opening adapter readme\nfixed ChipInput jsonConfig component",
         "de": "auch js-Controller Upgrade-Anweisungen anzeigen, wenn UI Upgrade verfügbar ist\nermöglichen, array-werte im benutzerdefinierten editor zu speichern\nfehler behoben, der die erstellung neuer objekte verhinderte\nfehler behoben, der das öffnen des adapters verhindert\nchipInput jsonConfig-Komponente",
@@ -95,19 +108,6 @@
         "pl": "Wsparcie dla uaktualniania js-controllerowskich niewolników",
         "uk": "Додана підтримка оновлення рабів-контролерів",
         "zh-cn": "增加支助,以更新控制的手奴"
-      },
-      "6.5.8": {
-        "en": "The log size will be parsed correctly for controller v5",
-        "de": "Die Log-Größe wird für den Controller v5 korrekt pariert",
-        "ru": "Размер лога будет отправлен правильно для контроллера v5",
-        "pt": "O tamanho do log será analisado corretamente para o controlador v5",
-        "nl": "De logmatische grootte zal correct worden uitgedeeld voor controleur V5",
-        "fr": "La taille du journal sera parsée correctement pour le contrôleur v5",
-        "it": "La dimensione del log verrà correttamente analizzata per il controller v5",
-        "es": "El tamaño del registro será analizado correctamente para el controlador v5",
-        "pl": "Rozmiary logowania będą poprawnie zarezerwowane dla kontrolera v5",
-        "uk": "Розмір колоди буде припаркований правильно для контролера v5",
-        "zh-cn": "逻辑大小将正确地用于控制容忍 v5"
       }
     },
     "desc": {
