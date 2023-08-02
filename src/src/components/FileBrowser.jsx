@@ -966,6 +966,18 @@ class FileBrowser extends Component {
             </Hidden>
             {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes[`itemDownloadEmpty${this.state.viewType}`]} /> : null}
 
+            {this.state.viewType === TABLE && this.props.allowDownload ? <a
+                className={Utils.clsx('MuiButtonBase-root', 'MuiIconButton-root', 'MuiIconButton-sizeLarge', this.props.classes.itemDownloadButtonTable)}
+                tabIndex="0"
+                download={`${item.id}.zip`}
+                href={this.imagePrefix + item.id}
+                onClick={e => {
+                    e.stopPropagation();
+                }}
+            >
+                <DownloadIcon />
+            </a> : null}
+
             {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length ?
                 <IconButton
                     aria-label="delete"
@@ -1005,7 +1017,7 @@ class FileBrowser extends Component {
             <div
                 className={Utils.clsx(this.props.classes[`itemName${this.state.viewType}`], this.props.classes[`itemNameFolder${this.state.viewType}`])}
             >
-..
+                ..
             </div>
         </div>;
     }
