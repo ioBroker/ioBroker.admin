@@ -966,6 +966,19 @@ class FileBrowser extends Component {
             </Hidden>
             {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes[`itemDownloadEmpty${this.state.viewType}`]} /> : null}
 
+            {this.state.viewType === TABLE && this.props.allowDownload ? <div
+                className={Utils.clsx('MuiButtonBase-root', 'MuiIconButton-root', 'MuiIconButton-sizeLarge', this.props.classes.itemDownloadButtonTable)}
+                tabIndex="0"
+                // download={item.id}
+                // href={this.imagePrefix + item.id}
+                onClick={e => {
+                    this.downloadFolder(item.id);
+                    e.stopPropagation();
+                }}
+            >
+                <DownloadIcon />
+            </div> : null}
+
             {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length ?
                 <IconButton
                     aria-label="delete"
@@ -985,6 +998,38 @@ class FileBrowser extends Component {
                 :
                 (this.state.viewType === TABLE && this.props.allowDelete ? <div className={this.props.classes[`itemDeleteButton${this.state.viewType}`]} /> : null)}
         </div>;
+    }
+
+    /**
+     * Downloads all given urls
+     *
+     * @param {string} folderId id of the folder
+     */
+    downloadFolder(folderId) {
+        const files = this.getFilesFromFolder(folderId);
+        // TODO zip all files
+        // TODO client download
+    }
+
+    /**
+     * Downloads all given urls
+     *
+     * @param {string} folderId id of the folder
+     * @return {string[]}
+     */
+    getFilesFromFolder(folderId) {
+        /** @type {string[]} */
+        const files = [];
+        for (const item of this.state.folders[folderId]) {
+            if (item.folder) {
+                const folderFiles = this.getFilesFromFolder(item.id);
+                files.push(...folderFiles);
+            } else {
+                files.push(item.id);
+            }
+        }
+
+        return files;
     }
 
     renderBackFolder() {
