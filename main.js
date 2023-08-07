@@ -16,7 +16,6 @@
 const semver = require('semver');
 const axios = require('axios');
 const fs = require('fs');
-const cp = require('child_process');
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const getInstalledInfo = utils.commonTools.getInstalledInfo;
@@ -32,7 +31,6 @@ const ERROR_PERMISSION = 'permissionError';
 const CURRENT_MAX_MAJOR_NODEJS = 18;
 const CURRENT_MAX_MAJOR_NPM = 8;
 
-let uuid = '';
 let socket = null;
 let webServer = null;
 let lastRepoUpdate = null;
@@ -533,8 +531,7 @@ function initSocket(server, store, adapter) {
     adapter
         .getForeignObjectAsync('system.meta.uuid')
         .then(async obj => {
-            if (obj && obj.native) {
-                uuid = obj.native.uuid;
+            if (obj?.native) {
                 try {
                     await socket.updateRatings();
                 } catch (error) {
@@ -552,7 +549,7 @@ function processTasks(adapter) {
         const obj = adapter._tasks.shift();
         if (!obj.acl || obj.acl.owner !== adapter.config.defaultUser) {
             obj.acl.owner = adapter.config.defaultUser;
-            adapter.setForeignObject(obj._id, obj, err =>
+            adapter.setForeignObject(obj._id, obj, () =>
                 setImmediate(() => {
                     adapter._running = false;
                     processTasks(adapter);
@@ -738,17 +735,7 @@ function main(adapter) {
         adapter.config.defaultUser = `system.user.${adapter.config.defaultUser}`;
     }
 
-    if (adapter.config.secure) {
-        // Load certificates
-        adapter.getCertificates((err, certificates, leConfig) => {
-            adapter.config.certificates = certificates;
-            adapter.config.leConfig = leConfig;
-
-            getData(adapter, adapter => (webServer = new Web(adapter.config, adapter, initSocket, { systemLanguage })));
-        });
-    } else {
-        getData(adapter, adapter => (webServer = new Web(adapter.config, adapter, initSocket, { systemLanguage })));
-    }
+    getData(adapter, adapter => (webServer = new Web(adapter.config, adapter, initSocket, { systemLanguage })));
 
     if (
         adapter.config.accessApplyRights &&
@@ -800,7 +787,7 @@ function validateUserData0() {
                 if (io.objects) {
                     const userData = io.objects.find(obj => obj._id === '0_userdata.0');
                     if (userData) {
-                        adapter.setForeignObject(userData._id, userData, err =>
+                        adapter.setForeignObject(userData._id, userData, () =>
                             adapter.log.info('Object 0_userdata.0 was re-created')
                         );
                     }
