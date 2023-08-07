@@ -85,6 +85,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) prevent error log of not used certificates even-though they are used
 * (foxriver76) fixed issue with docker host cards on intro tab
 * (foxriver76) fixed issue if adapter readme is opened in new tab
 
