@@ -72,5 +72,6 @@ module.exports = {
         radix: 'off',
         indent: ['error', 4, { SwitchCase: 1 }],
         'no-alert': 'off',
+        'class-methods-use-this': 'off',
     },
 };
