@@ -84,12 +84,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.7.1 (2023-08-07)
 * (foxriver76) remove https certificate options
 * (foxriver76) prevent error log of not used certificates even-though they are used
 * (foxriver76) fixed issue with docker host cards on intro tab
 * (foxriver76) fixed issue if adapter readme is opened in new tab
-
 
 ### 6.7.0 (2023-08-02)
 * (foxriver76) display more specific information about docker installation on host card
@@ -113,24 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (rovo89) apply button color change of v6.6.1 for all buttons
 * (foxriver76) correctly display materialized tabs when configured with io-package `adminUi` property
 * (foxriver76) enable keyboard navigation for objects tab
-
-### 6.6.1 (2023-07-17)
-* (foxriver76) Many GUI improvements
-* (bluefox) New json config component added: license agreement
-* (foxriver76) also show non-stable repo warning on the hosts tab
-* (foxriver76) fixed jsonConfig slider with different max/min values than 0/100
-* (foxriver76) fixed jsonConfig number element arrows
-* (foxriver76) fixed jsonConfig coordinates not triggering onChange and not being prefilled
-* (foxriver76) fixed jsonConfig jsonEditor component
-* (foxriver76) assume status as offline if status state value has been deleted (e.g., via `setState` with `expire` option)
-* (foxriver76) fixed jsonConfig CheckLicense edge case error
-* (foxriver76) added tooltip to ObjectBrowserValue to show that ack-flag cannot be used to control a device
-* (foxriver76) fixed host name not being visible on some themes
-* (foxriver76) fixed issue with jsonConfig CRON placeholder overlapping input
-* (foxriver76) button color in non-expert mode will not be changed according to ack/q anymore
-* (foxriver76) fixed multiple problems with jsonConfig coordinates when using `useSystemName` and separate `latitude`/`longitutde` states
-* (foxriver76) when adding an icon to an object, to not show already uploaded non-existing image initially
-* (foxriver76) when the session timer falls below the 2 - minute mark, show button to extend the session
 
 ## License
 The MIT License (MIT)
