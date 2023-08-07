@@ -907,6 +907,7 @@ class Intro extends Component {
                 return this.props.socket.getCompactHosts(update);
             })
             .then(_hosts => {
+                _hosts.forEach(host => this.preprocessHostData(host));
                 hosts = _hosts;
                 return this.getInstances(update, hosts, systemConfig);
             })
@@ -957,6 +958,26 @@ class Intro extends Component {
                 {this.editLinkCard()}
             </TabContent>
         </TabContainer>;
+    }
+
+    /**
+     * Preprocess host data to harmonize information
+     *
+     * @param {Record<string, any>} hostData Host data from controller
+     * @return {Record<string, (string | number)>}
+     */
+    preprocessHostData(hostData) {
+        if (hostData.dockerInformation?.isDocker) {
+            let dockerString = hostData.dockerInformation.isOfficial ? 'official image' : 'unofficial image';
+
+            if (hostData.dockerInformation.isOfficial) {
+                dockerString +=  ` - ${hostData.dockerInformation.officialVersion}`;
+            }
+
+            hostData.Platform = `${hostData.Platform} (${dockerString})`;
+        }
+
+        delete hostData.dockerInformation;
     }
 }
 

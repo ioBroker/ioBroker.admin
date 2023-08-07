@@ -84,6 +84,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) fixed issue with docker host cards on intro tab
+* (foxriver76) fixed issue if adapter readme is opened in new tab
+
+
 ### 6.7.0 (2023-08-02)
 * (foxriver76) display more specific information about docker installation on host card
 * (foxriver76) allow to download folders in files tab
