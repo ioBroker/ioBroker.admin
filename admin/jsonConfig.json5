@@ -33,12 +33,6 @@
           "md": 6,
           "lg": 2
         },
-        "_certs": {
-          "type": "certificates",
-          "newLine": true,
-          "hidden": "!data.secure",
-          "sm": 12
-        },
         "auth": {
           "newLine": true,
           "type": "checkbox",
@@ -188,6 +182,7 @@
           }
         },
         "_staticText": {
+            "newLine": true,
             "type": "staticText",
             "text": "ra_Use iobroker.acme adapter for letsencrypt certificates"
         }
