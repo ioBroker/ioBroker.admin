@@ -105,8 +105,13 @@ class CustomTab extends Component {
         this.registered = false;
 
         getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts,  this.props.adminInstance, this.props.themeName)
-            .then(href =>
-                this.setState({ href }));
+            .then(href => {
+                this.setState({ href });
+                // check if href exists
+                // fetch(href)
+                //     .then(() => this.setState({ href }))
+                //     .catch(() => this.setState({ href: href.includes('tab_m.html') ? href.replace('tab_m.html', 'tab.html') : href.replace('tab.html', 'tab_m.html') }));
+            });
     }
 
     componentWillUnmount() {

@@ -41,7 +41,7 @@ For that, the option "Allow access only to specific instances" must be activated
 It could be found on the "Access to the instances" tab.
 Additionally, the allowed instances should be selected in the appeared configuration table.
 
-If this option is disabled, the simple configuration page could be accessed under http://IP:8081/configs.html
+If this option is disabled, the simple configuration page could be accessed under `http://IP:8081/configs.html`
 
 ## Reverse proxy
 Please be sure that you forward not only the http/https requests, but the web-socket traffic too. It is essential for communication.
@@ -97,9 +97,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.6.5 (2023-07-31)
 * (foxriver76) also show js-controller upgrade instructions if UI upgrade is available
 * (buefox/foxriver76) allow array values to be stored in custom editor
-* (foxriver76) fixed bug which prevented creationg of new objects
+* (foxriver76) fixed bug which prevented the creation of new objects
 * (bluefox/foxriver76) fixed bug which prevented opening adapter readme
 * (foxriver76) fixed ChipInput jsonConfig component
+* (bluefox) corrected opening of custom tabs, e.g., for fullcalendar
 
 ### 6.6.4 (2023-07-28)
 * (bluefox) Better licenses handling (especially for vis-2)
