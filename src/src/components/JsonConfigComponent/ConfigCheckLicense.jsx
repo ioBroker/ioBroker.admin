@@ -191,7 +191,7 @@ class ConfigCheckLicense extends ConfigGeneric {
                             {key.replace(/_/g, ' ')}
 :
                         </div>
-                        {data[key]}
+                        {data[key].toString()}
                     </div>);
                 }
             });
@@ -336,9 +336,17 @@ class ConfigCheckLicense extends ConfigGeneric {
                 if (err === 'permissionError') {
                     reject(I18n.t('ra_May not trigger "updateLicenses"'));
                 } else if (err && err.error) {
-                    reject(I18n.t(err.error));
+                    if (typeof err.error === 'string') {
+                        reject(I18n.t(err.error));
+                    } else {
+                        reject(JSON.stringify(err.error));
+                    }
                 } else if (err) {
-                    reject(I18n.t(err));
+                    if (typeof err === 'string') {
+                        reject(I18n.t(err));
+                    } else {
+                        reject(JSON.stringify(err));
+                    }
                 } else {
                     resolve(licenses);
                 }
@@ -565,7 +573,12 @@ class ConfigCheckLicense extends ConfigGeneric {
             onClose={async isYes => {
                 if (isYes) {
                     this.setState({ askForUpdate: false });
-                    await ConfigCheckLicense.updateLicenses(this.props.socket);
+                    try {
+                        await ConfigCheckLicense.updateLicenses(this.props.socket);
+                    } catch (e) {
+                        window.alert(I18n.t('ra_Cannot read licenses: %s', e));
+                        return;
+                    }
                     await this._onClick(true);
                 } else {
                     this.setState({ askForUpdate: false, running: false });
