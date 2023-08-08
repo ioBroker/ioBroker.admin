@@ -155,7 +155,11 @@ const JsControllerDialog = ({
     };
 
     useEffect(() => {
-        (!location || !os) && socket.getHostInfoShort(hostId)
+        if (!hostId || typeof hostId !== 'string') {
+            console.error(`Invalid hostId: "${hostId}" with type ${typeof hostId}`);
+        }
+
+        (!location || !os) && hostId && typeof hostId === 'string' && socket.getHostInfoShort(hostId)
             .then(data => {
                 data.location && data.location !== location && setLocation(data.location);
                 data.os && data.os !== os && setOS(data.os); // win32, linux, darwin, freebsd, android
