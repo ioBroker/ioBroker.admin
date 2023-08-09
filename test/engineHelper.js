@@ -86,7 +86,7 @@ function checkIsAdminStarted(states, cb, counter) {
     }
 
     states.getState('system.adapter.admin.0.alive', (err, state) => {
-        console.log(`[${counter}]Check if vis is uploaded "system.adapter.admin.0.alive" = ${JSON.stringify(state)}`);
+        console.log(`[${counter}]Check if admin is started "system.adapter.admin.0.alive" = ${JSON.stringify(state)}`);
         err && console.error(err);
         if (state && state.val) {
             cb && cb();

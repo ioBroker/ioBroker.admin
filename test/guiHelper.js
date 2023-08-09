@@ -56,7 +56,7 @@ async function stopBrowser(browser) {
 
 async function screenshot(page, fileName) {
     page = page || gPage;
-    await page.screenshot({path: `${rootDir}tmp/screenshots/${fileName}.png`});
+    await page.screenshot({ path: `${rootDir}tmp/screenshots/${fileName}.png` });
 }
 
 module.exports = {
