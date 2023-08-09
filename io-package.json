@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "6.7.1": {
-        "en": "remove https certificate options\nprevent error log of not used certificates even-though they are used\nfixed issue with docker host cards on intro tab\nfixed issue if adapter readme is opened in new tab",
-        "de": "entfernen von https-zertifikat-optionen\nverhindern fehlerprotokoll von nicht verwendeten zertifikaten, auch wenn sie verwendet werden\nfeste ausgabe mit docer-hostkarten auf intro-tab\nfestes problem, wenn adapter-lesegerät in neuem tab geöffnet wird",
-        "ru": "удалить опции сертификата https\nпредотвратить лог ошибок не используемых сертификатов, хотя они используются\nфиксированная проблема с картами хозяина docker на вкладке intro\nфиксированная проблема, если читатель адаптера открыт в новой вкладке",
-        "pt": "remover opções de certificado https\nimpedir o registro de erro de certificados não usados, mesmo que sejam usados\nproblema fixo com cartões de host docker na guia intro\nproblema fixo se o readme do adaptador é aberto na nova aba",
-        "nl": "verwijder htp's certificaat opties\nverhinder het logboek van niet gebruikt certificaten, alhoewel ze gebruikt worden\nvertaling:\nals adapterlezing wordt geopend in een nieuwe rekening",
-        "fr": "supprimer les options de certificat https\nempêcher le relevé d'erreur des certificats non utilisés même-bien qu'ils sont utilisés\nproblème fixe avec les cartes d'hôte docker sur l'onglet intro\nproblème fixe si l'adaptateur readme est ouvert dans un nouvel onglet",
-        "it": "rimuovere le opzioni di certificato https\nimpedire il registro di errore dei certificati non utilizzati anche se sono utilizzati\nproblema fisso con le schede host docker sulla scheda intro\nproblema fisso se il readme dell'adattatore è aperto nella nuova scheda",
-        "es": "eliminar las opciones de certificado https\npreviene el registro de errores de certificados no utilizados aunque se utilizan\nedición fija con tarjetas de host de muelle en ficha de entrada\nproblema fijo si el readme del adaptador se abre en nueva pestaña",
-        "pl": "usunąć certyfikat https\numożliwia to, że logowanie błędów nie stosuje certyfikatów nawet jeśli są używane\nbezpośredni problem z kartami prowadzącymi w internecie\nostateczny problem, jeśli adapter readme jest otwarty w nowym tabeli",
-        "uk": "видалити параметри сертифіката https\nзапобігає похибці журналу не використовуваних сертифікатів\nфіксована проблема з docker хост-карт на вкладці intro\nвиправлено проблему, якщо перехідний читме відкрився в новій вкладці",
-        "zh-cn": "取消证书选择\n防止使用不使用证书的错误逻辑甚至是使用过的。\na. 穿梭邮票的固定问题\n如果适应者读书在新的表格中开出固定问题。"
-      },
       "6.7.0": {
         "en": "display more specific information about docker installation on host card\nallow to download folders in files tab",
         "de": "mehr spezifische informationen über die docking-installation auf der hostkarte anzeigen\nordner in dateien tab herunterladen",

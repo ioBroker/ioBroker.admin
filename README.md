@@ -84,15 +84,18 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 6.7.1 (2023-08-07)
+### **WORK IN PROGRESS**
 * (foxriver76) remove https certificate options
-* (foxriver76) prevent error log of not used certificates even-though they are used
+* (foxriver76) prevent error log of not used certificates even though they are used
 * (foxriver76) fixed issue with docker host cards on intro tab
 * (foxriver76) fixed issue if adapter readme is opened in new tab
+* (bluefox) corrected opening of custom tabs, e.g., for fullcalendar
+* (bluefox) allowed downloading of recursive folders
+
 
 ### 6.7.0 (2023-08-02)
 * (foxriver76) display more specific information about docker installation on host card
-* (foxriver76) allow to download folders in files tab
+* (foxriver76) allowed downloading folders in files tab
 
 ### 6.6.5 (2023-07-31)
 * (foxriver76) also show js-controller upgrade instructions if UI upgrade is available
@@ -100,7 +103,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed bug which prevented the creation of new objects
 * (bluefox/foxriver76) fixed bug which prevented opening adapter readme
 * (foxriver76) fixed ChipInput jsonConfig component
-* (bluefox) corrected opening of custom tabs, e.g., for fullcalendar
 
 ### 6.6.4 (2023-07-28)
 * (bluefox) Better licenses handling (especially for vis-2)
