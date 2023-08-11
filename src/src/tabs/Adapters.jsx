@@ -43,6 +43,7 @@ import { blue, green } from '@mui/material/colors';
 
 import Router from '@iobroker/adapter-react-v5/Components/Router';
 
+import { I18n } from '@iobroker/adapter-react-v5'; // adapter-react-v5/Components/Utils';
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
@@ -60,7 +61,7 @@ import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 import RatingDialog from '../dialogs/RatingDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import IsVisible from '../components/IsVisible';
-import Utils from '../components/Utils'; // adapter-react-v5/Components/Utils';
+import Utils from '../components/Utils';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -850,8 +851,35 @@ class Adapters extends Component {
         );
     }
 
-    update(adapter, version) {
+    async update(adapter, version) {
+        if (adapter === 'admin' && (await this.props.socket.checkFeatureSupported('ADAPTER_WEBSERVER_UPGRADE'))) {
+            this.performWebserverUpgrade(version);
+            return;
+        }
+
         this.props.executeCommand(`upgrade ${adapter}@${version}${this.props.expertMode ? ' --debug' : ''}`);
+    }
+
+    /**
+     * Perform the Admin Upgrade via Webserver
+     * This allows showing UI progress even admin is down
+     *
+     * @param {string} version desired admin version
+     */
+    performWebserverUpgrade(version) {
+        console.info('Initializing Admin Webserver Upgrade');
+
+        this.props.socket.getRawSocket().emit(
+            'sendToHost',
+            this.props.hostId,
+            'upgradeAdapterWithWebserver',
+            {
+                version,
+            },
+            result => {
+                console.log('result');
+            },
+        );
     }
 
     closeAddInstanceDialog() {
