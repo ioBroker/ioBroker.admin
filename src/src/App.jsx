@@ -1533,6 +1533,7 @@ class App extends Router {
                         adminGuiConfig={this.adminGuiConfig}
                         toggleTranslation={this.toggleTranslation}
                         noTranslation={this.state.noTranslation}
+                        adminInstance={this.adminInstance}
                     />
                 </Suspense>;
             } if (this.state.currentTab.tab === 'tab-instances') {

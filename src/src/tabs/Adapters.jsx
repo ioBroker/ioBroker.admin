@@ -871,7 +871,7 @@ class Adapters extends Component {
 
         const {
             certPrivateName, certPublicName, port, useHttps,
-        } = this.getWebserverParams();
+        } = await this.getWebserverParams();
 
         this.props.socket.getRawSocket().emit(
             'sendToHost',
@@ -896,15 +896,16 @@ class Adapters extends Component {
     /**
      * Get the webserver configuration of the current admin instance
      *
-     * @return {WebserverParameters}
+     * @return {Promise<WebserverParameters>}
      */
-    getWebserverParams() {
-        // TODO get certs from where?
+    async getWebserverParams() {
+        const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
 
         return {
-            useHttps: window.location.protocol === 'https:',
-            // TODO: after testing adapt again
-            port: 8081, // parseInt(window.location.port),
+            useHttps: obj.native.secure,
+            port: obj.native.port,
+            certPrivateName: obj.native.certPrivate,
+            certPublicName: obj.native.certPublic,
         };
     }
 
@@ -2357,6 +2358,8 @@ Adapters.propTypes = {
     triggerUpdate: PropTypes.number,
     /** The current host, like system.host.test */
     host: PropTypes.string.isRequired,
+    /** Like admin.0 */
+    adminInstance: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(Adapters);
