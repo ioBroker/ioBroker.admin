@@ -871,7 +871,7 @@ class Adapters extends Component {
 
         const {
             certPrivateName, certPublicName, port, useHttps,
-        } = await this.getWebserverParams();
+        } = this.getWebserverParams();
 
         this.props.socket.getRawSocket().emit(
             'sendToHost',
@@ -896,18 +896,16 @@ class Adapters extends Component {
     /**
      * Get the webserver configuration of the current admin instance
      *
-     * @return {Promise<WebserverParameters>}
+     * @return {WebserverParameters}
      */
-    async getWebserverParams() {
-        // TODO get webserver params from current running admin, we need
-        /*
-            useHttps: true,
-            port: 8081,
-            certPrivateName: 'defaultPrivate',
-            certPublicName: 'defaultPublic'
-         */
+    getWebserverParams() {
+        // TODO get certs from where?
 
-        return {};
+        return {
+            useHttps: window.location.protocol === 'https:',
+            // TODO: after testing adapt again
+            port: 8081, // parseInt(window.location.port),
+        };
     }
 
     closeAddInstanceDialog() {
