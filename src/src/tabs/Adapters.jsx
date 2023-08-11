@@ -43,7 +43,6 @@ import { blue, green } from '@mui/material/colors';
 
 import Router from '@iobroker/adapter-react-v5/Components/Router';
 
-import { I18n } from '@iobroker/adapter-react-v5'; // adapter-react-v5/Components/Utils';
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
@@ -865,21 +864,50 @@ class Adapters extends Component {
      * This allows showing UI progress even admin is down
      *
      * @param {string} version desired admin version
+     * @return {Promise<void>}
      */
-    performWebserverUpgrade(version) {
+    async performWebserverUpgrade(version) {
         console.info('Initializing Admin Webserver Upgrade');
+
+        const {
+            certPrivateName, certPublicName, port, useHttps,
+        } = await this.getWebserverParams();
 
         this.props.socket.getRawSocket().emit(
             'sendToHost',
-            this.props.hostId,
+            this.props.host,
             'upgradeAdapterWithWebserver',
             {
                 version,
+                adapterName: 'admin',
+                port,
+                useHttps,
+                certPublicName,
+                certPrivateName,
             },
             result => {
-                console.log('result');
+                console.log(result);
             },
         );
+    }
+
+    /** @typedef {{ useHttps: boolean, port: number, certPrivateName?: string, certPublicName?: string }} WebserverParameters */
+
+    /**
+     * Get the webserver configuration of the current admin instance
+     *
+     * @return {Promise<WebserverParameters>}
+     */
+    async getWebserverParams() {
+        // TODO get webserver params from current running admin, we need
+        /*
+            useHttps: true,
+            port: 8081,
+            certPrivateName: 'defaultPrivate',
+            certPublicName: 'defaultPublic'
+         */
+
+        return {};
     }
 
     closeAddInstanceDialog() {
@@ -2329,6 +2357,8 @@ Adapters.propTypes = {
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
     triggerUpdate: PropTypes.number,
+    /** The current host, like system.host.test */
+    host: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(Adapters);

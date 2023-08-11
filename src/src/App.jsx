@@ -1517,6 +1517,7 @@ class App extends Router {
                         systemConfig={this.state.systemConfig}
                         socket={this.socket}
                         hosts={this.state.hosts}
+                        host={this.state.host}
                         hostsWorker={this.hostsWorker}
                         currentHost={this.state.currentHost}
                         ready={this.state.ready}
