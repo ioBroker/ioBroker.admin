@@ -202,6 +202,7 @@
         "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
       }
     },
+    "jsonConfig": true,
     "adminUI": {
       "config": "json"
     }
@@ -218,6 +219,9 @@
     "accessAllowedConfigs": [],
     "accessAllowedTabs": [],
     "leCollection": false,
+    "certPublic": "",
+    "certPrivate": "",
+    "certChained": "",
     "ttl": 3600,
     "defaultUser": "admin",
     "tmpPath": "/tmp",

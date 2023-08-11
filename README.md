@@ -84,9 +84,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+
 ### 6.7.2 (2023-08-09)
 * (foxriver76) remove https certificate options
 * (foxriver76) prevent error log of not used certificates even though they are used
+* (foxriver76) prevent error log of not used certificates even-though they are used
 * (foxriver76) fixed issue with docker host cards on intro tab
 * (foxriver76) fixed issue if adapter readme is opened in new tab
 * (bluefox) corrected opening of custom tabs, e.g., for fullcalendar
