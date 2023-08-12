@@ -21,7 +21,10 @@ class AdminUpdater extends Component {
         this.state = {
             response: null,
             error: null,
+            /** if upgrade is just starting we ignore errors in beginning */
             starting: true,
+            /** if admin is up again after upgrade */
+            upAgain: false,
         };
 
         this.updating = false;
@@ -117,7 +120,7 @@ class AdminUpdater extends Component {
                     if (response && !response.running) {
                         this.interval && clearInterval(this.interval);
                         this.interval = null;
-                        await this.waitForAdapterStart();
+                        this.waitForAdapterStart();
                     } else if (response?.running) {
                         this.setUpdating(true);
                     }
@@ -143,7 +146,7 @@ class AdminUpdater extends Component {
             try {
                 await fetch(this.link);
                 clearInterval(this.interval);
-                window.location.reload();
+                this.setState({ upAgain: true });
             } catch  {
                 // ignore, it will throw until admin is reachable
             }
@@ -202,7 +205,7 @@ class AdminUpdater extends Component {
                 <DialogActions>
                     <Button
                         variant="contained"
-                        disabled={this.state.starting || (!this.state.error && this.state.response?.running)}
+                        disabled={this.state.starting || (!this.state.error && !this.state.upAgain)}
                         onClick={() => {
                             if (this.state.response?.success) {
                                 window.location.reload();
