@@ -73,23 +73,15 @@ class AdminUpdater extends Component {
                 certPublicName,
                 certPrivateName,
             },
-            result => {
-                console.log(result);
-
-                if (result.result) {
-                    this.setUpdating(true);
-                    this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
-
-                    this.startTimeout = setTimeout(() => {
-                        this.startTimeout = null;
-                        this.setState({ starting: false });
-                    }, 10_000); // give 10 seconds to controller to start update
-                } else {
-                    this.setState({ error: I18n.t('Not updatable'), starting: false });
-                    this.setUpdating(false);
-                }
-            },
         );
+
+        this.setUpdating(true);
+        this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
+
+        this.startTimeout = setTimeout(() => {
+            this.startTimeout = null;
+            this.setState({ starting: false });
+        }, 10_000); // give 10 seconds to controller to start update
     }
 
     componentWillUnmount() {
