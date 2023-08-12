@@ -1534,6 +1534,7 @@ class App extends Router {
                         toggleTranslation={this.toggleTranslation}
                         noTranslation={this.state.noTranslation}
                         adminInstance={this.adminInstance}
+                        onUpdating={updating => this.setState({ updating })}
                     />
                 </Suspense>;
             } if (this.state.currentTab.tab === 'tab-instances') {

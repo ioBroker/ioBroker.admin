@@ -61,6 +61,7 @@ import RatingDialog from '../dialogs/RatingDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import IsVisible from '../components/IsVisible';
 import Utils from '../components/Utils';
+import AdminUpdater from '../dialogs/AdminUpdater';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -278,6 +279,8 @@ class Adapters extends Component {
             currentHost: this.props.currentHost,
             forceUpdateAdapters: this.props.forceUpdateAdapters,
             triggerUpdate: props.triggerUpdate,
+            /** Upgrade admin version to given one */
+            adminUpgradeTo: null,
         };
 
         // this.rebuildSupported = false;
@@ -746,7 +749,7 @@ class Adapters extends Component {
         }
 
         // Do not update too often
-        if (Date.now() - this.state.lastUpdate > 1000) {
+        if (Date.now() - this.state.lastUpdate > 1_000) {
             console.log('[ADAPTERS] getAdaptersInfo');
 
             const currentHost = this.state.currentHost;
@@ -852,7 +855,7 @@ class Adapters extends Component {
 
     async update(adapter, version) {
         if (adapter === 'admin' && (await this.props.socket.checkFeatureSupported('ADAPTER_WEBSERVER_UPGRADE'))) {
-            this.performWebserverUpgrade(version);
+            this.setState({ adminUpgradeTo: version });
             return;
         }
 
@@ -863,50 +866,24 @@ class Adapters extends Component {
      * Perform the Admin Upgrade via Webserver
      * This allows showing UI progress even admin is down
      *
-     * @param {string} version desired admin version
-     * @return {Promise<void>}
+     * @return {React.JSX.Element | null}
      */
-    async performWebserverUpgrade(version) {
+    renderWebserverUpgrade() {
+        if (!this.state.adminUpgradeTo)  {
+            return null;
+        }
+
         console.info('Initializing Admin Webserver Upgrade');
 
-        const {
-            certPrivateName, certPublicName, port, useHttps,
-        } = await this.getWebserverParams();
-
-        this.props.socket.getRawSocket().emit(
-            'sendToHost',
-            this.props.host,
-            'upgradeAdapterWithWebserver',
-            {
-                version,
-                adapterName: 'admin',
-                port,
-                useHttps,
-                certPublicName,
-                certPrivateName,
-            },
-            result => {
-                console.log(result);
-            },
-        );
-    }
-
-    /** @typedef {{ useHttps: boolean, port: number, certPrivateName?: string, certPublicName?: string }} WebserverParameters */
-
-    /**
-     * Get the webserver configuration of the current admin instance
-     *
-     * @return {Promise<WebserverParameters>}
-     */
-    async getWebserverParams() {
-        const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
-
-        return {
-            useHttps: obj.native.secure,
-            port: obj.native.port,
-            certPrivateName: obj.native.certPrivate,
-            certPublicName: obj.native.certPublic,
-        };
+        return <AdminUpdater
+            socket={this.props.socket}
+            host={this.props.host}
+            onClose={reload =>
+                this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
+            version={this.state.adminUpgradeTo}
+            adminInstance={this.props.adminInstance}
+            onUpdating={isUpdating => this.props.onUpdating(isUpdating)}
+        />;
     }
 
     closeAddInstanceDialog() {
@@ -2222,6 +2199,7 @@ class Adapters extends Component {
             </TabContent>}
 
             {this.getUpdater()}
+            {this.renderWebserverUpgrade()}
             {this.getStatistics()}
             {this.renderSetRatingDialog()}
             {this.renderSlowConnectionWarning()}
@@ -2360,6 +2338,8 @@ Adapters.propTypes = {
     host: PropTypes.string.isRequired,
     /** Like admin.0 */
     adminInstance: PropTypes.string.isRequired,
+    /** Called when admin updates itself */
+    onUpdating: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Adapters);

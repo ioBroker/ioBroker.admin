@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import ipaddr from 'ipaddr.js';
 
 import { LinearProgress } from '@mui/material';
 
@@ -15,7 +14,7 @@ import ReloadIcon from '@mui/icons-material/Refresh';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-class JsControllerUpdater extends Component {
+class AdminUpdater extends Component {
     constructor(props) {
         super(props);
 
@@ -39,82 +38,58 @@ class JsControllerUpdater extends Component {
         }
     }
 
-    async findIpAddress() {
-        // Controller to update: this.props.hostId
-        // Current admin instance: this.props.adminInstance = 'admin.X'
-        // read settings of admin.X
-        const instanceObj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
-        if (instanceObj.common.host !== this.props.hostId) {
-            // we are updating some slave => try to find the common ip address
-            const host = await this.props.socket.getObject(`system.host.${this.props.hostId}`);
-            const settings = await this.props.socket.readBaseSettings(this.props.hostId);
-            let hostIp = settings?.config?.objects?.host;
+    /** @typedef {{ useHttps: boolean, port: number, certPrivateName?: string, certPublicName?: string }} WebserverParameters */
 
-            if (hostIp && hostIp !== 'localhost') {
-                hostIp = ipaddr.parse(hostIp);
-                // find common ip address in host.native.hardware.networkInterfaces
+    /**
+     * Get the webserver configuration of the current admin instance
+     *
+     * @return {Promise<WebserverParameters>}
+     */
+    async getWebserverParams() {
+        const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
 
-                if (host?.native?.hardware?.networkInterfaces) {
-                    for (const networkInterface of Object.entries(host.native.hardware.networkInterfaces)) {
-                        networkInterface.find(addr => {
-                            // addr = {
-                            //     "address": "192.168.178.45",
-                            //     "netmask": "255.255.255.0",
-                            //     "family": "IPv4",
-                            //     "mac": "00:2e:5c:68:15:e1",
-                            //     "internal": false,
-                            //     "cidr": "192.168.178.45/24"
-                            // }
-                            try {
-                                const iIP = ipaddr.parseCIDR(addr.cidr);
-                                if (addr.internal === false && hostIp.match(iIP)) {
-                                    this.link = `${window.location.protocol}//${
-                                        addr.family === 'IPv6' ? `[${addr.address}]` : addr.address
-                                    }:${window.location.port}`;
-                                }
-                            } catch (e) {
-                                // ignore
-                            }
-                            return false;
-                        });
-                    }
-                }
-            }
-        }
+        return {
+            useHttps: obj.native.secure,
+            port: obj.native.port,
+            certPrivateName: obj.native.certPrivate,
+            certPublicName: obj.native.certPublic,
+        };
     }
 
-    componentDidMount() {
-        // send update command to js-controller
-        this.findIpAddress()
-            .catch(e => {
-                // cannot find ip address
-                console.error(`Cannot find ip address: ${e}`);
-            })
-            .then(() => {
-                this.props.socket.getRawSocket().emit(
-                    'sendToHost',
-                    this.props.hostId,
-                    'upgradeController',
-                    {
-                        version: this.props.version,
-                        adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
-                    },
-                    result => {
-                        if (result.result) {
-                            this.setUpdating(true);
-                            this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
+    async componentDidMount() {
+        const {
+            certPrivateName, certPublicName, port, useHttps,
+        } = await this.getWebserverParams();
 
-                            this.startTimeout = setTimeout(() => {
-                                this.startTimeout = null;
-                                this.setState({ starting: false });
-                            }, 10_000); // give 10 seconds to controller to start update
-                        } else {
-                            this.setState({ error: I18n.t('Not updatable'), starting: false });
-                            this.setUpdating(false);
-                        }
-                    },
-                );
-            });
+        this.props.socket.getRawSocket().emit(
+            'sendToHost',
+            this.props.host,
+            'upgradeAdapterWithWebserver',
+            {
+                version: this.props.version,
+                adapterName: 'admin',
+                port,
+                useHttps,
+                certPublicName,
+                certPrivateName,
+            },
+            result => {
+                console.log(result);
+
+                if (result.result) {
+                    this.setUpdating(true);
+                    this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
+
+                    this.startTimeout = setTimeout(() => {
+                        this.startTimeout = null;
+                        this.setState({ starting: false });
+                    }, 10_000); // give 10 seconds to controller to start update
+                } else {
+                    this.setState({ error: I18n.t('Not updatable'), starting: false });
+                    this.setUpdating(false);
+                }
+            },
+        );
     }
 
     componentWillUnmount() {
@@ -137,17 +112,17 @@ class JsControllerUpdater extends Component {
             .then(res => res.json())
             .then(response => {
                 // sometimes stderr has only one empty string in it
-                if (response && response.stderr) {
+                if (response?.stderr) {
                     response.stderr = response.stderr.filter(line => line.trim());
                 }
                 if (response && !response.running && response.success && response.stdout) {
                     response.stdout.push('');
                     response.stdout.push('---------------------------------------------------');
-                    response.stdout.push(I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version));
+                    response.stdout.push(I18n.t('%s was successfully updated to %s', 'admin', this.props.version));
                 } else if (response?.stdout) {
                     response.stdout.unshift('');
                     response.stdout.unshift('---------------------------------------------------');
-                    response.stdout.unshift(I18n.t('updating %s to %s...', 'js-controller', this.props.version));
+                    response.stdout.unshift(I18n.t('updating %s to %s...', 'admin', this.props.version));
                 }
                 this.setState({ response, error: null }, () => {
                     if (response && !response.running) {
@@ -183,7 +158,7 @@ class JsControllerUpdater extends Component {
                 maxWidth="lg"
                 fullWidth
             >
-                <DialogTitle>{I18n.t('Updating %s...', 'js-controller')}</DialogTitle>
+                <DialogTitle>{I18n.t('Updating %s...', 'admin')}</DialogTitle>
                 <DialogContent style={{ height: 400, padding: '0 20px', overflow: 'hidden' }}>
                     {(!this.state.response || this.state.response.running) && !this.state.error ? (
                         <LinearProgress />
@@ -203,9 +178,9 @@ class JsControllerUpdater extends Component {
                                 border: this.state.response?.success
                                     ? '2px solid green'
                                     : this.state.error ||
-                                      (this.state.response &&
-                                          !this.state.response.running &&
-                                          !this.state.response.success)
+                                    (this.state.response &&
+                                        !this.state.response.running &&
+                                        !this.state.response.success)
                                         ? '2px solid red'
                                         : undefined,
                             }}
@@ -241,9 +216,9 @@ class JsControllerUpdater extends Component {
     }
 }
 
-JsControllerUpdater.propTypes = {
+AdminUpdater.propTypes = {
     socket: PropTypes.object.isRequired,
-    hostId: PropTypes.string.isRequired,
+    host: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
     version: PropTypes.string.isRequired,
     adminInstance: PropTypes.string.isRequired,
@@ -251,4 +226,4 @@ JsControllerUpdater.propTypes = {
     themeName: PropTypes.string,
 };
 
-export default JsControllerUpdater;
+export default AdminUpdater;
