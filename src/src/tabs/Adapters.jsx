@@ -873,8 +873,6 @@ class Adapters extends Component {
             return null;
         }
 
-        console.info('Initializing Admin Webserver Upgrade');
-
         return <AdminUpdater
             socket={this.props.socket}
             host={this.props.host}

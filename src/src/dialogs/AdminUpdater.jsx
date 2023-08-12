@@ -113,10 +113,11 @@ class AdminUpdater extends Component {
                     response.stdout.unshift('---------------------------------------------------');
                     response.stdout.unshift(I18n.t('updating %s to %s...', 'admin', this.props.version));
                 }
-                this.setState({ response, error: null }, () => {
+                this.setState({ response, error: null }, async () => {
                     if (response && !response.running) {
                         this.interval && clearInterval(this.interval);
                         this.interval = null;
+                        await this.waitForAdapterStart();
                     } else if (response?.running) {
                         this.setUpdating(true);
                     }
@@ -132,6 +133,21 @@ class AdminUpdater extends Component {
                     this.setState({ error: e.toString() }, () => this.setUpdating(false));
                 }
             });
+    }
+
+    /**
+     * Wait until admin is up again
+     */
+    waitForAdapterStart() {
+        this.interval = setInterval(async () => {
+            try {
+                await fetch(this.link);
+                clearInterval(this.interval);
+                window.location.reload();
+            } catch  {
+                // ignore, it will throw until admin is reachable
+            }
+        }, 1_000);
     }
 
     render() {
