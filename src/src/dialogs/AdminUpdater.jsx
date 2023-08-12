@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { LoadingButton } from '@mui/lab';
 
 import { LinearProgress } from '@mui/material';
 
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -203,7 +203,8 @@ class AdminUpdater extends Component {
                     ) : null}
                 </DialogContent>
                 <DialogActions>
-                    <Button
+                    <LoadingButton
+                        loading={this.state.response?.success && !this.state.upAgain}
                         variant="contained"
                         disabled={this.state.starting || (!this.state.error && !this.state.upAgain)}
                         onClick={() => {
@@ -216,7 +217,7 @@ class AdminUpdater extends Component {
                         startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
                     >
                         {this.state.response?.success ? I18n.t('Reload') : I18n.t('Close')}
-                    </Button>
+                    </LoadingButton>
                 </DialogActions>
             </Dialog>
         );
