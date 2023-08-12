@@ -76,7 +76,7 @@ class AdminUpdater extends Component {
         );
 
         this.setUpdating(true);
-        this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
+        this.interval = setInterval(() => this.checkStatus(), 1_000); // poll every second
 
         this.startTimeout = setTimeout(() => {
             this.startTimeout = null;
@@ -85,24 +85,21 @@ class AdminUpdater extends Component {
     }
 
     componentWillUnmount() {
-        this.intervall && clearInterval(this.intervall);
-        this.intervall = null;
+        this.interval && clearInterval(this.interval);
+        this.interval = null;
 
         this.startTimeout && clearTimeout(this.startTimeout);
         this.startTimeout = null;
     }
 
-    checkStatus() {
-        // interface ServerResponse {
-        //     running: boolean; // If the update is still running
-        //     stderr: string[];
-        //     stdout: string[];
-        //     success?: boolean; // if installation process succeeded
-        // }
+    /** @typedef {{ running: boolean; stderr: string[]; stdout: string[]; success?: boolean }} ServerResponse */
 
+    checkStatus() {
         fetch(this.link)
             .then(res => res.json())
-            .then(response => {
+            .then(_response => {
+                /** @type {ServerResponse} */
+                const response = _response;
                 // sometimes stderr has only one empty string in it
                 if (response?.stderr) {
                     response.stderr = response.stderr.filter(line => line.trim());
@@ -118,9 +115,8 @@ class AdminUpdater extends Component {
                 }
                 this.setState({ response, error: null }, () => {
                     if (response && !response.running) {
-                        this.setUpdating(false);
-                        this.intervall && clearInterval(this.intervall);
-                        this.intervall = null;
+                        this.interval && clearInterval(this.interval);
+                        this.interval = null;
                     } else if (response?.running) {
                         this.setUpdating(true);
                     }
