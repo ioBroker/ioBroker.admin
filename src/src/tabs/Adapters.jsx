@@ -60,7 +60,8 @@ import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 import RatingDialog from '../dialogs/RatingDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import IsVisible from '../components/IsVisible';
-import Utils from '../components/Utils'; // adapter-react-v5/Components/Utils';
+import Utils from '../components/Utils';
+import AdminUpdater from '../dialogs/AdminUpdater';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -278,6 +279,8 @@ class Adapters extends Component {
             currentHost: this.props.currentHost,
             forceUpdateAdapters: this.props.forceUpdateAdapters,
             triggerUpdate: props.triggerUpdate,
+            /** Upgrade admin version to given one */
+            adminUpgradeTo: null,
         };
 
         // this.rebuildSupported = false;
@@ -746,7 +749,7 @@ class Adapters extends Component {
         }
 
         // Do not update too often
-        if (Date.now() - this.state.lastUpdate > 1000) {
+        if (Date.now() - this.state.lastUpdate > 1_000) {
             console.log('[ADAPTERS] getAdaptersInfo');
 
             const currentHost = this.state.currentHost;
@@ -850,8 +853,35 @@ class Adapters extends Component {
         );
     }
 
-    update(adapter, version) {
+    async update(adapter, version) {
+        if (adapter === 'admin' && (await this.props.socket.checkFeatureSupported('ADAPTER_WEBSERVER_UPGRADE'))) {
+            this.setState({ adminUpgradeTo: version });
+            return;
+        }
+
         this.props.executeCommand(`upgrade ${adapter}@${version}${this.props.expertMode ? ' --debug' : ''}`);
+    }
+
+    /**
+     * Perform the Admin Upgrade via Webserver
+     * This allows showing UI progress even admin is down
+     *
+     * @return {React.JSX.Element | null}
+     */
+    renderWebserverUpgrade() {
+        if (!this.state.adminUpgradeTo)  {
+            return null;
+        }
+
+        return <AdminUpdater
+            socket={this.props.socket}
+            host={this.props.host}
+            onClose={reload =>
+                this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
+            version={this.state.adminUpgradeTo}
+            adminInstance={this.props.adminInstance}
+            onUpdating={isUpdating => this.props.onUpdating(isUpdating)}
+        />;
     }
 
     closeAddInstanceDialog() {
@@ -2167,6 +2197,7 @@ class Adapters extends Component {
             </TabContent>}
 
             {this.getUpdater()}
+            {this.renderWebserverUpgrade()}
             {this.getStatistics()}
             {this.renderSetRatingDialog()}
             {this.renderSlowConnectionWarning()}
@@ -2301,6 +2332,12 @@ Adapters.propTypes = {
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
     triggerUpdate: PropTypes.number,
+    /** The current host, like system.host.test */
+    host: PropTypes.string.isRequired,
+    /** Like admin.0 */
+    adminInstance: PropTypes.string.isRequired,
+    /** Called when admin updates itself */
+    onUpdating: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Adapters);

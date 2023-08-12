@@ -84,9 +84,15 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+* (foxriver76) admin is now showing update information, while it is stopped during upgrade
+* (foxriver76) required nodejs version is 16 as 14 is End-Of-Life
+
+
 ### 6.7.2 (2023-08-09)
 * (foxriver76) remove https certificate options
-* (foxriver76) prevent error log of not used certificates even though they are used
+* (foxriver76) prevent error log of not used certificates even-though they are used
 * (foxriver76) fixed issue with docker host cards on intro tab
 * (foxriver76) fixed issue if adapter readme is opened in new tab
 * (bluefox) corrected opening of custom tabs, e.g., for fullcalendar
