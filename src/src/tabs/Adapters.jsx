@@ -854,7 +854,7 @@ class Adapters extends Component {
     }
 
     async update(adapter, version) {
-        if (adapter === 'admin' && (await this.props.socket.checkFeatureSupported('ADAPTER_WEBSERVER_UPGRADE'))) {
+        if (adapter === 'admin' && this.props.host === this.props.currentHost && (await this.props.socket.checkFeatureSupported('ADAPTER_WEBSERVER_UPGRADE'))) {
             this.setState({ adminUpgradeTo: version });
             return;
         }
@@ -2321,7 +2321,8 @@ Adapters.propTypes = {
     themeType: PropTypes.string,
     systemConfig: PropTypes.object,
     socket: PropTypes.object,
-    currentHost: PropTypes.string,
+    /** Current selected host */
+    currentHost: PropTypes.string.isRequired,
     hostsWorker: PropTypes.object,
     ready: PropTypes.bool,
     t: PropTypes.func,
@@ -2332,7 +2333,7 @@ Adapters.propTypes = {
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
     triggerUpdate: PropTypes.number,
-    /** The current host, like system.host.test */
+    /** The host of the admin adapter, like system.host.test */
     host: PropTypes.string.isRequired,
     /** Like admin.0 */
     adminInstance: PropTypes.string.isRequired,
