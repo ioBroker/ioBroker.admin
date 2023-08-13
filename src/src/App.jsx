@@ -394,6 +394,7 @@ class App extends Router {
                 hosts: [],
                 currentHost: '',
                 currentHostName: '',
+                ownHost: '',
                 currentTab: Router.getLocation(),
                 currentDialog: null,
                 currentUser: '',
@@ -1099,6 +1100,8 @@ class App extends Router {
             }
         }
 
+        newState.ownHost = newState.currentHost;
+
         // Check that host is alive
         let alive;
         try {
@@ -1517,7 +1520,7 @@ class App extends Router {
                         systemConfig={this.state.systemConfig}
                         socket={this.socket}
                         hosts={this.state.hosts}
-                        host={this.state.host}
+                        host={this.state.ownHost}
                         hostsWorker={this.hostsWorker}
                         currentHost={this.state.currentHost}
                         ready={this.state.ready}
