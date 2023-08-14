@@ -46,44 +46,50 @@ class JsControllerUpdater extends Component {
         // Current admin instance: this.props.adminInstance = 'admin.X'
         // read settings of admin.X
         const instanceObj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
-        if (instanceObj.common.host !== this.props.hostId) {
-            // we are updating some slave => try to find the common ip address
-            const host = await this.props.socket.getObject(`system.host.${this.props.hostId}`);
-            const settings = await this.props.socket.readBaseSettings(this.props.hostId);
-            let hostIp = settings?.config?.objects?.host;
+        if (instanceObj.common.host === this.props.hostId) {
+            return;
+        }
 
-            if (hostIp && hostIp !== 'localhost') {
-                hostIp = ipaddr.parse(hostIp);
-                // find common ip address in host.native.hardware.networkInterfaces
+        // we are updating some slave => try to find the common ip address
+        const host = await this.props.socket.getObject(`system.host.${this.props.hostId}`);
+        const settings = await this.props.socket.readBaseSettings(this.props.hostId);
+        let hostIp = settings?.config?.objects?.host;
 
-                if (host?.native?.hardware?.networkInterfaces) {
-                    for (const networkInterface of Object.entries(host.native.hardware.networkInterfaces)) {
-                        networkInterface.find(addr => {
-                            // addr = {
-                            //     "address": "192.168.178.45",
-                            //     "netmask": "255.255.255.0",
-                            //     "family": "IPv4",
-                            //     "mac": "00:2e:5c:68:15:e1",
-                            //     "internal": false,
-                            //     "cidr": "192.168.178.45/24"
-                            // }
-                            try {
-                                const iIP = ipaddr.parseCIDR(addr.cidr);
-                                if (addr.internal === false && hostIp.match(iIP)) {
-                                    this.link = `${window.location.protocol}//${
-                                        addr.family === 'IPv6' ? `[${addr.address}]` : addr.address
-                                    }:${window.location.port}`;
-                                    // todo: remove as soon as mh slave update fixed
-                                    console.info(`link is "${this.link}"`);
-                                }
-                            } catch (e) {
-                                // ignore
-                            }
-                            return false;
-                        });
+        if (!hostIp || hostIp === 'localhost') {
+            return;
+        }
+
+        hostIp = ipaddr.parse(hostIp);
+
+        if (!host?.native?.hardware?.networkInterfaces) {
+            return;
+        }
+
+        // find common ip address in host.native.hardware.networkInterfaces
+        for (const networkInterface of Object.values(host.native.hardware.networkInterfaces)) {
+            networkInterface.find(addr => {
+                // addr = {
+                //     "address": "192.168.178.45",
+                //     "netmask": "255.255.255.0",
+                //     "family": "IPv4",
+                //     "mac": "00:2e:5c:68:15:e1",
+                //     "internal": false,
+                //     "cidr": "192.168.178.45/24"
+                // }
+                try {
+                    const iIP = ipaddr.parseCIDR(addr.cidr);
+                    if (addr.internal === false && hostIp.match(iIP)) {
+                        this.link = `${window.location.protocol}//${
+                            addr.family === 'IPv6' ? `[${addr.address}]` : addr.address
+                        }:${window.location.port}`;
+                        // todo: remove as soon as mh slave update fixed
+                        console.info(`link is "${this.link}"`);
                     }
+                } catch (e) {
+                    // ignore
                 }
-            }
+                return false;
+            });
         }
     }
 

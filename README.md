@@ -86,6 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 
 ### **WORK IN PROGRESS**
+* (foxriver76) try to find correct IP for controller UI multihost slave upgrade
 * (foxriver76) admin is now showing update information, while it is stopped during upgrade
 * (foxriver76) required nodejs version is 16 as 14 is End-Of-Life
 * (foxriver76) fix downloading folders recursive
