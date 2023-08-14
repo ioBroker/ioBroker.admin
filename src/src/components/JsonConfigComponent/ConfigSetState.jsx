@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 
-import IconWarning from '@mui/icons-material/Warning';
-import IconError from '@mui/icons-material/Error';
-import IconInfo from '@mui/icons-material/Info';
+import {
+    Warning as IconWarning,
+    Error as IconError,
+    Info as IconInfo,
+} from '@mui/icons-material';
 
 import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';

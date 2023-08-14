@@ -2,11 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import  {
+    InputLabel,
+    FormHelperText,
+    FormControl,
+    Select,
+    MenuItem,
+    ListSubheader,
+} from '@mui/material';
 
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
@@ -29,7 +32,18 @@ class ConfigSelect extends ConfigGeneric {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        const selectOptions = JSON.parse(JSON.stringify(this.props.schema.options));
+        const selectOptions = [];
+
+        (this.props.schema.options || []).forEach(item => {
+            // if optgroup
+            if (Array.isArray(item.items)) {
+                selectOptions.push({ label: item.label, value: item.value, group: true });
+                item.items = item.items.forEach(it => selectOptions.push(it));
+                return;
+            }
+
+            selectOptions.push(item);
+        });
 
         // if __different
         if (Array.isArray(value)) {
@@ -47,9 +61,11 @@ class ConfigSelect extends ConfigGeneric {
         }
 
         const selectOptions = (this.state.selectOptions || []).filter(item => {
+            // if optgroup or no hidden function
             if (!item.hidden) {
                 return true;
-            } if (this.props.custom) {
+            }
+            if (this.props.custom) {
                 return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
             }
             return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
@@ -80,10 +96,14 @@ class ConfigSelect extends ConfigGeneric {
                     });
                 }}
             >
-                {selectOptions.map(it =>
-                    <MenuItem key={it.value} value={it.value} style={it.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}>
+                {selectOptions.map((it, i) => {
+                    if (it.group) {
+                        return <ListSubheader key={i}>{this.getText(it.label, this.props.schema.noTranslation)}</ListSubheader>;
+                    }
+                    return <MenuItem key={i} value={it.value} style={it.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}>
                         {this.getText(it.label, this.props.schema.noTranslation)}
-                    </MenuItem>)}
+                    </MenuItem>;
+                })}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;

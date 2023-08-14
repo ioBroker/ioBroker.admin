@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { /* lighten, */ withStyles } from '@mui/styles';
 import Dropzone from 'react-dropzone';
 
-import FormHelperText from '@mui/material/FormHelperText';
 import {
     Button, Dialog, DialogActions, DialogContent, DialogTitle,
     IconButton, InputAdornment, Paper,
@@ -11,6 +10,7 @@ import {
     TableHead, TableRow, TableSortLabel,
     TextField, Toolbar, Tooltip,
     Typography,
+    FormHelperText,
 } from '@mui/material';
 
 import {

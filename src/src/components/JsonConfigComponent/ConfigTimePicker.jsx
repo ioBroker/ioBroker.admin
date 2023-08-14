@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import { TimePicker } from '@mui/x-date-pickers';
+
 import ConfigGeneric from './ConfigGeneric';
 
 const styles = () => ({

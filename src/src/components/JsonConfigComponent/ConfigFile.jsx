@@ -2,14 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
+import {
+    Button,
+    TextField,
+    IconButton,
+} from '@mui/material';
 
-import IconText from '@mui/icons-material/Article';
-import IconVideo from '@mui/icons-material/Videocam';
-import IconCode from '@mui/icons-material/Code';
-import IconPlay from '@mui/icons-material/PlayArrow';
+import {
+    Article as IconText,
+    Code as IconCode,
+    PlayArrow as IconPlay,
+    Videocam as IconVideo,
+} from '@mui/icons-material';
 
 import SelectFileDialog from './wrapper/Dialogs/SelectFile';
 

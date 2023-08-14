@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
+import {
+    TextField,
+    IconButton,
+} from '@mui/material';
 
-import IconCopy from '@mui/icons-material/ContentCopy';
+import { ContentCopy as IconCopy } from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';

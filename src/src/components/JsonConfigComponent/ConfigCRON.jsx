@@ -2,9 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import { Button, TextField } from '@mui/material';
+import {
+    InputLabel,
+    FormControl,
+    Button,
+    TextField,
+} from '@mui/material';
 
 import I18n from './wrapper/i18n';
 import DialogCron from './wrapper/Dialogs/Cron';

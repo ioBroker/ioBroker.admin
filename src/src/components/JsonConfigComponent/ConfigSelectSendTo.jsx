@@ -2,17 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import TextField from '@mui/material/TextField';
-import CircularProgress from '@mui/material/CircularProgress';
-import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
-import Chip from '@mui/material/Chip';
-import Box from '@mui/material/Box';
+import {
+    InputLabel,
+    MenuItem,
+    FormHelperText,
+    FormControl,
+    Select,
+    TextField,
+    CircularProgress,
+    ListItemText,
+    Checkbox,
+    Chip,
+    Box,
+} from '@mui/material';
 
 import I18n from './wrapper/i18n';
 

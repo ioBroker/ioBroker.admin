@@ -57,7 +57,8 @@ Possible types:
   - `allowDeactivate` - allow letting functionality empty
 
 - `select` 
-  - `options` - `[{label: {en: "option 1"}, value: 1}, ...]`
+  - `options` - `[{label: {en: "option 1"}, value: 1}, ...]` or
+                `[{"items": [{"label": "Val1", "value": 1}, {"label": "Val2", value: "2}], "name": "group1"}, {"items": [{"label": "Val3", "value": 3}, {"label": "Val4", value: "4}], "name": "group2"}, {"label": "Val5", "value": 5}]`
 
 - `autocomplete`
   - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`

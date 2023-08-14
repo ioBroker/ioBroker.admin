@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import LinearProgress from '@mui/material/LinearProgress';
-import Grid from '@mui/material/Grid';
+import { Grid, LinearProgress } from '@mui/material';
 
 import I18n from './wrapper/i18n';
 
 const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
     new Promise((resolve, reject) => {
-    // check if remote exists on window
+    // check if remote exists on the global `window`object
         if (!window[remote]) {
             // search dom to see if remote tag exists, but might still be loading (async)
             const existingRemote = document.querySelector(`script[data-webpack="${remote}"]`);

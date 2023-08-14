@@ -4,13 +4,15 @@ import { withStyles } from '@mui/styles';
 
 import { Button, CircularProgress } from '@mui/material';
 
-import IconWarning from '@mui/icons-material/Warning';
-import IconError from '@mui/icons-material/Error';
-import IconInfo from '@mui/icons-material/Info';
-import IconAuth from '@mui/icons-material/Key';
-import IconSend from '@mui/icons-material/Send';
-import IconWeb from '@mui/icons-material/Public';
-import IconSearch from '@mui/icons-material/Search';
+import {
+    Warning as IconWarning,
+    Error as IconError,
+    Info as IconInfo,
+    Key as IconAuth,
+    Send as IconSend,
+    Public as IconWeb,
+    Search as IconSearch,
+} from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
 import Icon from './wrapper/Components/Icon';

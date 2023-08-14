@@ -1,8 +1,7 @@
+import { Buffer } from 'buffer';
 import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-
-import { Buffer } from 'buffer';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-min-noconflict/mode-json';

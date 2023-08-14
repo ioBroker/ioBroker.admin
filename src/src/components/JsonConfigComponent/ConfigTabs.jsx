@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import { Tabs, Tab } from '@mui/material';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';

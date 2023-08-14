@@ -50,7 +50,7 @@
     "@iobroker/testing": "^4.1.0",
     "chai": "^4.3.7",
     "colorette": "^2.0.20",
-    "eslint": "^8.46.0",
+    "eslint": "^8.47.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-prettier": "^5.0.0",
@@ -62,7 +62,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "mocha": "^10.2.0",
     "prettier": "^3.0.1",
-    "puppeteer": "^21.0.2"
+    "puppeteer": "^21.0.3"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"

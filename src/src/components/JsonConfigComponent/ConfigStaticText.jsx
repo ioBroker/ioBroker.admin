@@ -2,18 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 
-import IconAuth from '@mui/icons-material/Key';
-import IconSend from '@mui/icons-material/Send';
-import IconWeb from '@mui/icons-material/Public';
-import IconWarning from '@mui/icons-material/Warning';
-import IconError from '@mui/icons-material/Error';
-import IconInfo from '@mui/icons-material/Info';
-import IconSearch from '@mui/icons-material/Search';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import HelpIcon from '@mui/icons-material/Help';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import {
+    Key as IconAuth,
+    Send as IconSend,
+    Public as IconWeb,
+    Warning as IconWarning,
+    Error as IconError,
+    Info as IconInfo,
+    Search as IconSearch,
+    MenuBook as MenuBookIcon,
+    Help as HelpIcon,
+    UploadFile as UploadFileIcon,
+} from '@mui/icons-material';
 
 import Icon from './wrapper/Components/Icon';
 import Utils from './wrapper/Components/Utils';
