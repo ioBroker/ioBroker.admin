@@ -1,6 +1,19 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.6.3 (2023-07-27)
+* (foxriver76) fixed "Let's Encrypt" link not being clickable inside system settings
+* (foxriver76) fixed false positives for "not much space left on device" warning
+* (foxriver76) fixed issue with npm version determination on some installations
+* (foxriver76) reset the logout timer UI if session is extended
+* (rovo89) apply button color change of v6.6.1 for all buttons
+* (foxriver76) correctly display materialized tabs when configured with io-package `adminUi` property
+* (foxriver76) enable keyboard navigation for objects tab
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions

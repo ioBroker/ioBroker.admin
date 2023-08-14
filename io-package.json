@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.7.2",
+    "version": "6.8.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.8.0": {
+        "en": "try to find correct IP for controller UI multihost slave upgrade\nadmin is now showing update information, while it is stopped during upgrade\nrequired nodejs version is 16 as 14 is End-Of-Life\nfix downloading folders recursive",
+        "de": "versuchen, korrekte IP für Controller UI Multihost Slave Upgrade zu finden\nadmin zeigt jetzt update-informationen, während es während des upgrades gestoppt wird\nerforderliche nodejs-Version ist 16 wie 14 ist End-Of-Life\nfix downloaden ordner wiederkehren",
+        "ru": "попробуйте найти правильный IP для контроллера UI multihost slave обновление\nadmin сейчас показывает обновление информации, в то время как он остановлен во время обновления\nтребуется версия nodejs 16 как 14 является End-Of-Life\nисправить загрузку папок recursive",
+        "pt": "tentar encontrar o IP correto para controlador UI multihost slave upgrade\nadmin agora está mostrando informações de atualização, enquanto ele é interrompido durante a atualização\nnodejs necessários versão é 16 como 14 é End-Of-Life\ncorrigir pastas de download recursiva",
+        "nl": "probeer correct IP te vinden voor controleler UI multihost slave upgra\nadmin toont nu update informatie, terwijl het wordt gestopt tijdens de upgrade\nnodejs versie is 16 als 14 is End-Of-Life\nvertaling:",
+        "fr": "essayez de trouver l'IP correct pour le contrôleur UI multihost esclave upgrade\nadmin montre maintenant des informations de mise à jour, pendant qu'il est arrêté pendant la mise à niveau\nla version nodejs requise est 16 car 14 est End-Of-Life\ncorrection des dossiers de téléchargement recursif",
+        "it": "cercare di trovare IP corretto per il controllore UI multihost slave upgrade\nadmin ora mostra informazioni di aggiornamento, mentre viene interrotto durante l'aggiornamento\nversione nodejs richiesta è 16 come 14 è End-Of-Life\ncorreggere le cartelle di download ricorrenti",
+        "es": "tratar de encontrar la IP correcta para el controlador UI multihost actualizaciones de esclavos\nadmin ahora está mostrando información de actualización, mientras que se detiene durante la actualización\nversión nodejs requerida es 16 ya que 14 es End-Of-Life\narreglar carpetas de descarga recursiva",
+        "pl": "w celu znalezienia odpowiedniego IP dla kontrolera UI multihost ulepszania niewolnik\nadmin jest teraz pokazywany na aktualizacji informacji, podczas gdy zatrzymuje się on w trakcie aktualizacji\nwersja z węzłem 16 {\\displaystyle 16} jest to koniec życia\nnaprawić foldery rekursywne",
+        "uk": "намагатися знайти правильний IP для контролера UI багатоhost раб оновлення\nadmin тепер показує інформацію про оновлення, в той час як він припиняється під час оновлення\njavaScript licenses API Веб-сайт Go1.13.8\nвиправити завантаження папок рекурсивний",
+        "zh-cn": "试图找到控制勒乌伊多主奴隶升级的IP。\n现在突出的是最新资料,在升级期间停止更新信息。\n要求的无误版本为16件,14件为X-Of-Life。\nf 固定下载导游"
+      },
       "6.7.2": {
         "en": "remove https certificate options\nprevent error log of not used certificates even though they are used\nfixed issue with docker host cards on intro tab\nfixed issue if adapter readme is opened in new tab\ncorrected opening of custom tabs, e.g., for fullcalendar\nallowed downloading of recursive folders",
         "de": "entfernen von https-zertifikat-optionen\ndie fehlerprotokollierung nicht genutzter zertifikate verhindern, obwohl sie verwendet werden\nfeste ausgabe mit docer-hostkarten auf intro-tab\nfestes problem, wenn adapter-lesegerät in neuem tab geöffnet wird\nkorrigiertes öffnen von benutzerdefinierten tabs, z.b. für fullcalendar\ndas herunterladen von wiederkehrenden ordnern erlaubt",
@@ -95,19 +108,6 @@
         "pl": "Wiele ulepszeń GUI\nNowy komponent konfigurowalny dodano: umowa o licencji",
         "uk": "Багато покращення інтерфейсу\nДодано новий компонент config json: ліцензійний договір",
         "zh-cn": "许多GUI改进\n新Jsonconfig部分增加:被许可协议"
-      },
-      "6.6.0": {
-        "en": "New json config component added: accordion\nAdded site name and corrected the system dialog",
-        "de": "Neue json config Komponente hinzugefügt: Akkordeon\nSeitenname hinzugefügt und den Systemdialog korrigiert",
-        "ru": "Новый компонент json config добавлен: аккордеон\nДобавил имя сайта и исправил диалог системы",
-        "pt": "Novo componente json config adicionado: acordeão\nAdicionado nome do site e corrigido a caixa de diálogo do sistema",
-        "nl": "Nieuw Json config component toegevoegd:\nVoeg de site naam toe en corrigeerde de systeem dialog",
-        "fr": "Nouveau composant json config ajouté: accordion\nAjout du nom du site et correction du dialogue système",
-        "it": "Nuovo componente json config aggiunto: fisarmonica\nAggiunto nome del sito e corretto il sistema dialogo",
-        "es": "Nuevo componente de configuración json añadido: acordeón\nAñadido el nombre del sitio y corregido el diálogo del sistema",
-        "pl": "Dodano nowy skład konfigurowny: akordeon\nNazwa miejsca i poprawiła dialogi systemowe",
-        "uk": "Додано новий json config компонент: акордеон\nДодано назву сайту і виправлено діалогове вікно системи",
-        "zh-cn": "新 jsonconfig部分增加:同意\n增加网站名称和纠正系统口号"
       }
     },
     "desc": {

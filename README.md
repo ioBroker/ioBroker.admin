@@ -84,13 +84,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 6.8.0 (2023-08-14)
 * (foxriver76) try to find correct IP for controller UI multihost slave upgrade
 * (foxriver76) admin is now showing update information, while it is stopped during upgrade
 * (foxriver76) required nodejs version is 16 as 14 is End-Of-Life
 * (foxriver76) fix downloading folders recursive
-
 
 ### 6.7.2 (2023-08-09)
 * (foxriver76) remove https certificate options
@@ -113,15 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.6.4 (2023-07-28)
 * (bluefox) Better licenses handling (especially for vis-2)
-
-### 6.6.3 (2023-07-27)
-* (foxriver76) fixed "Let's Encrypt" link not being clickable inside system settings
-* (foxriver76) fixed false positives for "not much space left on device" warning
-* (foxriver76) fixed issue with npm version determination on some installations
-* (foxriver76) reset the logout timer UI if session is extended
-* (rovo89) apply button color change of v6.6.1 for all buttons
-* (foxriver76) correctly display materialized tabs when configured with io-package `adminUi` property
-* (foxriver76) enable keyboard navigation for objects tab
 
 ## License
 The MIT License (MIT)
