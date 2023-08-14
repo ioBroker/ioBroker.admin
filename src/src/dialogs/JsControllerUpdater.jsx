@@ -30,8 +30,6 @@ class JsControllerUpdater extends Component {
         this.textareaRef = React.createRef();
 
         this.link = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-        // todo: remove as soon as mh slave update fixed
-        console.info(`initial link is "${this.link}"`);
     }
 
     setUpdating(updating) {
@@ -82,8 +80,6 @@ class JsControllerUpdater extends Component {
                         this.link = `${window.location.protocol}//${
                             addr.family === 'IPv6' ? `[${addr.address}]` : addr.address
                         }:${window.location.port}`;
-                        // todo: remove as soon as mh slave update fixed
-                        console.info(`link is "${this.link}"`);
                     }
                 } catch (e) {
                     // ignore
@@ -143,8 +139,6 @@ class JsControllerUpdater extends Component {
         //     success?: boolean; // if installation process succeeded
         // }
 
-        // todo: remove as soon as mh slave update fixed
-        console.info(`fetch "${this.link}"`);
         fetch(this.link)
             .then(res => res.json())
             .then(response => {
