@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.8.0",
+    "version": "6.8.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.8.1": {
+        "en": "Extended the select component with grouping\nAllowed the sorting of adapters by name and not only by title\nAllowed the set state JSON config component",
+        "de": "Erweiterte Auswahlkomponente mit Gruppierung\nErlaubt die Sortierung von Adaptern nach Namen und nicht nur nach Titel\nErlaubt der eingestellten Zustand JSON config Komponente",
+        "ru": "Расширенный выбор компонента с группировкой\nРазрешена сортировка адаптеров по имени и не только по названию\nРазрешена настройка состояния JSON config компонента",
+        "pt": "Estendido o componente seleto com agrupamento\nPermite a classificação de adaptadores por nome e não apenas por título\nPermitido o conjunto estado JSON componente de configuração",
+        "nl": "Verlengde het selecte component met groepering\nHet soort adapters met naam en niet alleen de titel\nStaat JSON config component",
+        "fr": "Extended the select component with grouping\nPermet le tri des adaptateurs par nom et non seulement par titre\nPermis le composant de configuration de l'état de réglage JSON",
+        "it": "Esteso il componente selezionato con il raggruppamento\nConsentito la selezione di adattatori per nome e non solo per titolo\nConsentito il componente di configurazione dello stato impostato JSON",
+        "es": "Extendido el componente selecto con agrupación\nPermitió la clasificación de adaptadores por nombre y no sólo por título\nPermitido el componente de configuración del estado establecido JSON",
+        "pl": "Rozciągnięty skład selekcji z grupą\nWszystko to zawdzięczało rodzajowi adaptacji przez nazwę, a nie tylko tytułowi\nWspółtworzył stan konfigurowalny JSON",
+        "uk": "Розширений вибір компонента з групуванням\nДозволено сортування адаптерів за назвою і не тільки за назвою\nСприяє встановленню компонента JSON config",
+        "zh-cn": "A. 参与与集团集团有关的选定部分\n允许以名称进行适应者,而不是仅通过名称进行。\n允许设立的国家联合协商会控制部分"
+      },
       "6.8.0": {
         "en": "try to find correct IP for controller UI multihost slave upgrade\nadmin is now showing update information, while it is stopped during upgrade\nrequired nodejs version is 16 as 14 is End-Of-Life\nfix downloading folders recursive",
         "de": "versuchen, korrekte IP für Controller UI Multihost Slave Upgrade zu finden\nadmin zeigt jetzt update-informationen, während es während des upgrades gestoppt wird\nerforderliche nodejs-Version ist 16 wie 14 ist End-Of-Life\nfix downloaden ordner wiederkehren",
@@ -95,19 +108,6 @@
         "pl": "stała \"Let's Encrypt\" nie jest clickable wewnątrz systemu\nuruchomione fałszywe dodatki dla „niewielkiej przestrzeni pozostawionej na urządzenie”\nostateczny problem z determinacją wersji na niektóre instalacje\nresetowanie timer UI w razie przedłużenia sesji\nzmiana przycisku v6.6.1 dla wszystkich przycisków\npoprawnie wyświetlają tabele, gdy konfiguruje się z adminem io. własność Ui\nokładka",
         "uk": "фіксована посилання \"Зашифрування\" не натискається на налаштування системи\nфіксовані помилкові бонуси за попередження \"не багато місця, що залишилося на пристрої\"\nвиправлено проблему з визначенням версії npm на деяких установках\nскинути таймер логотипа UI, якщо сеанс продовжено\nнаносити зміни кольору кнопки v6.6.1 для всіх кнопок\nправильно відображати матеріалізовані вкладки при налаштуванні адміністратором io-package Ui майно\nувімкнути навігацію клавіатури для вкладки об'єктів",
         "zh-cn": "固定的“Let's En加密”环节在系统环境中无法找到\n“没有多少空间留在装置上”的固定错误积极性\n某些设施的固定问题\n如果会议延长,则重新安排时间的UI\n适用于所有克顿斯的“6.6.1”适用但有色彩的变化\n装有碘剂的正确展示图表 1. 不动产\na. 关键航线"
-      },
-      "6.6.1": {
-        "en": "Many GUI improvements\nNew json config component added: license agreement",
-        "de": "Viele GUI Verbesserungen\nNeue json config Komponente hinzugefügt: Lizenzvereinbarung",
-        "ru": "Многие улучшения GUI\nДобавлен новый компонент json config: лицензионное соглашение",
-        "pt": "Muitas melhorias GUI\nNovo componente json config adicionado: acordo de licença",
-        "nl": "Veel GUI verbetering\nNieuw Json config component toegevoegd:",
-        "fr": "Nombre d'améliorations de l'interface graphique\nNouveau composant json config ajouté: accord de licence",
-        "it": "Molti miglioramenti della GUI\nNuovo componente json config aggiunto: accordo di licenza",
-        "es": "Muchas mejoras GUI\nNuevo componente de configuración json añadido: acuerdo de licencia",
-        "pl": "Wiele ulepszeń GUI\nNowy komponent konfigurowalny dodano: umowa o licencji",
-        "uk": "Багато покращення інтерфейсу\nДодано новий компонент config json: ліцензійний договір",
-        "zh-cn": "许多GUI改进\n新Jsonconfig部分增加:被许可协议"
       }
     },
     "desc": {

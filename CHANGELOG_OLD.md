@@ -1,6 +1,13 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.6.4 (2023-07-28)
+* (bluefox) Better licenses handling (especially for vis-2)
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.6.3 (2023-07-27)
 * (foxriver76) fixed "Let's Encrypt" link not being clickable inside system settings
 * (foxriver76) fixed false positives for "not much space left on device" warning
