@@ -83,6 +83,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 
+### **WORK IN PROGRESS**
+* (foxriver76) added description to adapter rating dialog
+
 ## Changelog
 ### 6.8.1 (2023-08-16)
 * (bluefox) Extended the select component with grouping
