@@ -19,6 +19,8 @@ import Select from '@mui/material/Select';
 
 import VoteIcon from '@mui/icons-material/HowToVote';
 import CloseIcon from '@mui/icons-material/Close';
+import InfoIcon from '@mui/icons-material/Info';
+import Typography from '@mui/material/Typography';
 
 const styles = theme => ({
     rating: {
@@ -66,6 +68,16 @@ const styles = theme => ({
         opacity: 0.8,
         fontSize: 10,
         float: 'right',
+    },
+    infoText: {
+        textAlign: 'left',
+        fontSize: '14px',
+    },
+    infoTextContainer: {
+        display: 'flex',
+        paddingBottom: '10px',
+        alignItems: 'center',
+        gap: '10px',
     },
 });
 
@@ -180,6 +192,18 @@ class RatingDialog extends Component {
             });
     }
 
+    /**
+     * Renders the info text component, which explains the rating section
+     *
+     * @return {JSX.Element}
+     */
+    renderInfoText() {
+        return <div className={this.props.classes.infoTextContainer}>
+            <InfoIcon />
+            <Typography className={this.props.classes.infoText}>{this.props.t('use GitHub for issues')}</Typography>
+        </div>;
+    }
+
     renderComments() {
         if (this.state.votings?.comments && this.state.votings.comments.length) {
             const found = this.state.votings.comments.find(comment =>
@@ -258,6 +282,7 @@ class RatingDialog extends Component {
         >
             <DialogTitle>{`${this.props.t('Review')} ${this.props.adapter}${this.props.version ? `@${this.props.version}` : ''}`}</DialogTitle>
             <DialogContent style={{ textAlign: 'center' }} title={(this.props.currentRating && this.props.currentRating.title) || ''}>
+                {this.renderInfoText()}
                 <Rating
                     className={this.props.classes.rating}
                     name={this.props.adapter}
