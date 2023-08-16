@@ -159,7 +159,7 @@ jobs:
           export SENTRY_ORG=iobroker
           export SENTRY_PROJECT=iobroker-admin
           export SENTRY_VERSION=iobroker.admin@${{ steps.extract_release.outputs.VERSION }}
-          export SENTRY_RELEASE=${{ env.VERSION }}
+          export SENTRY_RELEASE=${{ steps.extract_release.outputs.VERSION }}
           sentry-cli releases new $SENTRY_VERSION
           sentry-cli releases finalize $SENTRY_VERSION
           sentry-cli sourcemaps inject ./www
