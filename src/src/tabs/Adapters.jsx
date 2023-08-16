@@ -231,6 +231,13 @@ const styles = theme => ({
     },
 });
 
+const FILTERS = [
+    { name: 'Description A-Z' },
+    { name: 'Name A-Z' },
+    { name: 'Popular first', notByList: true },
+    { name: 'Recently updated', notByList: true },
+];
+
 class Adapters extends Component {
     constructor(props) {
         super(props);
@@ -263,8 +270,7 @@ class Adapters extends Component {
             updateList: false,
             installedList: false,
             categoriesTiles: 'All',
-            filterTiles: 'A-Z',
-            arrayFilter: [{ name: 'A-Z' }, { name: 'Popular first' }, { name: 'Recently updated' }],
+            filterTiles: 'Description A-Z',
             gitHubInstallDialog: false,
             updateAvailable: [],
             filteredList: null,
@@ -521,6 +527,70 @@ class Adapters extends Component {
         return this.t('votes');
     }
 
+    static getAdapterTitle(adapter, adapters, lang) {
+        let title = adapters[adapter].titleLang || adapters[adapter].title;
+        if (typeof title === 'object') {
+            title = title[lang] || title.en;
+        }
+        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+        return title.toLowerCase();
+    }
+
+    static sortAdapters(list, lang, installed, adapters, sortByName, sortPopularFirst, sortRecentlyUpdated) {
+        const titles = {};
+        list.sort((a, b) => {
+            if (sortPopularFirst) {
+                if (adapters[b].stat === adapters[a].stat) {
+                    titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
+                    titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
+
+                    return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
+                }
+                return adapters[b].stat - adapters[a].stat;
+            }
+            if (sortRecentlyUpdated) {
+                if (!adapters[a]) {
+                    return -1;
+                }
+                if (!adapters[b]) {
+                    return 1;
+                }
+                if (adapters[a].daysAgo === adapters[b].daysAgo) {
+                    titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
+                    titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
+
+                    return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
+                }
+                return adapters[a].daysAgo - adapters[b].daysAgo;
+            }
+
+            if (installed[a] && installed[b]) {
+                if (sortByName) {
+                    return a > b ? 1 : (a < b ? -1 : 0);
+                }
+                titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
+                titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
+
+                return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
+            }
+            if (installed[a]) {
+                return -1;
+            }
+            if (installed[b]) {
+                return 1;
+            }
+
+            if (sortByName) {
+                return a > b ? 1 : (a < b ? -1 : 0);
+            }
+            // sort by real language name and not by adapter name
+            titles[a] = titles[a] || Adapters.getAdapterTitle(a, adapters, lang);
+            titles[b] = titles[b] || Adapters.getAdapterTitle(b, adapters, lang);
+
+            return titles[a] > titles[b] ? 1 : titles[a] < titles[b] ? -1 : 0;
+        });
+    }
+
     calculateInfo(instances, ratings, hostData, compactRepositories) {
         hostData = hostData || this.state.hostData;
         ratings = ratings || this.state.ratings;
@@ -650,54 +720,11 @@ class Adapters extends Component {
             })
             .forEach(value => categoriesSorted.push(categories[value]));
 
-        const _titles = {};
+        // const _titles = {};
+        const sortByName = this.state.filterTiles === 'Name A-Z';
 
         Object.keys(categories).forEach(type =>
-            categories[type].adapters.sort((a, b) => {
-                if (installed[a] && installed[b]) {
-                    if (!_titles[a]) {
-                        let title = repository[a].titleLang || repository[a].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[a] = title.toLowerCase();
-                    }
-                    if (!_titles[b]) {
-                        let title = repository[b].titleLang || repository[b].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[b] = title.toLowerCase();
-                    }
-
-                    return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-                } if (installed[a]) {
-                    return -1;
-                } if (installed[b]) {
-                    return 1;
-                }
-                // sort by real language name and not by adapter name
-                if (!_titles[a]) {
-                    let title = repository[a].titleLang || repository[a].title;
-                    if (typeof title === 'object') {
-                        title = title[this.props.lang] || title.en;
-                    }
-                    title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                    _titles[a] = title.toLowerCase();
-                }
-                if (!_titles[b]) {
-                    let title = repository[b].titleLang || repository[b].title;
-                    if (typeof title === 'object') {
-                        title = title[this.props.lang] || title.en;
-                    }
-                    title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                    _titles[b] = title.toLowerCase();
-                }
-
-                return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-            }));
+            Adapters.sortAdapters(categories[type].adapters, this.props.lang, installed, repository, sortByName));
 
         let installedList = false;
         try {
@@ -710,7 +737,10 @@ class Adapters extends Component {
         const updateList = (window._localStorage || window.localStorage).getItem('Adapters.updateList') === 'true';
         const categoriesTiles =
             (window._localStorage || window.localStorage).getItem('Adapters.categoriesTiles') || 'All';
-        const filterTiles = (window._localStorage || window.localStorage).getItem('Adapters.filterTiles') || 'A-Z';
+        let filterTiles = (window._localStorage || window.localStorage).getItem('Adapters.filterTiles') || 'Description A-Z';
+        if (filterTiles === 'A-Z') {
+            filterTiles = 'Description A-Z';
+        }
         this.allAdapters = Object.keys(repository).length - 1;
 
         this.cache.listOfVisibleAdapter = null;
@@ -1209,8 +1239,16 @@ class Adapters extends Component {
     changeViewMode() {
         this.cache.listOfVisibleAdapter = null;
         const viewMode = !this.state.viewMode;
+
+        // By the list view, the filterTiles can be only 'Description A-Z' or 'Name A-Z'
+        let filterTiles = this.state.filterTiles;
+        if (viewMode && filterTiles !== 'Description A-Z' && filterTiles !== 'Name A-Z') {
+            filterTiles = 'Description A-Z';
+            (window._localStorage || window.localStorage).setItem('Adapters.filterTiles', filterTiles);
+        }
+
         (window._localStorage || window.localStorage).setItem('Adapters.viewMode', viewMode ? 'true' : 'false');
-        this.setState({ viewMode });
+        this.setState({ viewMode, filterTiles });
     }
 
     changeUpdateList() {
@@ -1231,7 +1269,7 @@ class Adapters extends Component {
     }
 
     changeFilterTiles(filterTiles) {
-        this.cache.listOfVisibleAdapter = null;
+        this.cache.listOfVisibleAdapter = null; // rebuild cache
         (window._localStorage || window.localStorage).setItem('Adapters.filterTiles', filterTiles);
         this.setState({ filterTiles });
     }
@@ -1442,30 +1480,28 @@ class Adapters extends Component {
                 const expanded = this.state.categoriesExpanded[categoryName];
                 count++;
 
-                return (
-                    <Fragment key={`category-${categoryName} ${category.adapters.length}`}>
-                        <AdapterRow
-                            descHidden={descHidden}
-                            key={`category-${categoryName}${1}`}
-                            category
-                            categoryName={categoryName}
-                            count={category.count}
-                            expanded={expanded}
-                            installedCount={category.installed}
-                            name={category.translation}
-                            onToggle={() => this.toggleCategory(categoryName)}
-                            t={this.t}
-                            hidden={false}
-                        />
+                return <Fragment key={`category-${categoryName} ${category.adapters.length}`}>
+                    <AdapterRow
+                        descHidden={descHidden}
+                        key={`category-${categoryName}${1}`}
+                        category
+                        categoryName={categoryName}
+                        count={category.count}
+                        expanded={expanded}
+                        installedCount={category.installed}
+                        name={category.translation}
+                        onToggle={() => this.toggleCategory(categoryName)}
+                        t={this.t}
+                        hidden={false}
+                    />
 
-                        {expanded &&
-                            category.adapters.map(value => {
-                                const item = this.getRow(value, descHidden);
-                                item && count++;
-                                return item;
-                            })}
-                    </Fragment>
-                );
+                    {expanded &&
+                        category.adapters.map(value => {
+                            const item = this.getRow(value, descHidden);
+                            item && count++;
+                            return item;
+                        })}
+                </Fragment>;
             });
         }
 
@@ -1503,20 +1539,14 @@ class Adapters extends Component {
 
         // get all visible adapters
         this.state.categories
-            .filter(
-                cat =>
-                    this.state.viewMode ||
-                    !this.state.categoriesTiles ||
-                    this.state.categoriesTiles === 'All' ||
-                    cat.name === this.state.categoriesTiles,
-            )
+            .filter(cat =>
+                this.state.viewMode ||
+                !this.state.categoriesTiles ||
+                this.state.categoriesTiles === 'All' ||
+                cat.name === this.state.categoriesTiles)
             .forEach(category =>
                 category.adapters.forEach(value => {
                     const adapter = this.state.repository[value];
-
-                    if (value === 'admin') {
-                        console.log(`[ADAPTERS] ${value}`);
-                    }
 
                     if (adapter && !adapter.controller) {
                         const connectionType = adapter.connectionType ? adapter.connectionType : '-';
@@ -1582,87 +1612,27 @@ class Adapters extends Component {
 
         this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length;
 
-        const repo = this.state.repository;
-        const adapters = this.cache.adapters;
-        const installed = this.state.installed;
+        const sortByName = this.state.filterTiles === 'Name A-Z';
+        if (this.state.viewMode) {
+            Object.keys(this.state.categories).forEach(type =>
+                Adapters.sortAdapters(
+                    this.state.categories[type].adapters,
+                    this.props.lang,
+                    this.state.installed,
+                    this.cache.adapters,
+                    sortByName,
+                ));
+        }
 
-        const _titles = {};
-
-        this.cache.listOfVisibleAdapter.sort((a, b) => {
-            if (sortPopularFirst) {
-                return repo[b].stat - repo[a].stat;
-            } if (sortRecentlyUpdated) {
-                if (!adapters[a]) {
-                    return -1;
-                } if (!adapters[b]) {
-                    return 1;
-                }
-                if (adapters[a].daysAgo === adapters[b].daysAgo) {
-                    if (!_titles[a]) {
-                        let title = adapters[a].titleLang || adapters[a].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[a] = title.toLowerCase();
-                    }
-                    if (!_titles[b]) {
-                        let title = adapters[b].titleLang || adapters[b].title;
-                        if (typeof title === 'object') {
-                            title = title[this.props.lang] || title.en;
-                        }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        _titles[a] = title.toLowerCase();
-                    }
-
-                    return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-                }
-                return adapters[a].daysAgo - adapters[b].daysAgo;
-            }
-            if (installed[a] && installed[b]) {
-                if (!_titles[a]) {
-                    let title = adapters[a].titleLang || adapters[a].title;
-                    if (typeof title === 'object') {
-                        title = title[this.props.lang] || title.en;
-                    }
-                    title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                    _titles[a] = title.toLowerCase();
-                }
-                if (!_titles[b]) {
-                    let title = adapters[b].titleLang || adapters[b].title;
-                    if (typeof title === 'object') {
-                        title = title[this.props.lang] || title.en;
-                    }
-                    title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                    _titles[b] = title.toLowerCase();
-                }
-
-                return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-            } if (installed[a]) {
-                return -1;
-            } if (installed[b]) {
-                return 1;
-            }
-            // sort by real language name and not by adapter name
-            if (!_titles[a]) {
-                let title = adapters[a].titleLang || adapters[a].title;
-                if (typeof title === 'object') {
-                    title = title[this.props.lang] || title.en;
-                }
-                title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                _titles[a] = title.toLowerCase();
-            }
-            if (!_titles[b]) {
-                let title = adapters[b].titleLang || adapters[b].title;
-                if (typeof title === 'object') {
-                    title = title[this.props.lang] || title.en;
-                }
-                title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                _titles[b] = title.toLowerCase();
-            }
-
-            return _titles[a] > _titles[b] ? 1 : _titles[a] < _titles[b] ? -1 : 0;
-        });
+        Adapters.sortAdapters(
+            this.cache.listOfVisibleAdapter,
+            this.props.lang,
+            this.state.installed,
+            this.cache.adapters,
+            sortByName,
+            sortPopularFirst,
+            sortRecentlyUpdated,
+        );
 
         // console.log('[ADAPTERS] Update cache!');
     }
@@ -2115,12 +2085,12 @@ class Adapters extends Component {
                     onClick={value => this.changeCategoriesTiles(value)}
                     value={this.state.categoriesTiles}
                 />}
-                {!this.state.viewMode && <CustomSelectButton
+                <CustomSelectButton
                     t={this.t}
-                    arrayItem={this.state.arrayFilter}
+                    arrayItem={this.state.viewMode ? FILTERS.filter(item => !item.notByList) : FILTERS}
                     onClick={value => this.changeFilterTiles(value)}
                     value={this.state.filterTiles}
-                />}
+                />
                 <div className={classes.grow} />
                 <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.statistics">
                     <Hidden only={['xs', 'sm']}>
