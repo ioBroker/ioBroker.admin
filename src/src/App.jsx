@@ -291,15 +291,19 @@ class App extends Router {
     constructor(props) {
         super(props);
 
-        window.alert = message => {
-            if (message && message.toString().toLowerCase().includes('error')) {
-                console.error(message);
-                this.showAlert(message.toString(), 'error');
-            } else {
-                console.log(message);
-                this.showAlert(message.toString(), 'info');
-            }
-        };
+        try {
+            window.alert = message => {
+                if (message && message.toString().toLowerCase().includes('error')) {
+                    console.error(message);
+                    this.showAlert(message.toString(), 'error');
+                } else {
+                    console.log(message);
+                    this.showAlert(message.toString(), 'info');
+                }
+            };
+        } catch (e) {
+            // ignore. FF could not redefine alert
+        }
 
         // init translations
         this.translations = {

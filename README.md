@@ -84,8 +84,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.8.1 (2023-08-16)
 * (bluefox) Extended the select component with grouping
+* (bluefox) Allowed the sorting of adapters by name and not only by title
+* (bluefox) Allowed the set state JSON config component
 
 ### 6.8.0 (2023-08-14)
 * (foxriver76) try to find the correct IP for the controller UI multihost slave upgrade
@@ -111,9 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed bug which prevented the creation of new objects
 * (bluefox/foxriver76) fixed bug which prevented opening adapter readme
 * (foxriver76) fixed ChipInput jsonConfig component
-
-### 6.6.4 (2023-07-28)
-* (bluefox) Better licenses handling (especially for vis-2)
 
 ## License
 The MIT License (MIT)
