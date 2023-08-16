@@ -162,7 +162,7 @@ Possible types:
     - `timeout` - timeout for request in ms. Default: none.
 
 - `setState` - button that set instance's state
-    - `id` - 'info.test'
+    - `id` - `system.adapter.myAdapter.%INSTANCE%.test`, you can use the placeholder `%INSTANCE%` to replace it with the current instance name
     - `ack` - false (default false)
     - `val` - '${data.myText}_test' or number. Type will be detected automatically from the state type and converting done too
     - `okText` - Alert which will be shown by pressing the button

@@ -39,8 +39,10 @@ class ConfigSetState extends ConfigGeneric {
             }
         }
 
+        const id = (this.props.schema.id || '').replace(/%INSTANCE%/g, this.props.instance);
+
         try {
-            await this.props.socket.setState(this.props.schema.id, { val, ack: !!this.props.schema.ack });
+            await this.props.socket.setState(id, { val, ack: !!this.props.schema.ack });
             this.props.schema.okText && window.alert(this.getText(this.props.schema.okText));
         } catch (e) {
             if (this.props.schema.error && this.props.schema.error[e.toString()]) {
