@@ -10,7 +10,6 @@
   "5 %d days ago": "%d天前",
   "<p>You have not installed an Info Adapter. The adapter shows you information about the system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the info adapter?</p>": "<p>您尚未安装信息插件。该插件显示有关系统的信息，并且需要显示来自ioBroker团队的重要消息。</p><p>是否要安装信息插件？</p>",
   "<p>Your version of the info adapter is outdated. It is strongly recommended to update this to get on the enjoyment of the innovations. Only with the new version, for example, messages from the ioBroker team can be displayed directly.</p><p>Would you like to update the info adapter?</p>": "<p>您的信息插件版本已过时。强烈建议更新此内容以获得创新的乐趣。例如，只有使用新版本，才能直接显示来自ioBroker团队的消息。</p><p>是否要更新信息插件？</p>",
-  "A-Z": "A-Z",
   "Access control": "访问控制",
   "Access control list": "访问控制列表",
   "Acknowledged": "已确认",
@@ -1533,5 +1532,7 @@
   "This name will be shown in admin's header. Just to identify the whole installation": "该名称将显示在管理员的标题中。只是为了识别整个安装",
   "Instance %s already exists": "实例“%s”已存在",
   "Unknown error": "未知错误",
-  "serial number (UUID) in license is for other device": "许可证中的序列号 (UUID) 用于其他设备"
+  "serial number (UUID) in license is for other device": "许可证中的序列号 (UUID) 用于其他设备",
+  "Name A-Z": "姓名",
+  "Description A-Z": "标题"
 }

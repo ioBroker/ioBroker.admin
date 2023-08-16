@@ -18,7 +18,6 @@
   "<p>You have not installed an Info Adapter. The adapter shows you information about the system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the info adapter?</p>": "<p>Інформаційний адаптер не встановлено у вашій системі. Цей адаптер надає інформацію про вашу систему та потрібен для відображення важливих повідомлень від команди ioBroker.</p><p>Ви бажаєте встановити інформаційний адаптер?</p>",
   "<p>Your version of the info adapter is outdated. It is strongly recommended to update this to get on the enjoyment of the innovations. Only with the new version, for example, messages from the ioBroker team can be displayed directly.</p><p>Would you like to update the info adapter?</p>": "<p>Ваша версія інформаційного адаптера застаріла. Наполегливо рекомендуємо оновити, щоб отримувати всі відповідні повідомлення для вашої системи.</p><p>Ви бажаєте оновити інформаційний адаптер зараз?</p>",
   "A manual installation usually takes place under root as user and therefore a \"sudo\" is necessary before the commands.": "Встановлення вручну зазвичай відбувається під адміністратором від імені користувача, тому перед командами необхідно вводити «sudo».",
-  "A-Z": "А-Я",
   "API key": "Ключ API",
   "Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.": "Абсолютний шлях до каталогу резервного копіювання або порожній шлях до резервного копіювання в каталозі даних. Залиште його порожнім для місця зберігання за замовчуванням.",
   "Accept": "прийняти",
@@ -1533,5 +1532,7 @@
   "This name will be shown in admin's header. Just to identify the whole installation": "Це ім'я буде показано в заголовку адміністратора. Просто щоб ідентифікувати всю установку",
   "Instance %s already exists": "Примірник \"%s\" уже існує",
   "Unknown error": "Невідома помилка",
-  "serial number (UUID) in license is for other device": "Серійний номер (UUID) у ліцензії для іншого пристрою"
+  "serial number (UUID) in license is for other device": "Серійний номер (UUID) у ліцензії для іншого пристрою",
+  "Name A-Z": "Ім'я",
+  "Description A-Z": "Назва"
 }

@@ -10,7 +10,6 @@
   "5 %d days ago": "il y a %d jours",
   "<p>You have not installed an Info Adapter. The adapter shows you information about the system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the info adapter?</p>": "<p>Vous n’avez pas installé d’Info Adapter. L’adaptateur affiche des informations sur le système et est nécessaire pour afficher les messages importants de l’équipe ioBroker.</p><p>Souhaitez-vous installer l’adaptateur d’informations?</p>",
   "<p>Your version of the info adapter is outdated. It is strongly recommended to update this to get on the enjoyment of the innovations. Only with the new version, for example, messages from the ioBroker team can be displayed directly.</p><p>Would you like to update the info adapter?</p>": "<p>Votre version de l’adaptateur d’informations est obsolète. Il est fortement recommandé de le mettre à jour pour profiter pleinement des innovations. Par exemple, avec la nouvelle version uniquement, les messages de l’équipe ioBroker peuvent être affichés directement.</p><p>Souhaitez-vous mettre à jour l’adaptateur d’informations?</p>",
-  "A-Z": "A-Z",
   "Access control": "Contrôle d'accès",
   "Access control list": "Liste des droits d'accès",
   "Acknowledged": "Confirmé",
@@ -1533,5 +1532,7 @@
   "This name will be shown in admin's header. Just to identify the whole installation": "Ce nom sera affiché dans l'en-tête de l'administrateur. Juste pour identifier l'ensemble de l'installation",
   "Instance %s already exists": "L'instance \"%s\" existe déjà",
   "Unknown error": "Erreur inconnue",
-  "serial number (UUID) in license is for other device": "Le numéro de série (UUID) de la licence correspond à un autre appareil"
+  "serial number (UUID) in license is for other device": "Le numéro de série (UUID) de la licence correspond à un autre appareil",
+  "Name A-Z": "Nom",
+  "Description A-Z": "Titre"
 }

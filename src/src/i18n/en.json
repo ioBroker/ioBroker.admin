@@ -10,7 +10,6 @@
   "5 %d days ago": "%d days ago",
   "<p>You have not installed an Info Adapter. The adapter shows you information about the system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the info adapter?</p>": "<p>The Info adapter ist not installed on your system. This adapter provides information about your system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the Info adapter?</p>",
   "<p>Your version of the info adapter is outdated. It is strongly recommended to update this to get on the enjoyment of the innovations. Only with the new version, for example, messages from the ioBroker team can be displayed directly.</p><p>Would you like to update the info adapter?</p>": "<p>Your version of the Info adapter is outdated. It is strongly recommended to update in order to receive all relevant messages for your system.</p><p>Would you like to update the Info adapter now?</p>",
-  "A-Z": "A-Z",
   "Access control": "Access control",
   "Access control list": "Access control list",
   "Acknowledged": "Acknowledged",
@@ -1533,5 +1532,7 @@
   "This name will be shown in admin's header. Just to identify the whole installation": "This name will be shown in admin's header. Just to identify the whole installation",
   "Instance %s already exists": "Instance \"%s\" already exists",
   "Unknown error": "Unknown error",
-  "serial number (UUID) in license is for other device": "Serial number (UUID) in license is for other device"
+  "serial number (UUID) in license is for other device": "Serial number (UUID) in license is for other device",
+  "Name A-Z": "Name",
+  "Description A-Z": "Title"
 }

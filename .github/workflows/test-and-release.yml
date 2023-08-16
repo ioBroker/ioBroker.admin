@@ -159,8 +159,11 @@ jobs:
           export SENTRY_ORG=iobroker
           export SENTRY_PROJECT=iobroker-admin
           export SENTRY_VERSION=iobroker.admin@${{ steps.extract_release.outputs.VERSION }}
+          export SENTRY_RELEASE=${{ env.VERSION }}
           sentry-cli releases new $SENTRY_VERSION
           sentry-cli releases finalize $SENTRY_VERSION
+          sentry-cli sourcemaps inject ./www
+          sentry-cli sourcemaps upload ./www
 
         # Add the following line BEFORE finalize if repositories are connected in Sentry
         # sentry-cli releases set-commits $SENTRY_VERSION --auto

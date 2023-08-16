@@ -737,29 +737,25 @@ class ConfigGeneric extends Component {
             }
 
             if (schema.hideOnlyControl) {
-                const item = (
-                    <Grid
-                        item
-                        xs={schema.xs || undefined}
-                        lg={schema.lg || undefined}
-                        md={schema.md || undefined}
-                        sm={schema.sm || undefined}
-                        style={({
-                            marginBottom: 0, /* marginRight: 8, */
-                            textAlign: 'left',
-                            ...schema.style,
-                            ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
-                        })}
-                    />
-                );
+                const item = <Grid
+                    item
+                    xs={schema.xs || undefined}
+                    lg={schema.lg || undefined}
+                    md={schema.md || undefined}
+                    sm={schema.sm || undefined}
+                    style={({
+                        marginBottom: 0, /* marginRight: 8, */
+                        textAlign: 'left',
+                        ...schema.style,
+                        ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
+                    })}
+                />;
 
                 if (schema.newLine) {
-                    return (
-                        <>
-                            <div style={{ flexBasis: '100%', height: 0 }} />
-                            {item}
-                        </>
-                    );
+                    return <>
+                        <div style={{ flexBasis: '100%', height: 0 }} />
+                        {item}
+                    </>;
                 }
                 return item;
             }
@@ -804,7 +800,6 @@ class ConfigGeneric extends Component {
             md={schema.md || undefined}
             sm={schema.sm || undefined}
             style={({
-
                 marginBottom: 0,
                 // marginRight: 8,
                 textAlign: 'left',

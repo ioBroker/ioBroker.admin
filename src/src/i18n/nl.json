@@ -10,7 +10,6 @@
   "5 %d days ago": "%d dagen geleden",
   "<p>You have not installed an Info Adapter. The adapter shows you information about the system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the info adapter?</p>": "<p>U hebt geen Info-adapter geïnstalleerd. De adapter geeft informatie over het systeem weer en is nodig om belangrijke berichten van het ioBroker-team weer te geven.</p><p>Wilt u de infolader installeren?</p>",
   "<p>Your version of the info adapter is outdated. It is strongly recommended to update this to get on the enjoyment of the innovations. Only with the new version, for example, messages from the ioBroker team can be displayed directly.</p><p>Would you like to update the info adapter?</p>": "<p>Uw versie van de infolader is verouderd. Het wordt ten zeerste aanbevolen om dit bij te werken om te genieten van de innovaties. Alleen met de nieuwe versie kunnen berichten van het ioBroker-team bijvoorbeeld direct worden weergegeven.</p><p>Wilt u de infolader bijwerken?</p>",
-  "A-Z": "A-Z",
   "Access control": "Toegangscontrole",
   "Access control list": "Toegangscontrole lijst",
   "Acknowledged": "Erkend",
@@ -1533,5 +1532,7 @@
   "This name will be shown in admin's header. Just to identify the whole installation": "Deze naam wordt weergegeven in de admin-header. Gewoon om de hele installatie te identificeren",
   "Instance %s already exists": "Instantie \"%s\" bestaat al",
   "Unknown error": "Onbekende fout",
-  "serial number (UUID) in license is for other device": "Serienummer (UUID) in licentie is voor ander apparaat"
+  "serial number (UUID) in license is for other device": "Serienummer (UUID) in licentie is voor ander apparaat",
+  "Name A-Z": "Naam",
+  "Description A-Z": "Titel"
 }

@@ -86,6 +86,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (bluefox) Extended the select component with grouping
+* (bluefox) Allowed the sorting of adapters by name and not only by title
+* (bluefox) Allowed the set state JSON config component
 
 ### 6.8.0 (2023-08-14)
 * (foxriver76) try to find the correct IP for the controller UI multihost slave upgrade

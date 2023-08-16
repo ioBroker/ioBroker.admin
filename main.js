@@ -1203,7 +1203,7 @@ function updateRegister(isForce) {
         if (systemConfig && systemConfig.common) {
             adapter.getForeignObject('system.repositories', (err, repos) => {
                 err && adapter.log.error('May not read "system.repositories"');
-                // Check if repositories exists
+                // Check if repositories exist
                 let exists = false;
                 const active = systemConfig.common.activeRepo;
 
@@ -1239,7 +1239,7 @@ function updateRegister(isForce) {
                                 checkRevokedVersions(_repository).then(() => {});
                             }
 
-                            // start next cycle
+                            // start the next cycle
                             if (adapter.config.autoUpdate) {
                                 adapter.timerRepo && clearTimeout(adapter.timerRepo);
                                 adapter.log.debug(
