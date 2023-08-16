@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "6.8.2": {
-        "en": "Extended the select component with grouping\nAllowed the sorting of adapters by name and not only by title\nAllowed the set state JSON config component",
-        "de": "Erweiterte Auswahlkomponente mit Gruppierung\nErlaubt die Sortierung von Adaptern nach Namen und nicht nur nach Titel\nErlaubt der eingestellten Zustand JSON config Komponente",
-        "ru": "Расширенный выбор компонента с группировкой\nРазрешена сортировка адаптеров по имени и не только по названию\nРазрешена настройка состояния JSON config компонента",
-        "pt": "Estendido o componente seleto com agrupamento\nPermite a classificação de adaptadores por nome e não apenas por título\nPermitido o conjunto estado JSON componente de configuração",
-        "nl": "Verlengde het selecte component met groepering\nHet soort adapters met naam en niet alleen de titel\nStaat JSON config component",
-        "fr": "Extended the select component with grouping\nPermet le tri des adaptateurs par nom et non seulement par titre\nPermis le composant de configuration de l'état de réglage JSON",
-        "it": "Esteso il componente selezionato con il raggruppamento\nConsentito la selezione di adattatori per nome e non solo per titolo\nConsentito il componente di configurazione dello stato impostato JSON",
-        "es": "Extendido el componente selecto con agrupación\nPermitió la clasificación de adaptadores por nombre y no sólo por título\nPermitido el componente de configuración del estado establecido JSON",
-        "pl": "Rozciągnięty skład selekcji z grupą\nWszystko to zawdzięczało rodzajowi adaptacji przez nazwę, a nie tylko tytułowi\nWspółtworzył stan konfigurowalny JSON",
-        "uk": "Розширений вибір компонента з групуванням\nДозволено сортування адаптерів за назвою і не тільки за назвою\nСприяє встановленню компонента JSON config",
-        "zh-cn": "A. 参与与集团集团有关的选定部分\n允许以名称进行适应者,而不是仅通过名称进行。\n允许设立的国家联合协商会控制部分"
-      },
       "6.8.0": {
         "en": "try to find correct IP for controller UI multihost slave upgrade\nadmin is now showing update information, while it is stopped during upgrade\nrequired nodejs version is 16 as 14 is End-Of-Life\nfix downloading folders recursive",
         "de": "versuchen, korrekte IP für Controller UI Multihost Slave Upgrade zu finden\nadmin zeigt jetzt update-informationen, während es während des upgrades gestoppt wird\nerforderliche nodejs-Version ist 16 wie 14 ist End-Of-Life\nfix downloaden ordner wiederkehren",
