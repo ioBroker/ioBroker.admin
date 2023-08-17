@@ -1255,7 +1255,9 @@ class Admin extends utils.Adapter {
             this.config.defaultUser = `system.user.${this.config.defaultUser}`;
         }
 
-        this.getData(adapter => (webServer = new Web(adapter.config, adapter, this.initSocket, { systemLanguage })));
+        this.getData(
+            adapter => (webServer = new Web(adapter.config, adapter, this.initSocket.bind(this), { systemLanguage }))
+        );
 
         if (
             this.config.accessApplyRights &&
