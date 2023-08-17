@@ -624,13 +624,17 @@ class Intro extends Component {
 
                     if (common.name && common.name === 'admin' && common.localLink === (this.props.hostname || '')) {
                         return;
-                    } if (common.name && common.name === 'web') {
+                    }
+                    if (common.name && common.name === 'web') {
                         return;
-                    } if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
+                    }
+                    if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
                         return;
-                    } if (common.name && common.name.match(/^icons-/)) {
+                    }
+                    if (common.name && common.name.match(/^icons-/)) {
                         return;
-                    } if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
+                    }
+                    if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
                         let links = common.localLinks || common.localLink || '';
                         if (typeof links === 'string') {
                             links = { _default: links };

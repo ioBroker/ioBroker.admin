@@ -528,6 +528,9 @@ class Adapters extends Component {
     }
 
     static getAdapterTitle(adapter, adapters, lang) {
+        if (!adapters[adapter]) {
+            return adapter;
+        }
         let title = adapters[adapter].titleLang || adapters[adapter].title;
         if (typeof title === 'object') {
             title = title[lang] || title.en;
