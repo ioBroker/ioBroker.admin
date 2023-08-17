@@ -48,6 +48,7 @@
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@iobroker/legacy-testing": "^0.3.7",
     "@iobroker/testing": "^4.1.0",
+    "@tsconfig/node16": "^16.1.0",
     "chai": "^4.3.7",
     "colorette": "^2.0.20",
     "eslint": "^8.47.0",
@@ -62,7 +63,8 @@
     "gulp-sourcemaps": "^3.0.0",
     "mocha": "^10.2.0",
     "prettier": "^3.0.2",
-    "puppeteer": "^21.0.3"
+    "puppeteer": "^21.0.3",
+    "typescript": "^5.1.6"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
