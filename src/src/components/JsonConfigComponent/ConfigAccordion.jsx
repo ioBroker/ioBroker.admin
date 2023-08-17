@@ -87,6 +87,7 @@ class ConfigAccordion extends ConfigGeneric {
         return <ConfigPanel
             index={idx + this.state.iteration}
             arrayIndex={idx}
+            changed={this.props.changed}
             globalData={this.props.data}
             socket={this.props.socket}
             adapterName={this.props.adapterName}
@@ -268,6 +269,7 @@ ConfigAccordion.propTypes = {
     schema: PropTypes.object,
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    changed: PropTypes.bool,
 };
 
 export default withStyles(styles)(ConfigAccordion);

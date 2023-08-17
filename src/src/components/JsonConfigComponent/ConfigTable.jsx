@@ -275,6 +275,7 @@ class ConfigTable extends ConfigGeneric {
         return <ConfigPanel
             index={idx + this.state.iteration}
             arrayIndex={idx}
+            changed={this.props.changed}
             globalData={this.props.data}
             socket={this.props.socket}
             adapterName={this.props.adapterName}
@@ -882,13 +883,16 @@ class ConfigTable extends ConfigGeneric {
                         </Typography>
                     </div> : null}
             </TableContainer>
-            {schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
+            {schema.help ?
+                <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText>
+                : null}
         </Paper>;
     }
 }
 
 ConfigTable.propTypes = {
     socket: PropTypes.object.isRequired,
+    changed: PropTypes.bool,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
     style: PropTypes.object,

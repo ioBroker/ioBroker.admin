@@ -600,12 +600,24 @@ JS function is:
 ```
 const myValidator = "_alive === true && data.options.myType == 2";
 
-const func = new Function('data', '_system', '_alive', '_common', '_socket', myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
+const func = new Function(
+  'data',          // actual obj.native or obj.common.custom['adapter.X'] object
+                   // If table, so data is current line in the table
+  'originalData',  // data before changes
+  '_system',       // system config => 'system.config'=>common
+  '_alive',        // If instance is alive
+  '_common',       // common part of instance = 'system.config.ADAPTER.X' => common 
+  '_socket',       // socket connection
+  '_instance',     // instance number
+  'arrayIndex',    // filled only by table and represents the row index
+  'globalData',    // filled only by table and represents the obj.native or obj.common.custom['adapter.X'] object
+  '_changed'       // indicator if some data was changed and must be saved
+  myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
 const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, this.props.socket);
 
 ```
-If the alive status changes, so all fields must be updated, validated, disabled, hidden anew.
+If the `alive` status changes, so all fields must be updated, validated, disabled, hidden anew.
 
 The following variables are available in JS function in adapter settings:
 - `data` - native settings for this instance or current line in the table (to access all settings use globalData)
@@ -622,7 +634,15 @@ JS function is:
 ```
 const myValidator = "customObj.common.type === 'boolean' && data.options.myType == 2";
 
-const func = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', arrayIndex, myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
+const func = new Function(
+  'data',
+  'originalData',
+  '_system',
+  'instanceObj',
+  'customObj',
+  '_socket',
+  arrayIndex,
+  myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
 const isValid = func(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
 ```

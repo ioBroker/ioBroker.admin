@@ -470,6 +470,7 @@ class ConfigGeneric extends Component {
                 '_instance',
                 'arrayIndex',
                 'globalData',
+                '_changed',
                 func.includes('return') ? func : `return ${func}`,
             );
             return f(
@@ -482,6 +483,7 @@ class ConfigGeneric extends Component {
                 this.props.instance,
                 arrayIndex,
                 globalData,
+                this.props.changed,
             );
         } catch (e) {
             console.error(`Cannot execute ${func}: ${e}`);
@@ -508,6 +510,7 @@ class ConfigGeneric extends Component {
                 '_socket',
                 'arrayIndex',
                 'globalData',
+                '_changed',
                 func.includes('return') ? func : `return ${func}`,
             );
             return f(
@@ -519,6 +522,7 @@ class ConfigGeneric extends Component {
                 this.props.socket,
                 arrayIndex,
                 globalData,
+                this.props.changed,
             );
         } catch (e) {
             console.error(`Cannot execute ${func}: ${e}`);
@@ -664,6 +668,7 @@ class ConfigGeneric extends Component {
                     'instanceObj',
                     'customObj',
                     '_socket',
+                    '_changed',
                     `return \`${pattern.replace(/`/g, '\\`')}\``,
                 );
                 return f(
@@ -675,8 +680,7 @@ class ConfigGeneric extends Component {
                     this.props.instanceObj,
                     this.props.customObj,
                     this.props.socket,
-                    this.props.arrayIndex,
-                    this.props.globalData,
+                    this.props.changed,
                 );
             }
             // eslint-disable-next-line no-new-func
@@ -689,6 +693,7 @@ class ConfigGeneric extends Component {
                 '_alive',
                 '_common',
                 '_socket',
+                '_changed',
                 `return \`${pattern.replace(/`/g, '\\`')}\``,
             );
             return f(
@@ -700,6 +705,7 @@ class ConfigGeneric extends Component {
                 this.props.alive,
                 this.props.common,
                 this.props.socket,
+                this.props.changed,
             );
         } catch (e) {
             console.error(`Cannot execute ${pattern}: ${e}`);
@@ -872,6 +878,7 @@ ConfigGeneric.propTypes = {
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,
+    changed: PropTypes.bool,
     common: PropTypes.object,
     adapterName: PropTypes.string,
     instance: PropTypes.number,

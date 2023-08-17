@@ -74,7 +74,7 @@ function encryptLegacy(key, value) {
 /**
  * Decrypt the password/value with given key
  *  Usage:
- *  ```
+ *  ```js
  *     function load(settings, onChange) {
  *          if (settings.password) {
  *              settings.password = decrypt(systemSecret, settings.password);
@@ -93,7 +93,7 @@ function decrypt(key, value) {
         return value;
     }
 
-    // if not encrypted as aes-192 or key not a valid 48 digit hex -> fallback
+    // if not encrypted as aes-192 or key not a valid 48-digit hex -> fallback
     if (!value.startsWith('$/aes-192-cbc:') || !/^[0-9a-f]{48}$/.test(key)) {
         return decryptLegacy(key, value);
     }

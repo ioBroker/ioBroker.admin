@@ -182,6 +182,7 @@ class ConfigPanel extends ConfigGeneric {
             return <ItemComponent
                 key={`${attr}_${this.props.index === undefined ? '' : this.props.index}`}
                 index={this.props.index}
+                changed={this.props.changed}
                 arrayIndex={this.props.arrayIndex}
                 globalData={this.props.globalData}
                 onCommandRunning={this.props.onCommandRunning}
@@ -239,7 +240,6 @@ class ConfigPanel extends ConfigGeneric {
                     md={schema.md || undefined}
                     sm={schema.sm || undefined}
                     style={({
-
                         marginBottom: 0, /* marginRight: 8, */
                         textAlign: 'left',
                         ...schema.style,
@@ -256,9 +256,13 @@ class ConfigPanel extends ConfigGeneric {
                 return item;
             }
             return null;
-        } if (this.props.table) {
+        }
+
+        if (this.props.table) {
             return this.renderItems(items, disabled);
-        } if (this.props.custom) {
+        }
+
+        if (this.props.custom) {
             return <Grid
                 key={`${this.props.attr}_${this.props.index}`}
                 container
@@ -269,6 +273,7 @@ class ConfigPanel extends ConfigGeneric {
                 {this.renderItems(items, disabled)}
             </Grid>;
         }
+
         let content;
         if (schema.collapsable) {
             content = <Accordion
@@ -364,6 +369,7 @@ ConfigPanel.propTypes = {
     forceUpdate: PropTypes.func,
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    changed: PropTypes.bool,
     registerOnForceUpdate: PropTypes.func,
 };
 
