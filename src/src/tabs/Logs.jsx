@@ -3,44 +3,45 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@mui/styles';
 
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Badge from '@mui/material/Badge';
-import LinearProgress from '@mui/material/LinearProgress';
+import {
+    Button,
+    IconButton,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography,
+    Menu,
+    MenuItem,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Badge,
+    LinearProgress,
+    InputLabel,
+    FormControl,
+    Select,
+    Tooltip,
+} from '@mui/material';
 
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { Tooltip } from '@mui/material';
-
-import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import PauseIcon from '@mui/icons-material/Pause';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import ErrorIcon from '@mui/icons-material/ErrorOutline';
-import WarningIcon from '@mui/icons-material/Warning';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    Close as CloseIcon,
+    Delete as DeleteIcon,
+    DeleteForever as DeleteForeverIcon,
+    Pause as PauseIcon,
+    Refresh as RefreshIcon,
+    SaveAlt as SaveAltIcon,
+    ErrorOutline as ErrorIcon,
+    Warning as WarningIcon,
+    Check as CheckIcon, ArrowUpward, ArrowDownward,
+} from '@mui/icons-material';
 import { FaPalette as ColorsIcon } from 'react-icons/fa';
 
-import amber from '@mui/material/colors/amber';
-import grey from '@mui/material/colors/grey';
-import red from '@mui/material/colors/red';
+import { amber, grey, red } from '@mui/material/colors';
 
 import { Icon, withWidth, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
@@ -298,6 +299,7 @@ class Logs extends Component {
             source: (window._localStorage || window.localStorage).getItem('Log.source') || '1',
             severity: (window._localStorage || window.localStorage).getItem('Log.severity') || 'debug',
             message: (window._localStorage || window.localStorage).getItem('Log.message') || '',
+            reverse: (window._localStorage || window.localStorage).getItem('Log.reverse') === 'true',
             logDeleteDialog: false,
             logDownloadDialog: null,
             logFiles: [],
@@ -315,6 +317,8 @@ class Logs extends Component {
             currentHost: this.props.currentHost,
             hosts: null,
         };
+
+        this.scrollToEnd = this.state.reverse;
 
         this.severities = {
             silly: 0,
@@ -382,6 +386,9 @@ class Logs extends Component {
                         sources[id].color = COLORS[color % COLORS.length];
                         color++;
                     });
+
+                    // scroll down by reverse direction
+                    this.scrollToEnd = this.state.reverse;
 
                     if (logFiles) {
                         this.setState({
@@ -534,6 +541,12 @@ class Logs extends Component {
             newState.sources = sources;
         }
 
+        if (this.state.reverse) {
+            // remember if last element is visible
+            const el = document.getElementById('endOfLog');
+            this.scrollToEnd =  el ? el.getBoundingClientRect().top < window.innerHeight : true;
+        }
+
         this.setState(newState);
     };
 
@@ -645,82 +658,106 @@ class Logs extends Component {
             </MenuItem>);
     }
 
-    getRows() {
-        const rows = [];
+    getOneRow(i, rows, options) {
+        const row = this.state.logs[i];
+        if (!row) {
+            return;
+        }
         const { classes } = this.props;
-        const filterMessage = this.state.message.toLowerCase();
-        let sourceFilter = this.state.source;
-        const sources = Object.keys(this.state.sources).sort();
-        sources.unshift('1');
-        if (!sources.includes(sourceFilter)) {
-            sourceFilter = '1';
+        const severity = row.severity;
+
+        let message = row.message || '';
+        let id = '';
+
+        if (typeof message !== 'object') {
+            const regExp = new RegExp(`${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `, 'g');
+            const matches = message.match(regExp);
+
+            if (matches) {
+                message = message.replace(matches[0], '');
+                id = matches[0].split(' ')[1].match(/\d+/g)[0];
+            } else {
+                message = message.replace(`${row.from} `, '');
+            }
         }
 
-        let previousKey = 0;
-        for (let i = this.state.pause > 0 ? this.state.pause - 1 : this.state.logs.length - 1; i >= 0; i--) {
-            const row = this.state.logs[i];
-            if (!row) {
-                continue;
+        const isFrom = options.sourceFilter !== '1' && options.sourceFilter !== row.from;
+
+        let isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity];
+        if (!isHidden && options.filterMessage) {
+            if (typeof message === 'object') {
+                isHidden = !message.original.toLowerCase().includes(options.filterMessage);
+            } else {
+                isHidden = !message.toLowerCase().includes(options.filterMessage);
             }
-            const severity = row.severity;
+        }
 
-            let message = row.message || '';
-            let id = '';
+        const key = options.previousKey === row.key ? i : row.key;
+        options.previousKey = row.key;
 
-            if (typeof message !== 'object') {
-                const regExp = new RegExp(`${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `, 'g');
-                const matches = message.match(regExp);
-
-                if (matches) {
-                    message = message.replace(matches[0], '');
-                    id = matches[0].split(' ')[1].match(/\d+/g)[0];
-                } else {
-                    message = message.replace(`${row.from} `, '');
-                }
-            }
-
-            const isFrom = sourceFilter !== '1' && sourceFilter !== row.from;
-
-            let isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity];
-            if (!isHidden && filterMessage) {
-                if (typeof message === 'object') {
-                    isHidden = !message.original.toLowerCase().includes(filterMessage);
-                } else {
-                    isHidden = !message.toLowerCase().includes(filterMessage);
-                }
-            }
-
-            const key = previousKey === row.key ? i : row.key;
-            previousKey = row.key;
-
-            rows.push(<TableRow
-                className={UtilsCommon.clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
-                style={this.state.colors ? { backgroundColor: this.state.sources[row.from]?.color || undefined } : {}}
-                key={key}
-                hover
+        rows.push(<TableRow
+            id={options.length === i ? 'endOfLog' : undefined}
+            className={UtilsCommon.clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
+            style={this.state.colors ? { backgroundColor: this.state.sources[row.from]?.color || undefined } : {}}
+            key={options.keyPrefix + key}
+            hover
+        >
+            <TableCell className={UtilsCommon.clsx(classes.cell, classes.cellName)}>
+                <div className={classes.iconAndName}>
+                    <Icon src={row.icon || ''} className={classes.icon} />
+                    <div className={classes.name}>{row.from}</div>
+                </div>
+            </TableCell>
+            {this.state.pid && <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                {id}
+            </TableCell>}
+            <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                {row.time}
+            </TableCell>
+            <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+                {row.severity}
+            </TableCell>
+            <TableCell
+                className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}
+                title={typeof message === 'object' ? message.original : message}
             >
-                <TableCell className={UtilsCommon.clsx(classes.cell, classes.cellName)}>
-                    <div className={classes.iconAndName}>
-                        <Icon src={row.icon || ''} className={classes.icon} />
-                        <div className={classes.name}>{row.from}</div>
-                    </div>
-                </TableCell>
-                {this.state.pid && <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
-                    {id}
-                </TableCell>}
-                <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
-                    {row.time}
-                </TableCell>
-                <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
-                    {row.severity}
-                </TableCell>
-                <TableCell
-                    className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}
-                    title={typeof message === 'object' ? message.original : message}
-                >
-                    {typeof message === 'object' ? message.parts.map((item, idx) => <span key={idx} style={item.style}>{item.text}</span>) : message}
-                </TableCell>
-            </TableRow>);
+                {typeof message === 'object' ? message.parts.map((item, idx) => <span key={idx} style={item.style}>{item.text}</span>) : message}
+            </TableCell>
+        </TableRow>);
+    }
+
+    getRows() {
+        const rows = [];
+        const options = {
+            filterMessage: this.state.message.toLowerCase(),
+            sourceFilter: this.state.source,
+        };
+        const sources = Object.keys(this.state.sources).sort();
+        sources.unshift('1');
+        if (!sources.includes(options.sourceFilter)) {
+            options.sourceFilter = '1';
+        }
+
+        options.previousKey = 0;
+        options.keyPrefix = this.state.reverse ? 'r' : '';
+        options.length = this.state.pause > 0 ? this.state.pause - 1 : this.state.logs.length - 1;
+        if (this.state.reverse) {
+            for (let i = 0; i <= options.length; i++) {
+                this.getOneRow(i, rows, options);
+            }
+        } else {
+            for (let i = options.length; i >= 0; i--) {
+                this.getOneRow(i, rows, options);
+            }
+        }
+
+        // Scroll to last element
+        if (options.length > 0 && this.scrollToEnd) {
+            setTimeout(() => {
+                const el = document.getElementById('endOfLog');
+                el && el.scrollIntoView();
+            }, 200);
+            this.scrollToEnd = false;
         }
 
         if (!this.lastRowRender || Date.now() - this.lastRowRender > 1000) {
@@ -845,7 +882,24 @@ class Logs extends Component {
                         }}
                         color={!this.state.colors ? 'default' : 'primary'}
                     >
-                        <ColorsIcon />
+                        <ColorsIcon style={{ width: '0.8em', height: '0.8em' }} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Reverse output direction')}>
+                    <IconButton
+                        size="large"
+                        onClick={() => {
+                            (window._localStorage || window.localStorage).setItem('Log.reverse', this.state.reverse ? 'false' : 'true');
+                            this.setState({ reverse: !this.state.reverse });
+                            setTimeout(() => {
+                                // scroll to endOfLog
+                                const element = document.getElementById('endOfLog');
+                                element && element.scrollIntoView();
+                            }, 500);
+                        }}
+                        color={!this.state.reverse ? 'default' : 'primary'}
+                    >
+                        {this.state.reverse ? <ArrowDownward /> : <ArrowUpward />}
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Show errors')}>
