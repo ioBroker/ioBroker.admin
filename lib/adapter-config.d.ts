@@ -9,7 +9,10 @@ type _AdapterConfig = typeof native;
 declare global {
     namespace ioBroker {
         interface AdapterConfig extends _AdapterConfig {
-            // Do not enter anything here!
+            // non-primitive types are not inferred correctly
+            accessAllowedConfigs: string[];
+            accessAllowedTabs: string[];
+            reverseProxy: unknown[];
         }
     }
 }

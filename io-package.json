@@ -207,6 +207,7 @@
     }
   },
   "native": {
+    "autoUpdate": 24,
     "port": 8081,
     "auth": false,
     "secure": false,

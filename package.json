@@ -49,6 +49,7 @@
     "@iobroker/legacy-testing": "^0.3.7",
     "@iobroker/testing": "^4.1.0",
     "@tsconfig/node16": "^16.1.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "chai": "^4.3.7",
     "colorette": "^2.0.20",
     "eslint": "^8.47.0",
