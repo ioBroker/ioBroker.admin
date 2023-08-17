@@ -44,6 +44,7 @@ Possible types:
   - `listenOnAllPorts` - add 0.0.0.0 to option
   - `onlyIp4` - show only IP4 addresses
   - `onlyIp6` - show only IP6 addresses
+  - `noInternal` - do not show internal IP addresses
 
 - `user` - Select user from system.user. (With color and icon)
   - `short` - no system.user.

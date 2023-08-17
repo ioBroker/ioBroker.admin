@@ -35,13 +35,15 @@ class ConfigIP extends ConfigGeneric {
                 } else if (this.props.schema.onlyIp6) {
                     ips = ips.filter(item => item.family === 'ipv6');
                 }
+                if (this.props.schema.noInternal) {
+                    ips = ips.filter(item => !item.internal);
+                }
                 ips.forEach(item => {
                     if (item.address === '0.0.0.0') {
                         item.name = `[IPv4] 0.0.0.0 - ${I18n.t('ra_Listen on all IPs')}`;
-                    } else
-                        if (item.address === '::') {
-                            item.name = `[IPv6] :: - ${I18n.t('ra_Listen on all IPs')}`;
-                        }
+                    } else if (item.address === '::') {
+                        item.name = `[IPv6] :: - ${I18n.t('ra_Listen on all IPs')}`;
+                    }
                 });
                 this.setState({ ips });
             });
