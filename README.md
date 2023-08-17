@@ -84,6 +84,16 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added possibility to change log direction
+* (bluefox) JSON config: Added possibility to filter out internal IP addresses
+* (bluefox) JSON config: Added _changed flag for formula in JSON config
+* (bluefox) JSON config: Added option `reloadBrowser` to sendto in JSON config
+* (bluefox) JSON config: Allowed positioning of add button on the very top of the table
+* (bluefox) JSON config: Trim strings by saving and not by typing
+* (bluefox) Added alias creation from object browser
+* (bluefox) Allowed to change chart type
+
 ### 6.8.3 (2023-08-16)
 * (foxriver76) added description to adapter rating dialog
 * (bluefox) Extended the select component with grouping
