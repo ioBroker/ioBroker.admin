@@ -65,7 +65,7 @@ const styles = theme => ({
         top: 20,
         width: 1,
     },
-    addIcon: {
+    label: {
         display: 'flex',
         justifyContent: 'space-between',
     },
@@ -275,6 +275,7 @@ class ConfigTable extends ConfigGeneric {
         return <ConfigPanel
             index={idx + this.state.iteration}
             arrayIndex={idx}
+            changed={this.props.changed}
             globalData={this.props.data}
             socket={this.props.socket}
             adapterName={this.props.adapterName}
@@ -355,7 +356,7 @@ class ConfigTable extends ConfigGeneric {
                         align="left"
                         sortDirection={orderBy === headCell.attr ? order : false}
                     >
-                        <div className={classes.flex}>
+                        <div className={classes.flex} style={schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined}>
                             {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
                                 <span>
                                     <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
@@ -809,16 +810,16 @@ class ConfigTable extends ConfigGeneric {
         return <Paper className={classes.paper}>
             {this.showImportDialog()}
             {this.showTypeOfImportDialog()}
-            <div className={classes.addIcon}>
-                {schema.label ? <Toolbar
+            {schema.label ? <div className={classes.label}>
+                <Toolbar
                     variant="dense"
                     className={classes.rootTool}
                 >
                     <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                         {this.getText(schema.label)}
                     </Typography>
-                </Toolbar> : null}
-            </div>
+                </Toolbar>
+            </div> : null}
             <TableContainer>
                 <Table className={classes.table} size="small">
                     {this.enhancedTableHead(!doAnyFilterSet && !this.state.orderBy ? 120 : 64, doAnyFilterSet)}
@@ -882,13 +883,16 @@ class ConfigTable extends ConfigGeneric {
                         </Typography>
                     </div> : null}
             </TableContainer>
-            {schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
+            {schema.help ?
+                <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText>
+                : null}
         </Paper>;
     }
 }
 
 ConfigTable.propTypes = {
     socket: PropTypes.object.isRequired,
+    changed: PropTypes.bool,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
     style: PropTypes.object,

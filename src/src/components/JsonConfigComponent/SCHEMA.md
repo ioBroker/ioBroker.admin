@@ -44,6 +44,7 @@ Possible types:
   - `listenOnAllPorts` - add 0.0.0.0 to option
   - `onlyIp4` - show only IP4 addresses
   - `onlyIp6` - show only IP6 addresses
+  - `noInternal` - do not show internal IP addresses
 
 - `user` - Select user from system.user. (With color and icon)
   - `short` - no system.user.
@@ -154,6 +155,7 @@ Possible types:
     - `error` - `{error1: {en: 'E'}, error2: {en: 'E2'}}`
     - `variant` - `contained`, `outlined` or nothing
     - `openUrl` - if true - open URL in new tab, if response contains attribute `openUrl`, like `{"openUrl": "http://1.2.3.4:80/aaa", "window": "_blank", "saveConfig": true}`. If `saveConfig` is true, the user will be requested to save the configuration.
+    - `reloadBrowser` - if true - reload the current browser window, if response contains attribute `reloadBrowser`, like `{"reloadBrowser": true}`.
     - `window` - if `openUrl` is true, this is name of the new window. Could be overwritten if response consist `window` attribute.
       `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
     - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`. You can use `base64` icons. (Request via issue if you need more icons)
@@ -191,6 +193,7 @@ Possible types:
     - `objValueName` - (legacy setting, don't use!) - name of the value in `{"192.168.1.1": "value1", "192.168.1.2": "value2"}`
     - `allowAddByFilter` - if add allowed even if filter is set
     - `showSecondAddAt` - Number of lines from which the second add button at the bottom of the table will be shown. Default 5
+    - `showFirstAddOnTop` - Show first plus button on top of the first column and not on the left.
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
     - `export` - [optional] - if export button should be shown. Export as csv file.
     - `import` - [optional] - if import button should be shown. Import from csv file.
@@ -599,12 +602,24 @@ JS function is:
 ```
 const myValidator = "_alive === true && data.options.myType == 2";
 
-const func = new Function('data', '_system', '_alive', '_common', '_socket', myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
+const func = new Function(
+  'data',          // actual obj.native or obj.common.custom['adapter.X'] object
+                   // If table, so data is current line in the table
+  'originalData',  // data before changes
+  '_system',       // system config => 'system.config'=>common
+  '_alive',        // If instance is alive
+  '_common',       // common part of instance = 'system.config.ADAPTER.X' => common 
+  '_socket',       // socket connection
+  '_instance',     // instance number
+  'arrayIndex',    // filled only by table and represents the row index
+  'globalData',    // filled only by table and represents the obj.native or obj.common.custom['adapter.X'] object
+  '_changed'       // indicator if some data was changed and must be saved
+  myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
 const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, this.props.socket);
 
 ```
-If the alive status changes, so all fields must be updated, validated, disabled, hidden anew.
+If the `alive` status changes, so all fields must be updated, validated, disabled, hidden anew.
 
 The following variables are available in JS function in adapter settings:
 - `data` - native settings for this instance or current line in the table (to access all settings use globalData)
@@ -621,7 +636,15 @@ JS function is:
 ```
 const myValidator = "customObj.common.type === 'boolean' && data.options.myType == 2";
 
-const func = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', arrayIndex, myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
+const func = new Function(
+  'data',
+  'originalData',
+  '_system',
+  'instanceObj',
+  'customObj',
+  '_socket',
+  arrayIndex,
+  myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
 const isValid = func(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
 ```

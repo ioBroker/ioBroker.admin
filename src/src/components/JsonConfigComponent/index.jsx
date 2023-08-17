@@ -309,6 +309,7 @@ class JsonConfigComponent extends Component {
                 forceUpdate={this.forceAttrUpdate}
                 registerOnForceUpdate={this.registerOnForceUpdate}
                 onChange={this.onChange}
+                changed={this.state.changed}
                 onError={(attr, error) => this.onError(attr, error)}
             />;
         }
@@ -316,6 +317,7 @@ class JsonConfigComponent extends Component {
             return <ConfigPanel
                 index={1000}
                 isParentTab
+                changed={this.state.changed}
                 onCommandRunning={this.onCommandRunning}
                 commandRunning={this.state.commandRunning}
                 socket={this.props.socket}
