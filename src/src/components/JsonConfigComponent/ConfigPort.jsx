@@ -83,6 +83,39 @@ class ConfigPort extends ConfigGeneric {
         return null;
     }
 
+    checkValue(value) {
+        if (value === null || value === undefined) {
+            return null;
+        }
+
+        const min = this.props.schema.min || 20;
+        const max = this.props.schema.max || 0xFFFF;
+
+        value = value.toString().trim();
+        const f = value === '' ? 0 : parseInt(value, 10);
+
+        if (value !== '' && Number.isNaN(f)) {
+            return 'ra_Not a number';
+        }
+
+        // eslint-disable-next-line no-restricted-properties
+        if (value !== '' && window.isFinite(value)) {
+            if (f < min) {
+                return 'ra_Too small';
+            }
+            if (f > max) {
+                return 'ra_Too big';
+            }
+            if (value === '' || value === '-' || Number.isNaN(f)) {
+                return 'ra_Not a number';
+            }
+
+            return null;
+        }
+
+        return 'ra_Not a number';
+    }
+
     renderItem(error, disabled /* , defaultValue */) {
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
@@ -114,11 +147,9 @@ class ConfigPort extends ConfigGeneric {
         }
 
         if (!error && this.state._value !== null && this.state._value !== undefined) {
-            if (this.state._value < min) {
-                error = I18n.t('ra_Too small');
-            }
-            if (this.state._value > max) {
-                error = I18n.t('ra_Too big');
+            error = this.checkValue(this.state._value);
+            if (error) {
+                error = I18n.t(error);
             }
         }
 
@@ -136,31 +167,19 @@ class ConfigPort extends ConfigGeneric {
             disabled={!!disabled}
             className={warning ? this.props.classes.warning : ''}
             onChange={e => {
-                const _value = e.target.value;
-                // eslint-disable-next-line no-restricted-properties
-                if (window.isFinite(_value)) {
-                    if (parseFloat(_value) < min) {
-                        this.onError(this.props.attr, I18n.t('ra_Too small'));
-                    } else if (parseFloat(_value) > max) {
-                        this.onError(this.props.attr, I18n.t('ra_Too big'));
-                    } else if (_value === '-' || Number.isNaN(parseFloat(_value))) {
-                        this.onError(this.props.attr, I18n.t('ra_Not a number'));
-                    } else {
-                        this.onError(this.props.attr); // clear error
-                    }
-                } else if (_value !== '') {
-                    this.onError(this.props.attr, I18n.t('ra_Not a number'));
+                const _value = e.target.value.toString().replace(/[^0-9]/g, '');
+                const _error = this.checkValue(_value);
+                if (_error) {
+                    this.onError(this.props.attr, I18n.t(_error));
                 } else {
                     this.onError(this.props.attr); // clear error
                 }
 
-                if (this.state._value !== _value) {
-                    this.setState({ _value, oldValue: this.state._value }, () => {
-                        if (_value.trim() === parseInt(_value, 10).toString()) {
-                            this.onChange(this.props.attr, parseInt(_value, 10) || 0);
-                        }
-                    });
-                }
+                this.setState({ _value, oldValue: this.state._value }, () => {
+                    if (_value.trim() === parseInt(_value, 10).toString()) {
+                        this.onChange(this.props.attr, parseInt(_value, 10) || 0);
+                    }
+                });
             }}
             placeholder={this.getText(this.props.schema.placeholder)}
             label={this.getText(this.props.schema.label)}

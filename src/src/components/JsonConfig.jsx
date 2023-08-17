@@ -439,8 +439,24 @@ class JsonConfig extends Router {
                 // should not happen
                 data[attr] = data[attr].trim();
             } else if (schema.type === 'number') {
-                // should not happen
-                data[attr] = parseFloat(data[attr]);
+                data[attr] = parseFloat(data[attr].toString().replace(',', '.'));
+                if (schema.min !== undefined && data[attr] < schema.min) {
+                    data[attr] = schema.min;
+                } else if (schema.max !== undefined && data[attr] > schema.max) {
+                    data[attr] = schema.max;
+                }
+            } else if (schema.type === 'port') {
+                data[attr] = parseInt(data[attr].toString(), 10);
+                if (schema.min !== undefined && data[attr] < schema.min) {
+                    data[attr] = schema.min;
+                } else if (schema.max !== undefined && data[attr] > schema.max) {
+                    data[attr] = schema.max;
+                }
+                if (data[attr] !== 0 && data[attr] < 20) {
+                    data[attr] = 20;
+                } else if (data[attr] > 0xFFFF) {
+                    data[attr] = 0xFFFF;
+                }
             } else if (schema.type === 'checkbox') {
                 // should not happen
                 data[attr] = data[attr] === true || data[attr] === 'true' || data[attr] === 'on' || data[attr] === 1 || data[attr] === '1';

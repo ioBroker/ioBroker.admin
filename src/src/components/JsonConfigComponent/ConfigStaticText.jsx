@@ -82,7 +82,7 @@ class ConfigStaticText extends ConfigGeneric {
                 {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}
             </Button>;
         }
-        let text = this.getText(this.props.schema.text || this.props.schema.label);
+        let text = this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation);
         if (text && (text.includes('<a ') || text.includes('<br') || text.includes('<b>') || text.includes('<i>'))) {
             text = Utils.renderTextWithA(text);
         }

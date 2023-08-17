@@ -50,6 +50,35 @@ class ConfigNumber extends ConfigGeneric {
         return null;
     }
 
+    checkValue(value) {
+        if (value === null || value === undefined) {
+            return null;
+        }
+        value = value.toString().trim();
+        const f = value === '' ? 0 : parseFloat(value);
+
+        if (value !== '' && Number.isNaN(f)) {
+            return 'ra_Not a number';
+        }
+
+        // eslint-disable-next-line no-restricted-properties
+        if (value !== '' && window.isFinite(value)) {
+            if (this.props.schema.min !== undefined && f < this.props.schema.min) {
+                return 'ra_Too small';
+            }
+            if (this.props.schema.max !== undefined && f > this.props.schema.max) {
+                return 'ra_Too big';
+            }
+            if (value === '' || value === '-' || Number.isNaN(f)) {
+                return 'ra_Not a number';
+            }
+
+            return null;
+        }
+
+        return 'ra_Not a number';
+    }
+
     renderItem(error, disabled /* , defaultValue */) {
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
@@ -68,105 +97,79 @@ class ConfigNumber extends ConfigGeneric {
             const arr = [...this.state.value].map(item => ({ label: item.toString(), value: item }));
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
-            return (
-                <Autocomplete
-                    className={this.props.classes.indeterminate}
-                    fullWidth
-                    value={arr[0]}
-                    getOptionSelected={(option, value) => option.label === value.label}
-                    onChange={(_, value) =>
-                        this.onChange(this.props.attr, value ? parseFloat(value.value) : this.props.schema.min || 0)}
-                    options={arr}
-                    getOptionLabel={option => option.label}
-                    renderInput={params => (
-                        <TextField
-                            variant="standard"
-                            {...params}
-                            inputProps={{
-                                readOnly: this.props.schema.readOnly || false,
-                            }}
-                            error={!!error}
-                            placeholder={this.getText(this.props.schema.placeholder)}
-                            label={this.getText(this.props.schema.label)}
-                            helperText={this.renderHelp(
-                                this.props.schema.help,
-                                this.props.schema.helpLink,
-                                this.props.schema.noTranslation,
-                            )}
-                            disabled={!!disabled}
-                        />
-                    )}
-                />
-            );
+            return <Autocomplete
+                className={this.props.classes.indeterminate}
+                fullWidth
+                value={arr[0]}
+                getOptionSelected={(option, value) => option.label === value.label}
+                onChange={(_, value) =>
+                    this.onChange(this.props.attr, value.value)}
+                options={arr}
+                getOptionLabel={option => option.label}
+                renderInput={params => (
+                    <TextField
+                        variant="standard"
+                        {...params}
+                        inputProps={{ readOnly: this.props.schema.readOnly || false }}
+                        error={!!error}
+                        placeholder={this.getText(this.props.schema.placeholder)}
+                        label={this.getText(this.props.schema.label)}
+                        helperText={this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )}
+                        disabled={!!disabled}
+                    />
+                )}
+            />;
         }
-        if (!error && this.state._value !== null && this.state._value !== undefined) {
-            if (this.props.schema.min !== undefined && this.state._value < this.props.schema.min) {
-                error = I18n.t('ra_Too small');
-            }
-            if (this.props.schema.max !== undefined && this.state._value > this.props.schema.max) {
-                error = I18n.t('ra_Too big');
+        if (!error && this.state._value !== null && this.state._value !== undefined && this.state._value) {
+            error = this.checkValue(this.state._value);
+            if (error) {
+                error = I18n.t(error);
             }
         }
 
-        return (
-            <FormControl variant="standard" className={this.props.classes.control}>
-                <TextField
-                    variant="standard"
-                    type="number"
-                    fullWidth
-                    inputProps={{
-                        min: this.props.schema.min,
-                        max: this.props.schema.max,
-                        step: this.props.schema.step,
-                        readOnly: this.props.schema.readOnly || false,
-                    }}
-                    value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
-                    error={!!error}
-                    disabled={!!disabled}
-                    onChange={e => {
-                        const _value = e.target.value;
-                        // eslint-disable-next-line no-restricted-properties
-                        if (window.isFinite(_value)) {
-                            if (this.props.schema.min !== undefined && parseFloat(_value) < this.props.schema.min) {
-                                this.onError(this.props.attr, I18n.t('ra_Too small'));
-                            } else if (
-                                this.props.schema.max !== undefined &&
-                                    parseFloat(_value) > this.props.schema.max
-                            ) {
-                                this.onError(this.props.attr, I18n.t('ra_Too big'));
-                            } else if (_value === '-' || Number.isNaN(parseFloat(_value))) {
-                                this.onError(this.props.attr, I18n.t('ra_Not a number'));
-                            } else {
-                                this.onError(this.props.attr); // clear error
-                            }
-                        } else if (_value !== '') {
-                            this.onError(this.props.attr, I18n.t('ra_Not a number'));
-                        } else {
-                            this.onError(this.props.attr); // clear error
-                        }
-
-                        if (this.state._value !== _value) {
-                            this.setState({ _value, oldValue: this.state._value }, () => {
-                                if (_value.trim() === parseFloat(_value).toString()) {
-                                    this.onChange(this.props.attr, parseFloat(_value) || 0);
-                                }
-                            });
-                        }
-                    }}
-                    placeholder={this.getText(this.props.schema.placeholder)}
-                    label={this.getText(this.props.schema.label)}
-                    helperText={
-                        error && typeof error === 'string'
-                            ? error
-                            : this.renderHelp(
-                                this.props.schema.help,
-                                this.props.schema.helpLink,
-                                this.props.schema.noTranslation,
-                            )
+        return <FormControl variant="standard" className={this.props.classes.control}>
+            <TextField
+                variant="standard"
+                type="number"
+                fullWidth
+                inputProps={{
+                    min: this.props.schema.min,
+                    max: this.props.schema.max,
+                    step: this.props.schema.step,
+                    readOnly: this.props.schema.readOnly || false,
+                }}
+                value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
+                error={!!error}
+                disabled={!!disabled}
+                onChange={e => {
+                    const _value = e.target.value; // value is always a string and it is valid formatted
+                    const _error = this.checkValue(_value);
+                    if (_error) {
+                        this.onError(this.props.attr, I18n.t(_error));
+                    } else {
+                        this.onError(this.props.attr); // clear error
                     }
-                />
-            </FormControl>
-        );
+
+                    this.setState({ _value, oldValue: this.state._value }, () =>
+                        this.onChange(this.props.attr, _value));
+                }}
+                placeholder={this.getText(this.props.schema.placeholder)}
+                label={this.getText(this.props.schema.label)}
+                helperText={
+                    error && typeof error === 'string'
+                        ? error
+                        : this.renderHelp(
+                            this.props.schema.help,
+                            this.props.schema.helpLink,
+                            this.props.schema.noTranslation,
+                        )
+                }
+            />
+        </FormControl>;
     }
 }
 
