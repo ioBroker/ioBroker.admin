@@ -225,16 +225,19 @@ class ConfigSendto extends ConfigGeneric {
                         this.setState({ _error: response.error ? I18n.t(response.error) : I18n.t('ra_Error') });
                     }
                 } else {
-                    if (response?.openUrl && this.props.schema.openUrl) {
+                    if (response?.reloadBrowser && this.props.schema.reloadBrowser) {
+                        window.location.reload();
+                    } else if (response?.openUrl && this.props.schema.openUrl) {
                         window.open(response.openUrl, response.window || this.props.schema.window || '_blank');
-                    } else
-                        if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
-                            let text = this.getText(this.props.schema.result[response.result]);
-                            if (response.args) {
-                                response.args.forEach(arg => text = text.replace('%s', arg));
-                            }
-                            window.alert(text);
-                        } if (response?.native && this.props.schema.useNative) {
+                    } else if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
+                        let text = this.getText(this.props.schema.result[response.result]);
+                        if (response.args) {
+                            response.args.forEach(arg => text = text.replace('%s', arg));
+                        }
+                        window.alert(text);
+                    }
+
+                    if (response?.native && this.props.schema.useNative) {
                         const attrs = Object.keys(response.native);
                         attrs.forEach(attr =>
                             this.onChange(attr, response.native[attr]));
