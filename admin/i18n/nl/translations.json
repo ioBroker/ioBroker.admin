@@ -84,5 +84,7 @@
   "Loading backgroun": "Achtergrond laden",
   "Background color of the loading screen": "Achtergrondkleur van het laadscherm",
   "Loading background": "Achtergrond laden",
-  "Use iobroker.acme adapter for letsencrypt certificates": "Gebruik de iobroker.acme-adapter voor letsencrypt-certificaten"
+  "Use iobroker.acme adapter for letsencrypt certificates": "Gebruik de iobroker.acme-adapter voor letsencrypt-certificaten",
+  "Reverse proxy": "Omgekeerde proxy",
+  "You can use admin behind a reverse proxy.": "U kunt admin gebruiken achter een Reverse Proxy."
 }

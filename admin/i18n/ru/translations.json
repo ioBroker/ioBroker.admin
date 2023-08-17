@@ -84,5 +84,7 @@
   "Loading backgroun": "Загрузка фона",
   "Background color of the loading screen": "Цвет фона экрана загрузки",
   "Loading background": "Фон загрузки",
-  "Use iobroker.acme adapter for letsencrypt certificates": "Используйте адаптер iobroker.acme для сертификатов letsencrypt"
+  "Use iobroker.acme adapter for letsencrypt certificates": "Используйте адаптер iobroker.acme для сертификатов letsencrypt",
+  "Reverse proxy": "Reverse прокси",
+  "You can use admin behind a reverse proxy.": "Вы можете использовать admin за Reverse Proxy."
 }
