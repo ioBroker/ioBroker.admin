@@ -41,11 +41,7 @@ class ConfigText extends ConfigGeneric {
     static getDerivedStateFromProps(props, state) {
         let value = ConfigGeneric.getValue(props.data, props.attr);
         if (value !== null && value !== undefined) {
-            if (props.schema.trim !== false) {
-                value = value.toString().trim();
-            } else {
-                value = value.toString();
-            }
+            value = value.toString();
         }
 
         if (value === null || value === undefined || (value !== state.value && value !== state.oldValue)) {
@@ -116,7 +112,7 @@ class ConfigText extends ConfigGeneric {
                     onChange={e => {
                         const value = e.target.value;
                         this.setState({ value, oldValue: this.state.value }, () =>
-                            this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
+                            this.onChange(this.props.attr, value || ''));
                     }}
                     placeholder={this.getText(this.props.schema.placeholder)}
                 />
@@ -136,7 +132,7 @@ class ConfigText extends ConfigGeneric {
             onChange={e => {
                 const value = e.target.value;
                 this.setState({ value, oldValue: this.state.value }, () =>
-                    this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
+                    this.onChange(this.props.attr, value));
             }}
             placeholder={this.getText(this.props.schema.placeholder)}
             label={this.getText(this.props.schema.label)}

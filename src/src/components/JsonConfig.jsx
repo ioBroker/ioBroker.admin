@@ -400,6 +400,54 @@ class JsonConfig extends Router {
         return null;
     }
 
+    // this function is called recursively and trims all text fields, that must be trimmed
+    postProcessing(data, attr, schema) {
+        schema = schema || this.state.schema;
+        if (!data) {
+            // should not happen
+            console.error(`Data is empty in postProcessing: ${attr}, ${JSON.stringify(schema)}`);
+            return;
+        }
+        if (schema.items) {
+            const keys = Object.keys(schema.items);
+            if (schema.type === 'table') {
+                const table = data[attr];
+                for (let i = 0; i < table.length; i++) {
+                    for (let a = 0; a < schema.items.length; a++) {
+                        const tItem = schema.items[a];
+                        this.postProcessing(table[i], tItem.attr, tItem);
+                    }
+                }
+            } else {
+                for (let k = 0; k < keys.length; k++) {
+                    const _attr = keys[k];
+                    const item = schema.items[_attr];
+                    if (item.type === 'panel' || item.type === 'tabs' || item.type === 'accordion') {
+                        this.postProcessing(data, null, item);
+                    } else {
+                        this.postProcessing(data, _attr, item);
+                    }
+                }
+            }
+        } else if (attr && data[attr]) {
+            // postprocessing
+            if (schema.type === 'text') {
+                if (schema.trim !== false) {
+                    data[attr] = data[attr].trim();
+                }
+            } else if (schema.type === 'ip') {
+                // should not happen
+                data[attr] = data[attr].trim();
+            } else if (schema.type === 'number') {
+                // should not happen
+                data[attr] = parseFloat(data[attr]);
+            } else if (schema.type === 'checkbox') {
+                // should not happen
+                data[attr] = data[attr] === true || data[attr] === 'true' || data[attr] === 'on' || data[attr] === 1 || data[attr] === '1';
+            }
+        }
+    }
+
     async onSave(doSave, close) {
         if (doSave) {
             const obj = await this.getInstanceObject();
@@ -409,6 +457,8 @@ class JsonConfig extends Router {
                 window.alert('Something went wrong: may be no connection?');
                 return;
             }
+
+            this.postProcessing(this.state.data, this.state.schema);
 
             Object.keys(this.state.data).forEach(attr => {
                 const item = this.findAttr(attr);
