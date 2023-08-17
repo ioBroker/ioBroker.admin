@@ -193,6 +193,7 @@ Possible types:
     - `objValueName` - (legacy setting, don't use!) - name of the value in `{"192.168.1.1": "value1", "192.168.1.2": "value2"}`
     - `allowAddByFilter` - if add allowed even if filter is set
     - `showSecondAddAt` - Number of lines from which the second add button at the bottom of the table will be shown. Default 5
+    - `showFirstAddOnTop` - Show first plus button on top of the first column and not on the left.
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
     - `export` - [optional] - if export button should be shown. Export as csv file.
     - `import` - [optional] - if import button should be shown. Import from csv file.
