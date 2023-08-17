@@ -1535,5 +1535,9 @@
   "write": "Scrivi",
   "write operation": "Scrivi",
   "wrongPassword": "Nome utente o password errati",
-  "yesterday": "Ieri"
+  "yesterday": "Ieri",
+  "Save as image": "Salva come immagine",
+  "Show lines": "Mostra linee",
+  "Step type": "Tipo di passo",
+  "stepStart": "Passi"
 }

@@ -364,7 +364,7 @@
   "Enabled:": "Enabled",
   "End date": "End date",
   "End of line char": "End of line char",
-  "End time": "Time",
+  "End time": "End Time",
   "Enum parameters": "Enumeration parameters",
   "Enums": "Enums",
   "Equatorial Guinea": "Equatorial Guinea",
@@ -1535,5 +1535,9 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
-  "yesterday": "yesterday"
+  "yesterday": "yesterday",
+  "Show lines": "Show lines",
+  "Save as image": "Save as image",
+  "Step type": "Step type",
+  "stepStart": "Steps"
 }

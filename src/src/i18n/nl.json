@@ -1535,5 +1535,9 @@
   "write": "schrijven",
   "write operation": "schrijven",
   "wrongPassword": "ongeldige gebruikersnaam of wachtwoord",
-  "yesterday": "gisteren"
+  "yesterday": "gisteren",
+  "Save as image": "Opslaan als afbeelding",
+  "Show lines": "Laat lijnen zien",
+  "Step type": "Type stap",
+  "stepStart": "Stappen"
 }

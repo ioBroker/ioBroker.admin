@@ -1535,5 +1535,9 @@
   "write": "писати",
   "write operation": "писати",
   "wrongPassword": "Неправильне ім'я користувача або пароль",
-  "yesterday": "вчора"
+  "yesterday": "вчора",
+  "Save as image": "Зберегти як зображення",
+  "Show lines": "Показати рядки",
+  "Step type": "Тип кроку",
+  "stepStart": "Кроки"
 }

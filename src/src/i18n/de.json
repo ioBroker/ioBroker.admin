@@ -364,7 +364,7 @@
   "Enabled:": "Aktiviert",
   "End date": "Enddatum",
   "End of line char": "Zeilenende Zeichen",
-  "End time": "Zeit",
+  "End time": "Endzeit",
   "Enum parameters": "Aufzählungsparameter",
   "Enums": "Aufzählungen",
   "Equatorial Guinea": "Äquatorial-Guinea",
@@ -1535,5 +1535,9 @@
   "write": "schreiben",
   "write operation": "schreiben",
   "wrongPassword": "Name oder Kennwort sind falsch",
-  "yesterday": "gestern"
+  "yesterday": "gestern",
+  "Save as image": "Als Bild speichern",
+  "Show lines": "Linien anzeigen",
+  "Step type": "Schritttyp",
+  "stepStart": "Schritte"
 }

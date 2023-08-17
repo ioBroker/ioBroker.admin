@@ -1535,5 +1535,9 @@
   "write": "写",
   "write operation": "写",
   "wrongPassword": "用户名或密码无效",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "Save as image": "另存为图像",
+  "Show lines": "显示线路",
+  "Step type": "台阶式",
+  "stepStart": "脚步"
 }

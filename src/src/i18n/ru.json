@@ -364,7 +364,7 @@
   "Enabled:": "Включено",
   "End date": "Дата окончания",
   "End of line char": "Знак конца строки",
-  "End time": "Время",
+  "End time": "Время окончания",
   "Enum parameters": "Параметры категории",
   "Enums": "Категории",
   "Equatorial Guinea": "Экваториальная Гвинея",
@@ -1535,5 +1535,9 @@
   "write": "писать",
   "write operation": "Писать",
   "wrongPassword": "Неверные имя пользователя или пароль",
-  "yesterday": "вчера"
+  "yesterday": "вчера",
+  "Save as image": "Сохранить как изображение",
+  "Show lines": "Показать линии",
+  "Step type": "Тип шага",
+  "stepStart": "Шаги"
 }

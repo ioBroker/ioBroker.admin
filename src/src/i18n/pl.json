@@ -1535,5 +1535,9 @@
   "write": "pisać",
   "write operation": "pisać",
   "wrongPassword": "Nieprawidłowa nazwa użytkownika lub hasło",
-  "yesterday": "wczoraj"
+  "yesterday": "wczoraj",
+  "Save as image": "Zapisz jako obraz",
+  "Show lines": "Pokaż linie",
+  "Step type": "Rodzaj kroku",
+  "stepStart": "Kroki"
 }
