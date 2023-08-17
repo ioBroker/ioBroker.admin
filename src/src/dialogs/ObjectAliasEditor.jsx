@@ -17,7 +17,6 @@ import {
 // Icons
 import {
     Close,
-    Save,
     Link as IconLink,
     AddLink, Close as IconClose,
 } from '@mui/icons-material';
@@ -33,8 +32,10 @@ const styles = theme => ({
     },
     formControlLabel: {
         marginBottom: theme.spacing(2),
-    }
+    },
 });
+
+// todo: edit color, icon, enum function, enum room, write from other object
 
 class ObjectAliasEditor extends Component {
     constructor(props) {
@@ -64,6 +65,8 @@ class ObjectAliasEditor extends Component {
             newAliasUseFormula: false,
             newAliasReadFormula: 'val',
             newAliasWriteFormula: 'val',
+            newAliasColor: this.props.obj.common.color,
+            newAliasIcon: this.props.obj.common.icon,
         };
     }
 
@@ -271,6 +274,12 @@ class ObjectAliasEditor extends Component {
                         }
                         if (this.state.newAliasWrite !== undefined && this.state.newAliasWrite !== null) {
                             obj.common.write = this.state.newAliasWrite;
+                        }
+                        if (this.state.newAliasColor) {
+                            obj.common.color = this.state.newAliasColor;
+                        }
+                        if (this.state.newAliasIcon) {
+                            obj.common.icon = this.state.newAliasIcon;
                         }
                         if (this.state.newAliasUseFormula) {
                             if (obj.common.read !== false && this.state.newAliasReadFormula && this.state.newAliasReadFormula !== 'val') {
