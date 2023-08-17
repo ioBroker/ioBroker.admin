@@ -1540,5 +1540,15 @@
   "Show lines": "显示线路",
   "Step type": "台阶式",
   "stepStart": "脚步",
-  "Reverse output direction": "输出方向相反"
+  "Reverse output direction": "输出方向相反",
+  "Create new alias: %s": "创建新别名：%s",
+  "Alias ID": "别名ID",
+  "Alias name": "别名",
+  "Alias description": "别名说明",
+  "Alias units": "别名单位",
+  "Alias read": "可读",
+  "Alias write": "可写",
+  "This object does not used in any aliases yet": "该对象尚未在任何别名中使用",
+  "Create alias from this ID": "从此对象创建别名",
+  "This object is used in aliases": "该对象用于别名"
 }

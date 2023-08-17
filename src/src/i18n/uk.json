@@ -1540,5 +1540,15 @@
   "Show lines": "Показати рядки",
   "Step type": "Тип кроку",
   "stepStart": "Кроки",
-  "Reverse output direction": "Зворотний напрямок виведення"
+  "Reverse output direction": "Зворотний напрямок виведення",
+  "Create new alias: %s": "Створити новий псевдонім: %s",
+  "Alias ID": "ID псевдоніма",
+  "Alias name": "Псевдонім",
+  "Alias description": "Опис псевдоніма",
+  "Alias units": "Псевдоніми одиниць",
+  "Alias read": "Читабельний",
+  "Alias write": "Можливість запису",
+  "This object does not used in any aliases yet": "Цей об’єкт ще не використовується в жодних псевдонімах",
+  "Create alias from this ID": "Створіть псевдонім із цього об’єкта",
+  "This object is used in aliases": "Цей об'єкт використовується в псевдонімах"
 }

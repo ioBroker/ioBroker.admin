@@ -26,6 +26,7 @@ import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';
 import ObjectAddNewObject from '../dialogs/ObjectAddNewObject';
 import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
 import ObjectViewFileDialog from '../dialogs/ObjectViewFileDialog';
+import ObjectAliasEditor from '../dialogs/ObjectAliasEditor';
 
 const IconDeleteAll = IconDeleteOne;
 const styles = {
@@ -210,6 +211,7 @@ class Objects extends Component {
                 objectBrowserEditObject={ObjectBrowserEditObject}
                 objectBrowserEditRole={ObjectBrowserEditRole}
                 objectBrowserViewFile={ObjectViewFileDialog}
+                objectBrowserAliasEditor={ObjectAliasEditor}
                 router={Router}
                 enableStateValueEdit
                 onObjectDelete={(id, hasChildren, exists, childrenCount) =>

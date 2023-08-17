@@ -317,7 +317,6 @@ class ObjectChart extends Component {
                         list = list.filter(it => this.props.obj.common.custom[it.id]);
                     }
 
-
                     // find current history
                     // first read from localstorage
                     let historyInstance = (window._localStorage || window.localStorage).getItem('App.historyInstance') || '';

@@ -1540,5 +1540,15 @@
   "Save as image": "Save as image",
   "Step type": "Step type",
   "stepStart": "Steps",
-  "Reverse output direction": "Reverse output direction"
+  "Reverse output direction": "Reverse output direction",
+  "Create new alias: %s": "Create new alias: %s",
+  "Alias ID": "Alias ID",
+  "Alias name": "Alias name",
+  "Alias description": "Alias description",
+  "Alias units": "Alias units",
+  "Alias read": "Readable",
+  "Alias write": "Writable",
+  "This object does not used in any aliases yet": "This object does not used in any aliases yet",
+  "Create alias from this ID": "Create alias from this object",
+  "This object is used in aliases": "This object is used in aliases"
 }

@@ -1540,5 +1540,15 @@
   "Show lines": "Linien anzeigen",
   "Step type": "Schritttyp",
   "stepStart": "Schritte",
-  "Reverse output direction": "Ausgaberichtung umkehren"
+  "Reverse output direction": "Ausgaberichtung umkehren",
+  "Create new alias: %s": "Neuen Alias erstellen: %s",
+  "Alias ID": "Alias-ID",
+  "Alias name": "Pseudonym",
+  "Alias description": "Alias-Beschreibung",
+  "Alias units": "Alias-Einheiten",
+  "Alias read": "Lesbar",
+  "Alias write": "Schreibbar",
+  "This object does not used in any aliases yet": "Dieses Objekt wird noch in keinem Alias verwendet",
+  "Create alias from this ID": "Alias aus diesem Objekt erstellen",
+  "This object is used in aliases": "Dieses Objekt wird in Aliasen verwendet"
 }

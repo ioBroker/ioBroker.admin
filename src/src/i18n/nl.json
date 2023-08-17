@@ -1540,5 +1540,15 @@
   "Show lines": "Laat lijnen zien",
   "Step type": "Type stap",
   "stepStart": "Stappen",
-  "Reverse output direction": "Omgekeerde uitgangsrichting"
+  "Reverse output direction": "Omgekeerde uitgangsrichting",
+  "Create new alias: %s": "Nieuwe alias maken: %s",
+  "Alias ID": "Alias-ID",
+  "Alias name": "Alias naam",
+  "Alias description": "Alias beschrijving",
+  "Alias units": "Alias-eenheden",
+  "Alias read": "Leesbaar",
+  "Alias write": "Beschrijfbaar",
+  "This object does not used in any aliases yet": "Dit object wordt nog niet in een alias gebruikt",
+  "Create alias from this ID": "Maak een alias van dit object",
+  "This object is used in aliases": "Dit object wordt gebruikt in aliassen"
 }

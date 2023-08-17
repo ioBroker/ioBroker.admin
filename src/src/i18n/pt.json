@@ -1540,5 +1540,15 @@
   "Show lines": "Mostrar linhas",
   "Step type": "Tipo de passo",
   "stepStart": "Passos",
-  "Reverse output direction": "Direção de saída inversa"
+  "Reverse output direction": "Direção de saída inversa",
+  "Create new alias: %s": "Criar novo alias: %s",
+  "Alias ID": "ID de alias",
+  "Alias name": "nome alternativo",
+  "Alias description": "Descrição do apelido",
+  "Alias units": "Unidades de alias",
+  "Alias read": "Legível",
+  "Alias write": "gravável",
+  "This object does not used in any aliases yet": "Este objeto ainda não é usado em nenhum alias",
+  "Create alias from this ID": "Criar alias a partir deste objeto",
+  "This object is used in aliases": "Este objeto é usado em aliases"
 }

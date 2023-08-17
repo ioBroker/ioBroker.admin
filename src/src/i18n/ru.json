@@ -1540,5 +1540,15 @@
   "Show lines": "Показать линии",
   "Step type": "Тип шага",
   "stepStart": "Шаги",
-  "Reverse output direction": "Обратное направление вывода"
+  "Reverse output direction": "Обратное направление вывода",
+  "Create new alias: %s": "Создать новый псевдоним: %s",
+  "Alias ID": "Идентификатор псевдонима",
+  "Alias name": "Псевдоним",
+  "Alias description": "Описание псевдонима",
+  "Alias units": "Единицы измерения",
+  "Alias read": "Читаемый",
+  "Alias write": "Доступно для записи",
+  "This object does not used in any aliases yet": "Этот объект еще не используется ни в каких псевдонимах",
+  "Create alias from this ID": "Создать псевдоним из этого объекта",
+  "This object is used in aliases": "Этот объект используется в псевдонимах"
 }
