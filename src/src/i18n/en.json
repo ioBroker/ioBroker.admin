@@ -1539,5 +1539,6 @@
   "Show lines": "Show lines",
   "Save as image": "Save as image",
   "Step type": "Step type",
-  "stepStart": "Steps"
+  "stepStart": "Steps",
+  "Reverse output direction": "Reverse output direction"
 }

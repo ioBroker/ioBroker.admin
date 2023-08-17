@@ -1539,5 +1539,6 @@
   "Save as image": "Сохранить как изображение",
   "Show lines": "Показать линии",
   "Step type": "Тип шага",
-  "stepStart": "Шаги"
+  "stepStart": "Шаги",
+  "Reverse output direction": "Обратное направление вывода"
 }

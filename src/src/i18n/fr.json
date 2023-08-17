@@ -1539,5 +1539,6 @@
   "Save as image": "Enregistrer en tant qu'image",
   "Show lines": "Afficher les lignes",
   "Step type": "Type d'étape",
-  "stepStart": "Pas"
+  "stepStart": "Pas",
+  "Reverse output direction": "Sens de sortie inverse"
 }

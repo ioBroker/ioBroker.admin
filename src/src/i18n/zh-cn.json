@@ -1539,5 +1539,6 @@
   "Save as image": "另存为图像",
   "Show lines": "显示线路",
   "Step type": "台阶式",
-  "stepStart": "脚步"
+  "stepStart": "脚步",
+  "Reverse output direction": "输出方向相反"
 }

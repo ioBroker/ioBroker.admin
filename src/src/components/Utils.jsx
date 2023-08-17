@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2023 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2023 Denis Haev <dogafox@gmail.com>
  *
  * MIT License
  *

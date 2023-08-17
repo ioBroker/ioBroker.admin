@@ -1539,5 +1539,6 @@
   "Save as image": "Zapisz jako obraz",
   "Show lines": "Pokaż linie",
   "Step type": "Rodzaj kroku",
-  "stepStart": "Kroki"
+  "stepStart": "Kroki",
+  "Reverse output direction": "Odwróć kierunek wyjścia"
 }

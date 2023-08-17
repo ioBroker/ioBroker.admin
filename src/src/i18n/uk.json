@@ -1539,5 +1539,6 @@
   "Save as image": "Зберегти як зображення",
   "Show lines": "Показати рядки",
   "Step type": "Тип кроку",
-  "stepStart": "Кроки"
+  "stepStart": "Кроки",
+  "Reverse output direction": "Зворотний напрямок виведення"
 }

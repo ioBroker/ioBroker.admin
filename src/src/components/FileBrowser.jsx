@@ -2,7 +2,7 @@
     Later it will be moved to adapter-react
  */
 /**
- * Copyright 2020-2023, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2023, Denis Haev <dogafox@gmail.com>
  *
  * MIT License
  *

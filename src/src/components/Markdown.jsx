@@ -600,7 +600,7 @@ class Markdown extends Component {
                 }
             } else if (line.trim() && oneEntry) {
                 // extract author
-                // *(bluefox) if group
+                // *(Denis Haev) if group
                 line = line.replace(/^[+*]+\s?/, '').trim();
                 if (line.startsWith('(') && line.includes(')')) {
                     const p = line.split(')');
