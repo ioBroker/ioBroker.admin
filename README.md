@@ -93,6 +93,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) JSON config: Trim strings by saving and not by typing
 * (bluefox) Added alias creation from object browser
 * (bluefox) Allowed to change chart type
+* (foxriver76) show a date picker when setting state (role: date/type: number)
 
 ### 6.8.3 (2023-08-16)
 * (foxriver76) added description to adapter rating dialog
