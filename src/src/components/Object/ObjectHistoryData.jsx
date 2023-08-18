@@ -4,39 +4,43 @@ import { withStyles } from '@mui/styles';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
-import Paper from '@mui/material/Paper';
-import LinearProgress from '@mui/material/LinearProgress';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import TextField from '@mui/material/TextField';
-import TableBody from '@mui/material/TableBody';
-import TableContainer from '@mui/material/TableContainer';
 
-import { Utils, withWidth } from '@iobroker/adapter-react-v5';
+import {
+    Paper,
+    LinearProgress,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+    Toolbar,
+    IconButton,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Button,
+    FormControlLabel,
+    Checkbox,
+    Grid,
+    TableHead,
+    TableRow,
+    TableCell,
+    TextField,
+    TableBody,
+    TableContainer,
+} from '@mui/material';
+
+import { Utils, withWidth, TableResize } from '@iobroker/adapter-react-v5';
 
 // icons
 import { FaPlusSquare as InsertIcon, FaDownload as ExportIcon } from 'react-icons/fa';
-import EditIcon from '@mui/icons-material/Edit';
-import IconDelete from '@mui/icons-material/Delete';
-import IconClose from '@mui/icons-material/Close';
+import {
+    Edit as IconEdit,
+    Delete as IconDelete,
+    Close as IconClose,
+} from '@mui/icons-material';
 
-import TableResize from '../TableResize';
 import { localeMap } from './utils';
 
 function padding3(ms) {
@@ -1292,7 +1296,7 @@ class ObjectHistoryData extends Component {
                     });
                 }}
             >
-                <EditIcon />
+                <IconEdit />
             </IconButton> : null}
             {this.state.supportedFeatures.includes('delete') && this.props.expertMode ? <IconButton
                 size="large"

@@ -7,7 +7,7 @@ const TabHeader = props => <Grid
     container
     alignItems="center"
 >
-    { props.children }
+    {props.children}
 </Grid>;
 
 TabHeader.propTypes = {

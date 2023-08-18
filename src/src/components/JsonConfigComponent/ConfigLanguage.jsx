@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import {
+    InputLabel,
+    MenuItem,
+    FormHelperText,
+    FormControl,
+    Select,
+} from '@mui/material';
 
 import I18n from './wrapper/i18n';
 

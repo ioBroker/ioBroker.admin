@@ -237,7 +237,8 @@ class Objects extends Component {
                         objects={context.objects}
                         expertMode={this.props.expertMode}
                         open={context.state.modalNewObj}
-                        setObject={(id, data) => context.setObject(id, data)}
+                        setObject={(id, data) => this.props.socket.setObject(id, data)
+                            .catch(error => window.alert(error))}
                         selected={context.state.selected[0] || context.state.selectedNonObject}
                         onClose={() => context.setState({ modalNewObj: false })}
                         onApply={() => context.setState({ modalNewObj: false })}
@@ -248,7 +249,8 @@ class Objects extends Component {
                         themeType={this.props.themeType}
                         open={context.state.modalEditOfAccess}
                         extendObject={(id, data) => {
-                            context.extendObject(id, data);
+                            this.props.socket.extendObject(id, data)
+                                .catch(error => window.alert(error));
                             objData.aclTooltip = null;
                         }}
                         selected={context.state.selected[0]}

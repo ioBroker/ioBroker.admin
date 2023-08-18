@@ -2,20 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import { Button } from '@mui/material';
-
 import AceEditor from 'react-ace';
-import ConfigGeneric from './ConfigGeneric';
-import I18n from './wrapper/i18n';
-import CustomModal from '../CustomModal';
-
 import 'ace-builds/src-min-noconflict/mode-json';
 import 'ace-builds/src-min-noconflict/worker-json';
 import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-min-noconflict/theme-chrome';
 import 'ace-builds/src-min-noconflict/ext-language_tools';
+
+import {
+    FormHelperText,
+    FormControl,
+    Button,
+} from '@mui/material';
+
+import ConfigGeneric from './ConfigGeneric';
+import I18n from './wrapper/i18n';
+import CustomModal from '../CustomModal';
 
 const styles = () => ({
     fullWidth: {

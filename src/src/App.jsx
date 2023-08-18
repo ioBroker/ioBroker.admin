@@ -29,24 +29,27 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 
 // @material-ui/icons
-import MenuIcon from '@mui/icons-material/Menu';
-import BuildIcon from '@mui/icons-material/Build';
-import UpdateIcon from '@mui/icons-material/Update';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
-import UserIcon from '@mui/icons-material/Person';
-import SyncIcon from '@mui/icons-material/CloudSync';
-import SyncIconDisabled from '@mui/icons-material/SyncDisabled';
-import CancelIcon from '@mui/icons-material/Close';
-
-import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
+import {
+    Menu as MenuIcon,
+    Build as BuildIcon,
+    Update as UpdateIcon,
+    Visibility as VisibilityIcon,
+    PictureInPictureAlt as PictureInPictureAltIcon,
+    Person as UserIcon,
+    CloudSync as SyncIcon,
+    SyncDisabled as SyncIconDisabled,
+    Close as CancelIcon,
+} from '@mui/icons-material';
 
 import { AdminConnection as Connection, PROGRESS } from '@iobroker/socket-client';
-import Loader from '@iobroker/adapter-react-v5/Components/Loader';
-import LoaderPT from '@iobroker/adapter-react-v5/Components/Loaders/PT';
-import LoaderVendor from '@iobroker/adapter-react-v5/Components/Loaders/Vendor';
 import {
-    I18n, Router, Confirm as ConfirmDialog, Icon, withWidth, Theme,
+    LoaderPT,
+    LoaderVendor,
+    Loader,
+    I18n, Router, Confirm as ConfirmDialog,
+    Icon, withWidth, Theme,
+    IconExpert,
+    ToggleThemeMenu,
 } from '@iobroker/adapter-react-v5';
 import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
@@ -62,7 +65,6 @@ import HostSelectors from './components/HostSelectors';
 import ExpertModeDialog from './dialogs/ExpertModeDialog';
 import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import HostWarningDialog from './dialogs/HostWarningDialog';
-import ToggleThemeMenu from './components/ToggleThemeMenu';
 import LogsWorker from './Workers/LogsWorker';
 import InstancesWorker from './Workers/InstancesWorker';
 import HostsWorker from './Workers/HostsWorker';
@@ -2362,7 +2364,7 @@ class App extends Router {
                                                     }}
                                                     color="default"
                                                 >
-                                                    <ExpertIcon
+                                                    <IconExpert
                                                         title={I18n.t('Toggle expert mode')}
                                                         glowColor={this.state.theme.palette.secondary.main}
                                                         active={this.state.expertMode}

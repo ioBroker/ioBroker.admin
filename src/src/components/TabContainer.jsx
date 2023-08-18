@@ -1,7 +1,6 @@
-import { Component } from 'react';
-
+// please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
+import React from 'react';
 import { withStyles } from '@mui/styles';
-
 import PropTypes from 'prop-types';
 
 import { Grid, Paper } from '@mui/material';
@@ -21,7 +20,15 @@ const styles = {
     },
 };
 
-class TabContainer extends Component {
+/**
+ * @typedef {object} TabContainerProps
+ * @property {number} [elevation] The elevation of the tab container.
+ * @property {string} [overflow] Set to 'visible' show the overflow.
+ * @property {{ [key in keyof styles]: string}} classes The styling class names.
+ *
+ * @extends {React.Component<TabContainerProps>}
+ */
+class TabContainer extends React.Component {
     render() {
         const { classes } = this.props;
 
@@ -37,7 +44,7 @@ class TabContainer extends Component {
                 wrap="nowrap"
                 className={classes.container}
             >
-                { this.props.children }
+                {this.props.children}
             </Grid>
         </Paper>;
     }
@@ -51,4 +58,6 @@ TabContainer.propTypes = {
     tabIndex: PropTypes.number,
 };
 
-export default withStyles(styles)(TabContainer);
+/** @type {typeof TabContainer} */
+const _export = withStyles(styles)(TabContainer);
+export default _export;

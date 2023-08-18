@@ -8,9 +8,8 @@ import {
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { Utils, ToggleThemeMenu } from '@iobroker/adapter-react-v5';
 
-import ToggleThemeMenu from '../components/ToggleThemeMenu';
 import Config from './Config';
 import EasyModeCard from '../components/EasyModeCard';
 

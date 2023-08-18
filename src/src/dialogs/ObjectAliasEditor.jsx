@@ -11,7 +11,7 @@ import {
     MenuItem,
     MenuList,
     ListItemIcon,
-    ListItemText, TextField, Checkbox, FormControlLabel, InputAdornment, IconButton,
+    ListItemText, TextField, Checkbox, FormControlLabel, InputAdornment, IconButton, InputLabel, Select, FormControl,
 } from '@mui/material';
 
 // Icons
@@ -23,7 +23,7 @@ import {
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
-import { I18n, IconFx } from '@iobroker/adapter-react-v5';
+import { I18n, IconFx, Utils } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     funcIcon: {
@@ -33,9 +33,26 @@ const styles = theme => ({
     formControlLabel: {
         marginBottom: theme.spacing(2),
     },
+    color: {
+        // display: 'block',
+        width: 70,
+    },
+    typeNameEng: {
+        marginLeft: theme.spacing(1),
+        opacity: 0.7,
+        fontStyle: 'italic',
+        fontSize: 'smaller',
+    },
+    usedInAlias: {
+        // backgroundColor: theme.palette.secondary.main,
+    },
+    addNewAlias: {
+        backgroundColor: theme.palette.primary.main,
+    },
 });
+const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
 
-// todo: edit color, icon, enum function, enum room, write from other object
+// todo: icon, enum function, enum room, write from other object
 
 class ObjectAliasEditor extends Component {
     constructor(props) {
@@ -62,6 +79,7 @@ class ObjectAliasEditor extends Component {
             newAliasWrite: this.props.obj.common.write,
             newAliasUnit: this.props.obj.common.unit,
             newAliasDesc: ObjectAliasEditor.getText(this.props.obj.common.desc),
+            newAliasType: this.props.obj.common.type,
             newAliasUseFormula: false,
             newAliasReadFormula: 'val',
             newAliasWriteFormula: 'val',
@@ -145,6 +163,25 @@ class ObjectAliasEditor extends Component {
                     label={I18n.t('Alias description')}
                     fullWidth
                 />
+                <FormControl className={this.props.classes.formControlLabel} fullWidth>
+                    <InputLabel>{I18n.t('State type')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={this.state.newAliasType}
+                        onChange={e => this.setState({ newAliasType: e.target.value })}
+                    >
+                        {stateTypeArray.map(el => (
+                            <MenuItem key={el} value={el}>
+                                {I18n.t(el)}
+                                <span className={this.props.classes.typeNameEng}>
+(
+                                    {el}
+)
+                                </span>
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <TextField
                     className={this.props.classes.formControlLabel}
                     variant="standard"
@@ -162,6 +199,14 @@ class ObjectAliasEditor extends Component {
                     onChange={e => this.setState({ newAliasUnit: e.target.value })}
                     label={I18n.t('Alias units')}
                     fullWidth
+                />
+                <TextField
+                    variant="standard"
+                    className={Utils.clsx(this.props.classes.formControlLabel, this.props.classes.color)}
+                    label={I18n.t('Color')}
+                    type="color"
+                    value={this.state.newAliasColor}
+                    onChange={e => this.setState({ newAliasColor: e.target.value })}
                 />
                 <FormControlLabel
                     className={this.props.classes.formControlLabel}
@@ -255,8 +300,10 @@ class ObjectAliasEditor extends Component {
                     onClick={async () => {
                         const obj = {
                             _id: `alias.0.${this.state.newAliasId}`,
+                            type: 'state',
                             common: {
                                 name: this.state.newAliasName,
+                                type: this.props.obj.common.type,
                                 alias: {
                                     id: this.props.obj._id,
                                 },
@@ -265,6 +312,9 @@ class ObjectAliasEditor extends Component {
                         };
                         if (this.state.newAliasDesc) {
                             obj.common.desc = this.state.newAliasDesc;
+                        }
+                        if (this.state.newAliasType) {
+                            obj.common.type = this.state.newAliasType;
                         }
                         if (this.state.newAliasUnit) {
                             obj.common.unit = this.state.newAliasUnit;
@@ -289,9 +339,10 @@ class ObjectAliasEditor extends Component {
                                 obj.common.alias.write = this.state.newAliasWriteFormula;
                             }
                         }
-                        await this.props.socket.setObjectAsync(obj._id, obj);
+                        await this.props.socket.setObject(obj._id, obj);
                         this.setState({ showAddNewAlias: false });
-                        this.props.onRedirect(obj._id);
+                        this.props.onRedirect(obj._id, 2000);
+                        this.props.onClose();
                     }}
                     startIcon={<AddLink />}
                     color="primary"
@@ -327,6 +378,7 @@ class ObjectAliasEditor extends Component {
                 <MenuList style={{ maxWidth: 400 }}>
                     {this.state.usedInAliases.map(aliasID =>
                         <MenuItem
+                            className={this.props.classes.usedInAlias}
                             key={aliasID}
                             onClick={() => this.props.onRedirect(aliasID)}
                         >
@@ -335,7 +387,10 @@ class ObjectAliasEditor extends Component {
                             </ListItemIcon>
                             <ListItemText>{aliasID}</ListItemText>
                         </MenuItem>)}
-                    <MenuItem onClick={() => this.setState({ showAddNewAlias: true })}>
+                    <MenuItem
+                        onClick={() => this.setState({ showAddNewAlias: true })}
+                        className={this.props.classes.addNewAlias}
+                    >
                         <ListItemIcon>
                             <AddLink fontSize="small" />
                         </ListItemIcon>
