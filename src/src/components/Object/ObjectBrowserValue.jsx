@@ -39,7 +39,7 @@ import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import { Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';
@@ -252,14 +252,21 @@ class ObjectBrowserValue extends Component {
     renderTimePicker() {
         return <LocalizationProvider adapterLocale={localeMap[this.props.lang]} dateAdapter={AdapterDateFns}>
             <DatePicker
+                style={{ padding: '10px' }}
                 value={this.state.targetValue * 1_000}
                 onChange={value => {
-                    value.setSeconds(0);
-                    value.setMinutes(0);
-                    value.setHours(0);
                     this.setState({ targetValue: Math.round(value.getTime() / 1_000) });
                 }}
             />
+
+            <TimePicker
+                value={this.state.targetValue * 1_000}
+                views={['hours', 'minutes', 'seconds']}
+                onChange={value => {
+                    this.setState({ targetValue: Math.round(value.getTime() / 1_000) });
+                }}
+            />
+
         </LocalizationProvider>;
     }
 
@@ -572,7 +579,7 @@ class ObjectBrowserValue extends Component {
                                         )}
                                     </Grid>
 
-                                    {(this.props.role === 'date' || this.props.role.startsWith('date.')) && this.state.type === 'number' ? (<Grid item xs={6} style={{ minHeight: 100 }}>{this.renderTimePicker()}</Grid>) : null}
+                                    {(this.props.role === 'date' || this.props.role.startsWith('date.')) && this.state.type === 'number' ? (<Grid style={{ display: 'flex', gap: '5px' }} item xs={6}>{this.renderTimePicker()}</Grid>) : null}
 
                                     {this.props.expertMode ? <Grid item>{ackCheckbox}</Grid> : null}
 
