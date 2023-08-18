@@ -253,17 +253,17 @@ class ObjectBrowserValue extends Component {
         return <LocalizationProvider adapterLocale={localeMap[this.props.lang]} dateAdapter={AdapterDateFns}>
             <DatePicker
                 style={{ padding: '10px' }}
-                value={this.state.targetValue * 1_000}
+                value={Number(this.state.targetValue)}
                 onChange={value => {
-                    this.setState({ targetValue: Math.round(value.getTime() / 1_000) });
+                    this.setState({ targetValue: Math.round(value.getTime()) });
                 }}
             />
 
             <TimePicker
-                value={this.state.targetValue * 1_000}
+                value={Number(this.state.targetValue)}
                 views={['hours', 'minutes', 'seconds']}
                 onChange={value => {
-                    this.setState({ targetValue: Math.round(value.getTime() / 1_000) });
+                    this.setState({ targetValue: Math.round(value.getTime()) });
                 }}
             />
 
