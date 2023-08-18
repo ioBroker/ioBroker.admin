@@ -572,7 +572,7 @@ class ObjectBrowserValue extends Component {
                                         )}
                                     </Grid>
 
-                                    {this.props.role === 'date' && this.state.type === 'number' ? (<Grid item xs={6} style={{ minHeight: 100 }}>{this.renderTimePicker()}</Grid>) : null}
+                                    {(this.props.role === 'date' || this.props.role.startsWith('date.')) && this.state.type === 'number' ? (<Grid item xs={6} style={{ minHeight: 100 }}>{this.renderTimePicker()}</Grid>) : null}
 
                                     {this.props.expertMode ? <Grid item>{ackCheckbox}</Grid> : null}
 
