@@ -6464,12 +6464,15 @@ class ObjectBrowser extends Component {
             ? this.objects[this.edit.id].common.type
             : typeof this.edit.val;
 
+        const role = this.objects[this.edit.id].common.role;
+
         const ObjectBrowserValue = this.props.objectBrowserValue;
 
         return <ObjectBrowserValue
             t={this.props.t}
             lang={this.props.lang}
             type={type}
+            role={role}
             states={Utils.getStates(this.objects[this.edit.id])}
             themeType={this.props.themeType}
             expertMode={this.state.filter.expertMode}

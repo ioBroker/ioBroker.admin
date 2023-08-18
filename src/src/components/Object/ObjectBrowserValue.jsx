@@ -39,7 +39,10 @@ import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import { Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import ObjectChart from './ObjectChart';
+import { localeMap } from './utils';
 
 const styles = () => ({
     input: {
@@ -135,8 +138,8 @@ class ObjectBrowserValue extends Component {
 
         let type = this.props.type || typeof this.props.value;
 
-        this.value = this.props.value;
-        this.propsValue = this.value;
+        let value = this.props.value;
+        this.propsValue = value;
 
         if (this.propsValue === null) {
             this.propsValue = 'null';
@@ -148,22 +151,22 @@ class ObjectBrowserValue extends Component {
             type = 'states';
         } else if (type === 'string' || type === 'json') {
             if (
-                this.value &&
-                typeof this.value === 'string' &&
-                ((this.value.startsWith('[') && this.value.endsWith(']')) ||
-                    (this.value.startsWith('{') && this.value.endsWith('}')))
+                value &&
+                typeof value === 'string' &&
+                ((value.startsWith('[') && value.endsWith(']')) ||
+                    (value.startsWith('{') && value.endsWith('}')))
             ) {
                 try {
-                    this.value = JSON.parse(this.value);
-                    this.value = JSON.stringify(this.value, null, 2);
-                    this.propsValue = this.value;
+                    value = JSON.parse(value);
+                    value = JSON.stringify(value, null, 2);
+                    this.propsValue = value;
                     type = 'json';
                 } catch (e) {
                     // ignore
                 }
             }
         } else if (type === 'number') {
-            this.value = parseFloat(this.propsValue) || 0;
+            value = parseFloat(this.propsValue) || 0;
         }
 
         this.state = {
@@ -171,6 +174,7 @@ class ObjectBrowserValue extends Component {
             chart: false,
             chartEnabled: (window._localStorage || window.localStorage).getItem('App.chartSetValue') !== 'false',
             fullScreen: (window._localStorage || window.localStorage).getItem('App.fullScreen') === 'true',
+            targetValue: value,
         };
 
         this.ack = false;
@@ -206,12 +210,12 @@ class ObjectBrowserValue extends Component {
         e && e.stopPropagation();
         e && e.preventDefault();
 
-        let value = this.value;
+        let value = this.state.targetValue;
         if (this.state.type === 'states') {
             if (value === 'null') {
                 value = null;
             } else {
-                const type = this.props.type || typeof this.props.value;
+                const type = this.props.type || typeof this.state.targetValue;
                 value = typeof value === 'object' ? value.value : value;
 
                 if (type === 'number') {
@@ -241,6 +245,24 @@ class ObjectBrowserValue extends Component {
         });
     }
 
+    /**
+     * Render time picker component for date type
+     * @returns {React.JSX.Element}
+     */
+    renderTimePicker() {
+        return <LocalizationProvider adapterLocale={localeMap[this.props.lang]} dateAdapter={AdapterDateFns}>
+            <DatePicker
+                value={this.state.targetValue * 1_000}
+                onChange={value => {
+                    value.setSeconds(0);
+                    value.setMinutes(0);
+                    value.setHours(0);
+                    this.setState({ targetValue: Math.round(value.getTime() / 1_000) });
+                }}
+            />
+        </LocalizationProvider>;
+    }
+
     renderChart() {
         return (
             <ObjectChart
@@ -262,7 +284,7 @@ class ObjectBrowserValue extends Component {
 
     checkJsonError() {
         try {
-            JSON.parse(this.value);
+            JSON.parse(this.state.targetValue);
             this.setState({ jsonError: false });
         } catch (e) {
             this.setState({ jsonError: true });
@@ -282,7 +304,7 @@ class ObjectBrowserValue extends Component {
                 theme={this.props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
                 defaultValue={(this.propsValue || '').toString()}
                 onChange={newValue => {
-                    this.value = newValue;
+                    this.setState({ targetValue: newValue });
                     this.checkJsonError();
                 }}
                 name="UNIQUE_ID_OF_DIV1"
@@ -327,8 +349,8 @@ class ObjectBrowserValue extends Component {
                     freeSolo
                     getOptionLabel={option =>
                         option.label || (option !== undefined && option !== null ? option.toString() : '')}
-                    onChange={(e, value) => (this.value = value)}
-                    onInputChange={(e, value) => (this.value = value)}
+                    onChange={(e, value) => this.setState({ targetValue: value })}
+                    onInputChange={(e, value) => this.setState({ targetValue: value })}
                     onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
                     renderInput={params => (
                         <TextField {...params} label={this.props.t('Value')} variant="standard" />
@@ -342,7 +364,7 @@ class ObjectBrowserValue extends Component {
                 <Select
                     variant="standard"
                     defaultValue={this.propsValue}
-                    onChange={e => (this.value = e.target.value)}
+                    onChange={e => this.setState({ targetValue: e.target.value })}
                 >
                     {Object.keys(this.props.states).map((key, i) => (
                         <MenuItem key={i} value={key}>
@@ -460,7 +482,7 @@ class ObjectBrowserValue extends Component {
                                                                 value={this.state.type}
                                                                 onChange={e => {
                                                                     if (e.target.value === 'json') {
-                                                                        this.value = (this.value || '').toString();
+                                                                        this.setState({ targetValue: (this.state.targetValue || '').toString() });
                                                                         this.checkJsonError();
                                                                     }
 
@@ -488,18 +510,6 @@ class ObjectBrowserValue extends Component {
                                         style={{ paddingTop: 0 }}
                                     >
                                         {this.state.type === 'boolean' ? (
-                                            /* <FormControl component="fieldset" className={ this.props.classes.formControl }>
-                                            <FormControlLabel
-                                                className={ this.props.classes.formControl }
-                                                control={<Checkbox
-                                                    autoFocus
-                                                    defaultChecked={ !!this.propsValue }
-                                                    onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
-                                                    onChange={e => this.value = e.target.checked}/>}
-                                                label={this.props.t('Value')}
-                                            />
-                                            <FormHelperText>{this.props.t('Press ENTER to write the value, when focused')}</FormHelperText>
-                                        </FormControl> */
                                             <Typography component="div">
                                                 <Grid component="label" container alignItems="center" spacing={1}>
                                                     <Grid item style={{ marginRight: 10 }}>
@@ -517,7 +527,7 @@ class ObjectBrowserValue extends Component {
                                                                     : !!this.propsValue
                                                             }
                                                             onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
-                                                            onChange={e => (this.value = e.target.checked)}
+                                                            onChange={e => this.setState({ targetValue: e.target.checked })}
                                                         />
                                                     </Grid>
                                                     <Grid item>TRUE</Grid>
@@ -532,12 +542,12 @@ class ObjectBrowserValue extends Component {
                                                 helperText={this.props.t(
                                                     'Press ENTER to write the value, when focused',
                                                 )}
+                                                value={parseFloat(this.state.targetValue) || 0}
                                                 label={this.props.t('Value')}
-                                                defaultValue={parseFloat(this.propsValue) || 0}
                                                 onKeyUp={e => {
                                                     e.keyCode === 13 && this.onUpdate(e);
                                                 }}
-                                                onChange={e => (this.value = e.target.value)}
+                                                onChange={e => this.setState({ targetValue: e.target.value })}
                                             />
                                         ) : this.state.type === 'json' ? (
                                             this.renderJsonEditor()
@@ -557,10 +567,12 @@ class ObjectBrowserValue extends Component {
                                                 multiline
                                                 onKeyDown={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate(e)}
                                                 defaultValue={this.propsValue.toString()}
-                                                onChange={e => (this.value = e.target.value)}
+                                                onChange={e => this.setState({ targetValue: e.target.value })}
                                             />
                                         )}
                                     </Grid>
+
+                                    {this.props.role === 'date' && this.state.type === 'number' ? (<Grid item xs={6} style={{ minHeight: 100 }}>{this.renderTimePicker()}</Grid>) : null}
 
                                     {this.props.expertMode ? <Grid item>{ackCheckbox}</Grid> : null}
 
@@ -654,7 +666,10 @@ class ObjectBrowserValue extends Component {
 
 ObjectBrowserValue.propTypes = {
     classes: PropTypes.object,
+    /** State type */
     type: PropTypes.string,
+    /** State role */
+    role: PropTypes.string.isRequired,
     states: PropTypes.object,
     value: PropTypes.any,
     expertMode: PropTypes.bool,
