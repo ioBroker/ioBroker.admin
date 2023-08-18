@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 
 import { Grid, Button } from '@mui/material';
 
-import IconInfo from '@mui/icons-material/Info';
-import IconWarning from '@mui/icons-material/Warning';
-import IconError from '@mui/icons-material/Error';
+import {
+    Info as IconInfo,
+    Warning as IconWarning,
+    Error as IconError,
+} from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';

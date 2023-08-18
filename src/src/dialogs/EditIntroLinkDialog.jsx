@@ -4,30 +4,35 @@ import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Slider from '@mui/material/Slider';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-
-import CloseIcon from '@mui/icons-material/Close';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+    Grid,
+    IconButton,
+    Typography,
+    FormControlLabel,
+    Checkbox,
+    Slider,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+} from '@mui/material';
 
 // icons
-import AddIcon from '@mui/icons-material/Add';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    Add as AddIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
+
+import { UploadImage } from '@iobroker/adapter-react-v5';
+
 import IntroCard from '../components/IntroCard';
-import UploadImage from '../components/UploadImage';
 
 const styles = theme => ({
     formControl: {

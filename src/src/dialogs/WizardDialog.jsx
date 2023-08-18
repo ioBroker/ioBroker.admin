@@ -16,9 +16,11 @@ import StepLabel from '@mui/material/StepLabel';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import CheckIcon from '@mui/icons-material/Check';
 
-import { withWidth, Utils, Router } from '@iobroker/adapter-react-v5';
+import {
+    withWidth, Utils,
+    Router, ToggleThemeMenu,
+} from '@iobroker/adapter-react-v5';
 
-import ToggleThemeMenu from '../components/ToggleThemeMenu';
 import WizardPasswordTab from '../components/Wizard/WizardPasswordTab';
 import WizardLicenseTab from '../components/Wizard/WizardLicenseTab';
 import WizardFinishImage from '../assets/wizard-finish.jpg';

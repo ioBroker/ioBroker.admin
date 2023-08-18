@@ -18,9 +18,7 @@ import {
     Add as IconAdd,
 } from '@mui/icons-material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
-
-import UploadImage from '../UploadImage';
+import { Utils, UploadImage } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     error: {

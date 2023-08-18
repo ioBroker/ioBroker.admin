@@ -3,23 +3,27 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 import Dropzone from 'react-dropzone';
 
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
+import {
+    InputLabel,
+    MenuItem,
+    FormHelperText,
+    FormControl,
+    Select,
+    IconButton,
+    ListItemText,
+    ListItemIcon,
+} from '@mui/material';
 
-import IconRefresh from '@mui/icons-material/Refresh';
-import IconUpload from '@mui/icons-material/UploadFile';
-import IconDelete from '@mui/icons-material/Delete';
-import IconPlay from '@mui/icons-material/PlayArrow';
-import IconAudio from '@mui/icons-material/MusicNote';
-import IconVideo from '@mui/icons-material/Videocam';
-import IconText from '@mui/icons-material/Article';
-import IconCode from '@mui/icons-material/Code';
+import {
+    Refresh as IconRefresh,
+    UploadFile as IconUpload,
+    Delete as IconDelete,
+    PlayArrow as IconPlay,
+    MusicNote as IconAudio,
+    Videocam as IconVideo,
+    Article as IconText,
+    Code as IconCode,
+} from '@mui/icons-material';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 
 import Utils from './wrapper/Components/Utils';

@@ -38,10 +38,10 @@ import {
 import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 
 import {
-    Utils, I18n, SelectID as DialogSelectID, IconFx,
+    Utils, I18n,
+    SelectID as DialogSelectID, IconFx,
+    UploadImage,
 } from '@iobroker/adapter-react-v5';
-
-import UploadImage from '../UploadImage';
 
 const styles = theme => ({
     divWithoutTitle: {
@@ -171,6 +171,12 @@ const styles = theme => ({
     },
     commonDeleteTip: {
         color: '#fa4a4a',
+    },
+    typeNameEng: {
+        marginLeft: theme.spacing(1),
+        opacity: 0.7,
+        fontStyle: 'italic',
+        fontSize: 'smaller',
     },
 });
 
@@ -849,6 +855,11 @@ class ObjectBrowserEditObject extends Component {
                                     {stateTypeArray.map(el => (
                                         <MenuItem key={el} value={el}>
                                             {t(el)}
+                                            <span className={this.props.classes.typeNameEng}>
+                                                (
+                                                {el}
+                                                )
+                                            </span>
                                         </MenuItem>
                                     ))}
                                 </Select>

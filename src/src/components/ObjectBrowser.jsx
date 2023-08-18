@@ -765,6 +765,38 @@ const styles = theme => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#9a9a9a' : '#565656',
         borderRadius: '0 2px 2px 0',
     },
+    contextMenuEdit: {
+        color: theme.palette.mode === 'dark' ? '#ffee48' : '#cbb801',
+    },
+    contextMenuEditValue: {
+        color: theme.palette.mode === 'dark' ? '#5dff45' : '#1cd301',
+    },
+    contextMenuView: {
+        color: theme.palette.mode === 'dark' ? '#FFF' : '#000',
+    },
+    contextMenuCustom: {
+        color: theme.palette.mode === 'dark' ? '#42eaff' : '#01bbc2',
+    },
+    contextMenuACL: {
+        color: theme.palette.mode === 'dark' ? '#e079ff' : '#500070',
+    },
+    contextMenuRoom: {
+        color: theme.palette.mode === 'dark' ? '#ff9a33' : '#642a00',
+    },
+    contextMenuRole: {
+        color: theme.palette.mode === 'dark' ? '#ffdb43' : '#562d00',
+    },
+    contextMenuAlias: {
+        color: theme.palette.mode === 'dark' ? '#5cabfb' : '#011ed0',
+    },
+    contextMenuDelete: {
+        color: theme.palette.mode === 'dark' ? '#ff4f4f' : '#cf0000',
+    },
+    contextMenuKeys: {
+        marginLeft: theme.spacing(1),
+        opacity: 0.7,
+        fontSize: 'smaller',
+    },
 });
 
 function generateFile(filename, obj) {
@@ -804,6 +836,24 @@ function binarySearch(list, find, _start, _end) {
     }
     return false;
 }
+
+/**
+ * Check if browser is running on iOS
+ *
+ * @return {boolean}
+ */
+// function isIOS() {
+//     return [
+//         'iPad Simulator',
+//         'iPhone Simulator',
+//         'iPod Simulator',
+//         'iPad',
+//         'iPhone',
+//         'iPod',
+//     ].includes(navigator.platform)
+//     // iPad on iOS 13 detection
+//     || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+// }
 
 function getName(name, lang) {
     if (name && typeof name === 'object') {
@@ -2241,6 +2291,8 @@ class ObjectBrowser extends Component {
         }
 
         objectsAlreadyLoaded = true;
+
+        window.addEventListener('contextmenu', this.onContextMenu, true);
     }
 
     /**
@@ -2249,6 +2301,7 @@ class ObjectBrowser extends Component {
     componentWillUnmount() {
         this.filterTimer && clearTimeout(this.filterTimer);
         this.filterTimer = null;
+        window.removeEventListener('contextmenu', this.onContextMenu, true);
 
         if (this.props.objectsWorker) {
             this.props.objectsWorker.unregisterHandler(this.onObjectChange, true);
@@ -2265,6 +2318,18 @@ class ObjectBrowser extends Component {
         this.subscribes = [];
         this.objects = {};
     }
+
+    /**
+     * Context menu handler.
+     */
+    onContextMenu = e => {
+        // console.log(`CONTEXT MENU: ${this.contextMenu ? Date.now() - this.contextMenu.ts : 'false'}`);
+        if (this.contextMenu && Date.now() - this.contextMenu.ts < 2000) {
+            e.preventDefault();
+            this.setState({ showContextMenu: this.contextMenu.item });
+        }
+        this.contextMenu = null;
+    };
 
     /**
      * Called when component is mounted.
@@ -2335,7 +2400,7 @@ class ObjectBrowser extends Component {
      * @param {string} toggleItem
      * @param {boolean} [isDouble]
      */
-    onSelect(toggleItem, isDouble) {
+    onSelect(toggleItem, isDouble, cb) {
         if (!this.props.multiSelect) {
             if (
                 this.objects[toggleItem] &&
@@ -2345,8 +2410,10 @@ class ObjectBrowser extends Component {
                     `${this.props.dialogName || 'App'}.selectedNonObject`,
                 );
                 if (this.state.selected[0] !== toggleItem) {
-                    this.setState({ selected: [toggleItem], selectedNonObject: '' }, () =>
-                        this.onAfterSelect(isDouble));
+                    this.setState({ selected: [toggleItem], selectedNonObject: '' }, () => {
+                        this.onAfterSelect(isDouble);
+                        cb && cb();
+                    });
                 } else if (isDouble && this.props.onSelect) {
                     this.onAfterSelect(isDouble);
                 }
@@ -2355,7 +2422,10 @@ class ObjectBrowser extends Component {
                     `${this.props.dialogName || 'App'}.selectedNonObject`,
                     toggleItem,
                 );
-                this.setState({ selected: [], selectedNonObject: toggleItem }, () => this.onAfterSelect());
+                this.setState({ selected: [], selectedNonObject: toggleItem }, () => {
+                    this.onAfterSelect();
+                    cb && cb();
+                });
             }
         } else if (
             this.objects[toggleItem] &&
@@ -2374,8 +2444,10 @@ class ObjectBrowser extends Component {
                 selected.splice(pos, 1);
             }
 
-            this.setState({ selected, selectedNonObject: '' }, () =>
-                this.onAfterSelect(isDouble));
+            this.setState({ selected, selectedNonObject: '' }, () => {
+                this.onAfterSelect(isDouble);
+                cb && cb();
+            });
         }
     }
 
@@ -4309,17 +4381,15 @@ class ObjectBrowser extends Component {
                 this.objects[id].common.custom &&
                 this.objects[id].common.custom[this.defaultHistory]
             ) {
-                info.valFull.push(
-                    <svg
-                        key="sparkline"
-                        className="sparkline"
-                        data-id={id}
-                        style={{ fill: '#3d85de' }}
-                        width="200"
-                        height="30"
-                        strokeWidth="3"
-                    />,
-                );
+                info.valFull.push(<svg
+                    key="sparkline"
+                    className="sparkline"
+                    data-id={id}
+                    style={{ fill: '#3d85de' }}
+                    width="200"
+                    height="30"
+                    strokeWidth="3"
+                />);
             }
 
             const copyText = info.valText.v || '';
@@ -5168,10 +5238,24 @@ class ObjectBrowser extends Component {
             )}
             key={id}
             id={id}
-            onClick={() => this.onSelect(id)}
-            onContextMenu={e => {
-                e.preventDefault(); // prevent the default behaviour when right-clicked
-                this.setState({ showContextMenu: { target: e.target, item } });
+            onMouseDown={e => {
+                e.preventDefault();
+                this.onSelect(id);
+                let isRightMB;
+                if ('which' in e) {
+                    // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                    isRightMB = e.which === 3;
+                } else if ('button' in e) { // IE, Opera
+                    isRightMB = e.button === 2;
+                }
+                if (isRightMB) {
+                    this.contextMenu = {
+                        item,
+                        ts: Date.now(),
+                    };
+                } else {
+                    this.contextMenu = null;
+                }
             }}
             onDoubleClick={() => {
                 if (!item.children) {
@@ -6153,7 +6237,13 @@ class ObjectBrowser extends Component {
             t={this.props.t}
             expertMode={this.state.filter.expertMode}
             onClose={() => this.setState({ showAliasEditor: '' })}
-            onRedirect={id => this.setState({ editObjectDialog: id, showAliasEditor: false, editObjectAlias: true })}
+            onRedirect={(id, timeout) =>
+                setTimeout(() =>
+                    this.onSelect(id, false, () =>
+                        this.expandAllSelected(() => {
+                            this.scrollToItem(id);
+                            setTimeout(() => this.setState({ editObjectDialog: id, showAliasEditor: false, editObjectAlias: true }), 300);
+                        })), timeout || 0)}
         />;
     }
 
@@ -6165,33 +6255,54 @@ class ObjectBrowser extends Component {
         if (!this.state.showContextMenu) {
             return null;
         }
-        const item = this.state.showContextMenu.item;
+        const item = this.state.showContextMenu;
+        const id = item.data.id;
         const items = [];
+        // const ctrl = isIOS() ? '⌘' : (this.props.lang === 'de' ? 'Strg+' : 'Ctrl+');
 
-        // Edit object -----------------------
-        if (this.props.objectBrowserEditObject && item.data.obj) {
-            items.push(<MenuItem
-                key="editObject"
-                onClick={() => this.setState({ editObjectDialog: item.data.id, showContextMenu: null, editObjectAlias: false })}
-            >
-                <ListItemIcon>
-                    <IconEdit fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{this.texts.editObject}</ListItemText>
-            </MenuItem>);
+        const obj = item.data.obj;
+
+        let showACL = '';
+        if (this.props.objectEditOfAccessControl && this.state.filter.expertMode) {
+            if (!obj) {
+                showACL = '---';
+            } else {
+                const acl = obj.acl
+                    ? obj.type === 'state'
+                        ? obj.acl.state
+                        : obj.acl.object
+                    : 0;
+                const aclSystemConfig =
+                    obj.acl &&
+                    (obj.type === 'state'
+                        ? this.systemConfig.common.defaultNewAcl.state
+                        : this.systemConfig.common.defaultNewAcl.object);
+                showACL = Number.isNaN(Number(acl)) ? Number(aclSystemConfig).toString(16) : Number(acl).toString(16);
+            }
         }
 
-        // Edit value -----------------------------
-        if (this.states &&
-            !this.props.notEditable &&
-            item.data.obj?.type === 'state' &&
-            item.data.obj.common?.type !== 'file' &&
-            (this.state.filter.expertMode || item.data.obj?.write !== false)
-        ) {
-            items.push(<MenuItem
-                key="editValue"
-                onClick={() => {
-                    const id = item.data.obj._id;
+        const enumEditable = !this.props.notEditable && obj &&
+            (this.state.filter.expertMode || obj.type === 'state' || obj.type === 'channel' || obj.type === 'device');
+
+        const ITEMS = {
+            EDIT: {
+                key: '0',
+                visibility: this.props.objectBrowserEditObject && obj,
+                icon: <IconEdit fontSize="small" className={this.props.classes.contextMenuEdit} />,
+                label: this.texts.editObject,
+                onClick: () => this.setState({ editObjectDialog: item.data.id, showContextMenu: null, editObjectAlias: false }),
+            },
+            EDIT_VALUE: {
+                key: '1',
+                visibility: this.states &&
+                    !this.props.notEditable &&
+                    obj &&
+                    obj.type === 'state' &&
+                    obj.common?.type !== 'file' &&
+                    (this.state.filter.expertMode || obj.common.write !== false),
+                icon: <IconValueEdit fontSize="small" className={this.props.classes.contextMenuEditValue} />,
+                label: this.props.t('ra_Edit value'),
+                onClick: () => {
                     this.edit = {
                         val: this.states[id] ? this.states[id].val : '',
                         q: this.states[id] ? this.states[id].q || 0 : 0,
@@ -6199,111 +6310,65 @@ class ObjectBrowser extends Component {
                         id,
                     };
                     this.setState({ updateOpened: true, showContextMenu: null });
-                }}
-            >
-                <ListItemIcon>
-                    <IconValueEdit fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{this.props.t('ra_Edit value')}</ListItemText>
-            </MenuItem>);
-        }
-
-        // View file -----------------------------
-        if (this.props.objectBrowserViewFile && item.data.obj.type === 'state' && item.data.obj.common?.type === 'file') {
-            items.push(<MenuItem
-                key="viewFile"
-                onClick={() => this.setState({ viewFileDialog: item.data.obj._id, showContextMenu: null })}
-            >
-                <ListItemIcon>
-                    <FindInPage fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{this.props.t('ra_View file')}</ListItemText>
-            </MenuItem>);
-        }
-
-        // Custom config ----------------------------
-        if (item.data.obj &&
-            this.props.objectCustomDialog &&
-            this.info.hasSomeCustoms &&
-            item.data.obj.type === 'state' &&
-            item.data.obj.common?.type !== 'file'
-        ) {
-            items.push(<MenuItem
-                key="customConfig"
-                onClick={() => {
-                    const id = item.data.id;
+                },
+            },
+            VIEW: {
+                visibility: this.props.objectBrowserViewFile && obj && obj.type === 'state' && obj.common?.type === 'file',
+                icon: <FindInPage fontSize="small" className={this.props.classes.contextMenuView} />,
+                className: '',
+                label: this.props.t('ra_View file'),
+                onClick: () => this.setState({ viewFileDialog: obj._id, showContextMenu: null }),
+            },
+            CUSTOM: {
+                key: '2',
+                visibility: this.props.objectCustomDialog &&
+                    this.info.hasSomeCustoms &&
+                    obj &&
+                    obj.type === 'state' &&
+                    obj.common?.type !== 'file',
+                icon: <IconConfig
+                    fontSize="small"
+                    className={item.data.hasCustoms
+                        ? this.props.classes.cellButtonsButtonWithCustoms
+                        : this.props.classes.cellButtonsButtonWithoutCustoms}
+                />,
+                className: this.props.classes.contextMenuCustom,
+                label: this.texts.customConfig,
+                onClick: () => {
                     this.pauseSubscribe(true);
                     this.props.router && this.props.router.doNavigate(null, 'customs', id);
                     this.setState({ customDialog: [id], showContextMenu: null });
-                }}
-            >
-                <ListItemIcon className={item.data.hasCustoms
-                    ? this.props.classes.cellButtonsButtonWithCustoms
-                    : this.props.classes.cellButtonsButtonWithoutCustoms}
-                >
-                    <IconConfig fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{this.texts.customConfig}</ListItemText>
-            </MenuItem>);
-        }
-
-        // ACL -----------------------
-        let showACL = '';
-        if (this.props.objectEditOfAccessControl && this.state.filter.expertMode) {
-            if (!item.data.obj) {
-                showACL = '---';
-            } else {
-                const acl = item.data.obj.acl
-                    ? item.data.obj.type === 'state'
-                        ? item.data.obj.acl.state
-                        : item.data.obj.acl.object
-                    : 0;
-                const aclSystemConfig =
-                    item.data.obj.acl &&
-                    (item.data.obj.type === 'state'
-                        ? this.systemConfig.common.defaultNewAcl.state
-                        : this.systemConfig.common.defaultNewAcl.object);
-                showACL = Number.isNaN(Number(acl)) ? Number(aclSystemConfig).toString(16) : Number(acl).toString(16);
-            }
-        }
-
-        if (showACL) {
-            items.push(<MenuItem
-                key="acl"
-                onClick={() => {
-                    this.setState({
-                        showContextMenu: null,
-                        modalEditOfAccess: true,
-                        modalEditOfAccessObjData: item.data,
-                    });
-                }}
-            >
-                <ListItemIcon style={{ fontSize: 'smaller' }}>
-                    {showACL}
-                </ListItemIcon>
-                <ListItemText>{this.props.t('ra_Edit ACL')}</ListItemText>
-            </MenuItem>);
-        }
-
-        const enumEditable = !this.props.notEditable && item.data.obj &&
-            (this.state.filter.expertMode || item.data.obj.type === 'state' || item.data.obj.type === 'channel' || item.data.obj.type === 'device');
-
-        // Edit role -----------------------
-        if (this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole) {
-            items.push(<MenuItem
-                key="role"
-                onClick={() => this.setState({ roleDialog: item.data.id, showContextMenu: null })}
-            >
-                <ListItemIcon><BorderColor fontSize="small" /></ListItemIcon>
-                <ListItemText>{this.props.t('ra_Edit role')}</ListItemText>
-            </MenuItem>);
-        }
-
-        // Edit function and room -----------------------
-        if (enumEditable) {
-            items.push(<MenuItem
-                key="func"
-                onClick={() => {
+                },
+            },
+            ACL: {
+                key: '3',
+                visibility: !!showACL,
+                icon: showACL,
+                iconStyle: { fontSize: 'smaller' },
+                listItemIconClass: this.props.classes.contextMenuACL,
+                className: this.props.classes.contextMenuACL,
+                label: this.props.t('ra_Edit ACL'),
+                onClick: () => this.setState({
+                    showContextMenu: null,
+                    modalEditOfAccess: true,
+                    modalEditOfAccessObjData: item.data,
+                }),
+            },
+            ROLE: {
+                key: '4',
+                visibility: this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole,
+                icon: <BorderColor fontSize="small" className={this.props.classes.contextMenuRole} />,
+                className: '',
+                label: this.props.t('ra_Edit role'),
+                onClick: () => this.setState({ roleDialog: item.data.id, showContextMenu: null }),
+            },
+            FUNCTION: {
+                key: '5',
+                visibility: enumEditable,
+                icon: <BedroomParent fontSize="small" className={this.props.classes.contextMenuRole} />,
+                className: '',
+                label: this.props.t('ra_Edit function'),
+                onClick: () => {
                     const enums = findEnumsForObjectAsIds(
                         this.info,
                         item.data.id,
@@ -6318,15 +6383,15 @@ class ObjectBrowser extends Component {
                         },
                         showContextMenu: null,
                     });
-                }}
-            >
-                <ListItemIcon><BedroomParent fontSize="small" /></ListItemIcon>
-                <ListItemText>{this.props.t('ra_Edit function')}</ListItemText>
-            </MenuItem>);
-
-            items.push(<MenuItem
-                key="room"
-                onClick={() => {
+                },
+            },
+            ROOM: {
+                key: '6',
+                visibility: enumEditable,
+                icon: <Construction fontSize="small" className={this.props.classes.contextMenuRoom} />,
+                className: '',
+                label: this.props.t('ra_Edit room'),
+                onClick: () => {
                     const enums = findEnumsForObjectAsIds(
                         this.info,
                         item.data.id,
@@ -6341,59 +6406,38 @@ class ObjectBrowser extends Component {
                         },
                         showContextMenu: null,
                     });
-                }}
-            >
-                <ListItemIcon><Construction fontSize="small" /></ListItemIcon>
-                <ListItemText>{this.props.t('ra_Edit room')}</ListItemText>
-            </MenuItem>);
-        }
-
-        // Alias editor -----------------------
-        if (!this.props.notEditable &&
-            this.props.objectBrowserAliasEditor &&
-            this.props.objectBrowserEditObject &&
-            this.state.filter.expertMode &&
-            item.data.obj?.type === 'state' &&
-            item.data.obj.common &&
-            item.data.obj.common.type !== 'file'
-        ) {
-            items.push(<MenuItem
-                key="alias"
-                onClick={() => {
-                    if (item.data.obj.common?.alias) {
+                },
+            },
+            ALIAS: {
+                key: '7',
+                visibility: !this.props.notEditable &&
+                    this.props.objectBrowserAliasEditor &&
+                    this.props.objectBrowserEditObject &&
+                    this.state.filter.expertMode &&
+                    obj &&
+                    obj.type === 'state' &&
+                    obj.common?.type !== 'file',
+                icon: <IconLink className={obj?.common?.alias
+                    ? this.props.classes.cellButtonsButtonWithCustoms
+                    : this.props.classes.cellButtonsButtonWithoutCustoms}
+                />,
+                className: '',
+                label: this.props.t('ra_Edit alias'),
+                onClick: () => {
+                    if (obj.common?.alias) {
                         this.setState({ editObjectDialog: item.data.id, showContextMenu: null, editObjectAlias: true });
                     } else {
                         this.setState({ showContextMenu: null, showAliasEditor: item.data.id });
                     }
-                }}
-            >
-                <ListItemIcon className={item.data.obj.common.alias
-                    ? this.props.classes.cellButtonsButtonWithCustoms
-                    : this.props.classes.cellButtonsButtonWithoutCustoms}
-                >
-                    <IconLink />
-                </ListItemIcon>
-                <ListItemText>{this.props.t('ra_Edit alias')}</ListItemText>
-            </MenuItem>);
-        }
-
-        // Delete
-        let showDelete = false;
-        if (this.props.onObjectDelete) {
-            if (!item.data.obj) {
-                if (item.children?.length) {
-                    showDelete = true;
-                }
-            } else if (item.children?.length || !item.data.obj.common?.dontDelete) {
-                showDelete = true;
-            }
-        }
-
-        if (showDelete) {
-            items.push(<MenuItem
-                key="delete"
-                onClick={() => {
-                    const id = item.data.id;
+                },
+            },
+            DELETE: {
+                key: 'Delete',
+                visibility: this.props.onObjectDelete && (item.children?.length || (obj && !obj.common?.dontDelete)),
+                icon: <IconDelete fontSize="small" className={this.props.classes.contextMenuDelete} />,
+                className: this.props.classes.contextMenuDelete,
+                label: this.texts.deleteObject,
+                onClick: () => {
                     this.setState({ showContextMenu: null }, () => {
                         // calculate number of children
                         const keys = Object.keys(this.objects);
@@ -6411,31 +6455,53 @@ class ObjectBrowser extends Component {
                         this.props.onObjectDelete(
                             id,
                             !!item.children?.length,
-                            !item.data.obj.common?.dontDelete,
+                            !obj.common?.dontDelete,
                             count + 1,
                         );
                     });
-                }}
-            >
-                <ListItemIcon>
-                    <IconDelete fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{this.texts.deleteObject}</ListItemText>
-            </MenuItem>);
-        }
+                },
+            },
+        };
+
+        Object.keys(ITEMS).forEach(key => {
+            if (ITEMS[key].visibility) {
+                items.push(<MenuItem key={key} onClick={ITEMS[key].onClick} className={ITEMS[key].className}>
+                    <ListItemIcon style={ITEMS[key].iconStyle} className={ITEMS[key].listItemIconClass}>
+                        {ITEMS[key].icon}
+                    </ListItemIcon>
+                    <ListItemText>{ITEMS[key].label}</ListItemText>
+                    {ITEMS[key].key ? <div className={this.props.classes.contextMenuKeys}>
+                        {`Alt+${ITEMS[key].key === 'Delete' ? this.props.t('ra_Del') : ITEMS[key].key}`}
+                    </div> : null}
+                </MenuItem>);
+            }
+        });
 
         if (!items.length) {
-            setTimeout(() => {
-                this.setState({ showContextMenu: null });
-            }, 100);
+            setTimeout(() => this.setState({ showContextMenu: null }), 100);
             return null;
         }
+
+        const el = document.getElementById(id);
 
         return <Menu
             key="contextMenu"
             open={!0}
-            anchorEl={this.state.showContextMenu.target}
-            onClose={() => this.setState({ showContextMenu: null })}
+            onKeyUp={e => {
+                e.preventDefault();
+                if (e.altKey) {
+                    Object.keys(ITEMS).forEach(key => {
+                        if (e.key === ITEMS[key].key) {
+                            ITEMS[key].onClick();
+                        }
+                    });
+                }
+            }}
+            anchorEl={el}
+            onClose={() => {
+                this.setState({ showContextMenu: null });
+                this.contextMenu = null;
+            }}
         >
             {items}
         </Menu>;
@@ -6484,21 +6550,6 @@ class ObjectBrowser extends Component {
             }}
         />;
     }
-
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    extendObject = (id, data) =>
-        this.props.socket.extendObject(id, data)
-            .catch(error => window.alert(error));
-
-    /**
-     * This method is used when `this` context is passed down
-     * @param {string} id
-     * @param {ioBroker.SettableObject} data
-     */
-    // eslint-disable-next-line react/no-unused-class-component-methods
-    setObject = (id, data) =>
-        this.props.socket.setObject(id, data)
-            .catch(error => window.alert(error));
 
     /**
      * The rendering method of this component.

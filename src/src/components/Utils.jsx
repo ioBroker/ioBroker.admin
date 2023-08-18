@@ -118,25 +118,24 @@ class Utils {
             if (typeof text === 'object') {
                 text = text[options.language] || text.en;
             }
-        } else
-            if (item && item.common && item.common[attr]) {
-                text = item.common[attr];
-                if (attr !== 'desc' && !text && item.common.desc) {
-                    text = item.common.desc;
-                }
-                if (typeof text === 'object') {
-                    text = text[options.language] || text.en || text.de || text.ru || '';
-                }
-                text = (text || '').toString().replace(/[_.]/g, ' ');
-
-                if (text === text.toUpperCase()) {
-                    text = text[0] + text.substring(1).toLowerCase();
-                }
-            } else {
-                const pos = id.lastIndexOf('.');
-                text = id.substring(pos + 1).replace(/[_.]/g, ' ');
-                text = Utils.CapitalWords(text);
+        } else if (item && item.common && item.common[attr]) {
+            text = item.common[attr];
+            if (attr !== 'desc' && !text && item.common.desc) {
+                text = item.common.desc;
             }
+            if (typeof text === 'object') {
+                text = text[options.language] || text.en || text.de || text.ru || '';
+            }
+            text = (text || '').toString().replace(/[_.]/g, ' ');
+
+            if (text === text.toUpperCase()) {
+                text = text[0] + text.substring(1).toLowerCase();
+            }
+        } else {
+            const pos = id.lastIndexOf('.');
+            text = id.substring(pos + 1).replace(/[_.]/g, ' ');
+            text = Utils.CapitalWords(text);
+        }
 
         return text.trim();
     }
@@ -167,21 +166,20 @@ class Utils {
             if (typeof text === 'object') {
                 text = text[options.language] || text.en;
             }
-        } else
-            if (item && item.common && item.common[attr]) {
-                text = item.common[attr];
-                if (attr !== 'desc' && !text && item.common.desc) {
-                    text = item.common.desc;
-                }
-                if (typeof text === 'object') {
-                    text = text[options.language] || text.en;
-                }
-                text = (text || '').toString().replace(/[_.]/g, ' ');
-
-                if (text === text.toUpperCase()) {
-                    text = text[0] + text.substring(1).toLowerCase();
-                }
+        } else if (item && item.common && item.common[attr]) {
+            text = item.common[attr];
+            if (attr !== 'desc' && !text && item.common.desc) {
+                text = item.common.desc;
             }
+            if (typeof text === 'object') {
+                text = text[options.language] || text.en;
+            }
+            text = (text || '').toString().replace(/[_.]/g, ' ');
+
+            if (text === text.toUpperCase()) {
+                text = text[0] + text.substring(1).toLowerCase();
+            }
+        }
         return noTrim ? text : text.trim();
     }
 
@@ -262,8 +260,8 @@ class Utils {
         if (obj && Object.prototype.hasOwnProperty.call(obj, 'common')) {
             obj = obj.common;
         }
-        if (obj && obj.custom) {
-            settings = obj.custom || {};
+        if (obj?.custom) {
+            settings = obj.custom;
             settings = settings[NAMESPACE] && settings[NAMESPACE][options.user || 'admin'] ? JSON.parse(JSON.stringify(settings[NAMESPACE][options.user || 'admin'])) : { enabled: true };
         } else {
             settings = { enabled: defaultEnabling === undefined ? true : defaultEnabling, useCustom: false };
@@ -344,6 +342,7 @@ class Utils {
 
             return true;
         }
+
         return false;
     }
 
@@ -358,9 +357,11 @@ class Utils {
             // If UTF-8 icon
             if (settings.icon.length <= 2) {
                 return <span style={style || {}}>{settings.icon}</span>;
-            } if (settings.icon.startsWith('data:image')) {
+            }
+            if (settings.icon.startsWith('data:image')) {
                 return <img alt={settings.name} src={settings.icon} style={style || {}} />;
-            }  // maybe later some changes for a second type
+            }
+            // maybe later some changes for a second type
             return <img alt={settings.name} src={(settings.prefix || '') + settings.icon} style={style || {}} />;
         }
         return null;
@@ -384,9 +385,11 @@ class Utils {
             // If UTF-8 icon
             if (typeof icon === 'string' && icon.length <= 2) {
                 return icon;
-            } if (icon.startsWith('data:image')) {
+            }
+            if (icon.startsWith('data:image')) {
                 return icon;
             }
+
             const parts = id.split('.');
             if (parts[0] === 'system') {
                 icon = `adapter/${parts[2]}${icon.startsWith('/') ? '' : '/'}${icon}`;
@@ -398,12 +401,12 @@ class Utils {
                 icon = `../../${icon}`;
             } else if (window.location.pathname.match(/material\/[.\d]+/)) {
                 icon = `../../${icon}`;
-            } else
-                if (window.location.pathname.match(/material\//)) {
-                    icon = `../${icon}`;
-                }
+            } else if (window.location.pathname.match(/material\//)) {
+                icon = `../${icon}`;
+            }
             return icon;
         }
+
         return null;
     }
 
@@ -481,10 +484,9 @@ class Utils {
             // remove alfa channel
             if (color.length === 8) {
                 color = color.substring(0, 6);
-            } else
-                if (color.length !== 6) {
-                    return false;
-                }
+            } else if (color.length !== 6) {
+                return false;
+            }
 
             r = parseInt(color.slice(0, 2), 16);
             g = parseInt(color.slice(2, 4), 16);
@@ -516,6 +518,7 @@ class Utils {
             }
             return `${hours}:${minutes}:${secs}`;
         }
+
         if (secs < 10) {
             secs = `0${secs}`;
         }
@@ -581,7 +584,7 @@ class Utils {
     }
 
     /**
-     * Pad the given number with a zero if its not 2 digits long.
+     * Pad the given number with a zero if it's not 2 digits long.
      * @param {string | number} num
      */
     static padding(num) {
@@ -590,7 +593,8 @@ class Utils {
                 return `0${num}`;
             }
             return num;
-        } if (num < 10) {
+        }
+        if (num < 10) {
             return `0${num}`;
         }
         return num;
@@ -704,6 +708,7 @@ class Utils {
 
             return result;
         }
+
         return text;
     }
 
@@ -728,18 +733,16 @@ class Utils {
             if (states && !states.common) {
                 return states.smartName;
             }
-            return (states &&
-                        states.common &&
-                        states.common.custom &&
-                        states.common.custom[instanceId]) ?
+            return states?.common?.custom && states.common.custom[instanceId] ?
                 states.common.custom[instanceId].smartName : undefined;
-        } if (!noCommon) {
+        }
+        if (!noCommon) {
             return states[id].common.smartName;
         }
+
         return (states[id] &&
-                states[id].common &&
-                states[id].common.custom &&
-                states[id].common.custom[instanceId]) ?
+            states[id].common?.custom &&
+            states[id].common.custom[instanceId]) ?
             states[id].common.custom[instanceId].smartName || null : null;
     }
 
@@ -762,10 +765,8 @@ class Utils {
         if (obj && !obj.common) {
             return obj.smartName;
         }
-        return (obj &&
-                    obj.common &&
-                    obj.common.custom &&
-                    obj.common.custom[instanceId]) ?
+
+        return obj?.common?.custom && obj.common.custom[instanceId] ?
             obj.common.custom[instanceId].smartName : undefined;
     }
 
@@ -1004,9 +1005,11 @@ class Utils {
         const invertedColor = Utils.invertColor(color, true);
         if (invertedColor === '#FFFFFF' && (themeType === 'dark' || (invert && themeType === 'light'))) {
             return '#DDD';
-        } if (invertedColor === '#000000' && (themeType === 'light' || (invert && themeType === 'dark'))) {
+        }
+        if (invertedColor === '#000000' && (themeType === 'light' || (invert && themeType === 'dark'))) {
             return '#222';
         }
+
         return undefined;
     }
 
@@ -1035,10 +1038,9 @@ class Utils {
                     parseInt(m[2], 10).toString(16).padStart(2, '0') +
                     parseInt(m[2], 10).toString(16).padStart(2, '0');
             }
-        } else
-            if (hex.startsWith('#')) {
-                hex = hex.slice(1);
-            }
+        } else if (hex.startsWith('#')) {
+            hex = hex.slice(1);
+        }
         // convert 3-digit hex to 6-digits.
         if (hex.length === 3) {
             hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
@@ -1047,11 +1049,10 @@ class Utils {
         if (hex.length === 8) {
             alfa = hex.substring(6, 8);
             hex = hex.substring(0, 6);
-        } else
-            if (hex.length !== 6) {
-                console.warn(`Cannot invert color: ${hex}`);
-                return hex;
-            }
+        } else if (hex.length !== 6) {
+            console.warn(`Cannot invert color: ${hex}`);
+            return hex;
+        }
         let r = parseInt(hex.slice(0, 2), 16);
         let g = parseInt(hex.slice(2, 4), 16);
         let b = parseInt(hex.slice(4, 6), 16);
@@ -1351,6 +1352,7 @@ class Utils {
             p.pop();
             return p.join('.');
         }
+
         return null;
     }
 
@@ -1420,9 +1422,11 @@ class Utils {
             const s = seconds % 60;
             if (d) {
                 return `${d}.${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            } if (h) {
+            }
+            if (h) {
                 return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
             }
+
             return `0:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
         return '0:00:00';
@@ -1464,6 +1468,7 @@ class Utils {
             }
             return '';
         }
+
         return header.title;
     }
 
@@ -1581,29 +1586,27 @@ class Utils {
                     console.error(`Cannot parse states: ${states}`);
                     states = null;
                 }
-            } else
+            } else if (typeof states === 'string') {
                 // if old format val1:text1;val2:text2
-                if (typeof states === 'string') {
-                    const parts = states.split(';');
-                    states = {};
-                    for (let p = 0; p < parts.length; p++) {
-                        const s = parts[p].split(':');
-                        states[s[0]] = s[1];
-                    }
-                } else if (Array.isArray(states)) {
-                    const result = {};
-                    if (obj.common.type === 'number') {
-                        states.forEach((value, key) => result[key] = value);
-                    } else
-                        if (obj.common.type === 'string') {
-                            states.forEach(value => result[value] = value);
-                        } else if (obj.common.type === 'boolean') {
-                            result.false = states[0];
-                            result.true = states[1];
-                        }
-
-                    return result;
+                const parts = states.split(';');
+                states = {};
+                for (let p = 0; p < parts.length; p++) {
+                    const s = parts[p].split(':');
+                    states[s[0]] = s[1];
                 }
+            } else if (Array.isArray(states)) {
+                const result = {};
+                if (obj.common.type === 'number') {
+                    states.forEach((value, key) => result[key] = value);
+                } else if (obj.common.type === 'string') {
+                    states.forEach(value => result[value] = value);
+                } else if (obj.common.type === 'boolean') {
+                    result.false = states[0];
+                    result.true = states[1];
+                }
+
+                return result;
+            }
         }
 
         return states;
@@ -1646,7 +1649,7 @@ class Utils {
     static isStableRepository(activeRepo) {
         return !!((
             typeof activeRepo === 'string' &&
-                activeRepo.toLowerCase().startsWith('stable')
+            activeRepo.toLowerCase().startsWith('stable')
         )
             ||
             (

@@ -12,56 +12,67 @@ import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 
-import LinearProgress from '@mui/material/LinearProgress';
-import CircularProgress from '@mui/material/CircularProgress';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Fab from '@mui/material/Fab';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Input from '@mui/material/Input';
 import {
-    Hidden, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip,
+    LinearProgress,
+    Hidden,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    Tooltip,
+    CircularProgress,
+    Toolbar,
+    IconButton,
+    Fab,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button,
+    Input,
+    Breadcrumbs,
 } from '@mui/material';
+
+// MUI Icons
+import {
+    Refresh as RefreshIcon,
+    Close as CloseIcon,
+    Bookmark as JsonIcon,
+    BookmarkBorder as CssIcon,
+    Description as HtmlIcon,
+    Edit as EditIcon,
+    Code as JSIcon,
+    InsertDriveFile as FileIcon,
+    Publish as UploadIcon,
+    MusicNote as MusicIcon,
+    SaveAlt as DownloadIcon,
+    CreateNewFolder as AddFolderIcon,
+    FolderOpen as EmptyFilterIcon,
+    List as IconList,
+    ViewModule as IconTile,
+    ArrowBack as IconBack,
+    Delete as DeleteIcon,
+    Brightness6 as Brightness5Icon,
+    Image as TypeIconImages,
+    FontDownload as TypeIconTxt,
+    AudioFile as TypeIconAudio,
+    Videocam as TypeIconVideo,
+    KeyboardReturn as EnterIcon,
+} from '@mui/icons-material';
 
 import ErrorDialog from '@iobroker/adapter-react-v5/Dialogs/Error';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import TextInputDialog from '@iobroker/adapter-react-v5/Dialogs/TextInput';
 
-// Icons
-import RefreshIcon from '@mui/icons-material/Refresh';
-import CloseIcon from '@mui/icons-material/Close';
-import JsonIcon from '@mui/icons-material/Bookmark';
-import CssIcon from '@mui/icons-material/BookmarkBorder';
-import HtmlIcon from '@mui/icons-material/Description';
-import EditIcon from '@mui/icons-material/Edit';
-import JSIcon from '@mui/icons-material/Code';
-import FileIcon from '@mui/icons-material/InsertDriveFile';
-import UploadIcon from '@mui/icons-material/Publish';
-import MusicIcon from '@mui/icons-material/MusicNote';
-import DownloadIcon from '@mui/icons-material/SaveAlt';
-import AddFolderIcon from '@mui/icons-material/CreateNewFolder';
-import EmptyFilterIcon from '@mui/icons-material/FolderOpen';
-import IconList from '@mui/icons-material/List';
-import IconTile from '@mui/icons-material/ViewModule';
-import IconBack from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Brightness5Icon from '@mui/icons-material/Brightness6';
-import TypeIconImages from '@mui/icons-material/Image';
-import TypeIconTxt from '@mui/icons-material/FontDownload';
-import TypeIconAudio from '@mui/icons-material/AudioFile';
-import TypeIconVideo from '@mui/icons-material/Videocam';
-
+// Custom Icons
 import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
 import IconClosed from '@iobroker/adapter-react-v5/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react-v5/icons/IconOpen';
 import IconNoIcon from '@iobroker/adapter-react-v5/icons/IconNoIcon';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+
 import FileViewer, { EXTENSIONS } from './FileViewer';
 
 const ROW_HEIGHT   = 32;
@@ -95,6 +106,14 @@ const styles = theme => ({
         overflowX: 'hidden',
         overflowY: 'auto',
         padding: theme.spacing(1),
+    },
+    filesDivHint: {
+        position: 'absolute',
+        bottom: 0,
+        left: 20,
+        opacity: 0.7,
+        fontStyle: 'italic',
+        fontSize: 12,
     },
     filesDivTable: {
         height: `calc(100% - ${48 + parseInt(theme.spacing(1), 10)}px)`,
@@ -336,11 +355,10 @@ const styles = theme => ({
     },
     uploadCenterTextAndIcon: {
         position: 'absolute',
-        top: '50%',
-        left: '50%',
         height: '30%',
-        width: '50%',
-        margin: '-15% 0 0 -25%',
+        width: '100%',
+        margin: 'auto',
+        opacity: 0.3,
     },
     menuButtonExpertActive: {
         color: '#c00000',
@@ -353,33 +371,18 @@ const styles = theme => ({
         textOverflow: 'clip',
         overflow: 'hidden',
         whiteSpace: 'nowrap',
+        backgroundColor: theme.palette.secondary.main,
     },
     pathDivInput: {
         width: '100%',
     },
-    pathDivBreadcrumb: {
-        paddingTop: 3,
-        paddingBottom: 2,
-        borderBottom: 'solid 1px',
-    },
     pathDivBreadcrumbDir: {
-        paddingLeft: 4,
-        paddingRight: 4,
-        paddingBottom: 4,
+        paddingLeft: 2,
+        paddingRight: 2,
         cursor: 'pointer',
         '&:hover': {
             background: theme.palette.mode === 'dark' ? '#333' : '#CCC',
         },
-    },
-    pathDivBreadcrumbSlash: {
-        paddingLeft: 4,
-        paddingRight: 4,
-        paddingBottom: 4,
-        opacity: 0.7,
-    },
-    pathDivBreadcrumbFile: {
-        cursor: 'pointer',
-        flexGrow: 1,
     },
     backgroundImageLight: {
         background: 'white',
@@ -869,31 +872,35 @@ class FileBrowser extends Component {
 
         this.lastSelect = Date.now();
 
-        folder = folder || getParentDir(this.state.currentDir);
+        let _folder = folder || getParentDir(this.state.currentDir);
 
-        if (folder === '/') {
-            folder = '';
+        if (_folder === '/') {
+            _folder = '';
         }
 
-        (window._localStorage || window.localStorage).setItem('files.currentDir', folder);
+        (window._localStorage || window.localStorage).setItem('files.currentDir', _folder);
 
-        if (folder && !this.state.folders[folder]) {
-            return this.browseFolder(folder)
+        if (folder && e && (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey)) {
+            return this.setState({ selected: _folder });
+        }
+
+        if (_folder && !this.state.folders[_folder]) {
+            return this.browseFolder(_folder)
                 .then(folders =>
                     this.setState({
                         folders,
-                        path: folder,
-                        currentDir: folder,
-                        selected: folder,
+                        path: _folder,
+                        currentDir: _folder,
+                        selected: _folder,
                         pathFocus: false,
                     }, () =>
                         this.props.onSelect && this.props.onSelect('')));
         }
 
         return this.setState({
-            currentDir: folder,
-            selected: folder,
-            path: folder,
+            currentDir: _folder,
+            selected: _folder,
+            path: _folder,
             pathFocus: false,
         }, () =>
             this.props.onSelect && this.props.onSelect(''));
@@ -906,7 +913,9 @@ class FileBrowser extends Component {
         }
         e && e.stopPropagation();
         this.lastSelect = Date.now();
+
         (window._localStorage || window.localStorage).setItem('files.selected', id);
+
         this.setState({ selected: id, path: id, pathFocus: false }, () => {
             if (this.props.onSelect) {
                 const ext = Utils.getFileExtension(id);
@@ -966,18 +975,6 @@ class FileBrowser extends Component {
             </Hidden>
             {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes[`itemDownloadEmpty${this.state.viewType}`]} /> : null}
 
-            {this.state.viewType === TABLE && this.props.allowDownload ? <a
-                className={Utils.clsx('MuiButtonBase-root', 'MuiIconButton-root', 'MuiIconButton-sizeLarge', this.props.classes.itemDownloadButtonTable)}
-                tabIndex="0"
-                download={`${item.id}.zip`}
-                href={this.imagePrefix + item.id}
-                onClick={e => {
-                    e.stopPropagation();
-                }}
-            >
-                <DownloadIcon />
-            </a> : null}
-
             {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length ?
                 <IconButton
                     aria-label="delete"
@@ -1017,7 +1014,7 @@ class FileBrowser extends Component {
             <div
                 className={Utils.clsx(this.props.classes[`itemName${this.state.viewType}`], this.props.classes[`itemNameFolder${this.state.viewType}`])}
             >
-                ..
+..
             </div>
         </div>;
     }
@@ -1123,7 +1120,8 @@ class FileBrowser extends Component {
         return <div
             key={item.id}
             id={item.id}
-            onDoubleClick={() => {
+            onDoubleClick={e => {
+                e.stopPropagation();
                 if (!this.props.onSelect) {
                     this.setState({ viewer: this.imagePrefix + item.id, formatEditFile: ext });
                 } else if (
@@ -1199,10 +1197,10 @@ class FileBrowser extends Component {
             </a> : null}
 
             {this.state.viewType === TABLE &&
-            this.props.allowDelete &&
-            item.id !== 'vis.0/' &&
-            item.id !== 'vis-2-beta.0/' &&
-            item.id !== USER_DATA
+                this.props.allowDelete &&
+                item.id !== 'vis.0/' &&
+                item.id !== 'vis-2-beta.0/' &&
+                item.id !== USER_DATA
                 ?
                 <IconButton
                     aria-label="delete"
@@ -1284,6 +1282,8 @@ class FileBrowser extends Component {
     renderToolbar() {
         const IconType = this.props.showTypeSelector ? (FILE_TYPE_ICONS[this.state.filterByType || 'all'] || FILE_TYPE_ICONS.all) : null;
 
+        const isInFolder = this.findFirstFolder(this.state.selected);
+
         return <Toolbar key="toolbar" variant="dense">
             {this.props.showExpertButton ? <IconButton
                 edge="start"
@@ -1344,12 +1344,15 @@ class FileBrowser extends Component {
             </IconButton>
             {this.props.allowCreateFolder ? <IconButton
                 edge="start"
-                disabled={!this.state.selected || !this.state.folders[this.state.selected] ||
+                disabled={
+                    !this.state.selected ||
+                    !isInFolder ||
                     (
                         this.limitToPath &&
                         !this.state.selected.startsWith(`${this.limitToPath}/`) &&
                         this.limitToPath !== this.state.selected
-                    )}
+                    )
+                }
                 title={this.props.t('ra_Create folder')}
                 className={this.props.classes.menuButton}
                 color="inherit"
@@ -1363,7 +1366,7 @@ class FileBrowser extends Component {
                 edge="start"
                 disabled={
                     !this.state.selected ||
-                    !this.state.folders[this.state.selected] ||
+                    !isInFolder ||
                     (
                         this.limitToPath &&
                         !this.state.selected.startsWith(`${this.limitToPath}/`) &&
@@ -1420,6 +1423,33 @@ class FileBrowser extends Component {
                     <Brightness5Icon fontSize="small" />
                 </IconButton>
             </Tooltip>
+            {this.state.viewType !== TABLE && this.props.allowDelete ? <Tooltip title={this.props.t('ra_Delete')}>
+                <span>
+                    <IconButton
+                        aria-label="delete"
+                        disabled={
+                            !this.state.selected ||
+                            this.state.selected === 'vis.0/' ||
+                            this.state.selected === 'vis-2-beta.0/' ||
+                            this.state.selected === USER_DATA
+                        }
+                        color="inherit"
+                        edge="start"
+                        className={this.props.classes.menuButton}
+                        onClick={e => {
+                            e.stopPropagation();
+                            if (this.suppressDeleteConfirm > Date.now()) {
+                                this.deleteItem(this.state.selected);
+                            } else {
+                                this.setState({ deleteItem: this.state.selected });
+                            }
+                        }}
+                        size="small"
+                    >
+                        <DeleteIcon fontSize="small" />
+                    </IconButton>
+                </span>
+            </Tooltip> : null}
         </Toolbar>;
     }
 
@@ -1679,14 +1709,22 @@ class FileBrowser extends Component {
                         newState.expanded = expanded;
                     }
 
+                    if (this.state.selected === deleteItem) {
+                        const parts = this.state.selected.split('/');
+                        parts.pop();
+                        newState.selected = parts.join('/');
+                    }
+
                     if (!this.supportSubscribes) {
                         const parentFolder = this.findFirstFolder(deleteItem);
                         const folders = {};
+
                         Object.keys(this.state.folders).forEach(name => {
                             if (name !== parentFolder && !name.startsWith(`${parentFolder}/`)) {
                                 folders[name] = this.state.folders[name];
                             }
                         });
+
                         newState.folders = folders;
 
                         this.setState(newState, () =>
@@ -1704,9 +1742,9 @@ class FileBrowser extends Component {
                 key="deleteDialog"
                 open={!0}
                 onClose={() => this.setState({ deleteItem: '' })}
-                aria-labelledby="form-dialog-title"
+                aria-labelledby="ar_dialog_file_delete_title"
             >
-                <DialogTitle id="form-dialog-title">{this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop())}</DialogTitle>
+                <DialogTitle id="ar_dialog_file_delete_title">{this.props.t('ra_Confirm deletion of %s', this.state.deleteItem.split('/').pop())}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         {this.props.t('ra_Are you sure?')}
@@ -1800,28 +1838,45 @@ class FileBrowser extends Component {
     }
 
     renderBreadcrumb() {
-        const parts = this.state.selected.startsWith('/') ? this.state.selected.split('/') : (`/${this.state.selected}`).split('/');
+        const parts = this.state.currentDir.startsWith('/') ? this.state.currentDir.split('/') : (`/${this.state.currentDir}`).split('/');
         const p = [];
-        return parts.map((part, i) => {
-            part && p.push(part);
-            const path = p.join('/');
-            if (i < parts.length - 1) {
-                return [
-                    <div key={`${this.state.selected}_${i}`} className={this.props.classes.pathDivBreadcrumbDir} onClick={e => this.changeFolder(e, path || '/')}>
+        return <Breadcrumbs>
+            {parts.map((part, i) => {
+                part && p.push(part);
+                const path = p.join('/');
+                if (i < parts.length - 1) {
+                    return <div
+                        key={`${this.state.selected}_${i}`}
+                        className={this.props.classes.pathDivBreadcrumbDir}
+                        onClick={e => this.changeFolder(e, path || '/')}
+                    >
                         {part || this.props.t('ra_Root')}
-                    </div>,
-                    <span key={`${this.state.selected}_s_${i}`} className={this.props.classes.pathDivBreadcrumbSlash}>{'>'}</span>];
-            }
-            return <div key={`${this.state.selected}_${i}`} className={this.props.classes.pathDivBreadcrumbFile} onClick={() => this.setState({ pathFocus: true })}>{part}</div>;
-        });
+                    </div>;
+                }
+
+                return <div
+                    key={`${this.state.selected}_${i}`}
+                    onClick={() => this.setState({ pathFocus: true })}
+                >
+                    {part}
+                </div>;
+            })}
+        </Breadcrumbs>;
     }
 
     renderPath() {
-        return <div key="path" className={Utils.clsx(this.props.classes.pathDiv, !this.state.pathFocus && this.props.classes.pathDivBreadcrumb)}>
+        return <div key="path" className={this.props.classes.pathDiv}>
             {this.state.pathFocus ?
                 <Input
                     value={this.state.path}
-                    onKeyDown={e => e.keyCode === 13 && this.changeToPath()}
+                    onKeyDown={e => {
+                        if (e.keyCode === 13) {
+                            this.changeToPath();
+                        } else if (e.keyCode === 27) {
+                            this.setState({ pathFocus: false });
+                        }
+                    }}
+                    endAdornment={<IconButton size="small" onClick={() => this.changeToPath()}><EnterIcon /></IconButton>}
                     onBlur={() => this.changeToPath()}
                     onChange={e => this.setState({ path: e.target.value })}
                     className={this.props.classes.pathDivInput}
@@ -1849,8 +1904,20 @@ class FileBrowser extends Component {
         return <div style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
             {this.props.showToolbar ? this.renderToolbar() : null}
             {this.state.viewType === TILE ? this.renderPath() : null}
-            <div className={Utils.clsx(this.props.classes.filesDiv, this.props.classes[`filesDiv${this.state.viewType}`])}>
+            <div
+                className={Utils.clsx(this.props.classes.filesDiv, this.props.classes[`filesDiv${this.state.viewType}`])}
+                onClick={e => {
+                    if (this.state.viewType !== TABLE) {
+                        if (this.state.selected !== (this.state.currentDir || '/')) {
+                            this.changeFolder(e, this.state.currentDir || '/');
+                        } else {
+                            e.stopPropagation();
+                        }
+                    }
+                }}
+            >
                 {this.state.viewType === TABLE ? this.renderItems('/') : this.renderItems(this.state.currentDir || '/')}
+                {this.state.viewType !== TABLE ? <div className={this.props.classes.filesDivHint}>{this.props.t('ra_select_folder_hint')}</div> : null}
             </div>
             {this.props.allowUpload ? this.renderInputDialog() : null}
             {this.props.allowUpload ? this.renderUpload() : null}

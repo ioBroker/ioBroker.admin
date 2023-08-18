@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
+// File viewer in adapter-react does not use ace editor
 import AceEditor from 'react-ace';
 import 'ace-builds/src-min-noconflict/mode-json';
 import 'ace-builds/src-min-noconflict/mode-json5';
@@ -11,22 +12,27 @@ import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-min-noconflict/theme-chrome';
 import 'ace-builds/src-min-noconflict/ext-language_tools';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import { IconButton } from '@mui/material';
-
-import IconNoIcon from '@iobroker/adapter-react-v5/icons/IconNoIcon';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import {
+    // TextField,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+} from '@mui/material';
 
 // Icons
 import { FaCopy as CopyIcon } from 'react-icons/fa';
-import Brightness5Icon from '@mui/icons-material/Brightness6';
-import CloseIcon from '@mui/icons-material/Close';
-import SaveIcon from '@mui/icons-material/Save';
+import {
+    Close as CloseIcon,
+    Save as SaveIcon,
+    Brightness6 as Brightness5Icon,
+} from '@mui/icons-material';
+
+import IconNoIcon from '@iobroker/adapter-react-v5/icons/IconNoIcon';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 const styles = () => ({
     dialog: {
@@ -57,6 +63,8 @@ export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg', 'bmp'],
     code:   ['js', 'json', 'json5', 'md'],
     txt:    ['log', 'txt', 'html', 'css', 'xml'],
+    audio:  ['mp3', 'wav', 'ogg', 'acc'],
+    video:  ['mp4', 'mov', 'avi'],
 };
 
 function bufferToBase64(buffer, isFull) {
@@ -260,10 +268,10 @@ class FileViewer extends Component {
             onClose={() => this.props.onClose()}
             fullWidth
             maxWidth="xl"
-            aria-labelledby="form-dialog-title"
+            aria-labelledby="ar_dialog_file_view_title"
         >
             <div className={this.props.classes.dialogTitle}>
-                <DialogTitle id="form-dialog-title">{`${this.props.t(this.state.editing ? 'Edit' : 'View')}: ${this.props.href}`}</DialogTitle>
+                <DialogTitle id="ar_dialog_file_view_title">{`${this.props.t(this.state.editing ? 'Edit' : 'View')}: ${this.props.href}`}</DialogTitle>
                 {EXTENSIONS.images.includes(this.state.ext) && <div>
                     <IconButton
                         size="large"
