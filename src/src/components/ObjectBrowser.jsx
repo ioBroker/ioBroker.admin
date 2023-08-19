@@ -1559,23 +1559,32 @@ function formatValue(options) {
 
     if (isCommon?.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
         if (v && typeof v === 'string') {
-            if (v.length === 13) {
-                // (length of "1647597254924") warning, this solution only works till Nov 20 2286 18:46:39CET
+            if (Utils.isStringInteger(v)) {
+                // we assume a unix ts
                 v = new Date(parseInt(v, 10)).toString();
             } else {
-                // we don't know what is that, so leave it as it is
+                // check if parsable by new date
+                try {
+                    const parsedDate = new Date(v);
+
+                    if (Utils.isValidDate(parsedDate)) {
+                        v = parsedDate.toString();
+                    }
+                } catch {
+                    // ignore
+                }
             }
         } else {
             if (v > 946681200 && v < 946681200000) {
                 // '2000-01-01T00:00:00' => 946681200000
-                v *= 1000; // may be the time is in seconds (UNIX time)
+                v *= 1_000; // may be the time is in seconds (UNIX time)
             }
             // null and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
             v = v ? new Date(v).toString() : v;
         }
     } else {
         if (type === 'number') {
-            v = Math.round(v * 100000000) / 100000000; // remove 4.00000000000000001
+            v = Math.round(v * 100_000_000) / 100_000_000; // remove 4.00000000000000001
             if (isFloatComma) {
                 v = v.toString().replace('.', ',');
             }
