@@ -94,6 +94,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Added alias creation from object browser
 * (bluefox) Allowed to change chart type
 * (foxriver76) show a date picker when setting state (role: date/type: number)
+* (foxriver76) fixed problem, that creation of folders was not possible
+* (foxriver76) adapted text to clarify, that only tarball can be installed from path
+* (foxriver76) type string/role date will now also be previewed as a date in objects tab
+* (foxriver76) fixed problem with table formatting on history data point viewer
 
 ### 6.8.3 (2023-08-16)
 * (foxriver76) added description to adapter rating dialog
