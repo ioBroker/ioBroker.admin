@@ -520,7 +520,7 @@ class Hosts extends Component {
     };
 
     renderUpdateDialog() {
-        if (!this.state.updateDialog && !this.state.instructionDialog) {
+        if ((!this.state.updateDialog || !this.state.updateAvailable) && !this.state.instructionDialog) {
             return null;
         }
 
