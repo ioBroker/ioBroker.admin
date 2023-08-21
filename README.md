@@ -98,6 +98,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) adapted text to clarify, that only tarball can be installed from path
 * (foxriver76) type string/role date will now also be previewed as a date in objects tab
 * (foxriver76) fixed problem with table formatting on history data point viewer
+* (foxriver76) fixed problem that could render update dialog with invalid property
 
 ### 6.8.3 (2023-08-16)
 * (foxriver76) added description to adapter rating dialog
