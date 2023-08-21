@@ -9,38 +9,43 @@ import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-min-noconflict/theme-chrome';
 import 'ace-builds/src-min-noconflict/ext-language_tools';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import TextField from '@mui/material/TextField';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import Grid from '@mui/material/Grid';
-import Hidden from '@mui/material/Hidden';
-import Fab from '@mui/material/Fab';
-import Typography from '@mui/material/Typography';
-import Switch from '@mui/material/Switch';
-import Autocomplete from '@mui/material/Autocomplete';
-
-import ChartIcon from '@mui/icons-material/ShowChart';
-import IconCancel from '@mui/icons-material/Close';
-import IconCheck from '@mui/icons-material/Check';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-
-import { Tooltip } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    FormControlLabel,
+    Checkbox,
+    TextField,
+    DialogActions,
+    Button,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+    Grid,
+    Hidden,
+    Fab,
+    Typography,
+    Switch,
+    Autocomplete,
+    Tooltip,
+} from '@mui/material';
+
+import {
+    ShowChart as ChartIcon,
+    Close as IconCancel,
+    Check as IconCheck,
+    Fullscreen as FullscreenIcon,
+    FullscreenExit as FullscreenExitIcon,
+    Info as InfoIcon,
+} from '@mui/icons-material';
+
+import { Utils } from '@iobroker/adapter-react-v5';
+
 import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';
 
@@ -400,168 +405,148 @@ class ObjectBrowserValue extends Component {
             </div>
         );
 
-        return (
-            <Dialog
-                open={!0}
-                maxWidth={
-                    this.state.type === 'number' || this.state.type === 'boolean' || this.state.type === 'states'
-                        ? this.state.chart && this.state.chartEnabled
-                            ? 'lg'
-                            : null
-                        : 'md'
-                }
-                fullWidth={
-                    (this.state.type === 'json' && this.state.fullScreen) ||
-                    (this.state.type !== 'number' && this.state.type !== 'boolean' && this.state.type !== 'states') ||
-                    (this.state.chart && this.state.chartEnabled)
-                }
-                fullScreen={this.state.type === 'json' && this.state.fullScreen}
-                onClose={() => this.props.onClose()}
-                aria-labelledby="edit-value-dialog-title"
-                aria-describedby="edit-value-dialog-description"
-                classes={{ root: this.state.type === 'json' ? this.props.classes.dialog : '' }}
-            >
-                <DialogTitle id="edit-value-dialog-title">
-                    {this.props.t('Write value')}
-                    {this.props.object.common?.write === false ? (
-                        <span className={this.props.classes.readOnlyText}>
+        return <Dialog
+            open={!0}
+            maxWidth={
+                this.state.type === 'number' || this.state.type === 'boolean' || this.state.type === 'states'
+                    ? this.state.chart && this.state.chartEnabled
+                        ? 'lg'
+                        : null
+                    : 'md'
+            }
+            fullWidth={
+                (this.state.type === 'json' && this.state.fullScreen) ||
+                (this.state.type !== 'number' && this.state.type !== 'boolean' && this.state.type !== 'states') ||
+                (this.state.chart && this.state.chartEnabled)
+            }
+            fullScreen={this.state.type === 'json' && this.state.fullScreen}
+            onClose={() => this.props.onClose()}
+            aria-labelledby="edit-value-dialog-title"
+            aria-describedby="edit-value-dialog-description"
+            classes={{ root: this.state.type === 'json' ? this.props.classes.dialog : '' }}
+        >
+            <DialogTitle id="edit-value-dialog-title">
+                {this.props.t('Write value')}
+                {this.props.object.common?.write === false ? <span className={this.props.classes.readOnlyText}>
 (
-                            {this.props.t('read only')}
+                    {this.props.t('read only')}
 )
-                        </span>
-                    ) : null}
-                    {/* this.state.chart ? <div style={{flexGrow: 1}}/> : null */}
-                    {this.state.chart ? (
-                        <Fab
-                            style={{ float: 'right' }}
-                            size="small"
-                            color={this.state.chartEnabled ? 'primary' : 'default'}
-                            onClick={() => {
-                                (window._localStorage || window.localStorage).setItem(
-                                    'App.chartSetValue',
-                                    this.state.chartEnabled ? 'false' : 'true',
-                                );
-                                this.setState({ chartEnabled: !this.state.chartEnabled });
-                            }}
+                </span> : null}
+                {/* this.state.chart ? <div style={{flexGrow: 1}}/> : null */}
+                {this.state.chart ? <Fab
+                    style={{ float: 'right' }}
+                    size="small"
+                    color={this.state.chartEnabled ? 'primary' : 'default'}
+                    onClick={() => {
+                        (window._localStorage || window.localStorage).setItem(
+                            'App.chartSetValue',
+                            this.state.chartEnabled ? 'false' : 'true',
+                        );
+                        this.setState({ chartEnabled: !this.state.chartEnabled });
+                    }}
+                >
+                    <ChartIcon />
+                </Fab> : null}
+                {this.state.type === 'json' ? <IconButton
+                    style={{ float: 'right' }}
+                    onClick={() => {
+                        (window._localStorage || window.localStorage).setItem(
+                            'App.fullScreen',
+                            this.state.fullScreen ? 'false' : 'true',
+                        );
+                        this.setState({ fullScreen: !this.state.fullScreen });
+                    }}
+                >
+                    {this.state.fullScreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+                </IconButton> : null}
+            </DialogTitle>
+            <DialogContent>
+                <form
+                    className={this.props.classes.dialogForm}
+                    noValidate
+                    autoComplete="off"
+                    onSubmit={() => false}
+                    style={{ height: '100%' }}
+                >
+                    <Grid container direction="row" spacing={2} style={{ height: '100%' }}>
+                        <Grid
+                            item
+                            xs={this.state.chart && this.state.chartEnabled ? 6 : 12}
+                            style={{ height: '100%' }}
                         >
-                            <ChartIcon />
-                        </Fab>
-                    ) : null}
-                    {this.state.type === 'json' ? (
-                        <IconButton
-                            style={{ float: 'right' }}
-                            onClick={() => {
-                                (window._localStorage || window.localStorage).setItem(
-                                    'App.fullScreen',
-                                    this.state.fullScreen ? 'false' : 'true',
-                                );
-                                this.setState({ fullScreen: !this.state.fullScreen });
-                            }}
-                        >
-                            {this.state.fullScreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-                        </IconButton>
-                    ) : null}
-                </DialogTitle>
-                <DialogContent>
-                    <form
-                        className={this.props.classes.dialogForm}
-                        noValidate
-                        autoComplete="off"
-                        onSubmit={() => false}
-                        style={{ height: '100%' }}
-                    >
-                        <Grid container direction="row" spacing={2} style={{ height: '100%' }}>
-                            <Grid
-                                item
-                                xs={this.state.chart && this.state.chartEnabled ? 6 : 12}
-                                style={{ height: '100%' }}
-                            >
-                                <Grid container direction="column" spacing={2} style={{ marginTop: 0, height: '100%' }}>
-                                    {this.props.expertMode ? (
-                                        <Grid item>
-                                            <Grid container direction="row" spacing={2} style={{ marginTop: 0 }}>
-                                                {this.props.expertMode ? (
-                                                    <Grid item>
-                                                        <FormControl className={this.props.classes.formControl}>
-                                                            <InputLabel>{this.props.t('Value type')}</InputLabel>
-                                                            <Select
-                                                                variant="standard"
-                                                                value={this.state.type}
-                                                                onChange={e => {
-                                                                    if (e.target.value === 'json') {
-                                                                        this.setState({ targetValue: (this.state.targetValue || '').toString() });
-                                                                        this.checkJsonError();
-                                                                    }
+                            <Grid container direction="column" spacing={2} style={{ marginTop: 0, height: '100%' }}>
+                                {this.props.expertMode ? <Grid item>
+                                    <Grid container direction="row" spacing={2} style={{ marginTop: 0 }}>
+                                        {this.props.expertMode ? <Grid item>
+                                            <FormControl className={this.props.classes.formControl}>
+                                                <InputLabel>{this.props.t('Value type')}</InputLabel>
+                                                <Select
+                                                    variant="standard"
+                                                    value={this.state.type}
+                                                    onChange={e => {
+                                                        if (e.target.value === 'json') {
+                                                            this.setState({ targetValue: (this.state.targetValue || '').toString() });
+                                                            this.checkJsonError();
+                                                        }
 
-                                                                    this.setState({ type: e.target.value });
-                                                                }}
-                                                            >
-                                                                <MenuItem value="string">String</MenuItem>
-                                                                <MenuItem value="number">Number</MenuItem>
-                                                                <MenuItem value="boolean">Boolean</MenuItem>
-                                                                <MenuItem value="json">JSON</MenuItem>
-                                                                {this.props.states ? (
-                                                                    <MenuItem value="states">States</MenuItem>
-                                                                ) : null}
-                                                            </Select>
-                                                        </FormControl>
-                                                    </Grid>
-                                                ) : null}
-                                                {this.state.type === 'json' ? <Grid item flex={1}></Grid> : null}
-                                            </Grid>
-                                        </Grid>
-                                    ) : null}
-                                    <Grid
-                                        item
-                                        flex={this.state.type === 'json' && this.state.fullScreen ? 1 : undefined}
-                                        style={{ paddingTop: 0 }}
-                                    >
-                                        {this.state.type === 'boolean' ? (
-                                            <Typography component="div">
-                                                <Grid component="label" container alignItems="center" spacing={1}>
-                                                    <Grid item style={{ marginRight: 10 }}>
-                                                        {this.props.t('Value')}
+                                                        this.setState({ type: e.target.value });
+                                                    }}
+                                                >
+                                                    <MenuItem value="string">String</MenuItem>
+                                                    <MenuItem value="number">Number</MenuItem>
+                                                    <MenuItem value="boolean">Boolean</MenuItem>
+                                                    <MenuItem value="json">JSON</MenuItem>
+                                                    {this.props.states ? <MenuItem value="states">States</MenuItem> : null}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid> : null}
+                                        {this.state.type === 'json' ? <Grid item flex={1}></Grid> : null}
+                                    </Grid>
+                                </Grid> : null}
+                                <Grid
+                                    item
+                                    flex={this.state.type === 'json' && this.state.fullScreen ? 1 : undefined}
+                                    style={{ paddingTop: 0 }}
+                                >
+                                    {this.state.type === 'boolean' ? <Typography component="div">
+                                        <Grid component="label" container alignItems="center" spacing={1}>
+                                            <Grid item style={{ marginRight: 10 }}>
+                                                {this.props.t('Value')}
 :
-                                                    </Grid>
-                                                    <Grid item>FALSE</Grid>
-                                                    <Grid item>
-                                                        <AntSwitch
-                                                            autoFocus
-                                                            defaultChecked={
-                                                                this.propsValue === 'null' ||
-                                                                this.propsValue === 'undefined'
-                                                                    ? false
-                                                                    : !!this.propsValue
-                                                            }
-                                                            onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
-                                                            onChange={e => this.setState({ targetValue: e.target.checked })}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item>TRUE</Grid>
-                                                </Grid>
-                                            </Typography>
-                                        ) : this.state.type === 'number' ? (
-                                            <TextField
-                                                variant="standard"
-                                                classes={{ root: this.props.classes.textInput }}
-                                                autoFocus
-                                                inputRef={this.inputRef}
-                                                helperText={this.props.t(
-                                                    'Press ENTER to write the value, when focused',
-                                                )}
-                                                value={parseFloat(this.state.targetValue) || 0}
-                                                label={this.props.t('Value')}
-                                                onKeyUp={e => {
-                                                    e.keyCode === 13 && this.onUpdate(e);
-                                                }}
-                                                onChange={e => this.setState({ targetValue: e.target.value })}
-                                            />
-                                        ) : this.state.type === 'json' ? (
-                                            this.renderJsonEditor()
-                                        ) : this.state.type === 'states' ? (
+                                            </Grid>
+                                            <Grid item>FALSE</Grid>
+                                            <Grid item>
+                                                <AntSwitch
+                                                    autoFocus
+                                                    defaultChecked={
+                                                        this.propsValue === 'null' ||
+                                                        this.propsValue === 'undefined'
+                                                            ? false
+                                                            : !!this.propsValue
+                                                    }
+                                                    onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
+                                                    onChange={e => this.setState({ targetValue: e.target.checked })}
+                                                />
+                                            </Grid>
+                                            <Grid item>TRUE</Grid>
+                                        </Grid>
+                                    </Typography> : (this.state.type === 'number' ? <TextField
+                                        variant="standard"
+                                        classes={{ root: this.props.classes.textInput }}
+                                        autoFocus
+                                        inputRef={this.inputRef}
+                                        helperText={this.props.t(
+                                            'Press ENTER to write the value, when focused',
+                                        )}
+                                        value={parseFloat(this.state.targetValue) || 0}
+                                        label={this.props.t('Value')}
+                                        onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
+                                        onChange={e => this.setState({ targetValue: e.target.value })}
+                                    /> : (this.state.type === 'json' ?
+                                        this.renderJsonEditor()
+                                        : (this.state.type === 'states' ?
                                             this.renderStates()
-                                        ) : (
-                                            <TextField
+                                            : <TextField
                                                 variant="standard"
                                                 classes={{ root: this.props.classes.textInput }}
                                                 inputRef={this.inputRef}
@@ -575,99 +560,93 @@ class ObjectBrowserValue extends Component {
                                                 onKeyDown={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate(e)}
                                                 defaultValue={this.propsValue.toString()}
                                                 onChange={e => this.setState({ targetValue: e.target.value })}
-                                            />
-                                        )}
-                                    </Grid>
-
-                                    {(this.props.role === 'date' || this.props.role.startsWith('date.')) && this.state.type === 'number' ? (<Grid style={{ display: 'flex', gap: '5px' }} item xs={6}>{this.renderTimePicker()}</Grid>) : null}
-
-                                    {this.props.expertMode ? <Grid item>{ackCheckbox}</Grid> : null}
-
-                                    {this.props.expertMode ? (
-                                        <Grid item>
-                                            <FormControl variant="standard" className={this.props.classes.quality}>
-                                                <InputLabel>{this.props.t('Quality')}</InputLabel>
-                                                <Select
-                                                    variant="standard"
-                                                    defaultValue={0}
-                                                    onChange={e => (this.q = parseInt(e.target.value, 10))}
-                                                >
-                                                    <MenuItem value={0x00}>0x00 - good</MenuItem>
-
-                                                    <MenuItem value={0x01}>0x01 - general problem</MenuItem>
-                                                    <MenuItem value={0x02}>0x02 - no connection problem</MenuItem>
-
-                                                    <MenuItem value={0x10}>
-                                                        0x10 - substitute value from controller
-                                                    </MenuItem>
-                                                    <MenuItem value={0x20}>0x20 - substitute initial value</MenuItem>
-                                                    <MenuItem value={0x40}>
-                                                        0x40 - substitute value from device or instance
-                                                    </MenuItem>
-                                                    <MenuItem value={0x80}>
-                                                        0x80 - substitute value from sensor
-                                                    </MenuItem>
-
-                                                    <MenuItem value={0x11}>0x11 - general problem by instance</MenuItem>
-                                                    <MenuItem value={0x41}>0x41 - general problem by device</MenuItem>
-                                                    <MenuItem value={0x81}>0x81 - general problem by sensor</MenuItem>
-
-                                                    <MenuItem value={0x12}>0x12 - instance not connected</MenuItem>
-                                                    <MenuItem value={0x42}>0x42 - device not connected</MenuItem>
-                                                    <MenuItem value={0x82}>0x82 - sensor not connected</MenuItem>
-
-                                                    <MenuItem value={0x44}>0x44 - device reports error</MenuItem>
-                                                    <MenuItem value={0x84}>0x84 - sensor reports error</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                            <TextField
-                                                variant="standard"
-                                                title={this.props.t('0 - no expiration')}
-                                                classes={{ root: this.props.classes.expire }}
-                                                label={this.props.t('Expire')}
-                                                type="number"
-                                                inputProps={{ min: 0 }}
-                                                helperText={this.props.t('in seconds')}
-                                                defaultValue={this.expire}
-                                                onChange={e => (this.expire = e.target.value)}
-                                            />
-                                        </Grid>
-                                    ) : null}
+                                            />)))}
                                 </Grid>
+
+                                {(this.props.role === 'date' || this.props.role.startsWith('date.')) && this.state.type === 'number' ? <Grid style={{ display: 'flex', gap: '5px' }} item xs={6}>{this.renderTimePicker()}</Grid> : null}
+
+                                {this.props.expertMode ? <Grid item>{ackCheckbox}</Grid> : null}
+
+                                {this.props.expertMode ? <Grid item>
+                                    <FormControl variant="standard" className={this.props.classes.quality}>
+                                        <InputLabel>{this.props.t('Quality')}</InputLabel>
+                                        <Select
+                                            variant="standard"
+                                            defaultValue={0}
+                                            onChange={e => (this.q = parseInt(e.target.value, 10))}
+                                        >
+                                            <MenuItem value={0x00}>0x00 - good</MenuItem>
+
+                                            <MenuItem value={0x01}>0x01 - general problem</MenuItem>
+                                            <MenuItem value={0x02}>0x02 - no connection problem</MenuItem>
+
+                                            <MenuItem value={0x10}>
+                                                0x10 - substitute value from controller
+                                            </MenuItem>
+                                            <MenuItem value={0x20}>0x20 - substitute initial value</MenuItem>
+                                            <MenuItem value={0x40}>
+                                                0x40 - substitute value from device or instance
+                                            </MenuItem>
+                                            <MenuItem value={0x80}>
+                                                0x80 - substitute value from sensor
+                                            </MenuItem>
+
+                                            <MenuItem value={0x11}>0x11 - general problem by instance</MenuItem>
+                                            <MenuItem value={0x41}>0x41 - general problem by device</MenuItem>
+                                            <MenuItem value={0x81}>0x81 - general problem by sensor</MenuItem>
+
+                                            <MenuItem value={0x12}>0x12 - instance not connected</MenuItem>
+                                            <MenuItem value={0x42}>0x42 - device not connected</MenuItem>
+                                            <MenuItem value={0x82}>0x82 - sensor not connected</MenuItem>
+
+                                            <MenuItem value={0x44}>0x44 - device reports error</MenuItem>
+                                            <MenuItem value={0x84}>0x84 - sensor reports error</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <TextField
+                                        variant="standard"
+                                        title={this.props.t('0 - no expiration')}
+                                        classes={{ root: this.props.classes.expire }}
+                                        label={this.props.t('Expire')}
+                                        type="number"
+                                        inputProps={{ min: 0 }}
+                                        helperText={this.props.t('in seconds')}
+                                        defaultValue={this.expire}
+                                        onChange={e => (this.expire = e.target.value)}
+                                    />
+                                </Grid> : null}
                             </Grid>
-                            {this.state.chart && this.state.chartEnabled && this.state.type !== 'json' ? (
-                                <Hidden only={['sm', 'xs']}>
-                                    <Grid item xs={6} style={{ minHeight: 300 }}>
-                                        {this.renderChart()}
-                                    </Grid>
-                                </Hidden>
-                            ) : null}
                         </Grid>
-                    </form>
-                </DialogContent>
-                <DialogActions className={this.props.classes.wrapperButton}>
-                    {!this.props.expertMode ? ackCheckbox : null}
-                    {!this.props.expertMode ? <div style={{ flexGrow: 1 }} /> : null}
-                    <Button
-                        variant="contained"
-                        onClick={e => this.onUpdate(e)}
-                        color="primary"
-                        startIcon={<IconCheck />}
-                        className={this.props.object.common?.write === false ? this.props.classes.readOnly : ''}
-                    >
-                        {this.props.t('Set value')}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        onClick={() => this.props.onClose()}
-                        color="grey"
-                        startIcon={<IconCancel />}
-                    >
-                        {this.props.t('Cancel')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+                        {this.state.chart && this.state.chartEnabled && this.state.type !== 'json' ? <Hidden only={['sm', 'xs']}>
+                            <Grid item xs={6} style={{ minHeight: 300 }}>
+                                {this.renderChart()}
+                            </Grid>
+                        </Hidden> : null}
+                    </Grid>
+                </form>
+            </DialogContent>
+            <DialogActions className={this.props.classes.wrapperButton}>
+                {!this.props.expertMode ? ackCheckbox : null}
+                {!this.props.expertMode ? <div style={{ flexGrow: 1 }} /> : null}
+                <Button
+                    variant="contained"
+                    onClick={e => this.onUpdate(e)}
+                    color="primary"
+                    startIcon={<IconCheck />}
+                    className={this.props.object.common?.write === false ? this.props.classes.readOnly : ''}
+                >
+                    {this.props.t('Set value')}
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={() => this.props.onClose()}
+                    color="grey"
+                    startIcon={<IconCancel />}
+                >
+                    {this.props.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

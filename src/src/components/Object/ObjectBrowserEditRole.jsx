@@ -2,16 +2,20 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import TextField from '@mui/material/TextField';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Autocomplete from '@mui/material/Autocomplete';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Button,
+    Autocomplete,
+} from '@mui/material';
 
-import IconCancel from '@mui/icons-material/Close';
-import IconCheck from '@mui/icons-material/Check';
+import {
+    Close as IconCancel,
+    Check as IconCheck,
+} from '@mui/icons-material';
 
 const styles = theme => ({
     input: {

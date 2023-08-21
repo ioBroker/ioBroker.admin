@@ -39,7 +39,8 @@ import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 
 import {
     Utils, I18n,
-    SelectID as DialogSelectID, IconFx,
+    SelectID as DialogSelectID,
+    IconFx,
     UploadImage,
 } from '@iobroker/adapter-react-v5';
 
