@@ -1183,21 +1183,20 @@ CRON:
                     </IconButton>
                 </Tooltip>
             </div>
-            {item.supportCompact ?
-                <div className={classes.hidden570}>
-                    <Tooltip title={t('compact groups')} classes={{ popper: classes.tooltip }}>
-                        <IconButton
-                            size="small"
-                            className={Utils.clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
-                            onClick={e => {
-                                e.stopPropagation();
-                                setCompact(instance);
-                            }}
-                        >
-                            <ViewCompactIcon color={item.compact ? 'primary' : 'inherit'} />
-                        </IconButton>
-                    </Tooltip>
-                </div> : null}
+            <div className={classes.hidden570}>
+                <Tooltip title={t('compact groups')} classes={{ popper: classes.tooltip }}>
+                    <IconButton
+                        size="small"
+                        className={Utils.clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
+                        onClick={e => {
+                            e.stopPropagation();
+                            setCompact(instance);
+                        }}
+                    >
+                        <ViewCompactIcon color={item.compact ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>
+            </div>
         </AccordionSummary>
         <AccordionDetails>
             <Grid container direction="row">
@@ -1440,21 +1439,20 @@ CRON:
                             </IconButton>
                         </Tooltip>
                     </div>
-                    {item.supportCompact ?
-                        <div className={classes.visible570}>
-                            <Tooltip title={t('compact groups')} classes={{ popper: classes.tooltip }}>
-                                <IconButton
-                                    size="small"
-                                    className={Utils.clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        setCompact(instance);
-                                    }}
-                                >
-                                    <ViewCompactIcon color={item.compact ? 'primary' : 'inherit'} />
-                                </IconButton>
-                            </Tooltip>
-                        </div> : null}
+                    <div className={classes.visible570}>
+                        <Tooltip title={t('compact groups')} classes={{ popper: classes.tooltip }}>
+                            <IconButton
+                                size="small"
+                                className={Utils.clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setCompact(instance);
+                                }}
+                            >
+                                <ViewCompactIcon color={item.compact ? 'primary' : 'inherit'} />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
                 </div>
             </Grid>
         </AccordionDetails>
