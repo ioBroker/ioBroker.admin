@@ -520,10 +520,6 @@ class Hosts extends Component {
     };
 
     renderUpdateDialog() {
-        if ((!this.state.updateDialog || !this.state.updateAvailable) && !this.state.instructionDialog) {
-            return null;
-        }
-
         if (this.state.updateAvailable && this.state.updateDialog) {
             return <JsControllerUpdater
                 socket={this.props.socket}
@@ -536,13 +532,17 @@ class Hosts extends Component {
             />;
         }
 
-        return <JsControllerDialog
-            socket={this.props.socket}
-            hostId={this.state.instructionDialog}
-            theme={this.props.theme}
-            version={this.state.repository['js-controller'].version}
-            onClose={() => this.setState({ instructionDialog: false })}
-        />;
+        if (this.state.instructionDialog) {
+            return <JsControllerDialog
+                socket={this.props.socket}
+                hostId={this.state.instructionDialog}
+                theme={this.props.theme}
+                version={this.state.repository['js-controller'].version}
+                onClose={() => this.setState({ instructionDialog: false })}
+            />;
+        }
+
+        return null;
     }
 
     hostUpdateDialogCb = () => {
