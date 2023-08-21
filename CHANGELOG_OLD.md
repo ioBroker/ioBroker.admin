@@ -1,6 +1,21 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.7.0 (2023-08-02)
+* (foxriver76) display more specific information about docker installation on host card
+* (foxriver76) allowed downloading folders in files tab
+
+## 6.6.5 (2023-07-31)
+* (foxriver76) also show js-controller upgrade instructions if UI upgrade is available
+* (buefox/foxriver76) allow array values to be stored in custom editor
+* (foxriver76) fixed bug which prevented the creation of new objects
+* (bluefox/foxriver76) fixed bug which prevented opening adapter readme
+* (foxriver76) fixed ChipInput jsonConfig component
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions

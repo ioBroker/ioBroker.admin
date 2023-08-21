@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.8.3",
+    "version": "6.9.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.9.0": {
+        "en": "Added possibility to change log direction\nJSON config: Added possibility to filter out internal IP addresses\nJSON config: Added _changed flag for formula in JSON config",
+        "de": "Möglichkeit zur Änderung der Logrichtung\nJSON config: Möglichkeit, interne IP-Adressen auszufiltern\nJSON config: Hinzugefügt _changed flag for Formel in JSON config",
+        "ru": "Добавлена возможность изменения направления лога\nJSON конфиг: Добавлена возможность фильтрации внутренних IP-адресов\nJSON конфиг: Добавлено _измененный флаг для формулы в JSON config",
+        "pt": "Adicionado possibilidade de mudar direção de log\nJSON config: Adicionado possibilidade de filtrar endereços IP internos\nJSON config: Adicionado _changed flag para fórmula em JSON config",
+        "nl": "Toegevoegd de mogelijkheid te veranderen\nJSON config: Toegevoegd de mogelijkheid om interne IP-adressen te filtreren\nJSON config: Veranderde vlag voor formule in JSON",
+        "fr": "Possibilité de changer de direction de journal\nJSON : Possibilité de filtrer les adresses IP internes\nJSON : Ajouté _ drapeau modifié pour la formule dans la configuration JSON",
+        "it": "Aggiunta possibilità di cambiare direzione di registro\nJSON config: Aggiunta possibilità di filtrare gli indirizzi IP interni\nJSON config: Aggiunto _bandiera modificata per la formula in JSON config",
+        "es": "Mayor posibilidad de cambiar la dirección de registro\nJSON config: Posibilidad de filtrar direcciones IP internas\nJSON config: Añadido _ bandera cambiada para la fórmula en JSON config",
+        "pl": "Wstępna możliwość zmiany kierunku logowego\nJSON config Wstępna możliwość filtrowania adresów wewnętrznego IP\nJSON config Wzmiankowana flaga dla formuły JSON",
+        "uk": "Додано можливість змінити напрямок журналу\nНалаштування JSON: Додана можливість фільтрувати внутрішні IP-адреси\nНалаштування JSON: Додано _changed прапор для формули в JSON config",
+        "zh-cn": "改变逻辑方向的可能性\nJSON config: 增加过滤内部IP的可能性\nJSON config: 增加:在联合协商会中采用公式的换旗"
+      },
       "6.8.3": {
         "en": "added description to adapter rating dialog\nExtended the select component with grouping\nAllowed the sorting of adapters by name and not only by title\nAllowed the set state JSON config component",
         "de": "beschreibung zum adapter rating dialog\nErweiterte Auswahlkomponente mit Gruppierung\nErlaubt die Sortierung von Adaptern nach Namen und nicht nur nach Titel\nErlaubt der eingestellten Zustand JSON config Komponente",
@@ -95,19 +108,6 @@
         "pl": "Lepsza obsługa licencji (zwłaszcza dla wi-2)",
         "uk": "Отримання ліцензії (особливо для vis-2)",
         "zh-cn": "更佳的许可证处理(特别是相对于2)"
-      },
-      "6.6.3": {
-        "en": "fixed \"Let's Encrypt\" link not being clickable inside system settings\nfixed false positives for \"not much space left on device\" warning\nfixed issue with npm version determination on some installations\nreset the logout timer UI if session is extended\napply button color change of v6.6.1 for all buttons\ncorrectly display materialized tabs when configured with io-package `adminUi` property\nenable keyboard navigation for objects tab",
-        "de": "fix \"Let's Encrypt\" Link nicht innerhalb von Systemeinstellungen anklickbar\nfeste falsche positive für \"nicht viel platz auf dem gerät übrig\" warnung\nfeste ausgabe mit npm versionsbestimmung für einige installationen\nzurücksetzen der Logout-Timer UI, wenn die Sitzung erweitert wird\nfür alle tasten die farbänderung v6.6.1 anwenden\nkorrekte Anzeige materialisierter Registerkarten, wenn mit io-package admin konfiguriert Ui Immobilien\ntastaturnavigation für objekte tab aktivieren",
-        "ru": "исправлена ссылка \"Let's Encrypt\" не кликабельна в настройках системы\nфиксированные ложные позитивы для предупреждения \"не много места на устройстве\"\nфиксированная проблема с определением версии npm на некоторых установках\nпереустановить таймер логаут UI, если сеанс продлен\nприменить изменение цвета кнопки v6.6.1 для всех кнопок\nправильно отображать материализированные вкладки при настройке с io-package admin Ui собственность\nвключить клавиатурную навигацию для вкладки объектов",
-        "pt": "fixo \"Vamos Criptografar\" link não sendo clicável dentro das configurações do sistema\nfalsos positivos fixos para \"não muito espaço deixado no dispositivo\" aviso\nproblema fixo com a determinação da versão npm em algumas instalações\nredefinir a interface do usuário do temporizador do logout se a sessão for estendida\naplicar mudança de cor do botão de v6.6.1 para todos os botões\nexibir corretamente as abas materializadas quando configuradas com o administrador do io-package Propriedade Ui\nhabilitar a navegação do teclado para a guia de objetos",
-        "nl": "vertaling:\nvalse posities gerepareerd voor \"niet veel ruimte over op apparaat\" waarschuwing\n_\nreset de logout timer UI als sessie wordt verlengd\nknoopkleurverandering van v6.6.1 voor alle knoppen\nvertaling: Ui eigendom\ntoetsenbord navigatie voor objecten",
-        "fr": "fixe \"Encrypt\" lien ne pas être cliquable dans les paramètres du système\nfaux positifs fixes pour \"pas beaucoup d'espace laissé sur le dispositif\" avertissement\nproblème fixe avec détermination de la version npm sur certaines installations\nréinitialiser l'interface utilisateur d'enregistrement si la session est prolongée\nappliquer le bouton changement de couleur de v6.6.1 pour tous les boutons\nafficher correctement les onglets matérialisés lorsque configuré avec l'administrateur io-package Propriété Ui\nactiver la navigation du clavier pour l'onglet objets",
-        "it": "fisso \"Crettiamo\" collegamento non cliccabile all'interno delle impostazioni del sistema\nfalsi positivi fissi per \"non molto spazio lasciato sul dispositivo\" avvertimento\nproblema fisso con la determinazione della versione npm su alcuni impianti\nresettare il timer logout UI se la sessione è estesa\napplicare il pulsante cambiamento di colore di v6.6.1 per tutti i pulsanti\nvisualizza correttamente le schede materializzate quando configurate con l'amministratore del pacchetto io Ui proprietà\nabilitare la navigazione della tastiera per la scheda oggetti",
-        "es": "fijo \"Encrypt\" enlace no se puede hacer clic en la configuración del sistema\nfalsos positivos fijos para \"no mucho espacio dejado en el dispositivo\" advertencia\nedición fija con npm versión determinación en algunas instalaciones\nrestablecer el temporizador del logotipo UI si la sesión se extiende\naplicar botón cambio de color de v6.6.1 para todos los botones\nmostrar correctamente pestañas materializadas cuando se configura con io-package admin Propiedad Ui\nhabilitar la navegación del teclado para la pestaña de objetos",
-        "pl": "stała \"Let's Encrypt\" nie jest clickable wewnątrz systemu\nuruchomione fałszywe dodatki dla „niewielkiej przestrzeni pozostawionej na urządzenie”\nostateczny problem z determinacją wersji na niektóre instalacje\nresetowanie timer UI w razie przedłużenia sesji\nzmiana przycisku v6.6.1 dla wszystkich przycisków\npoprawnie wyświetlają tabele, gdy konfiguruje się z adminem io. własność Ui\nokładka",
-        "uk": "фіксована посилання \"Зашифрування\" не натискається на налаштування системи\nфіксовані помилкові бонуси за попередження \"не багато місця, що залишилося на пристрої\"\nвиправлено проблему з визначенням версії npm на деяких установках\nскинути таймер логотипа UI, якщо сеанс продовжено\nнаносити зміни кольору кнопки v6.6.1 для всіх кнопок\nправильно відображати матеріалізовані вкладки при налаштуванні адміністратором io-package Ui майно\nувімкнути навігацію клавіатури для вкладки об'єктів",
-        "zh-cn": "固定的“Let's En加密”环节在系统环境中无法找到\n“没有多少空间留在装置上”的固定错误积极性\n某些设施的固定问题\n如果会议延长,则重新安排时间的UI\n适用于所有克顿斯的“6.6.1”适用但有色彩的变化\n装有碘剂的正确展示图表 1. 不动产\na. 关键航线"
       }
     },
     "desc": {
@@ -213,7 +213,6 @@
     "secure": false,
     "bind": "0.0.0.0",
     "cache": false,
-    "autoUpdate": 24,
     "accessLimit": false,
     "accessApplyRights": false,
     "accessAllowedConfigs": [],

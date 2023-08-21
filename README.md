@@ -84,12 +84,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.9.0 (2023-08-21)
 * (bluefox) Added possibility to change log direction
 * (bluefox) JSON config: Added possibility to filter out internal IP addresses
 * (bluefox) JSON config: Added _changed flag for formula in JSON config
-
-### 6.8.3.1 (2023-08-21)
 * (bluefox) JSON config: Added option `reloadBrowser` to sendto in JSON config
 * (bluefox) JSON config: Allowed positioning of add button on the very top of the table
 * (bluefox) JSON config: Trim strings by saving and not by typing
@@ -122,17 +120,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed issue if adapter readme is opened in new tab
 * (bluefox) corrected opening of custom tabs, e.g., for fullcalendar
 * (bluefox) allowed downloading of recursive folders
-
-### 6.7.0 (2023-08-02)
-* (foxriver76) display more specific information about docker installation on host card
-* (foxriver76) allowed downloading folders in files tab
-
-### 6.6.5 (2023-07-31)
-* (foxriver76) also show js-controller upgrade instructions if UI upgrade is available
-* (buefox/foxriver76) allow array values to be stored in custom editor
-* (foxriver76) fixed bug which prevented the creation of new objects
-* (bluefox/foxriver76) fixed bug which prevented opening adapter readme
-* (foxriver76) fixed ChipInput jsonConfig component
 
 ## License
 The MIT License (MIT)
