@@ -5898,6 +5898,20 @@ class ObjectBrowser extends Component {
     };
 
     /**
+     * Render a right handle for resizing
+     *
+     * @return {JSX.Element}
+     */
+    renderHandleRight() {
+        return <div
+            className={`${this.props.classes.resizeHandle} ${this.props.classes.resizeHandleRight}`}
+            onMouseDown={this.resizerMouseDown}
+            onDoubleClick={this.resizerReset}
+            title={this.props.t('ra_Double click to reset table layout')}
+        />;
+    }
+
+    /**
      * @private
      * @returns {JSX.Element}
      */
@@ -5925,87 +5939,92 @@ class ObjectBrowser extends Component {
                 data-name="id"
             >
                 {this.getFilterInput('id')}
-                <div
-                    className={`${this.props.classes.resizeHandle} ${this.props.classes.resizeHandleRight}`}
-                    onMouseDown={this.resizerMouseDown}
-                    onDoubleClick={this.resizerReset}
-                    title={this.props.t('ra_Double click to reset table layout')}
-                />
+                {this.renderHandleRight()}
             </div>
             {this.columnsVisibility.name ? <div
                 className={classes.headerCell}
-                style={{ width: this.columnsVisibility.nameHeader }}
+                style={{ width: this.columnsVisibility.nameHeader, position: 'relative' }}
                 data-min={100}
                 data-name="nameHeader"
             >
                 {this.getFilterInput('name')}
+                {this.renderHandleRight()}
+
             </div> : null}
             {!this.state.statesView && <>
                 {this.columnsVisibility.type ? <div
                     className={classes.headerCell}
-                    style={{ width: this.columnsVisibility.type }}
+                    style={{ width: this.columnsVisibility.type, position: 'relative' }}
                     data-min={100}
                     data-name="type"
                 >
                     {this.getFilterSelectType()}
+                    {this.renderHandleRight()}
                 </div> : null}
                 {this.columnsVisibility.role ? <div
                     className={classes.headerCell}
-                    style={{ width: this.columnsVisibility.role }}
+                    style={{ width: this.columnsVisibility.role, position: 'relative' }}
                     data-min={100}
                     data-name="role"
                 >
                     {this.getFilterSelectRole()}
+                    {this.renderHandleRight()}
                 </div> : null}
                 {this.columnsVisibility.room ? <div
                     className={classes.headerCell}
-                    style={{ width: this.columnsVisibility.room }}
+                    style={{ width: this.columnsVisibility.room, position: 'relative' }}
                     data-min={100}
                     data-name="room"
                 >
                     {this.getFilterSelectRoom()}
+                    {this.renderHandleRight()}
                 </div> : null}
                 {this.columnsVisibility.func ? <div
                     className={classes.headerCell}
-                    style={{ width: this.columnsVisibility.func }}
+                    style={{ width: this.columnsVisibility.func, position: 'relative' }}
                     data-min={100}
                     data-name="func"
                 >
                     {this.getFilterSelectFunction()}
+                    {this.renderHandleRight()}
                 </div> : null}
             </>}
             {this.state.statesView && <>
                 <div
                     className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                    style={{ width: this.columnsVisibility.changedFrom }}
+                    style={{ width: this.columnsVisibility.changedFrom, position: 'relative' }}
                     data-min={100}
                     data-name="changedFrom"
                 >
                     {this.props.t('ra_Changed from')}
+                    {this.renderHandleRight()}
                 </div>
                 <div
                     className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                    style={{ width: this.columnsVisibility.qualityCode }}
+                    style={{ width: this.columnsVisibility.qualityCode, position: 'relative' }}
                     data-min={100}
                     data-name="qualityCode"
                 >
                     {this.props.t('ra_Quality code')}
+                    {this.renderHandleRight()}
                 </div>
                 <div
                     className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                    style={{ width: this.columnsVisibility.timestamp }}
+                    style={{ width: this.columnsVisibility.timestamp, position: 'relative' }}
                     data-min={100}
                     data-name="timestamp"
                 >
                     {this.props.t('ra_Timestamp')}
+                    {this.renderHandleRight()}
                 </div>
                 <div
                     className={Utils.clsx(classes.headerCell, classes.headerCellValue)}
-                    style={{ width: this.columnsVisibility.lastChange }}
+                    style={{ width: this.columnsVisibility.lastChange, position: 'relative' }}
                     data-min={100}
                     data-name="lastChange"
                 >
                     {this.props.t('ra_Last change')}
+                    {this.renderHandleRight()}
                 </div>
             </>}
             {this.adapterColumns.map(item => <div

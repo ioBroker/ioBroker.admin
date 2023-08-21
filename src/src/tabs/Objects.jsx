@@ -60,7 +60,7 @@ class Objects extends Component {
         const selected = (window._localStorage || window.localStorage).getItem(`${this.dialogName || 'App'}.selected`) || '';
 
         this.state = {
-            selected: this.props.selected === undefined ? selected : '',
+            selected,
             name: '',
             toast: '',
             deleteObjectShow: null,
