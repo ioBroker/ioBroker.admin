@@ -100,6 +100,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed problem with table formatting on history data point viewer
 * (foxriver76) fixed problem that could render update dialog with invalid property
 * (foxriver76) fixed sentry icon being in wrong position if no compact flag provided
+* (foxriver76) allow resizing of all columns in objects tab
 
 ### 6.8.3 (2023-08-16)
 * (foxriver76) added description to adapter rating dialog
