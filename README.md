@@ -88,6 +88,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Added possibility to change log direction
 * (bluefox) JSON config: Added possibility to filter out internal IP addresses
 * (bluefox) JSON config: Added _changed flag for formula in JSON config
+
+### 6.8.3.1 (2023-08-21)
 * (bluefox) JSON config: Added option `reloadBrowser` to sendto in JSON config
 * (bluefox) JSON config: Allowed positioning of add button on the very top of the table
 * (bluefox) JSON config: Trim strings by saving and not by typing
