@@ -564,7 +564,7 @@ class Hosts extends Component {
             onUpdate={async () => {
                 const hostUpdate = this.state.hostUpdate;
                 this.closeHostUpdateDialog(() =>
-                    this.setState({ updateDialog: hostUpdate }));
+                    this.setState({ [this.state.updateAvailable ? 'updateDialog' : 'instructionDialog']: hostUpdate }));
             }}
             onInstruction={async () => {
                 const hostUpdate = this.state.hostUpdate;
