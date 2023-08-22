@@ -1,6 +1,10 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.7.0 (2023-08-02)
 * (foxriver76) display more specific information about docker installation on host card
 * (foxriver76) allowed downloading folders in files tab

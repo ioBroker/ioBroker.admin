@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.9.0",
+    "version": "6.9.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.9.1": {
+        "en": "allow resizing of all columns in objects tab\nwithout expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace\nfixed keyboard navigation\nfixed problem with showing controller upgrade instructions if no UI upgrade is supported",
+        "de": "alle spalten in der registerkarte objekte neu formatieren lassen\nohne expertenmodus benutzer sind nur erlaubt, objekte in 0_userdata.0 und alias.0 namespace zu bearbeiten\ntastatur navigation\nbehobenes Problem bei der Anzeige von Controller-Upgrade-Anweisungen, wenn kein UI-Upgrade unterstützt wird",
+        "ru": "позволяют повторно использовать все колонки в вкладке объектов\nбез пользователей экспертного режима разрешается редактировать объекты в 0_userdata.0 и псевдонимов.0\nфиксированная клавиатура навигации\nфиксированная проблема с показывать инструкции по модернизации контроллера, если не поддерживается обновление UI",
+        "pt": "permitir o redimensionamento de todas as colunas na guia objetos\nsem usuários de modo de especialista só são permitidos editar objetos em 0_userdata.0 e alias.0 namespace\nnavegação do teclado fixo\nproblema fixo com a exibição de instruções de atualização do controlador se nenhuma atualização da interface do usuário é suportada",
+        "nl": "_\nzonder deskundige gebruikers mogen alleen objecten in 0userdata.0 en alias\nvertaling:\nhet probleem met het tonen van controleler upgrade instructies als geen UI upgrade ondersteunt",
+        "fr": "permet de redimensionner toutes les colonnes dans l'onglet objets\nsans les utilisateurs de mode expert sont uniquement autorisés à modifier des objets dans 0_userdata.0 et alias.0 namespace\nnavigation à clavier fixe\nproblème fixe avec l'affichage des instructions de mise à niveau du contrôleur si aucune mise à niveau de l'interface utilisateur est supportée",
+        "it": "consentire il ridimensionamento di tutte le colonne nella scheda oggetti\nsenza utenti di modalità esperto sono autorizzati solo a modificare oggetti in 0_userdata.0 e alias.0 namespace\nnavigazione a tastiera fissa\nproblema fisso con la visualizzazione delle istruzioni di aggiornamento del controller se nessun aggiornamento UI è supportato",
+        "es": "permite el tamaño de todas las columnas en la pestaña objetos\nsin los usuarios del modo experto sólo se permite editar objetos en 0_userdata.0 y alias.0 namespace\nnavegación del teclado fijo\nproblema fijo con las instrucciones de actualización del controlador si no se admite actualización UI",
+        "pl": "umożliwia odzyskiwanie wszystkich kolumn w obiektach tabeli\nużytkownicy trybu ekspertów są dozwolone jedynie do edytowania obiektów w 0_userdata.0 i alias.0\nkeyboard navigation\nproblem stały z wyświetlaniem instrukcji sterownika, jeśli nie ma aktualizacji użytkownika",
+        "uk": "дозволяють переоснащення всіх стовпчиків в вкладці об'єктів\nкористувачі не можуть редагувати об'єкти в 0_userdata.0 і alias.0\nфіксована клавіатура навігації\nвиправлена проблема з інструкціями налаштування контролера, якщо не підтримується оновлення UI",
+        "zh-cn": "允许将所有栏目重新列入目标表\n如果没有专家模式用户,只允许在0._userdata.0, 除其他外,使用名称空间。\n固定关键导航\n显示控制媒体升级指示的固定问题,如果不支持升级的UI升级。"
+      },
       "6.9.0": {
         "en": "Added possibility to change log direction\nJSON config: Added possibility to filter out internal IP addresses\nJSON config: Added _changed flag for formula in JSON config",
         "de": "Möglichkeit zur Änderung der Logrichtung\nJSON config: Möglichkeit, interne IP-Adressen auszufiltern\nJSON config: Hinzugefügt _changed flag for Formel in JSON config",
@@ -95,19 +108,6 @@
         "pl": "wykazuje również ulepszenie js-controllerowych instrukcji, jeśli ulepszanie UI jest dostępne\npozwala na przechowywanie wartości w edytorze standardowym\nuruchomiony trąb uniemożliwiający tworzenie nowych obiektów\nbłąd stały, który zapobiegał otwieraniu adapterowi\nchipInput (ang.)",
         "uk": "також показати інструкції щодо оновлення js-controller, якщо оновлення UI доступний\nдозволяє зберігати значення масиву у користувальницькому редакторі\nвиправлена помилка, яка перешкоджала створенню нових об'єктів\nвиправлена помилка, яка запобігає відкриванню адаптера\njsonConfig компонент",
         "zh-cn": "如果能提供UI升级的控制性升级指示,也显示防污升级指示。\n允许在习惯编辑中储存各种价值\n防止新目标的设定\nb. 妨碍开端的固定阀\nbhipInput jsonConfig部分"
-      },
-      "6.6.4": {
-        "en": "Better licenses handling (especially for vis-2)",
-        "de": "Bessere Lizenzen (insbesondere für vis-2)",
-        "ru": "Улучшение обработки лицензий (особенно для vis-2)",
-        "pt": "Melhor manuseio de licenças (especialmente para vis-2)",
-        "nl": "Betere vergunningen voor vis-2",
-        "fr": "Meilleure manipulation des licences (en particulier pour vis-2)",
-        "it": "Migliore gestione delle licenze (specialmente per vis-2)",
-        "es": "Mejor manejo de licencias (especialmente para vis-2)",
-        "pl": "Lepsza obsługa licencji (zwłaszcza dla wi-2)",
-        "uk": "Отримання ліцензії (особливо для vis-2)",
-        "zh-cn": "更佳的许可证处理(特别是相对于2)"
       }
     },
     "desc": {
