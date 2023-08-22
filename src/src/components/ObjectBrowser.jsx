@@ -1834,6 +1834,12 @@ let objectsAlreadyLoaded = false;
  */
 class ObjectBrowser extends Component {
     /**
+     * Namespaces which are allowed to be edited by non-expert users
+     * @type {string[]}
+     */
+    #NON_EXPERT_NAMESPACES = ['0_userdata.0.', 'alias.0.'];
+
+    /**
      * @param {import('./types').ObjectBrowserProps} props
      */
     constructor(props) {
@@ -2210,6 +2216,16 @@ class ObjectBrowser extends Component {
                 }
             })
             .catch(e => this.showError(e));
+    }
+
+    /**
+     * Check if it is a non-expert id
+     *
+     * @param id id to test
+     * @return {boolean}
+     */
+    isNonExpertId(id) {
+        return !!this.#NON_EXPERT_NAMESPACES.find(saveNamespace => id.startsWith(saveNamespace));
     }
 
     /**
@@ -4165,6 +4181,8 @@ class ObjectBrowser extends Component {
                 ? this.systemConfig.common.defaultNewAcl.state
                 : this.systemConfig.common.defaultNewAcl.object);
 
+        const showEdit = this.state.filter.expertMode || this.isNonExpertId(item.data.id);
+
         return [
             this.state.filter.expertMode && this.props.objectEditOfAccessControl ?
                 <Tooltip key="acl" title={item.data.aclTooltip} classes={{ popper: this.props.classes.tooltip }}>
@@ -4182,7 +4200,7 @@ class ObjectBrowser extends Component {
                 </Tooltip>
                 :
                 <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
-            <IconButton
+            showEdit ? <IconButton
                 key="edit"
                 className={classes.cellButtonsButton}
                 size="small"
@@ -4197,7 +4215,7 @@ class ObjectBrowser extends Component {
                 }}
             >
                 <IconEdit className={classes.cellButtonsButtonIcon} />
-            </IconButton>,
+            </IconButton> : <div key="editDisabled" className={classes.cellButtonsButton} />,
             this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ?
                 <IconButton
                     key="delete"
