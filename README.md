@@ -88,6 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) allow resizing of all columns in objects tab
 * (foxriver76) without expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace
 * (foxriver76) fixed keyboard navigation
+* (foxriver76) fixed problem with showing controller upgrade instructions if no UI upgrade is supported
 
 ### 6.9.0 (2023-08-21)
 * (bluefox) Added possibility to change log direction
