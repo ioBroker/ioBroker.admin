@@ -87,6 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 * (foxriver76) allow resizing of all columns in objects tab
 * (foxriver76) without expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace
+* (foxriver76) fixed cursor navigation
 
 ### 6.9.0 (2023-08-21)
 * (bluefox) Added possibility to change log direction
