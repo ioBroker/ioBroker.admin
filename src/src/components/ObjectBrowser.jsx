@@ -5266,7 +5266,6 @@ class ObjectBrowser extends Component {
             key={id}
             id={id}
             onMouseDown={e => {
-                e.preventDefault();
                 this.onSelect(id);
                 let isRightMB;
                 if ('which' in e) {
@@ -6294,6 +6293,8 @@ class ObjectBrowser extends Component {
     }
 
     /**
+     * Renders the right mouse button context menu
+     *
      * @private
      * @returns {JSX.Element | null}
      */
@@ -6333,7 +6334,7 @@ class ObjectBrowser extends Component {
         const ITEMS = {
             EDIT: {
                 key: '0',
-                visibility: this.props.objectBrowserEditObject && obj,
+                visibility: this.props.objectBrowserEditObject && obj && (this.state.filter.expertMode || this.isNonExpertId(id)),
                 icon: <IconEdit fontSize="small" className={this.props.classes.contextMenuEdit} />,
                 label: this.texts.editObject,
                 onClick: () => this.setState({ editObjectDialog: item.data.id, showContextMenu: null, editObjectAlias: false }),
