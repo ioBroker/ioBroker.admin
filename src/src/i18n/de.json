@@ -131,6 +131,7 @@
   "Available version:": "Verfügbare Version:",
   "Azerbaijan": "Aserbaidschan",
   "Back": "Zurück",
+  "Backend time differs by %s minutes": "Die Zeit des ioBroker Servers und die des Browsers unterscheiden sich um %s Minuten. Prüfen Sie die Host-Einstellungen.",
   "Background": "Hintergrund",
   "Background color of the login screen": "Hintergrundfarbe des Anmeldebildschirms",
   "Background image": "Hintergrundbild",

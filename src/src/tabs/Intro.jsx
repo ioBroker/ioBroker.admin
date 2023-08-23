@@ -91,6 +91,8 @@ class Intro extends Component {
     /** If server time differs more than MS from client time, show a warning */
     #THRESHOLD_TIME_DIFF_MS = 30 * 60 * 1_000;
 
+    #ONE_MINUTE_MS = 60 * 1_000;
+
     constructor(props) {
         super(props);
 
@@ -103,10 +105,14 @@ class Intro extends Component {
             editLink: false,
             editLinkIndex: -1,
             openSnackBar: false,
+            /** If toast for time diff is open */
+            openSnackBarTimeDiff: false,
             hasUnsavedChanges: false,
             reverseProxy: null,
             alive: {},
             hostsData: {},
+            /** Difference between client and server time in ms */
+            backendTimeDiff: 0,
         };
 
         this.currentProxyPath = window.location.pathname; // e.g. /admin/
@@ -125,17 +131,18 @@ class Intro extends Component {
     async checkBackendTime() {
         const { protocol, host } = window.location;
         const adminTs = Date.now();
-        const res = (await fetch(`${protocol}//${host}/time`));
-        const { ts } = await res.json();
+        let diff = 0;
 
-        const diff = Math.abs(adminTs - ts);
-
-        console.log(`Difference is ${diff} ms`);
-        console.log(`Server time is ${new Date(ts)} our time is ${new Date(adminTs)}`);
+        try {
+            const res = (await fetch(`${protocol}//${host}/time`));
+            const { ts } = await res.json();
+            diff = Math.abs(adminTs - ts);
+        } catch (e) {
+            console.warn(`Cannot get server time: ${e.message}`);
+        }
 
         if (diff > this.#THRESHOLD_TIME_DIFF_MS) {
-            console.warn(`Critical difference: Server time is ${new Date(ts)} our time is ${new Date(adminTs)}`);
-            // TODO: put diff in a state instead and conditional render a info dialog somewhere
+            this.setState({ backendTimeDiff: diff,  openSnackBarTimeDiff: true });
         }
     }
 
@@ -959,6 +966,42 @@ class Intro extends Component {
             .catch(error => window.alert(`Cannot get data: ${error}`));
     }
 
+    /**
+     * Render toast if content has been copied
+     *
+     * @return {JSX.Element}
+     */
+    renderCopiedToast() {
+        return <Snackbar
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            open={this.state.openSnackBar}
+            autoHideDuration={3_000}
+            onClose={() => this.setState({ openSnackBar: false })}
+            message={this.t('copied')}
+        />;
+    }
+
+    /**
+     * Render toast if server and client time are different
+     *
+     * @return {JSX.Element}
+     */
+    renderTimeDiffToast() {
+        return <Snackbar
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            open={this.state.openSnackBarTimeDiff}
+            autoHideDuration={8_000}
+            onClose={() => this.setState({ openSnackBarTimeDiff: false })}
+            message={this.t('Backend time differs by %s minutes', Math.round(this.state.backendTimeDiff / this.#ONE_MINUTE_MS))}
+        />;
+    }
+
     render() {
         if (!this.state.instances) {
             return <LinearProgress />;
@@ -970,16 +1013,8 @@ class Intro extends Component {
             elevation={0}
             overflow="visible"
         >
-            <Snackbar
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-                open={this.state.openSnackBar}
-                autoHideDuration={3000}
-                onClose={() => this.setState({ openSnackBar: false })}
-                message={this.t('copied')}
-            />
+            {this.renderCopiedToast()}
+            {this.renderTimeDiffToast()}
             <TabContent classes={{ root: classes.container }}>
                 <Grid container spacing={2}>
                     {this.getInstancesCards()}
