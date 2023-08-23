@@ -84,6 +84,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) show info, if server time differs from client time
+
 ### 6.9.1 (2023-08-22)
 * (foxriver76) allow resizing of all columns in objects tab
 * (foxriver76) without expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace

@@ -88,6 +88,9 @@ const formatInfo = {
 };
 
 class Intro extends Component {
+    /** If server time differs more than MS from client time, show a warning */
+    #THRESHOLD_TIME_DIFF_MS = 30 * 60 * 1_000;
+
     constructor(props) {
         super(props);
 
@@ -114,17 +117,41 @@ class Intro extends Component {
         this.t = props.t;
     }
 
-    componentDidMount() {
-        this.getData()
-            .then(() => {
-                this.props.instancesWorker.registerHandler(this.getDataDelayed);
-                this.props.hostsWorker.registerHandler(this.updateHosts);
-                this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
-                // read reverse proxy settings
-                this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`)
-                    .then(obj =>
-                        this.setState({ reverseProxy: obj?.native?.reverseProxy || [] }));
-            });
+    /**
+     * Compares the backend time with the frontend time
+     *
+     * @return {Promise<void>}
+     */
+    async checkBackendTime() {
+        const { protocol, host } = window.location;
+        const adminTs = Date.now();
+        const res = (await fetch(`${protocol}//${host}/time`));
+        const { ts } = await res.json();
+
+        const diff = Math.abs(adminTs - ts);
+
+        console.log(`Difference is ${diff} ms`);
+        console.log(`Server time is ${new Date(ts)} our time is ${new Date(adminTs)}`);
+
+        if (diff > this.#THRESHOLD_TIME_DIFF_MS) {
+            console.warn(`Critical difference: Server time is ${new Date(ts)} our time is ${new Date(adminTs)}`);
+            // TODO: put diff in a state instead and conditional render a info dialog somewhere
+        }
+    }
+
+    /**
+     * React lifecycle hook called when component did mount
+     * @return {Promise<void>}
+     */
+    async componentDidMount() {
+        await this.getData();
+        this.props.instancesWorker.registerHandler(this.getDataDelayed);
+        this.props.hostsWorker.registerHandler(this.updateHosts);
+        this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+        // read reverse proxy settings
+        const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
+        this.setState({ reverseProxy: obj?.native?.reverseProxy || [] });
+        await this.checkBackendTime();
     }
 
     componentWillUnmount() {
