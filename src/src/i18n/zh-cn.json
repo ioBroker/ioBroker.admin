@@ -131,6 +131,7 @@
   "Available version:": "可用版本",
   "Azerbaijan": "阿塞拜疆",
   "Back": "后退",
+  "Backend time differs by %s minutes": "ioBroker 服务器的时间与浏览器的时间相差 %s 分钟。检查主机设置。",
   "Background": "背景",
   "Background color of the login screen": "登录界面的背景颜色",
   "Background image": "背景图片",

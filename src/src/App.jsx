@@ -989,7 +989,7 @@ class App extends Router {
                                 } else {
                                     window.location.reload();
                                 }
-                            }, 1000);
+                            }, 1_000);
 
                             this.setState({
                                 cloudNotConnected: true,

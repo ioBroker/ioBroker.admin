@@ -88,6 +88,11 @@ const formatInfo = {
 };
 
 class Intro extends Component {
+    /** If server time differs more than MS from client time, show a warning */
+    #THRESHOLD_TIME_DIFF_MS = 30 * 60 * 1_000;
+
+    #ONE_MINUTE_MS = 60 * 1_000;
+
     constructor(props) {
         super(props);
 
@@ -104,6 +109,8 @@ class Intro extends Component {
             reverseProxy: null,
             alive: {},
             hostsData: {},
+            /** Difference between client and host time in ms */
+            hostTimeDiffMap: new Map(),
         };
 
         this.currentProxyPath = window.location.pathname; // e.g. /admin/
@@ -114,17 +121,37 @@ class Intro extends Component {
         this.t = props.t;
     }
 
-    componentDidMount() {
-        this.getData()
-            .then(() => {
-                this.props.instancesWorker.registerHandler(this.getDataDelayed);
-                this.props.hostsWorker.registerHandler(this.updateHosts);
-                this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
-                // read reverse proxy settings
-                this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`)
-                    .then(obj =>
-                        this.setState({ reverseProxy: obj?.native?.reverseProxy || [] }));
-            });
+    /**
+     * Compares the backend time with the frontend time
+     *
+     * @return {Promise<void>}
+     */
+    async checkBackendTime() {
+        const timeDiffMap = this.state.hostTimeDiffMap;
+
+        for (const [hostId, hostData] of Object.entries(this.state.hostsData)) {
+            const currDate = new Date();
+            const diff = Math.abs(hostData.time - currDate.getTime());
+
+            timeDiffMap.set(hostId, diff);
+        }
+
+        this.setState({ hostTimeDiffMap: timeDiffMap });
+    }
+
+    /**
+     * React lifecycle hook called when component did mount
+     * @return {Promise<void>}
+     */
+    async componentDidMount() {
+        await this.getData();
+        this.props.instancesWorker.registerHandler(this.getDataDelayed);
+        this.props.hostsWorker.registerHandler(this.updateHosts);
+        this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+        // read reverse proxy settings
+        const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
+        this.setState({ reverseProxy: obj?.native?.reverseProxy || [] });
+        await this.checkBackendTime();
     }
 
     componentWillUnmount() {
@@ -135,7 +162,7 @@ class Intro extends Component {
         this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
     }
 
-    updateHostsAlive = events => {
+    updateHostsAlive = async events => {
         const alive = JSON.parse(JSON.stringify(this.state.alive));
         const hostsId = [];
 
@@ -156,11 +183,9 @@ class Intro extends Component {
         if (hostsId.length) {
             const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
 
-            Promise.all(hostsId.map(id => this.getHostData(id, alive[id])))
-                .then(results => {
-                    results.forEach(res => hostsData[res.id] = res.data);
-                    this.setState({ alive, hostsData });
-                });
+            const results = await Promise.all(hostsId.map(id => this.getHostData(id, alive[id])));
+            results.forEach(res => hostsData[res.id] = res.data);
+            this.setState({ alive, hostsData }, () => this.checkBackendTime());
         }
     };
 
@@ -269,6 +294,7 @@ class Intro extends Component {
                 }
 
                 const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
+                const timeDiff = this.state.hostTimeDiffMap.get(instance.id) ?? 0;
 
                 return <IntroCard
                     key={`${instance.id}_${instance.link}`}
@@ -291,6 +317,7 @@ class Intro extends Component {
                     edit={this.state.edit}
                     reverseProxy={this.state.reverseProxy}
                     offline={hostData && hostData.alive === false}
+                    warning={timeDiff > this.#THRESHOLD_TIME_DIFF_MS ? this.t('Backend time differs by %s minutes', Math.round(timeDiff / this.#ONE_MINUTE_MS)) : null}
                     enabled={enabled}
                     disabled={!hostData || typeof hostData !== 'object'}
                     getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
@@ -932,6 +959,24 @@ class Intro extends Component {
             .catch(error => window.alert(`Cannot get data: ${error}`));
     }
 
+    /**
+     * Render toast if content has been copied
+     *
+     * @return {JSX.Element}
+     */
+    renderCopiedToast() {
+        return <Snackbar
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            open={this.state.openSnackBar}
+            autoHideDuration={3_000}
+            onClose={() => this.setState({ openSnackBar: false })}
+            message={this.t('copied')}
+        />;
+    }
+
     render() {
         if (!this.state.instances) {
             return <LinearProgress />;
@@ -943,16 +988,7 @@ class Intro extends Component {
             elevation={0}
             overflow="visible"
         >
-            <Snackbar
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-                open={this.state.openSnackBar}
-                autoHideDuration={3000}
-                onClose={() => this.setState({ openSnackBar: false })}
-                message={this.t('copied')}
-            />
+            {this.renderCopiedToast()}
             <TabContent classes={{ root: classes.container }}>
                 <Grid container spacing={2}>
                     {this.getInstancesCards()}
