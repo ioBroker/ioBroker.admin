@@ -5,12 +5,14 @@ import { withStyles } from '@mui/styles';
 import {
     Button, Card, CardActions, CardContent, CardMedia, Collapse, Divider, Grid, IconButton, Link, Typography, Skeleton,
 } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 
 import CheckIcon from '@mui/icons-material/Check';
 import EditIcon from '@mui/icons-material/Create';
 import ErrorIcon from '@mui/icons-material/Error';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
+import WarningIcon from '@mui/icons-material/Warning';
 
 import blue from '@mui/material/colors/blue';
 import grey from '@mui/material/colors/grey';
@@ -414,12 +416,25 @@ class IntroCard extends Component {
                             {this.props.t('Info')}
                         </Button>
                     }
-                    <div className={classes.media + editClass} style={{ backgroundColor: this.props.color }}>
+                    <div className={classes.media + editClass} style={{ backgroundColor: this.props.color, display: 'flex', flexDirection: 'column' }}>
                         <CardMedia
                             className={classes.img}
                             component="img"
                             image={this.props.image}
-                        />
+                        >
+                        </CardMedia>
+                        <div style={{
+                            flex: 1, display: 'flex', paddingBottom: '5px', paddingLeft: '5px',
+                        }}
+                        >
+                            {this.props.warning ? <Tooltip title={this.props.warning}>
+                                <WarningIcon style={{
+                                    alignSelf: 'end',
+                                    fontSize: 36,
+                                }}
+                                />
+                            </Tooltip> : null}
+                        </div>
                     </div>
                     <div className={classes.contentContainer + editClass}>
                         <CardContent className={classes.content}>
@@ -519,6 +534,8 @@ IntroCard.propTypes = {
     offline: PropTypes.bool,
     t: PropTypes.func,
     lang: PropTypes.string,
+    /** Shows a warning on the card with given text if configured */
+    warning: PropTypes.string,
 };
 
 export default withStyles(styles)(IntroCard);

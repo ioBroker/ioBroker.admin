@@ -105,14 +105,12 @@ class Intro extends Component {
             editLink: false,
             editLinkIndex: -1,
             openSnackBar: false,
-            /** If toast for time diff is open */
-            openSnackBarTimeDiff: false,
             hasUnsavedChanges: false,
             reverseProxy: null,
             alive: {},
             hostsData: {},
-            /** Difference between client and server time in ms */
-            backendTimeDiff: 0,
+            /** Difference between client and host time in ms */
+            hostTimeDiffMap: new Map(),
         };
 
         this.currentProxyPath = window.location.pathname; // e.g. /admin/
@@ -129,21 +127,16 @@ class Intro extends Component {
      * @return {Promise<void>}
      */
     async checkBackendTime() {
-        const { protocol, host } = window.location;
-        const adminTs = Date.now();
-        let diff = 0;
+        const timeDiffMap = this.state.hostTimeDiffMap;
 
-        try {
-            const res = (await fetch(`${protocol}//${host}/time`));
-            const { ts } = await res.json();
-            diff = Math.abs(adminTs - ts);
-        } catch (e) {
-            console.warn(`Cannot get server time: ${e.message}`);
+        for (const [hostId, hostData] of Object.entries(this.state.hostsData)) {
+            const currDate = new Date();
+            const diff = Math.abs(hostData.time - currDate.getTime());
+
+            timeDiffMap.set(hostId, diff);
         }
 
-        if (diff > this.#THRESHOLD_TIME_DIFF_MS) {
-            this.setState({ backendTimeDiff: diff,  openSnackBarTimeDiff: true });
-        }
+        this.setState({ hostTimeDiffMap: timeDiffMap });
     }
 
     /**
@@ -169,7 +162,7 @@ class Intro extends Component {
         this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
     }
 
-    updateHostsAlive = events => {
+    updateHostsAlive = async events => {
         const alive = JSON.parse(JSON.stringify(this.state.alive));
         const hostsId = [];
 
@@ -190,11 +183,9 @@ class Intro extends Component {
         if (hostsId.length) {
             const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
 
-            Promise.all(hostsId.map(id => this.getHostData(id, alive[id])))
-                .then(results => {
-                    results.forEach(res => hostsData[res.id] = res.data);
-                    this.setState({ alive, hostsData });
-                });
+            const results = await Promise.all(hostsId.map(id => this.getHostData(id, alive[id])));
+            results.forEach(res => hostsData[res.id] = res.data);
+            this.setState({ alive, hostsData }, () => this.checkBackendTime());
         }
     };
 
@@ -303,6 +294,7 @@ class Intro extends Component {
                 }
 
                 const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
+                const timeDiff = this.state.hostTimeDiffMap.get(instance.id) ?? 0;
 
                 return <IntroCard
                     key={`${instance.id}_${instance.link}`}
@@ -325,6 +317,7 @@ class Intro extends Component {
                     edit={this.state.edit}
                     reverseProxy={this.state.reverseProxy}
                     offline={hostData && hostData.alive === false}
+                    warning={timeDiff > this.#THRESHOLD_TIME_DIFF_MS ? this.t('Backend time differs by %s minutes', Math.round(timeDiff / this.#ONE_MINUTE_MS)) : null}
                     enabled={enabled}
                     disabled={!hostData || typeof hostData !== 'object'}
                     getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
