@@ -977,24 +977,6 @@ class Intro extends Component {
         />;
     }
 
-    /**
-     * Render toast if server and client time are different
-     *
-     * @return {JSX.Element}
-     */
-    renderTimeDiffToast() {
-        return <Snackbar
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-            }}
-            open={this.state.openSnackBarTimeDiff}
-            autoHideDuration={8_000}
-            onClose={() => this.setState({ openSnackBarTimeDiff: false })}
-            message={this.t('Backend time differs by %s minutes', Math.round(this.state.backendTimeDiff / this.#ONE_MINUTE_MS))}
-        />;
-    }
-
     render() {
         if (!this.state.instances) {
             return <LinearProgress />;
@@ -1007,7 +989,6 @@ class Intro extends Component {
             overflow="visible"
         >
             {this.renderCopiedToast()}
-            {this.renderTimeDiffToast()}
             <TabContent classes={{ root: classes.container }}>
                 <Grid container spacing={2}>
                     {this.getInstancesCards()}
