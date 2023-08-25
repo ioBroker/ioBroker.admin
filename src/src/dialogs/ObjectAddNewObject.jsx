@@ -29,7 +29,7 @@ const stateDefValues = {
 };
 
 const TYPES = {
-    state:   { name: 'Datapoint', value: 'state' },
+    state:   { name: 'State', value: 'state' },
     channel: { name: 'Channel', value: 'channel' },
     device:  { name: 'Device', value: 'device' },
     folder:  { name: 'Folder', value: 'folder' },
