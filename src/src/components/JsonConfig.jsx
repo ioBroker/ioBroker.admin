@@ -429,9 +429,10 @@ class JsonConfig extends Router {
                     }
                 }
             }
-        } else if (attr && data[attr]) {
+        } else if (attr && typeof data[attr] === 'string') {
             // postprocessing
             if (schema.type === 'text') {
+                console.log(data[attr]);
                 if (schema.trim !== false) {
                     data[attr] = data[attr].trim();
                 }
