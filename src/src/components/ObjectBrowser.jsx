@@ -2344,6 +2344,37 @@ class ObjectBrowser extends Component {
         this.objects = {};
     }
 
+    /** @typedef {{ id: string, obj: ioBroker.Object, item: any }} ShowDeleteDialogOptions */
+
+    /**
+     * Show the delete dialog for a given object
+     *
+     * @param {ShowDeleteDialogOptions} options
+     */
+    showDeleteDialog(options) {
+        const { id, obj, item } = options;
+
+        // calculate number of children
+        const keys = Object.keys(this.objects);
+        keys.sort();
+        let count = 0;
+        const start = `${id}.`;
+        for (let i = 0; i < keys.length; i++) {
+            if (keys[i].startsWith(start)) {
+                count++;
+            } else if (keys[i] > start) {
+                break;
+            }
+        }
+
+        this.props.onObjectDelete(
+            id,
+            !!item.children?.length,
+            !obj.common?.dontDelete,
+            count + 1,
+        );
+    }
+
     /**
      * Context menu handler.
      */
@@ -5904,6 +5935,35 @@ class ObjectBrowser extends Component {
         if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
             this.toggleExpanded(selectedId);
         }
+
+        if (event.code === 'Delete') {
+            const item = this.getItemFromRoot(this.root, selectedId);
+            const { obj } = item.data;
+
+            if (obj && !obj.common?.dontDelete) {
+                this.showDeleteDialog({ id: selectedId, obj, item });
+            }
+        }
+    }
+
+    /**
+     * Find the id from the root
+     *
+     * @param {Record<string, any>} root The current root
+     * @param {string} id the object id
+     *
+     * @returns {any}
+     */
+    getItemFromRoot(root, id) {
+        const idArr = id.split('.');
+        let currId = '';
+
+        for (const idEntry of idArr) {
+            currId = currId ? `${currId}.${idEntry}` : idEntry;
+            root = root.children.find(item => item.data.id === currId);
+        }
+
+        return root;
     }
 
     resizerReset = () => {
@@ -6486,25 +6546,7 @@ class ObjectBrowser extends Component {
                 label: this.texts.deleteObject,
                 onClick: () => {
                     this.setState({ showContextMenu: null }, () => {
-                        // calculate number of children
-                        const keys = Object.keys(this.objects);
-                        keys.sort();
-                        let count = 0;
-                        const start = `${id}.`;
-                        for (let i = 0; i < keys.length; i++) {
-                            if (keys[i].startsWith(start)) {
-                                count++;
-                            } else if (keys[i] > start) {
-                                break;
-                            }
-                        }
-
-                        this.props.onObjectDelete(
-                            id,
-                            !!item.children?.length,
-                            !obj.common?.dontDelete,
-                            count + 1,
-                        );
+                        this.showDeleteDialog({ id, obj: obj || {}, item });
                     });
                 },
             },
