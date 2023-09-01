@@ -188,7 +188,7 @@ class ObjectBrowserValue extends Component {
 
         this.inputRef = React.createRef();
 
-        this.chartFrom = Date.now() - 3600000 * 2;
+        this.chartFrom = Date.now() - 3_600_000 * 2;
     }
 
     componentDidMount() {
@@ -203,10 +203,21 @@ class ObjectBrowserValue extends Component {
         }
 
         setTimeout(() => {
-            if (this.inputRef && this.inputRef.current) {
+            if (this.inputRef?.current) {
                 const el = this.inputRef.current;
                 const value = el.value || '';
+                const origType = el.type;
+
+                // type number cannot be selected, so we perform a short workaround
+                if (el.type === 'number') {
+                    el.type = 'text';
+                }
+
                 el.setSelectionRange(0, value.length);
+
+                if (origType === 'number') {
+                    el.type = origType;
+                }
             }
         }, 200);
     }
@@ -534,11 +545,13 @@ class ObjectBrowserValue extends Component {
                                         variant="standard"
                                         classes={{ root: this.props.classes.textInput }}
                                         autoFocus
+                                        type="number"
+                                        inputProps={{ step: this.props.object.common.step, min: this.props.object.common.min, max: this.props.object.common.max }}
                                         inputRef={this.inputRef}
                                         helperText={this.props.t(
                                             'Press ENTER to write the value, when focused',
                                         )}
-                                        value={parseFloat(this.state.targetValue) || 0}
+                                        value={this.state.targetValue || 0}
                                         label={this.props.t('Value')}
                                         onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
                                         onChange={e => this.setState({ targetValue: e.target.value })}
