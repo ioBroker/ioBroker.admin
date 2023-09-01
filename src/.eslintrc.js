@@ -75,4 +75,23 @@ module.exports = {
         'no-alert': 'off',
         'class-methods-use-this': 'off',
     },
+    overrides: [
+        {
+            files: [
+                '*.tsx',
+            ],
+            extends: [
+                'plugin:@typescript-eslint/recommended',
+                'plugin:prettier/recommended',
+            ],
+            parser: '@typescript-eslint/parser',
+            parserOptions: {
+                ecmaVersion: 'latest',
+                sourceType: 'module',
+            },
+            rules:  {
+                '@typescript-eslint/no-explicit-any': 'off',
+            },
+        },
+    ],
 };

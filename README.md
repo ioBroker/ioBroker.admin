@@ -84,6 +84,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) fixed problem with discovery dialog
+
 ### 6.9.2 (2023-09-01)
 * (foxriver76) show info, if server time differs from client time
 * (foxriver76) remove confusion with different names for state (datapoint and state)
