@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.9.1",
+    "version": "6.9.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.9.2": {
+        "en": "show info, if server time differs from client time\nremove confusion with different names for state (datapoint and state)\nfixed link on 404-page being opened inside child view\nfixed issue if non-text default values are provided to a text jsonConfig component\nimplemented del key shortcut to delete a selected object",
+        "de": "show info, wenn die serverzeit von der clientzeit abweicht\nverwechslung mit verschiedenen namen für staat (datenpunkt und zustand) entfernen\nfester link auf 404-seite geöffnet innerhalb der kinderansicht\nfestes Problem, wenn Nichttext-Standardwerte an einer Text jsonConfig-Komponente bereitgestellt werden\nimplementiert del key shortcut, um ein ausgewähltes objekt zu löschen",
+        "ru": "показать информацию, если время сервера отличается от времени клиента\nудалить путаницу с различными именами для государства (данные и государства)\nфиксированная ссылка на 404-страницу открыта внутри ребенка\nисправлена проблема, если нетекстовые значения по умолчанию предоставляются текстовому компоненту jsonConfig\nреализованная дель-ключовая ярлык для удаления выбранного объекта",
+        "pt": "mostrar informações, se o tempo do servidor difere do tempo do cliente\nremover confusão com nomes diferentes para estado (datapoint e estado)\nlink fixo em 404-página sendo aberta dentro da visão da criança\nproblema fixo se os valores padrão de não texto são fornecidos a um componente jsonConfig de texto\nimplementado o atalho da chave para excluir um objeto selecionado",
+        "nl": "show info, als servertijd verschillend is van cliënt tijd\nverwijder verwarring met verschillende namen voor staat (datapoint en staat)\nverbinding met 404 pagina's die geopend worden in kinderuitzicht\nals niet-text defecte waarden worden verstrekt aan een sms JsonConfig component\ndel toetsnelweg om een geselecteerd object te verwijderen",
+        "fr": "afficher des informations, si le temps de serveur diffère du temps client\nsupprimer la confusion avec différents noms d'état (point de données et état)\nlien fixe sur 404 page ouvert à l'intérieur de la vue enfant\nproblème fixe si des valeurs par défaut non textuelles sont fournies à un composant texte jsonConfig\nimplémenté del raccourci clé pour supprimer un objet sélectionné",
+        "it": "mostra informazioni, se il tempo del server differisce dall'ora del client\nrimuovere la confusione con nomi diversi per stato (datapoint e stato)\ncollegamento fisso su 404-pagina aperto all'interno della vista del bambino\nproblema fisso se i valori predefiniti non di testo vengono forniti a un componente jsonConfig di testo\nimplementato il collegamento del tasto per eliminare un oggetto selezionato",
+        "es": "mostrar información, si el tiempo del servidor difiere del tiempo del cliente\neliminar confusión con diferentes nombres para el estado (datapoint y estado)\nenlace fijo en 404 páginas que se abre dentro de la vista del niño\nedición fija si los valores predeterminados no texto se proporcionan a un componente jsonConfig texto\nimplementado del atajo clave para eliminar un objeto seleccionado",
+        "pl": "program info, jeśli czas serwera różni się od czasu klienta\npomyłka z różnymi nazwami dla stanu (dane i stan)\nzawartość 404-stronicowa została otwarta w świetle dziecięcym\nw przypadku, gdy domyślne wartości nie są dostarczane tekstowi komponent jsonConfig\nzaimplementowany klucz w celu usunięcia wybranego obiektu",
+        "uk": "показати інформацію, якщо час сервера відрізняється від часу клієнта\nвидалення конфузії з різними назвами для держави (дата даних та стану)\nвиправлено посилання на 404-сторінку, що відкривається всередині дитячого вигляду\nвиправлено проблему, якщо значення нетекстового за замовчуванням наданий на текстовий компонент\nвпроваджено функцію автоматичного видалення вибраного об'єкту",
+        "zh-cn": "展示,如果服务时间与客户时间不同\n与国名(数据点和国名)不同的混淆\n404页的固定联系在儿童观点内开放\n如果非实际的违约价值提供给案文丛书,则确定问题。\n删除选定目标的关键执行"
+      },
       "6.9.1": {
         "en": "allow resizing of all columns in objects tab\nwithout expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace\nfixed keyboard navigation\nfixed problem with showing controller upgrade instructions if no UI upgrade is supported",
         "de": "alle spalten in der registerkarte objekte neu formatieren lassen\nohne expertenmodus benutzer sind nur erlaubt, objekte in 0_userdata.0 und alias.0 namespace zu bearbeiten\ntastatur navigation\nbehobenes Problem bei der Anzeige von Controller-Upgrade-Anweisungen, wenn kein UI-Upgrade unterstützt wird",
@@ -95,19 +108,6 @@
         "pl": "informacja o instalacji dockera\npozwala na pobieranie folderów w plikach tabeli",
         "uk": "показати ще одну конкретну інформацію про встановлення docker на картці\nдозволяє завантажувати папки у вкладці файлів",
         "zh-cn": "关于在东道国卡里安装的集装箱的更具体的资料\n可在档案表中下载编号"
-      },
-      "6.6.5": {
-        "en": "also show js-controller upgrade instructions if UI upgrade is available\nallow array values to be stored in custom editor\nfixed bug which prevented creationg of new objects\nfixed bug which prevented opening adapter readme\nfixed ChipInput jsonConfig component",
-        "de": "auch js-Controller Upgrade-Anweisungen anzeigen, wenn UI Upgrade verfügbar ist\nermöglichen, array-werte im benutzerdefinierten editor zu speichern\nfehler behoben, der die erstellung neuer objekte verhinderte\nfehler behoben, der das öffnen des adapters verhindert\nchipInput jsonConfig-Komponente",
-        "ru": "также показать JS-контроллер инструкции по обновлению, если обновление UI доступно\nпозволяют значения массива храниться в пользовательском редакторе\nисправлена ошибка, предотвращающая создание новых объектов\nисправлена ошибка, которая предотвратить открытие адаптера readme\nфиксированный ChipInput jsonConfig компонент",
-        "pt": "também mostrar instruções de atualização js-controller se a atualização UI estiver disponível\npermitir que os valores de array sejam armazenados no editor personalizado\nbug fixo que impediu criação de novos objetos\nbug fixo que impediu o readme do adaptador de abertura\ncomponente fixo ChipInput jsonConfig",
-        "nl": "toon ook Js-controller upgrade instructies als UI upgrade beschikbaar is\nvertaling:\nvertaling:\n_\njsonConfig component",
-        "fr": "également afficher les instructions de mise à niveau de js-controller si la mise à niveau de l'interface utilisateur est disponible\npermettre de stocker des valeurs de tableau dans un éditeur personnalisé\nbug fixe qui a empêché la création de nouveaux objets\nbug fixe qui a empêché l'adaptateur d'ouverture readme\ncomposant fixe ChipInput jsonConfig",
-        "it": "mostra anche istruzioni di aggiornamento js-controller se l'aggiornamento dell'interfaccia utente è disponibile\nconsentire la memorizzazione dei valori di array nell'editor personalizzato\nbug fisso che ha impedito il creazioneg di nuovi oggetti\nbug fisso che ha impedito l'apertura dell'adattatore readme\ncomponente fisso ChipInput jsonConfig",
-        "es": "también mostrar js-controller instrucciones de actualización si la actualización UI está disponible\npermite que los valores de array se almacenen en editor personalizado\nfallo fijo que impidió la creación de nuevos objetos\nfallo fijo que impidió la apertura del adaptador readme\ncomponente fijo de ChipInput jsonConfig",
-        "pl": "wykazuje również ulepszenie js-controllerowych instrukcji, jeśli ulepszanie UI jest dostępne\npozwala na przechowywanie wartości w edytorze standardowym\nuruchomiony trąb uniemożliwiający tworzenie nowych obiektów\nbłąd stały, który zapobiegał otwieraniu adapterowi\nchipInput (ang.)",
-        "uk": "також показати інструкції щодо оновлення js-controller, якщо оновлення UI доступний\nдозволяє зберігати значення масиву у користувальницькому редакторі\nвиправлена помилка, яка перешкоджала створенню нових об'єктів\nвиправлена помилка, яка запобігає відкриванню адаптера\njsonConfig компонент",
-        "zh-cn": "如果能提供UI升级的控制性升级指示,也显示防污升级指示。\n允许在习惯编辑中储存各种价值\n防止新目标的设定\nb. 妨碍开端的固定阀\nbhipInput jsonConfig部分"
       }
     },
     "desc": {

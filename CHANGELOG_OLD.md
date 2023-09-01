@@ -1,6 +1,18 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.7.2 (2023-08-09)
+* (foxriver76) remove https certificate options
+* (foxriver76) prevent error log of not used certificates even-though they are used
+* (foxriver76) fixed issue with docker host cards on intro tab
+* (foxriver76) fixed issue if adapter readme is opened in new tab
+* (bluefox) corrected opening of custom tabs, e.g., for fullcalendar
+* (bluefox) allowed downloading of recursive folders
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
