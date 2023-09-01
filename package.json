@@ -48,7 +48,7 @@
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@iobroker/legacy-testing": "^0.3.7",
     "@iobroker/testing": "^4.1.0",
-    "@tsconfig/node16": "^16.1.0",
+    "@tsconfig/node16": "^16.1.1",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.0",
     "chai": "^4.3.7",
