@@ -70,6 +70,7 @@ import InstancesWorker from './Workers/InstancesWorker';
 import HostsWorker from './Workers/HostsWorker';
 import AdaptersWorker from './Workers/AdaptersWorker';
 import ObjectsWorker from './Workers/ObjectsWorker';
+// eslint-disable-next-line import/no-unresolved
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog from './dialogs/SlowConnectionWarningDialog';
 import IsVisible from './components/IsVisible';
