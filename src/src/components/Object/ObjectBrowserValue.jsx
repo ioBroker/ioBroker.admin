@@ -581,11 +581,11 @@ class ObjectBrowserValue extends Component {
                                         helperText={this.props.t(
                                             'Press ENTER to write the value, when focused',
                                         )}
-                                        value={this.state.targetValue || 0}
+                                        value={this.state.targetValue.toString() || 0}
                                         label={this.props.t('Value')}
                                         onKeyUp={e => e.keyCode === 13 && this.state.valid && this.onUpdate(e)}
                                         onChange={e => {
-                                            this.setState({ targetValue: e.target.value, valid: this.isNumberValid({ value: e.target.value, common: this.props.object.common }) });
+                                            this.setState({ targetValue: Number(e.target.value), valid: this.isNumberValid({ value: e.target.value, common: this.props.object.common }) });
                                         }}
                                     /> : (this.state.type === 'json' ?
                                         this.renderJsonEditor()
