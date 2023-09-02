@@ -253,7 +253,7 @@ class ConfigTable extends ConfigGeneric {
             order: 'asc',
             iteration: 0,
             filterOn: [],
-        }, () =>         this.validateUniqueProps());
+        }, () => this.validateUniqueProps());
     }
 
     componentWillUnmount() {
@@ -309,7 +309,7 @@ class ConfigTable extends ConfigGeneric {
     }
 
     /**
-     * Validate that the new table value is unique
+     * Validate that columns configured in `uniqueColumns` have unique values
      */
     validateUniqueProps() {
         if (!this.props.schema.uniqueColumns) {
@@ -335,15 +335,6 @@ class ConfigTable extends ConfigGeneric {
                 this.setState({ errorMessage: '' });
             }
         }
-        /**
-
-        if (found) {
-            this.onError(attr, 'is not unique');
-            this.setState({ errorMessage: I18n.t('Non-allowed duplicate entry "%s" in column "%s"', value, attr) });
-        } else {
-            this.onError(attr, null);
-        }
-            */
     }
 
     static descendingComparator(a, b, orderBy) {
