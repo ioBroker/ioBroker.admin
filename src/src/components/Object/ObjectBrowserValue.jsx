@@ -180,6 +180,8 @@ class ObjectBrowserValue extends Component {
             chartEnabled: (window._localStorage || window.localStorage).getItem('App.chartSetValue') !== 'false',
             fullScreen: (window._localStorage || window.localStorage).getItem('App.fullScreen') === 'true',
             targetValue: value,
+            /** IF input is invalid, set value button is disabled */
+            valid: true,
         };
 
         this.ack = false;
@@ -188,7 +190,7 @@ class ObjectBrowserValue extends Component {
 
         this.inputRef = React.createRef();
 
-        this.chartFrom = Date.now() - 3600000 * 2;
+        this.chartFrom = Date.now() - 3_600_000 * 2;
     }
 
     componentDidMount() {
@@ -203,10 +205,21 @@ class ObjectBrowserValue extends Component {
         }
 
         setTimeout(() => {
-            if (this.inputRef && this.inputRef.current) {
+            if (this.inputRef?.current) {
                 const el = this.inputRef.current;
                 const value = el.value || '';
+                const origType = el.type;
+
+                // type number cannot be selected, so we perform a short workaround
+                if (el.type === 'number') {
+                    el.type = 'text';
+                }
+
                 el.setSelectionRange(0, value.length);
+
+                if (origType === 'number') {
+                    el.type = origType;
+                }
             }
         }, 200);
     }
@@ -248,6 +261,33 @@ class ObjectBrowserValue extends Component {
         this.props.onClose({
             val: value, ack: this.ack, q: this.q, expire: parseInt(this.expire, 10) || undefined,
         });
+    }
+
+    /** @typedef {{ value: unknown, common: ioBroker.StateCommon }} NumberValidationOptions */
+
+    /**
+     * Check if a number value is valid according to the objects common properties
+     * @param {NumberValidationOptions} options value and common information
+     *
+     * @returns {boolean}
+     */
+    isNumberValid(options) {
+        const { common } = options;
+        let { value } = options;
+
+        if (typeof value !== 'number') {
+            value = Number(value);
+        }
+
+        if (typeof common.min === 'number'  && value < common.min) {
+            return false;
+        }
+
+        if (typeof common.max === 'number'  && value > common.max) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -489,7 +529,7 @@ class ObjectBrowserValue extends Component {
                                                             this.checkJsonError();
                                                         }
 
-                                                        this.setState({ type: e.target.value });
+                                                        this.setState({ type: e.target.value, valid: e.target.value === 'number' ? this.isNumberValid({ value: this.state.targetValue, common: this.props.object.common }) : true });
                                                     }}
                                                 >
                                                     <MenuItem value="string">String</MenuItem>
@@ -534,14 +574,19 @@ class ObjectBrowserValue extends Component {
                                         variant="standard"
                                         classes={{ root: this.props.classes.textInput }}
                                         autoFocus
+                                        error={!this.state.valid}
+                                        type="number"
+                                        inputProps={{ step: this.props.object.common.step, min: this.props.object.common.min, max: this.props.object.common.max }}
                                         inputRef={this.inputRef}
                                         helperText={this.props.t(
                                             'Press ENTER to write the value, when focused',
                                         )}
-                                        value={parseFloat(this.state.targetValue) || 0}
+                                        value={this.state.targetValue.toString() || 0}
                                         label={this.props.t('Value')}
-                                        onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
-                                        onChange={e => this.setState({ targetValue: e.target.value })}
+                                        onKeyUp={e => e.keyCode === 13 && this.state.valid && this.onUpdate(e)}
+                                        onChange={e => {
+                                            this.setState({ targetValue: Number(e.target.value), valid: this.isNumberValid({ value: e.target.value, common: this.props.object.common }) });
+                                        }}
                                     /> : (this.state.type === 'json' ?
                                         this.renderJsonEditor()
                                         : (this.state.type === 'states' ?
@@ -630,6 +675,7 @@ class ObjectBrowserValue extends Component {
                 {!this.props.expertMode ? <div style={{ flexGrow: 1 }} /> : null}
                 <Button
                     variant="contained"
+                    disabled={!this.state.valid}
                     onClick={e => this.onUpdate(e)}
                     color="primary"
                     startIcon={<IconCheck />}
