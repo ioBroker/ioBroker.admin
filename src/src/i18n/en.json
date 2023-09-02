@@ -715,6 +715,7 @@
   "No stdout outputs": "No stdout outputs",
   "No version of %s": "Latest available version of \"%s\" is required, but nothing installed. Please install first \"%s\" and then retry.",
   "Node.js": "Node.js",
+  "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Non-allowed duplicate entry \"%s\" in column \"%s\"",
   "None": "None",
   "Norfolk Island": "Norfolk Island",
   "Northern Mariana Islands": "Northern Mariana Islands",

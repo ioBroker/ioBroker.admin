@@ -715,6 +715,7 @@
   "No stdout outputs": "Нет вывода в stdout",
   "No version of %s": "Требуется последняя доступная версия \"%s\", но ничего не установлено. Сначала установите \"%s\", а затем повторите попытку.",
   "Node.js": "Node.js",
+  "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Недопустимая повторяющаяся запись «%s» в столбце «%s».",
   "None": "Никто",
   "Norfolk Island": "Остров Норфолк",
   "Northern Mariana Islands": "Северные Марианские острова",

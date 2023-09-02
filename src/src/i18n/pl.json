@@ -715,6 +715,7 @@
   "No stdout outputs": "Brak wyjść na standardowe wyjście",
   "No version of %s": "Wymagana jest najnowsza dostępna wersja „%s”, ale nic nie zostało zainstalowane. Zainstaluj najpierw „%s”, a następnie spróbuj ponownie.",
   "Node.js": "Node.js",
+  "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Niedozwolony zduplikowany wpis „%s” w kolumnie „%s”",
   "None": "Żaden",
   "Norfolk Island": "Wyspa Norfolk",
   "Northern Mariana Islands": "Mariany Północne",

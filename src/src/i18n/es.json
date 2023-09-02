@@ -715,6 +715,7 @@
   "No stdout outputs": "Sin salidas estándar",
   "No version of %s": "Se requiere la última versión disponible de \"%s\", pero no hay nada instalado. Instale primero \"%s\" y luego vuelva a intentarlo.",
   "Node.js": "Node.js",
+  "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Entrada duplicada no permitida \"%s\" en la columna \"%s\"",
   "None": "Ninguno",
   "Norfolk Island": "Isla de Norfolk",
   "Northern Mariana Islands": "Islas Marianas del Norte",
