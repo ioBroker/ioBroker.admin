@@ -529,7 +529,7 @@ class ObjectBrowserValue extends Component {
                                                             this.checkJsonError();
                                                         }
 
-                                                        this.setState({ type: e.target.value });
+                                                        this.setState({ type: e.target.value, valid: e.target.value === 'number' ? this.isNumberValid({ value: this.state.targetValue, common: this.props.object.common }) : true });
                                                     }}
                                                 >
                                                     <MenuItem value="string">String</MenuItem>
