@@ -23,6 +23,7 @@ import {
     FilterAltOff as IconFilterOff,
     ContentCopy as CopyContentIcon,
     Download as ExportIcon,
+    Warning as ErrorIcon,
     UploadFile as ImportIcon,
     Close as IconClose,
 } from '@mui/icons-material';
@@ -228,6 +229,10 @@ class ConfigTable extends ConfigGeneric {
         });
     }
 
+    /**
+     * React lifecycle hook, called once component is mounted
+     * @return {Promise<void>}
+     */
     async componentDidMount() {
         super.componentDidMount();
         let value = ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
@@ -248,7 +253,7 @@ class ConfigTable extends ConfigGeneric {
             order: 'asc',
             iteration: 0,
             filterOn: [],
-        });
+        }, () => this.validateUniqueProps());
     }
 
     componentWillUnmount() {
@@ -294,11 +299,42 @@ class ConfigTable extends ConfigGeneric {
             onChange={(attr, valueChange) => {
                 const newObj = JSON.parse(JSON.stringify(value));
                 newObj[idx][attr] = valueChange;
-                this.setState({ value: newObj }, () =>
-                    this.onChangeWrapper(newObj, true));
+                this.setState({ value: newObj }, () => {
+                    this.validateUniqueProps();
+                    this.onChangeWrapper(newObj, true);
+                });
             }}
             onError={(error, attr) => this.onError(error, attr)}
         />;
+    }
+
+    /**
+     * Validate that columns configured in `uniqueColumns` have unique values
+     */
+    validateUniqueProps() {
+        if (!this.props.schema.uniqueColumns) {
+            return;
+        }
+
+        for (const uniqueCol of this.props.schema.uniqueColumns) {
+            /** @type {string[]} */
+            const allVals = [];
+            const found = this.state.value.find(entry => {
+                const val = entry[uniqueCol];
+                if (allVals.includes(val)) {
+                    this.onError(uniqueCol, 'is not unique');
+                    this.setState({ errorMessage: I18n.t('Non-allowed duplicate entry "%s" in column "%s"', val, uniqueCol) });
+                    return true;
+                }
+                allVals.push(val);
+                return false;
+            });
+
+            if (!found) {
+                this.onError(uniqueCol, null);
+                this.setState({ errorMessage: '' });
+            }
+        }
     }
 
     static descendingComparator(a, b, orderBy) {
@@ -450,7 +486,7 @@ class ConfigTable extends ConfigGeneric {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
         newValue.splice(index, 1);
 
-        this.setState({ value: newValue, iteration: this.state.iteration + 10000 }, () =>
+        this.setState({ value: newValue, iteration: this.state.iteration + 10_000 }, () =>
             this.applyFilter(false, null, () =>
                 this.onChangeWrapper(newValue)));
     };
@@ -886,6 +922,10 @@ class ConfigTable extends ConfigGeneric {
             {schema.help ?
                 <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText>
                 : null}
+            {this.state.errorMessage ? <div style={{ display: 'flex', padding: '5px' }}>
+                <ErrorIcon color="error" />
+                <span style={{ color: 'red', alignSelf: 'center' }}>{this.state.errorMessage}</span>
+            </div> : null}
         </Paper>;
     }
 }

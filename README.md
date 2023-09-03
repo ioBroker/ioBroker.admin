@@ -87,6 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 * (foxriver76) fixed problem with discovery dialog
 * (foxriver76) object browser now validates setting state of type number
+* (foxriver76) allow to specify unique columns for tables
 
 ### 6.9.2 (2023-09-01)
 * (foxriver76) show info, if server time differs from client time

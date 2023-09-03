@@ -715,6 +715,7 @@
   "No stdout outputs": "Kein Ausgabe in Kommandozeile",
   "No version of %s": "Die neueste verfügbare Version von \"%s\" ist erforderlich, es ist jedoch nichts installiert. Bitte installieren Sie zuerst \"%s\" und versuchen Sie es dann erneut.",
   "Node.js": "Node.js",
+  "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Unzulässiger doppelter Eintrag „%s“ in Spalte „%s“",
   "None": "Keiner",
   "Norfolk Island": "Norfolk Island",
   "Northern Mariana Islands": "Northern Mariana Islands",

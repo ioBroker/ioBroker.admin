@@ -715,6 +715,7 @@
   "No stdout outputs": "Geen standaarduitgangen",
   "No version of %s": "De nieuwste beschikbare versie van \"%s\" is vereist, maar er is niets geïnstalleerd. Installeer eerst \"%s\" en probeer het opnieuw.",
   "Node.js": "Node.js",
+  "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Niet-toegestane dubbele invoer \"%s\" in kolom \"%s\"",
   "None": "Geen",
   "Norfolk Island": "Norfolk Island",
   "Northern Mariana Islands": "noordelijke Mariana eilanden",

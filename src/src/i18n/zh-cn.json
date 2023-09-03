@@ -715,6 +715,7 @@
   "No stdout outputs": "没有标准输出",
   "No version of %s": "需要最新可用版本的“%s”，但未安装任何内容。请先安装“%s”，然后重试。",
   "Node.js": "Node.js",
+  "Non-allowed duplicate entry \"%s\" in column \"%s\"": "“%s”列中不允许出现重复条目“%s”",
   "None": "没有",
   "Norfolk Island": "诺福克岛",
   "Northern Mariana Islands": "北马里亚纳群岛",

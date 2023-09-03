@@ -197,6 +197,7 @@ Possible types:
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
     - `export` - [optional] - if export button should be shown. Export as csv file.
     - `import` - [optional] - if import button should be shown. Import from csv file.
+    - `uniqueColumns` - [optional] - specify an array of columns, which need to have unique entries
 
 - `accordion` - accordion with items that could be deleted, added, moved up, moved down (Admin 6.6.0 and newer)
     - `items` - `[{"type": see above, "attr": "name", "default": ""}]` - items can be placed like on a `panel` (xs, sm, md, lg and newLine)
