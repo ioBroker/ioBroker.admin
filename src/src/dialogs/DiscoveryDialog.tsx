@@ -312,29 +312,27 @@ const headCells = [
 function EnhancedTableHead(props): React.JSX.Element {
     const { numSelected, rowCount, onSelectAllClick } = props;
 
-    return (
-        <TableHead>
-            <TableRow>
-                <TableCell padding="checkbox">
-                    <Checkbox
-                        indeterminate={numSelected > 0 && numSelected < rowCount}
-                        checked={rowCount > 0 && numSelected === rowCount}
-                        onChange={onSelectAllClick}
-                        inputProps={{ 'aria-label': 'select all desserts' }}
-                    />
+    return <TableHead>
+        <TableRow>
+            <TableCell padding="checkbox">
+                <Checkbox
+                    indeterminate={numSelected > 0 && numSelected < rowCount}
+                    checked={rowCount > 0 && numSelected === rowCount}
+                    onChange={onSelectAllClick}
+                    inputProps={{ 'aria-label': 'select all desserts' }}
+                />
+            </TableCell>
+            {headCells.map(headCell => (
+                <TableCell
+                    key={headCell.id}
+                    align={headCell.numeric ? 'right' : 'left'}
+                    padding={headCell.disablePadding ? 'none' : 'normal'}
+                >
+                    <TableSortLabel>{headCell.label}</TableSortLabel>
                 </TableCell>
-                {headCells.map(headCell => (
-                    <TableCell
-                        key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
-                        padding={headCell.disablePadding ? 'none' : 'normal'}
-                    >
-                        <TableSortLabel>{headCell.label}</TableSortLabel>
-                    </TableCell>
-                ))}
-            </TableRow>
-        </TableHead>
-    );
+            ))}
+        </TableRow>
+    </TableHead>;
 }
 
 const buildComment = (comment, t) => {
