@@ -1,5 +1,8 @@
 module.exports = {
     root: true,
+    globals: {
+        ioBroker: true,
+    },
     env: {
         browser: true,
         es2021: true,
