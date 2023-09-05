@@ -205,9 +205,9 @@ const useStyles = makeStyles(theme => ({
         width: 200,
     },
     table: {
-        // '& *': {
-        //     color: 'black'
-        // }
+    // '& *': {
+    //     color: 'black'
+    // }
     },
     paperTable: {
         width: '100%',
@@ -259,7 +259,9 @@ interface TabPanelProps {
     [other: string]: unknown;
 }
 
-const TabPanel = ({ classes, children, value, index, title, custom, boxHeight, black, ...props }: TabPanelProps) => {
+function TabPanel({
+    classes, children, value, index, title, custom, boxHeight, black, ...props
+}: TabPanelProps) {
     if (custom) {
         return <div {...props}>{value === index && children}</div>;
     }
@@ -278,7 +280,7 @@ const TabPanel = ({ classes, children, value, index, title, custom, boxHeight, b
         </div>;
     }
     return null;
-};
+}
 
 const headCells = [
     {
@@ -310,27 +312,29 @@ const headCells = [
 function EnhancedTableHead(props) {
     const { numSelected, rowCount, onSelectAllClick } = props;
 
-    return <TableHead>
-        <TableRow>
-            <TableCell padding="checkbox">
-                <Checkbox
-                    indeterminate={numSelected > 0 && numSelected < rowCount}
-                    checked={rowCount > 0 && numSelected === rowCount}
-                    onChange={onSelectAllClick}
-                    inputProps={{ 'aria-label': 'select all desserts' }}
-                />
-            </TableCell>
-            {headCells.map(headCell => (
-                <TableCell
-                    key={headCell.id}
-                    align={headCell.numeric ? 'right' : 'left'}
-                    padding={headCell.disablePadding ? 'none' : 'normal'}
-                >
-                    <TableSortLabel>{headCell.label}</TableSortLabel>
+    return (
+        <TableHead>
+            <TableRow>
+                <TableCell padding="checkbox">
+                    <Checkbox
+                        indeterminate={numSelected > 0 && numSelected < rowCount}
+                        checked={rowCount > 0 && numSelected === rowCount}
+                        onChange={onSelectAllClick}
+                        inputProps={{ 'aria-label': 'select all desserts' }}
+                    />
                 </TableCell>
-            ))}
-        </TableRow>
-    </TableHead>;
+                {headCells.map(headCell => (
+                    <TableCell
+                        key={headCell.id}
+                        align={headCell.numeric ? 'right' : 'left'}
+                        padding={headCell.disablePadding ? 'none' : 'normal'}
+                    >
+                        <TableSortLabel>{headCell.label}</TableSortLabel>
+                    </TableCell>
+                ))}
+            </TableRow>
+        </TableHead>
+    );
 }
 
 const buildComment = (comment, t) => {
@@ -393,7 +397,7 @@ const buildComment = (comment, t) => {
     return text;
 };
 
-const DiscoveryDialog = ({
+function DiscoveryDialog({
     themeType,
     themeName,
     socket,
@@ -404,7 +408,7 @@ const DiscoveryDialog = ({
     hosts,
     onClose,
     theme,
-}) => {
+}) {
     const classes = useStyles();
 
     const [step, setStep] = useState<number>(0);
@@ -417,8 +421,7 @@ const DiscoveryDialog = ({
         async function fetchData() {
             const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
             const listChecked = {};
-            let lastSelection =
-                ((window as any)._localStorage || window.localStorage).getItem('App.discoveryLastSelection') || null;
+            let lastSelection = ((window as any)._localStorage || window.localStorage).getItem('App.discoveryLastSelection') || null;
             if (lastSelection) {
                 try {
                     lastSelection = JSON.parse(lastSelection);
@@ -622,37 +625,38 @@ const DiscoveryDialog = ({
 
         if (selected.length > index) {
             setTimeout(
-                () =>
-                    checkLicenseAndInputs(selected[index], () => {
-                        setCurrentInstall(index + 1);
-                        setCmdName('install');
-                        setInstallProgress(true);
-                    }),
-                100
+                () => checkLicenseAndInputs(selected[index], () => {
+                    setCurrentInstall(index + 1);
+                    setCmdName('install');
+                    setInstallProgress(true);
+                }),
+                100,
             );
         } else {
             setFinishInstall(true);
         }
     };
 
-    const inputsDialog = showInputsDialog ? <GenerateInputsModal
-        socket={socket}
-        themeType={themeType}
-        themeName={themeName}
-        newInstances={showInputsDialog.obj}
-        onClose={params => {
-            const cb = showInputsDialog.cb;
-            const obj = showInputsDialog.obj;
-            setShowInputsDialog(false);
+    const inputsDialog = showInputsDialog ? (
+        <GenerateInputsModal
+            socket={socket}
+            themeType={themeType}
+            themeName={themeName}
+            newInstances={showInputsDialog.obj}
+            onClose={params => {
+                const { cb } = showInputsDialog;
+                const { obj } = showInputsDialog;
+                setShowInputsDialog(false);
 
-            if (params) {
-                setInstancesInputsParams(params);
-                cb();
-            } else {
-                goToNextInstance(obj._id, 'Error: configuration dialog canceled');
-            }
-        }}
-    /> : null;
+                if (params) {
+                    setInstancesInputsParams(params);
+                    cb();
+                } else {
+                    goToNextInstance(obj._id, 'Error: configuration dialog canceled');
+                }
+            }}
+        />
+    ) : null;
 
     const resetStateBack = () => {
         setSelected([]);
@@ -674,8 +678,8 @@ const DiscoveryDialog = ({
         <LicenseDialog
             url={showLicenseDialog.obj.common.licenseUrl}
             onClose={result => {
-                const cb = showLicenseDialog.cb;
-                const obj = showLicenseDialog.obj;
+                const { cb } = showLicenseDialog;
+                const { obj } = showLicenseDialog;
                 setShowLicenseDialog(false);
                 if (!result) {
                     // license isn't accepted, go to the next instance
@@ -738,7 +742,7 @@ const DiscoveryDialog = ({
                                     <div className={classes.descriptionHeaderText}>
                                         {I18n.t(
                                             'Last scan on %s',
-                                            Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat)
+                                            Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat),
                                         )}
                                     </div>
                                 )}
@@ -755,12 +759,12 @@ const DiscoveryDialog = ({
                                             disabled={disableScanner}
                                             onChange={(_, value) => {
                                                 const newCheckboxChecked = JSON.parse(
-                                                    JSON.stringify(checkboxChecked)
+                                                    JSON.stringify(checkboxChecked),
                                                 );
                                                 newCheckboxChecked[key] = value;
                                                 ((window as any)._localStorage || window.localStorage).setItem(
                                                     'App.discoveryLastSelection',
-                                                    JSON.stringify(newCheckboxChecked)
+                                                    JSON.stringify(newCheckboxChecked),
                                                 );
                                                 setCheckboxChecked(newCheckboxChecked);
                                             }}
@@ -796,9 +800,9 @@ const DiscoveryDialog = ({
                         title={
                             discoveryData?.native?.lastScan
                                 ? I18n.t(
-                                      'Create instances automatically - Last scan on %s',
-                                      Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat)
-                                  )
+                                    'Create instances automatically - Last scan on %s',
+                                    Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat),
+                                )
                                 : I18n.t('Create instances automatically')
                         }
                     >
@@ -858,9 +862,7 @@ const DiscoveryDialog = ({
                                                     <TableCell padding="checkbox">
                                                         <Checkbox
                                                             checked={isSelected(obj._id, selected)}
-                                                            onClick={e =>
-                                                                handleClick(e, obj._id, selected, setSelected)
-                                                            }
+                                                            onClick={e => handleClick(e, obj._id, selected, setSelected)}
                                                         />
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" padding="none">
@@ -885,12 +887,10 @@ const DiscoveryDialog = ({
                                                                 t={I18n.t}
                                                                 value={hostInstances[obj._id] || currentHost}
                                                                 themeType={themeType}
-                                                                onChange={val =>
-                                                                    setHostInstances({
-                                                                        ...hostInstances,
-                                                                        [obj._id]: val,
-                                                                    })
-                                                                }
+                                                                onChange={val => setHostInstances({
+                                                                    ...hostInstances,
+                                                                    [obj._id]: val,
+                                                                })}
                                                             />
                                                         ) : (
                                                             '_'
@@ -905,8 +905,8 @@ const DiscoveryDialog = ({
                                                             onClick={() => {
                                                                 const newInstances = JSON.parse(
                                                                     JSON.stringify(
-                                                                        discoveryData?.native.newInstances
-                                                                    )
+                                                                        discoveryData?.native.newInstances,
+                                                                    ),
                                                                 );
                                                                 newInstances[idx].comment = {
                                                                     ...newInstances[idx].comment,
@@ -944,7 +944,7 @@ const DiscoveryDialog = ({
                                             classes.headerBlockDisplayItem,
                                             finishInstall && classes.pointer,
                                             finishInstall && classes.hover,
-                                            finishInstall && selectLogsIndex === idx && classes.activeBlock
+                                            finishInstall && selectLogsIndex === idx && classes.activeBlock,
                                         )}
                                     >
                                         <div className={classes.width200}>
@@ -963,104 +963,109 @@ const DiscoveryDialog = ({
                                                 </div>
                                             </div>
                                         </div>
-                                        {currentInstall === idx + 1 && !installStatus[idx + 1] && <CircularProgress size={20} />}
-                                        {installStatus[idx + 1] === 'error' ? <ReportProblemIcon className={classes.installError} />
-                                            : installStatus[idx + 1] === 'success' ? <AssignmentTurnedInIcon className={classes.installSuccess} /> : null}
+                                        {currentInstall === idx + 1 && !installStatus[idx + 1] && (
+                                            <CircularProgress size={20} />
+                                        )}
+                                        {installStatus[idx + 1] === 'error' ? (
+                                            <ReportProblemIcon className={classes.installError} />
+                                        ) : installStatus[idx + 1] === 'success' ? (
+                                            <AssignmentTurnedInIcon className={classes.installSuccess} />
+                                        ) : null}
                                     </div>
                                 ))}
                             </div>
-                            {currentInstall && (installProgress || finishInstall) && <div style={{ overflow: 'hidden', width: 'calc(100% - 260px)' }}>
-                                <Command
-                                    noSpacing
-                                    key={`${currentInstall}-${cmdName}`}
-                                    ready
-                                    host={currentHost}
-                                    logsRead={
-                                        finishInstall ? logs[selected[selectLogsIndex]] || ['skipped'] : null
-                                    }
-                                    showElement={!finishInstall}
-                                    socket={socket}
-                                    t={I18n.t}
-                                    cmd={
-                                        finishInstall
-                                            ? ''
-                                            : `${cmdName} ${
-                                                  selected[currentInstall - 1]
-                                                      .replace('system.adapter.', '')
-                                                      .split('.')[0]
-                                              }`
-                                    }
-                                    onFinished={(_, logsSuccess) => {
-                                        let data = JSON.parse(
-                                            JSON.stringify(
-                                                discoveryData?.native.newInstances.find(
-                                                    obj => obj._id === selected[currentInstall - 1]
-                                                )
-                                            )
-                                        );
-                                        delete data.comment;
+                            {currentInstall && (installProgress || finishInstall) && (
+                                <div style={{ overflow: 'hidden', width: 'calc(100% - 260px)' }}>
+                                    <Command
+                                        noSpacing
+                                        key={`${currentInstall}-${cmdName}`}
+                                        ready
+                                        host={currentHost}
+                                        logsRead={
+                                            finishInstall ? logs[selected[selectLogsIndex]] || ['skipped'] : null
+                                        }
+                                        showElement={!finishInstall}
+                                        socket={socket}
+                                        t={I18n.t}
+                                        cmd={
+                                            finishInstall
+                                                ? ''
+                                                : `${cmdName} ${
+                                                    selected[currentInstall - 1]
+                                                        .replace('system.adapter.', '')
+                                                        .split('.')[0]
+                                                }`
+                                        }
+                                        onFinished={(_, logsSuccess) => {
+                                            let data = JSON.parse(
+                                                JSON.stringify(
+                                                    discoveryData?.native.newInstances.find(
+                                                        obj => obj._id === selected[currentInstall - 1],
+                                                    ),
+                                                ),
+                                            );
+                                            delete data.comment;
 
-                                        let adapterId = data._id.split('.');
-                                        adapterId.pop();
-                                        adapterId = adapterId.join('.');
-                                        socket.getObject(adapterId).then(obj => {
-                                            data = { ...obj, ...data };
-                                            data.common = Object.assign(obj.common, data.common);
-                                            data.native = Object.assign(obj.native, data.native);
-                                            data.type = 'instance';
+                                            let adapterId = data._id.split('.');
+                                            adapterId.pop();
+                                            adapterId = adapterId.join('.');
+                                            socket.getObject(adapterId).then(obj => {
+                                                data = { ...obj, ...data };
+                                                data.common = Object.assign(obj.common, data.common);
+                                                data.native = Object.assign(obj.native, data.native);
+                                                data.type = 'instance';
 
-                                            // set log level
-                                            if (defaultLogLevel) {
-                                                data.common.logLevel = defaultLogLevel;
-                                            }
-                                            data.common.logLevel = data.common.logLevel || 'info';
+                                                // set log level
+                                                if (defaultLogLevel) {
+                                                    data.common.logLevel = defaultLogLevel;
+                                                }
+                                                data.common.logLevel = data.common.logLevel || 'info';
 
-                                            if (
-                                                instancesInputsParams.native &&
-                                                Object.keys(instancesInputsParams.native).length
-                                            ) {
-                                                Object.assign(data.native, instancesInputsParams.native);
-                                                setInstancesInputsParams({});
-                                            }
-                                            if (checkSelectHosts && hostInstances[data._id]) {
-                                                data.common.host = hostInstances[data._id];
-                                            }
+                                                if (
+                                                    instancesInputsParams.native
+                                                        && Object.keys(instancesInputsParams.native).length
+                                                ) {
+                                                    Object.assign(data.native, instancesInputsParams.native);
+                                                    setInstancesInputsParams({});
+                                                }
+                                                if (checkSelectHosts && hostInstances[data._id]) {
+                                                    data.common.host = hostInstances[data._id];
+                                                }
 
-                                            // write created instance
-                                            extendObject(data._id, data).then(() => {
-                                                if (currentInstall < selected.length) {
-                                                    // install next
-                                                    checkLicenseAndInputs(selected[currentInstall], () => {
-                                                        setCurrentInstall(currentInstall + 1);
-                                                        setCmdName('install');
-                                                    });
-                                                    setLogs({
-                                                        ...logs,
-                                                        [selected[currentInstall - 1]]: logsSuccess,
-                                                    });
-                                                    setInstallStatus({
-                                                        ...installStatus,
-                                                        [currentInstall]: 'success',
-                                                    });
-                                                } else {
-                                                    setLogs({
-                                                        ...logs,
-                                                        [selected[currentInstall - 1]]: logsSuccess,
-                                                    });
-                                                    setInstallStatus({
-                                                        ...installStatus,
-                                                        [currentInstall]: 'success',
-                                                    });
-                                                    setSelectLogsIndex(currentInstall - 1);
-                                                    const dataDiscovery = JSON.parse(
-                                                        JSON.stringify(discoveryData)
-                                                    );
-                                                    if (dataDiscovery) {
-                                                        dataDiscovery.native.newInstances =
-                                                            dataDiscovery.native.newInstances.filter(
+                                                // write created instance
+                                                extendObject(data._id, data).then(() => {
+                                                    if (currentInstall < selected.length) {
+                                                        // install next
+                                                        checkLicenseAndInputs(selected[currentInstall], () => {
+                                                            setCurrentInstall(currentInstall + 1);
+                                                            setCmdName('install');
+                                                        });
+                                                        setLogs({
+                                                            ...logs,
+                                                            [selected[currentInstall - 1]]: logsSuccess,
+                                                        });
+                                                        setInstallStatus({
+                                                            ...installStatus,
+                                                            [currentInstall]: 'success',
+                                                        });
+                                                    } else {
+                                                        setLogs({
+                                                            ...logs,
+                                                            [selected[currentInstall - 1]]: logsSuccess,
+                                                        });
+                                                        setInstallStatus({
+                                                            ...installStatus,
+                                                            [currentInstall]: 'success',
+                                                        });
+                                                        setSelectLogsIndex(currentInstall - 1);
+                                                        const dataDiscovery = JSON.parse(
+                                                            JSON.stringify(discoveryData),
+                                                        );
+                                                        if (dataDiscovery) {
+                                                            dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(
                                                                 ({ _id }) => {
                                                                     const find = selected.find(
-                                                                        el => el === _id
+                                                                        el => el === _id,
                                                                     );
                                                                     if (!find) {
                                                                         return true;
@@ -1070,127 +1075,129 @@ const DiscoveryDialog = ({
                                                                             selected.indexOf(find) + 1
                                                                         ] !== 'success'
                                                                     );
-                                                                }
+                                                                },
                                                             );
-                                                        socket.setObject('system.discovery', dataDiscovery);
+                                                            socket.setObject('system.discovery', dataDiscovery);
+                                                        }
+                                                        setFinishInstall(true);
+                                                        window.alert(I18n.t('Finished'));
                                                     }
-                                                    setFinishInstall(true);
-                                                    window.alert(I18n.t('Finished'));
-                                                }
+                                                });
                                             });
-                                        });
-                                    }}
-                                    errorFunc={(el, logsError) => {
-                                        if (el === 51 && cmdName === 'install') {
-                                            setCmdName('upload');
-                                            return;
-                                        }
-                                        if (selected.length > currentInstall && cmdName === 'upload') {
-                                            checkLicenseAndInputs(selected[currentInstall], () =>
-                                                setCurrentInstall(currentInstall + 1)
-                                            );
-                                            setInstallStatus({ ...installStatus, [currentInstall]: 'error' });
-                                        } else {
-                                            if (selected.length > currentInstall) {
-                                                setInstallStatus({
-                                                    ...installStatus,
-                                                    [currentInstall]: 'error',
-                                                });
-                                                checkLicenseAndInputs(selected[currentInstall], () =>
-                                                    setCurrentInstall(currentInstall + 1)
-                                                );
-                                                setCmdName('install');
-                                                setLogs({ ...logs, [selected[currentInstall - 1]]: logsError });
+                                        }}
+                                        errorFunc={(el, logsError) => {
+                                            if (el === 51 && cmdName === 'install') {
+                                                setCmdName('upload');
+                                                return;
+                                            }
+                                            if (selected.length > currentInstall && cmdName === 'upload') {
+                                                checkLicenseAndInputs(selected[currentInstall], () => setCurrentInstall(currentInstall + 1));
+                                                setInstallStatus({ ...installStatus, [currentInstall]: 'error' });
                                             } else {
-                                                setInstallStatus({
-                                                    ...installStatus,
-                                                    [currentInstall]: 'error',
-                                                });
-                                                setLogs({ ...logs, [selected[currentInstall - 1]]: logsError });
-                                                setFinishInstall(true);
-                                                setSelectLogsIndex(currentInstall - 1);
-                                                const dataDiscovery = JSON.parse(JSON.stringify(discoveryData));
-                                                if (dataDiscovery) {
-                                                    dataDiscovery.native.newInstances =
-                                                        dataDiscovery.native.newInstances.filter(({ _id }) => {
+                                                if (selected.length > currentInstall) {
+                                                    setInstallStatus({
+                                                        ...installStatus,
+                                                        [currentInstall]: 'error',
+                                                    });
+                                                    checkLicenseAndInputs(selected[currentInstall], () => setCurrentInstall(currentInstall + 1));
+                                                    setCmdName('install');
+                                                    setLogs({ ...logs, [selected[currentInstall - 1]]: logsError });
+                                                } else {
+                                                    setInstallStatus({
+                                                        ...installStatus,
+                                                        [currentInstall]: 'error',
+                                                    });
+                                                    setLogs({ ...logs, [selected[currentInstall - 1]]: logsError });
+                                                    setFinishInstall(true);
+                                                    setSelectLogsIndex(currentInstall - 1);
+                                                    const dataDiscovery = JSON.parse(JSON.stringify(discoveryData));
+                                                    if (dataDiscovery) {
+                                                        dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(({ _id }) => {
                                                             const find = selected.find(ele => ele === _id);
                                                             if (!find) {
                                                                 return true;
                                                             }
                                                             return (
-                                                                installStatus[selected.indexOf(find) + 1] !==
-                                                                'success'
+                                                                installStatus[selected.indexOf(find) + 1]
+                                                                        !== 'success'
                                                             );
                                                         });
-                                                    socket.setObject('system.discovery', dataDiscovery);
+                                                        socket.setObject('system.discovery', dataDiscovery);
+                                                    }
                                                 }
+                                                window.alert(`error ${selected[currentInstall - 1]}`);
                                             }
-                                            window.alert(`error ${selected[currentInstall - 1]}`);
-                                        }
-                                    }}
-                                />
-                            </div>}
+                                        }}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </TabPanel>
                 </div>
             </DialogContent>
             <DialogActions>
-                {step > 0 && step !== 4 && <Button
-                    variant="contained"
-                    disabled={step === 0}
-                    onClick={() => {
-                        if (step === 2) {
-                            resetStateBack();
-                        }
-                        stepDown();
-                    }}
-                    // @ts-expect-error check if grey really works
-                    color="grey"
-                    startIcon={<NavigateBeforeIcon />}
-                >
-                    {I18n.t('Back')}
-                </Button>}
-                {step === 0 && <Button
-                    variant="contained"
-                    autoFocus
-                    disabled={disableScanner}
-                    onClick={discoverScanner}
-                    color="primary"
-                    startIcon={<SearchIcon />}
-                >
-                    {I18n.t('Discover')}
-                </Button>}
-                {step !== 2 && step !== 4 && <Tooltip
-                    title={
-                        step === 0
-                            ? I18n.t('Skip discovery process and go to install with last scan results')
-                            : ''
-                    }
-                >
-                    <span style={{ marginLeft: 8 }}>
-                        <Button
-                            variant="contained"
-                            disabled={
-                                !discoveryData ||
-                                !discoveryData?.native?.lastScan ||
-                                step === 2 ||
-                                disableScanner ||
-                                (step === 1 && !selected.length)
+                {step > 0 && step !== 4 && (
+                    <Button
+                        variant="contained"
+                        disabled={step === 0}
+                        onClick={() => {
+                            if (step === 2) {
+                                resetStateBack();
                             }
-                            onClick={() => {
-                                stepUp();
-                                if (step === 1) {
-                                    checkInstall();
+                            stepDown();
+                        }}
+                        // @ts-expect-error check if grey really works
+                        color="grey"
+                        startIcon={<NavigateBeforeIcon />}
+                    >
+                        {I18n.t('Back')}
+                    </Button>
+                )}
+                {step === 0 && (
+                    <Button
+                        variant="contained"
+                        autoFocus
+                        disabled={disableScanner}
+                        onClick={discoverScanner}
+                        color="primary"
+                        startIcon={<SearchIcon />}
+                    >
+                        {I18n.t('Discover')}
+                    </Button>
+                )}
+                {step !== 2 && step !== 4 && (
+                    <Tooltip
+                        title={
+                            step === 0
+                                ? I18n.t('Skip discovery process and go to install with last scan results')
+                                : ''
+                        }
+                    >
+                        <span style={{ marginLeft: 8 }}>
+                            <Button
+                                variant="contained"
+                                disabled={
+                                    !discoveryData
+                                        || !discoveryData?.native?.lastScan
+                                        || step === 2
+                                        || disableScanner
+                                        || (step === 1 && !selected.length)
                                 }
-                            }}
-                            // @ts-expect-error check if grey really works
-                            color={step === 1 ? 'primary' : 'grey'}
-                            startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
-                        >
-                            {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
-                        </Button>
-                    </span>
-                </Tooltip>}
+                                onClick={() => {
+                                    stepUp();
+                                    if (step === 1) {
+                                        checkInstall();
+                                    }
+                                }}
+                                // @ts-expect-error check if grey really works
+                                color={step === 1 ? 'primary' : 'grey'}
+                                startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
+                            >
+                                {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
+                            </Button>
+                        </span>
+                    </Tooltip>
+                )}
                 <Button
                     variant="contained"
                     disabled={disableScanner}
@@ -1204,6 +1211,6 @@ const DiscoveryDialog = ({
             </DialogActions>
         </Dialog>
     </ThemeProvider>;
-};
+}
 
 export default DiscoveryDialog;

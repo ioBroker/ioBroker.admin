@@ -1440,11 +1440,16 @@ function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
         return { rooms: [], per: false };
     }
     rooms = rooms || [];
-    for (let i = 0; i < data.roomEnums.length; i++) {
-        const common = data.objects[data.roomEnums[i]]?.common;
+    for (const room of data.roomEnums) {
+        const common = data.objects[room]?.common;
+
+        if (!common) {
+            continue;
+        }
+
         const name = getName(common.name, lang);
 
-        if (common?.members?.includes(id) && !rooms.includes(name)) {
+        if (common.members?.includes(id) && !rooms.includes(name)) {
             if (!withParentInfo) {
                 rooms.push(name);
             } else {
