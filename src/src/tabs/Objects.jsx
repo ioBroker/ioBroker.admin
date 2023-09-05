@@ -20,6 +20,7 @@ import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 import Router from '@iobroker/adapter-react-v5/Components/Router';
 import ObjectBrowser from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
+// eslint-disable-next-line import/no-unresolved
 import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';
 import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';

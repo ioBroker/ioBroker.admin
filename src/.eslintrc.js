@@ -1,5 +1,8 @@
 module.exports = {
     root: true,
+    globals: {
+        ioBroker: true,
+    },
     env: {
         browser: true,
         es2021: true,
@@ -9,6 +12,7 @@ module.exports = {
         'plugin:react/recommended',
         'airbnb',
         'plugin:eqeqeq-fix/recommended',
+        'plugin:@typescript-eslint/recommended',
     ],
     parserOptions: {
         ecmaFeatures: {
@@ -74,24 +78,6 @@ module.exports = {
         indent: ['error', 4, { SwitchCase: 1 }],
         'no-alert': 'off',
         'class-methods-use-this': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
     },
-    overrides: [
-        {
-            files: [
-                '*.tsx',
-            ],
-            extends: [
-                'plugin:@typescript-eslint/recommended',
-                'plugin:prettier/recommended',
-            ],
-            parser: '@typescript-eslint/parser',
-            parserOptions: {
-                ecmaVersion: 'latest',
-                sourceType: 'module',
-            },
-            rules:  {
-                '@typescript-eslint/no-explicit-any': 'off',
-            },
-        },
-    ],
 };

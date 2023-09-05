@@ -224,7 +224,7 @@ const JsControllerDialog = ({
         {readme.map((text, i) => (typeof text === 'object' ? text : <ReactMarkdown
             key={`t_${i}`}
             components={{
-                // eslint-disable-next-line react/no-unstable-nested-components
+                // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
                 em: ({ node, ...props }) =>
                     <IconButton
                         className={classes.copyButtonSmall}
@@ -232,11 +232,12 @@ const JsControllerDialog = ({
                     >
                         <IconCopy />
                     </IconButton>,
-                // eslint-disable-next-line react/no-unstable-nested-components
+                // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
                 a: ({ node, children, ...props }) =>
                     <a style={{ color: 'inherit' }} {...props}>{children}</a>,
                 // eslint-disable-next-line react/no-unstable-nested-components
                 code: ({
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     node, inline, className, children, ...props
                 }) => <code className={classes.code} {...props}>{children}</code>,
             }}

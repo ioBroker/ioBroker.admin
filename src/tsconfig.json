@@ -10,7 +10,8 @@
     "sourceRoot": "./src",
     "noImplicitAny": false,
     "lib": ["es2018", "DOM"],
-    "jsx": "react"
+    "jsx": "react",
+    "types": ["@iobroker/types"]
   },
   "include": ["./**/*.ts", "./**/*.tsx", "../src/lib/adapter-config.d.ts"],
   "exclude": ["./**/*.test.ts", "./**/*.test.tsx"]
