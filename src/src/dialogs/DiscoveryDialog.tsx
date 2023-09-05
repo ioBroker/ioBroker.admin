@@ -261,7 +261,7 @@ interface TabPanelProps {
 
 function TabPanel({
     classes, children, value, index, title, custom, boxHeight, black, ...props
-}: TabPanelProps) {
+}: TabPanelProps): React.JSX.Element | null {
     if (custom) {
         return <div {...props}>{value === index && children}</div>;
     }
@@ -309,7 +309,7 @@ const headCells = [
     },
 ];
 
-function EnhancedTableHead(props) {
+function EnhancedTableHead(props): React.JSX.Element {
     const { numSelected, rowCount, onSelectAllClick } = props;
 
     return (
@@ -1146,7 +1146,7 @@ function DiscoveryDialog({
                             }
                             stepDown();
                         }}
-                        // @ts-expect-error check if grey really works
+                        // @ts-expect-error TS does not like this but it works
                         color="grey"
                         startIcon={<NavigateBeforeIcon />}
                     >

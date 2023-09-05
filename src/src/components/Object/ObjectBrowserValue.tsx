@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import AceEditor from 'react-ace';
@@ -44,7 +43,7 @@ import {
     Info as InfoIcon,
 } from '@mui/icons-material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { AdminConnection, Utils } from '@iobroker/adapter-react-v5';
 
 import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';
@@ -99,7 +98,7 @@ const styles = () => ({
         marginLeft: 4,
     },
     dialog: {
-        minHeight: window.clientHeight - 50 > 500 ? 500 : window.clientHeight - 50,
+        minHeight: (window as any).clientHeight - 50 > 500 ? 500 : (window as any).clientHeight - 50,
     },
 });
 
@@ -137,8 +136,63 @@ const AntSwitch = withStyles(theme => ({
     checked: {},
 }))(Switch);
 
-class ObjectBrowserValue extends Component {
-    constructor(props) {
+interface ObjectBrowserValueProps {
+    /** Css classes */
+   classes: Record<string, any>;
+    /** State type */
+    type: string;
+    /** State role */
+    role: string;
+    states: Record<string, any>;
+    /** The state value */
+    value: any;
+    /** If expert mode is enabled */
+    expertMode: boolean;
+    onClose: (...args: any[]) => void;
+    /** Configured theme */
+    themeType: string;
+    socket: AdminConnection;
+    defaultHistory: string;
+    dateFormat: string;
+    object: ioBroker.StateObject;
+    isFloatComma: boolean;
+    t: (...args: string[]) => string;
+    lang: ioBroker.Languages;
+}
+
+interface ObjectBrowserValueState {
+    /** The state value */
+    targetValue: any;
+    /** State type */
+    type: string
+    chart: boolean,
+    chartEnabled: boolean,
+    fullScreen: boolean,
+    /** If input is invalid, set value button is disabled */
+    valid: boolean,
+    jsonError?: boolean;
+}
+
+class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowserValueState> {
+    /** The state value */
+    private readonly propsValue: any;
+
+    /** Chart start date */
+    private readonly chartFrom: number;
+
+    /** Ack flag of the state */
+    private ack: boolean;
+
+    /** TextField Ref */
+    private readonly inputRef = React.createRef<any>();
+
+    /** State quality */
+    private q: number;
+
+    /** Expiration of the state */
+    private expire: number;
+
+    constructor(props: ObjectBrowserValueProps) {
         super(props);
 
         let type = this.props.type || typeof this.props.value;
@@ -166,7 +220,7 @@ class ObjectBrowserValue extends Component {
                     value = JSON.stringify(value, null, 2);
                     this.propsValue = value;
                     type = 'json';
-                } catch (e) {
+                } catch {
                     // ignore
                 }
             }
@@ -177,10 +231,10 @@ class ObjectBrowserValue extends Component {
         this.state = {
             type,
             chart: false,
-            chartEnabled: (window._localStorage || window.localStorage).getItem('App.chartSetValue') !== 'false',
-            fullScreen: (window._localStorage || window.localStorage).getItem('App.fullScreen') === 'true',
+            chartEnabled: ((window as any)._localStorage || window.localStorage).getItem('App.chartSetValue') !== 'false',
+            fullScreen: ((window as any)._localStorage || window.localStorage).getItem('App.fullScreen') === 'true',
             targetValue: value,
-            /** IF input is invalid, set value button is disabled */
+            /** If input is invalid, set value button is disabled */
             valid: true,
         };
 
@@ -259,7 +313,7 @@ class ObjectBrowserValue extends Component {
         }
 
         this.props.onClose({
-            val: value, ack: this.ack, q: this.q, expire: parseInt(this.expire, 10) || undefined,
+            val: value, ack: this.ack, q: this.q, expire: parseInt((this.expire as any), 10) || undefined,
         });
     }
 
@@ -292,14 +346,17 @@ class ObjectBrowserValue extends Component {
 
     /**
      * Render time picker component for date type
-     * @returns {React.JSX.Element}
      */
-    renderTimePicker() {
+    renderTimePicker(): React.JSX.Element {
         return <LocalizationProvider adapterLocale={localeMap[this.props.lang]} dateAdapter={AdapterDateFns}>
             <DatePicker
-                style={{ padding: '10px' }}
                 value={Number(this.state.targetValue)}
                 onChange={value => {
+                    if (!value) {
+                        return;
+                    }
+
+                    // @ts-expect-error we are getting type Date here but TS thinks number
                     this.setState({ targetValue: Math.round(value.getTime()) });
                 }}
             />
@@ -308,6 +365,11 @@ class ObjectBrowserValue extends Component {
                 value={Number(this.state.targetValue)}
                 views={['hours', 'minutes', 'seconds']}
                 onChange={value => {
+                    if (!value) {
+                        return;
+                    }
+
+                    // @ts-expect-error we are getting type Date here but TS thinks number
                     this.setState({ targetValue: Math.round(value.getTime()) });
                 }}
             />
@@ -315,7 +377,7 @@ class ObjectBrowserValue extends Component {
         </LocalizationProvider>;
     }
 
-    renderChart() {
+    renderChart(): React.JSX.Element {
         return (
             <ObjectChart
                 t={this.props.t}
@@ -334,7 +396,7 @@ class ObjectBrowserValue extends Component {
         );
     }
 
-    checkJsonError() {
+    checkJsonError(): void {
         try {
             JSON.parse(this.state.targetValue);
             this.setState({ jsonError: false });
@@ -343,7 +405,7 @@ class ObjectBrowserValue extends Component {
         }
     }
 
-    renderJsonEditor() {
+    renderJsonEditor(): React.JSX.Element {
         return (
             <AceEditor
                 className={this.state.jsonError ? this.props.classes.jsonError : this.props.classes.jsonNoError}
@@ -451,7 +513,7 @@ class ObjectBrowserValue extends Component {
                 this.state.type === 'number' || this.state.type === 'boolean' || this.state.type === 'states'
                     ? this.state.chart && this.state.chartEnabled
                         ? 'lg'
-                        : null
+                        : undefined
                     : 'md'
             }
             fullWidth={
@@ -478,7 +540,7 @@ class ObjectBrowserValue extends Component {
                     size="small"
                     color={this.state.chartEnabled ? 'primary' : 'default'}
                     onClick={() => {
-                        (window._localStorage || window.localStorage).setItem(
+                        ((window as any)._localStorage || window.localStorage).setItem(
                             'App.chartSetValue',
                             this.state.chartEnabled ? 'false' : 'true',
                         );
@@ -490,7 +552,7 @@ class ObjectBrowserValue extends Component {
                 {this.state.type === 'json' ? <IconButton
                     style={{ float: 'right' }}
                     onClick={() => {
-                        (window._localStorage || window.localStorage).setItem(
+                        ((window as any)._localStorage || window.localStorage).setItem(
                             'App.fullScreen',
                             this.state.fullScreen ? 'false' : 'true',
                         );
@@ -618,7 +680,7 @@ class ObjectBrowserValue extends Component {
                                         <Select
                                             variant="standard"
                                             defaultValue={0}
-                                            onChange={e => (this.q = parseInt(e.target.value, 10))}
+                                            onChange={e => (this.q = Number(e.target.value))}
                                         >
                                             <MenuItem value={0x00}>0x00 - good</MenuItem>
 
@@ -657,7 +719,7 @@ class ObjectBrowserValue extends Component {
                                         inputProps={{ min: 0 }}
                                         helperText={this.props.t('in seconds')}
                                         defaultValue={this.expire}
-                                        onChange={e => (this.expire = e.target.value)}
+                                        onChange={e => (this.expire = Number(e.target.value))}
                                     />
                                 </Grid> : null}
                             </Grid>
@@ -686,6 +748,7 @@ class ObjectBrowserValue extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
+                    // @ts-expect-error Ts does not like it but it works
                     color="grey"
                     startIcon={<IconCancel />}
                 >
@@ -695,26 +758,5 @@ class ObjectBrowserValue extends Component {
         </Dialog>;
     }
 }
-
-ObjectBrowserValue.propTypes = {
-    classes: PropTypes.object,
-    /** State type */
-    type: PropTypes.string,
-    /** State role */
-    role: PropTypes.string.isRequired,
-    states: PropTypes.object,
-    value: PropTypes.any,
-    expertMode: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
-    themeType: PropTypes.string,
-    socket: PropTypes.object,
-    defaultHistory: PropTypes.string,
-    dateFormat: PropTypes.string,
-    object: PropTypes.object,
-    isFloatComma: PropTypes.bool,
-
-    t: PropTypes.func,
-    lang: PropTypes.string,
-};
 
 export default withStyles(styles)(ObjectBrowserValue);
