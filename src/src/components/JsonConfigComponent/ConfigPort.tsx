@@ -6,7 +6,7 @@ import { TextField } from '@mui/material';
 
 import I18n from './wrapper/i18n';
 
-import ConfigGeneric from './ConfigGeneric';
+import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
 
 const styles = () => ({
     indeterminate: {
@@ -23,8 +23,31 @@ const styles = () => ({
     },
 });
 
-class ConfigPort extends ConfigGeneric {
-    componentDidMount() {
+interface Port {
+    name: string;
+    port: number;
+    enabled: boolean;
+}
+
+interface ConfigPortProps extends ConfigGenericProps {
+    /** The current config */
+    data: Record<string, any>;
+    /** Attribute in the config, which represents the port */
+    attr: string;
+    /** CSS classes */
+    classes: Record<string, any>;
+}
+
+interface ConfigPortState extends ConfigGenericState {
+    _value: string;
+    oldValue: string | null;
+    ports: Port[];
+}
+
+class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
+    private updateTimeout?: ReturnType<typeof setTimeout>;
+
+    async componentDidMount(): Promise<void> {
         super.componentDidMount();
         let _value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         if (_value === null || _value === undefined) {
@@ -33,41 +56,40 @@ class ConfigPort extends ConfigGeneric {
         this.setState({ _value: _value.toString(), oldValue: _value.toString() });
 
         // read all instances
-        this.props.socket.getAdapterInstances()
-            .then(instances => {
-                const ownId = `system.adapter.${this.props.adapterName}.${this.props.instance}`;
-                const ports = [];
-                instances
-                    .forEach(instance => {
-                        // ignore own instance
-                        if (instance._id === ownId) {
-                            return;
-                        }
-                        // if let's encrypt is enabled and update is enabled, then add port to check
-                        if (instance?.native &&
+        const instances = await this.props.socket.getAdapterInstances();
+
+        const ownId = `system.adapter.${this.props.adapterName}.${this.props.instance}`;
+        const ports: Port[] = [];
+        instances
+            .forEach(instance => {
+                // ignore own instance
+                if (instance._id === ownId) {
+                    return;
+                }
+                // if let's encrypt is enabled and update is enabled, then add port to check
+                if (instance?.native &&
                             instance.native.secure &&
                             instance.native.leEnabled &&
                             instance.native.leUpdate
-                        ) {
-                            const port = parseInt(instance.native.leCheckPort || instance.native.lePort, 10);
-                            port && ports.push({
-                                name: `${instance._id.replace('system.adapter.', '')} (LE)`,
-                                port,
-                                enabled: instance.common?.enabled,
-                            });
-                        }
-
-                        const port = parseInt(instance?.native?.port, 10);
-                        if (port) {
-                            ports.push({
-                                name: instance._id.replace('system.adapter.', ''),
-                                port,
-                                enabled: instance.common?.enabled,
-                            });
-                        }
+                ) {
+                    const port = parseInt(instance.native.leCheckPort || instance.native.lePort, 10);
+                    port && ports.push({
+                        name: `${instance._id.replace('system.adapter.', '')} (LE)`,
+                        port,
+                        enabled: !!instance.common?.enabled,
                     });
-                this.setState({ ports });
+                }
+
+                const port = parseInt(instance?.native?.port, 10);
+                if (port) {
+                    ports.push({
+                        name: instance._id.replace('system.adapter.', ''),
+                        port,
+                        enabled: !!instance.common?.enabled,
+                    });
+                }
             });
+        this.setState({ ports });
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -120,12 +142,12 @@ class ConfigPort extends ConfigGeneric {
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
             this.updateTimeout = setTimeout(() => {
-                this.updateTimeout = null;
+                this.updateTimeout = undefined;
                 this.setState({ oldValue: null });
             }, 30);
         } else if (this.updateTimeout) {
             clearTimeout(this.updateTimeout);
-            this.updateTimeout = null;
+            this.updateTimeout = undefined;
         }
 
         const min = this.props.schema.min || 20;
@@ -167,7 +189,7 @@ class ConfigPort extends ConfigGeneric {
             disabled={!!disabled}
             className={warning ? this.props.classes.warning : ''}
             onChange={e => {
-                const _value = e.target.value.toString().replace(/[^0-9]/g, '');
+                const _value = Number(e.target.value.toString().replace(/[^0-9]/g, '')).toString();
                 const _error = this.checkValue(_value);
                 if (_error) {
                     this.onError(this.props.attr, I18n.t(_error));
@@ -188,16 +210,5 @@ class ConfigPort extends ConfigGeneric {
     }
 }
 
-ConfigPort.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
+// @ts-expect-error check later on
 export default withStyles(styles)(ConfigPort);
