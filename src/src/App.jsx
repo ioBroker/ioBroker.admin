@@ -70,7 +70,6 @@ import InstancesWorker from './Workers/InstancesWorker';
 import HostsWorker from './Workers/HostsWorker';
 import AdaptersWorker from './Workers/AdaptersWorker';
 import ObjectsWorker from './Workers/ObjectsWorker';
-// eslint-disable-next-line import/no-unresolved
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog from './dialogs/SlowConnectionWarningDialog';
 import IsVisible from './components/IsVisible';
@@ -1265,7 +1264,7 @@ class App extends Router {
                     console.error(`Cannot parse news: ${newsFeed?.val}`);
                 }
 
-                if (news && news.length && news[0].id !== lastNewsId?.val) {
+                if (news?.length && news[0].id !== lastNewsId?.val) {
                     this.socket.getUuid().then(uuid =>
                         this.socket
                             .getHostInfo(this.state.currentHost)
