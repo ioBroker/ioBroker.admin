@@ -85,6 +85,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) various minor improvements
 * (foxriver76) fixed problem with discovery dialog
 * (foxriver76) object browser now validates setting state of type number
 * (foxriver76) allow to specify unique columns for tables
