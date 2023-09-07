@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import { TextField } from '@mui/material';
@@ -56,7 +55,7 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
         this.setState({ _value: _value.toString(), oldValue: _value.toString() });
 
         // read all instances
-        const instances = await this.props.socket.getAdapterInstances();
+        const instances: ioBroker.InstanceObject[] = await this.props.socket.getAdapterInstances();
 
         const ownId = `system.adapter.${this.props.adapterName}.${this.props.instance}`;
         const ports: Port[] = [];
@@ -92,7 +91,7 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
         this.setState({ ports });
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: ConfigPortProps, state: ConfigPortState) {
         const _value = ConfigGeneric.getValue(props.data, props.attr);
         if (_value === null || _value === undefined ||
             state.oldValue === null || state.oldValue === undefined ||
@@ -105,7 +104,7 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
         return null;
     }
 
-    checkValue(value) {
+    checkValue(value: string): string | null {
         if (value === null || value === undefined) {
             return null;
         }
@@ -121,7 +120,7 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
         }
 
         // eslint-disable-next-line no-restricted-properties
-        if (value !== '' && window.isFinite(value)) {
+        if (value !== '' && window.isFinite(Number(value))) {
             if (f < min) {
                 return 'ra_Too small';
             }
@@ -138,7 +137,7 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
         return 'ra_Not a number';
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean): React.JSX.Element {
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
             this.updateTimeout = setTimeout(() => {
@@ -170,7 +169,7 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
 
         if (!error && this.state._value !== null && this.state._value !== undefined) {
             error = this.checkValue(this.state._value);
-            if (error) {
+            if (typeof error === 'string') {
                 error = I18n.t(error);
             }
         }

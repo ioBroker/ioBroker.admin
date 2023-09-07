@@ -26,6 +26,11 @@ module.exports = {
         'only-warn',
         'react-hooks',
     ],
+    settings: {
+        'import/resolver': {
+            typescript: {},
+        },
+    },
     rules: {
         'arrow-parens': [1, 'as-needed'],
         'react/jsx-indent': 'off',

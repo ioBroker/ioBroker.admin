@@ -12,6 +12,7 @@ import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
 import ConfirmDialog from './wrapper/Dialogs/Confirm';
+import { isObject } from '../../helpers/utils';
 
 export interface ConfigGenericProps {
     /** Provided props by the specific component */
@@ -27,7 +28,7 @@ export interface ConfigGenericProps {
     arrayIndex: any;
     globalData: any;
     systemConfig?: Record<string, any>;
-    instanceObj: Record<string, any>;
+    instanceObj: ioBroker.InstanceObject;
     customObj: Record<string, any>;
     socket: AdminConnection;
     changed: boolean;
@@ -59,8 +60,6 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
     static NONE_VALUE = '';
 
     static NONE_LABEL = 'ra_none';
-
-    static AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
     private readonly defaultValue: any;
 
@@ -166,7 +165,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
 
             this.props.socket
                 .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.defaultSendTo, data)
-                .then(value => {
+                .then((value: any) => {
                     if (value !== null && value !== undefined) {
                         if (this.props.custom) {
                             this.props.onChange(this.props.attr, value, () =>
@@ -194,7 +193,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         }
     }
 
-    onUpdate = data => {
+    onUpdate = (data: Record<string, any>) => {
         const value = ConfigGeneric.getValue(data || this.props.data, this.props.attr) || '';
         if (this.state.value !== value) {
             this.setState({ value });
@@ -206,11 +205,10 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
     /**
      * Extract attribute out of data
      *
-     * @param {Record<string, any>} data
-     * @param {string|string[]} attr
-     * @return {*|null}
+     * @param data
+     * @param attr
      */
-    static getValue(data, attr) {
+    static getValue(data: Record<string, any>, attr: string | string[]): any {
         if (typeof attr === 'string') {
             return ConfigGeneric.getValue(data, attr.split('.'));
         }
@@ -218,13 +216,14 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
             return data[attr[0]];
         }
         const part = attr.shift();
-        if (typeof data[part] === 'object') {
+
+        if (typeof part === 'string' && typeof data[part] === 'object') {
             return ConfigGeneric.getValue(data[part], attr);
         }
         return null;
     }
 
-    static setValue(data, attr, value) {
+    static setValue(data: Record<string, any>, attr: string | string[], value: any) {
         if (typeof attr === 'string') {
             ConfigGeneric.setValue(data, attr.split('.'), value);
             return;
@@ -237,6 +236,11 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
             }
         } else {
             const part = attr.shift();
+
+            if (typeof part !== 'string') {
+                return;
+            }
+
             if (!data[part] || typeof data[part] === 'object') {
                 data[part] = data[part] || {};
             }
@@ -244,19 +248,20 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         }
     }
 
-    getText(text, noTranslation?: boolean) {
+    getText(text: unknown, noTranslation?: boolean): string {
         if (!text) {
             return '';
         }
 
         if (typeof text === 'string') {
-            text = noTranslation ? text : I18n.t(text);
-            if (text.includes('${')) {
-                return this.getPattern(text);
+            const strText = noTranslation ? text : I18n.t(text);
+            if (strText.includes('${')) {
+                return this.getPattern(strText);
             }
-            return text;
+            return strText;
         }
-        if (text && typeof text === 'object') {
+
+        if (isObject(text)) {
             if (text.func) {
                 // calculate pattern
                 if (typeof text.func === 'object') {
@@ -268,7 +273,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
             return text[this.lang] || text.en || '';
         }
 
-        return text.toString();
+        return (text as any).toString();
     }
 
     renderConfirmDialog() {
@@ -339,7 +344,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
      * @param cb optional callback function, else returns a Promise
      */
     // eslint-disable-next-line react/no-unused-class-component-methods
-    onChange(attr, newValue, cb?: () => void): Promise<void> {
+    onChange(attr: string, newValue: any, cb?: () => void): Promise<void> {
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
 
@@ -405,7 +410,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
             }
         }
 
-        const changed = [];
+        const changed: string[] = [];
         if (this.props.schema.onChangeDependsOn) {
             for (let z = 0; z < this.props.schema.onChangeDependsOn.length; z++) {
                 const dep = this.props.schema.onChangeDependsOn[z];
@@ -434,7 +439,6 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
 
                     if (_newValue !== val) {
                         ConfigGeneric.setValue(data, dep.attr, _newValue);
-                        // @ts-expect-error investigate
                         changed.push(dep.attr);
                     }
                 }
@@ -444,7 +448,6 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         if (this.props.schema.hiddenDependsOn) {
             for (let z = 0; z < this.props.schema.hiddenDependsOn.length; z++) {
                 const dep = this.props.schema.hiddenDependsOn[z];
-                // @ts-expect-error investigate
                 dep.hidden && changed.push(dep.attr);
             }
         }
@@ -452,7 +455,6 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         if (this.props.schema.labelDependsOn) {
             for (let z = 0; z < this.props.schema.labelDependsOn.length; z++) {
                 const dep = this.props.schema.labelDependsOn[z];
-                // @ts-expect-error investigate
                 dep.hidden && changed.push(dep.attr);
             }
         }
@@ -460,7 +462,6 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         if (this.props.schema.helpDependsOn) {
             for (let z = 0; z < this.props.schema.helpDependsOn.length; z++) {
                 const dep = this.props.schema.helpDependsOn[z];
-                // @ts-expect-error investigate
                 dep.hidden && changed.push(dep.attr);
             }
         }
@@ -506,12 +507,16 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         return Promise.resolve();
     }
 
-    execute(func, defaultValue, data, arrayIndex, globalData) {
-        if (func && typeof func === 'object') {
-            func = func.func;
+    execute(func: string| Record<string, string>, defaultValue: any, data: Record<string, any>, arrayIndex: number, globalData: Record<string, any>) {
+        let fun: string;
+
+        if (isObject(func)) {
+            fun = func.func;
+        } else {
+            fun = func;
         }
 
-        if (!func) {
+        if (!fun) {
             return defaultValue;
         }
         try {
@@ -527,7 +532,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
                 'arrayIndex',
                 'globalData',
                 '_changed',
-                func.includes('return') ? func : `return ${func}`,
+                fun.includes('return') ? fun : `return ${fun}`,
             );
             return f(
                 data || this.props.data,
@@ -547,12 +552,16 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         }
     }
 
-    executeCustom(func, data, customObj, instanceObj, arrayIndex, globalData) {
-        if (func && typeof func === 'object') {
-            func = func.func;
+    executeCustom(func: string | Record<string, string>, data: Record<string, any>, customObj: Record<string, any>, instanceObj: ioBroker.InstanceObject, arrayIndex: number, globalData: Record<string, any>) {
+        let fun: string;
+
+        if (isObject(func)) {
+            fun = func.func;
+        } else {
+            fun = func;
         }
 
-        if (!func) {
+        if (!fun) {
             return null;
         }
         try {
@@ -567,7 +576,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
                 'arrayIndex',
                 'globalData',
                 '_changed',
-                func.includes('return') ? func : `return ${func}`,
+                fun.includes('return') ? fun : `return ${fun}`,
             );
             return f(
                 data || this.props.data,
@@ -581,12 +590,12 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
                 this.props.changed,
             );
         } catch (e) {
-            console.error(`Cannot execute ${func}: ${e}`);
+            console.error(`Cannot execute ${fun}: ${e}`);
             return null;
         }
     }
 
-    calculate(schema) {
+    calculate(schema: Record<string, any>) {
         let error;
         let disabled;
         let hidden;
@@ -659,7 +668,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         };
     }
 
-    onError(attr, error?) {
+    onError(attr: string, error?: unknown) {
         if (!error) {
             delete this.isError[attr];
         } else {
@@ -670,12 +679,12 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    renderItem(_error, _disabled, _defaultValue) {
+    renderItem(_error: unknown, _disabled: boolean, _defaultValue?: unknown): React.JSX.Element | string {
         return this.getText(this.props.schema.label) || this.getText(this.props.schema.text);
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHelp(text, link, noTranslation) {
+    renderHelp(text: string, link: string, noTranslation: boolean) {
         if (!link) {
             text = this.getText(text, noTranslation) || '';
             if (
