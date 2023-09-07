@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import { Grid, Button } from '@mui/material';
 
@@ -9,11 +8,51 @@ import {
     Error as IconError,
 } from '@mui/icons-material';
 
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
 import ConfirmDialog from './wrapper/Dialogs/Confirm';
+import { isObject } from '../../helpers/utils';
 
-class ConfigGeneric extends Component {
+export interface ConfigGenericProps {
+    /** Provided props by the specific component */
+    schema: Record<string, any>;
+    registerOnForceUpdate: any;
+    attr: string;
+    data: Record<string, any>;
+    onChange: (attrOrData: string | Record<string, any>, val?: any, cb?: () => void) => void;
+    custom: boolean;
+    forceUpdate: (attrs: string[], data: Record<string, any>) => void;
+    alive: boolean;
+    originalData: Record<string, any>;
+    arrayIndex: any;
+    globalData: any;
+    systemConfig?: Record<string, any>;
+    instanceObj: ioBroker.InstanceObject;
+    customObj: Record<string, any>;
+    socket: AdminConnection;
+    changed: boolean;
+    adapterName: string;
+    instance: number;
+    common: Record<string, any>;
+    onError: (attr: string, error?: unknown) => void;
+    themeType: string;
+    commandRunning: any;
+    disabled?: boolean;
+}
+
+export interface ConfigGenericState {
+    confirmDialog: boolean;
+    confirmNewValue: any;
+    confirmAttr: any;
+    confirmData: any;
+    value?: any;
+    confirmDepAttr?: any;
+    confirmDepNewValue?: any;
+    confirmOldValue?: any;
+}
+
+class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGenericState> extends Component<Props, State> {
     static DIFFERENT_VALUE = '__different__';
 
     static DIFFERENT_LABEL = 'ra___different__';
@@ -22,17 +61,28 @@ class ConfigGeneric extends Component {
 
     static NONE_LABEL = 'ra_none';
 
-    static AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
+    private readonly defaultValue: any;
 
-    constructor(props) {
+    private isError: any;
+
+    private readonly lang: ioBroker.Languages;
+
+    private defaultSendToDone?: boolean;
+
+    private sendToTimeout?: any;
+
+    private noPlaceRequired: any;
+
+    constructor(props: Props) {
         super(props);
 
+        // @ts-expect-error of course, as we just
         this.state = {
             confirmDialog: false,
             confirmNewValue: null,
             confirmAttr: null,
             confirmData: null,
-        };
+        } satisfies ConfigGenericState;
 
         this.isError = {};
 
@@ -115,7 +165,7 @@ class ConfigGeneric extends Component {
 
             this.props.socket
                 .sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.defaultSendTo, data)
-                .then(value => {
+                .then((value: any) => {
                     if (value !== null && value !== undefined) {
                         if (this.props.custom) {
                             this.props.onChange(this.props.attr, value, () =>
@@ -131,7 +181,7 @@ class ConfigGeneric extends Component {
         } else {
             this.defaultSendToDone = false;
             // show error, that instance does not started
-            this.onError(this.props.attr, I18n.t('ra_Instance %s is not alive', this.props.instance));
+            this.onError(this.props.attr, I18n.t('ra_Instance %s is not alive', this.props.instance.toString()));
         }
     }
 
@@ -143,7 +193,7 @@ class ConfigGeneric extends Component {
         }
     }
 
-    onUpdate = data => {
+    onUpdate = (data: Record<string, any>) => {
         const value = ConfigGeneric.getValue(data || this.props.data, this.props.attr) || '';
         if (this.state.value !== value) {
             this.setState({ value });
@@ -155,11 +205,10 @@ class ConfigGeneric extends Component {
     /**
      * Extract attribute out of data
      *
-     * @param {Record<string, any>} data
-     * @param {string|string[]} attr
-     * @return {*|null}
+     * @param data
+     * @param attr
      */
-    static getValue(data, attr) {
+    static getValue(data: Record<string, any>, attr: string | string[]): any {
         if (typeof attr === 'string') {
             return ConfigGeneric.getValue(data, attr.split('.'));
         }
@@ -167,13 +216,14 @@ class ConfigGeneric extends Component {
             return data[attr[0]];
         }
         const part = attr.shift();
-        if (typeof data[part] === 'object') {
+
+        if (typeof part === 'string' && typeof data[part] === 'object') {
             return ConfigGeneric.getValue(data[part], attr);
         }
         return null;
     }
 
-    static setValue(data, attr, value) {
+    static setValue(data: Record<string, any>, attr: string | string[], value: any) {
         if (typeof attr === 'string') {
             ConfigGeneric.setValue(data, attr.split('.'), value);
             return;
@@ -186,6 +236,11 @@ class ConfigGeneric extends Component {
             }
         } else {
             const part = attr.shift();
+
+            if (typeof part !== 'string') {
+                return;
+            }
+
             if (!data[part] || typeof data[part] === 'object') {
                 data[part] = data[part] || {};
             }
@@ -193,19 +248,20 @@ class ConfigGeneric extends Component {
         }
     }
 
-    getText(text, noTranslation) {
+    getText(text: unknown, noTranslation?: boolean): string {
         if (!text) {
             return '';
         }
 
         if (typeof text === 'string') {
-            text = noTranslation ? text : I18n.t(text);
-            if (text.includes('${')) {
-                return this.getPattern(text);
+            const strText = noTranslation ? text : I18n.t(text);
+            if (strText.includes('${')) {
+                return this.getPattern(strText);
             }
-            return text;
+            return strText;
         }
-        if (text && typeof text === 'object') {
+
+        if (isObject(text)) {
             if (text.func) {
                 // calculate pattern
                 if (typeof text.func === 'object') {
@@ -217,7 +273,7 @@ class ConfigGeneric extends Component {
             return text[this.lang] || text.en || '';
         }
 
-        return text.toString();
+        return (text as any).toString();
     }
 
     renderConfirmDialog() {
@@ -225,7 +281,7 @@ class ConfigGeneric extends Component {
             return null;
         }
         const confirm = this.state.confirmData || this.props.schema.confirm;
-        let icon = null;
+        let icon: null | React.JSX.Element = null;
         if (confirm.type === 'warning') {
             icon = <IconWarning />;
         } else if (confirm.type === 'error') {
@@ -285,11 +341,10 @@ class ConfigGeneric extends Component {
      *
      * @param attr the changed attribute
      * @param newValue new value of the attribute
-     * @param {(() => void)?} cb optional callback function, else returns a Promise
-     * @return {Promise<void>}
+     * @param cb optional callback function, else returns a Promise
      */
     // eslint-disable-next-line react/no-unused-class-component-methods
-    onChange(attr, newValue, cb) {
+    onChange(attr: string, newValue: any, cb?: () => void): Promise<void> {
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
 
@@ -297,7 +352,7 @@ class ConfigGeneric extends Component {
             this.props.schema.confirm &&
             this.execute(this.props.schema.confirm.condition, false, data, this.props.arrayIndex, this.props.globalData)
         ) {
-            return new Promise(resolve => {
+            return new Promise<void>(resolve => {
                 this.setState(
                     {
                         confirmDialog: true,
@@ -331,7 +386,7 @@ class ConfigGeneric extends Component {
                             this.props.globalData,
                         )
                     ) {
-                        return new Promise(resolve => {
+                        return new Promise<void>(resolve => {
                             this.setState(
                                 {
                                     confirmDialog: true,
@@ -355,7 +410,7 @@ class ConfigGeneric extends Component {
             }
         }
 
-        const changed = [];
+        const changed: string[] = [];
         if (this.props.schema.onChangeDependsOn) {
             for (let z = 0; z < this.props.schema.onChangeDependsOn.length; z++) {
                 const dep = this.props.schema.onChangeDependsOn[z];
@@ -452,12 +507,16 @@ class ConfigGeneric extends Component {
         return Promise.resolve();
     }
 
-    execute(func, defaultValue, data, arrayIndex, globalData) {
-        if (func && typeof func === 'object') {
-            func = func.func;
+    execute(func: string| Record<string, string>, defaultValue: any, data: Record<string, any>, arrayIndex: number, globalData: Record<string, any>) {
+        let fun: string;
+
+        if (isObject(func)) {
+            fun = func.func;
+        } else {
+            fun = func;
         }
 
-        if (!func) {
+        if (!fun) {
             return defaultValue;
         }
         try {
@@ -473,7 +532,7 @@ class ConfigGeneric extends Component {
                 'arrayIndex',
                 'globalData',
                 '_changed',
-                func.includes('return') ? func : `return ${func}`,
+                fun.includes('return') ? fun : `return ${fun}`,
             );
             return f(
                 data || this.props.data,
@@ -493,12 +552,16 @@ class ConfigGeneric extends Component {
         }
     }
 
-    executeCustom(func, data, customObj, instanceObj, arrayIndex, globalData) {
-        if (func && typeof func === 'object') {
-            func = func.func;
+    executeCustom(func: string | Record<string, string>, data: Record<string, any>, customObj: Record<string, any>, instanceObj: ioBroker.InstanceObject, arrayIndex: number, globalData: Record<string, any>) {
+        let fun: string;
+
+        if (isObject(func)) {
+            fun = func.func;
+        } else {
+            fun = func;
         }
 
-        if (!func) {
+        if (!fun) {
             return null;
         }
         try {
@@ -513,7 +576,7 @@ class ConfigGeneric extends Component {
                 'arrayIndex',
                 'globalData',
                 '_changed',
-                func.includes('return') ? func : `return ${func}`,
+                fun.includes('return') ? fun : `return ${fun}`,
             );
             return f(
                 data || this.props.data,
@@ -527,12 +590,12 @@ class ConfigGeneric extends Component {
                 this.props.changed,
             );
         } catch (e) {
-            console.error(`Cannot execute ${func}: ${e}`);
+            console.error(`Cannot execute ${fun}: ${e}`);
             return null;
         }
     }
 
-    calculate(schema) {
+    calculate(schema: Record<string, any>) {
         let error;
         let disabled;
         let hidden;
@@ -605,7 +668,7 @@ class ConfigGeneric extends Component {
         };
     }
 
-    onError(attr, error) {
+    onError(attr: string, error?: unknown) {
         if (!error) {
             delete this.isError[attr];
         } else {
@@ -615,12 +678,13 @@ class ConfigGeneric extends Component {
         this.props.onError && this.props.onError(attr, error);
     }
 
-    renderItem(/* error, disabled, defaultValue */) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    renderItem(_error: unknown, _disabled: boolean, _defaultValue?: unknown): React.JSX.Element | string {
         return this.getText(this.props.schema.label) || this.getText(this.props.schema.text);
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHelp(text, link, noTranslation) {
+    renderHelp(text: string, link: string, noTranslation: boolean) {
         if (!link) {
             text = this.getText(text, noTranslation) || '';
             if (
@@ -644,7 +708,7 @@ class ConfigGeneric extends Component {
         </a>;
     }
 
-    getPattern(pattern, data) {
+    getPattern(pattern: any, data?: any) {
         data = data || this.props.data;
         if (!pattern) {
             return '';
@@ -859,39 +923,5 @@ class ConfigGeneric extends Component {
         return item;
     }
 }
-
-ConfigGeneric.propTypes = {
-    socket: PropTypes.object.isRequired,
-    data: PropTypes.object,
-    originalData: PropTypes.object,
-    schema: PropTypes.object,
-    attr: PropTypes.string,
-    // eslint-disable-next-line react/no-unused-prop-types
-    value: PropTypes.any,
-    // eslint-disable-next-line react/no-unused-prop-types
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-    // eslint-disable-next-line react/no-unused-prop-types
-    customs: PropTypes.object,
-    forceUpdate: PropTypes.func.isRequired,
-    disabled: PropTypes.bool,
-
-    systemConfig: PropTypes.object,
-    alive: PropTypes.bool,
-    changed: PropTypes.bool,
-    common: PropTypes.object,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-    // eslint-disable-next-line react/no-unused-prop-types
-    dateFormat: PropTypes.string,
-    // eslint-disable-next-line react/no-unused-prop-types
-    isFloatComma: PropTypes.bool,
-
-    customObj: PropTypes.object,
-    instanceObj: PropTypes.object,
-    custom: PropTypes.bool,
-};
 
 export default ConfigGeneric;

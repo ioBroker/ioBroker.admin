@@ -136,6 +136,10 @@ const AntSwitch = withStyles(theme => ({
     checked: {},
 }))(Switch);
 
+interface NumberValidationOptions {
+    value: unknown; common: ioBroker.StateCommon;
+}
+
 interface ObjectBrowserValueProps {
     /** Css classes */
    classes: Record<string, any>;
@@ -164,12 +168,12 @@ interface ObjectBrowserValueState {
     /** The state value */
     targetValue: any;
     /** State type */
-    type: string
-    chart: boolean,
-    chartEnabled: boolean,
-    fullScreen: boolean,
+    type: string;
+    chart: boolean;
+    chartEnabled: boolean;
+    fullScreen: boolean;
     /** If input is invalid, set value button is disabled */
-    valid: boolean,
+    valid: boolean;
     jsonError?: boolean;
 }
 
@@ -255,7 +259,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         ) {
             this.props.socket
                 .getState(`system.adapter.${this.props.defaultHistory}.alive`)
-                .then(state => this.setState({ chart: state && !!state.val }));
+                .then((state: ioBroker.State | null | undefined) => this.setState({ chart: !!state?.val }));
         }
 
         setTimeout(() => {
@@ -278,7 +282,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         }, 200);
     }
 
-    onUpdate(e) {
+    onUpdate(e: React.KeyboardEvent | React.MouseEvent) {
         e && e.stopPropagation();
         e && e.preventDefault();
 
@@ -317,27 +321,20 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         });
     }
 
-    /** @typedef {{ value: unknown, common: ioBroker.StateCommon }} NumberValidationOptions */
-
     /**
      * Check if a number value is valid according to the objects common properties
-     * @param {NumberValidationOptions} options value and common information
-     *
-     * @returns {boolean}
+     * @param options value and common information
      */
-    isNumberValid(options) {
+    isNumberValid(options: NumberValidationOptions): boolean {
         const { common } = options;
-        let { value } = options;
+        const { value } = options;
+        const numVal  = Number(value);
 
-        if (typeof value !== 'number') {
-            value = Number(value);
-        }
-
-        if (typeof common.min === 'number'  && value < common.min) {
+        if (typeof common.min === 'number'  && numVal < common.min) {
             return false;
         }
 
-        if (typeof common.max === 'number'  && value > common.max) {
+        if (typeof common.max === 'number'  && numVal > common.max) {
             return false;
         }
 

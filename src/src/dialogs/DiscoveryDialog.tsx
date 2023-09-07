@@ -309,7 +309,7 @@ const headCells = [
     },
 ];
 
-function EnhancedTableHead(props): React.JSX.Element {
+function EnhancedTableHead(props: Record<string, any>): React.JSX.Element {
     const { numSelected, rowCount, onSelectAllClick } = props;
 
     return <TableHead>
@@ -335,7 +335,7 @@ function EnhancedTableHead(props): React.JSX.Element {
     </TableHead>;
 }
 
-const buildComment = (comment, t) => {
+const buildComment = (comment: any) => {
     if (!comment) {
         return 'new';
     }
@@ -345,13 +345,13 @@ const buildComment = (comment, t) => {
     let text = '';
 
     if (comment.add) {
-        text += t('new');
+        text += I18n.t('new');
         if (Array.isArray(comment.add) && comment.add.length) {
             text += ': ';
             if (comment.add.length <= 5) {
                 text += comment.add.join(', ');
             } else {
-                text += t('%s devices', comment.add.length);
+                text += I18n.t('%s devices', comment.add.length);
             }
         } else if (typeof comment.add === 'string' || typeof comment.add === 'number') {
             text += ': ';
@@ -360,13 +360,13 @@ const buildComment = (comment, t) => {
     }
 
     if (comment.changed) {
-        text += (text ? ', ' : '') + t('changed');
+        text += (text ? ', ' : '') + I18n.t('changed');
         if (Array.isArray(comment.changed === 'object') && comment.changed.length) {
             text += ': ';
             if (comment.changed.length <= 5) {
                 text += comment.changed.join(', ');
             } else {
-                text += t('%s devices', comment.changed.length);
+                text += I18n.t('%s devices', comment.changed.length);
             }
         } else if (typeof comment.changed === 'string' || typeof comment.changed === 'number') {
             text += ': ';
@@ -375,13 +375,13 @@ const buildComment = (comment, t) => {
     }
 
     if (comment.extended) {
-        text += (text ? ', ' : '') + t('extended');
+        text += (text ? ', ' : '') + I18n.t('extended');
         if (Array.isArray(comment.extended) && comment.extended.length) {
             text += ': ';
             if (comment.extended.length <= 5) {
                 text += comment.extended.join(', ');
             } else {
-                text += t('%s devices', comment.extended.length);
+                text += I18n.t('%s devices', comment.extended.length);
             }
         } else if (typeof comment.extended === 'string' || typeof comment.extended === 'number') {
             text += ': ';
@@ -406,7 +406,7 @@ function DiscoveryDialog({
     hosts,
     onClose,
     theme,
-}) {
+}: Record<string, any>) {
     const classes = useStyles();
 
     const [step, setStep] = useState<number>(0);
@@ -418,7 +418,7 @@ function DiscoveryDialog({
     useEffect(() => {
         async function fetchData() {
             const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
-            const listChecked = {};
+            const listChecked: Record<string, any> = {};
             let lastSelection = ((window as any)._localStorage || window.localStorage).getItem('App.discoveryLastSelection') || null;
             if (lastSelection) {
                 try {
@@ -452,12 +452,12 @@ function DiscoveryDialog({
         readOldData();
     }, [socket]);
 
-    const [aliveHosts, setAliveHosts] = useState({});
+    const [aliveHosts, setAliveHosts] = useState<Record<string, any>>({});
     const [checkSelectHosts, setCheckSelectHosts] = useState(false);
-    const [hostInstances, setHostInstances] = useState({});
+    const [hostInstances, setHostInstances] = useState<Record<string, any>>({});
 
     useEffect(() => {
-        hosts.forEach(async ({ _id }) => {
+        hosts.forEach(async ({ _id }: {_id: string}) => {
             const aliveValue = await socket.getState(`${_id}.alive`);
             setAliveHosts(prev => ({
                 ...prev,
@@ -478,7 +478,7 @@ function DiscoveryDialog({
     const [selected, setSelected] = useState<string[]>([]);
     const [installProgress, setInstallProgress] = useState(false);
     const [currentInstall, setCurrentInstall] = useState(1);
-    const [installStatus, setInstallStatus] = useState({});
+    const [installStatus, setInstallStatus] = useState<Record<string, any>>({});
     const [cmdName, setCmdName] = useState('install');
     const [suggested, setSuggested] = useStateLocal(true, 'discovery.suggested');
     const [showAll, setShowAll] = useStateLocal(true, 'discovery.showAll');
@@ -489,11 +489,11 @@ function DiscoveryDialog({
 
     const [instancesInputsParams, setInstancesInputsParams] = useState<Record<string, any>>({});
     const steps = ['Select methods', 'Create instances', 'Installation process'];
-    const [logs, setLogs] = useState({});
+    const [logs, setLogs] = useState<Record<string, any>>({});
     const [finishInstall, setFinishInstall] = useState(false);
     const [selectLogsIndex, setSelectLogsIndex] = useState(1);
 
-    const handlerInstall = (name, value) => {
+    const handlerInstall = (name: string, value: any) => {
         if (!value) {
             return;
         }
@@ -542,7 +542,7 @@ function DiscoveryDialog({
 
     const stepDown = () => setStep(step - 1);
 
-    const extendObject = (id, data) => socket.extendObject(id, data).catch(error => window.alert(error));
+    const extendObject = (id: string, data: Record<string, any>) => socket.extendObject(id, data).catch((error: any) => window.alert(error));
 
     const discoverScanner = async () => {
         setDisableScanner(true);
@@ -556,20 +556,20 @@ function DiscoveryDialog({
         }
     };
 
-    const handleSelectAllClick = event => {
+    const handleSelectAllClick = (event: any) => {
         if (event.target.checked) {
-            const newSelected = discoveryData?.native?.newInstances?.map(n => n._id);
+            const newSelected = discoveryData?.native?.newInstances?.map((n: ioBroker.InstanceObject) => n._id);
             setSelected(newSelected);
             return;
         }
         setSelected([]);
     };
 
-    const isSelected = (name, arr) => arr.includes(name);
+    const isSelected = (name: string, arr: string[]) => arr.includes(name);
 
-    const handleClick = (event, name, arr, func) => {
+    const handleClick = (_event: any, name: string, arr: string[], func: (newSelected: any) => void) => {
         const selectedIndex = arr.indexOf(name);
-        let newSelected = [];
+        let newSelected: string[] = [];
 
         if (selectedIndex === -1) {
             newSelected = newSelected.concat(arr, name);
@@ -584,8 +584,8 @@ function DiscoveryDialog({
         func(newSelected);
     };
 
-    const checkLicenseAndInputs = (objName, cb) => {
-        const obj = JSON.parse(JSON.stringify(discoveryData?.native?.newInstances.find(ob => ob._id === objName)));
+    const checkLicenseAndInputs = (objName: string, cb: () => void) => {
+        const obj = JSON.parse(JSON.stringify(discoveryData?.native?.newInstances.find((ob: ioBroker.InstanceObject) => ob._id === objName)));
         let license = true;
         if (obj?.comment?.license && obj.comment.license !== 'MIT') {
             license = false;
@@ -613,7 +613,7 @@ function DiscoveryDialog({
         }
     };
 
-    const goToNextInstance = (id, reason) => {
+    const goToNextInstance = (id: string, reason: string) => {
         const index = selected.indexOf(id) + 1;
         setInstallStatus(status => ({ ...status, [index]: 'error' }));
 
@@ -641,6 +641,7 @@ function DiscoveryDialog({
             themeType={themeType}
             themeName={themeName}
             newInstances={showInputsDialog.obj}
+            // @ts-expect-error wait until component is typed
             onClose={params => {
                 const { cb } = showInputsDialog;
                 const { obj } = showInputsDialog;
@@ -675,6 +676,7 @@ function DiscoveryDialog({
     const licenseDialog = showLicenseDialog ? (
         <LicenseDialog
             url={showLicenseDialog.obj.common.licenseUrl}
+            // @ts-expect-error wait until component is typed
             onClose={result => {
                 const { cb } = showLicenseDialog;
                 const { obj } = showLicenseDialog;
@@ -841,7 +843,7 @@ function DiscoveryDialog({
                                     />
                                     <TableBody>
                                         {discoveryData?.native?.newInstances
-                                            ?.filter(el => {
+                                            ?.filter((el: any) => {
                                                 if (!suggested) {
                                                     return !el.comment?.advice;
                                                 }
@@ -850,7 +852,7 @@ function DiscoveryDialog({
                                                 }
                                                 return true;
                                             })
-                                            .map((obj, idx) => (
+                                            .map((obj: any, idx: number) => (
                                                 <TableRow
                                                     hover
                                                     role="checkbox"
@@ -895,7 +897,7 @@ function DiscoveryDialog({
                                                         )}
                                                     </TableCell>
                                                     <TableCell align="left">
-                                                        {buildComment(obj.comment, I18n.t)}
+                                                        {buildComment(obj.comment)}
                                                     </TableCell>
                                                     <TableCell align="right" padding="checkbox">
                                                         <Checkbox
@@ -994,11 +996,12 @@ function DiscoveryDialog({
                                                         .split('.')[0]
                                                 }`
                                         }
+                                        // @ts-expect-error wait until component is typed
                                         onFinished={(_, logsSuccess) => {
                                             let data = JSON.parse(
                                                 JSON.stringify(
                                                     discoveryData?.native.newInstances.find(
-                                                        obj => obj._id === selected[currentInstall - 1],
+                                                        (obj: any) => obj._id === selected[currentInstall - 1],
                                                     ),
                                                 ),
                                             );
@@ -1007,7 +1010,7 @@ function DiscoveryDialog({
                                             let adapterId = data._id.split('.');
                                             adapterId.pop();
                                             adapterId = adapterId.join('.');
-                                            socket.getObject(adapterId).then(obj => {
+                                            socket.getObject(adapterId).then((obj: ioBroker.AdapterObject) => {
                                                 data = { ...obj, ...data };
                                                 data.common = Object.assign(obj.common, data.common);
                                                 data.native = Object.assign(obj.native, data.native);
@@ -1061,7 +1064,7 @@ function DiscoveryDialog({
                                                         );
                                                         if (dataDiscovery) {
                                                             dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(
-                                                                ({ _id }) => {
+                                                                ({ _id }: {_id: string}) => {
                                                                     const find = selected.find(
                                                                         el => el === _id,
                                                                     );
@@ -1083,6 +1086,7 @@ function DiscoveryDialog({
                                                 });
                                             });
                                         }}
+                                        // @ts-expect-error wait until component is typed
                                         errorFunc={(el, logsError) => {
                                             if (el === 51 && cmdName === 'install') {
                                                 setCmdName('upload');
@@ -1110,7 +1114,7 @@ function DiscoveryDialog({
                                                     setSelectLogsIndex(currentInstall - 1);
                                                     const dataDiscovery = JSON.parse(JSON.stringify(discoveryData));
                                                     if (dataDiscovery) {
-                                                        dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(({ _id }) => {
+                                                        dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(({ _id }: {_id: string}) => {
                                                             const find = selected.find(ele => ele === _id);
                                                             if (!find) {
                                                                 return true;

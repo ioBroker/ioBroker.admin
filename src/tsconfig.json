@@ -8,10 +8,10 @@
     "outDir": "./build",
     "sourceMap": true,
     "sourceRoot": "./src",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "lib": ["es2018", "DOM"],
     "jsx": "react",
-    "types": ["@iobroker/types"]
+    "types": ["@iobroker/types"],
   },
   "include": ["./**/*.ts", "./**/*.tsx", "../src/lib/adapter-config.d.ts"],
   "exclude": ["./**/*.test.ts", "./**/*.test.tsx"]

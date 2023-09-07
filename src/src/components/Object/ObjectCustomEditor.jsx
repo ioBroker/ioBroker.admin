@@ -97,8 +97,6 @@ const styles = () => ({
 const URL_PREFIX = '.'; // or './' or 'http://localhost:8081' for debug
 
 class ObjectCustomEditor extends Component {
-    static AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
-
     constructor(props) {
         super(props);
 
