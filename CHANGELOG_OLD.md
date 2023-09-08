@@ -1,6 +1,16 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.8.0 (2023-08-14)
+* (foxriver76) try to find the correct IP for the controller UI multihost slave upgrade
+* (foxriver76) admin is now showing update information, while it is stopped during upgrade
+* (foxriver76) required Node.js version is 16 as 14 is End-Of-Life
+* (foxriver76) fixed downloading folders recursive
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.7.2 (2023-08-09)
 * (foxriver76) remove https certificate options
 * (foxriver76) prevent error log of not used certificates even-though they are used

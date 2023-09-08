@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.9.2",
+    "version": "6.10.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.10.0": {
+        "en": "various minor improvements\nfixed problem with discovery dialog\nobject browser now validates setting state of type number\nallow to specify unique columns for tables\nfix crash on invalid states, which are missing the property `common.role`",
+        "de": "verschiedene kleinere verbesserungen\nproblem mit entdeckungsdialog behoben\nobjekt-browser validiert nun den einstellungszustand der typennummer\neinzigartige spalten für tabellen angeben\ncrash auf ungültigen zuständen beheben, die die eigenschaft häufig fehlen. rolle",
+        "ru": "различные незначительные улучшения\nисправленная проблема с диалогом открытия\nбраузер объекта теперь проверяет состояние номера типа\nпозволяют указать уникальные колонки для таблиц\nисправить аварии на недействительных состояниях, которые отсутствуют общие свойства. роль",
+        "pt": "várias pequenas melhorias\nproblema fixo com diálogo de descoberta\nnavegador objeto agora valida a definição estado de número de tipo\npermitir especificar colunas únicas para tabelas\ncorrigir acidente em estados inválidos, que estão faltando a propriedade comum. papel",
+        "nl": "verschillende verbeteringen\n_\nquality over quantity (qoq) releases vertaling:\n_\nverbinden met ongeldige staten, die het eigendom ontbreken. rol",
+        "fr": "diverses améliorations mineures\nproblème fixe avec le dialogue de découverte\nnavigateur objet valide maintenant l'état de type numéro\npermettre de spécifier des colonnes uniques pour les tables\nréparer le crash sur les états invalides, qui manquent la propriété commune. rôle",
+        "it": "vari miglioramenti minori\nproblema fisso con finestra di dialogo scoperta\nil browser dell'oggetto ora convalida l'impostazione dello stato del numero di tipo\nconsentire di specificare colonne uniche per le tabelle\nfissare l'incidente sugli stati invalidi, che manca la proprietà comune. ruolo",
+        "es": "diversas mejoras menores\nproblema fijo con diálogo de descubrimiento\nnavegador del objeto valida el estado del número de tipo\npermite especificar columnas únicas para tablas\narregla el accidente en estados inválidos, que están perdiendo la propiedad común. función",
+        "pl": "różne drobne ulepszenia\nproblem stały\nprzeglądarka obiektywna udowodniła stan numeru typowego\numożliwia to określanie unikalnych kolumn w tabeli\npowoduje to katastrofę w stanach nieprawidłowych, które zaginęły. rola",
+        "uk": "різні незначні поліпшення\nвиправлена проблема з діалогом відкриття\nвеб-переглядач тепер діє на встановлення стану номеру типу\nдозволяють вказати унікальні стовпчики для таблиць\nзафіксувати аварійну катастрофу на недійсних станах, які не мають права власності. роль",
+        "zh-cn": "b. 轻微改进\n发现口号的固定问题\n反对票据现在验证了种类数量的情况。\n允许具体说明表格的独特栏目\nf 在被遗失财产的国家发生事故。 作用"
+      },
       "6.9.2": {
         "en": "show info, if server time differs from client time\nremove confusion with different names for state (datapoint and state)\nfixed link on 404-page being opened inside child view\nfixed issue if non-text default values are provided to a text jsonConfig component\nimplemented del key shortcut to delete a selected object",
         "de": "show info, wenn die serverzeit von der clientzeit abweicht\nverwechslung mit verschiedenen namen für staat (datenpunkt und zustand) entfernen\nfester link auf 404-seite geöffnet innerhalb der kinderansicht\nfestes Problem, wenn Nichttext-Standardwerte an einer Text jsonConfig-Komponente bereitgestellt werden\nimplementiert del key shortcut, um ein ausgewähltes objekt zu löschen",
@@ -95,19 +108,6 @@
         "pl": "usunąć certyfikat https\numożliwia to, że nie są one używane certyfikaty, choć są one używane\nbezpośredni problem z kartami prowadzącymi w internecie\nostateczny problem, jeśli adapter readme jest otwarty w nowym tabeli\npoprawione otwarcie niestandardowych tabeli, np. dla pełnego kalendarza\npozwalać na pobranie rekurencyjnych folderów",
         "uk": "видалити параметри сертифіката https\nзапобігти журналам помилок не використовуваних сертифікатів, навіть якщо вони використовуються\nфіксована проблема з docker хост-карт на вкладці intro\nвиправлено проблему, якщо перехідний читме відкрився в новій вкладці\nвиправлено відкриття користувацьких вкладок, наприклад, для повноцінного\nдопускається завантаження рекурсивних папок",
         "zh-cn": "取消证书选择\n防止不使用证书的错误逻辑,尽管这些错误被用于使用。\na. 穿梭邮票的固定问题\n如果适应者读书在新的表格中开出固定问题。\n修改了习俗表格的开端,例如:\n允许回收器下载"
-      },
-      "6.7.0": {
-        "en": "display more specific information about docker installation on host card\nallow to download folders in files tab",
-        "de": "mehr spezifische informationen über die docking-installation auf der hostkarte anzeigen\nordner in dateien tab herunterladen",
-        "ru": "показать более конкретную информацию об установке докера на хост-карте\nпозволяют загружать папки в вкладке файлов",
-        "pt": "exibir informações mais específicas sobre a instalação de docker no cartão host\npermitir baixar pastas na guia arquivos",
-        "nl": "toon meer specifieke informatie over docker installatie op gastkaart\nvouwen in bestanden downloaden",
-        "fr": "afficher plus d'informations spécifiques sur l'installation docker sur la carte hôte\npermettre de télécharger des dossiers dans l'onglet fichiers",
-        "it": "visualizza informazioni più specifiche sull'installazione di docker sulla scheda host\nconsentire di scaricare cartelle nella scheda file",
-        "es": "mostrar más información específica sobre la instalación de docker en la tarjeta host\npermite descargar carpetas en la pestaña archivos",
-        "pl": "informacja o instalacji dockera\npozwala na pobieranie folderów w plikach tabeli",
-        "uk": "показати ще одну конкретну інформацію про встановлення docker на картці\nдозволяє завантажувати папки у вкладці файлів",
-        "zh-cn": "关于在东道国卡里安装的集装箱的更具体的资料\n可在档案表中下载编号"
       }
     },
     "desc": {
