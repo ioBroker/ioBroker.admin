@@ -2,28 +2,31 @@ import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Toolbar from '@mui/material/Toolbar';
-import MenuItem from '@mui/material/MenuItem';
-import Grid from '@mui/material/Grid';
-import Select from '@mui/material/Select';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Paper from '@mui/material/Paper';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+    Toolbar,
+    MenuItem,
+    Grid,
+    Select,
+    FormControlLabel,
+    Checkbox,
+    Button,
+    FormControl,
+    InputLabel,
+    Paper,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+} from '@mui/material';
 
-import IconWorld from '@mui/icons-material/Language';
-import IconCheck from '@mui/icons-material/Check';
-import IconCancel from '@mui/icons-material/Close';
+import {
+    Language as IconWorld,
+    Close as IconCancel,
+    Check as IconCheck,
+} from '@mui/icons-material';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { I18n, withWidth } from '@iobroker/adapter-react-v5';
 import LicenseTexts from '../LicenseTexts';
 
 const TOOLBAR_HEIGHT = 64;
@@ -113,7 +116,7 @@ class WizardLicenseTab extends Component {
                 <DialogContentText id="alert-dialog-description">
                     <span role="img" aria-label="unhappy">😒</span>
                     {' '}
-                    { this.props.t('Sorry, you cannot use ioBroker.')}
+                    {this.props.t('Sorry, you cannot use ioBroker.')}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -122,7 +125,7 @@ class WizardLicenseTab extends Component {
                     color="primary"
                     startIcon={<IconCheck />}
                 >
-                    { I18n.t('Understand') }
+                    {I18n.t('Understand')}
                 </Button>
             </DialogActions>
         </Dialog>;
@@ -131,7 +134,10 @@ class WizardLicenseTab extends Component {
     renderLicenseText() {
         let lines = LicenseTexts[I18n.getLanguage()] || LicenseTexts.en;
         lines = lines.split('\n');
-        return <div className={this.props.classes.licenseTextDiv}>{lines.map((line, i) => <div className={this.props.classes.licenseText} key={i}>{line}</div>)}</div>;
+        return <div className={this.props.classes.licenseTextDiv}>
+            {lines.map((line, i) =>
+                <div className={this.props.classes.licenseText} key={i}>{line}</div>)}
+        </div>;
     }
 
     render() {
@@ -141,7 +147,7 @@ class WizardLicenseTab extends Component {
                     <FormControl variant="standard" className={this.props.classes.languageSelect}>
                         <InputLabel>
                             <IconWorld />
-                            { this.props.t('Language') }
+                            {this.props.t('Language')}
                         </InputLabel>
                         <Select
                             variant="standard"
@@ -169,11 +175,11 @@ class WizardLicenseTab extends Component {
                             control={<Checkbox ref={this.focusRef} checked={this.state.statisticsAccepted} onChange={e => this.setState({ statisticsAccepted: e.target.checked })} />}
                             label={this.props.t('I agree with the collection of anonymous statistics.')}
                         />
-                        <div className={this.props.classes.statAcceptNote}>{ this.props.t('(This can be disabled later in settings)') }</div>
+                        <div className={this.props.classes.statAcceptNote}>{this.props.t('(This can be disabled later in settings)')}</div>
                     </div>
                 </Grid>
                 <Grid item>
-                    <h1>{ this.props.t('License terms') }</h1>
+                    <h1>{this.props.t('License terms')}</h1>
                 </Grid>
                 <Grid item className={this.props.classes.licenseDiv}>
                     {this.renderLicenseText()}
@@ -181,8 +187,24 @@ class WizardLicenseTab extends Component {
             </Grid>
             <Toolbar className={this.props.classes.toolbar}>
                 <div className={this.props.classes.grow} />
-                <Button variant="contained" color="grey" onClick={() => this.setState({ notAgree: true })} startIcon={<IconCancel />}>{ this.props.t('Not agree') }</Button>
-                <Button variant="contained" color="primary" className={this.props.classes.greenButton} disabled={!this.state.statisticsAccepted} onClick={() => this.props.onDone({ lang: this.state.lang })} startIcon={<IconCheck />}>{ this.props.t('Agree') }</Button>
+                <Button
+                    variant="contained"
+                    color="grey"
+                    onClick={() => this.setState({ notAgree: true })}
+                    startIcon={<IconCancel />}
+                >
+                    {this.props.t('Not agree')}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    className={this.props.classes.greenButton}
+                    disabled={!this.state.statisticsAccepted}
+                    onClick={() => this.props.onDone({ lang: this.state.lang })}
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('Agree')}
+                </Button>
                 <div className={this.props.classes.grow} />
             </Toolbar>
             { this.renderNotAgree() }

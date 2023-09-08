@@ -2,29 +2,28 @@ import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Toolbar';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import TextField from '@mui/material/TextField';
-import Fab from '@mui/material/Fab';
+import {
+    Grid,
+    Toolbar,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+    TextField,
+    Fab,
+    Button,
+    Paper,
+} from '@mui/material';
 
 import 'ol/ol.css';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import Feature from 'ol/Feature';
+import { Map, View, Feature } from 'ol';
 import { Tile, Vector as LayerVector } from 'ol/layer';
 import { Icon, Style } from 'ol/style';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import { Point } from 'ol/geom';
 import { toLonLat, fromLonLat } from 'ol/proj';
 
-import Button from '@mui/material/Button';
-import Paper from  '@mui/material/Paper';
-
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 // Icons
 import { FaCrosshairs as GeoIcon } from 'react-icons/fa';

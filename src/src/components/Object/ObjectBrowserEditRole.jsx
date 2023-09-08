@@ -76,6 +76,7 @@ class ObjectBrowserEditRole extends Component {
             <DialogTitle id="edit-role-dialog-title">{this.object ? this.props.t('Update role for %s', this.object._id) : null}</DialogTitle>
             <DialogContent>
                 <Autocomplete
+                    variant="standard"
                     freeSolo
                     options={this.props.roles}
                     style={{ width: '100%' }}

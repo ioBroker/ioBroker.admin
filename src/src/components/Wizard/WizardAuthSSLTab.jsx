@@ -2,20 +2,22 @@ import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Toolbar';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Button from '@mui/material/Button';
-import Paper from  '@mui/material/Paper';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import FormGroup from '@mui/material/FormGroup';
+import {
+    Grid,
+    Toolbar,
+    FormControlLabel,
+    Checkbox,
+    Button,
+    Paper,
+    InputLabel,
+    MenuItem,
+    FormHelperText,
+    FormControl,
+    Select,
+    FormGroup,
+} from '@mui/material';
 
-import IconCheck from '@mui/icons-material/Check';
+import { Check as IconCheck } from '@mui/icons-material';
 
 import { withWidth } from '@iobroker/adapter-react-v5';
 
@@ -74,7 +76,7 @@ class WizardAuthSSLTab extends Component {
             <form className={this.props.classes.form} noValidate autoComplete="off">
                 <Grid container direction="column">
                     <Grid item>
-                        <h2 className={this.props.classes.title}>{ this.props.t('It is suggested to enable the authentication in admin') }</h2>
+                        <h2 className={this.props.classes.title}>{this.props.t('It is suggested to enable the authentication in admin')}</h2>
                     </Grid>
                     <Grid item className={this.props.classes.inputLine}>
                         <FormGroup>
@@ -87,7 +89,6 @@ class WizardAuthSSLTab extends Component {
                                     />
                                 }
                                 label={this.props.t('Authentication in Admin')}
-
                             />
                             <FormHelperText>{this.props.t('Activate the check of password in admin if you plan to access your ioBroker is not in "Demilitarized Zone"')}</FormHelperText>
                         </FormGroup>
@@ -114,7 +115,14 @@ class WizardAuthSSLTab extends Component {
             </form>
             <Toolbar className={this.props.classes.toolbar}>
                 <div className={this.props.classes.grow} />
-                <Button color="primary" variant="contained" onClick={() => this.props.onDone({ auth: this.state.auth, secure: this.state.secure })} startIcon={<IconCheck />}>{ this.props.t('Apply') }</Button>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => this.props.onDone({ auth: this.state.auth, secure: this.state.secure })}
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('Apply')}
+                </Button>
             </Toolbar>
         </Paper>;
     }

@@ -77,7 +77,7 @@ class WizardPortForwarding extends Component {
             <form className={this.props.classes.form} noValidate autoComplete="off">
                 <Grid container direction="column">
                     <Grid item>
-                        <h2 className={this.props.classes.title}>{ this.props.t('Important information about port forwarding') }</h2>
+                        <h2 className={this.props.classes.title}>{this.props.t('Important information about port forwarding')}</h2>
                     </Grid>
                     <Grid item>
                         {!this.props.auth ? <div className={this.props.classes.error}>{this.props.t('Warning!')}</div> : null}
@@ -112,7 +112,14 @@ ioBroker.net
             </form>
             <Toolbar className={this.props.classes.toolbar}>
                 <div className={this.props.classes.grow} />
-                <Button color="primary" variant="contained" onClick={() => this.props.onDone(this.state.password)} startIcon={<IconCheck />}>{ this.props.t('Understand') }</Button>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => this.props.onDone()}
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('Understand')}
+                </Button>
             </Toolbar>
         </Paper>;
     }

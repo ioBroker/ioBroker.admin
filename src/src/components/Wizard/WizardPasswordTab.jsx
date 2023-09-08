@@ -2,15 +2,19 @@ import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Toolbar';
+import {
+    TextField,
+    Grid,
+    Toolbar,
+    Button,
+    Paper,
+} from '@mui/material';
 
-import Button from '@mui/material/Button';
-import Paper from  '@mui/material/Paper';
-import IconCheck from '@mui/icons-material/Check';
+import {
+    Check as IconCheck,
+} from '@mui/icons-material';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '../../Utils';
 
@@ -148,7 +152,15 @@ class WizardPasswordTab extends Component {
             </form>
             <Toolbar className={this.props.classes.toolbar}>
                 <div className={this.props.classes.grow} />
-                <Button color="primary" variant="contained" onClick={() => this.props.onDone(this.state.password)} disabled={!!this.state.errorPasswordRepeat || this.state.errorPassword} startIcon={<IconCheck />}>{ this.props.t('Set administrator password') }</Button>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => this.props.onDone(this.state.password)}
+                    disabled={!!this.state.errorPasswordRepeat || this.state.errorPassword}
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('Set administrator password')}
+                </Button>
             </Toolbar>
         </Paper>;
     }

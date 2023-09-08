@@ -1185,8 +1185,8 @@ class App extends Router {
     }
 
     onDiscoveryAlive = (name, value) => {
-        if (!!(value && !!value.val) !== this.state.discoveryAlive) {
-            this.setState({ discoveryAlive: !!(value && !!value.val) });
+        if (!!value?.val !== this.state.discoveryAlive) {
+            this.setState({ discoveryAlive: !!value?.val });
         }
     };
 
@@ -2286,16 +2286,14 @@ class App extends Router {
                                 </IconButton>
                                 <div className={classes.wrapperButtons}>
                                     <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
-                                        {this.state.discoveryAlive && (
-                                            <Tooltip title={I18n.t('Discovery devices')}>
-                                                <IconButton
-                                                    size="large"
-                                                    onClick={() => Router.doNavigate(null, 'discovery')}
-                                                >
-                                                    <VisibilityIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                        )}
+                                        {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
+                                            <IconButton
+                                                size="large"
+                                                onClick={() => Router.doNavigate(null, 'discovery')}
+                                            >
+                                                <VisibilityIcon />
+                                            </IconButton>
+                                        </Tooltip>}
                                     </IsVisible>
                                     <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
                                         <Tooltip title={I18n.t('System settings')}>

@@ -2,19 +2,23 @@ import { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
+import {
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    AppBar,
+    Toolbar,
+    Stepper,
+    Step,
+    StepLabel,
+} from '@mui/material';
 
 // Icons
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    PlayArrow as PlayArrowIcon,
+    Check as CheckIcon,
+} from '@mui/icons-material';
 
 import {
     withWidth, Utils,
@@ -249,7 +253,7 @@ class WizardDialog extends Component {
                         this.adminInstance.native.secure = false;
 
                         await this.props.socket.setObject(this.adminInstance._id, this.adminInstance);
-                        setTimeout(() => window.location = `http://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`, 1000);
+                        setTimeout(() => window.location = `http://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`, 1000);
                         this.props.onClose();
                         return;
                     }
@@ -263,18 +267,18 @@ class WizardDialog extends Component {
                 // redirect to https or http
                 let redirect;
                 if (this.adminInstance.native.secure) {
-                    redirect = `https://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`;
+                    redirect = `https://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`;
                 } else {
-                    redirect = `http://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`;
+                    redirect = `http://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`;
                 }
 
                 this.props.onClose(redirect);
             } else {
-                Router.doNavigate('tab-adapters', discovery ? 'discovery' : undefined);
+                Router.doNavigate('tab-adapters', discovery?.val ? 'discovery' : undefined);
                 this.props.onClose();
             }
         } else {
-            Router.doNavigate('tab-adapters', discovery ? 'discovery' : undefined);
+            Router.doNavigate('tab-adapters', discovery?.val ? 'discovery' : undefined);
             this.props.onClose();
         }
     }
@@ -288,7 +292,14 @@ class WizardDialog extends Component {
             </div>
             <Toolbar className={this.props.classes.toolbar}>
                 <div className={this.props.classes.grow} />
-                <Button variant="contained" color="primary" onClick={() => this.onClose()} startIcon={<CheckIcon />}>{this.props.t('Finish')}</Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => this.onClose()}
+                    startIcon={<CheckIcon />}
+                >
+                    {this.props.t('Finish')}
+                </Button>
                 <div className={this.props.classes.grow} />
             </Toolbar>
         </div>;
@@ -323,13 +334,13 @@ class WizardDialog extends Component {
                         </Stepper>
                     </Toolbar>
                 </AppBar>
-                {this.state.activeStep === 0 ? <div className={this.props.classes.tabPanel}>{this.renderWelcome()       }</div> : null}
-                {this.state.activeStep === 1 ? <div className={this.props.classes.tabPanel}>{this.renderLicense()       }</div> : null}
-                {this.state.activeStep === 2 ? <div className={this.props.classes.tabPanel}>{this.renderPassword()      }</div> : null}
+                {this.state.activeStep === 0 ? <div className={this.props.classes.tabPanel}>{this.renderWelcome()}</div> : null}
+                {this.state.activeStep === 1 ? <div className={this.props.classes.tabPanel}>{this.renderLicense()}</div> : null}
+                {this.state.activeStep === 2 ? <div className={this.props.classes.tabPanel}>{this.renderPassword()}</div> : null}
                 {this.state.activeStep === 3 ? <div className={this.props.classes.tabPanel}>{this.renderAuthentication()}</div> : null}
                 {this.state.activeStep === 4 ? <div className={this.props.classes.tabPanel}>{this.renderPortForwarding()}</div> : null}
-                {this.state.activeStep === 5 ? <div className={this.props.classes.tabPanel}>{this.renderSettings()      }</div> : null}
-                {this.state.activeStep === 6 ? <div className={this.props.classes.tabPanel}>{this.renderFinish()        }</div> : null}
+                {this.state.activeStep === 5 ? <div className={this.props.classes.tabPanel}>{this.renderSettings()}</div> : null}
+                {this.state.activeStep === 6 ? <div className={this.props.classes.tabPanel}>{this.renderFinish()}</div> : null}
             </DialogContent>
         </Dialog>;
     }
