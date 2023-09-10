@@ -1253,53 +1253,55 @@ class App extends Router {
         return Promise.resolve();
     };
 
+    /**
+     * Get news for specific adapter instance
+     *
+     * @param {string} instance e.g. hm-rpc.0
+     */
     getNews = instance => async (name, newsFeed) => {
         try {
             const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
-            if (newsFeed && newsFeed.val) {
+            if (newsFeed?.val) {
                 let news = null;
                 try {
-                    news = JSON.parse(newsFeed?.val);
+                    news = JSON.parse(newsFeed.val);
                 } catch (error) {
-                    console.error(`Cannot parse news: ${newsFeed?.val}`);
+                    console.error(`Cannot parse news: ${newsFeed.val}`);
                 }
 
                 if (news?.length && news[0].id !== lastNewsId?.val) {
-                    this.socket.getUuid().then(uuid =>
-                        this.socket
-                            .getHostInfo(this.state.currentHost)
-                            .catch(() => null)
-                            .then(info =>
-                                this.socket
-                                    .getCompactInstances()
-                                    .catch(() => null)
-                                    .then(instances => {
-                                        const checkNews = checkMessages(news, lastNewsId?.val, {
-                                            lang: I18n.getLanguage(),
-                                            adapters: this.state.adapters,
-                                            instances: instances || [],
-                                            nodeVersion: info ? info['Node.js'] || '?' : '?',
-                                            npmVersion: info ? info.NPM || '?' : '?',
-                                            os: info ? info.os || '?' : '?',
-                                            activeRepo: this.state.systemConfig.common.activeRepo,
-                                            uuid,
-                                        });
+                    const uuid = await this.socket.getUuid();
+                    const info = await this.socket
+                        .getHostInfo(this.state.currentHost)
+                        .catch(() => null);
 
-                                        if (checkNews && checkNews.length) {
-                                            newsAdminDialogFunc(
-                                                checkNews,
-                                                lastNewsId?.val,
-                                                this.state.themeName,
-                                                this.state.themeType,
-                                                this.state.theme,
-                                                id =>
-                                                    this.socket.setState(`admin.${instance}.info.newsLastId`, {
-                                                        val: id,
-                                                        ack: true,
-                                                    }),
-                                            );
-                                        }
-                                    })));
+                    const instances  = await this.socket
+                        .getCompactInstances()
+                        .catch(() => null);
+
+                    const checkNews = checkMessages(news, lastNewsId?.val, {
+                        lang: I18n.getLanguage(),
+                        adapters: this.state.adapters,
+                        instances: instances || [],
+                        nodeVersion: info ? info['Node.js'] || '?' : '?',
+                        npmVersion: info ? info.NPM || '?' : '?',
+                        os: info ? info.os || '?' : '?',
+                        activeRepo: this.state.systemConfig.common.activeRepo,
+                        uuid,
+                    });
+
+                    if (checkNews?.length) {
+                        newsAdminDialogFunc(
+                            checkNews,
+                            lastNewsId?.val,
+                            this.state.theme,
+                            id =>
+                                this.socket.setState(`admin.${instance}.info.newsLastId`, {
+                                    val: id,
+                                    ack: true,
+                                }),
+                        );
+                    }
                 }
             }
         } catch (error) {

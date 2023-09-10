@@ -84,6 +84,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) fixed `between` function for showing news
+
 ### 6.10.0 (2023-09-08)
 * (foxriver76) various minor improvements
 * (foxriver76) fixed problem with discovery dialog
