@@ -18,12 +18,13 @@ import WorldIcon from '@mui/icons-material/Public';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { Theme } from '@iobroker/adapter-react-v5/types';
 
-let node = null;
+let node: HTMLDivElement | null = null;
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: (theme as any).palette.background.paper,
         width: '100%',
         height: 'auto',
         display: 'flex',
@@ -94,7 +95,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const Status = ({ name, ...props }) => {
+const Status = ({ name, ...props }: {name: string; className: string}) => {
     switch (name) {
         case 'warning':
             return <WarningIcon style={{ color: '#ffca00' }} {...props} />;
@@ -107,11 +108,11 @@ const Status = ({ name, ...props }) => {
     }
 };
 
-function checkActive(adapterName, instances) {
+function checkActive(adapterName: string, instances: Record<string, any>): boolean {
     return !!Object.keys(instances).filter(id => id.startsWith(`adapter.system.${adapterName}.`)).find(id => instances[id].enabled);
 }
 
-function checkConditions(condition, installedVersion) {
+function checkConditions(condition: string, installedVersion: string): boolean {
     if (condition.startsWith('equals')) {
         const vers = condition.substring(7, condition.length - 1).trim();
         return installedVersion === vers;
@@ -142,24 +143,49 @@ function checkConditions(condition, installedVersion) {
     }
 }
 
-/* const context = {
-    adapters,
-    instances,
-    nodeVersion,
-    npmVersion,
-    os,
-    activeRepo
-    uuid,
-    lang
-} */
+interface Context {
+    adapters: Record<string, any>;
+    instances: ioBroker.InstanceObject[];
+    nodeVersion: string;
+    npmVersion: string;
+    os: string;
+    activeRepo: string;
+    uuid?: string;
+    lang: ioBroker.Languages;
+}
 
-export const checkMessages = (messages, lastMessageId, context) => {
+interface Message {
+    id: string;
+    uuid: string;
+    'date-start'?: number | string;
+    'date-end'?: number | string;
+    'node-version'?: string;
+    'npm-version'?: string;
+    os?: string;
+    repo: string;
+    conditions: {
+        [adapter: string]: '!installed' | 'active' | '!active';
+    };
+    title: Record<ioBroker.Languages, string>;
+    content:  Record<ioBroker.Languages, string>;
+    class: 'info' | 'warning' | 'danger';
+    /** Name of the FA-icon */
+    icon: string;
+    created: string;
+    /** Link destination */
+    link?: string;
+    /** Title of the link */
+    linkTitle?: string;
+    /** E.g. a base64 encoded image like, data:image/png;base64,iVBORw0KG... */
+    img?: 'string';
+}
+
+export const checkMessages = (messages: Message[], lastMessageId: string, context: Context) => {
     const messagesToShow = [];
 
     try {
         const today = Date.now();
-        for (let m = 0; m < messages.length; m++) {
-            const message = messages[m];
+        for (const message of messages) {
             if (!message) {
                 continue;
             }
@@ -214,7 +240,7 @@ export const checkMessages = (messages, lastMessageId, context) => {
                 if (Array.isArray(message.uuid)) {
                     showIt = context.uuid && message.uuid.find(uuid => context.uuid === uuid);
                 } else {
-                    showIt = context.uuid && context.uuid === message.uuid;
+                    showIt = !!(context.uuid && context.uuid === message.uuid);
                 }
             }
 
@@ -241,7 +267,7 @@ export const checkMessages = (messages, lastMessageId, context) => {
 
 const NewsAdminDialog = ({
     newsArr, current, callback, theme,
-}) => {
+}: {newsArr: any[]; current: any; callback: (id: string) => void; theme: any}) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [id, setId] = useState(current);
@@ -356,7 +382,7 @@ const NewsAdminDialog = ({
     </ThemeProvider>;
 };
 
-export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, theme, callback) => {
+export const newsAdminDialogFunc = (newsArr: any[], current: any, theme: Theme, callback: (id: string) => void | Promise<void>) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
@@ -368,8 +394,6 @@ export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, them
         <ThemeProvider theme={theme}>
             <NewsAdminDialog
                 newsArr={newsArr}
-                themeName={themeName}
-                themeType={themeType}
                 current={current}
                 callback={callback}
                 theme={theme}
