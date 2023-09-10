@@ -17,6 +17,10 @@ Additionally, to the JSON file, you must define in the `io-package.json` in `com
 ```
 to say that the adapter supports JSON configuration.
 
+You can see almost all components in action if you test this adapter: https://github.com/mcm1957/ioBroker.jsonconfig-demo.
+You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-demo` on the npm tab.
+
+
 All labels, texts, help texts can be multi-language or just strings.
 
 *If the attribute name starts with "_" it will not be saved in the object.*
