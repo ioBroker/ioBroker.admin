@@ -1676,7 +1676,7 @@ class Utils {
      * @return {boolean}
      */
     static isValidDate(date) {
-        return date instanceof Date && !Number.isNaN(date);
+        return date instanceof Date && !isNaN(date);
     }
 }
 
