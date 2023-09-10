@@ -693,6 +693,7 @@ The following variables are available in JS function in custom settings:
     onError={error => error can be true/false or text}
 />
 ```
+You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
 
 ## Schema
 Schema is [here](https://github.com/ioBroker/adapter-react-v5/tree/master/schemas)
