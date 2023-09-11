@@ -1,5 +1,25 @@
 # ioBroker JSON Config
-**Note: attributes or controls marked with "!", are not yet implemented.**
+Admin (from version 6) supports JSON configuration for adapters.
+It is possible to define the configuration in JSON file and then use it in Admin.
+
+Example of `jsonConfig.json` file with multiple tabs can be found here: https://github.com/ioBroker/ioBroker.admin/blob/master/admin/jsonConfig.json5
+and example with just one panel here: https://github.com/ioBroker/ioBroker.dwd/blob/master/admin/jsonConfig.json
+
+You can define the settings in JSON or in JSON5 format. JSON5 is more human-readable and supports comments.
+
+Additionally, to the JSON file, you must define in the `io-package.json` in `common` part:
+```json
+...
+"adminUI": {
+  "config": "json"
+}
+...
+```
+to say that the adapter supports JSON configuration.
+
+You can see almost all components in action if you test this adapter: https://github.com/mcm1957/ioBroker.jsonconfig-demo.
+You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-demo` on the npm tab.
+
 
 All labels, texts, help texts can be multi-language or just strings.
 
@@ -249,7 +269,7 @@ Possible types:
     - `simple` - show simple CRON settings
 
 - `fileSelector` (only Admin6)
-    - `pattern` - File extension pattern. Allowed `**/*.ext` to show all files from sub-folders too, `*.ext` to show from root folder or `folderName/*.ext` to show all files in sub-folder `folderName`. Default `**/*.*`.
+    - `pattern` - File extension pattern. Allowed `**/*.ext` to show all files from subfolders too, `*.ext` to show from root folder or `folderName/*.ext` to show all files in sub-folder `folderName`. Default `**/*.*`.
     - `fileTypes` - [optional] type of files: `audio`, `image`, `text`
     - `objectID` - Object ID of type `meta`. You can use special placeholder `%INSTANCE%`: like `myAdapter.%INSTANCE%.files`
     - `upload` - path, where the uploaded files will be stored. Like `folderName`. If not defined, no upload field will be shown. To upload in the root, set this field to `/`.
@@ -390,6 +410,8 @@ adapter.on('message', obj => {
 
 - `uuid` - Show iobroker UUID
 - `port` - Special input for ports. It checks automatically if port is used by other instances and shows a warning
+
+**Note: attributes or controls marked with "!", are not yet implemented.**
 
 ## Common attributes of controls
 All types could have:
@@ -674,7 +696,8 @@ The following variables are available in JS function in custom settings:
     onChange={(newData, isChanged) => {}} 
     onError={error => error can be true/false or text}
 />
-````
+```
+You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
 
 ## Schema
 Schema is [here](https://github.com/ioBroker/adapter-react-v5/tree/master/schemas)

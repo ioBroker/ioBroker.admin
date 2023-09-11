@@ -133,100 +133,89 @@ class ConfigCoordinates extends ConfigGeneric {
     }
 
     renderItem(error, disabled /* , defaultValue */) {
-        return (
-            <>
-                {this.props.schema.useSystemName ? (
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={!!this.state.useSystem}
-                                onChange={e => {
-                                    const useSystem = e.target.checked;
-                                    if (useSystem) {
-                                        this.getSystemCoordinates();
-                                    }
-                                    this.setState({ useSystem }, () =>
-                                        this.onChange(this.props.schema.useSystemName, useSystem));
-                                }}
-                            />
-                        }
-                        label={I18n.t('ra_Use system settings for position')}
-                    />
-                ) : null}
-                {this.props.schema.longitudeName && this.props.schema.latitudeName ? (
-                    <TextField
-                        variant="standard"
-                        className={this.props.classes.width50}
-                        value={this.state.longitude ?? ''}
-                        error={!!error}
-                        disabled={this.state.useSystem || !!disabled}
+        return <>
+            {this.props.schema.useSystemName ? <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={!!this.state.useSystem}
                         onChange={e => {
-                            const longitude = e.target.value;
-                            this.setState({ longitude }, () => {
-                                this.onChange(this.props.schema.longitudeName, (longitude || '').trim());
-                            });
+                            const useSystem = e.target.checked;
+                            if (useSystem) {
+                                this.getSystemCoordinates();
+                            }
+                            this.setState({ useSystem }, () =>
+                                this.onChange(this.props.schema.useSystemName, useSystem));
                         }}
-                        label={I18n.t('ra_Longitude')}
                     />
-                ) : null}
-                {this.props.schema.longitudeName && this.props.schema.latitudeName ? (
-                    <TextField
-                        variant="standard"
-                        className={this.props.classes.width50}
-                        value={this.state.latitude ?? ''}
-                        error={!!error}
-                        disabled={this.state.useSystem || !!disabled}
-                        onChange={e => {
-                            const latitude = e.target.value;
-                            this.setState({ latitude }, () =>
-                                this.onChange(this.props.schema.latitudeName, (latitude || '').trim()));
-                        }}
-                        label={I18n.t('ra_Latitude')}
-                    />
-                ) : null}
-                {!this.props.schema.longitudeName || !this.props.schema.latitudeName ? (
-                    <TextField
-                        variant="standard"
-                        className={this.props.classes.width}
-                        value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
-                        error={!!error}
-                        readOnly={this.state.useSystem}
-                        disabled={!!disabled}
-                        inputProps={{ maxLength: this.props.schema.maxLength || this.props.schema.max || undefined }}
-                        onChange={e => {
-                            const value = e.target.value;
-                            this.setState({ value }, () => this.onChange(this.props.attr, (value || '').trim()));
-                        }}
-                        placeholder={this.getText(this.props.schema.placeholder)}
-                        label={this.getText(this.props.schema.label)}
-                        helperText={this.renderHelp(
-                            this.props.schema.help,
-                            this.props.schema.helpLink,
-                            this.props.schema.noTranslation,
-                        )}
-                    />
-                ) : null}
-                {!this.state.useSystem ? (
-                    <Fab
-                        size="small"
-                        onClick={() => this.getCoordinates()}
-                        title={I18n.t('ra_Take browser position')}
-                        style={{ marginRight: 4 }}
-                    >
-                        <IconLocationOn />
-                    </Fab>
-                ) : null}
-                {!this.state.useSystem ? (
-                    <Fab
-                        size="small"
-                        onClick={() => this.getSystemCoordinates()}
-                        title={I18n.t('ra_Take position from system settings')}
-                    >
-                        <IconGpsFixed />
-                    </Fab>
-                ) : null}
-            </>
-        );
+                }
+                label={I18n.t('ra_Use system settings for position')}
+            /> : null}
+            {this.props.schema.longitudeName && this.props.schema.latitudeName ?
+                <TextField
+                    variant="standard"
+                    className={this.props.classes.width50}
+                    value={this.state.longitude ?? ''}
+                    error={!!error}
+                    disabled={this.state.useSystem || !!disabled}
+                    onChange={e => {
+                        const longitude = e.target.value;
+                        this.setState({ longitude }, () => {
+                            this.onChange(this.props.schema.longitudeName, (longitude || '').trim());
+                        });
+                    }}
+                    label={I18n.t('ra_Longitude')}
+                /> : null}
+            {this.props.schema.longitudeName && this.props.schema.latitudeName ?
+                <TextField
+                    variant="standard"
+                    className={this.props.classes.width50}
+                    value={this.state.latitude ?? ''}
+                    error={!!error}
+                    disabled={this.state.useSystem || !!disabled}
+                    onChange={e => {
+                        const latitude = e.target.value;
+                        this.setState({ latitude }, () =>
+                            this.onChange(this.props.schema.latitudeName, (latitude || '').trim()));
+                    }}
+                    label={I18n.t('ra_Latitude')}
+                /> : null}
+            {!this.props.schema.longitudeName || !this.props.schema.latitudeName ?
+                <TextField
+                    variant="standard"
+                    className={this.props.classes.width}
+                    value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
+                    error={!!error}
+                    readOnly={this.state.useSystem}
+                    disabled={!!disabled}
+                    inputProps={{ maxLength: this.props.schema.maxLength || this.props.schema.max || undefined }}
+                    onChange={e => {
+                        const value = e.target.value;
+                        this.setState({ value }, () => this.onChange(this.props.attr, (value || '').trim()));
+                    }}
+                    placeholder={this.getText(this.props.schema.placeholder)}
+                    label={this.getText(this.props.schema.label)}
+                    helperText={this.renderHelp(
+                        this.props.schema.help,
+                        this.props.schema.helpLink,
+                        this.props.schema.noTranslation,
+                    )}
+                /> : null}
+            {!this.state.useSystem ? <Fab
+                size="small"
+                onClick={() => this.getCoordinates()}
+                title={I18n.t('ra_Take browser position')}
+                style={{ marginRight: 4 }}
+            >
+                <IconLocationOn />
+            </Fab> : null}
+            {!this.state.useSystem ? <Fab
+                size="small"
+                onClick={() => this.getSystemCoordinates()}
+                title={I18n.t('ra_Take position from system settings')}
+            >
+                <IconGpsFixed />
+            </Fab> : null}
+        </>;
     }
 }
 

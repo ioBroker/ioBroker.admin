@@ -40,7 +40,7 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "semver": "^7.5.4",
-    "ws": "^8.14.0"
+    "ws": "^8.14.1"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.6.0",
@@ -53,7 +53,7 @@
     "@typescript-eslint/parser": "^6.6.0",
     "chai": "^4.3.8",
     "colorette": "^2.0.20",
-    "eslint": "^8.48.0",
+    "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-prettier": "^5.0.0",

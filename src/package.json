@@ -36,7 +36,7 @@
         "date-fns": "^2.30.0",
         "echarts": "^5.4.3",
         "echarts-for-react": "^3.0.2",
-        "eslint": "^8.48.0",
+        "eslint": "^8.49.0",
         "eslint-config-airbnb": "^19.0.4",
         "eslint-import-resolver-typescript": "^3.6.0",
         "eslint-plugin-eqeqeq-fix": "^1.0.3",
