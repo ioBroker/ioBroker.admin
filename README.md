@@ -87,6 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 * (foxriver76) fixed `between` function for showing news
 * (foxriver76) if date string is not parseable show the original string instead of `Invalid Date`
+* (foxriver76) updated socket classes to not crash on invalid patterns
 
 ### 6.10.0 (2023-09-08)
 * (foxriver76) various minor improvements
