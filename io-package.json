@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.10.0",
+    "version": "6.10.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.10.1": {
+        "en": "fixed `between` function for showing news\nif date string is not parseable show the original string instead of `Invalid Date`\nupdated socket classes to not crash on invalid patterns",
+        "de": "zwischen der funktion, nachrichten anzuzeigen\nwenn Datumsstring nicht parseable den ursprünglichen String anstelle von `Invalid Date` anzeigen\naktualisierte steckdosenklassen, um nicht ungültige muster abzustürzen",
+        "ru": "исправлена между функцией для показа новостей\nесли строка даты не parseable показать оригинальную строку вместо `Invalid Date`\nобновленные классы розетки, чтобы не сломать на недействительных картинах",
+        "pt": "fixo entre a função para mostrar notícias\nse a cadeia de data não for parseable mostrar a string original em vez de `Data inválida`\nclasses de tomada atualizadas para não travar em padrões inválidos",
+        "nl": "vertaling:\nals datum string niet geschikt is voor de originele snaar in plaats van 'Invalid Date'\ngeïnformeerde socket lessen om niet te crashen op invalide patronen",
+        "fr": "fixe entre fonction pour montrer des nouvelles\nsi la chaîne de date n'est pas parseable afficher la chaîne d'origine au lieu de ` Date invalide`\nclasses de socket mises à jour pour ne pas s'écraser sur des modèles invalides",
+        "it": "fisso tra funzione per mostrare notizie\nse la stringa di data non è parseable mostrare la stringa originale invece di ` Data non valida`\nclassi di socket aggiornate per non schiantarsi su modelli non validi",
+        "es": "fijo entre función para mostrar noticias\nsi la cadena de fecha no es parseable mostrar la cadena original en lugar de 'Fecha inválida'\nclases actualizadas de socket para no estrellarse en patrones inválidos",
+        "pl": "zastosowanie funkcji do pokazania wiadomości\njeśli ciąg dzienny nie jest parsewalny pokaz pierwotnego ciągu zamiast 'Invalid Date'\nzaktualizowane klasy gniazda nie rozbijają się na nieprawidłowych wzorach",
+        "uk": "фіксована між функцією відображення новин\nякщо дата рядка не є оригінальним елементом замість `Invalid Date`\nоновлені класи розетки не збиток на недійсних шаблонах",
+        "zh-cn": "新闻显示职能之间的固定关系\n如果日期不大可显示原来的“有效日期”\na. 更新的单元班,不用关于无效模式的碰撞"
+      },
       "6.10.0": {
         "en": "various minor improvements\nfixed problem with discovery dialog\nobject browser now validates setting state of type number\nallow to specify unique columns for tables\nfix crash on invalid states, which are missing the property `common.role`",
         "de": "verschiedene kleinere verbesserungen\nproblem mit entdeckungsdialog behoben\nobjekt-browser validiert nun den einstellungszustand der typennummer\neinzigartige spalten für tabellen angeben\ncrash auf ungültigen zuständen beheben, die die eigenschaft häufig fehlen. rolle",
@@ -95,19 +108,6 @@
         "pl": "w celu znalezienia odpowiedniego IP dla kontrolera UI multihost ulepszania niewolnik\nadmin jest teraz pokazywany na aktualizacji informacji, podczas gdy zatrzymuje się on w trakcie aktualizacji\nwersja z węzłem 16 {\\displaystyle 16} jest to koniec życia\nnaprawić foldery rekursywne",
         "uk": "намагатися знайти правильний IP для контролера UI багатоhost раб оновлення\nadmin тепер показує інформацію про оновлення, в той час як він припиняється під час оновлення\njavaScript licenses API Веб-сайт Go1.13.8\nвиправити завантаження папок рекурсивний",
         "zh-cn": "试图找到控制勒乌伊多主奴隶升级的IP。\n现在突出的是最新资料,在升级期间停止更新信息。\n要求的无误版本为16件,14件为X-Of-Life。\nf 固定下载导游"
-      },
-      "6.7.2": {
-        "en": "remove https certificate options\nprevent error log of not used certificates even though they are used\nfixed issue with docker host cards on intro tab\nfixed issue if adapter readme is opened in new tab\ncorrected opening of custom tabs, e.g., for fullcalendar\nallowed downloading of recursive folders",
-        "de": "entfernen von https-zertifikat-optionen\ndie fehlerprotokollierung nicht genutzter zertifikate verhindern, obwohl sie verwendet werden\nfeste ausgabe mit docer-hostkarten auf intro-tab\nfestes problem, wenn adapter-lesegerät in neuem tab geöffnet wird\nkorrigiertes öffnen von benutzerdefinierten tabs, z.b. für fullcalendar\ndas herunterladen von wiederkehrenden ordnern erlaubt",
-        "ru": "удалить опции сертификата https\nпредотвратить лог ошибок не используемых сертификатов, хотя они используются\nфиксированная проблема с картами хозяина docker на вкладке intro\nфиксированная проблема, если читатель адаптера открыт в новой вкладке\nисправлено открытие пользовательских вкладок, например, для fullcalendar\nразрешено скачивание рекурсивных папок",
-        "pt": "remover opções de certificado https\nevitar o registro de erro de certificados não usados, mesmo que eles sejam usados\nproblema fixo com cartões de host docker na guia intro\nproblema fixo se o readme do adaptador é aberto na nova aba\nabertura corrigida de abas personalizadas, por exemplo, para fullcalendar\ndownload permitido de pastas recursivas",
-        "nl": "verwijder htp's certificaat opties\nverhinder het logboek van niet gebruikt certificaten ook al zijn ze gebruikt\nvertaling:\nals adapterlezing wordt geopend in een nieuwe rekening\ngecorrigeerde opening van de gebruikelijke tabs, e.g. voor fullcalendar\nlaat het downloaden van terugkerende vouwen",
-        "fr": "supprimer les options de certificat https\nempêcher le relevé d'erreur des certificats non utilisés même si ils sont utilisés\nproblème fixe avec les cartes d'hôte docker sur l'onglet intro\nproblème fixe si l'adaptateur readme est ouvert dans un nouvel onglet\nouverture corrigée des onglets personnalisés, p.ex. pour fullcalendar\npossibilité de télécharger des dossiers récursifs",
-        "it": "rimuovere le opzioni di certificato https\nimpedire il registro di errore dei certificati non utilizzati anche se vengono utilizzati\nproblema fisso con le schede host docker sulla scheda intro\nproblema fisso se il readme dell'adattatore è aperto nella nuova scheda\napertura corretta di schede personalizzate, ad esempio, per fullcalendar\nscaricamento consentito di cartelle ricorsive",
-        "es": "eliminar las opciones de certificado https\nprevenir el registro de errores de certificados no utilizados aunque se utilizan\nedición fija con tarjetas de host de muelle en ficha de entrada\nproblema fijo si el readme del adaptador se abre en nueva pestaña\napertura corregida de pestañas personalizadas, por ejemplo, para fullcalendr\npermitido descargar carpetas recursivas",
-        "pl": "usunąć certyfikat https\numożliwia to, że nie są one używane certyfikaty, choć są one używane\nbezpośredni problem z kartami prowadzącymi w internecie\nostateczny problem, jeśli adapter readme jest otwarty w nowym tabeli\npoprawione otwarcie niestandardowych tabeli, np. dla pełnego kalendarza\npozwalać na pobranie rekurencyjnych folderów",
-        "uk": "видалити параметри сертифіката https\nзапобігти журналам помилок не використовуваних сертифікатів, навіть якщо вони використовуються\nфіксована проблема з docker хост-карт на вкладці intro\nвиправлено проблему, якщо перехідний читме відкрився в новій вкладці\nвиправлено відкриття користувацьких вкладок, наприклад, для повноцінного\nдопускається завантаження рекурсивних папок",
-        "zh-cn": "取消证书选择\n防止不使用证书的错误逻辑,尽管这些错误被用于使用。\na. 穿梭邮票的固定问题\n如果适应者读书在新的表格中开出固定问题。\n修改了习俗表格的开端,例如:\n允许回收器下载"
       }
     },
     "desc": {

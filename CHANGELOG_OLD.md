@@ -1,6 +1,16 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.8.3 (2023-08-16)
+* (foxriver76) added description to adapter rating dialog
+* (bluefox) Extended the select component with grouping
+* (bluefox) Allowed the sorting of adapters by name and not only by title
+* (bluefox) Allowed the set state JSON config component
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.8.0 (2023-08-14)
 * (foxriver76) try to find the correct IP for the controller UI multihost slave upgrade
 * (foxriver76) admin is now showing update information, while it is stopped during upgrade

@@ -84,7 +84,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.10.1 (2023-09-11)
 * (foxriver76) fixed `between` function for showing news
 * (foxriver76) if date string is not parseable show the original string instead of `Invalid Date`
 * (foxriver76) updated socket classes to not crash on invalid patterns
@@ -125,12 +125,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed problem with table formatting on history data point viewer
 * (foxriver76) fixed problem that could render update dialog with invalid property
 * (foxriver76) fixed sentry icon being in wrong position if no compact flag provided
-
-### 6.8.3 (2023-08-16)
-* (foxriver76) added description to adapter rating dialog
-* (bluefox) Extended the select component with grouping
-* (bluefox) Allowed the sorting of adapters by name and not only by title
-* (bluefox) Allowed the set state JSON config component
 
 ## License
 The MIT License (MIT)
