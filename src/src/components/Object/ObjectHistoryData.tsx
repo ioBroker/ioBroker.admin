@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { Styles, withStyles } from '@mui/styles';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
@@ -31,7 +30,9 @@ import {
     TableContainer,
 } from '@mui/material';
 
-import { Utils, withWidth, TableResize } from '@iobroker/adapter-react-v5';
+import {
+    Utils, withWidth, TableResize, AdminConnection,
+} from '@iobroker/adapter-react-v5';
 
 // icons
 import { FaPlusSquare as InsertIcon, FaDownload as ExportIcon } from 'react-icons/fa';
@@ -41,9 +42,11 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
+// @ts-expect-error this is weird
+import type { SystemConfig } from '@iobroker/socket-client';
 import { localeMap } from './utils';
 
-function padding3(ms) {
+function padding3(ms: number) {
     if (ms < 10) {
         return `00${ms}`;
     } if (ms < 100) {
@@ -52,14 +55,7 @@ function padding3(ms) {
     return ms;
 }
 
-// function padding2(num) {
-//     if (num < 10) {
-//         return `0${num}`;
-//     }
-//     return num;
-// }
-
-const styles = theme => ({
+const styles = (theme: any) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -206,18 +202,69 @@ const styles = theme => ({
     timeInput: {
         width: 100,
     },
-});
+}) satisfies Styles<any, any>;
 
-class ObjectHistoryData extends Component {
-    constructor(props) {
+interface ObjectHistoryDataProps {
+    t: (...text: string[]) => string;
+    lang: ioBroker.Languages;
+    expertMode: boolean;
+    socket: AdminConnection;
+    obj: Record<string, any>;
+    customsInstances: any[];
+    themeName: string;
+    objects: Record<string, any>;
+    isFloatComma: boolean;
+    classes: Record<string, any>;
+}
+
+interface ObjectHistoryDataState {
+    areYouSure?: boolean;
+    historyInstance: string;
+    relativeRange: any;
+    start: number;
+    end: number;
+    values: any;
+    selected: number[];
+    lastSelected: any;
+    lastSelectedColumn: any;
+    updateOpened: boolean;
+    insertOpened: boolean;
+    historyInstances: null | Record<string, any>[];
+    lcVisible: boolean;
+    ackVisible: boolean;
+    fromVisible: boolean;
+    /** 'insert', 'update', 'delete' */
+    supportedFeatures: string[];
+    dateFormat: string;
+    edit: Record<string, any>;
+    loading?: boolean;
+    suppressMessage?: number | boolean;
+}
+
+class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryDataState> {
+    private readonly adminInstance: number;
+
+    private readonly supportedFeaturesPromises: Record<string, any>;
+
+    private readonly unit: string;
+
+    private timeTimer?: ReturnType<typeof setTimeout>;
+
+    private readSupportedFeaturesTimeout?: ReturnType<typeof setTimeout>;
+
+    private rangeValues: any;
+
+    private rangeRef?: React.RefObject<any>;
+
+    constructor(props: ObjectHistoryDataProps) {
         super(props);
 
-        let relativeRange      = (window._localStorage || window.localStorage).getItem('App.relativeRange') || 'absolute';
-        const start              = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteStart'), 10) || 0;
-        const end                = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteEnd'), 10)   || 0;
-        let selected           = (window._localStorage || window.localStorage).getItem('App.historySelected') || '';
-        const lastSelected       = parseInt((window._localStorage || window.localStorage).getItem('App.historyLastSelected'), 10) || null;
-        const lastSelectedColumn = (window._localStorage || window.localStorage).getItem('App.historyLastSelectedColumn') || null;
+        let relativeRange      = (((window as any)._localStorage) || window.localStorage).getItem('App.relativeRange') || 'absolute';
+        const start              = parseInt((((window as any)._localStorage) || window.localStorage).getItem('App.absoluteStart'), 10) || 0;
+        const end                = parseInt((((window as any)._localStorage) || window.localStorage).getItem('App.absoluteEnd'), 10)   || 0;
+        let selected           = (((window as any)._localStorage) || window.localStorage).getItem('App.historySelected') || '';
+        const lastSelected       = parseInt((((window as any)._localStorage) || window.localStorage).getItem('App.historyLastSelected'), 10) || null;
+        const lastSelectedColumn = (((window as any)._localStorage) || window.localStorage).getItem('App.historyLastSelectedColumn') || null;
 
         if ((!start || !end) && (!relativeRange || relativeRange === 'absolute')) {
             relativeRange = '30';
@@ -260,7 +307,7 @@ class ObjectHistoryData extends Component {
 
         this.unit = this.props.obj.common && this.props.obj.common.unit ? ` ${this.props.obj.common.unit}` : '';
 
-        this.timeTimer = null;
+        this.timeTimer = undefined;
 
         this.prepareData()
             .then(() => this.readHistoryRange())
@@ -273,7 +320,7 @@ class ObjectHistoryData extends Component {
             });
     }
 
-    readSupportedFeatures(historyInstance) {
+    readSupportedFeatures(historyInstance: string) {
         historyInstance = historyInstance || this.state.historyInstance;
         if (!historyInstance) {
             return Promise.resolve([]);
@@ -284,15 +331,15 @@ class ObjectHistoryData extends Component {
         this.supportedFeaturesPromises[historyInstance] = new Promise(resolve => {
             this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
             this.readSupportedFeaturesTimeout = setTimeout(() => {
-                this.readSupportedFeaturesTimeout = null;
+                this.readSupportedFeaturesTimeout = undefined;
                 resolve([]);
-            }, 2000);
+            }, 2_000);
 
             this.props.socket.sendTo(historyInstance, 'features', null)
-                .then(result => {
+                .then((result: any) => {
                     if (this.readSupportedFeaturesTimeout) {
                         this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
-                        this.readSupportedFeaturesTimeout = null;
+                        this.readSupportedFeaturesTimeout = undefined;
                         resolve(result ? result.supportedFeatures || [] : []);
                     } else {
                         this.setState({ supportedFeatures: result ? result.supportedFeatures || [] : [] });
@@ -308,12 +355,12 @@ class ObjectHistoryData extends Component {
 
     componentWillUnmount() {
         this.timeTimer && clearTimeout(this.timeTimer);
-        this.timeTimer = null;
+        this.timeTimer = undefined;
 
         this.props.socket.unsubscribeState(this.props.obj._id, this.onChange);
     }
 
-    onChange = (id, state) => {
+    onChange = (id: string, state: ioBroker.State) => {
         if (id === this.props.obj._id &&
             state &&
             this.state.values &&
@@ -324,19 +371,19 @@ class ObjectHistoryData extends Component {
     };
 
     prepareData() {
-        let list;
+        let list: Record<string, any>[];
         return this.getHistoryInstances()
-            .then(_list => {
+            .then((_list: Record<string, any>[]) => {
                 list = _list;
                 // read default history
                 return this.props.socket.getCompactSystemConfig();
             })
-            .then(config => {
-                const defaultHistory = config && config.common && config.common.defaultHistory;
+            .then((config: SystemConfig) => {
+                const defaultHistory = config?.common?.defaultHistory;
 
                 // find current history
                 // first read from localstorage
-                let historyInstance = (window._localStorage || window.localStorage).getItem('App.historyInstance') || '';
+                let historyInstance = ((window as any)._localStorage || window.localStorage).getItem('App.historyInstance') || '';
                 if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
                     // try default history
                     historyInstance = defaultHistory;
@@ -353,7 +400,7 @@ class ObjectHistoryData extends Component {
                     historyInstance = defaultHistory;
                 }
                 return this.readSupportedFeatures(historyInstance)
-                    .then(supportedFeatures => new Promise(resolve => {
+                    .then((supportedFeatures: string[]) => new Promise<void>(resolve => {
                         // supportedFeatures = ['insert', 'update', 'delete'];
 
                         this.setState({
@@ -368,8 +415,8 @@ class ObjectHistoryData extends Component {
     }
 
     getHistoryInstances() {
-        const list = [];
-        const ids = [];
+        const list: Record<string, any>[] = [];
+        const ids: string[] = [];
         this.props.customsInstances.forEach(instance => {
             const instObj = this.props.objects[`system.adapter.${instance}`];
             if (instObj && instObj.common && instObj.common.getHistory) {
@@ -381,7 +428,7 @@ class ObjectHistoryData extends Component {
 
         if (ids.length) {
             return this.props.socket.getForeignStates(ids)
-                .then(alives => {
+                .then((alives: Record<string, any>) => {
                     Object.keys(alives).forEach(id => {
                         const item = list.find(it => id.endsWith(`${it.id}.alive`));
                         if (item) {
@@ -394,22 +441,7 @@ class ObjectHistoryData extends Component {
         return Promise.resolve(list);
     }
 
-    readHistory(start, end) {
-        /* interface GetHistoryOptions {
-            instance?: string;
-            start?: number;
-            end?: number;
-            step?: number;
-            count?: number;
-            from?: boolean;
-            ack?: boolean;
-            q?: boolean;
-            addID?: boolean;
-            limit?: number;
-            ignoreNull?: boolean;
-            sessionId?: any;
-            aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
-        } */
+    readHistory(start?: number, end?: number) {
         start = start || this.state.start;
         end   = end   || this.state.end;
 
@@ -430,7 +462,7 @@ class ObjectHistoryData extends Component {
             aggregate: 'none',
             returnNewestEntries: true,
         })
-            .then(values => {
+            .then((values: ioBroker.GetHistoryResult) => {
                 // merge range and chart
                 const chart       = [];
                 const range       = this.rangeValues;
@@ -529,13 +561,13 @@ class ObjectHistoryData extends Component {
             addID:     false,
             aggregate: 'none',
         })
-            .then(values => {
+            .then((values: ioBroker.GetHistoryResult) => {
                 if (values.length) {
                     // remove interpolated first value
                     if (values[0].val === null || values[0].ts === oldest.getTime()) {
                         values.shift();
                     }
-                    // mark interpolated
+                    // @ts-expect-error mark interpolated
                     values.forEach(it => it.i = true);
                     this.rangeValues = values;
                     this.setState({
@@ -548,7 +580,7 @@ class ObjectHistoryData extends Component {
             });
     }
 
-    onToggleSelect(e, ts, column) {
+    onToggleSelect(e: React.KeyboardEvent | React.MouseEvent, ts: number, column: string) {
         let selected = [...this.state.selected];
         const pos = selected.indexOf(ts);
         if (e.shiftKey && this.state.lastSelected) {
@@ -586,13 +618,13 @@ class ObjectHistoryData extends Component {
                 selected = [ts];
             }
 
-        (window._localStorage || window.localStorage).setItem('App.historyLastSelected', ts.toString());
-        (window._localStorage || window.localStorage).setItem('App.historyLastSelectedColumn', column);
-        (window._localStorage || window.localStorage).setItem('App.historySelected', JSON.stringify(selected));
+        ((window as any)._localStorage || window.localStorage).setItem('App.historyLastSelected', ts.toString());
+        ((window as any)._localStorage || window.localStorage).setItem('App.historyLastSelectedColumn', column);
+        ((window as any)._localStorage || window.localStorage).setItem('App.historySelected', JSON.stringify(selected));
         this.setState({ selected, lastSelected: ts, lastSelectedColumn: column });
     }
 
-    getTableRows(classes) {
+    getTableRows(classes: Record<string, any>) {
         const rows = [];
         for (let r = this.state.values.length - 1; r >= 0; r--) {
             const state = this.state.values[r];
@@ -647,7 +679,7 @@ class ObjectHistoryData extends Component {
                         key={ts + (state.val || '')}
                     >
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
-                            {`${new Date(state.ts).toLocaleDateString()} ${new Date(state.ts).toLocaleTimeString()}.${padding3(state.ts % 1000)}`}
+                            {`${this.formatTimestamp(state.ts)}`}
                             {selected && this.state.lastSelectedColumn === 'ts' ? <div className={classes.rowFocused} /> : ''}
                         </TableCell>
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'val')}>
@@ -742,36 +774,36 @@ class ObjectHistoryData extends Component {
         this.setState({ start, end }, () => this.readHistory());
 
         this.timeTimer = setTimeout(() => {
-            this.timeTimer = null;
+            this.timeTimer = undefined;
             this.shiftTime();
-        }, delay || 60000);
+        }, delay || 60_000);
     }
 
-    setRelativeInterval(mins, dontSave) {
+    setRelativeInterval(mins: string | number, dontSave?: boolean): void {
         if (!dontSave) {
-            (window._localStorage || window.localStorage).setItem('App.relativeRange', mins);
+            ((window as any)._localStorage || window.localStorage).setItem('App.relativeRange', mins);
             this.setState({ relativeRange: mins });
         }
         if (mins === 'absolute') {
             this.timeTimer && clearTimeout(this.timeTimer);
-            this.timeTimer = null;
+            this.timeTimer = undefined;
             return;
         }
-        (window._localStorage || window.localStorage).removeItem('App.absoluteStart');
-        (window._localStorage || window.localStorage).removeItem('App.absolute');
+        ((window as any)._localStorage || window.localStorage).removeItem('App.absoluteStart');
+        ((window as any)._localStorage || window.localStorage).removeItem('App.absolute');
 
         const now = new Date();
 
         if (!this.timeTimer) {
-            const delay = 60000 - now.getSeconds() - (1000 - now.getMilliseconds());
+            const delay = 60_000 - now.getSeconds() - (1_000 - now.getMilliseconds());
             this.timeTimer = setTimeout(() => {
-                this.timeTimer = null;
+                this.timeTimer = undefined;
                 this.shiftTime();
-            }, delay || 60000);
+            }, delay || 60_000);
         }
 
         if (now.getMilliseconds()) {
-            now.setMilliseconds(1000);
+            now.setMilliseconds(1_000);
         }
         if (now.getSeconds()) {
             now.setSeconds(60);
@@ -828,8 +860,8 @@ class ObjectHistoryData extends Component {
             now.setFullYear(now.getFullYear() - 1);
             start = now.getTime();
         } else {
-            mins = parseInt(mins, 10);
-            start = end - mins * 60000;
+            mins = Number(mins);
+            start = end - mins * 60_000;
         }
 
         this.setState({ start, end }, () =>
@@ -856,6 +888,8 @@ class ObjectHistoryData extends Component {
             }
 
             return <TableContainer className={classes.container}>
+                {/*
+                // @ts-expect-error needs further checking */}
                 <TableResize
                     stickyHeader
                     className={classes.table}
@@ -942,18 +976,21 @@ class ObjectHistoryData extends Component {
             }
         }
 
-        const state = {
+        const state: ioBroker.SettableState = {
             val,
             ack:  this.state.edit.ack,
             ts:   this.state.selected[0],
             from: `system.adapter.admin.${this.adminInstance}`,
             q:    this.state.edit.q,
         };
-        Object.keys(state).forEach(attr => {
-            if (state[attr] === undefined) {
+
+        for (const [attr, stateVal] of Object.entries(state)) {
+            if (stateVal === undefined) {
+                // @ts-expect-error can be fixed later
                 delete state[attr];
             }
-        });
+        }
+
         if (!this.state.lcVisible && state.lc) {
             delete state.lc;
         }
@@ -979,7 +1016,7 @@ class ObjectHistoryData extends Component {
         ts.setSeconds(this.state.edit.time.getSeconds());
         ts.setMilliseconds(parseInt(this.state.edit.ms, 10));
 
-        const state = {
+        const state: ioBroker.SettableState = {
             ts:   ts.getTime(),
             val,
             ack:  this.state.edit.ack,
@@ -991,27 +1028,19 @@ class ObjectHistoryData extends Component {
             delete state.lc;
         }
 
-        Object.keys(state).forEach(attr => {
-            if (state[attr] === undefined) {
+        for (const [attr, stateVal] of Object.entries(state)) {
+            if (stateVal === undefined) {
+                // @ts-expect-error can be fixed later
                 delete state[attr];
             }
-        });
+        }
+
         this.props.socket.sendTo(this.state.historyInstance, 'insert', [{ id: this.props.obj._id, state }])
             .then(() =>
                 this.readHistory());
     }
 
-    // formatTime(ms) {
-    //     const time = new Date(ms);
-    //     return `${padding2(time.getHours())}:${padding2(time.getMinutes())}:${padding2(time.getSeconds())}.${padding3(time.getMilliseconds())}`;
-    // }
-
-    // formatDate(ms) {
-    //     const time = new Date(ms);
-    //     return `${padding2(time.getDate())}.${padding2(time.getMonth() + 1)}.${time.getFullYear()}`;
-    // }
-
-    updateEdit(name, value) {
+    updateEdit(name: string, value: any): void {
         const edit = JSON.parse(JSON.stringify(this.state.edit));
         edit.time = new Date(edit.time);
         edit.date = new Date(edit.date);
@@ -1020,7 +1049,7 @@ class ObjectHistoryData extends Component {
         this.setState({ edit });
     }
 
-    renderEditDialog() {
+    renderEditDialog(): React.JSX.Element {
         return <Dialog
             open={this.state.updateOpened || this.state.insertOpened}
             onClose={() => this.setState({ updateOpened: false, insertOpened: false })}
@@ -1059,6 +1088,7 @@ class ObjectHistoryData extends Component {
                             <Grid container justifyContent="space-around">
                                 <DatePicker
                                     className={this.props.classes.editorDatePicker}
+                                    // @ts-expect-error does this really have an effect?
                                     margin="normal"
                                     label={this.props.t('Date')}
                                     // format="fullDate"
@@ -1066,18 +1096,10 @@ class ObjectHistoryData extends Component {
                                     value={this.state.edit.date}
                                     onChange={date =>
                                         this.updateEdit('date', date)}
-                                    renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
+                                    renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                                 />
-                                {/* <TextField
-                                    variant="standard"
-                                    label=this.props.t('Date')
-                                    defaultValue={ this.edit.date }
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    onChange={e => this.edit.date = e.target.value}
-                                /> */}
                                 <TimePicker
+                                    // @ts-expect-error does this really have an effect?
                                     margin="normal"
                                     views={['hours', 'minutes', 'seconds']}
                                     label={this.props.t('Time')}
@@ -1087,15 +1109,8 @@ class ObjectHistoryData extends Component {
                                     value={this.state.edit.time}
                                     onChange={time =>
                                         this.updateEdit('time', time)}
-                                    renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
+                                    renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                                 />
-                                {/* <TextField
-                                    variant="standard"
-                                    className={ this.props.classes.editorTimePicker}
-                                    label={ this.props.t('Value') }
-                                    defaultValue={ this.edit.time }
-                                    onChange={e => this.edit.time = e.target.value}
-                                /> */}
                                 <TextField
                                     variant="standard"
                                     classes={{ root: this.props.classes.msInput }}
@@ -1122,31 +1137,33 @@ class ObjectHistoryData extends Component {
                 >
                     {this.state.updateOpened ? this.props.t('Update') : this.props.t('Add')}
                 </Button>
+                {/*
+                // @ts-expect-error this color works */}
                 <Button variant="contained" onClick={() => this.setState({ updateOpened: false, insertOpened: false })} color="grey">{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }
 
-    setStartDate(start) {
-        start = start.getTime();
+    setStartDate(startDate: Date): void {
+        const start = startDate.getTime();
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
-            this.timeTimer = null;
+            this.timeTimer = undefined;
         }
-        (window._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
-        (window._localStorage || window.localStorage).setItem('App.absoluteStart', start);
-        (window._localStorage || window.localStorage).setItem('App.absoluteEnd', this.state.end);
+        ((window as any)._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
+        ((window as any)._localStorage || window.localStorage).setItem('App.absoluteStart', start);
+        ((window as any)._localStorage || window.localStorage).setItem('App.absoluteEnd', this.state.end);
         this.setState({ start, relativeRange: 'absolute' }, () => this.readHistory());
     }
 
-    setEndDate(end) {
-        end = end.getTime();
-        (window._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
-        (window._localStorage || window.localStorage).setItem('App.absoluteStart', this.state.start);
-        (window._localStorage || window.localStorage).setItem('App.absoluteEnd', end);
+    setEndDate(endDate: Date): void {
+        const end = endDate.getTime();
+        ((window as any)._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
+        ((window as any)._localStorage || window.localStorage).setItem('App.absoluteStart', this.state.start);
+        ((window as any)._localStorage || window.localStorage).setItem('App.absoluteEnd', end);
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
-            this.timeTimer = null;
+            this.timeTimer = undefined;
         }
         this.setState({ end, relativeRange: 'absolute'  }, () => this.readHistory());
     }
@@ -1161,14 +1178,14 @@ class ObjectHistoryData extends Component {
                     value={this.state.historyInstance || ''}
                     onChange={e => {
                         const historyInstance = e.target.value;
-                        (window._localStorage || window.localStorage).setItem('App.historyInstance', historyInstance);
+                        ((window as any)._localStorage || window.localStorage).setItem('App.historyInstance', historyInstance);
                         this.readSupportedFeatures(historyInstance)
-                            .then(supportedFeatures =>
+                            .then((supportedFeatures: string[]) =>
                                 this.setState({ historyInstance, supportedFeatures }, () =>
                                     this.readHistory()));
                     }}
                 >
-                    {this.state.historyInstances.map(it => <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{ it.id }</MenuItem>)}
+                    {this.state.historyInstances?.map(it => <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{ it.id }</MenuItem>)}
                 </Select>
             </FormControl>
             <FormControl variant="standard" className={classes.selectRelativeTime}>
@@ -1201,52 +1218,57 @@ class ObjectHistoryData extends Component {
                     <DatePicker
                         className={classes.toolbarDate}
                         disabled={this.state.relativeRange !== 'absolute'}
+                        /*
+                        // @ts-expect-error needs further checking */
                         disableToolbar
                         variant="inline"
                         margin="normal"
                         inputFormat={this.state.dateFormat}
-                        // format="fullDate"
                         label={this.props.t('Start date')}
                         value={new Date(this.state.start)}
-                        onChange={date => this.setStartDate(date)}
-                        renderInput={params => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
+                        onChange={date => this.setStartDate(date as Date)}
+                        renderInput={(params: any) => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
                         disabled={this.state.relativeRange !== 'absolute'}
                         className={classes.toolbarTime}
+                        /*
+                        // @ts-expect-error needs further checking */
                         margin="normal"
-                        // format="fullTime24h"
                         ampm={false}
                         label={this.props.t('Start time')}
                         value={new Date(this.state.start)}
-                        onChange={date => this.setStartDate(date)}
-                        renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
+                        onChange={date => this.setStartDate(date as Date)}
+                        renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
                 <div className={classes.toolbarTimeGrid}>
+
                     <DatePicker
                         disabled={this.state.relativeRange !== 'absolute'}
                         className={classes.toolbarDate}
+                        /*
+                        // @ts-expect-error needs further checking */
                         disableToolbar
                         inputFormat={this.state.dateFormat}
                         variant="inline"
-                        // format="fullDate"
                         margin="normal"
                         label={this.props.t('End date')}
                         value={new Date(this.state.end)}
-                        onChange={date => this.setEndDate(date)}
-                        renderInput={params => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
+                        onChange={date => this.setEndDate(date as Date)}
+                        renderInput={(params: any) => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
                         disabled={this.state.relativeRange !== 'absolute'}
                         className={classes.toolbarTime}
+                        /*
+                        // @ts-expect-error needs further checking */
                         margin="normal"
-                        // format="fullTime24h"
                         ampm={false}
                         label={this.props.t('End time')}
                         value={new Date(this.state.end)}
-                        onChange={date => this.setEndDate(date)}
-                        renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
+                        onChange={date => this.setEndDate(date as Date)}
+                        renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
             </LocalizationProvider>
@@ -1260,8 +1282,6 @@ class ObjectHistoryData extends Component {
                 size="large"
                 onClick={() => {
                     const time = new Date();
-                    // const date = `${time.getFullYear()}.${padding2(time.getMonth() + 1)}.${padding2(time.getDate())}`;
-                    // const tm = `${padding2(time.getHours())}:${padding2(time.getMinutes())}:${padding2(time.getSeconds())}.${padding3(time.getMilliseconds())}`;
 
                     const edit = {
                         ack:  this.state.values[this.state.values.length - 1].ack,
@@ -1285,10 +1305,10 @@ class ObjectHistoryData extends Component {
                 size="large"
                 disabled={this.state.selected.length !== 1}
                 onClick={() => {
-                    const state = JSON.parse(JSON.stringify(this.state.values.find(it => it.ts === this.state.lastSelected)));
+                    const state = JSON.parse(JSON.stringify(this.state.values.find((it: any) => it.ts === this.state.lastSelected)));
                     const time = new Date(state.ts);
-                    state.date = new Date(time);// time.getFullYear() + '.' + padding2(time.getMonth() + 1) + '.' + padding2(time.getDate());
-                    state.time = new Date(time);// padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
+                    state.date = new Date(time);
+                    state.time = new Date(time);
 
                     this.setState({
                         edit: state,
@@ -1302,7 +1322,7 @@ class ObjectHistoryData extends Component {
                 size="large"
                 disabled={!this.state.selected.length}
                 onClick={() => {
-                    if (this.state.suppressMessage && Date.now() - this.state.suppressMessage < 300000) {
+                    if (typeof this.state.suppressMessage === 'number' && Date.now() - this.state.suppressMessage < 300_000) {
                         this.onDelete();
                     } else {
                         this.setState({ areYouSure: true });
@@ -1325,15 +1345,16 @@ class ObjectHistoryData extends Component {
 
         const lines = ['timestamp;value;acknowledged;from;'];
 
-        this.state.values.forEach(state => !state.i && !state.e &&
+        this.state.values.forEach((state: any) => !state.i && !state.e &&
             lines.push([
-                new Date(state.ts).toISOString(),
+                this.formatTimestamp(state.ts),
                 state.val === null || state.val === undefined ? 'null' : state.val.toString(),
                 state.ack ? 'true' : 'false',
                 state.from || '',
             ].join(';')));
 
         element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(lines.join('\n'))}`);
+        // @ts-expect-error check it
         element.setAttribute('download', `${Utils.getObjectName({ [this.props.obj._id]: this.props.obj }, this.props.obj._id, { language: this.props.lang })}.csv`);
 
         element.click();
@@ -1356,18 +1377,15 @@ class ObjectHistoryData extends Component {
             {this.renderEditDialog()}
         </Paper>;
     }
-}
 
-ObjectHistoryData.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    expertMode: PropTypes.bool,
-    socket: PropTypes.object,
-    obj: PropTypes.object,
-    customsInstances: PropTypes.array,
-    themeName: PropTypes.string,
-    objects: PropTypes.object,
-    isFloatComma: PropTypes.bool,
-};
+    /**
+     * Convert timestamp to human-readable date string
+     *
+     * @param ts the timestamp
+     */
+    formatTimestamp(ts: number): string {
+        return `${new Date(ts).toLocaleDateString()} ${new Date(ts).toLocaleTimeString()}.${padding3(ts % 1_000)}`;
+    }
+}
 
 export default withWidth()(withStyles(styles)(ObjectHistoryData));

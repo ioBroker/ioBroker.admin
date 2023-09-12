@@ -83,6 +83,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 
+### **WORK IN PROGRESS**
+* (foxriver76) harmonized data on csv export with actual data shown by admin
+
 ## Changelog
 ### 6.10.1 (2023-09-11)
 * (foxriver76) fixed `between` function for showing news
