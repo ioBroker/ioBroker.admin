@@ -42,6 +42,7 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
+// @ts-expect-error this is weird
 import type { SystemConfig } from '@iobroker/socket-client';
 import { localeMap } from './utils';
 
@@ -678,7 +679,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         key={ts + (state.val || '')}
                     >
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
-                            {`${new Date(state.ts).toLocaleDateString()} ${new Date(state.ts).toLocaleTimeString()}.${padding3(state.ts % 1000)}`}
+                            {`${this.formatTimestamp(state.ts)}`}
                             {selected && this.state.lastSelectedColumn === 'ts' ? <div className={classes.rowFocused} /> : ''}
                         </TableCell>
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'val')}>
@@ -983,9 +984,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             q:    this.state.edit.q,
         };
 
-        for (const [attr, val] of Object.entries(state)) {
-            if (val === undefined) {
-                // @ts-expect-error
+        for (const [attr, stateVal] of Object.entries(state)) {
+            if (stateVal === undefined) {
+                // @ts-expect-error can be fixed later
                 delete state[attr];
             }
         }
@@ -1027,9 +1028,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             delete state.lc;
         }
 
-        for (const [attr, val] of Object.entries(state)) {
-            if (val === undefined) {
-                // @ts-expect-error
+        for (const [attr, stateVal] of Object.entries(state)) {
+            if (stateVal === undefined) {
+                // @ts-expect-error can be fixed later
                 delete state[attr];
             }
         }
@@ -1169,7 +1170,6 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
     renderToolbar() {
         const classes = this.props.classes;
-        // @ts-ignore
         return <Toolbar>
             <FormControl variant="standard" className={classes.selectHistoryControl}>
                 <InputLabel>{this.props.t('History instance')}</InputLabel>
@@ -1185,7 +1185,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                                     this.readHistory()));
                     }}
                 >
-                    {this.state.historyInstances!.map(it => <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{ it.id }</MenuItem>)}
+                    {this.state.historyInstances?.map(it => <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{ it.id }</MenuItem>)}
                 </Select>
             </FormControl>
             <FormControl variant="standard" className={classes.selectRelativeTime}>
@@ -1226,7 +1226,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         inputFormat={this.state.dateFormat}
                         label={this.props.t('Start date')}
                         value={new Date(this.state.start)}
-                        onChange={date => this.setStartDate(date!)}
+                        onChange={date => this.setStartDate(date as Date)}
                         renderInput={(params: any) => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
@@ -1238,7 +1238,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         ampm={false}
                         label={this.props.t('Start time')}
                         value={new Date(this.state.start)}
-                        onChange={date => this.setStartDate(date!)}
+                        onChange={date => this.setStartDate(date as Date)}
                         renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
@@ -1255,7 +1255,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         margin="normal"
                         label={this.props.t('End date')}
                         value={new Date(this.state.end)}
-                        onChange={date => this.setEndDate(date!)}
+                        onChange={date => this.setEndDate(date as Date)}
                         renderInput={(params: any) => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
@@ -1267,7 +1267,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         ampm={false}
                         label={this.props.t('End time')}
                         value={new Date(this.state.end)}
-                        onChange={date => this.setEndDate(date!)}
+                        onChange={date => this.setEndDate(date as Date)}
                         renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
@@ -1347,7 +1347,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         this.state.values.forEach((state: any) => !state.i && !state.e &&
             lines.push([
-                new Date(state.ts).toISOString(),
+                this.formatTimestamp(state.ts),
                 state.val === null || state.val === undefined ? 'null' : state.val.toString(),
                 state.ack ? 'true' : 'false',
                 state.from || '',
@@ -1376,6 +1376,15 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             {this.renderConfirmDialog()}
             {this.renderEditDialog()}
         </Paper>;
+    }
+
+    /**
+     * Convert timestamp to human-readable date string
+     *
+     * @param ts the timestamp
+     */
+    formatTimestamp(ts: number): string {
+        return `${new Date(ts).toLocaleDateString()} ${new Date(ts).toLocaleTimeString()}.${padding3(ts % 1_000)}`;
     }
 }
 
