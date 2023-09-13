@@ -3,6 +3,7 @@ import React from 'react';
 import { withStyles } from '@mui/styles';
 import { Grid, Paper } from '@mui/material';
 import { Utils } from '@iobroker/adapter-react-v5';
+import type { ReactNodeLike } from 'prop-types';
 
 const styles = {
     root: {
@@ -18,6 +19,8 @@ const styles = {
 } as const;
 
 interface TabContainerProps {
+    /** The content of the component. */
+    children: ReactNodeLike;
     /** The elevation of the tab container. */
     elevation?:number;
     /** Set to 'visible' show the overflow. */
