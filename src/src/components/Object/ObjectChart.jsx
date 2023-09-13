@@ -250,12 +250,12 @@ class ObjectChart extends Component {
             state &&
             this.rangeValues &&
             (!this.rangeValues.length || this.rangeValues[this.rangeValues.length - 1].ts < state.ts)) {
-            if (!this.state.max || state.ts - this.state.max < 120000) {
+            if (!this.state.max || state.ts - this.state.max < 120_000) {
                 this.chartValues && this.chartValues.push({ val: state.val, ts: state.ts });
                 this.rangeValues.push({ val: state.val, ts: state.ts });
 
                 // update only if end is near to now
-                if (state.ts >= this.chart.min && state.ts <= this.chart.max + 300000) {
+                if (state.ts >= this.chart.min && state.ts <= this.chart.max + 300_000) {
                     this.updateChart();
                 }
             }
@@ -472,6 +472,7 @@ class ObjectChart extends Component {
                 } else {
                     this.maxY = Math.ceil(this.maxY);
                 }
+
                 return chart;
             });
     }

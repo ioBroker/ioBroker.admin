@@ -6693,11 +6693,14 @@ class ObjectBrowser extends Component {
         const classes = this.props.classes;
         const items = this.renderItem(this.root, undefined, classes);
 
-        return <TabContainer key={this.props.dialogName} classes={{}} onKeyDown={event => this.navigateKeyPress(event)} tabIndex={0}>
-            <TabHeader>{this.getToolbar()}</TabHeader>
-            <TabContent classes={{}}>
+        return <TabContainer key={this.props.dialogName}>
+            <TabHeader>
+                {this.getToolbar()}
+            </TabHeader>
+            <TabContent>
                 {this.renderHeader()}
-                <div className={this.props.classes.tableDiv} ref={this.tableRef}>
+                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+                <div className={this.props.classes.tableDiv} ref={this.tableRef} onKeyDown={event => this.navigateKeyPress(event)} tabIndex={0}>
                     {items}
                 </div>
             </TabContent>
@@ -6728,8 +6731,8 @@ ObjectBrowser.defaultProps = {
     objectStatesView: false,
     objectImportExport: false,
     objectEditOfAccessControl: false,
-    modalNewObject: () => {},
-    modalEditOfAccessControl: () => {},
+    modalNewObject: () => undefined,
+    modalEditOfAccessControl: () => undefined,
 };
 
 ObjectBrowser.propTypes = {
