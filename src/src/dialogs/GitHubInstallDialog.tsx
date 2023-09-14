@@ -1,12 +1,9 @@
-import React, { useCallback, useState } from 'react';
-
-import PropTypes, { ReactNodeLike } from 'prop-types';
+import React from 'react';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import {
     AppBar,
@@ -20,7 +17,7 @@ import {
     TextField,
     Autocomplete,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { Styles, withStyles } from '@mui/styles';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 import UrlIcon from '@mui/icons-material/Language';
@@ -30,6 +27,7 @@ import CheckIcon from '@mui/icons-material/Check';
 
 import { I18n, Icon } from '@iobroker/adapter-react-v5';
 
+// @ts-expect-error adapt tsconfig
 import npmIcon from '../assets/npm.png';
 
 function a11yProps(index: number): {id: string; 'aria-controls': string} {
@@ -39,7 +37,7 @@ function a11yProps(index: number): {id: string; 'aria-controls': string} {
     };
 }
 
-const useStyles = makeStyles((theme: Record<string, any>) => ({
+const styles = ((theme: Record<string, any>) => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -80,7 +78,7 @@ const useStyles = makeStyles((theme: Record<string, any>) => ({
     tabSelected: {
         color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#FFFFFF !important',
     },
-}));
+} satisfies Styles<any, any>));
 
 // some older browsers do not have `flat`
 if (!Array.prototype.flat) {
@@ -93,7 +91,8 @@ if (!Array.prototype.flat) {
 
             return depth ? Array.prototype.reduce.call(this, (acc: any, cur) => {
                 if (Array.isArray(cur)) {
-                    // @ts-expect-error
+                    // @ts-expect-error fix later
+                    // eslint-disable-next-line prefer-spread
                     acc.push.apply(acc, flat.call(cur, depth - 1));
                 } else {
                     acc.push(cur);
@@ -113,10 +112,19 @@ interface GitHubInstallDialogProps {
     t: typeof I18n.t;
     /** Method to install adapter */
     installFromUrl: (adapter: string, debug: boolean, customUrl: boolean) => void;
+    classes: Record<string, any>;
+}
+
+interface AutoCompleteValue {
+    value: string;
+    nogit: boolean;
+    name: string;
+    icon: string;
+    title: string;
 }
 
 interface GitHubInstallDialogState {
-    autoCompleteValue: any;
+    autoCompleteValue: AutoCompleteValue | null;
     /** If debug output is desired */
     debug: boolean;
     /** The selected url */
@@ -125,7 +133,7 @@ interface GitHubInstallDialogState {
     currentTab: string;
 }
 
-export default class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitHubInstallDialogState> {
+class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitHubInstallDialogState> {
     constructor(props: GitHubInstallDialogProps) {
         super(props);
 
@@ -138,10 +146,8 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
     }
 
     render(): React.JSX.Element {
-        const classes = useStyles();
-
         // eslint-disable-next-line array-callback-return
-        const list = useCallback(() => {
+        const list = (() => {
             const adapters = this.props.categories
                 .map(category => category.adapters)
                 .flat()
@@ -178,7 +184,7 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                 })
                 .filter(it => it)
                 .sort((a: any, b: any) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-        }, [this.props.categories, this.props.repository]);
+        });
 
         const closeInit = () => {
             this.setState({ autoCompleteValue: null, url: '' });
@@ -189,14 +195,14 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
         return <Dialog
             onClose={() => this.props.onClose()}
             open={!0}
-            classes={{ paper: classes.paper }}
+            classes={{ paper: this.props.classes.paper }}
         >
             <DialogContent dividers>
-                <div className={classes.root}>
+                <div className={this.props.classes.root}>
                     <AppBar position="static" color="default">
                         <Tabs
                             value={this.state.currentTab}
-                            onChange={(e, newTab) => {
+                            onChange={(_e, newTab) => {
                                 ((window as any)._localStorage || window.localStorage).setItem('App.gitTab', newTab);
                                 this.setState({ currentTab: newTab });
                             }}
@@ -206,7 +212,7 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                             <Tab
                                 label={this.props.t('From npm')}
                                 wrapped
-                                classes={{ selected: classes.tabSelected }}
+                                classes={{ selected: this.props.classes.tabSelected }}
                                 icon={<img src={npmIcon} alt="npm" width={24} height={24} />}
                                 {...a11yProps(0)}
                                 value="npm"
@@ -214,7 +220,7 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                             <Tab
                                 label={this.props.t('From github')}
                                 wrapped
-                                classes={{ selected: classes.tabSelected }}
+                                classes={{ selected: this.props.classes.tabSelected }}
                                 icon={<GithubIcon style={{ width: 24, height: 24 }} width={24} height={24} />}
                                 {...a11yProps(0)}
                                 value="GitHub"
@@ -222,17 +228,17 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                             <Tab
                                 label={this.props.t('Custom')}
                                 wrapped
-                                classes={{ selected: classes.tabSelected }}
+                                classes={{ selected: this.props.classes.tabSelected }}
                                 icon={<UrlIcon width={24} height={24} />}
                                 {...a11yProps(1)}
                                 value="URL"
                             />
                         </Tabs>
                     </AppBar>
-                    <div className={classes.title}>
+                    <div className={this.props.classes.title}>
                         {this.props.t('Install or update the adapter from %s', this.state.currentTab || 'npm')}
                     </div>
-                    {this.state.currentTab === 'npm' ? <Paper className={classes.tabPaper}>
+                    {this.state.currentTab === 'npm' ? <Paper className={this.props.classes.tabPaper}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FormControlLabel
                                 control={
@@ -258,12 +264,12 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                                 }}
                                 // @ts-expect-error check later
                                 options={_list}
-                                getOptionLabel={option => option.name ?? ''}
+                                getOptionLabel={option => option?.name ?? ''}
                                 renderInput={params => {
                                     const _params = { ...params };
                                     _params.InputProps = _params.InputProps || {};
                                     _params.InputProps.startAdornment = <InputAdornment position="start">
-                                        <Icon src={this.state.autoCompleteValue?.icon || ''} className={classes.listIcon} />
+                                        <Icon src={this.state.autoCompleteValue?.icon || ''} className={this.props.classes.listIcon} />
                                     </InputAdornment>;
 
                                     return <TextField
@@ -278,8 +284,8 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                                         sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
                                         {...props}
                                     >
-                                        <Icon src={option.icon || ''} className={classes.listIconWithMargin} />
-                                        {option.name}
+                                        <Icon src={option?.icon || ''} className={this.props.classes.listIconWithMargin} />
+                                        {option?.name ?? ''}
                                     </Box>}
                             />
                         </div>
@@ -291,14 +297,14 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                         >
                             {this.props.t('Warning!')}
                         </div>
-                        <div className={classes.warningText}>
+                        <div className={this.props.classes.warningText}>
                             {this.props.t('npm_warning', 'NPM', 'NPM')}
                         </div>
-                        <div className={classes.noteText}>
+                        <div className={this.props.classes.noteText}>
                             {this.props.t('github_note')}
                         </div>
                     </Paper> : null}
-                    {this.state.currentTab === 'GitHub' ? <Paper className={classes.tabPaper}>
+                    {this.state.currentTab === 'GitHub' ? <Paper className={this.props.classes.tabPaper}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FormControlLabel
                                 control={
@@ -318,17 +324,17 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                             <Autocomplete
                                 fullWidth
                                 value={this.state.autoCompleteValue}
-                                getOptionDisabled={option => option.nogit}
+                                getOptionDisabled={option => !!option?.nogit}
                                 renderOption={(props, option) =>
                                     <Box
                                         component="li"
                                         sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
                                         {...props}
                                     >
-                                        <Icon src={option.icon || ''} className={classes.listIconWithMargin} />
-                                        {option.name}
-                                        {option.nogit && <div
-                                            className={classes.errorTextNoGit}
+                                        <Icon src={option?.icon || ''} className={this.props.classes.listIconWithMargin} />
+                                        {option?.name ?? ''}
+                                        {option?.nogit && <div
+                                            className={this.props.classes.errorTextNoGit}
                                         >
                                             {I18n.t('This adapter cannot be installed from git as must be built before installation.')}
                                         </div>}
@@ -339,14 +345,14 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                                 }}
                                 // @ts-expect-error check later
                                 options={_list}
-                                getOptionLabel={option => option.name ?? ''}
+                                getOptionLabel={option => option?.name ?? ''}
                                 renderInput={params => {
                                     const _params = { ...params };
                                     _params.InputProps = _params.InputProps || {};
                                     _params.InputProps.startAdornment = <InputAdornment position="start">
                                         <Icon
                                             src={this.state.autoCompleteValue?.icon || ''}
-                                            className={classes.listIconWithMargin}
+                                            className={this.props.classes.listIconWithMargin}
                                         />
                                     </InputAdornment>;
 
@@ -366,14 +372,14 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                         >
                             {this.props.t('Warning!')}
                         </div>
-                        <div className={classes.warningText}>
+                        <div className={this.props.classes.warningText}>
                             {this.props.t('github_warning', 'GitHub', 'GitHub')}
                         </div>
-                        <div className={classes.noteText}>
+                        <div className={this.props.classes.noteText}>
                             {this.props.t('github_note')}
                         </div>
                     </Paper> : null}
-                    {this.state.currentTab === 'URL' ? <Paper className={classes.tabPaper}>
+                    {this.state.currentTab === 'URL' ? <Paper className={this.props.classes.tabPaper}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <TextField
                                 variant="standard"
@@ -433,10 +439,10 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
                         >
                             {this.props.t('Warning!')}
                         </div>
-                        <div className={classes.warningText}>
+                        <div className={this.props.classes.warningText}>
                             {this.props.t('github_warning', 'URL', 'URL')}
                         </div>
-                        <div className={classes.noteText}>
+                        <div className={this.props.classes.noteText}>
                             {this.props.t('github_note')}
                         </div>
                     </Paper> : null}
@@ -445,7 +451,7 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
             <DialogActions>
                 <Button
                     variant="contained"
-                    disabled={((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') && !this.state.autoCompleteValue) || (this.state.currentTab === 'URL' && !this.state.url)}
+                    disabled={((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') && !this.state.autoCompleteValue?.value) || (this.state.currentTab === 'URL' && !this.state.url)}
                     autoFocus
                     onClick={() => {
                         if (this.state.currentTab === 'GitHub') {
@@ -490,3 +496,5 @@ export default class GitHubInstallDialog extends React.Component<GitHubInstallDi
         </Dialog>;
     }
 }
+
+export default withStyles(styles)(GitHubInstallDialog);

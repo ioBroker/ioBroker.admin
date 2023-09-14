@@ -55,7 +55,7 @@ function padding3(ms: number) {
     return ms;
 }
 
-const styles = (theme: any) => ({
+const styles = (theme: Record<string, any>) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
