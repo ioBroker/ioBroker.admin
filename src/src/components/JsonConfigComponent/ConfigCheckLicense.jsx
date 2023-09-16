@@ -588,7 +588,7 @@ class ConfigCheckLicense extends ConfigGeneric {
     }
 
     async _onClick(secondRun) {
-        const adapterName = this.props.adapterName === 'vis-2-beta' ? 'vis' : this.props.adapterName;
+        const adapterName = this.props.adapterName === 'vis-2' ? 'vis' : this.props.adapterName;
         this.setState({ running: true });
         let license;
         let licenses;

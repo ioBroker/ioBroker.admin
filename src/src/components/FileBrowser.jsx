@@ -938,7 +938,7 @@ class FileBrowser extends Component {
         const Icon = expanded ? IconOpen : IconClosed;
         const padding = this.state.viewType === TABLE ? item.level * this.levelPadding : 0;
         const isUserData = item.name === USER_DATA;
-        const isSpecialData = isUserData || item.name === 'vis.0' || item.name === 'vis-2-beta.0';
+        const isSpecialData = isUserData || item.name === 'vis.0' || item.name === 'vis-2.0';
 
         return <div
             key={item.id}
@@ -1199,7 +1199,7 @@ class FileBrowser extends Component {
             {this.state.viewType === TABLE &&
                 this.props.allowDelete &&
                 item.id !== 'vis.0/' &&
-                item.id !== 'vis-2-beta.0/' &&
+                item.id !== 'vis-2.0/' &&
                 item.id !== USER_DATA
                 ?
                 <IconButton
@@ -1430,7 +1430,7 @@ class FileBrowser extends Component {
                         disabled={
                             !this.state.selected ||
                             this.state.selected === 'vis.0/' ||
-                            this.state.selected === 'vis-2-beta.0/' ||
+                            this.state.selected === 'vis-2.0/' ||
                             this.state.selected === USER_DATA
                         }
                         color="inherit"
