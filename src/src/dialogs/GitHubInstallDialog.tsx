@@ -467,9 +467,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         } else if (this.state.currentTab === 'npm') {
                             const parts = (this.state.autoCompleteValue?.value || '').split('/');
                             if (!parts[0].includes('.')) {
-                                this.props.installFromUrl(`iobroker.${parts[0]}`, this.state.debug, true);
+                                this.props.installFromUrl(`iobroker.${parts[0]}@latest`, this.state.debug, true);
                             } else {
-                                this.props.installFromUrl(parts[0], this.state.debug, true);
+                                this.props.installFromUrl(`${parts[0]}@latest`, this.state.debug, true);
                             }
                         }
                         this.props.onClose();
