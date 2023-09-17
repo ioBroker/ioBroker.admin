@@ -168,8 +168,7 @@ const ENUM_TEMPLATE = {
     type: 'enum',
     common: {
         name: '',
-        enabled: true,
-        color: false,
+        color: '',
         desc: '',
         members: [],
     },
