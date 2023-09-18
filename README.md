@@ -85,6 +85,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+## Changelog
 
 ### **WORK IN PROGRESS**
 * (foxriver76) harmonized data on csv export with actual data shown by admin
@@ -92,8 +93,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) on npm install, ensure the latest version is installed
 * (foxriver76) optimized enum objects
 * (foxriver76) disallow Google Translate as the plugin causes crash cases
+* (foxriver76) fixed crash on intro tab on docker hosts
+* (foxriver76) fixed crash case on invalid state objects
 
-## Changelog
 ### 6.10.1 (2023-09-11)
 * (foxriver76) fixed `between` function for showing news
 * (foxriver76) if date string is not parseable show the original string instead of `Invalid Date`

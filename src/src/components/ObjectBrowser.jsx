@@ -1328,7 +1328,7 @@ function buildTree(objects, options) {
                 const _croot = {
                     data: {
                         name:       parts[parts.length - 1],
-                        title:      getName(obj && obj.common && obj.common.name, options.lang),
+                        title:      getName(obj?.common?.name, options.lang),
                         obj,
                         parent:     croot,
                         icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
@@ -1495,6 +1495,11 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     funcs = funcs || [];
     for (let i = 0; i < data.funcEnums.length; i++) {
         const common = data.objects[data.funcEnums[i]]?.common;
+
+        if (!common) {
+            continue;
+        }
+
         const name = getName(common.name, lang);
         if (common?.members?.includes(id) && !funcs.includes(name)) {
             if (!withParentInfo) {
@@ -3248,7 +3253,7 @@ class ObjectBrowser extends Component {
     getFilterSelectFunction() {
         const func = this.info.funcEnums.map(id => ({
             name: getName(
-                (this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(),
+                this.objects[id]?.common?.name || id.split('.').pop(),
             ),
             value: id,
             icon: <Icon src={this.objects[id]?.common?.icon || ''} className={this.props.classes.selectIcon} />,
@@ -4588,7 +4593,7 @@ class ObjectBrowser extends Component {
             const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums)
                 .map(id => ({
                     name: getName(
-                        (this.objects[id] && this.objects[id].common && this.objects[id].common.name) ||
+                        this.objects[id]?.common?.name ||
                             id.split('.').pop(),
                         this.props.lang,
                     ),
