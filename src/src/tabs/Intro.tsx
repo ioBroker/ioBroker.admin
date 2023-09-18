@@ -79,7 +79,7 @@ const styles = (theme: any) => ({
     },
 } satisfies Styles<any, any>);
 
-const formatInfo = {
+const formatInfo  = {
     Uptime:        Utils.formatSeconds,
     'System uptime': Utils.formatSeconds,
     RAM:           Utils.formatRam,
@@ -118,6 +118,7 @@ interface IntroState {
     edit: boolean;
     deactivated: string[] | null;
     instances: null | any[];
+    hosts: any;
 }
 
 class Intro extends React.Component<IntroProps, IntroState> {
@@ -153,6 +154,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             reverseProxy: null,
             alive: {},
             hostsData: {},
+            hosts: null,
             /** Difference between client and host time in ms */
             hostTimeDiffMap: new Map(),
         };
@@ -382,7 +384,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 
     getLinkCards() {
-        return this.state.introLinks.map((item, i) => {
+        return this.state.introLinks?.map((item, i) => {
             if (!item.enabled && !this.state.edit) {
                 return null;
             }
@@ -401,7 +403,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 onEdit={() => this.setState({
                     editLink: true,
                     editLinkIndex: i,
-                    link: JSON.parse(JSON.stringify(this.state.introLinks[i])),
+                    link: JSON.parse(JSON.stringify(this.state.introLinks?.[i])),
                 })}
                 onRemove={() => {
                     const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
@@ -582,7 +584,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 
     static applyReverseProxy(webReverseProxyPath: Record<string, any>, instances: any[], instance: Record<string, any>) {
-        webReverseProxyPath && webReverseProxyPath.paths.forEach(item => {
+        webReverseProxyPath && webReverseProxyPath.paths.forEach((item: any) => {
             if (item.instance === instance.id) {
                 instance.link = item.path;
             } else if (item.instance.startsWith('web.')) {
@@ -643,12 +645,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    getInstances(update: boolean, hosts: any[], systemConfig: SystemConfig) {
+    getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: SystemConfig) {
         hosts = hosts || this.state.hosts;
 
         return this.props.socket.getAdapterInstances('', update)
             .then((instances: ioBroker.InstanceObject[]) => {
-                let deactivated = systemConfig.common.intro || [];
+                let deactivated: string[] = systemConfig.common.intro || [];
                 if (!Array.isArray(deactivated)) {
                     deactivated = Object.keys(deactivated);
                     deactivated.sort();
@@ -721,6 +723,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                             instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
 
+                            // @ts-expect-error fix all the constructs here later on
                             this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
                         });
                     }
@@ -730,17 +733,21 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         common.welcomeScreenPro && links.push(common.welcomeScreenPro);
 
                         links.forEach(link => {
-                            const instance: Record<string, any> = {};
-                            instance.id          = `${obj._id.replace('system.adapter.', '')}/${link.link}`;
-                            instance.name        = link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '';
-                            // @ts-expect-error check later, at first glance makes no sense or types are wrong
-                            instance.color       = link.color || '';
-                            // @ts-expect-error needs to be added to types if InstanceCommon can have desc
-                            instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                            instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
-                            // @ts-expect-error check later, at first glance makes no sense or types are wrong
-                            instance.order       = link.order;
+                            const instance: Record<string, any> = {
+                                // @ts-expect-error fix link
+                                id: `${obj._id.replace('system.adapter.', '')}/${link.link}`,
+                                // @ts-expect-error fix link
+                                name: link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '',
+                                // @ts-expect-error fix link
+                                color: link.color || '',
+                                // @ts-expect-error fix link
+                                description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '',
+                                image: common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png',
+                                // @ts-expect-error fix link
+                                order: link.order,
+                            };
 
+                            // @ts-expect-error fix all the constructs here later on
                             this.addLinks(`%web_protocol%://%web_bind%:%web_port%/${link.link}`, common, instanceId, instance, objects, hosts, instances, introInstances);
                         });
                     }
@@ -772,24 +779,25 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     return 0;
                 });
 
-                Object.keys(hosts).forEach(key => {
-                    const obj = hosts[key];
+                Object.keys(hosts as any).forEach(key => {
+                    const obj = hosts?.[key];
                     const common = obj && obj.common;
 
                     if (common) {
-                        const instance    = {};
-                        instance.id       = obj._id;
-                        instance.name     = common.name && typeof common.name === 'object' ? (common.name[this.props.lang] || common.name.en) : (common.name || '');
-                        instance.color    = '';
-                        instance.image    = common.icon || 'img/no-image.png';
-                        instance.info     = this.t('Info');
-                        instance.linkName = '';
+                        const instance    = {
+                            id       : obj._id,
+                            name     : common.name && typeof common.name === 'object' ? (common.name[this.props.lang] || common.name.en) : (common.name || ''),
+                            color    : '',
+                            image    : common.icon || 'img/no-image.png',
+                            info     : this.t('Info'),
+                            linkName : '',
+                        };
 
                         introInstances.push(instance);
                     }
                 });
 
-                const _deactivated = [];
+                const _deactivated: string[] = [];
                 deactivated.forEach(id => {
                     if (introInstances.find(instance => id === `${instance.id}_${instance.linkName}`)) {
                         _deactivated.push(id);
@@ -799,13 +807,13 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                 return { instances: introInstances, deactivated };
             })
-            .catch(error => {
+            .catch((error: any) => {
                 console.log(error);
                 return { instances: [],  deactivated: [] };
             });
     }
 
-    getHostDescription(id) {
+    getHostDescription(id: string): React.JSX.Element {
         const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
@@ -813,8 +821,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             return <div className={this.props.classes.hostOffline}>{this.props.t('Offline')}</div>;
         }
 
-        let nodeUpdate = '';
-        let npmUpdate = '';
+        let nodeUpdate: string | React.JSX.Element = '';
+        let npmUpdate: string | React.JSX.Element = '';
         if (hostData) {
             try {
                 if (hostData._nodeNewest && hostData['Node.js'] && semver.gt(hostData._nodeNewest, hostData['Node.js'].replace(/^v/, ''))) {
@@ -931,7 +939,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             </ul>;
     }
 
-    getHostDescriptionAll(id) {
+    getHostDescriptionAll(id: string) {
         const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
@@ -947,12 +955,14 @@ class Intro extends React.Component<IntroProps, IntroState> {
 :
                                     {' '}
                                 </span>
+                                {/** @ts-expect-error check later */}
                                 {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
                             </span>
                             :
                             <Skeleton />}
                     </li>)}
             </ul>,
+            /** @ts-expect-error check later */
             hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => `${acom}${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`),
         ];
     }
@@ -960,26 +970,26 @@ class Intro extends React.Component<IntroProps, IntroState> {
     getDataDelayed = () => {
         this.getDataTimeout && clearTimeout(this.getDataTimeout);
         this.getDataTimeout = setTimeout(() => {
-            this.getDataTimeout = null;
+            this.getDataTimeout = undefined;
             this.getData(true);
         }, 300);
     };
 
     getData(update?: boolean) {
-        let hosts;
-        let systemConfig;
+        let hosts: any;
+        let systemConfig: SystemConfig;
 
         return this.props.socket.getSystemConfig(update)
-            .then(_systemConfig => {
+            .then((_systemConfig: SystemConfig) => {
                 systemConfig = _systemConfig;
                 return this.props.socket.getCompactHosts(update);
             })
-            .then(_hosts => {
+            .then((_hosts: any[]) => {
                 _hosts.forEach(host => this.preprocessHostData(host));
                 hosts = _hosts;
                 return this.getInstances(update, hosts, systemConfig);
             })
-            .then(data => {
+            .then((data: any) => {
                 this.setState({
                     instances: data.instances,
                     hosts,
@@ -989,19 +999,17 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 // hosts data could last a long time, so show some results to user now and then get the info about hosts
                 return this.getHostsData(hosts);
             })
-            .then(newState => new Promise(resolve => {
+            .then((newState: IntroState) => new Promise<void>(resolve => {
                 this.setState(newState, () =>
                     resolve());
             }))
-            .catch(error => window.alert(`Cannot get data: ${error}`));
+            .catch((error: any) => window.alert(`Cannot get data: ${error}`));
     }
 
     /**
      * Render toast if content has been copied
-     *
-     * @return {JSX.Element}
      */
-    renderCopiedToast() {
+    renderCopiedToast(): React.JSX.Element {
         return <Snackbar
             anchorOrigin={{
                 vertical: 'bottom',
@@ -1014,7 +1022,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         />;
     }
 
-    render() {
+    render(): React.JSX.Element {
         if (!this.state.instances) {
             return <LinearProgress />;
         }
