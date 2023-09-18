@@ -1,9 +1,8 @@
-import { Component } from 'react';
+import React from 'react';
 
-import PropTypes from 'prop-types';
 import semver from 'semver';
 
-import { withStyles } from '@mui/styles';
+import { Styles, withStyles } from '@mui/styles';
 
 import {
     Fab, Snackbar, Tooltip, Grid, LinearProgress, Skeleton,
@@ -14,15 +13,17 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import CreateIcon from '@mui/icons-material/Create';
 
-import { Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
+import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
+// @ts-expect-error check what's wrong here
+import type { SystemConfig } from '@iobroker/socket-client';
 import Utils from '../Utils';
 import IntroCard from '../components/IntroCard';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import EditIntroLinkDialog from '../dialogs/EditIntroLinkDialog';
 
-const styles = theme => ({
+const styles = (theme: any) => ({
     root: {
         width: '100%',
         height: '100%',
@@ -76,7 +77,7 @@ const styles = theme => ({
         opacity: 0.7,
         fontSize: 16,
     },
-});
+} satisfies Styles<any, any>);
 
 const formatInfo = {
     Uptime:        Utils.formatSeconds,
@@ -87,20 +88,63 @@ const formatInfo = {
     'Disk free':     Utils.formatBytes,
 };
 
-class Intro extends Component {
+interface IntroProps {
+    showAlert: (title: string, msg: string) => void;
+    socket: AdminConnection;
+    t: typeof i18n.t;
+    lang: ioBroker.Languages;
+    instancesWorker: Record<string, any>;
+    hostsWorker: Record<string, any>;
+    hostname: string;
+    protocol: string;
+    port: number;
+    adminInstance: string;
+    /** Additional css styling */
+    classes: Record<string, any>;
+}
+
+interface IntroState {
+    /** Difference between client and host time in ms */
+    hostTimeDiffMap: Map<string, number>;
+    hostsData: Record<string, any>;
+    alive: Record<string, boolean>;
+    reverseProxy: null | any[];
+    hasUnsavedChanges: boolean;
+    openSnackBar: boolean;
+    editLinkIndex: number;
+    editLink: boolean;
+    link: null | Record<string, any>;
+    introLinks: Record<string, any>[] | null;
+    edit: boolean;
+    deactivated: string[] | null;
+    instances: null | any[];
+}
+
+class Intro extends React.Component<IntroProps, IntroState> {
     /** If server time differs more than MS from client time, show a warning */
     #THRESHOLD_TIME_DIFF_MS = 30 * 60 * 1_000;
 
     #ONE_MINUTE_MS = 60 * 1_000;
 
-    constructor(props) {
+    /** // e.g. /admin/; */
+    private readonly currentProxyPath = window.location.pathname;
+
+    private introLinksOriginal = null;
+
+    private deactivatedOriginal = null;
+
+    private readonly t: typeof i18n.t;
+
+    private getDataTimeout?: ReturnType<typeof setTimeout>;
+
+    constructor(props: IntroProps) {
         super(props);
 
         this.state = {
             instances: null,
-            deactivated: {},
+            deactivated: [],
             edit: false,
-
+            link: null,
             introLinks: [],
             editLink: false,
             editLinkIndex: -1,
@@ -112,11 +156,6 @@ class Intro extends Component {
             /** Difference between client and host time in ms */
             hostTimeDiffMap: new Map(),
         };
-
-        this.currentProxyPath = window.location.pathname; // e.g. /admin/
-
-        this.introLinksOriginal = null;
-        this.deactivatedOriginal = null;
 
         this.t = props.t;
     }
@@ -162,9 +201,9 @@ class Intro extends Component {
         this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
     }
 
-    updateHostsAlive = async events => {
+    updateHostsAlive = async (events: any[]) => {
         const alive = JSON.parse(JSON.stringify(this.state.alive));
-        const hostsId = [];
+        const hostsId: string[] = [];
 
         // if some host deleted
         if (events.find(event => event.type === 'delete')) {
@@ -184,12 +223,12 @@ class Intro extends Component {
             const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
 
             const results = await Promise.all(hostsId.map(id => this.getHostData(id, alive[id])));
-            results.forEach(res => hostsData[res.id] = res.data);
+            results.forEach(res => hostsData[res.id] = this.preprocessHostData(res.data));
             this.setState({ alive, hostsData }, () => this.checkBackendTime());
         }
     };
 
-    updateHosts = (events, obj) => {
+    updateHosts = (events: any[], obj: Record<string, any>) => {
         if (!Array.isArray(events)) {
             events = [{ id: events, obj, type: obj ? 'changed' : 'delete' }];
         }
@@ -207,20 +246,20 @@ class Intro extends Component {
 
             Promise.all(hostsId.map(id => this.getHostData(id)))
                 .then(results => {
-                    results.forEach(res => hostsData[res.id] = res.data);
+                    results.forEach(res => hostsData[res.id] = this.preprocessHostData(res.data));
                     this.setState({ hostsData });
                 });
         }
     };
 
     activateEditMode() {
-        let systemConfig;
+        let systemConfig: SystemConfig;
         this.props.socket.getSystemConfig(true)
-            .then(_systemConfig => {
+            .then((_systemConfig: SystemConfig) => {
                 systemConfig = _systemConfig;
                 return this.getInstances(true, null, systemConfig);
             })
-            .then(data => {
+            .then((data: Record<string, any>) => {
                 const introLinks = systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [];
 
                 this.introLinksOriginal = JSON.parse(JSON.stringify(introLinks));
@@ -253,7 +292,7 @@ class Intro extends Component {
         });
     }
 
-    toggleCard(id, linkName) {
+    toggleCard(id: string, linkName: string) {
         if (!this.state.instances || !this.state.instances.length) {
             return;
         }
@@ -276,8 +315,8 @@ class Intro extends Component {
     }
 
     getInstancesCards() {
-        return this.state.instances.map(instance => {
-            const enabled = !this.state.deactivated.includes(`${instance.id}_${instance.linkName}`);
+        return this.state.instances?.map(instance => {
+            const enabled = !this.state.deactivated?.includes(`${instance.id}_${instance.linkName}`);
             if (enabled || this.state.edit) {
                 let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
                 const pos = linkText.indexOf('/');
@@ -289,7 +328,7 @@ class Intro extends Component {
                 let isShowInstance = window.isFinite(instance.id.split('.').pop());
                 if (isShowInstance) {
                     // try to find second instance of a same type
-                    isShowInstance = !!this.state.instances.find(inst =>
+                    isShowInstance = !!this.state.instances?.find(inst =>
                         inst.id !== instance.id && instance.name === inst.name && instance.id.split('.')[0] === inst.id.split('.')[0]);
                 }
 
@@ -317,7 +356,7 @@ class Intro extends Component {
                     edit={this.state.edit}
                     reverseProxy={this.state.reverseProxy}
                     offline={hostData && hostData.alive === false}
-                    warning={timeDiff > this.#THRESHOLD_TIME_DIFF_MS ? this.t('Backend time differs by %s minutes', Math.round(timeDiff / this.#ONE_MINUTE_MS)) : null}
+                    warning={timeDiff > this.#THRESHOLD_TIME_DIFF_MS ? this.t('Backend time differs by %s minutes', Math.round(timeDiff / this.#ONE_MINUTE_MS).toString()) : null}
                     enabled={enabled}
                     disabled={!hostData || typeof hostData !== 'object'}
                     getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
@@ -331,7 +370,7 @@ class Intro extends Component {
         });
     }
 
-    toggleLinkCard(i) {
+    toggleLinkCard(i: number): void {
         const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
 
         introLinks[i].enabled = !introLinks[i].enabled;
@@ -387,6 +426,7 @@ class Intro extends Component {
                 isNew={this.state.editLinkIndex === -1}
                 t={this.props.t}
                 lang={this.props.lang}
+                // @ts-expect-error wait until component ported
                 onClose={link => {
                     if (link) {
                         const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
@@ -413,7 +453,7 @@ class Intro extends Component {
         return null;
     }
 
-    getButtons(classes) {
+    getButtons(classes: Record<string, any>) {
         const buttons = [];
 
         if (this.state.edit) {
@@ -465,7 +505,7 @@ class Intro extends Component {
 
     saveCards() {
         return this.props.socket.getSystemConfig(true)
-            .then(systemConfig => {
+            .then((systemConfig: SystemConfig) => {
                 let changed = false;
 
                 if (JSON.stringify(systemConfig.common.intro) !== JSON.stringify(this.state.deactivated)) {
@@ -481,7 +521,7 @@ class Intro extends Component {
                 if (changed) {
                     this.props.socket.setSystemConfig(systemConfig)
                         .then(() => this.props.showAlert('Updated', 'success'))
-                        .catch(error => {
+                        .catch((error: any) => {
                             console.log(error);
                             this.props.showAlert(error, 'error');
                         })
@@ -492,7 +532,7 @@ class Intro extends Component {
             });
     }
 
-    async getHostData(hostId, isAlive) {
+    async getHostData(hostId: string, isAlive?: boolean) {
         let alive;
         if (isAlive !== undefined) {
             alive = { val: isAlive };
@@ -505,7 +545,7 @@ class Intro extends Component {
             }
         }
 
-        let data;
+        let data: Record<string, any>;
         if (alive?.val) {
             try {
                 data = await this.props.socket.getHostInfo(hostId, false, 10000);
@@ -528,22 +568,20 @@ class Intro extends Component {
         return { id: hostId, data };
     }
 
-    getHostsData(hosts) {
+    async getHostsData(hosts: Record<string, any>[]) {
         const promises = hosts.map(obj => this.getHostData(obj._id));
 
-        return Promise.all(promises)
-            .then(results => {
-                const hostsData = {};
-                const alive = {};
-                results.forEach(res => {
-                    hostsData[res.id] = res.data;
-                    alive[res.id] = res.data.alive;
-                });
-                return { hostsData, alive };
-            });
+        const results = await Promise.all(promises);
+        const hostsData: Record<string, any> = {};
+        const alive: Record<string, any> = {};
+        results.forEach(res => {
+            hostsData[res.id] = this.preprocessHostData(res.data);
+            alive[res.id] = res.data.alive;
+        });
+        return { hostsData, alive };
     }
 
-    static applyReverseProxy(webReverseProxyPath, instances, instance) {
+    static applyReverseProxy(webReverseProxyPath: Record<string, any>, instances: any[], instance: Record<string, any>) {
         webReverseProxyPath && webReverseProxyPath.paths.forEach(item => {
             if (item.instance === instance.id) {
                 instance.link = item.path;
@@ -564,7 +602,7 @@ class Intro extends Component {
         });
     }
 
-    addLinks(link, common, instanceId, instance, objects, hosts, instances, introInstances) {
+    addLinks(link: string, common: any, instanceId: string, instance: Record<string, any>, objects: any[], hosts: any[], instances: any[], introInstances: any[]) {
         const _urls = Utils.replaceLink(link, common.name, instanceId, {
             objects,
             hostname:      this.props.hostname,
@@ -574,7 +612,7 @@ class Intro extends Component {
             hosts,
         }) || [];
 
-        let webReverseProxyPath;
+        let webReverseProxyPath: any;
         if (this.state.reverseProxy && this.state.reverseProxy.length) {
             webReverseProxyPath = this.state.reverseProxy.find(item => item.globalPath === this.currentProxyPath);
         }
@@ -592,7 +630,7 @@ class Intro extends Component {
                 console.log(`Double links: "${instance.id}" and "${lll.id}"`);
             }
         } else if (_urls.length > 1) {
-            _urls.forEach(url => {
+            _urls.forEach((url: Record<string, any>) => {
                 const lll = introInstances.find(item => item.link === url.url);
                 Intro.applyReverseProxy(webReverseProxyPath, instances, url);
 
@@ -605,36 +643,39 @@ class Intro extends Component {
         }
     }
 
-    getInstances(update, hosts, systemConfig) {
+    getInstances(update: boolean, hosts: any[], systemConfig: SystemConfig) {
         hosts = hosts || this.state.hosts;
 
         return this.props.socket.getAdapterInstances('', update)
-            .then(instances => {
+            .then((instances: ioBroker.InstanceObject[]) => {
                 let deactivated = systemConfig.common.intro || [];
                 if (!Array.isArray(deactivated)) {
                     deactivated = Object.keys(deactivated);
                     deactivated.sort();
                 }
-                const introInstances = [];
-                const objects = {};
+                const introInstances: any[] = [];
+                const objects: Record<string, ioBroker.InstanceObject> = {};
                 instances.forEach(obj => objects[obj._id] = obj);
 
-                instances.sort((a, b) => {
-                    a = a && a.common;
-                    b = b && b.common;
-                    a = a || {};
-                    b = b || {};
+                instances.sort((_a, _b) => {
+                    const a = _a?.common ?? {};
+                    const b = _b?.common ?? {};
 
+                    // @ts-expect-error need to be added to types if this can exist
                     if (a.order === undefined && b.order === undefined) {
                         if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
                         if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
                         return 0;
+                        // @ts-expect-error need to be added to types if this can exist
                     } if (a.order === undefined) {
                         return -1;
+                        // @ts-expect-error need to be added to types if this can exist
                     } if (b.order === undefined) {
                         return 1;
                     }
+                    // @ts-expect-error need to be added to types if this can exist
                     if (a.order > b.order) return 1;
+                    // @ts-expect-error need to be added to types if this can exist
                     if (a.order < b.order) return -1;
                     if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
                     if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
@@ -647,7 +688,7 @@ class Intro extends Component {
                     }
                     const common     = obj.common || null;
                     const objId      = obj._id.split('.');
-                    const instanceId = objId.pop();
+                    const instanceId = objId.pop() as string;
 
                     if (common.name && common.name === 'admin' && common.localLink === (this.props.hostname || '')) {
                         return;
@@ -662,31 +703,24 @@ class Intro extends Component {
                         return;
                     }
                     if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-                        let links = common.localLinks || common.localLink || '';
-                        if (typeof links === 'string') {
-                            links = { _default: links };
-                        }
+                        const links = common.localLinks || { _default: common.localLink ?? '' };
 
                         Object.keys(links).forEach(linkName => {
                             let link = links[linkName];
-                            const instance = {};
+                            const instance: Record<string, any> = {};
                             if (typeof link === 'string') {
+                                // @ts-expect-error check later on
                                 link = { link };
                             }
 
                             instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`);
                             instance.name        = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ` ${linkName}`);
+                            // @ts-expect-error check later, at first glance makes no sense or types are wrong
                             instance.color       = link.color || '';
+                            // @ts-expect-error needs to be added to types if InstanceCommon can have desc
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                             instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
 
-                            /* let protocol = this.props.protocol;
-                            let port     = this.props.port;
-                            let hostname = Intro.getHostname(obj, objects, hosts, this.props.hostname, this.adminInstance);
-
-                            if (!hostname) {
-                                return;
-                            } */
                             this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
                         });
                     }
@@ -696,12 +730,15 @@ class Intro extends Component {
                         common.welcomeScreenPro && links.push(common.welcomeScreenPro);
 
                         links.forEach(link => {
-                            const instance = {};
+                            const instance: Record<string, any> = {};
                             instance.id          = `${obj._id.replace('system.adapter.', '')}/${link.link}`;
                             instance.name        = link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '';
+                            // @ts-expect-error check later, at first glance makes no sense or types are wrong
                             instance.color       = link.color || '';
+                            // @ts-expect-error needs to be added to types if InstanceCommon can have desc
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                             instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
+                            // @ts-expect-error check later, at first glance makes no sense or types are wrong
                             instance.order       = link.order;
 
                             this.addLinks(`%web_protocol%://%web_bind%:%web_port%/${link.link}`, common, instanceId, instance, objects, hosts, instances, introInstances);
@@ -928,7 +965,7 @@ class Intro extends Component {
         }, 300);
     };
 
-    getData(update) {
+    getData(update?: boolean) {
         let hosts;
         let systemConfig;
 
@@ -1003,10 +1040,9 @@ class Intro extends Component {
     /**
      * Preprocess host data to harmonize information
      *
-     * @param {Record<string, any>} hostData Host data from controller
-     * @return {Record<string, (string | number)>}
+     * @param hostData Host data from controller
      */
-    preprocessHostData(hostData) {
+    preprocessHostData(hostData: Record<string, any>): Record<string, (string | number)> {
         if (hostData.dockerInformation?.isDocker) {
             let dockerString = hostData.dockerInformation.isOfficial ? 'official image' : 'unofficial image';
 
@@ -1018,24 +1054,8 @@ class Intro extends Component {
         }
 
         delete hostData.dockerInformation;
+        return hostData;
     }
 }
-
-Intro.propTypes = {
-    /**
-     * Link and text
-     * {link: 'https://example.com', text: 'example.com'}
-     */
-    socket: PropTypes.object,
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    instancesWorker: PropTypes.object,
-    hostsWorker: PropTypes.object,
-
-    hostname: PropTypes.string,
-    protocol: PropTypes.string,
-    port: PropTypes.number,
-    adminInstance: PropTypes.string,
-};
 
 export default withStyles(styles)(Intro);
