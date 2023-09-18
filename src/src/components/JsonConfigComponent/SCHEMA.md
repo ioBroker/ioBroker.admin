@@ -562,6 +562,24 @@ If no schema is provided, the schema must be created automatically from data.
 
 If element has no attribute `type`, assume it has default type 'panel'.
 
+## Panel style
+You can provide style for panels too. Here is an example with panel background:
+```json
+{
+  "i18n": true,
+  "type": "panel",
+  "style": {
+    "backgroundImage": "url(adapter/mpd/background.png)",
+    "backgroundPosition": "top",
+    "backgroundRepeat": "no-repeat",
+    "backgroundSize": "cover"
+  },
+  "items": {
+    "...": {}
+  }
+}
+```
+
 ## i18n
 There are several options to provide the translations.
 Only the first one is compatible with our Community Translation Tool Weblate, so it should be favored over the others!
