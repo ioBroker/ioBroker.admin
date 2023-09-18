@@ -18,7 +18,7 @@ interface TabContentProps {
     /** The content of the component. */
     children: ReactNodeLike;
     /** Overflow behavior */
-    overflow: string;
+    overflow?: 'auto';
     /** Additional css classes */
     classes: { [key in keyof typeof styles]: string};
 }
