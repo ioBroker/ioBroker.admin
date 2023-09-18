@@ -87,6 +87,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) harmonized data on csv export with actual data shown by admin
 * (foxriver76) on expert mode installation tab, on no selection deactivate install button
 * (foxriver76) on npm install, ensure latest version is installed
+* (foxriver76) fixed crash on intro tab on docker hosts
+* (foxriver76) fixed crash case on invalid state objects
 
 ## Changelog
 ### 6.10.1 (2023-09-11)
