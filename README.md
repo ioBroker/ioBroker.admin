@@ -79,6 +79,9 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
+## Todo
+- Add to wizard (very first page): how your statistics will be processed.
+
 <!--
 	### **WORK IN PROGRESS**
 -->
@@ -86,7 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 * (foxriver76) harmonized data on csv export with actual data shown by admin
 * (foxriver76) on expert mode installation tab, on no selection deactivate install button
-* (foxriver76) on npm install, ensure latest version is installed
+* (foxriver76) on npm install, ensure the latest version is installed
+* (foxriver76) optimized enum objects
+* (foxriver76) disallow Google Translate as the plugin causes crash cases
 
 ## Changelog
 ### 6.10.1 (2023-09-11)
@@ -102,7 +107,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fix crash on invalid states, which are missing the property `common.role`
 
 ### 6.9.2 (2023-09-01)
-* (foxriver76) show info, if server time differs from client time
+* (foxriver76) show info if server time differs from client time
 * (foxriver76) remove confusion with different names for state (datapoint and state)
 * (jogibear9988) fixed link on 404-page being opened inside child view
 * (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
@@ -115,21 +120,21 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed problem with showing controller upgrade instructions if no UI upgrade is supported
 
 ### 6.9.0 (2023-08-21)
-* (bluefox) Added possibility to change log direction
+* (bluefox) Added possibility to change a log direction
 * (bluefox) JSON config: Added possibility to filter out internal IP addresses
 * (bluefox) JSON config: Added _changed flag for formula in JSON config
 * (bluefox) JSON config: Added option `reloadBrowser` to sendto in JSON config
 * (bluefox) JSON config: Allowed positioning of add button on the very top of the table
 * (bluefox) JSON config: Trim strings by saving and not by typing
 * (bluefox) Added alias creation from object browser
-* (bluefox) Allowed to change chart type
+* (bluefox) Allowed changing the chart type
 * (foxriver76) show a date picker when setting state (role: date/type: number)
 * (foxriver76) fixed problem, that creation of folders was not possible
-* (foxriver76) adapted text to clarify, that only tarball can be installed from path
+* (foxriver76) adapted a text to clarify, that only tarball can be installed from a path
 * (foxriver76) type string/role date will now also be previewed as a date in objects tab
 * (foxriver76) fixed problem with table formatting on history data point viewer
 * (foxriver76) fixed problem that could render update dialog with invalid property
-* (foxriver76) fixed sentry icon being in wrong position if no compact flag provided
+* (foxriver76) fixed sentry icon being in the wrong position if no compact flag is provided
 
 ## License
 The MIT License (MIT)
