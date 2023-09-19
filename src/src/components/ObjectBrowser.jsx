@@ -6803,7 +6803,7 @@ ObjectBrowser.propTypes = {
     types: PropTypes.array,             // optional ['state', 'instance', 'channel']
     columns: PropTypes.array,           // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
     // eslint-disable-next-line react/no-unused-prop-types
-    root: PropTypes.string,             // optional, shows only elements of this root
+    root: PropTypes.string,             // optional. Shows only elements of this root
 
     objectsWorker: PropTypes.object,    // optional cache of objects
     filterFunc: PropTypes.func,         // function to filter out all unnecessary objects. It cannot be used together with "types"
