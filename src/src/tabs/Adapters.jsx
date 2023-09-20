@@ -245,6 +245,7 @@ class Adapters extends Component {
         this.state = {
             lastUpdate: 0,
             repository: {},
+            /** without object changes installed just contains io-package information, not enriched information like installedFrom */
             installed: {},
             adapters: {},
             instances: {},
@@ -1345,7 +1346,7 @@ class Adapters extends Component {
         const cached = this.cache.adapters[value];
         if (cached) {
             const adapter = this.state.repository[value];
-            const installed = this.state.installed[value];
+            const installed = this.state.adapters[`system.adapter.${value}`];
 
             if (cached.title instanceof Object || !cached.desc) {
                 console.warn(`[ADAPTERS] ${value}`);
@@ -1360,12 +1361,12 @@ class Adapters extends Component {
                 description={cached.desc}
                 adapter={value}
                 versionDate={cached.daysAgoText}
-                enabledCount={installed && installed.enabled}
+                enabledCount={installed?.enabled}
                 expertMode={this.props.expertMode}
                 image={cached.image}
-                installedCount={installed && installed.count}
-                installedFrom={installed && installed.installedFrom}
-                installedVersion={installed && installed.version}
+                installedCount={installed?.count}
+                installedFrom={installed?.installedFrom}
+                installedVersion={installed?.version}
                 keywords={adapter.keywords}
                 name={cached.title}
                 license={adapter.license}
@@ -1382,7 +1383,7 @@ class Adapters extends Component {
                     this.setState({
                         showSetRating: {
                             adapter: value,
-                            version: installed && installed.version,
+                            version: installed?.version,
                             rating: adapter.rating,
                         },
                     })}
@@ -1657,7 +1658,7 @@ class Adapters extends Component {
         }
         return this.cache.listOfVisibleAdapter.map(value => {
             const adapter = this.state.repository[value];
-            const installed = this.state.installed[value];
+            const installed = this.state.adapters[`system.adapter.${value}`]?.common;
             const cached = this.cache.adapters[value];
 
             if (cached.title instanceof Object || !cached.desc) {
@@ -1676,11 +1677,11 @@ class Adapters extends Component {
                 versionDate={cached.daysAgoText}
                 connectionType={cached.connectionType}
                 description={cached.desc}
-                enabledCount={installed && installed.enabled}
+                enabledCount={installed?.enabled}
                 expertMode={this.props.expertMode}
-                installedCount={installed && installed.count}
-                installedFrom={installed && installed.installedFrom}
-                installedVersion={installed && installed.version}
+                installedCount={installed?.count}
+                installedFrom={installed?.installedFrom}
+                installedVersion={installed?.version}
                 keywords={adapter.keywords}
                 license={adapter.license}
                 updateAvailable={cached.updateAvailable}
@@ -1695,7 +1696,7 @@ class Adapters extends Component {
                     this.setState({
                         showSetRating: {
                             adapter: value,
-                            version: installed && installed.version,
+                            version: installed?.version,
                             rating: adapter.rating,
                         },
                     })}
