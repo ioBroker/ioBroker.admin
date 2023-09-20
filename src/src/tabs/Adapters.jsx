@@ -1346,7 +1346,7 @@ class Adapters extends Component {
         const cached = this.cache.adapters[value];
         if (cached) {
             const adapter = this.state.repository[value];
-            const installed = this.state.adapters[`system.adapter.${value}`];
+            const installed = this.state.adapters[`system.adapter.${value}`]?.common;
 
             if (cached.title instanceof Object || !cached.desc) {
                 console.warn(`[ADAPTERS] ${value}`);

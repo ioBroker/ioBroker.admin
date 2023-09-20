@@ -508,7 +508,7 @@ const AdapterTile = ({
                         :
                     </div>
                     <div className={classes.cardContentFlex}>
-                        {installedFrom && !installedFrom.startsWith(`iobroker.${name}@`) &&
+                        {installedFrom && !installedFrom.startsWith(`iobroker.${adapter}@`) &&
                         <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
                             <GitHubIcon
                                 fontSize="small"

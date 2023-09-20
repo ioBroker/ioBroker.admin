@@ -155,7 +155,7 @@ const styles = theme => ({
 class AdapterRow extends Component {
     renderVersion() {
         const {
-            name,
+            adapter,
             classes,
             enabledCount,
             installedCount,
@@ -174,7 +174,7 @@ class AdapterRow extends Component {
                 {installedVersion +
                     (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')}
             </Grid>
-            {installedFrom && !installedFrom.startsWith(`iobroker.${name}@`) &&
+            {installedFrom && !installedFrom.startsWith(`iobroker.${adapter}@`) &&
                 <Grid item container>
                     <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
                         <GitHubIcon
@@ -420,6 +420,7 @@ class AdapterRow extends Component {
 }
 
 AdapterRow.propTypes = {
+    adapter: PropTypes.string.isRequired,
     category: PropTypes.bool,
     connectionType: PropTypes.string,
     count: PropTypes.number,
