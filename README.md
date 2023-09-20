@@ -86,8 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 6.10.2 (2023-09-20)
 * (foxriver76) harmonized data on csv export with actual data shown by admin
 * (foxriver76) on expert mode installation tab, on no selection deactivate install button
 * (foxriver76) on npm install, ensure the latest version is installed
@@ -120,23 +119,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) without expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace
 * (foxriver76) fixed keyboard navigation
 * (foxriver76) fixed problem with showing controller upgrade instructions if no UI upgrade is supported
-
-### 6.9.0 (2023-08-21)
-* (bluefox) Added possibility to change a log direction
-* (bluefox) JSON config: Added possibility to filter out internal IP addresses
-* (bluefox) JSON config: Added _changed flag for formula in JSON config
-* (bluefox) JSON config: Added option `reloadBrowser` to sendto in JSON config
-* (bluefox) JSON config: Allowed positioning of add button on the very top of the table
-* (bluefox) JSON config: Trim strings by saving and not by typing
-* (bluefox) Added alias creation from object browser
-* (bluefox) Allowed changing the chart type
-* (foxriver76) show a date picker when setting state (role: date/type: number)
-* (foxriver76) fixed problem, that creation of folders was not possible
-* (foxriver76) adapted a text to clarify, that only tarball can be installed from a path
-* (foxriver76) type string/role date will now also be previewed as a date in objects tab
-* (foxriver76) fixed problem with table formatting on history data point viewer
-* (foxriver76) fixed problem that could render update dialog with invalid property
-* (foxriver76) fixed sentry icon being in the wrong position if no compact flag is provided
 
 ## License
 The MIT License (MIT)

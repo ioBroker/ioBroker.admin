@@ -1,6 +1,27 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.9.0 (2023-08-21)
+* (bluefox) Added possibility to change a log direction
+* (bluefox) JSON config: Added possibility to filter out internal IP addresses
+* (bluefox) JSON config: Added _changed flag for formula in JSON config
+* (bluefox) JSON config: Added option `reloadBrowser` to sendto in JSON config
+* (bluefox) JSON config: Allowed positioning of add button on the very top of the table
+* (bluefox) JSON config: Trim strings by saving and not by typing
+* (bluefox) Added alias creation from object browser
+* (bluefox) Allowed changing the chart type
+* (foxriver76) show a date picker when setting state (role: date/type: number)
+* (foxriver76) fixed problem, that creation of folders was not possible
+* (foxriver76) adapted a text to clarify, that only tarball can be installed from a path
+* (foxriver76) type string/role date will now also be previewed as a date in objects tab
+* (foxriver76) fixed problem with table formatting on history data point viewer
+* (foxriver76) fixed problem that could render update dialog with invalid property
+* (foxriver76) fixed sentry icon being in the wrong position if no compact flag is provided
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.8.3 (2023-08-16)
 * (foxriver76) added description to adapter rating dialog
 * (bluefox) Extended the select component with grouping
