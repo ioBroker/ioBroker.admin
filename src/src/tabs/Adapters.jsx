@@ -290,7 +290,6 @@ class Adapters extends Component {
             adminUpgradeTo: null,
         };
 
-        // this.rebuildSupported = false;
         this.inputRef = createRef();
         this.countRef = createRef();
 
@@ -832,12 +831,7 @@ class Adapters extends Component {
                     });
                 })
                 .then(compactRepositories => {
-                    // simulation
-                    // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
-
                     this.uuid = ratings?.uuid || null;
-                    // BF (2022.02.09)  TODO: Remove all "rebuild" stuff later (when js-controller 4.x will be mainstream)
-                    // this.rebuildSupported = false;// rebuild || false; Rebuild is no more supported from js-controller 4.0
                     return this.calculateInfo(instances, ratings, hostData, compactRepositories);
                 })
                 .catch(error => window.alert(`Cannot get adapters info: ${error}`));
@@ -1346,7 +1340,8 @@ class Adapters extends Component {
         const cached = this.cache.adapters[value];
         if (cached) {
             const adapter = this.state.repository[value];
-            const installed = this.state.adapters[`system.adapter.${value}`]?.common;
+            const installedAdapter = this.state.adapters[`system.adapter.${value}`]?.common ?? {};
+            const installed = { ...installedAdapter, ...(this.state.installed[value] ?? {}) };
 
             if (cached.title instanceof Object || !cached.desc) {
                 console.warn(`[ADAPTERS] ${value}`);
@@ -1376,7 +1371,6 @@ class Adapters extends Component {
                 rightDependencies={cached.rightDependencies}
                 rightOs={cached.rightOs}
                 sentry={cached.sentry}
-                // rebuild={this.rebuildSupported}
                 commandRunning={this.props.commandRunning}
                 rating={adapter.rating}
                 onSetRating={() =>
@@ -1402,7 +1396,6 @@ class Adapters extends Component {
                 }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
                 onInfo={() => Adapters.openInfoDialog(value)}
-                // onRebuild={() => this.rebuild(value)}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
@@ -1658,7 +1651,8 @@ class Adapters extends Component {
         }
         return this.cache.listOfVisibleAdapter.map(value => {
             const adapter = this.state.repository[value];
-            const installed = this.state.adapters[`system.adapter.${value}`]?.common;
+            const installedAdapter = this.state.adapters[`system.adapter.${value}`]?.common ?? {};
+            const installed = { ...installedAdapter, ...(this.state.installed[value] ?? {}) };
             const cached = this.cache.adapters[value];
 
             if (cached.title instanceof Object || !cached.desc) {
@@ -1690,7 +1684,6 @@ class Adapters extends Component {
                 rightDependencies={cached.rightDependencies}
                 rightOs={cached.rightOs}
                 sentry={cached.sentry}
-                // rebuild={this.rebuildSupported}
                 rating={adapter.rating}
                 onSetRating={() =>
                     this.setState({
@@ -1716,7 +1709,6 @@ class Adapters extends Component {
                 }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
                 onInfo={() => Adapters.openInfoDialog(value)}
-                // onRebuild={() => this.rebuild(value)}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {

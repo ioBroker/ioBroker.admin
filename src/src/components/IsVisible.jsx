@@ -36,6 +36,7 @@ IsVisible.propTypes = {
     name: PropTypes.string,
     config: PropTypes.object,
     value: PropTypes.bool,
+    children: PropTypes.node,
 };
 
 export default IsVisible;
