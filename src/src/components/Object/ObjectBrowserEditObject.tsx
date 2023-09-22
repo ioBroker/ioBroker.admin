@@ -657,7 +657,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         this.setState(newState as ObjectBrowserEditObjectState, () => cb && cb());
     }
 
-    onUpdate() {
+    onUpdate(): void {
         try {
             const obj = JSON.parse(this.state.text);
             obj._id = this.props.obj._id; // do not allow change of id
@@ -769,7 +769,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         return <DialogSelectID
             key="selectDialog"
             imagePrefix="."
-            // @ts-expect-error types are wrong ina dapter-react-v5
+            // @ts-expect-error types are wrong in adapter-react-v5
             dateFormat={this.props.dateFormat}
             isFloatComma={this.props.isFloatComma}
             socket={this.props.socket}
@@ -781,13 +781,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 const selectRead = this.state.selectRead;
                 const selectWrite = this.state.selectWrite;
                 const selectId = this.state.selectId;
+                const stateId = idx as string;
                 this.setState({ selectId: false, selectRead: false, selectWrite: false }, () => {
                     if (selectRead) {
-                        this.setAliasItem(json, 'id.read', idx);
+                        this.setAliasItem(json, 'id.read', stateId);
                     } else if (selectWrite) {
-                        this.setAliasItem(json, 'id.write', idx);
+                        this.setAliasItem(json, 'id.write', stateId);
                     } else if (selectId) {
-                        this.setAliasItem(json, 'id', idx);
+                        this.setAliasItem(json, 'id', stateId);
                     }
                 });
             }}
@@ -812,8 +813,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 commonAlias.id = { read: value, write: value };
             }
         } else {
-            // @ts-expect-error fix later
-            commonAlias[name] = value;
+            (commonAlias as any)[name] = value;
         }
 
         // @ts-expect-error fix later
@@ -885,7 +885,16 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     }
                 }
             }
-            return <div className={classes.commonTabWrapper} onKeyDown={e => e.key === 'Enter' && this.onUpdate()}>
+            return <div
+                className={classes.commonTabWrapper}
+                onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.onUpdate();
+                    }
+                }}
+            >
                 <div className={classes.commonWrapper}>
                     {typeof json.common.name !== 'undefined' ? <TextField
                         variant="standard"
@@ -1374,7 +1383,13 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 withAlias && this.props.classes.divWithoutTitleAndTab,
                                 this.state.error && this.props.classes.error,
                             )}
-                            onKeyDown={e => e.ctrlKey && e.key === 'Enter' && this.onUpdate()}
+                            onKeyDown={e => {
+                                if (e.ctrlKey && e.key === 'Enter') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    this.onUpdate();
+                                }
+                            }}
                         >
                             <AceEditor
                                 mode="json"
