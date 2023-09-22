@@ -88,6 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) fixed `installedFrom` other source indicator not shown on adapters tab
+* (foxriver76) allow to use enter key to save changes in object edit dialog
 
 ### 6.10.2 (2023-09-20)
 * (foxriver76) harmonized data on csv export with actual data shown by admin
