@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { Styles, withStyles } from '@mui/styles';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-min-noconflict/mode-json';
@@ -41,10 +40,10 @@ import {
     Utils, I18n,
     SelectID as DialogSelectID,
     IconFx,
-    UploadImage,
+    UploadImage, AdminConnection, i18n,
 } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles = (theme: Record<string, any>) => ({
     divWithoutTitle: {
         width: '100%',
         height: '100%',
@@ -179,7 +178,7 @@ const styles = theme => ({
         fontStyle: 'italic',
         fontSize: 'smaller',
     },
-});
+}) satisfies Styles<any, any>;
 
 const DEFAULT_ROLES = [
     'button',
@@ -435,15 +434,53 @@ const DEFAULT_ROLES = [
     'weather.title.forecast.0',
     'weather.title.short',
     'weather.type',
-];
+] as const;
 
-class ObjectBrowserEditObject extends Component {
-    constructor(props) {
+interface ObjectBrowserEditObjectProps {
+    classes: Record<string, any>;
+    socket: AdminConnection;
+    obj: ioBroker.AnyObject;
+    roleArray: string[];
+    expertMode: boolean;
+    themeName: string;
+    aliasTab: boolean;
+    onClose: (obj?: ioBroker.AnyObject) => void;
+    dialogName: string;
+    objects: Record<string, any>;
+    dateFormat: string;
+    isFloatComma: boolean;
+    onNewObject: (obj: ioBroker.AnyObject) => void;
+    t: typeof i18n.t;
+}
+
+interface ObjectBrowserEditObjectState {
+    text: string;
+    error: boolean;
+    changed: boolean;
+    readError: string;
+    writeError: string;
+    /** name of active tab */
+    tab: string;
+    showCopyDialog: string;
+    showCommonDeleteMessage: boolean;
+    selectId: boolean;
+    selectRead: boolean;
+    selectWrite: boolean;
+    newId: string;
+}
+
+class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, ObjectBrowserEditObjectState> {
+    private readonly isMobile = window.innerWidth < 850;
+
+    /** Original object stringified */
+    private originalObj: string;
+
+    constructor(props: ObjectBrowserEditObjectProps) {
         super(props);
 
         const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
         let tab =
-            (window._localStorage || window.localStorage).getItem(`${this.props.dialogName || 'App'}.editTab`) ||
+            ((window as any)._localStorage || window.localStorage).getItem(`${this.props.dialogName || 'App'}.editTab`) ||
             'object';
 
         // select another tab if alias not present
@@ -454,17 +491,25 @@ class ObjectBrowserEditObject extends Component {
             tab = 'alias';
         }
 
+        const obj = this.props.obj;
+
+        const aliasRead = obj.common && 'type' in obj.common && 'alias' in obj.common ? obj.common.alias.read : undefined;
+        const aliasWrite = obj.common && 'type' in obj.common && 'alias' in obj.common ? obj.common.alias.write : undefined;
+
         this.state = {
             text: JSON.stringify(this.props.obj, null, 2),
             error: false,
             changed: false,
-            readError: this.checkFunction(this.props.obj.common?.alias?.read, false),
-            writeError: this.checkFunction(this.props.obj.common?.alias?.write, true),
+            readError: this.checkFunction(aliasRead, false),
+            writeError: this.checkFunction(aliasWrite, true),
             tab,
-            showCopyDialog: false,
+            showCopyDialog: '',
+            showCommonDeleteMessage: false,
+            selectId: false,
+            selectRead: false,
+            selectWrite: false,
+            newId: '',
         };
-
-        this.isMobile = window.innerWidth < 850;
 
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
@@ -477,7 +522,7 @@ class ObjectBrowserEditObject extends Component {
         this.props.socket.unsubscribeObject(this.props.obj._id, this.onObjectUpdated);
     }
 
-    onObjectUpdated = (id, obj) => {
+    onObjectUpdated = (id: string, obj: ioBroker.AnyObject) => {
         if (this.originalObj !== JSON.stringify(obj, null, 2)) {
             this.originalObj = JSON.stringify(obj, null, 2);
             if (!this.state.changed) {
@@ -488,7 +533,7 @@ class ObjectBrowserEditObject extends Component {
         }
     };
 
-    checkFunction(func, isWrite) {
+    checkFunction(func: string, isWrite: boolean): string {
         if (!func) {
             return '';
         } if (func.includes('JSON.parse(')) {
@@ -539,7 +584,7 @@ class ObjectBrowserEditObject extends Component {
         return '';
     }
 
-    prepareObject(value) {
+    prepareObject(value: string) {
         value = value || this.state.text;
         try {
             const obj = JSON.parse(value);
@@ -583,9 +628,9 @@ class ObjectBrowserEditObject extends Component {
         }
     }
 
-    onChange(value, cb) {
+    onChange(value: string, cb?: () => void) {
         const json = this.prepareObject(value);
-        const newState = { text: value };
+        const newState: Partial<ObjectBrowserEditObjectState> = { text: value };
         if (json) {
             newState.changed = this.originalObj !== JSON.stringify(json, null, 2);
 
@@ -608,7 +653,8 @@ class ObjectBrowserEditObject extends Component {
             newState.showCommonDeleteMessage = false;
             newState.error = true;
         }
-        this.setState(newState, () => cb && cb());
+
+        this.setState(newState as ObjectBrowserEditObjectState, () => cb && cb());
     }
 
     onUpdate() {
@@ -649,8 +695,8 @@ class ObjectBrowserEditObject extends Component {
             }
 
             this.props.onClose(obj);
-        } catch (error) {
-            console.log.error(`Cannot parse: ${this.state.text}`);
+        } catch {
+            console.error(`Cannot parse: ${this.state.text}`);
         }
     }
 
@@ -659,7 +705,7 @@ class ObjectBrowserEditObject extends Component {
             className={this.props.classes.tabsPadding}
             value={this.state.tab}
             onChange={(e, tab) => {
-                (window._localStorage || window.localStorage).setItem(
+                ((window as any)._localStorage || window.localStorage).setItem(
                     `${this.props.dialogName || 'App'}.editTab`,
                     tab,
                 );
@@ -702,16 +748,19 @@ class ObjectBrowserEditObject extends Component {
         }
 
         let id = '';
-        let json;
+        let json: ioBroker.StateObject;
         try {
             json = JSON.parse(this.state.text);
 
+            const aliasRead = json.common && 'type' in json.common && 'alias' in json.common ? json.common.alias?.read : '';
+            const aliasWrite = json.common && 'type' in json.common && 'alias' in json.common ? json.common.alias?.write : '';
+
             if (this.state.selectId) {
-                id = json.common?.alias?.id || '';
+                id = json.common?.alias?.id as string || '';
             } else if (this.state.selectRead) {
-                id = json.common?.alias?.id?.read || '';
+                id = aliasRead ?? '';
             } else if (this.state.selectWrite) {
-                id = json.common?.alias?.id?.write || '';
+                id = aliasWrite ?? '';
             }
         } catch (error) {
             console.error(`Cannot parse ${this.state.text}`);
@@ -720,6 +769,7 @@ class ObjectBrowserEditObject extends Component {
         return <DialogSelectID
             key="selectDialog"
             imagePrefix="."
+            // @ts-expect-error types are wrong ina dapter-react-v5
             dateFormat={this.props.dateFormat}
             isFloatComma={this.props.isFloatComma}
             socket={this.props.socket}
@@ -745,40 +795,43 @@ class ObjectBrowserEditObject extends Component {
         />;
     }
 
-    setAliasItem(json, name, value, cb) {
+    setAliasItem(json: ioBroker.StateObject, name: string, value: string, cb?: () => void) {
         json.common = json.common || {};
-        json.common.alias = json.common.alias || {};
+        const commonAlias = json.common.alias || {} as Record<string, any>;
 
         if (name === 'id.read') {
-            if (json.common.alias.id && typeof json.common.alias.id === 'object') {
-                json.common.alias.id.read = value;
+            if (commonAlias.id && typeof commonAlias.id === 'object') {
+                commonAlias.id.read = value;
             } else {
-                json.common.alias.id = { read: value, write: value };
+                commonAlias.id = { read: value, write: value };
             }
         } else if (name === 'id.write') {
-            if (json.common.alias.id && typeof json.common.alias.id === 'object') {
-                json.common.alias.id.write = value;
+            if (commonAlias.id && typeof commonAlias.id === 'object') {
+                commonAlias.id.write = value;
             } else {
-                json.common.alias.id = { read: value, write: value };
+                commonAlias.id = { read: value, write: value };
             }
         } else {
-            json.common.alias[name] = value;
+            // @ts-expect-error fix later
+            commonAlias[name] = value;
         }
 
+        // @ts-expect-error fix later
+        json.common.alias = commonAlias;
         this.onChange(JSON.stringify(json, null, 2), cb);
     }
 
-    setCommonItem(json, name, value) {
+    setCommonItem(json: Record<string, any>, name: string, value: any): void {
         json.common[name] = value;
         this.onChange(JSON.stringify(json, null, 2));
     }
 
-    removeCommonItem(json, name) {
+    removeCommonItem(json: Record<string, any>, name: string): void {
         delete json.common[name];
         this.onChange(JSON.stringify(json, null, 2));
     }
 
-    buttonAddKey(nameKey, cb) {
+    buttonAddKey(nameKey: string, cb: () => void): React.JSX.Element {
         const { classes } = this.props;
         return <div className={classes.marginBlock}>
             <Button
@@ -793,14 +846,14 @@ class ObjectBrowserEditObject extends Component {
         </div>;
     }
 
-    buttonRemoveKey(nameKey, cb) {
+    buttonRemoveKey(nameKey: string, cb: () => void): React.JSX.Element {
         const { t, classes } = this.props;
         return <Tooltip title={t('Remove attribute %s', nameKey)}>
             <div className={classes.close} onClick={cb} />
         </Tooltip>;
     }
 
-    renderCommonEdit() {
+    renderCommonEdit(): React.JSX.Element {
         try {
             const json = JSON.parse(this.state.text);
             const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
@@ -812,7 +865,7 @@ class ObjectBrowserEditObject extends Component {
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
 
             // add default roles to roleArray
-            const bigRoleArray = [...DEFAULT_ROLES];
+            const bigRoleArray: string[] = [...DEFAULT_ROLES];
             roleArray.forEach(role => !bigRoleArray.includes(role) && bigRoleArray.push(role));
             bigRoleArray.sort();
 
@@ -832,7 +885,7 @@ class ObjectBrowserEditObject extends Component {
                     }
                 }
             }
-            return <div className={classes.commonTabWrapper}>
+            return <div className={classes.commonTabWrapper} onKeyDown={e => e.key === 'Enter' && this.onUpdate()}>
                 <div className={classes.commonWrapper}>
                     {typeof json.common.name !== 'undefined' ? <TextField
                         variant="standard"
@@ -840,7 +893,7 @@ class ObjectBrowserEditObject extends Component {
                         label={t('Name')}
                         className={Utils.clsx(classes.marginBlock, classes.textField)}
                         fullWidth
-                        value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), null, false, true)}
+                        value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), {}, false, true)}
                         onChange={el => this.setCommonItem(json, 'name', el.target.value)}
                     /> : this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))}
                     {checkState ? (
@@ -877,6 +930,7 @@ class ObjectBrowserEditObject extends Component {
                                         <Checkbox
                                             disabled={disabled}
                                             checked={json.common.read}
+                                            // @ts-expect-error check later
                                             onClick={el => this.setCommonItem(json, 'read', el.target.checked)}
                                         />
                                     }
@@ -893,6 +947,7 @@ class ObjectBrowserEditObject extends Component {
                                         <Checkbox
                                             disabled={disabled}
                                             checked={json.common.write}
+                                            // @ts-expect-error check later
                                             onClick={el => this.setCommonItem(json, 'write', el.target.checked)}
                                         />
                                     }
@@ -1008,6 +1063,7 @@ class ObjectBrowserEditObject extends Component {
                         maxSize={10 * 1024}
                         icon={iconPath}
                         removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
+                        // @ts-expect-error adapter-react-v5 type improvements needed
                         onChange={base64 => this.setCommonItem(json, 'icon', base64)}
                         t={t}
                     />
@@ -1220,12 +1276,13 @@ class ObjectBrowserEditObject extends Component {
         }
     }
 
-    onCopy(e) {
+    onCopy(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+        // @ts-expect-error types in adapter-react-v5 not optimal
         Utils.copyToClipboard(this.state.text, e);
         window.alert(this.props.t('ra_Copied'));
     }
 
-    onClone(oldId, newId) {
+    onClone(oldId: string, newId: string) {
         const newObj = JSON.parse(JSON.stringify(this.props.objects[oldId]));
         delete newObj.from;
         delete newObj.ts;
@@ -1240,7 +1297,7 @@ class ObjectBrowserEditObject extends Component {
             return null;
         }
         return (
-            <Dialog open={!0} maxWidth="md" fullWidth onClose={() => this.setState({ showCopyDialog: false })}>
+            <Dialog open={!0} maxWidth="md" fullWidth onClose={() => this.setState({ showCopyDialog: '' })}>
                 <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -1250,7 +1307,7 @@ class ObjectBrowserEditObject extends Component {
                         label={this.props.t('New object ID')}
                         value={this.state.newId}
                         onKeyDown={e => {
-                            if (e.keyCode === 13 && !this.props.objects[this.state.newId]) {
+                            if (e.key === 'Enter' && !this.props.objects[this.state.newId]) {
                                 this.setState({ showCopyDialog: '' });
                                 this.onClone(this.state.showCopyDialog, this.state.newId);
                             }
@@ -1271,6 +1328,7 @@ class ObjectBrowserEditObject extends Component {
                         {this.props.t('Clone')}
                     </Button>
                     <Button
+                        // @ts-expect-error this works
                         color="grey"
                         onClick={() => this.setState({ showCopyDialog: '' })}
                         startIcon={<IconClose />}
@@ -1283,14 +1341,17 @@ class ObjectBrowserEditObject extends Component {
     }
 
     render() {
-        const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
+        const obj = this.props.obj;
+
+        const withAlias = obj._id.startsWith('alias.0') && obj.type === 'state';
+        const fullWidth = obj.type !== 'state' || (obj.common.type !== 'number' && obj.common.type !== 'boolean');
 
         return (
             <Dialog
                 classes={{ paper: this.props.classes.dialog }}
                 open={!0}
                 maxWidth="lg"
-                fullWidth={this.state.type !== 'number' && this.state.type !== 'boolean'}
+                fullWidth={fullWidth}
                 fullScreen={false}
                 onClose={() => this.props.onClose()}
                 aria-labelledby="edit-value-dialog-title"
@@ -1313,6 +1374,7 @@ class ObjectBrowserEditObject extends Component {
                                 withAlias && this.props.classes.divWithoutTitleAndTab,
                                 this.state.error && this.props.classes.error,
                             )}
+                            onKeyDown={e => e.ctrlKey && e.key === 'Enter' && this.onUpdate()}
                         >
                             <AceEditor
                                 mode="json"
@@ -1343,8 +1405,11 @@ class ObjectBrowserEditObject extends Component {
                     {this.state.tab === 'common' ? this.renderCommonEdit() : null}
                     {this.renderSelectDialog()}
                 </DialogContent>
-                <DialogActions className={this.props.classes.wrapperButton}>
+                <DialogActions
+                    className={this.props.classes.wrapperButton}
+                >
                     <Button
+                        // @ts-expect-error this works
                         color="grey"
                         onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
                         disabled={this.state.error || this.state.changed}
@@ -1355,6 +1420,7 @@ class ObjectBrowserEditObject extends Component {
                     <div style={{ flexGrow: 1 }} />
                     {this.state.tab === 'object' && (
                         <Button
+                            // @ts-expect-error this works
                             color="grey"
                             onClick={e => this.onCopy(e)}
                             disabled={this.state.error}
@@ -1374,6 +1440,7 @@ class ObjectBrowserEditObject extends Component {
                         {this.props.t('Write')}
                     </Button>
                     <Button
+                        // @ts-expect-error this works
                         color="grey"
                         variant="contained"
                         onClick={() => this.props.onClose()}
@@ -1386,23 +1453,5 @@ class ObjectBrowserEditObject extends Component {
         );
     }
 }
-
-ObjectBrowserEditObject.propTypes = {
-    classes: PropTypes.object,
-    socket: PropTypes.object,
-    obj: PropTypes.object,
-    roleArray: PropTypes.array,
-    expertMode: PropTypes.bool,
-    themeName: PropTypes.string,
-    aliasTab: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
-    dialogName: PropTypes.string,
-    objects: PropTypes.object,
-    dateFormat: PropTypes.string,
-    isFloatComma: PropTypes.bool,
-    onNewObject: PropTypes.func,
-
-    t: PropTypes.func,
-};
 
 export default withStyles(styles)(ObjectBrowserEditObject);
