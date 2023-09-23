@@ -642,7 +642,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                         )}
                                         value={this.state.targetValue.toString() || 0}
                                         label={this.props.t('Value')}
-                                        onKeyUp={e => e.keyCode === 13 && this.state.valid && this.onUpdate(e)}
+                                        onKeyUp={e => e.key === 'Enter' && this.state.valid && this.onUpdate(e)}
                                         onChange={e => {
                                             this.setState({ targetValue: Number(e.target.value), valid: this.isNumberValid({ value: e.target.value, common: this.props.object.common }) });
                                         }}
@@ -661,7 +661,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 label={this.props.t('Value')}
                                                 fullWidth
                                                 multiline
-                                                onKeyDown={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate(e)}
+                                                onKeyDown={e => e.ctrlKey && e.key === 'Enter' && this.onUpdate(e)}
                                                 defaultValue={this.propsValue.toString()}
                                                 onChange={e => this.setState({ targetValue: e.target.value })}
                                             />)))}
