@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.10.3",
+    "version": "6.10.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.10.4": {
+        "en": "fixed parsing `jsonConfig`",
+        "de": "feste Parsing jsonConfig",
+        "ru": "фиксированный парсинг jsonConfig",
+        "pt": "fixo parsing jsonConfig",
+        "nl": "jsonConfig",
+        "fr": "jsonConfig",
+        "it": "parsing fisso jsonConfig",
+        "es": "fija persiguiendo jsonConfig",
+        "pl": "oficjalna strona jsonConfig",
+        "uk": "фіксована парсинг jsonConfig",
+        "zh-cn": "固定假"
+      },
       "6.10.3": {
         "en": "fixed `installedFrom` other source indicator not shown on adapters tab\nallow to use enter key to save changes in object edit dialog\nfix json config crash with empty table",
         "de": "installiert Aus anderen Quellenanzeiger nicht auf Adapter-Tab angezeigt\ngeben sie den schlüssel ein, um änderungen im objekt bearbeiten dialog speichern\nfix json config crash mit leerem tisch",
@@ -95,19 +108,6 @@
         "pl": "umożliwia odzyskiwanie wszystkich kolumn w obiektach tabeli\nużytkownicy trybu ekspertów są dozwolone jedynie do edytowania obiektów w 0_userdata.0 i alias.0\nkeyboard navigation\nproblem stały z wyświetlaniem instrukcji sterownika, jeśli nie ma aktualizacji użytkownika",
         "uk": "дозволяють переоснащення всіх стовпчиків в вкладці об'єктів\nкористувачі не можуть редагувати об'єкти в 0_userdata.0 і alias.0\nфіксована клавіатура навігації\nвиправлена проблема з інструкціями налаштування контролера, якщо не підтримується оновлення UI",
         "zh-cn": "允许将所有栏目重新列入目标表\n如果没有专家模式用户,只允许在0._userdata.0, 除其他外,使用名称空间。\n固定关键导航\n显示控制媒体升级指示的固定问题,如果不支持升级的UI升级。"
-      },
-      "6.9.0": {
-        "en": "Added possibility to change log direction\nJSON config: Added possibility to filter out internal IP addresses\nJSON config: Added _changed flag for formula in JSON config",
-        "de": "Möglichkeit zur Änderung der Logrichtung\nJSON config: Möglichkeit, interne IP-Adressen auszufiltern\nJSON config: Hinzugefügt _changed flag for Formel in JSON config",
-        "ru": "Добавлена возможность изменения направления лога\nJSON конфиг: Добавлена возможность фильтрации внутренних IP-адресов\nJSON конфиг: Добавлено _измененный флаг для формулы в JSON config",
-        "pt": "Adicionado possibilidade de mudar direção de log\nJSON config: Adicionado possibilidade de filtrar endereços IP internos\nJSON config: Adicionado _changed flag para fórmula em JSON config",
-        "nl": "Toegevoegd de mogelijkheid te veranderen\nJSON config: Toegevoegd de mogelijkheid om interne IP-adressen te filtreren\nJSON config: Veranderde vlag voor formule in JSON",
-        "fr": "Possibilité de changer de direction de journal\nJSON : Possibilité de filtrer les adresses IP internes\nJSON : Ajouté _ drapeau modifié pour la formule dans la configuration JSON",
-        "it": "Aggiunta possibilità di cambiare direzione di registro\nJSON config: Aggiunta possibilità di filtrare gli indirizzi IP interni\nJSON config: Aggiunto _bandiera modificata per la formula in JSON config",
-        "es": "Mayor posibilidad de cambiar la dirección de registro\nJSON config: Posibilidad de filtrar direcciones IP internas\nJSON config: Añadido _ bandera cambiada para la fórmula en JSON config",
-        "pl": "Wstępna możliwość zmiany kierunku logowego\nJSON config Wstępna możliwość filtrowania adresów wewnętrznego IP\nJSON config Wzmiankowana flaga dla formuły JSON",
-        "uk": "Додано можливість змінити напрямок журналу\nНалаштування JSON: Додана можливість фільтрувати внутрішні IP-адреси\nНалаштування JSON: Додано _changed прапор для формули в JSON config",
-        "zh-cn": "改变逻辑方向的可能性\nJSON config: 增加过滤内部IP的可能性\nJSON config: 增加:在联合协商会中采用公式的换旗"
       }
     },
     "desc": {

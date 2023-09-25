@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.10.4 (2023-09-25)
 * (foxriver76) fixed parsing `jsonConfig`
 
 ### 6.10.3 (2023-09-25)
@@ -114,13 +114,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) object browser now validates setting state of type number
 * (foxriver76) allow to specify unique columns for tables
 * (foxriver76) fix crash on invalid states, which are missing the property `common.role`
-
-### 6.9.2 (2023-09-01)
-* (foxriver76) show info if server time differs from client time
-* (foxriver76) remove confusion with different names for state (datapoint and state)
-* (jogibear9988) fixed link on 404-page being opened inside child view
-* (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
-* (foxriver76) implemented del key shortcut to delete a selected object
 
 ## License
 The MIT License (MIT)

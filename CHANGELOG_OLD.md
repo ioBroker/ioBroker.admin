@@ -1,6 +1,17 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.9.2 (2023-09-01)
+* (foxriver76) show info if server time differs from client time
+* (foxriver76) remove confusion with different names for state (datapoint and state)
+* (jogibear9988) fixed link on 404-page being opened inside child view
+* (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
+* (foxriver76) implemented del key shortcut to delete a selected object
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.9.1 (2023-08-22)
 * (foxriver76) allow resizing of all columns in objects tab
 * (foxriver76) without expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace
