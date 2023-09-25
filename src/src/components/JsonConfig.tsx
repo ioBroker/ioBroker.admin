@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { Styles, withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 import MD5 from 'crypto-js/md5';
 
@@ -14,10 +13,13 @@ import {
     Router,
     SaveCloseButtons,
     Theme as theme,
-    Confirm as ConfirmDialog,
+    Confirm as ConfirmDialog, AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from '@iobroker/adapter-react-v5/Components/JsonConfigComponent/ConfigGeneric';
+import { Theme } from '@iobroker/adapter-react-v5/types';
+// @ts-expect-error optimize socket-client types
+import type { SystemConfig } from '@iobroker/socket-client';
 import JsonConfigComponent from './JsonConfigComponent';
 import Utils from './Utils';
 
@@ -41,14 +43,14 @@ const styles = {
     button: {
         marginRight: 5,
     },
-};
+} satisfies Styles<any, any>;
 
 /**
  * Decrypt the password/value with given key
  * @param key - Secret key
  * @param value - value to decrypt
  */
-function decryptLegacy(key, value) {
+function decryptLegacy(key: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
         // eslint-disable-next-line no-bitwise
@@ -62,7 +64,7 @@ function decryptLegacy(key, value) {
  * @param key - Secret key
  * @param value - value to encrypt
  */
-function encryptLegacy(key, value) {
+function encryptLegacy(key: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
         // eslint-disable-next-line no-bitwise
@@ -84,11 +86,10 @@ function encryptLegacy(key, value) {
  *          // ...
  *     }
  *  ```
- * @param {string} key - Secret key
- * @param {string} value - value to decrypt
- * @returns {string}
+ * @param key - Secret key
+ * @param value - value to decrypt
  */
-function decrypt(key, value) {
+function decrypt(key: string, value: string): string {
     if (typeof value !== 'string') {
         return value;
     }
@@ -125,12 +126,11 @@ function decrypt(key, value) {
  *          ...
  *    }
  *  ```
- * @param {string} key - Secret key
- * @param {string} value - value to encrypt
- * @param {string} _iv - optional initial vector for tests
- * @returns {string}
+ * @param key - Secret key
+ * @param value - value to encrypt
+ * @param _iv - optional initial vector for tests
  */
-function encrypt(key, value, _iv) {
+function encrypt(key: string, value: string, _iv?: string): string {
     if (typeof value !== 'string') {
         return value;
     }
@@ -153,7 +153,7 @@ function encrypt(key, value, _iv) {
     return `$/aes-192-cbc:${window.CryptoJS.enc.Hex.stringify(iv)}:${encrypted}`;
 }
 
-function loadScript(src, id) {
+function loadScript(src: string, id: string) {
     if (!id || !document.getElementById(id)) {
         return new Promise(resolve => {
             const script = document.createElement('script');
@@ -163,18 +163,69 @@ function loadScript(src, id) {
             document.getElementsByTagName('head')[0].appendChild(script);
         });
     }
-    return document.getElementById(id).onload;
+    return document.getElementById(id)?.onload;
 }
 
-class JsonConfig extends Router {
-    constructor(props) {
+interface BufferObject {
+    type: 'Buffer';
+    data: Buffer;
+}
+
+interface Schema {
+    type: string;
+    items: Schema[];
+    max?: number;
+    min?: number;
+    trim?: boolean;
+    attr?: string;
+    doNotSave?: boolean;
+}
+
+interface JsonConfigProps {
+    menuPadding: number;
+    adapterName: string;
+    instance: number;
+    isFloatComma: boolean;
+    dateFormat: string;
+    secret: string;
+    socket: AdminConnection;
+    theme: Record<string, any>;
+    themeName: string;
+    themeType: string;
+    /** CSS classes */
+    classes: Record<string, any>;
+    /** Translate method */
+    t: typeof I18n.t;
+    configStored: (notChanged: boolean) => void;
+    width: 'xs' | 'sm' | 'md';
+}
+
+interface JsonConfigState {
+    schema?: Schema;
+    data?: Record<string, unknown>;
+    originalData?: Record<string, unknown>;
+    updateData: number;
+    common?: ioBroker.InstanceCommon;
+    changed: boolean;
+    confirmDialog: boolean;
+    theme: Theme;
+    saveConfigDialog: boolean;
+    hash: string;
+    error?: string;
+}
+
+class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
+    private fileSubscribed = '';
+
+    private fileLangSubscribed = '';
+
+    private secret = '';
+
+    constructor(props: JsonConfigProps) {
         super(props);
 
         this.state = {
-            schema: null,
-            data: null,
             updateData: 0,
-            common: null,
             changed: false,
             confirmDialog: false,
             theme: theme(props.themeName), // buttons require special theme
@@ -186,8 +237,9 @@ class JsonConfig extends Router {
             .then(obj => this.getConfigFile()
                 .then(schema =>
                     // load language
+                // @ts-expect-error it has the static method
                     JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
-                        .then(langFileName => {
+                        .then((langFileName: string) => {
                             if (langFileName) {
                                 // subscribe on changes
                                 if (!this.fileLangSubscribed) {
@@ -201,6 +253,7 @@ class JsonConfig extends Router {
                                     schema,
                                     data: obj.native,
                                     common: obj.common,
+                                    // @ts-expect-error really no string?
                                     hash: MD5(JSON.stringify(schema)),
                                 });
                             } else {
@@ -213,24 +266,28 @@ class JsonConfig extends Router {
         super.componentWillUnmount();
         if (this.fileSubscribed) {
             this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
-            this.fileSubscribed = false;
+            this.fileSubscribed = '';
         }
         if (this.fileLangSubscribed) {
             this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileLangSubscribed, this.onFileChange);
-            this.fileLangSubscribed = false;
+            this.fileLangSubscribed = '';
         }
     }
 
     /**
      * @private
-     * @param {object} evt
+     * @param evt
      */
-    handleFileSelect = evt => {
+    handleFileSelect = (evt: Record<string, any>) => {
         const f = evt.target.files[0];
         if (f) {
             const r = new FileReader();
             r.onload = async e => {
-                const contents = e.target.result;
+                if (!e.target) {
+                    return;
+                }
+
+                const contents = e.target.result as string;
                 try {
                     const data = JSON.parse(contents);
                     this.setState({ data, changed: JSON.stringify(data) !== JSON.stringify(this.state.originalData) });
@@ -254,6 +311,7 @@ class JsonConfig extends Router {
                         const input = document.createElement('input');
                         input.setAttribute('type', 'file');
                         input.setAttribute('id', 'files');
+                        // @ts-expect-error check
                         input.setAttribute('opacity', 0);
                         input.addEventListener('change', e => this.handleFileSelect(e), false);
                         input.click();
@@ -267,6 +325,10 @@ class JsonConfig extends Router {
                     size="small"
                     classes={{ root: this.props.classes.button }}
                     onClick={() => {
+                        if (!this.state.data) {
+                            return;
+                        }
+
                         Utils.generateFile(`${this.props.adapterName}.${this.props.instance}.json`, this.state.data);
                     }}
                 >
@@ -276,72 +338,39 @@ class JsonConfig extends Router {
         </div>;
     }
 
-    onFileChange = (id, fileName, size) => {
+    onFileChange = async (id: string, fileName: string, size: number) => {
         if (id === `${this.props.adapterName}.admin` && size) {
             if (fileName === this.fileLangSubscribed)  {
-                JsonConfigComponent.loadI18n(this.props.socket, this.state.schema?.i18n, this.props.adapterName)
-                    .then(() => this.setState({ hash: `${this.state.hash}1` }))
-                    .catch(() => {
-                    }); // ignore errors
+                try {
+                    // @ts-expect-error needs types
+                    await JsonConfigComponent.loadI18n(this.props.socket, this.state.schema?.i18n, this.props.adapterName);
+                    this.setState({ hash: `${this.state.hash}1` });
+                } catch {
+                    // ignore errors
+                }
             } else if (fileName === this.fileSubscribed) {
-                this.getConfigFile(this.fileSubscribed)
-                    .then(schema => this.setState({ schema, hash: MD5(JSON.stringify(schema)) }))
-                    .catch(() => { }); // ignore errors
+                try {
+                    const schema = await this.getConfigFile(this.fileSubscribed);
+                    // @ts-expect-error really no string?
+                    this.setState({ schema, hash: MD5(JSON.stringify(schema)) });
+                } catch {
+                    // ignore errors
+                }
             }
         }
     };
 
-    getConfigFile(fileName) {
-        fileName = fileName || 'jsonConfig.json5';
-
-        return this.props.socket.fileExists(`${this.props.adapterName}.admin`, fileName)
-            .then(exist => {
-                if (!exist) {
-                    fileName = 'jsonConfig.json';
-                }
-                return this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
-            })
-            .then(data => {
-                if (data.file !== undefined) {
-                    data = data.file;
-                }
-                if (data?.type === 'Buffer') {
-                    let binary = '';
-                    const bytes = new Uint8Array(data.data);
-                    const len = bytes.byteLength;
-                    for (let i = 0; i < len; i++) {
-                        binary += String.fromCharCode(bytes[i]);
-                    }
-                    data = binary;
-                }
-
-                // subscribe on changes
-                if (!this.fileSubscribed) {
-                    this.fileSubscribed = fileName;
-                    this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
-                }
-
-                try {
-                    return JSON5.parse(data);
-                } catch (e) {
-                    window.alert('[JsonConfig] Cannot parse json5 config!');
-                    return null;
-                }
-            })
-            .catch(e => !this.state.schema && window.alert(`[JsonConfig] Cannot read file: ${e}`));
-    }
-
-    getInstanceObject() {
+    getInstanceObject(): Promise<ioBroker.InstanceObject> {
         return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
-            .then(obj => {
+            .then((obj: ioBroker.InstanceObject) => {
                 // decode all native attributes listed in obj.encryptedNative
                 if (Array.isArray(obj.encryptedNative)) {
                     return this.props.socket.getSystemConfig()
-                        .then(async systemConfig => {
+                        .then(async (systemConfig: SystemConfig) => {
                             await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
                             this.secret = systemConfig.native.secret;
 
-                            obj.encryptedNative.forEach(attr => {
+                            obj.encryptedNative?.forEach(attr => {
                                 if (obj.native[attr]) {
                                     obj.native[attr] = decrypt(this.secret, obj.native[attr]);
                                 }
@@ -351,7 +380,7 @@ class JsonConfig extends Router {
                 }
                 return obj;
             })
-            .catch(e => window.alert(`[JsonConfig] Cannot read instance object: ${e}`));
+            .catch((e: any) => window.alert(`[JsonConfig] Cannot read instance object: ${e}`));
     }
 
     renderConfirmDialog() {
@@ -364,8 +393,53 @@ class JsonConfig extends Router {
             ok={I18n.t('ra_Discard')}
             cancel={I18n.t('ra_Cancel')}
             onClose={isYes =>
-                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
+                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate())}
         />;
+    }
+
+    getConfigFile(fileName?: string): Promise<Schema> {
+        fileName = fileName || 'jsonConfig.json5';
+
+        return this.props.socket.fileExists(`${this.props.adapterName}.admin`, fileName)
+            .then((exist: boolean) => {
+                if (!exist) {
+                    fileName = 'jsonConfig.json';
+                }
+                return this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
+            })
+            .then((data: { file: string | BufferObject; mimeType: string; type: string }) => {
+                let content = '';
+                let file: string | BufferObject = '';
+
+                if (data.file !== undefined) {
+                    file = data.file;
+                }
+
+                if (typeof file !== 'string' && file.type === 'Buffer') {
+                    let binary = '';
+                    const bytes = new Uint8Array(file.data);
+                    const len = bytes.byteLength;
+                    for (let i = 0; i < len; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    content = binary;
+                }
+
+                // subscribe on changes
+                if (!this.fileSubscribed) {
+                    this.fileSubscribed = fileName ?? '';
+                    this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
+                }
+
+                try {
+                    return JSON5.parse(content);
+                } catch (e) {
+                    window.alert('[JsonConfig] Cannot parse json5 config!');
+                    console.log(e);
+                    return null;
+                }
+            })
+            .catch((e: any) => !this.state.schema && window.alert(`[JsonConfig] Cannot read file: ${e}`));
     }
 
     renderSaveConfigDialog() {
@@ -374,7 +448,7 @@ class JsonConfig extends Router {
         }
         return <ConfirmDialog
             title={I18n.t('ra_Please confirm')}
-            text={typeof this.state.saveConfigDialog === 'string' ? this.state.saveConfigDialog : I18n.t('Save configuration?')}
+            text={I18n.t('Save configuration?')}
             ok={I18n.t('ra_Save')}
             cancel={I18n.t('ra_Cancel')}
             onClose={isYes =>
@@ -382,15 +456,14 @@ class JsonConfig extends Router {
         />;
     }
 
-    findAttr(attr, schema) {
+    findAttr(attr: string, schema?: Schema): Schema | null {
         schema = schema || this.state.schema;
-        if (schema.items) {
-            if (schema.items[attr]) {
-                return schema.items[attr];
+        if (schema?.items) {
+            if (attr in schema.items) {
+                return schema.items[attr as any];
             }
-            const keys = Object.keys(schema.items);
-            for (let k = 0; k < keys.length; k++) {
-                const item = this.findAttr(attr, schema.items[keys[k]]);
+            for (const _item of Object.values(schema.items)) {
+                const item = this.findAttr(attr, _item);
                 if (item) {
                     return item;
                 }
@@ -401,62 +474,69 @@ class JsonConfig extends Router {
     }
 
     // this function is called recursively and trims all text fields, that must be trimmed
-    postProcessing(data, attr, schema) {
+    postProcessing(data: Record<string, unknown>, attr: string, schema: Schema) {
         schema = schema || this.state.schema;
         if (!data) {
             // should not happen
             console.error(`Data is empty in postProcessing: ${attr}, ${JSON.stringify(schema)}`);
             return;
         }
+
+        const dataAttr = data[attr];
+
         if (schema.items) {
-            const keys = Object.keys(schema.items);
             if (schema.type === 'table') {
-                const table = data[attr];
-                for (let i = 0; i < table.length; i++) {
-                    for (let a = 0; a < schema.items.length; a++) {
-                        const tItem = schema.items[a];
-                        this.postProcessing(table[i], tItem.attr, tItem);
+                const table = dataAttr;
+
+                if (!Array.isArray(table)) {
+                    return;
+                }
+
+                for (const entry of table) {
+                    for (const tItem of schema.items) {
+                        this.postProcessing(entry, tItem.attr as string, tItem);
                     }
                 }
             } else {
-                for (let k = 0; k < keys.length; k++) {
-                    const _attr = keys[k];
-                    const item = schema.items[_attr];
+                for (const [_attr, item] of Object.entries(schema.items)) {
                     if (item.type === 'panel' || item.type === 'tabs' || item.type === 'accordion') {
-                        this.postProcessing(data, null, item);
-                    } else {
-                        this.postProcessing(data, _attr, item);
+                        return;
                     }
+                    this.postProcessing(data, _attr, item);
                 }
             }
-        } else if (attr && typeof data[attr] === 'string') {
+        } else if (attr && typeof dataAttr === 'string') {
             // postprocessing
             if (schema.type === 'text') {
-                console.log(data[attr]);
                 if (schema.trim !== false) {
-                    data[attr] = data[attr].trim();
+                    data[attr] = dataAttr.trim();
                 }
             } else if (schema.type === 'ip') {
                 // should not happen
-                data[attr] = data[attr].trim();
+                data[attr] = dataAttr.trim();
             } else if (schema.type === 'number') {
-                data[attr] = parseFloat(data[attr].toString().replace(',', '.'));
-                if (schema.min !== undefined && data[attr] < schema.min) {
+                const dataVal = parseFloat(dataAttr.toString().replace(',', '.'));
+
+                if (schema.min !== undefined && dataVal < schema.min) {
                     data[attr] = schema.min;
-                } else if (schema.max !== undefined && data[attr] > schema.max) {
+                } else if (schema.max !== undefined && dataVal > schema.max) {
                     data[attr] = schema.max;
+                } else {
+                    data[attr] = dataVal;
                 }
             } else if (schema.type === 'port') {
-                data[attr] = parseInt(data[attr].toString(), 10);
-                if (schema.min !== undefined && data[attr] < schema.min) {
+                const dataVal = parseInt(dataAttr.toString(), 10);
+                if (schema.min !== undefined && dataVal < schema.min) {
                     data[attr] = schema.min;
-                } else if (schema.max !== undefined && data[attr] > schema.max) {
+                } else if (schema.max !== undefined && dataVal > schema.max) {
                     data[attr] = schema.max;
                 }
-                if (data[attr] !== 0 && data[attr] < 20) {
+                if (data[attr] !== 0 && dataVal < 20) {
                     data[attr] = 20;
-                } else if (data[attr] > 0xFFFF) {
+                } else if (dataVal > 0xFFFF) {
                     data[attr] = 0xFFFF;
+                } else {
+                    data[attr] = dataVal;
                 }
             } else if (schema.type === 'checkbox') {
                 // should not happen
@@ -465,7 +545,7 @@ class JsonConfig extends Router {
         }
     }
 
-    async onSave(doSave, close) {
+    async onSave(doSave: boolean, close?: boolean): Promise<void> {
         if (doSave) {
             const obj = await this.getInstanceObject();
 
@@ -475,16 +555,18 @@ class JsonConfig extends Router {
                 return;
             }
 
-            this.postProcessing(this.state.data, this.state.schema);
+            if (!this.state.data || !this.state.schema) {
+                return;
+            }
 
-            Object.keys(this.state.data).forEach(attr => {
+            for (const attr of Object.keys(this.state.data)) {
                 const item = this.findAttr(attr);
                 if (!item || !item.doNotSave) {
                     ConfigGeneric.setValue(obj.native, attr, this.state.data[attr]);
                 } else {
                     ConfigGeneric.setValue(obj.native, attr, null);
                 }
-            });
+            }
 
             try {
                 const encryptedObj = JSON.parse(JSON.stringify(obj));
@@ -492,11 +574,11 @@ class JsonConfig extends Router {
                 if (Array.isArray(encryptedObj.encryptedNative)) {
                     await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
 
-                    encryptedObj.encryptedNative.forEach(attr => {
+                    for (const attr of encryptedObj.encryptedNative) {
                         if (encryptedObj.native[attr]) {
                             encryptedObj.native[attr] = encrypt(this.secret, encryptedObj.native[attr]);
                         }
-                    });
+                    }
                 }
 
                 await this.props.socket.setObject(encryptedObj._id, encryptedObj);
@@ -510,19 +592,19 @@ class JsonConfig extends Router {
                 updateData: this.state.updateData + 1,
                 originalData: JSON.parse(JSON.stringify(obj.native)),
             }, () =>
-                close && Router.doNavigate(null));
+                close && Router.doNavigate());
         } else if (this.state.changed) {
             this.setState({ confirmDialog: true });
         } else {
-            Router.doNavigate(null);
+            Router.doNavigate();
         }
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
+    componentDidUpdate(_prevProps: JsonConfigProps, prevState: JsonConfigState): void {
         if (prevState.changed !== this.state.changed) {
             this.props.configStored(!this.state.changed);
         }
-    };
+    }
 
     render() {
         const { classes } = this.props;
@@ -535,7 +617,8 @@ class JsonConfig extends Router {
             {this.getExportImportButtons()}
             {this.renderSaveConfigDialog()}
             <JsonConfigComponent
-                key={this.state.hash}
+                key={this.state.hash as string}
+                // @ts-expect-error types not correct yet
                 className={classes.scroll}
                 socket={this.props.socket}
                 theme={this.props.theme}
@@ -572,28 +655,13 @@ class JsonConfig extends Router {
                 newReact
                 theme={this.state.theme}
                 noTextOnButtons={this.props.width === 'xs' || this.props.width === 'sm' || this.props.width === 'md'}
-                changed={this.state.error || this.state.changed}
-                error={this.state.error}
-                onSave={close => this.onSave(true, close)}
+                changed={!!(this.state.error || this.state.changed)}
+                error={!!this.state.error}
+                onSave={(close: any) => this.onSave(true, close)}
                 onClose={() => this.onSave(false)}
             />
         </div>;
     }
 }
-
-JsonConfig.propTypes = {
-    menuPadding: PropTypes.number,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-    isFloatComma: PropTypes.bool,
-    dateFormat: PropTypes.string,
-    secret: PropTypes.string,
-
-    socket: PropTypes.object,
-
-    theme: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
-};
 
 export default withStyles(styles)(JsonConfig);
