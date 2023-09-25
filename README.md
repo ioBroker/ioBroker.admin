@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) fixed parsing `jsonConfig`
+
 ### 6.10.3 (2023-09-25)
 * (foxriver76) fixed `installedFrom` other source indicator not shown on adapters tab
 * (foxriver76) allow to use enter key to save changes in object edit dialog

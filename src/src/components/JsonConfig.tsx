@@ -415,7 +415,9 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                     file = data.file;
                 }
 
-                if (typeof file !== 'string' && file.type === 'Buffer') {
+                if (typeof file === 'string') {
+                    content = file;
+                } else if (file.type === 'Buffer') {
                     let binary = '';
                     const bytes = new Uint8Array(file.data);
                     const len = bytes.byteLength;
