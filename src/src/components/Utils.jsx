@@ -1516,7 +1516,7 @@ class Utils {
     /**
      * Generate the json file on the file for download.
      * @param {string} filename file name
-     * @param {string} json file data
+     * @param {Record<string, unknown>} json file data
      * @returns {object} json structure (not stringified)
      */
     static generateFile(filename, json) {
