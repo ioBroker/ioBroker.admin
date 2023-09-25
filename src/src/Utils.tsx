@@ -1,10 +1,18 @@
+import I18n from '@iobroker/adapter-react-v5/i18n';
+
 const ANSI_RESET = 0;
 const ANSI_RESET_COLOR = 39;
 const ANSI_RESET_BG_COLOR = 49;
 const ANSI_BOLD = 1;
 const ANSI_RESET_BOLD = 22;
 
-const STYLES = {
+interface Style {
+    color?: string;
+    backgroundColor?: string;
+    fontWeight?: string;
+}
+
+const STYLES: Record<string, Style> = {
     30: { color: 'black' }, // ANSI_BLACK
     31: { color: 'red' }, // ANSI_RED
     32: { color: 'green' }, // ANSI_GREEN
@@ -45,10 +53,9 @@ const STYLES = {
 class Utils {
     /**
      * Format bytes to MB or GB
-     * @param {!number} bytes
-     * @returns {String}
+     * @param bytes
      */
-    static formatRam(bytes) {
+    static formatRam(bytes: number): string {
         const GB = Math.floor((bytes / (1024 * 1024 * 1024)) * 10) / 10;
         bytes %= (1024 * 1024 * 1024);
         const MB = Math.floor(((bytes / (1024 * 1024)) * 10)) / 10;
@@ -63,11 +70,11 @@ class Utils {
         return text;
     }
 
-    static formatSpeed(mhz) {
+    static formatSpeed(mhz: number): string {
         return `${mhz} MHz`;
     }
 
-    static formatBytes(bytes) {
+    static formatBytes(bytes: number): string {
         if (Math.abs(bytes) < 1024) {
             return `${bytes} B`;
         }
@@ -84,7 +91,7 @@ class Utils {
         return `${bytes.toFixed(1)} ${units[u]}`;
     }
 
-    static getFileExtension(fileName) {
+    static getFileExtension(fileName: string): string | null {
         const pos = fileName.lastIndexOf('.');
         if (pos !== -1) {
             return fileName.substring(pos + 1).toLowerCase();
@@ -93,7 +100,7 @@ class Utils {
     }
 
     // Big thanks to: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
-    static invertColor(hex, bw) {
+    static invertColor(hex: string, bw: boolean) {
         if (hex === undefined || hex === null || hex === '' || typeof hex !== 'string') {
             return '';
         }
@@ -107,9 +114,9 @@ class Utils {
         if (hex.length !== 6) {
             throw new Error('Invalid HEX color.');
         }
-        let r = parseInt(hex.slice(0, 2), 16);
-        let g = parseInt(hex.slice(2, 4), 16);
-        let b = parseInt(hex.slice(4, 6), 16);
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
 
         if (bw) {
             // http://stackoverflow.com/a/3943023/112731
@@ -118,47 +125,59 @@ class Utils {
                 : '#FFFFFF';
         }
         // invert color components
-        r = (255 - r).toString(16);
-        g = (255 - g).toString(16);
-        b = (255 - b).toString(16);
+        const finalR = (255 - r).toString(16);
+        const finalG = (255 - g).toString(16);
+        const finalB = (255 - b).toString(16);
         // pad each with zeros and return
-        return `#${r.padStart(2, '0')}${g.padStart(2, '0')}${b.padStart(2, '0')}`;
+        return `#${finalR.padStart(2, '0')}${finalG.padStart(2, '0')}${finalB.padStart(2, '0')}`;
     }
 
     /**
      * Format number in seconds to time text
-     * @param {number} seconds
-     * @param {function} t i18n.t function
-     * @returns {String}
+     * @param seconds
+     * @param t i18n.t function
      */
-    static formatSeconds(seconds, t) {
+    static formatSeconds(seconds: number, t: typeof I18n.t): string {
         const days = Math.floor(seconds / (3600 * 24));
+        let minutesRes: string;
+        let secondsRes: string;
+        let hoursRes: string;
+
         seconds %= 3600 * 24;
-        let hours = Math.floor(seconds / 3600);
+        const hours = Math.floor(seconds / 3600);
+
         if (hours < 10) {
-            hours = `0${hours}`;
+            hoursRes = `0${hours}`;
+        } else {
+            hoursRes = hours.toString();
         }
         seconds %= 3600;
-        let minutes = Math.floor(seconds / 60);
+        const minutes = Math.floor(seconds / 60);
         if (minutes < 10) {
-            minutes = `0${minutes}`;
+            minutesRes = `0${minutes}`;
+        } else {
+            minutesRes = minutes.toString();
         }
+
         seconds %= 60;
         seconds = Math.floor(seconds);
         if (seconds < 10) {
-            seconds = `0${seconds}`;
+            secondsRes = `0${seconds}`;
+        } else {
+            secondsRes = seconds.toString();
         }
+
         let text = '';
         if (days) {
             text += `${days} ${t('daysShortText')} `;
         }
-        text += `${hours}:${minutes}:${seconds}`;
+        text += `${hoursRes}:${minutesRes}:${secondsRes}`;
 
         return text;
     }
 
     // internal use
-    static _replaceLink(link, objects, adapterInstance, attr, placeholder, hosts, hostname, adminInstance) {
+    static _replaceLink(link: string, objects: Record<string, ioBroker.InstanceObject>, adapterInstance: string, attr: string, placeholder: string, hosts: ioBroker.HostObject[], hostname: string, adminInstance: string) {
         if (attr === 'protocol') {
             attr = 'secure';
         }
@@ -206,20 +225,20 @@ class Utils {
         return link;
     }
 
-    static ip2int(ip) {
+    static ip2int(ip: string): number {
         // eslint-disable-next-line no-bitwise
         return ip.split('.').reduce((ipInt, octet) => (ipInt << 8) + parseInt(octet, 10), 0) >>> 0;
     }
 
-    static findNetworkAddressOfHost(obj, localIp) {
+    static findNetworkAddressOfHost(obj: ioBroker.HostObject, localIp: string) {
         const networkInterfaces = obj?.native?.hardware?.networkInterfaces;
         if (!networkInterfaces) {
             return null;
         }
 
         let hostIp;
-        Object.keys(networkInterfaces).forEach(inter => {
-            networkInterfaces[inter].forEach(ip => {
+        for (const networkInterface of Object.values(networkInterfaces)) {
+            networkInterface?.forEach(ip => {
                 if (ip.internal) {
                     return;
                 } if (localIp.includes(':') && ip.family !== 'IPv6') {
@@ -239,11 +258,11 @@ class Utils {
                     hostIp = ip.address;
                 }
             });
-        });
+        }
 
         if (!hostIp) {
-            Object.keys(networkInterfaces).forEach(inter => {
-                networkInterfaces[inter].forEach(ip => {
+            for (const networkInterface of Object.values(networkInterfaces)) {
+                networkInterface?.forEach(ip => {
                     if (ip.internal) {
                         return;
                     } if (localIp.includes(':') && ip.family !== 'IPv6') {
@@ -257,24 +276,24 @@ class Utils {
                         hostIp = ip.address;
                     }
                 });
-            });
+            }
         }
 
         if (!hostIp) {
-            Object.keys(networkInterfaces).forEach(inter => {
-                networkInterfaces[inter].forEach(ip => {
+            for (const networkInterface of Object.values(networkInterfaces)) {
+                networkInterface?.forEach(ip => {
                     if (ip.internal) {
                         return;
                     }
                     hostIp = ip.address;
                 });
-            });
+            }
         }
 
         return hostIp;
     }
 
-    static getHostname(instanceObj, objects, hosts, currentHostname, adminInstance) {
+    static getHostname(instanceObj: ioBroker.InstanceObject, objects: Record<string, ioBroker.InstanceObject>, hosts: ioBroker.HostObject[], currentHostname: string, adminInstance: string) {
         if (!instanceObj || !instanceObj.common) {
             return null;
         }
@@ -306,14 +325,13 @@ class Utils {
 
     /**
      * Format number in seconds to time text
-     * @param {string} link pattern for link
-     * @param {string} adapter admin name
-     * @param {string} instance admin instance
-     * @param {object} context {objects, hostname(of browser), protocol(of browser)}
-     * @returns {array<any>}
+     * @param link pattern for link
+     * @param adapter admin name
+     * @param instance admin instance
+     * @param context {objects, hostname(of browser), protocol(of browser)}
      */
-    static replaceLink(link, adapter, instance, context) {
-        const _urls = [];
+    static replaceLink(link: string, adapter: string, instance: string, context: Record<string, any>): Record<string, any>[] {
+        const _urls: Record<string, any>[] = [];
         let port;
 
         if (link) {
@@ -434,7 +452,7 @@ class Utils {
         return [{ url: link, port }];
     }
 
-    static objectMap(object, callback) {
+    static objectMap(object: Record<string, any>, callback: (res: any, key: string) => void): any[] {
         const result = [];
         for (const key in object) {
             result.push(callback(object[key], key));
@@ -442,7 +460,7 @@ class Utils {
         return result;
     }
 
-    static fixAdminUI(obj) {
+    static fixAdminUI(obj: Record<string, any>): void {
         if (obj?.common) {
             if (!obj.common.adminUI) {
                 if (obj.common.noConfig) {
@@ -524,18 +542,18 @@ class Utils {
         }
     }
 
-    static parseColorMessage(text) {
+    static parseColorMessage(text: string) {
         if (text && (text.includes('\u001b[') || text.includes('\u001B['))) {
             // eslint-disable-next-line
             let m = text.match(/\u001b\[\d+m/gi);
             if (m) {
                 const original = text;
                 const result = [];
-                let style = {};
+                let style: Style = {};
                 for (let i = 0; i < m.length; i++) {
                     const pos = text.indexOf(m[i]);
                     if (pos) {
-                        result.push({ text: text.substring(0, pos), style: JSON.parse(JSON.stringify(style)) });
+                        result.push({ text: text.substring(0, pos), style: { ...style } });
                     }
                     const code = parseInt(m[i].substring(2), 10);
                     if (STYLES[code]) {
@@ -554,7 +572,7 @@ class Utils {
                     text = text.substring(m[i].length + pos);
                 }
                 if (text) {
-                    result.push({ text, style: JSON.parse(JSON.stringify(style)) });
+                    result.push({ text, style: { ...style } });
                 }
 
                 return { original, parts: result };
@@ -572,7 +590,7 @@ class Utils {
 
     static PASSWORD_SET = '***********';
 
-    static checkPassword(password, passwordRepeat) {
+    static checkPassword(password: string, passwordRepeat: string) {
         password = password || '';
         passwordRepeat = passwordRepeat || '';
         if (password && passwordRepeat && password !== Utils.PASSWORD_SET && passwordRepeat !== Utils.PASSWORD_SET) {
