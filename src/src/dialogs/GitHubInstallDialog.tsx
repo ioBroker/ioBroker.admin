@@ -138,10 +138,11 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         super(props);
 
         this.state = {
-            autoCompleteValue:((window as any)._localStorage || window.localStorage).getItem('App.autocomplete') || null,
-            debug: ((window as any)._localStorage || window.localStorage).getItem('App.gitDebug') === 'true',
-            url: ((window as any)._localStorage || window.localStorage).getItem('App.userUrl') || '',
-            currentTab: ((window as any)._localStorage || window.localStorage).getItem('App.gitTab') || 'npm',
+            // @ts-expect-error check later
+            autoCompleteValue: (window._localStorage || window.localStorage).getItem('App.autocomplete') || null,
+            debug: (window._localStorage || window.localStorage).getItem('App.gitDebug') === 'true',
+            url: (window._localStorage || window.localStorage).getItem('App.userUrl') || '',
+            currentTab: (window._localStorage || window.localStorage).getItem('App.gitTab') || 'npm',
         };
     }
 
@@ -203,7 +204,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         <Tabs
                             value={this.state.currentTab}
                             onChange={(_e, newTab) => {
-                                ((window as any)._localStorage || window.localStorage).setItem('App.gitTab', newTab);
+                                (window._localStorage || window.localStorage).setItem('App.gitTab', newTab);
                                 this.setState({ currentTab: newTab });
                             }}
                             variant="fullWidth"
@@ -245,7 +246,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     <Checkbox
                                         checked={this.state.debug}
                                         onChange={e => {
-                                            ((window as any)._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                            (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                             this.setState({ debug: e.target.checked });
                                         }}
                                     />
@@ -259,7 +260,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 fullWidth
                                 value={this.state.autoCompleteValue}
                                 onChange={(_, newValue) => {
-                                    ((window as any)._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
+                                    // @ts-expect-error check later
+                                    (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
                                     this.setState({ autoCompleteValue: newValue });
                                 }}
                                 // @ts-expect-error check later
@@ -311,7 +313,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     <Checkbox
                                         checked={this.state.debug}
                                         onChange={e => {
-                                            ((window as any)._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                            (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                             this.setState({ debug: e.target.checked });
                                         }}
                                     />
@@ -340,7 +342,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         </div>}
                                     </Box>}
                                 onChange={(_, newValue) => {
-                                    ((window as any)._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
+                                    // @ts-expect-error check later
+                                    (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
                                     this.setState({ autoCompleteValue: newValue });
                                 }}
                                 // @ts-expect-error check later
@@ -388,7 +391,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 helperText={this.props.t('URL or file path')}
                                 value={this.state.url}
                                 onChange={event => {
-                                    ((window as any)._localStorage || window.localStorage).setItem('App.userUrl', event.target.value);
+                                    (window._localStorage || window.localStorage).setItem('App.userUrl', event.target.value);
                                     this.setState({ url: event.target.value });
                                 }}
                                 onKeyUp={event => {
@@ -422,7 +425,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     <Checkbox
                                         checked={this.state.debug}
                                         onChange={e => {
-                                            ((window as any)._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                            (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                             this.setState({ debug: e.target.checked });
                                         }}
                                     />
