@@ -1,6 +1,16 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.9.1 (2023-08-22)
+* (foxriver76) allow resizing of all columns in objects tab
+* (foxriver76) without expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace
+* (foxriver76) fixed keyboard navigation
+* (foxriver76) fixed problem with showing controller upgrade instructions if no UI upgrade is supported
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.9.0 (2023-08-21)
 * (bluefox) Added possibility to change a log direction
 * (bluefox) JSON config: Added possibility to filter out internal IP addresses

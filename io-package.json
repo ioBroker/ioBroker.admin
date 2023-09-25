@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.10.2",
+    "version": "6.10.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.10.3": {
+        "en": "fixed `installedFrom` other source indicator not shown on adapters tab\nallow to use enter key to save changes in object edit dialog\nfix json config crash with empty table",
+        "de": "installiert Aus anderen Quellenanzeiger nicht auf Adapter-Tab angezeigt\ngeben sie den schlüssel ein, um änderungen im objekt bearbeiten dialog speichern\nfix json config crash mit leerem tisch",
+        "ru": "фиксированный установленный От другого индикатора источника не отображается на вкладке адаптеров\nпозволяют использовать ввести ключ для сохранения изменений в диалоге редактирования объекта\nисправить json config аварии с пустой таблицей",
+        "pt": "fixo instalado De outro indicador de origem não mostrado na guia adaptadores\npermitir usar a chave de entrada para salvar alterações na caixa de diálogo de edição de objeto\ncorrigir quebra json config com mesa vazia",
+        "nl": "_ Van andere bron indicator niet getoond op adapters\n_\njson config crash met lege tafel",
+        "fr": "fixe D'autres indicateurs de source non affichés sur les onglets adaptateurs\npermettre d'utiliser la clé pour enregistrer les changements dans le dialogue de modification d'objet\ncorrection du crash de configuration de json avec table vide",
+        "it": "installato fisso Dall'altro indicatore sorgente non mostrato sulla scheda adattatori\nconsentire di utilizzare il tasto entrare per salvare le modifiche nella finestra di dialogo modifica oggetto\nfix json config crash con tabella vuota",
+        "es": "fijo De otro indicador fuente no se muestra en la pestaña adaptadores\npermitir el uso de la clave para guardar cambios en el diálogo de edición de objetos\narreglar json config accidente con mesa vacía",
+        "pl": "zainstalowany Z innych wskaźników źródłowych nie można wyjaśnić na temat adapterów tabele\numożliwia wykorzystanie klucza do zapisywania zmian w dialogu obiektowym\nnaprawić json config z pustym stołem",
+        "uk": "фіксована встановлена З іншого індикатора джерела не відображається на вкладці адаптерів\nдозволяє використовувати ключ для збереження змін у діалоговому вікні редагування об'єктів\nвиправити json configcrash з порожнім столом",
+        "zh-cn": "固定装置 其他来源指标未显示适应者表格\n允许使用关键手段来挽救目标口号的改变。\nfixson 装有空桌的突发事件"
+      },
       "6.10.2": {
         "en": "harmonized data on csv export with actual data shown by admin\non expert mode installation tab, on no selection deactivate install button\non npm install, ensure the latest version is installed\noptimized enum objects\ndisallow Google Translate as the plugin causes crash cases\nfixed crash on intro tab on docker hosts\nfixed crash case on invalid state objects",
         "de": "harmonisierte daten über csv export mit tatsächlichen daten von admin\nauf der registerkarte der installation des expertenmodus, auf keine auswahl deaktivieren installationstaste\nauf npm installieren, stellen sie sicher, dass die neueste version installiert ist\noptimierte enum-objekte\ndisallow Google Translate als Plugin verursacht Crash-Fälle\nfester crash auf intro-tab auf docking-hosts\nfester crashfall auf ungültigen zustandsobjekten",
@@ -95,19 +108,6 @@
         "pl": "Wstępna możliwość zmiany kierunku logowego\nJSON config Wstępna możliwość filtrowania adresów wewnętrznego IP\nJSON config Wzmiankowana flaga dla formuły JSON",
         "uk": "Додано можливість змінити напрямок журналу\nНалаштування JSON: Додана можливість фільтрувати внутрішні IP-адреси\nНалаштування JSON: Додано _changed прапор для формули в JSON config",
         "zh-cn": "改变逻辑方向的可能性\nJSON config: 增加过滤内部IP的可能性\nJSON config: 增加:在联合协商会中采用公式的换旗"
-      },
-      "6.8.3": {
-        "en": "added description to adapter rating dialog\nExtended the select component with grouping\nAllowed the sorting of adapters by name and not only by title\nAllowed the set state JSON config component",
-        "de": "beschreibung zum adapter rating dialog\nErweiterte Auswahlkomponente mit Gruppierung\nErlaubt die Sortierung von Adaptern nach Namen und nicht nur nach Titel\nErlaubt der eingestellten Zustand JSON config Komponente",
-        "ru": "добавлено описание к диалогу рейтинга адаптера\nРасширенный выбор компонента с группировкой\nРазрешена сортировка адаптеров по имени и не только по названию\nРазрешена настройка состояния JSON config компонента",
-        "pt": "descrição adicionada ao diálogo de classificação do adaptador\nEstendido o componente seleto com agrupamento\nPermite a classificação de adaptadores por nome e não apenas por título\nPermitido o conjunto estado JSON componente de configuração",
-        "nl": "voegde beschrijving toe aan adapter rating dialog\nVerlengde het selecte component met groepering\nHet soort adapters met naam en niet alleen de titel\nStaat JSON config component",
-        "fr": "description ajoutée à la boîte de dialogue de notation de l'adaptateur\nExtended the select component with grouping\nPermet le tri des adaptateurs par nom et non seulement par titre\nPermis le composant de configuration de l'état de réglage JSON",
-        "it": "aggiunto descrizione alla finestra di dialogo di rating adattatore\nEsteso il componente selezionato con il raggruppamento\nConsentito la selezione di adattatori per nome e non solo per titolo\nConsentito il componente di configurazione dello stato impostato JSON",
-        "es": "descripción añadida al diálogo de calificación de adaptador\nExtendido el componente selecto con agrupación\nPermitió la clasificación de adaptadores por nombre y no sólo por título\nPermitido el componente de configuración del estado establecido JSON",
-        "pl": "dodał opis do adaptacji ratingowych dialogów\nRozciągnięty skład selekcji z grupą\nWszystko to zawdzięczało rodzajowi adaptacji przez nazwę, a nie tylko tytułowi\nWspółtworzył stan konfigurowalny JSON",
-        "uk": "доданий опис до рейтингу адаптера діалогове вікно\nРозширений вибір компонента з групуванням\nДозволено сортування адаптерів за назвою і не тільки за назвою\nСприяє встановленню компонента JSON config",
-        "zh-cn": "补充说明\nA. 参与与集团集团有关的选定部分\n允许以名称进行适应者,而不是仅通过名称进行。\n允许设立的国家联合协商会控制部分"
       }
     },
     "desc": {

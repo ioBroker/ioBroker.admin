@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.10.3 (2023-09-25)
 * (foxriver76) fixed `installedFrom` other source indicator not shown on adapters tab
 * (foxriver76) allow to use enter key to save changes in object edit dialog
 * (foxriver76) fix json config crash with empty table
@@ -118,12 +118,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (jogibear9988) fixed link on 404-page being opened inside child view
 * (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
 * (foxriver76) implemented del key shortcut to delete a selected object
-
-### 6.9.1 (2023-08-22)
-* (foxriver76) allow resizing of all columns in objects tab
-* (foxriver76) without expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace
-* (foxriver76) fixed keyboard navigation
-* (foxriver76) fixed problem with showing controller upgrade instructions if no UI upgrade is supported
 
 ## License
 The MIT License (MIT)
