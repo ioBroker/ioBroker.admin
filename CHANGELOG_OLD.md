@@ -1,6 +1,3 @@
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 ## 6.9.2 (2023-09-01)
 * (foxriver76) show info if server time differs from client time
 * (foxriver76) remove confusion with different names for state (datapoint and state)
@@ -8,19 +5,11 @@
 * (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
 * (foxriver76) implemented del key shortcut to delete a selected object
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.9.1 (2023-08-22)
 * (foxriver76) allow resizing of all columns in objects tab
 * (foxriver76) without expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace
 * (foxriver76) fixed keyboard navigation
 * (foxriver76) fixed problem with showing controller upgrade instructions if no UI upgrade is supported
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.9.0 (2023-08-21)
 * (bluefox) Added possibility to change a log direction
@@ -39,29 +28,17 @@
 * (foxriver76) fixed problem that could render update dialog with invalid property
 * (foxriver76) fixed sentry icon being in the wrong position if no compact flag is provided
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.8.3 (2023-08-16)
 * (foxriver76) added description to adapter rating dialog
 * (bluefox) Extended the select component with grouping
 * (bluefox) Allowed the sorting of adapters by name and not only by title
 * (bluefox) Allowed the set state JSON config component
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.8.0 (2023-08-14)
 * (foxriver76) try to find the correct IP for the controller UI multihost slave upgrade
 * (foxriver76) admin is now showing update information, while it is stopped during upgrade
 * (foxriver76) required Node.js version is 16 as 14 is End-Of-Life
 * (foxriver76) fixed downloading folders recursive
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.7.2 (2023-08-09)
 * (foxriver76) remove https certificate options
@@ -70,14 +47,6 @@
 * (foxriver76) fixed issue if adapter readme is opened in new tab
 * (bluefox) corrected opening of custom tabs, e.g., for fullcalendar
 * (bluefox) allowed downloading of recursive folders
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.7.0 (2023-08-02)
 * (foxriver76) display more specific information about docker installation on host card
@@ -90,24 +59,8 @@
 * (bluefox/foxriver76) fixed bug which prevented opening adapter readme
 * (foxriver76) fixed ChipInput jsonConfig component
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.6.4 (2023-07-28)
 * (bluefox) Better licenses handling (especially for vis-2)
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.6.3 (2023-07-27)
 * (foxriver76) fixed "Let's Encrypt" link not being clickable inside system settings
@@ -117,14 +70,6 @@
 * (rovo89) apply button color change of v6.6.1 for all buttons
 * (foxriver76) correctly display materialized tabs when configured with io-package `adminUi` property
 * (foxriver76) enable keyboard navigation for objects tab
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.6.1 (2023-07-17)
 * (foxriver76) Many GUI improvements
@@ -144,207 +89,83 @@
 * (foxriver76) when adding an icon to an object, to not show already uploaded non-existing image initially
 * (foxriver76) when the session timer falls below the 2 - minute mark, show button to extend the session
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.6.0 (2023-07-05)
 * (klein0r) New json config component added: accordion
 * (bluefox) Added site name and corrected the system dialog
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.5.9 (2023-06-19)
 * (bluefox) Added support for update of the js-controller slaves
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.5.8 (2023-06-12)
 * (foxriver76) The log size will be parsed correctly for controller v5
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.5.7 (2023-06-06)
 * (bluefox) ZIP archives will be saved in files and not in states
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.5.3 (2023-05-24)
 * (bluefox) Added support for the js-controller update
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.4.4 (2023-05-10)
 * (bluefox) Added `imageSendTo` Control to JSONConfig
 * (bluefox) Added possibility to filter objects in selectID JSON component
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.4.3 (2023-03-31)
 * (bluefox) Corrected the folder rights edit dialog
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.4.2 (2023-03-27)
 * (bluefox) Better check of the certificates
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.4.1 (2023-03-24)
 * (bluefox) Fallback on normal https webserver in case of not let's encrypt certificates
 * (bluefox) Show readme from GitHub
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.4.0 (2023-03-22)
 * (bluefox) Breaking change: Configuration of Let's encrypt certificates moved to `iobroker.acme` adapter
 * (bluefox) Added port controller to JSON config
 * (bluefox) Added `certificates` to JSON config
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.3.7 (2023-03-12)
 * (bluefox) Better tooltips in object browser 
 * Added again possibility to hide/show of columns in object browser
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.3.6 (2023-01-29)
 * (bluefox) Allowed the edit of log level in the configuration tab
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.3.5 (2022-12-22)
 * (bluefox) Corrected reading of node.js version
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.3.4 (2022-12-18)
 * (bluefox) Corrected crashes in object browser
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.3.3 (2022-12-14)
 * (bluefox) Corrected icons in object browser
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.3.2 (2022-12-12)
 * (bluefox) Added `useNative` option to `sendTo` JSON Config component
 * (bluefox) Added `checkLicense` and `uuid` components to JSON Config
 * (bluefox) Corrected the news handler
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.2.23 (2022-10-12)
 * (Apollon77) Prepare for future js-controller versions
 * (bluefox) Corrected deletion of objects
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.2.22 (2022-09-14)
 * (bluefox) Corrected admin4 adapter settings
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.2.21 (2022-09-05)
 * (bluefox) Corrected small JSON config issue
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.2.20 (2022-08-29)
 * (bluefox) Corrected GUI issues
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.2.19 (2022-08-27)
 * (bluefox) Corrected some issues
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.2.18 (2022-08-24)
 * (bluefox) Corrected GUI bugs on custom settings
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.2.17 (2022-08-19)
 * (bluefox) Corrected GUI bug on intro tab
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.2.16 (2022-08-18)
 * (bluefox) Corrected many GUI issues
@@ -352,23 +173,11 @@
 * (bluefox) Added reset button for repositories
 * (bluefox) Improved `writeFile` function for socket communication
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.2.14 (2022-08-06)
 * (Apollon77) Fix for OAuth2 authentication response success page
 
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
-
 ## 6.2.13 (2022-08-01)
 * (bluefox) Corrected JSON config
-
-## 6.2.6 (2022-07-28)
-* (bluefox) Implemented Oauth2 workflow for adapters
-* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.2.12 (2022-07-31)
 * (bluefox) Corrected the Text input field in JSON configuration
@@ -468,7 +277,7 @@
 * (bluefox) Corrected some errors in Object Browser
 
 ## 5.4.7 (2022-05-09)
-* (bluefox) Reload GUI if new admin version detected
+* (bluefox) Reload GUI if a new admin version detected
 
 ## 5.4.6 (2022-05-09)
 * (bluefox) Corrected readLogs command
@@ -480,10 +289,10 @@
 
 ## 5.3.8 (2022-04-14)
 * (Apollon77) Changed the datapoint history list
-* (bluefox) Added support of swagger adapter
+* (bluefox) Added support for swagger adapter
 
 ## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
+* (bluefox) Changed the chart rendering
 
 ## 5.3.6 (2022-04-03)
 * (bluefox) Corrected the host selector in "add instance" dialog
@@ -494,7 +303,7 @@
 * (bluefox) Corrected user tab
 
 ## 5.3.3 (2022-03-19)
-* (bluefox) Implemented the objects coloring depends on other states
+* (bluefox) Implemented the object coloring depends on other states
 
 ## 5.3.2 (2022-03-18)
 * (xXBJXx) added Radio Buttons for value2table
@@ -705,7 +514,7 @@
 
 ## 4.1.11 (2020-11-22)
 * (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
-* (paul53) fix Objects dialog
+* (paul53) fixed Objects dialog
 
 ## 4.1.10 (2020-10-08)
 * (bluefox) Corrected the icons of the custom tabs.
@@ -721,7 +530,7 @@
 
 ## 4.1.11 (2020-11-22)
 * (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
-* (paul53) fix Objects dialog
+* (paul53) fixed Objects dialog
 
 ## 4.1.10 (2020-10-08)
 * (bluefox) Corrected the icons of the custom tabs.
@@ -869,7 +678,7 @@
 * (bluefox) Destroy tabs after they left
 
 ### 3.4.8 (2018-07-17)
-* (bluefox) fix error with add new enum
+* (bluefox) fixed error with add new enum
 * (bluefox) try to fix error with custom settings
 * (bluefox) place all titles at the top in the config
 * (bluefox) add expert mode to common
@@ -891,26 +700,26 @@
 * (bluefox) edit raw value and not escaped in selectID.js
 * (bluefox) allow edit of empty names in selectID.less
 * (bluefox) add change with ack=true to selectID
-* (bluefox) fix select for admin3 in configuration dialog
+* (bluefox) fixed select for admin3 in configuration dialog
 * (bluefox) add autocomplete for configs
-* (bluefox) fix enums
+* (bluefox) fixed enums
 
 ### 3.4.3 (2018-05-13)
 * (bluefox) The button in selectID was fixed
 * (bluefox) disk info was added
 * (bluefox) The filter in table mode on adapter tab was showed
 * (bluefox) memAvailable for RAM monitoring is used
-* (bluefox) fix select problem in config dialog
+* (bluefox) fixed select problem in config dialog
 * (bluefox) added the asking about unsaved scripts
 
 ### 3.4.2 (2018-05-04)
-* (BuZZy1337) fix wrong height calculation in select id dialog
+* (BuZZy1337) fixed wrong height calculation in select id dialog
 
 ### 3.4.1 (2018-05-03)
-* (bluefox) fix wait popup
-* (bluefox) fix button name in config dialog
+* (bluefox) fixed wait popup
+* (bluefox) fixed button name in config dialog
 * (BuZZy1337) escape html from log entries
-* (bluefox) fix objects counter
+* (bluefox) fixed objects counter
 * (BuZZy1337) show current Tab in Page-Title
 * (BuZZy1337) escape HTML Tags from selectID.js
 * (bluefox) GUI bugfixes
@@ -922,7 +731,7 @@
 * (bluefox) handle mutlilanguage names
 * (bluefox) show number of objects
 * (BuZZy1337) always addChips when input blurs
-* (bluefox) fix select ID dialog for old styles
+* (bluefox) fixed select ID dialog for old styles
 * (bluefox) add states view for object tab
 
 ### 3.3.9 (2018-04-12)
@@ -973,8 +782,8 @@
 
 ### 3.1.10 (2018-02-02)
 * (bluefox) update material CSS
-* (bluefox) fix permission error
-* (bluefox) fix filter of adapters
+* (bluefox) fixed permission error
+* (bluefox) fixed filter of adapters
 
 ### 3.1.7 (2018-01-31)
 * (bluefox) Fixing the role selection
@@ -995,7 +804,7 @@
 
 ### 3.0.11 (2018-01-11)
 * (DeepCoreSystem) French update
-* (bluefox) fix error with empty ID
+* (bluefox) fixed error with empty ID
 * (bluefox) add sort by "recently updated"
 * (ldittmar) add readme and issues viewer
 
@@ -1015,7 +824,7 @@
 * (soef) added use of delete-key in the objects view
 
 ### 2.0.8 (2017-10-12)
-* (soef) fix quickEdit: number with boolean value
+* (soef) fixed quickEdit: number with boolean value
 
 ### 2.0.7 (2017-10-11)
 * (soef) Sort option added to object view
@@ -1049,7 +858,7 @@
 * (Steiger04) select multiple auch bei data-name="[eigner-name]"
 
 ### 1.7.3 (2017-03-25)
-* (bluefox) fix license dialog
+* (bluefox) fixed license dialog
 * (bluefox) change color of tooltip text
 * (ykuendig) update german translation
 * (bluefox) add docs
@@ -1059,22 +868,22 @@
 * (bluefox) support of discovery by first start
 
 ### 1.7.1 (2017-03-11)
-* (apollon77) fix save button functionality
+* (apollon77) fixed save button functionality
 * (ykuendig) Update german translations
 * (bluefox) patch repositories to support stable
 
 ### 1.7.0 (2017-03-08)
-* (bluefox) fix log
+* (bluefox) fixed log
 * (bluefox) show jQuery button for role button
 * (apollon77) update testing setup.js
-* (bluefox) fix wetty loading
-* (bluefox) fix add/delete tabs
+* (bluefox) fixed wetty loading
+* (bluefox) fixed add/delete tabs
 * (bluefox) implement hints for configuration dialog
 * (bluefox) redirect if IP address changes
 * (bluefox) add tooltip instruction
 * (bluefox) wizard support
-* (bluefox) fix acl error
-* (bluefox) fix license agree button
+* (bluefox) fixed acl error
+* (bluefox) fixed license agree button
 
 ### 1.6.12 (2017-01-31)
 * (bluefox) Show message rates for adapters
@@ -1091,7 +900,7 @@
 
 ### 1.6.7 (2016-11-12)
 * (bluefox) expert mode in adapters: allow install of js-controller from git, allow install specific adapter version
-* (bluefox) fix confirm dialog
+* (bluefox) fixed confirm dialog
 
 ### 1.6.6 (2016-11-06)
 * (bluefox) update jQuery UI version
@@ -1106,11 +915,11 @@
 * (bluefox) Changes for JS adapter
 
 ### 1.6.3 (2016-09-21)
-* (bluefox) fix upload of custom installations
+* (bluefox) fixed upload of custom installations
 
 ### 1.6.2 (2016-09-12)
-* (bluefox) fix hosts leds
-* (bluefox) fix error in system settings
+* (bluefox) fixed hosts leds
+* (bluefox) fixed error in system settings
 * (bluefox) small fixes
 * (bluefox) add "upgrade all" button (experimental)
 
@@ -1124,24 +933,24 @@
 * (bluefox) Debug outputs for letsencrypt
 
 ### 1.5.2 (2016-08-27)
-* (bluefox) use pure letsencrypt module
+* (bluefox) used pure letsencrypt module
 
 ### 1.5.1 (2016-08-22)
-* (bluefox) fix error in instances table
+* (bluefox) fixed error in instances table
 
 ### 1.5.0 (2016-08-19)
-* (bluefox) add support of Let's Encrypt
+* (bluefox) added support of Let's Encrypt
 
 ### 1.4.1 (2016-07-30)
 * (bluefox) support of multiple WEB instances
-* (bluefox) fix weekdays for cron
+* (bluefox) fixed weekdays for cron
 
 ### 1.4.0 (2016-07-27)
 * (bluefox) implement settings for autorestart
-* (bluefox) do not allow edit group instances for javascript
+* (bluefox) do not allow editing group instances for javascript
 
 ### 1.3.0 (2016-07-18)
-* (bluefox) fix error with early logout
+* (bluefox) fixed error with early logout
 * (bluefox) update passport.socketio
 * (bluefox) disable update button if version is incompatible 
 
@@ -1160,10 +969,10 @@
 * (bluefox) hide reload by WWW only adapters
 
 ### 1.2.3 (2016-06-05)
-* (bluefox) fix memory displaying
+* (bluefox) fixed memory displaying
 
 ### 1.2.2 (2016-05-31)
-* (bluefox) fix memory displaying if adapter does not run
+* (bluefox) fixed memory displaying if adapter does not run
 
 ### 1.2.1 (2016-05-28)
 * (bluefox) highlight changes of states
@@ -1174,19 +983,19 @@
 * (bluefox) show change log in admin tab
 
 ### 1.1.1 (2016-05-17)
-* (bluefox) fix set of states in States-Tab
+* (bluefox) fixed set of states in States-Tab
 * (bluefox) show history data from adapter and not from updates
 * (bluefox) change default chart to flot
-* (bluefox) fix error if host has no IP address
+* (bluefox) fixed error if host has no IP address
 * (bluefox) show on the bottom only adapters without config and without links
-* (bluefox) fix filter in adapters if upper case
+* (bluefox) fixed filter in adapters if upper case
 * (bluefox) change file open from selectID Dialog
 
 ### 1.1.0 (2016-04-30)
 * (bluefox) change seconds to milliseconds by ts and lc
 
 ### 1.0.3 (2016-04-30)
-* (bluefox) fix write of state in the objects tab
+* (bluefox) fixed write of state in the objects tab
 
 ### 1.0.2 (2016-04-07)
 * (bluefox) show npm errors of version
@@ -1196,11 +1005,11 @@
 
 ### 1.0.0 (2016-03-15)
 * (bluefox) adapter is good enough to be released
-* (bluefox) fix LEDs
+* (bluefox) fixed LEDs
 * (bluefox) disable double-click in Objects
 
 ### 0.8.7 (2016-03-15)
-* (bluefox) fix LED status
+* (bluefox) fixed LED status
 
 ### 0.8.6 (2016-03-10)
 * (bluefox) show quality
@@ -1213,10 +1022,10 @@
 
 ### 0.8.4 (2016-03-08)
 * (bluefox) remove script.js.* from non-expert-view
-* (bluefox) fix selectId for javascript tab
+* (bluefox) fixed selectId for javascript tab
 
 ### 0.8.3 (2016-02-29)
-* (bluefox) fix delete of objects tree
+* (bluefox) fixed delete of objects tree
 
 ### 0.8.2 (2016-02-29)
 * (bluefox) disable start button if in process
@@ -1234,14 +1043,14 @@
 ### 0.7.5 (2016-02-11)
 * (bluefox) support of text2command
 * (bluefox) support of noConfig flag
-* (bluefox) fix tabs
+* (bluefox) fixed tabs
 * (bluefox) add support of adminTab.ignoreConfigUpdate
 
 ### 0.7.4 (2016-01-28)
 * (bluefox) pause button for logs and events
 
 ### 0.7.3 (2016-01-21)
-* (bluefox) fix groups dialog
+* (bluefox) fixed groups dialog
 * (bluefox) allow set max memory limit for adapters
 
 ### 0.7.2 (2015-12-18)
@@ -1251,11 +1060,11 @@
 * (husky-koglhof) added support for up-/download of objecttrees
 * (bluefox) disable chart if dialog closed.
 * (bluefox) store selected history type in history dialog
-* (bluefox) fix selectId dialog
-* (bluefox) fix graph
+* (bluefox) fixed selectId dialog
+* (bluefox) fixed graph
 * (bluefox) add title to index.html
 * (bluefox) change theme
-* (bluefox) fix buttons
+* (bluefox) fixed buttons
 
 ### 0.7.0 (2015-11-15)
 * (bluefox) support of multi history
@@ -1267,17 +1076,17 @@
 * (bluefox) maginfy icon by mouseover
 
 ### 0.6.4 (2015-10-27)
-* (bluefox) fix write of enums
-* (bluefox) fix buttons in instance tab
+* (bluefox) fixed write of enums
+* (bluefox) fixed buttons in instance tab
 
 ### 0.6.3 (2015-10-22)
-* (bluefox) fix delete of adapter
+* (bluefox) fixed delete of adapter
 
 ### 0.6.2 (2015-10-18)
 * (bluefox) add confirmation by instance deletion
 
 ### 0.6.1 (2015-10-12)
-* (bluefox) fix columns resizing in adapters
+* (bluefox) fixed columns resizing in adapters
 
 ### 0.6.0 (2015-10-07)
 * (bluefox) enable table resizing
@@ -1295,7 +1104,7 @@
 * (bluefox) remove common.type=='enum'. It must be a number
 * (bluefox) show "level.time" as Time
 * (bluefox) fixed: Reiter Objekte: "common.type" verschwindet / Name wird verkurzt
-* (bluefox) fix Multistate-Attribute
+* (bluefox) fixed Multistate-Attribute
 * (homoran) Update adminAdapters.js
 
 ### 0.5.10 (2015-09-13)
@@ -1320,7 +1129,7 @@
 * (bluefox) update packages
 
 ### 0.5.6 (2015-08-05)
-* (bluefox) fix translate.js
+* (bluefox) fixed translate.js
 * (bluefox) support of multilanguage for tabs
 * (bluefox) improve selectID.js
 * (bluefox) store settings of selectId dialog
@@ -1329,22 +1138,22 @@
 * (bluefox) update packages
 
 ### 0.5.4 (2015-07-01)
-* (bluefox) fix error in "create new group"
+* (bluefox) fixed error in "create new group"
 
 ### 0.5.3 (2015-06-29)
 * (bluefox) enable select objects in javascript
 
 ### 0.5.2 (2015-06-29)
-* (bluefox) fix delete objects
-* (bluefox) fix vis group
+* (bluefox) fixed delete objects
+* (bluefox) fixed vis group
 
 ### 0.5.1 (2015-06-28)
 * (bluefox) support of permissions
 * (bluefox) confirm deleting of scripts
-* (bluefox) fix license agreement for adapters
-* (SmilingJack) fix scroll by adapter config
+* (bluefox) fixed license agreement for adapters
+* (SmilingJack) fixed scroll by adapter config
 * (bluefox) support of https link in instances
-* (bluefox) fix buttons after sort in jqGrid table
+* (bluefox) fixed buttons after sort in jqGrid table
 * (siedi)implement multiselect for selectID tree
 * (bluefox) better edit object in raw mode.
 * (bluefox) adjustable tabs
@@ -1353,11 +1162,11 @@
 * (bluefox) support of permissions
 
 ### 0.4.8 (2015-05-17)
-* (bluefox) fix buttons after sort in jqGrid table
+* (bluefox) fixed buttons after sort in jqGrid table
 
 ### 0.4.7 (2015-05-13)
-* (bluefox) fix license agreement for adapters
-* (SmilingJack) fix scroll by adapter config
+* (bluefox) fixed license agreement for adapters
+* (SmilingJack) fixed scroll by adapter config
 
 ### 0.4.6 (2015-05-01)
 * (bluefox) confirm deleting of scripts
@@ -1368,11 +1177,11 @@
 * (bluefox) set missing categories
 
 ### 0.4.4 (2015-04-19)
-* (bluefox) fix error with hm-rega instance
+* (bluefox) fixed error with hm-rega instance
 
 ### 0.4.3 (2015-04-19)
-* (bluefox) fix error with select ID dialog in edit script
-* (bluefox) fix group of installed adapter
+* (bluefox) fixed error with select ID dialog in edit script
+* (bluefox) fixed group of installed adapter
 * (bluefox) show statistics over installed adapters 
 * (bluefox) add "agree with statistics" checkbox
 
@@ -1380,23 +1189,23 @@
 * (bluefox) workaround for license text
 
 ### 0.4.1 (2015-04-17)
-* (bluefox) fix click on buttons on adapter tab
+* (bluefox) fixed click on buttons on adapter tab
 
 ### 0.4.0 (2015-04-16)
-* (bluefox) use tree for adapters
+* (bluefox) used tree for adapters
 * (bluefox) implement license agreement for adapters
 
 ### 0.3.27 (2015-04-14)
 * (bluefox) save size of script editor dialog
-* (bluefox) fix errors with table editor in adapter configuration
+* (bluefox) fixed errors with table editor in adapter configuration
 * (bluefox) update npm modules
 
 ### 0.3.26 (2015-03-27)
 * (bluefox) change save function for adapter settings
-* (bluefox) fix show states in object tab
+* (bluefox) fixed show states in object tab
 
 ### 0.3.23 (2015-03-22)
-* (bluefox) fix error with show values in objects TAB
+* (bluefox) fixed error with show values in objects TAB
 * (bluefox) move objects tab code into adminObjects.js
 
 ### 0.3.22 (2015-03-20)
@@ -1407,30 +1216,30 @@
 * (bluefox) enable read and upload of files (for sayit)
 
 ### 0.3.21 (2015-03-08)
-* (bluefox) fix filter in log
+* (bluefox) fixed filter in log
 
 ### 0.3.20 (2015-03-07)
 * (bluefox) support of uncolored log messages
 * (bluefox) place logs in own file
 
 ### 0.3.19 (2015-03-04)
-* (bluefox) fix some errors with restart
+* (bluefox) fixed some errors with restart
 
 ### 0.3.18 (2015-02-22)
-* (bluefox) fix error with delete button for adapters
+* (bluefox) fixed error with delete button for adapters
 
 ### 0.3.17 (2015-02-22)
-* (bluefox) fix error with refresh button for adapters (again)
+* (bluefox) fixed error with refresh button for adapters (again)
 
 ### 0.3.16 (2015-02-21)
-* (bluefox) fix error with refresh button for adapters
+* (bluefox) fixed error with refresh button for adapters
 
 ### 0.3.15 (2015-01-26)
 * (bluefox) extend table editor in adapter settings
-* (bluefox) fix error in instances.
+* (bluefox) fixed error in instances.
 
 ### 0.3.14 (2015-01-26)
-* (bluefox) fix error with adapter instances with more modes (again)
+* (bluefox) fixed error with adapter instances with more modes (again)
 
 ### 0.3.13 (2015-01-21)
 * (bluefox) add selection of certificates to settings of admin
@@ -1441,19 +1250,19 @@
 * (bluefox) make showMessage dialog
 
 ### 0.3.11 (2015-01-16)
-* (bluefox) fix npm
+* (bluefox) fixed npm
 
 ### 0.3.10 (2015-01-14)
-* (bluefox) fix error with adapter instances with more modes
+* (bluefox) fixed error with adapter instances with more modes
 
 ### 0.3.9 (2015-01-10)
 * (bluefox) support of multiple hosts if one host is down.
 
 ### 0.3.8 (2015-01-08)
-* (bluefox) fix errors with states update if filtered. Resize command putput window.
+* (bluefox) fixed errors with states update if filtered. Resize command putput window.
 
 ### 0.3.7 (2015-01-07)
-* (bluefox) fix errors with history state update.
+* (bluefox) fixed errors with history state update.
 
 ### 0.3.6 (2015-01-07)
 * (bluefox) group edit of history settings. Move history settings from states to objects.
@@ -1462,13 +1271,13 @@
 * (bluefox) add events filter. Fix error with alive and connected status.
 
 ### 0.3.4 (2015-01-04)
-* (bluefox) fix error with update adapters with "-" in name, like hm-rpc or hm-rega
+* (bluefox) fixed error with update adapters with "-" in name, like hm-rpc or hm-rega
 
 ### 0.3.3 (2015-01-03)
-* (bluefox) fix error if states without object
+* (bluefox) fixed error if states without object
 
 ### 0.3.2 (2015-01-02)
-* (bluefox) fix error if states without object
+* (bluefox) fixed error if states without object
 
 ### 0.3.1 (2015-01-02)
 * (bluefox) Support of npm install
@@ -1477,20 +1286,20 @@
 * (bluefox) Support of debounce interval for history
 
 ### 0.2.9 (2014-12-20)
-* (bluefox) fix filter of IDs in objects
+* (bluefox) fixed filter of IDs in objects
 
 ### 0.2.8 (2014-12-20)
 * (bluefox) support of controller restart
 
 ### 0.2.7 (2014-12-19)
-* (bluefox) fix time in log (web)
+* (bluefox) fixed time in log (web)
 * (bluefox) replace enum edit with tree
 
 ### 0.2.6 (2014-12-16)
 * (bluefox) replace jqGrid with fancytree by objects
 
 ### 0.2.5 (2014-12-07)
-* (bluefox) fix object tree (some nodes was hidden)
+* (bluefox) fixed object tree (some nodes was hidden)
 
 ### 0.2.4 (2014-12-05)
 * (bluefox) preload last 200 lines from iobroker.log
@@ -1513,16 +1322,16 @@
 * (bluefox) update of object tree online
 
 ### 0.1.9 (2014-11-15)
-* (bluefox) fix scripts editor
+* (bluefox) fixed scripts editor
 
 ### 0.1.8 (2014-11-10)
-* (bluefox) fix problem if js-controller does not hav the most actual version 
+* (bluefox) fixed problem if js-controller does not hav the most actual version 
 
 ### 0.1.7 (2014-11-09)
 * (bluefox) add log pane
 
 ### 0.1.6 (2014-11-07)
-* (bluefox) fix edit list in configuration
+* (bluefox) fixed edit list in configuration
 
 ### 0.1.5 (2014-11-03)
 * (bluefox) support of tables in edit configuration
@@ -1543,16 +1352,16 @@
 * (bluefox) update states if some adapter added or deleted. Update states if history enabled or disabled.
 
 ### 0.0.19 (2014-10-24)
-* (bluefox) fix error with repository edition
+* (bluefox) fixed error with repository edition
 
 ### 0.0.18 (2014-10-20)
-* (bluefox) fix error with "up to date"
+* (bluefox) fixed error with "up to date"
 
 ### 0.0.17 (2014-10-19)
-* (bluefox) fix delete of adapter
+* (bluefox) fixed delete of adapter
 
 ### 0.0.16 (2014-10-19)
-* (bluefox) support of certificate list
+* (bluefox) support of a certificate list
 
 ### 0.0.15 (2014-10-09)
 * (bluefox) make possible availableModes for adapter
@@ -1594,5 +1403,5 @@
 * (hobbyquaker) fixes
 
 ### 0.0.5
-* (hobbyquaker) show available version, show update button if not up-to-date
+* (hobbyquaker) show an available version, show update button if not up-to-date
 * (hobbyquaker) minor fixes
