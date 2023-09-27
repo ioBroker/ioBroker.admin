@@ -58,11 +58,14 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
         const instances: ioBroker.InstanceObject[] = await this.props.socket.getAdapterInstances();
 
         const ownId = `system.adapter.${this.props.adapterName}.${this.props.instance}`;
+        const instanceObj: ioBroker.InstanceObject = await this.props.socket.getObject(ownId);
+        const ownHostname = instanceObj?.common.host;
+
         const ports: Port[] = [];
         instances
             .forEach(instance => {
-                // ignore own instance
-                if (instance._id === ownId) {
+                // ignore own instance and instances on other host
+                if (instance._id === ownId || instance.common.host !== ownHostname) {
                     return;
                 }
                 // if let's encrypt is enabled and update is enabled, then add port to check
