@@ -4,13 +4,6 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import AceEditor from 'react-ace';
-import 'ace-builds/src-min-noconflict/mode-json';
-import 'ace-builds/src-min-noconflict/worker-json';
-import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-min-noconflict/theme-chrome';
-import 'ace-builds/src-min-noconflict/ext-language_tools';
-
 import {
     Grid, Paper, Card, Typography, MenuItem,
     FormControl, Select, InputLabel,
@@ -18,7 +11,8 @@ import {
 
 import blueGrey from '@mui/material/colors/blueGrey';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
+import Editor from '../../components/Editor';
 
 // eslint-disable-next-line no-undef
 ace.config.set('basePath', 'lib/js/ace');
@@ -156,26 +150,10 @@ class StatisticsDialog extends Component {
                             {this.props.t('Sent data:')}
                         </Typography>
                     </Paper>
-                    <AceEditor
-                        mode="json"
-                        width="100%"
-                        height="100%"
-                        showPrintMargin
-                        showGutter
-                        highlightActiveLine
-                        readOnly
-                        theme={this.props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
+                    <Editor
+                        editValueMode
+                        themeType={this.props.themeType}
                         value={JSON.stringify(this.props.dataAux, null, 2)}
-                        name="UNIQUE_ID_OF_DIV"
-                        fontSize={14}
-                        setOptions={{
-                            enableBasicAutocompletion: true,
-                            enableLiveAutocompletion: true,
-                            enableSnippets: true,
-                            showLineNumbers: true,
-                            tabSize: 2,
-                        }}
-                        editorProps={{ $blockScrolling: true }}
                     />
                 </Grid>
             </Grid>

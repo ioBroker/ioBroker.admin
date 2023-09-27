@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 
-import AceEditor from 'react-ace';
-import 'ace-builds/src-min-noconflict/mode-json';
-import 'ace-builds/src-min-noconflict/worker-json';
-import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-min-noconflict/theme-chrome';
-import 'ace-builds/src-min-noconflict/ext-language_tools';
-
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
@@ -47,6 +40,7 @@ import { AdminConnection, Utils } from '@iobroker/adapter-react-v5';
 
 import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';
+import Editor from '../Editor';
 
 const styles = () => ({
     input: {
@@ -65,20 +59,13 @@ const styles = () => ({
         marginLeft: 8,
         width: 80,
     },
-    jsonError: {
-        border: '1px solid red',
-        minHeight: 200,
-    },
-    jsonNoError: {
-        border: '1px solid #00000000',
-        minHeight: 200,
-    },
     wrapperButton: {},
     readOnly: {
         backgroundColor: '#b74848',
     },
     readOnlyText: {
         color: '#b74848',
+        marginLeft: 8,
     },
     '@media screen and (max-width: 465px)': {
         wrapperButton: {
@@ -240,6 +227,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             targetValue: value,
             /** If input is invalid, set value button is disabled */
             valid: true,
+            jsonError: false,
         };
 
         this.ack = false;
@@ -393,43 +381,27 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         );
     }
 
-    checkJsonError(): void {
+    static checkJsonError(value: string): boolean {
         try {
-            JSON.parse(this.state.targetValue);
-            this.setState({ jsonError: false });
+            JSON.parse(value);
+            return false;
         } catch (e) {
-            this.setState({ jsonError: true });
+            return true;
         }
     }
 
     renderJsonEditor(): React.JSX.Element {
-        return (
-            <AceEditor
-                className={this.state.jsonError ? this.props.classes.jsonError : this.props.classes.jsonNoError}
-                mode="json"
-                width="100%"
-                height="100%"
-                showPrintMargin
-                showGutter
-                highlightActiveLine
-                theme={this.props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
-                defaultValue={(this.propsValue || '').toString()}
-                onChange={newValue => {
-                    this.setState({ targetValue: newValue });
-                    this.checkJsonError();
-                }}
-                name="UNIQUE_ID_OF_DIV1"
-                fontSize={14}
-                setOptions={{
-                    enableBasicAutocompletion: true,
-                    enableLiveAutocompletion: true,
-                    enableSnippets: true,
-                    showLineNumbers: true,
-                    tabSize: 2,
-                }}
-                editorProps={{ $blockScrolling: true }}
-            />
-        );
+        return <Editor
+            error={this.state.jsonError}
+            editValueMode
+            themeType={this.props.themeType}
+            defaultValue={(this.propsValue || '').toString()}
+            onChange={(newValue: string) =>
+                this.setState({
+                    targetValue: newValue,
+                    jsonError: ObjectBrowserValue.checkJsonError(newValue),
+                })}
+        />;
     }
 
     renderStates() {
@@ -446,63 +418,57 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 value: key,
             }));
 
-            return (
-                <Autocomplete
-                    className={this.props.classes.formControl}
-                    disablePortal
-                    defaultValue={
-                        this.props.states[this.propsValue] !== undefined
-                            ? this.props.states[this.propsValue]
-                            : this.propsValue
-                    }
-                    options={options}
-                    noOptionsText=""
-                    freeSolo
-                    getOptionLabel={option =>
-                        option.label || (option !== undefined && option !== null ? option.toString() : '')}
-                    onChange={(e, value) => this.setState({ targetValue: value })}
-                    onInputChange={(e, value) => this.setState({ targetValue: value })}
-                    onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
-                    renderInput={params => (
-                        <TextField {...params} label={this.props.t('Value')} variant="standard" />
-                    )}
-                />
-            );
+            return <Autocomplete
+                className={this.props.classes.formControl}
+                disablePortal
+                defaultValue={
+                    this.props.states[this.propsValue] !== undefined
+                        ? this.props.states[this.propsValue]
+                        : this.propsValue
+                }
+                options={options}
+                noOptionsText=""
+                freeSolo
+                getOptionLabel={option =>
+                    option.label || (option !== undefined && option !== null ? option.toString() : '')}
+                onChange={(e, value) => this.setState({ targetValue: value })}
+                onInputChange={(e, value) => this.setState({ targetValue: value })}
+                onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
+                renderInput={params => (
+                    <TextField {...params} label={this.props.t('Value')} variant="standard" />
+                )}
+            />;
         }
-        return (
-            <FormControl variant="standard" className={this.props.classes.formControl}>
-                <InputLabel>{this.props.t('Value')}</InputLabel>
-                <Select
-                    variant="standard"
-                    defaultValue={this.propsValue}
-                    onChange={e => this.setState({ targetValue: e.target.value })}
-                >
-                    {Object.keys(this.props.states).map((key, i) => (
-                        <MenuItem key={i} value={key}>
-                            {this.props.states[key]}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-        );
+        return <FormControl variant="standard" className={this.props.classes.formControl}>
+            <InputLabel>{this.props.t('Value')}</InputLabel>
+            <Select
+                variant="standard"
+                defaultValue={this.propsValue}
+                onChange={e => this.setState({ targetValue: e.target.value })}
+            >
+                {Object.keys(this.props.states).map((key, i) => (
+                    <MenuItem key={i} value={key}>
+                        {this.props.states[key]}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>;
     }
 
     render() {
-        const ackCheckbox = (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <FormControlLabel
-                    className={Utils.clsx(
-                        this.props.classes.formControl,
-                        !this.props.expertMode ? this.props.classes.ackCheckbox : '',
-                    )}
-                    control={<Checkbox defaultChecked={false} onChange={e => (this.ack = e.target.checked)} />}
-                    label={this.props.t('Acknowledged')}
-                />
-                <Tooltip title={this.props.t('Acknowledged explanation')}>
-                    <InfoIcon color="primary" />
-                </Tooltip>
-            </div>
-        );
+        const ackCheckbox = <div style={{ display: 'flex', alignItems: 'center' }}>
+            <FormControlLabel
+                className={Utils.clsx(
+                    this.props.classes.formControl,
+                    !this.props.expertMode ? this.props.classes.ackCheckbox : '',
+                )}
+                control={<Checkbox defaultChecked={false} onChange={e => (this.ack = e.target.checked)} />}
+                label={this.props.t('Acknowledged')}
+            />
+            <Tooltip title={this.props.t('Acknowledged explanation')}>
+                <InfoIcon color="primary" />
+            </Tooltip>
+        </div>;
 
         return <Dialog
             open={!0}
@@ -583,12 +549,18 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                     variant="standard"
                                                     value={this.state.type}
                                                     onChange={e => {
-                                                        if (e.target.value === 'json') {
-                                                            this.setState({ targetValue: (this.state.targetValue || '').toString() });
-                                                            this.checkJsonError();
-                                                        }
-
-                                                        this.setState({ type: e.target.value, valid: e.target.value === 'number' ? this.isNumberValid({ value: this.state.targetValue, common: this.props.object.common }) : true });
+                                                        this.setState({
+                                                            type: e.target.value,
+                                                            valid: e.target.value === 'number' ? this.isNumberValid({ value: this.state.targetValue, common: this.props.object.common }) : true,
+                                                            jsonError: false,
+                                                        }, () => {
+                                                            if (this.state.type === 'json') {
+                                                                this.setState({
+                                                                    targetValue: (this.state.targetValue || '').toString(),
+                                                                    jsonError: ObjectBrowserValue.checkJsonError((this.state.targetValue || '').toString()),
+                                                                });
+                                                            }
+                                                        });
                                                     }}
                                                 >
                                                     <MenuItem value="string">String</MenuItem>
@@ -644,7 +616,10 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                         label={this.props.t('Value')}
                                         onKeyUp={e => e.key === 'Enter' && this.state.valid && this.onUpdate(e)}
                                         onChange={e => {
-                                            this.setState({ targetValue: Number(e.target.value), valid: this.isNumberValid({ value: e.target.value, common: this.props.object.common }) });
+                                            this.setState({
+                                                targetValue: Number(e.target.value),
+                                                valid: this.isNumberValid({ value: e.target.value, common: this.props.object.common }),
+                                            });
                                         }}
                                     /> : (this.state.type === 'json' ?
                                         this.renderJsonEditor()

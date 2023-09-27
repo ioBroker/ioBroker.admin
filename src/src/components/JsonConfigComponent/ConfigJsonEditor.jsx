@@ -2,13 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import AceEditor from 'react-ace';
-import 'ace-builds/src-min-noconflict/mode-json';
-import 'ace-builds/src-min-noconflict/worker-json';
-import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-min-noconflict/theme-chrome';
-import 'ace-builds/src-min-noconflict/ext-language_tools';
-
 import {
     FormHelperText,
     FormControl,
@@ -18,6 +11,7 @@ import {
 import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';
 import CustomModal from '../CustomModal';
+import Editor from '../Editor';
 
 const styles = () => ({
     fullWidth: {
@@ -76,21 +70,11 @@ class ConfigJsonEditor extends ConfigGeneric {
                 onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
             >
                 <div className={classes.wrapper}>
-                    <AceEditor
-                        mode="json"
-                        theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
+                    <Editor
                         value={typeof value === 'object' ? JSON.stringify(value) : value}
-                        width="100%"
-                        height="100%"
                         onChange={newValue => this.setState({ value: newValue })}
                         name="ConfigJsonEditor"
-                        fontSize={14}
-                        setOptions={{
-                            enableBasicAutocompletion: true,
-                            enableLiveAutocompletion: true,
-                            enableSnippets: true,
-                        }}
-                        editorProps={{ $blockScrolling: true }}
+                        themeType={this.props.themeType}
                     />
                 </div>
             </CustomModal> : null}
@@ -108,7 +92,6 @@ class ConfigJsonEditor extends ConfigGeneric {
 ConfigJsonEditor.propTypes = {
     socket: PropTypes.object.isRequired,
     themeType: PropTypes.string,
-    themeName: PropTypes.string,
     style: PropTypes.object,
     className: PropTypes.string,
     data: PropTypes.object.isRequired,

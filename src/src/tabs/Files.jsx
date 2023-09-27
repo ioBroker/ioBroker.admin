@@ -1,7 +1,9 @@
 import { Component } from 'react';
 
 import PropTypes from 'prop-types';
-import LinearProgress from '@mui/material/LinearProgress';
+import {
+    LinearProgress,
+} from '@mui/material';
 
 import FileBrowser from '../components/FileBrowser';
 
@@ -46,7 +48,7 @@ class Files extends Component {
                     showViewTypeButton
                     ready={this.props.ready}
                     socket={this.props.socket}
-                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
                     lang={this.props.lang}
                     t={this.props.t}
                     showToolbar

@@ -5,20 +5,22 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@mui/styles';
 import {
-    Grid, Typography, FormControl, Checkbox,
+    Grid,
+    Typography,
+    FormControl,
+    Checkbox,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    MenuItem,
+    Select,
+    InputLabel,
 } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { I18n, withWidth } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     tabPanel: {

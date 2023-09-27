@@ -5,20 +5,28 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@mui/styles';
 
-import Fab from '@mui/material/Fab';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TextField from '@mui/material/TextField';
+import {
+    Fab,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+} from '@mui/material';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+    Add as AddIcon,
+    Delete as DeleteIcon,
+} from '@mui/icons-material';
 
-import { withWidth, I18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
+import {
+    withWidth,
+    I18n,
+    Utils as UtilsCommon,
+} from '@iobroker/adapter-react-v5';
 
 import Utils from '../../Utils';
 

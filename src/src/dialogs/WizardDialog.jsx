@@ -309,7 +309,10 @@ class WizardDialog extends Component {
         return <Dialog
             className={this.props.classes.dialog}
             open={!0}
-            onClose={() => {}}
+            onClose={() => {
+                // ignore
+                // This dialog can be closed only by button
+            }}
             fullWidth
             fullScreen
             aria-labelledby="wizard-dialog-title"

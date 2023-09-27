@@ -1775,7 +1775,7 @@ class FileBrowser extends Component {
             key={this.state.viewer}
             href={this.state.viewer}
             formatEditFile={this.state.formatEditFile}
-            themeName={this.props.themeName}
+            themeType={this.props.themeType}
             setStateBackgroundImage={this.setStateBackgroundImage}
             getClassBackgroundImage={this.getClassBackgroundImage}
             t={this.props.t}
@@ -1952,6 +1952,7 @@ FileBrowser.propTypes = {
     showExpertButton: PropTypes.bool,
     viewType: PropTypes.string,
     showViewTypeButton: PropTypes.bool,
+    themeType: PropTypes.string,
 
     selected: PropTypes.string,
     tileView: PropTypes.bool,

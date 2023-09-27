@@ -3,15 +3,6 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-// File viewer in adapter-react does not use ace editor
-import AceEditor from 'react-ace';
-import 'ace-builds/src-min-noconflict/mode-json';
-import 'ace-builds/src-min-noconflict/mode-json5';
-import 'ace-builds/src-min-noconflict/worker-json';
-import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-min-noconflict/theme-chrome';
-import 'ace-builds/src-min-noconflict/ext-language_tools';
-
 import {
     // TextField,
     Button,
@@ -30,9 +21,8 @@ import {
     Brightness6 as Brightness5Icon,
 } from '@mui/icons-material';
 
-import IconNoIcon from '@iobroker/adapter-react-v5/icons/IconNoIcon';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { Utils, withWidth, IconNoIcon } from '@iobroker/adapter-react-v5';
+import Editor from './Editor';
 
 const styles = () => ({
     dialog: {
@@ -239,22 +229,11 @@ class FileViewer extends Component {
             />;
         }
         if (this.state.code !== null || this.state.text !== null || this.state.editing) {
-            return <AceEditor
+            return <Editor
                 mode={FileViewer.getEditFile(this.props.formatEditFile)}
-                width="100%"
-                height="100%"
-                theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
+                themeType={this.props.themeType}
                 value={this.state.editingValue || this.state.code || this.state.text}
-                onChange={newValue => this.setState({ editingValue: newValue, changed: true })}
-                name="UNIQUE_ID_OF_DIV"
-                readOnly={!this.state.editing}
-                fontSize={14}
-                setOptions={{
-                    enableBasicAutocompletion: true,
-                    enableLiveAutocompletion: true,
-                    enableSnippets: true,
-                }}
-                editorProps={{ $blockScrolling: true }}
+                onChange={this.state.editing ? newValue => this.setState({ editingValue: newValue, changed: true }) : undefined}
             />;
         }
         return null;
@@ -322,6 +301,7 @@ FileViewer.propTypes = {
     onClose: PropTypes.func,
     href: PropTypes.string.isRequired,
     supportSubscribes: PropTypes.bool,
+    themeType: PropTypes.string,
 };
 
 /** @type {typeof FileViewer} */

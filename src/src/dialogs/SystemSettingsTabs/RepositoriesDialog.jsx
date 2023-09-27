@@ -4,24 +4,32 @@ import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 
-import Checkbox from '@mui/material/Checkbox';
-import Fab from '@mui/material/Fab';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Tooltip from '@mui/material/Tooltip';
-import TextField from '@mui/material/TextField';
-import Paper from '@mui/material/Paper';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DragHandleIcon from '@mui/icons-material/Menu';
-import RestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import {
+    Checkbox,
+    Fab,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Tooltip,
+    Paper,
+} from '@mui/material';
 
 import {
-    I18n, Utils as UtilsCommon, withWidth, Confirm as ConfirmDialog,
+    Add as AddIcon,
+    Delete as DeleteIcon,
+    Menu as DragHandleIcon,
+    SettingsBackupRestore as RestoreIcon,
+} from '@mui/icons-material';
+
+import {
+    I18n,
+    Utils as UtilsCommon,
+    withWidth,
+    Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
 import Utils from '../../Utils';
@@ -114,7 +122,7 @@ const SortableItem = SortableElement(({
     onValueChanged,
     onChangeActiveRepo,
     repoInfo,
-    disabled,
+    disabled_,
 }) => <TableRow className="float_row">
     <TableCell className={UtilsCommon.clsx(classes.dragColumn, 'float_cell')} title={t('Drag and drop to reorder')}>
         <DragHandle t={t} />
@@ -122,7 +130,7 @@ const SortableItem = SortableElement(({
     <TableCell className={UtilsCommon.clsx(classes.enableColumn, 'float_cell')}>
         {_index + 1}
         {multipleRepos ? <Checkbox
-            disabled={adminGuiConfig.admin.settings.activeRepo === false || disabled}
+            disabled={adminGuiConfig.admin.settings.activeRepo === false || disabled_}
             className={error ? classes.checkboxError : ''}
             title={error ? I18n.t('At least one repo must be selected') : ''}
             checked={typeof dataAux.common.activeRepo === 'string' ? dataAux.common.activeRepo === item.title : dataAux.common.activeRepo.includes(item.title)}
@@ -176,7 +184,7 @@ const SortableItem = SortableElement(({
     <TableCell className={UtilsCommon.clsx(classes.nameRow, 'float_cell')}>
         <TextField
             variant="standard"
-            disabled={disabled}
+            disabled={disabled_}
             value={item.title}
             InputLabelProps={{ shrink: true }}
             InputProps={{ readOnly: false }}
@@ -186,7 +194,7 @@ const SortableItem = SortableElement(({
     </TableCell>
     <TableCell className={UtilsCommon.clsx('grow_cell', 'float_cell')}>
         <TextField
-            disabled={disabled}
+            disabled={disabled_}
             variant="standard"
             id={`default_${_index}`}
             value={item.link}
@@ -198,7 +206,7 @@ const SortableItem = SortableElement(({
     </TableCell>
     <TableCell className={UtilsCommon.clsx(classes.buttonColumn, 'float_cell')}>
         <Fab
-            disabled={disabled}
+            disabled={disabled_}
             size="small"
             color="secondary"
             aria-label="add"
@@ -256,7 +264,7 @@ const SortableList = SortableContainer(({
                 onDelete={onDelete}
                 onValueChanged={onValueChanged}
                 onChangeActiveRepo={onChangeActiveRepo}
-                disabled={disabled}
+                disabled_={disabled}
             />)}
     </TableBody>
 </Table>);

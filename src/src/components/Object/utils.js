@@ -1,14 +1,17 @@
-import frLocale from 'date-fns/locale/fr';
-import ruLocale from 'date-fns/locale/ru';
-import enLocale from 'date-fns/locale/en-US';
-import esLocale from 'date-fns/locale/es';
-import plLocale from 'date-fns/locale/pl';
-import ptLocale from 'date-fns/locale/pt';
-import itLocale from 'date-fns/locale/it';
-import cnLocale from 'date-fns/locale/zh-CN';
-import brLocale from 'date-fns/locale/pt-BR';
-import deLocale from 'date-fns/locale/de';
-import nlLocale from 'date-fns/locale/nl';
+import {
+    fr as frLocale,
+    ru as ruLocale,
+    enUS as enLocale,
+    es as esLocale,
+    pl as plLocale,
+    pt as ptLocale,
+    it as itLocale,
+    zhCN as cnLocale,
+    ptBR as brLocale,
+    de as deLocale,
+    uk as ukLocale,
+    nl as nlLocale,
+} from 'date-fns/locale';
 
 // eslint-disable-next-line import/prefer-default-export
 export const localeMap = {
@@ -22,5 +25,6 @@ export const localeMap = {
     it: itLocale,
     pt: ptLocale,
     pl: plLocale,
+    uk: ukLocale,
     'zh-cn': cnLocale,
 };

@@ -1,24 +1,30 @@
 import React, { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import JSON5 from 'json5';
 
-import LinearProgress from '@mui/material/LinearProgress';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import Paper from  '@mui/material/Paper';
-import FormControlLabel from  '@mui/material/FormControlLabel';
-import Checkbox from  '@mui/material/Checkbox';
+import {
+    LinearProgress,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Typography,
+    Paper,
+    FormControlLabel,
+    Checkbox,
+} from '@mui/material';
 
 // Icons
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+    ExpandMore as ExpandMoreIcon,
+} from '@mui/icons-material';
 
-import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import {
+    withWidth,
+    Utils as CommonUtils,
+    Error as DialogError,
+    Confirm as ConfirmDialog,
+} from '@iobroker/adapter-react-v5';
 
 import JsonConfigComponent from '../JsonConfigComponent';
 import ConfigGeneric from '../JsonConfigComponent/ConfigGeneric';
@@ -450,7 +456,7 @@ class ObjectCustomEditor extends Component {
             >
                 <img src={icon} className={this.props.classes.headingIcon} alt="" />
                 <Typography className={this.props.classes.heading}>{ this.props.t('Settings %s', instance)}</Typography>
-                <div className={clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible)}>
+                <div className={CommonUtils.clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible)}>
                     {
                         this.props.t('Enabled')
                     }
@@ -731,7 +737,9 @@ class ObjectCustomEditor extends Component {
 
     render() {
         if (this.customObj === null) {
-            return <div style={{ color: '#F55', fontSize: 32 }}>{this.props.t('Object does not exist!')}</div>;
+            return <div style={{ color: '#F55', fontSize: 32 }}>
+                {this.props.t('Object does not exist!')}
+            </div>;
         }
         if (!this.state.loaded) {
             return <LinearProgress />;
@@ -750,8 +758,8 @@ class ObjectCustomEditor extends Component {
                     return null;
                 })}
             </div>
-            { this.renderErrorMessage() }
-            { this.renderConfirmationDialog() }
+            {this.renderErrorMessage()}
+            {this.renderConfirmationDialog()}
         </Paper>;
     }
 }

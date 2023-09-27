@@ -7,17 +7,21 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import { useMap } from 'react-leaflet/hooks';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
-import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import FormHelperText from '@mui/material/FormHelperText';
+import {
+    Grid,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+    TextField,
+    Autocomplete,
+    FormHelperText,
+} from '@mui/material';
 
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import {
+    Confirm as ConfirmDialog,
+    withWidth,
+} from '@iobroker/adapter-react-v5';
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries';

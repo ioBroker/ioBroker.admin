@@ -2,21 +2,28 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import AppBar from '@mui/material/AppBar';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Button from '@mui/material/Button';
-import LinearProgress from '@mui/material/LinearProgress';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    AppBar,
+    Tab,
+    Tabs,
+    Button,
+    LinearProgress,
+} from '@mui/material';
 
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import {
+    Confirm as ConfirmDialog,
+    withWidth,
+} from '@iobroker/adapter-react-v5';
 
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+import {
+    Check as CheckIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
+
 import BaseSettingsSystem from '../components/BaseSettings/BaseSettingsSystem';
 import BaseSettingsMultihost from '../components/BaseSettings/BaseSettingsMultihost';
 import BaseSettingsObjects from '../components/BaseSettings/BaseSettingsObjects';
@@ -223,7 +230,7 @@ class BaseSettingsDialog extends Component {
         return <BaseSettingsPlugins
             settings={this.state[name]}
             t={this.props.t}
-            themeName={this.props.themeName}
+            themeType={this.props.themeType}
             onChange={settings =>
                 this.updateSettings(name, settings)}
         />;
@@ -311,7 +318,7 @@ BaseSettingsDialog.propTypes = {
     currentHostName: PropTypes.string,
     hosts: PropTypes.array,
     socket: PropTypes.object,
-    themeName: PropTypes.string,
+    themeType: PropTypes.string,
     onClose: PropTypes.func.isRequired,
 };
 

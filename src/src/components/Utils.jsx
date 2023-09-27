@@ -1670,7 +1670,7 @@ class Utils {
     }
 
     /**
-     * Check if date is valid
+     * Check if the date is valid
      *
      * @param {Date} date
      * @return {boolean}

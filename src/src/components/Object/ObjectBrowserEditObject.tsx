@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import { Styles, withStyles } from '@mui/styles';
 
-import AceEditor from 'react-ace';
-import 'ace-builds/src-min-noconflict/mode-json';
-import 'ace-builds/src-min-noconflict/worker-json';
-import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-min-noconflict/theme-chrome';
-import 'ace-builds/src-min-noconflict/ext-language_tools';
-
 import {
     Dialog,
     DialogTitle,
@@ -42,6 +35,8 @@ import {
     IconFx,
     UploadImage, AdminConnection, i18n,
 } from '@iobroker/adapter-react-v5';
+
+import Editor from '../Editor';
 
 const styles = (theme: Record<string, any>) => ({
     divWithoutTitle: {
@@ -442,7 +437,7 @@ interface ObjectBrowserEditObjectProps {
     obj: ioBroker.AnyObject;
     roleArray: string[];
     expertMode: boolean;
-    themeName: string;
+    themeType: string;
     aliasTab: boolean;
     onClose: (obj?: ioBroker.AnyObject) => void;
     dialogName: string;
@@ -1117,13 +1112,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         value={json.common?.alias?.id || ''}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.id ? (
-                                <InputAdornment position="end">
-                                    <IconButton size="large" onClick={() => this.setAliasItem(json, 'id', '')}>
-                                        <IconClose />
-                                    </IconButton>
-                                </InputAdornment>
-                            ) : null,
+                            endAdornment: json.common?.alias?.id ? <InputAdornment position="end">
+                                <IconButton size="large" onClick={() => this.setAliasItem(json, 'id', '')}>
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id', e.target.value)}
                         margin="normal"
@@ -1144,16 +1137,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         value={json.common?.alias?.id?.read || ''}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.id?.read ? (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        size="large"
-                                        onClick={() => this.setAliasItem(json, 'id.read', '')}
-                                    >
-                                        <IconClose />
-                                    </IconButton>
-                                </InputAdornment>
-                            ) : null,
+                            endAdornment: json.common?.alias?.id?.read ? <InputAdornment position="end">
+                                <IconButton
+                                    size="large"
+                                    onClick={() => this.setAliasItem(json, 'id.read', '')}
+                                >
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id.read', e.target.value)}
                         margin="normal"
@@ -1174,16 +1165,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         value={json.common?.alias?.id?.write || ''}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.id?.write ? (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        size="large"
-                                        onClick={() => this.setAliasItem(json, 'id.write', '')}
-                                    >
-                                        <IconClose />
-                                    </IconButton>
-                                </InputAdornment>
-                            ) : null,
+                            endAdornment: json.common?.alias?.id?.write ? <InputAdornment position="end">
+                                <IconButton
+                                    size="large"
+                                    onClick={() => this.setAliasItem(json, 'id.write', '')}
+                                >
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id.write', e.target.value)}
                         margin="normal"
@@ -1259,21 +1248,17 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         }
                         className={this.props.classes.funcEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.write ? (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        size="large"
-                                        onClick={() => this.setAliasItem(json, 'write', '')}
-                                    >
-                                        <IconClose />
-                                    </IconButton>
-                                </InputAdornment>
-                            ) : null,
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <IconFx className={this.props.classes.funcIcon} />
-                                </InputAdornment>
-                            ),
+                            endAdornment: json.common?.alias?.write ? <InputAdornment position="end">
+                                <IconButton
+                                    size="large"
+                                    onClick={() => this.setAliasItem(json, 'write', '')}
+                                >
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
+                            startAdornment: <InputAdornment position="start">
+                                <IconFx className={this.props.classes.funcIcon} />
+                            </InputAdornment>,
                         }}
                         onChange={e => this.setAliasItem(json, 'write', e.target.value)}
                         margin="normal"
@@ -1391,21 +1376,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 }
                             }}
                         >
-                            <AceEditor
-                                mode="json"
-                                width="100%"
-                                height="100%"
-                                theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
+                            <Editor
                                 value={this.state.text}
                                 onChange={newValue => this.onChange(newValue)}
                                 name="UNIQUE_ID_OF_DIV"
-                                fontSize={14}
-                                setOptions={{
-                                    enableBasicAutocompletion: true,
-                                    enableLiveAutocompletion: true,
-                                    enableSnippets: true,
-                                }}
-                                editorProps={{ $blockScrolling: true }}
+                                themeType={this.props.themeType}
                             />
                             {this.state.showCommonDeleteMessage ? (
                                 <div className={this.props.classes.commonDeleteTip}>{I18n.t('common_delete_tip')}</div>

@@ -1,18 +1,12 @@
 import { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
-import AceEditor from 'react-ace';
-import 'ace-builds/src-min-noconflict/mode-json';
-import 'ace-builds/src-min-noconflict/worker-json';
-import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-min-noconflict/theme-chrome';
-import 'ace-builds/src-min-noconflict/ext-language_tools';
+import { Paper } from  '@mui/material';
 
-import Paper from  '@mui/material/Paper';
+import { Utils, withWidth } from '@iobroker/adapter-react-v5';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import Editor from '../Editor';
 
 const styles = theme => ({
     paper: {
@@ -34,7 +28,6 @@ const styles = theme => ({
     error: {
         border: '2px solid #FF0000',
     },
-
 });
 
 class BaseSettingsPlugins extends Component {
@@ -74,22 +67,12 @@ class BaseSettingsPlugins extends Component {
     render() {
         return <Paper className={this.props.classes.paper}>
             <div className={this.props.classes.title}>{ this.props.t('For future use') }</div>
-            <div className={clsx(this.props.classes.divWithoutTitle, this.state.error && this.props.classes.error)}>
-                <AceEditor
-                    mode="json"
-                    width="100%"
-                    height="100%"
-                    theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
+            <div className={Utils.clsx(this.props.classes.divWithoutTitle, this.state.error && this.props.classes.error)}>
+                <Editor
+                    // mode="json"
+                    themeType={this.props.themeType}
                     value={this.state.settings}
                     onChange={newValue => this.onChange(newValue)}
-                    name="UNIQUE_ID_OF_DIV1"
-                    fontSize={14}
-                    setOptions={{
-                        enableBasicAutocompletion: true,
-                        enableLiveAutocompletion: true,
-                        enableSnippets: true,
-                    }}
-                    editorProps={{ $blockScrolling: true }}
                 />
             </div>
         </Paper>;
@@ -100,7 +83,7 @@ BaseSettingsPlugins.propTypes = {
     t: PropTypes.func,
     onChange: PropTypes.func.isRequired,
     settings: PropTypes.object.isRequired,
-    themeName: PropTypes.string,
+    themeType: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(BaseSettingsPlugins));

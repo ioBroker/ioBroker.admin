@@ -3,12 +3,14 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Grid from '@mui/material/Grid';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import Paper from '@mui/material/Paper';
+import {
+    Grid,
+    FormControl,
+    TextField,
+    Paper,
+} from '@mui/material';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 const styles = theme => ({
     tabPanel: {

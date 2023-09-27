@@ -6272,7 +6272,7 @@ class ObjectBrowser extends Component {
             objects={this.objects}
             dateFormat={this.props.dateFormat}
             isFloatComma={this.props.isFloatComma}
-            themeName={this.props.themeName}
+            themeType={this.props.themeType}
             socket={this.props.socket}
             dialogName={this.props.dialogName}
             aliasTab={this.state.editObjectAlias}

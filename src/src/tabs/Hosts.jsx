@@ -4,19 +4,25 @@ import semver from 'semver';
 
 import { withStyles } from '@mui/styles';
 
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import { InputAdornment, LinearProgress, TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import {
+    IconButton,
+    Tooltip,
+    InputAdornment,
+    LinearProgress,
+    TextField,
+    Skeleton,
+} from '@mui/material';
 
-import RefreshIcon from '@mui/icons-material/Refresh';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import CloseIcon from '@mui/icons-material/Close';
-import BugReportIcon from '@mui/icons-material/BugReport';
-import InfoIcon from '@mui/icons-material/Info';
-import WarningIcon from '@mui/icons-material/Warning';
-import ErrorIcon from '@mui/icons-material/Error';
+import {
+    Refresh as RefreshIcon,
+    ViewList as ViewListIcon,
+    ViewModule as ViewModuleIcon,
+    Close as CloseIcon,
+    BugReport as BugReportIcon,
+    Info as InfoIcon,
+    Warning as WarningIcon,
+    Error as ErrorIcon,
+} from '@mui/icons-material';
 
 import { withWidth, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
@@ -421,7 +427,7 @@ class Hosts extends Component {
         return <BaseSettingsDialog
             currentHost={this.state.baseSettingsDialog.dialogName}
             hosts={this.state.hosts}
-            themeName={this.props.themeName}
+            themeType={this.props.themeType}
             currentHostName={this.state.baseSettingsDialog.dialogName}
             key="base"
             onClose={() => this.setState({
@@ -528,7 +534,7 @@ class Hosts extends Component {
                 onClose={() => this.setState({ updateDialog: false })}
                 adminInstance={this.props.adminInstance}
                 onUpdating={isUpdating => this.props.onUpdating(isUpdating)}
-                themeName={this.props.themeName}
+                themeType={this.props.themeType}
             />;
         }
 
@@ -749,6 +755,7 @@ Hosts.propTypes = {
     currentHost: PropTypes.string,
     adminInstance: PropTypes.string,
     onUpdating: PropTypes.func,
+    themeType: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(Hosts));

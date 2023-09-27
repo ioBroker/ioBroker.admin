@@ -6,27 +6,30 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 
 // @mui/material
-import AppBar from '@mui/material/AppBar';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
-import Snackbar from '@mui/material/Snackbar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { Hidden, Tooltip } from '@mui/material';
-import Badge from '@mui/material/Badge';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
+import {
+    AppBar,
+    Avatar,
+    Grid,
+    IconButton,
+    Paper,
+    Snackbar,
+    Toolbar,
+    Typography,
+    Hidden,
+    Tooltip,
+    Badge,
+    Menu,
+    MenuItem,
+    ListItemIcon,
+    ListItemText,
+    CircularProgress,
+    Dialog,
+    DialogTitle,
+    Button,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+} from '@mui/material';
 
 // @material-ui/icons
 import {
@@ -1682,7 +1685,7 @@ class App extends Router {
                         hostsWorker={this.hostsWorker}
                         toggleTranslation={this.toggleTranslation}
                         noTranslation={this.state.noTranslation}
-                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
                         theme={this.state.theme}
                         expertMode={this.state.expertMode}
                         t={I18n.t}
@@ -1933,7 +1936,12 @@ class App extends Router {
 
     showRedirectDialog() {
         if (this.state.showRedirect) {
-            return <Dialog open={!0} onClose={() => {}}>
+            return <Dialog
+                open={!0}
+                onClose={() => {
+                // ignore. It can be closed only by button
+                }}
+            >
                 <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
