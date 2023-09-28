@@ -679,10 +679,10 @@ class Admin extends utils.Adapter {
         return (
             this.getStateAsync('info.newsETag')
                 .then(state => {
-                    oldEtag = state && state.val;
+                    oldEtag = state?.val;
                     return axios
                         .get('https://iobroker.live/repo/news-hash.json', {
-                            timeout: 13000,
+                            timeout: 13_000,
                             validateStatus: status => status < 400,
                         })
                         .then(response => response.data)
@@ -699,7 +699,7 @@ class Admin extends utils.Adapter {
                         newEtag = etag.hash;
                         return axios
                             .get('https://iobroker.live/repo/news.json', {
-                                timeout: 14000,
+                                timeout: 14_000,
                                 validateStatus: status => status < 400,
                             })
                             .then(response => response.data)
@@ -722,7 +722,7 @@ class Admin extends utils.Adapter {
                 .then(state => {
                     try {
                         /** @ts-expect-error */
-                        oldNews = state && state.val ? JSON.parse(state.val) : [];
+                        oldNews = state?.val ? JSON.parse(state.val) : [];
                     } catch (e) {
                         oldNews = [];
                     }
@@ -734,7 +734,7 @@ class Admin extends utils.Adapter {
                 .then(lastState => {
                     // find time of last ID
                     let time = '';
-                    if (lastState && lastState.val) {
+                    if (lastState?.val) {
                         const item = oldNews.find(item => item.id === lastState.val);
                         if (item) {
                             time = item.created;
@@ -761,6 +761,7 @@ class Admin extends utils.Adapter {
                     }
 
                     if (originalOldNews !== JSON.stringify(oldNews)) {
+                        this.registerNewsNotifications(oldNews, lastState?.val);
                         return this.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
                     } else {
                         return Promise.resolve();
@@ -773,6 +774,91 @@ class Admin extends utils.Adapter {
                 .catch(e => this.log.error(`Cannot update news: ${e}`))
                 .then(() => (this.timerNews = setTimeout(() => this.updateNews(), 24 * ONE_HOUR_MS + 1)))
         );
+    }
+
+    /**
+     * Add the nes to the notification system
+     *
+     * @param {Record<string, any>[]} messages sorted news
+     * @param {string | undefined | null} lastMessageId lastMessageId, all after this has already been seen
+     *
+     * @return {Promise<void>}
+     */
+    async registerNewsNotifications(messages, lastMessageId) {
+        const adapters = await this.getObjectViewAsync('system', 'adapter', {
+            startkey: 'system.adapter.\u0000',
+            endkey: 'system.adapter.\u9999',
+        });
+
+        // TODO: get OS
+        // TODO: get instances
+        // TODO: get node version
+        // TODO: get npm version
+        const today = Date.now();
+        for (const message of messages) {
+            if (!message) {
+                continue;
+            }
+
+            if (message.id === lastMessageId) {
+                break;
+            }
+            let showIt = true;
+
+            if (showIt && message['date-start'] && new Date(message['date-start']).getTime() > today) {
+                showIt = false;
+            } else if (showIt && message['date-end'] && new Date(message['date-end']).getTime() < today) {
+                showIt = false;
+            } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
+                Object.keys(message.conditions).forEach(key => {
+                    if (showIt) {
+                        const adapter = adapters.rows.find(adapter => adapter.id === `system.adapter.${key}`);
+                        const condition = message.conditions[key];
+
+                        if (!adapter && condition !== '!installed') {
+                            showIt = false;
+                        } else if (adapter && condition === '!installed') {
+                            showIt = false;
+                        } else if (adapter && condition === 'active') {
+                            showIt = checkActive(key, context.instances);
+                        } else if (adapter && condition === '!active') {
+                            showIt = !checkActive(key, context.instances);
+                        } else if (adapter) {
+                            showIt = checkConditions(condition, adapter.v);
+                        }
+                    }
+                });
+            }
+
+            if (showIt && message['node-version'] && context.nodeVersion) {
+                showIt = checkConditions(message['node-version'], context.nodeVersion);
+            }
+            if (showIt && message['npm-version'] && context.npmVersion) {
+                showIt = checkConditions(message['npm-version'], context.npmVersion);
+            }
+            if (showIt && message.os && context.os) {
+                showIt = context.os === message.os;
+            }
+            if (showIt && message.repo) {
+                // If multi-repo
+                if (Array.isArray(context.activeRepo)) {
+                    showIt = context.activeRepo.includes(message.repo);
+                } else {
+                    showIt = context.activeRepo === message.repo;
+                }
+            }
+            if (showIt && message.uuid) {
+                if (Array.isArray(message.uuid)) {
+                    showIt = context.uuid && message.uuid.find(uuid => context.uuid === uuid);
+                } else {
+                    showIt = !!(context.uuid && context.uuid === message.uuid);
+                }
+            }
+
+            if (showIt) {
+                await this.registerNotification('news', message.class, message.title.en + '\n' + message.content.en);
+            }
+        }
     }
 
     /**
