@@ -958,7 +958,7 @@ class App extends Router {
                                             `admin.${instance}.info.newsFeed`,
                                             this.getNews(instance),
                                         )),
-                                5000,
+                                5_000,
                             );
 
                             setTimeout(
@@ -1213,7 +1213,7 @@ class App extends Router {
             for (let instance = 0; instance < maxCount; instance++) {
                 try {
                     const adminAlive = await this.socket.getState(`system.adapter.admin.${instance}.alive`);
-                    if (adminAlive && adminAlive.val) {
+                    if (adminAlive?.val) {
                         resolve(instance);
                         break;
                     }
@@ -1263,6 +1263,10 @@ class App extends Router {
      */
     getNews = instance => async (name, newsFeed) => {
         try {
+            if (!this.state.systemConfig.common.licenseConfirmed) {
+                return;
+            }
+
             const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
             if (newsFeed?.val) {
                 let news = null;
