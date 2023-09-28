@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@iobroker/adapter-core": "^3.0.3",
-    "@iobroker/socket-classes": "^1.4.1",
+    "@iobroker/socket-classes": "^1.4.2",
     "@iobroker/webserver": "^0.3.7",
     "@iobroker/ws-server": "^2.1.1",
     "archiver": "^6.0.1",
@@ -51,7 +51,7 @@
     "@tsconfig/node16": "^16.1.1",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
-    "chai": "^4.3.8",
+    "chai": "^4.3.10",
     "colorette": "^2.0.20",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
@@ -65,7 +65,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "mocha": "^10.2.0",
     "prettier": "^3.0.3",
-    "puppeteer": "^21.3.5",
+    "puppeteer": "^21.3.6",
     "typescript": "^5.2.2"
   },
   "bugs": {
