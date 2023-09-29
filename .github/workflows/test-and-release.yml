@@ -33,11 +33,6 @@ jobs:
       - name: 'Install'
         run: npm i
 
-      - name: Check TypeScript files
-        run: |
-         cd src
-         npm run check-ts
-
       - name: 'Build'
         run: NODE_OPTIONS=--max_old_space_size=4096 npm run build
 
@@ -62,6 +57,11 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+
+      - name: Check TypeScript files
+        run: |
+          cd src
+          npm run check-ts
 
       - name: Run local tests
         run: npm test

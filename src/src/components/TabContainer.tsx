@@ -20,7 +20,7 @@ const styles = {
 
 interface TabContainerProps {
     /** The content of the component. */
-    children: string;
+    children: React.JSX.Element | React.JSX.Element[];
     /** The elevation of the tab container. */
     elevation?:number;
     /** Set to 'visible' show the overflow. */
