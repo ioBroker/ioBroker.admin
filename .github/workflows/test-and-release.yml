@@ -29,8 +29,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - run: cd src
-      - run: npm run check-ts
+      - run: |
+          cd src
+          npm run check-ts
 
   build:
     runs-on: ubuntu-latest
