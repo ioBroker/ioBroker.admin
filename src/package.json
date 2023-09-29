@@ -78,10 +78,11 @@
     "scripts": {
         "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true&& craco start",
         "old-start": "react-scripts start",
-        "lint": "eslint --fix --ext .js,.jsx src",
+        "lint": "eslint --fix --ext .js,.jsx,.tsx src",
         "build": "craco build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "check-ts": "tsc --noEmit --checkJS false"
     },
     "eslintConfig": {
         "extends": "react-app"

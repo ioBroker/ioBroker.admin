@@ -29,8 +29,22 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - run: npm i
-      - run: NODE_OPTIONS=--max_old_space_size=4096 npm run build
+
+      - name: 'Install'
+        run: npm i
+
+      - name: 'Install FE'
+        run: | 
+          cd src
+          npm i --force
+
+      - name: Check TypeScript files
+        run: |
+          cd src
+          npm run check-ts
+
+      - name: 'Build'
+        run: NODE_OPTIONS=--max_old_space_size=4096 npm run build
 
   # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
