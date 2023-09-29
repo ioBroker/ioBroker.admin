@@ -13,7 +13,7 @@
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@iobroker/adapter-react-v5": "^4.5.5",
         "@iobroker/admin-component-easy-access": "^0.3.2",
-        "@iobroker/socket-client": "^2.3.4",
+        "@iobroker/socket-client": "^2.3.9",
         "@mui/icons-material": "^5.14.11",
         "@mui/lab": "^5.0.0-alpha.146",
         "@mui/material": "^5.14.11",
@@ -78,10 +78,11 @@
     "scripts": {
         "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true&& craco start",
         "old-start": "react-scripts start",
-        "lint": "eslint --fix --ext .js,.jsx src",
+        "lint": "eslint --fix --ext .js,.jsx,.tsx src",
         "build": "craco build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "check-ts": "tsc --noEmit --checkJS false"
     },
     "eslintConfig": {
         "extends": "react-app"
