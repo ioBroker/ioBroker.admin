@@ -22,17 +22,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check-ts:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-      - run: |
-          cd src
-          npm run check-ts
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -64,6 +53,11 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+
+      - name: Check TypeScript files
+        run: |
+          cd src
+          npm run check-ts
 
       - name: Run local tests
         run: npm test
