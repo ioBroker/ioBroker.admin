@@ -36,7 +36,7 @@ jobs:
       - name: 'Install FE'
         run: | 
           cd src
-          npm i
+          npm i --force
 
       - name: Check TypeScript files
         run: |
