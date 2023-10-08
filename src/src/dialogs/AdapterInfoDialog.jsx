@@ -83,7 +83,6 @@ class AdapterInfoDialog extends Component {
                 text={this.state.text}
                 language={I18n.getLanguage()}
                 theme={this.props.theme}
-                themeName={this.props.themeName}
                 themeType={this.props.themeType}
                 mobile={this.props.mobile}
                 editMode={false}
@@ -128,7 +127,6 @@ AdapterInfoDialog.propTypes = {
     link: PropTypes.string,
     t: PropTypes.func,
     theme: PropTypes.object,
-    themeName: PropTypes.string,
     themeType: PropTypes.string,
     socket: PropTypes.object,
 };

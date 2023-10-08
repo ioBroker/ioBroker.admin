@@ -903,6 +903,7 @@ class Adapters extends Component {
 
         return <AdminUpdater
             socket={this.props.socket}
+            themeType={this.props.themeType}
             host={this.props.host}
             onClose={reload =>
                 this.setState({ showUpdater: false }, () => reload && this.updateAll(true, false))}
@@ -1835,7 +1836,6 @@ class Adapters extends Component {
                 return <TabContainer className={this.props.classes.tabContainer}>
                     <AdapterInfoDialog
                         theme={this.props.theme}
-                        themeName={this.props.themeName}
                         themeType={this.props.themeType}
                         adapter={this.state.dialogProp}
                         link={adapter.readme || ''}
