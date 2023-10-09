@@ -234,7 +234,8 @@
     "reverseProxy": [],
     "loadingBackgroundColor": "",
     "loadingHideLogo": false,
-    "loadingBackgroundImage": false
+    "loadingBackgroundImage": false,
+    "doNotCheckPublicIP": false
   },
   "objects": [],
   "instanceObjects": [
