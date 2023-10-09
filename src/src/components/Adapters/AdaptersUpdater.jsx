@@ -242,7 +242,7 @@ class AdaptersUpdater extends Component {
                         }}
                     />
                 </ListItemSecondaryAction>}
-                {this.state.current === adapter && !this.props.stoppedOnError && !this.props.finished && <ListItemSecondaryAction>
+                {this.state.current === adapter && !this.props.stopped && !this.props.finished && <ListItemSecondaryAction>
                     <CircularProgress />
                 </ListItemSecondaryAction>}
             </ListItem>
@@ -368,7 +368,8 @@ class AdaptersUpdater extends Component {
 AdaptersUpdater.propTypes = {
     inProcess: PropTypes.bool.isRequired,
     lang: PropTypes.string.isRequired,
-    stoppedOnError: PropTypes.bool.isRequired,
+    /** if process has been stopped, e.g. due to an error */
+    stopped: PropTypes.bool.isRequired,
     repository: PropTypes.object.isRequired,
     installed: PropTypes.object.isRequired,
     onUpdateSelected: PropTypes.func.isRequired,
