@@ -269,8 +269,8 @@ class AdaptersUpdaterDialog extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose(!!this.state.updated.length)}
-                    disabled={this.state.inProcess}
-                    color="grey"
+                    disabled={this.state.inProcess && !this.state.stoppedOnError}
+                    color={this.state.stoppedOnError ? 'error' : 'grey'}
                     startIcon={<CloseIcon />}
                 >
                     {this.props.t('Close')}

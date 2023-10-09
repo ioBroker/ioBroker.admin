@@ -88,6 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) JSON config component `port` does no longer mark port as occupied if it is only occupied on another host
+* (foxriver76) if upgrade all is stopped on error, activate close button
 
 ### 6.10.4 (2023-09-25)
 * (foxriver76) fixed parsing `jsonConfig`
