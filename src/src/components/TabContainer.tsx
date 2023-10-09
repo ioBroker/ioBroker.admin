@@ -1,9 +1,8 @@
 // please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
-import React, { ReactChildren, ReactElement } from 'react';
+import React from 'react';
 import { withStyles } from '@mui/styles';
 import { Grid, Paper } from '@mui/material';
 import { Utils } from '@iobroker/adapter-react-v5';
-import type { ReactElementLike, ReactNodeLike } from 'prop-types';
 
 const styles = {
     root: {
