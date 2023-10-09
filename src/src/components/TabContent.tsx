@@ -1,4 +1,3 @@
-import type { ReactNodeLike } from 'prop-types';
 import { withStyles } from '@mui/styles';
 import { Grid } from '@mui/material';
 import { Utils } from '@iobroker/adapter-react-v5';
