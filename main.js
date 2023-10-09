@@ -15,7 +15,8 @@
 
 const semver = require('semver');
 const axios = require('axios').default;
-const fs = require('fs');
+const fs = require('node:fs');
+const os = require('node:os');
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const getInstalledInfo = utils.commonTools.getInstalledInfo;
@@ -790,10 +791,18 @@ class Admin extends utils.Adapter {
             endkey: 'system.adapter.\u9999',
         });
 
-        // TODO: get OS
-        // TODO: get instances
-        // TODO: get node version
-        // TODO: get npm version
+        const operatingSystem = os.platform();
+
+        const instances = await this.getObjectViewAsync('system', 'instance', {
+            startkey: 'system.adapter.\u0000',
+            endkey: 'system.adapter.\u9999',
+        });
+
+        const activeRepo = (await this.getForeignObjectAsync('system.config'))?.common.activeRepo;
+        const uuid = (await this.getForeignObjectAsync('system.meta.uuid'))?.native.uuid;
+        const nodeVersion = process.version;
+        const npmVersion = await this.getNpmVersion();
+
         const today = Date.now();
         for (const message of messages) {
             if (!message) {
@@ -820,44 +829,97 @@ class Admin extends utils.Adapter {
                         } else if (adapter && condition === '!installed') {
                             showIt = false;
                         } else if (adapter && condition === 'active') {
-                            showIt = checkActive(key, context.instances);
+                            showIt = this.checkActive(key, instances);
                         } else if (adapter && condition === '!active') {
-                            showIt = !checkActive(key, context.instances);
-                        } else if (adapter) {
-                            showIt = checkConditions(condition, adapter.v);
+                            showIt = !this.checkActive(key, instances);
+                        } else if (adapter?.value) {
+                            showIt = this.checkConditions(condition, adapter.value.common.version);
                         }
                     }
                 });
             }
 
-            if (showIt && message['node-version'] && context.nodeVersion) {
-                showIt = checkConditions(message['node-version'], context.nodeVersion);
+            if (showIt && message['node-version']) {
+                showIt = this.checkConditions(message['node-version'], nodeVersion);
             }
-            if (showIt && message['npm-version'] && context.npmVersion) {
-                showIt = checkConditions(message['npm-version'], context.npmVersion);
+            if (showIt && message['npm-version']) {
+                showIt = this.checkConditions(message['npm-version'], npmVersion);
             }
-            if (showIt && message.os && context.os) {
-                showIt = context.os === message.os;
+            if (showIt && message.os) {
+                showIt = operatingSystem === message.os;
             }
             if (showIt && message.repo) {
                 // If multi-repo
-                if (Array.isArray(context.activeRepo)) {
-                    showIt = context.activeRepo.includes(message.repo);
+                if (Array.isArray(activeRepo)) {
+                    showIt = activeRepo.includes(message.repo);
                 } else {
-                    showIt = context.activeRepo === message.repo;
+                    showIt = activeRepo === message.repo;
                 }
             }
             if (showIt && message.uuid) {
                 if (Array.isArray(message.uuid)) {
-                    showIt = context.uuid && message.uuid.find(uuid => context.uuid === uuid);
+                    showIt = uuid && message.uuid.find(msgUuid => uuid === msgUuid);
                 } else {
-                    showIt = !!(context.uuid && context.uuid === message.uuid);
+                    showIt = !!(uuid && uuid === message.uuid);
                 }
             }
 
             if (showIt) {
+                this.log.info(`register notification ${message.class}`);
                 await this.registerNotification('news', message.class, message.title.en + '\n' + message.content.en);
             }
+        }
+    }
+
+    /**
+     * Check if adapter is active
+     *
+     * @param {string} adapterName
+     * @param {Awaited<ioBroker.GetObjectViewPromise<ioBroker.InstanceObject>>} instances
+     * @return {boolean}
+     */
+    checkActive(adapterName, instances) {
+        return !!Object.keys(instances)
+            .filter(id => id.startsWith(`adapter.system.${adapterName}.`))
+            .find(id => instances.rows.find(row => id === row.id)?.value?.common.enabled);
+    }
+
+    /**
+     * Check if conditions met
+     *
+     * @param {string} condition
+     * @param {string} installedVersion
+     * @return {boolean}
+     */
+    checkConditions(condition, installedVersion) {
+        if (condition.startsWith('equals')) {
+            const vers = condition.substring(7, condition.length - 1).trim();
+            return installedVersion === vers;
+        }
+        if (condition.startsWith('bigger') || condition.startsWith('greater')) {
+            const vers = condition.substring(7, condition.length - 1).trim();
+            try {
+                return semver.gt(vers, installedVersion);
+            } catch (e) {
+                return false;
+            }
+        } else if (condition.startsWith('smaller')) {
+            const vers = condition.substring(8, condition.length - 1).trim();
+            try {
+                return semver.lt(installedVersion, vers);
+            } catch (e) {
+                return false;
+            }
+        } else if (condition.startsWith('between')) {
+            const vers1 = condition.substring(8, condition.indexOf(',')).trim();
+            const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
+            try {
+                return semver.gte(installedVersion, vers1) && semver.lte(installedVersion, vers2);
+            } catch (e) {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 
