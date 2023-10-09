@@ -1,9 +1,9 @@
 // please do not delete React, as without it other projects could not be compiled: ReferenceError: React is not defined
-import React from 'react';
+import React, { ReactChildren, ReactElement } from 'react';
 import { withStyles } from '@mui/styles';
 import { Grid, Paper } from '@mui/material';
 import { Utils } from '@iobroker/adapter-react-v5';
-import type { ReactNodeLike } from 'prop-types';
+import type { ReactElementLike, ReactNodeLike } from 'prop-types';
 
 const styles = {
     root: {
@@ -20,7 +20,7 @@ const styles = {
 
 interface TabContainerProps {
     /** The content of the component. */
-    children: ReactNodeLike;
+    children: React.JSX.Element | React.JSX.Element[];
     /** The elevation of the tab container. */
     elevation?:number;
     /** Set to 'visible' show the overflow. */

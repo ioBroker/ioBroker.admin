@@ -16,7 +16,7 @@ const styles = {
 
 interface TabContentProps {
     /** The content of the component. */
-    children: ReactNodeLike;
+    children: React.JSX.Element | (React.JSX.Element | null | React.JSX.Element[])[];
     /** Overflow behavior */
     overflow?: 'auto';
     /** Additional css classes */

@@ -420,7 +420,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         });
     }
 
-    editLinkCard() {
+    editLinkCard(): React.JSX.Element | null {
         if (this.state.editLink) {
             return <EditIntroLinkDialog
                 link={this.state.link}
@@ -455,7 +455,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return null;
     }
 
-    getButtons(classes: Record<string, any>) {
+    getButtons(classes: Record<string, any>): React.JSX.Element[] {
         const buttons = [];
 
         if (this.state.edit) {

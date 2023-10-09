@@ -177,8 +177,8 @@ class AdminUpdater extends Component {
                                 width: '100%',
                                 height: '100%',
                                 resize: 'none',
-                                background: this.props.themeName === 'dark' ? '#000' : '#fff',
-                                color: this.props.themeName === 'dark' ? '#EEE' : '#111',
+                                background: this.props.themeType === 'dark' ? '#000' : '#fff',
+                                color: this.props.themeType === 'dark' ? '#EEE' : '#111',
                                 boxSizing: 'border-box',
                                 fontFamily:
                                     'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
@@ -231,7 +231,7 @@ AdminUpdater.propTypes = {
     version: PropTypes.string.isRequired,
     adminInstance: PropTypes.string.isRequired,
     onUpdating: PropTypes.func.isRequired,
-    themeName: PropTypes.string,
+    themeType: PropTypes.string,
 };
 
 export default AdminUpdater;
