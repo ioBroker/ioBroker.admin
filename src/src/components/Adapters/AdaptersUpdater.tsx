@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import { Styles, withStyles } from '@mui/styles';
 import semver from 'semver';
-import moment from 'moment';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -29,7 +27,12 @@ import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
 import AdapterUpdateDialog from '../../dialogs/AdapterUpdateDialog';
 
-const styles = theme => ({
+interface GetNewsResultEntry {
+    version: string;
+    news: string;
+}
+
+const styles = (theme: Record<string, any>) => ({
     smallAvatar: {
         width: theme.spacing(3),
         height: theme.spacing(3),
@@ -48,7 +51,8 @@ const styles = theme => ({
         opacity: 0.7,
     },
     '@media screen and (max-width: 400px)': {
-        minWidth:{
+        minWidth: {
+            // @ts-expect-error check later
             minWidth: 32,
         },
         listItem:{
@@ -85,10 +89,39 @@ const styles = theme => ({
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
     },
-});
+} satisfies Styles<any, any>);
 
-class AdaptersUpdater extends Component {
-    constructor(props) {
+interface AdaptersUpdaterProps {
+    inProcess: boolean;
+    lang: ioBroker.Languages;
+    /** if process has been stopped, e.g. due to an error */
+    stopped: boolean;
+    repository: Record<string, any>;
+    installed: Record<string, any>;
+    onUpdateSelected: (adapters: string[], adapters2?: string[]) => void;
+    selected: string[];
+    current: string;
+    updated: string[];
+    finished: boolean;
+    noTranslation: boolean;
+    toggleTranslation: () => void;
+    classes: Record<string, any>;
+}
+
+interface AdaptersUpdaterState {
+    current: string;
+    showNews: null | Record<string, any>;
+}
+
+class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterState> {
+    private readonly updateAvailable: string[];
+
+    /** Key adapterName, value: version */
+    private readonly initialVersions: Record<string, string>;
+
+    private readonly currentRef: React.RefObject<HTMLLIElement>;
+
+    constructor(props: AdaptersUpdaterProps) {
         super(props);
 
         this.updateAvailable = this.detectUpdates();
@@ -105,7 +138,7 @@ class AdaptersUpdater extends Component {
         this.props.onUpdateSelected([...this.updateAvailable], this.updateAvailable);
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps: AdaptersUpdaterProps) {
         if (nextProps.current !== this.state.current) {
             this.setState({ current: nextProps.current });
             setTimeout(() =>
@@ -113,17 +146,17 @@ class AdaptersUpdater extends Component {
         }
     }
 
-    static isUpdateAvailable(oldVersion, newVersion) {
+    static isUpdateAvailable(oldVersion: string, newVersion: string) {
         try {
-            return semver.gt(newVersion, oldVersion) === true;
+            return semver.gt(newVersion, oldVersion);
         } catch (e) {
             console.warn(`Cannot compare "${newVersion}" and "${oldVersion}"`);
             return false;
         }
     }
 
-    detectUpdates() {
-        const updateAvailable = [];
+    detectUpdates(): string[] {
+        const updateAvailable: string[] = [];
 
         Object.keys(this.props.repository).forEach(adapter => {
             const _installed = this.props.installed[adapter];
@@ -135,6 +168,7 @@ class AdaptersUpdater extends Component {
                 _installed.ignoreVersion !== this.props.repository[adapter].version &&
                 AdaptersUpdater.isUpdateAvailable(_installed.version, this.props.repository[adapter].version)
             ) {
+                // @ts-expect-error should be ok wait for ts port
                 if (!AdapterUpdateDialog.checkCondition(this.props.repository[adapter].messages, _installed.version, this.props.repository[adapter].version)) {
                     updateAvailable.push(adapter);
                 }
@@ -146,12 +180,12 @@ class AdaptersUpdater extends Component {
         return updateAvailable;
     }
 
-    getNews(adapter) {
+    getNews(adapter: string): GetNewsResultEntry[] {
         const adapterObj = this.props.repository[adapter];
         const installed  = this.props.installed[adapter];
-        const news = [];
+        const news: GetNewsResultEntry[] = [];
 
-        if (installed && adapterObj && adapterObj.news) {
+        if (installed && adapterObj?.news) {
             Object.keys(adapterObj.news).forEach(version => {
                 try {
                     if (semver.gt(version, installed.version)) {
@@ -170,7 +204,7 @@ class AdaptersUpdater extends Component {
         return news;
     }
 
-    renderOneAdapter(adapter) {
+    renderOneAdapter(adapter: string): React.JSX.Element | null {
         const checked = this.props.selected.includes(adapter);
         if ((this.props.finished || this.props.inProcess) && !checked) {
             return null;
@@ -186,7 +220,7 @@ class AdaptersUpdater extends Component {
                 key={adapter}
                 dense
                 classes={{ root: Utils.clsx(this.props.classes.listItem, this.props.updated.includes(adapter) && this.props.classes.updateDone) }}
-                ref={this.state.current === adapter && this.currentRef}
+                ref={this.state.current === adapter ? this.currentRef : null}
             >
                 <ListItemIcon className={this.props.classes.minWidth}>
                     <Avatar
@@ -250,17 +284,17 @@ class AdaptersUpdater extends Component {
         </React.Fragment>;
     }
 
-    getReactNews(adapter, fromVersion) {
+    getReactNews(adapter: string, fromVersion: string): React.JSX.Element[] {
         const adapterObj = this.props.repository[adapter];
         const installed  = this.props.installed[adapter];
         fromVersion = fromVersion || installed.version;
-        const result = [];
+        const result: React.JSX.Element[] = [];
 
-        if (installed && adapterObj && adapterObj.news) {
+        if (installed && adapterObj?.news) {
             Object.keys(adapterObj.news).forEach(version => {
                 try {
                     if (semver.gt(version, fromVersion) && adapterObj.news[version]) {
-                        const newsText = this.props.noTranslation ?
+                        const newsText: string = this.props.noTranslation ?
                             (adapterObj.news[version].en || '') :
                             (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en || '');
 
@@ -276,12 +310,6 @@ class AdaptersUpdater extends Component {
                         result.push(<Grid item key={version}>
                             <Typography className={this.props.classes.versionHeader}>
                                 {version}
-                                {this.props.adapterObject?.version === version ?
-                                    <span className={this.props.classes.versionTime}>
-                                        (
-                                        {moment(this.props.adapterObject.versionDate).fromNow()}
-)
-                                    </span> : ''}
                             </Typography>
                             {news.map((value, index) => <Typography key={`${version}-${index}`} component="div" variant="body2">
                                 { `• ${value}`}
@@ -346,10 +374,11 @@ class AdaptersUpdater extends Component {
                     <Button
                         variant="contained"
                         onClick={() => this.setState({ showNews: null })}
+                        // @ts-expect-error this is fine
                         color="grey"
                         startIcon={<CloseIcon />}
                     >
-                        {this.mobile ? null : I18n.t('Close')}
+                        {I18n.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>;
@@ -365,20 +394,5 @@ class AdaptersUpdater extends Component {
     }
 }
 
-AdaptersUpdater.propTypes = {
-    inProcess: PropTypes.bool.isRequired,
-    lang: PropTypes.string.isRequired,
-    /** if process has been stopped, e.g. due to an error */
-    stopped: PropTypes.bool.isRequired,
-    repository: PropTypes.object.isRequired,
-    installed: PropTypes.object.isRequired,
-    onUpdateSelected: PropTypes.func.isRequired,
-    selected: PropTypes.array.isRequired,
-    current: PropTypes.string.isRequired,
-    updated: PropTypes.array.isRequired,
-    finished: PropTypes.bool.isRequired,
-    noTranslation: PropTypes.bool,
-    toggleTranslation: PropTypes.func,
-};
-
+// @ts-expect-error investigate why it doesn't like the media screen prop in the style
 export default withStyles(styles)(AdaptersUpdater);

@@ -275,7 +275,6 @@ class AdaptersUpdaterDialog extends Component {
                     startIcon={<CancelIcon />}
                     onClick={() => {
                         this.setState({ stopped: true, finished: true });
-                        // this.onAdapterFinished = null;
                         this.props.onSetCommandRunning(false);
                     }}
                 >
