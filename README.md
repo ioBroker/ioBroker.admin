@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.10.5 (2023-10-10)
 * (foxriver76) JSON config component `port` does no longer mark port as occupied if it is only occupied on another host
 * (foxriver76) register news as notifications
 * (foxriver76) if upgrade all is stopped on error, activate close button
@@ -113,13 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed `between` function for showing news
 * (foxriver76) if date string is not parseable show the original string instead of `Invalid Date`
 * (foxriver76) updated socket classes to not crash on invalid patterns
-
-### 6.10.0 (2023-09-08)
-* (foxriver76) various minor improvements
-* (foxriver76) fixed problem with discovery dialog
-* (foxriver76) object browser now validates setting state of type number
-* (foxriver76) allow to specify unique columns for tables
-* (foxriver76) fix crash on invalid states, which are missing the property `common.role`
 
 ## License
 The MIT License (MIT)

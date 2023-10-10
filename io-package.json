@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.10.4",
+    "version": "6.10.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.10.5": {
+        "en": "JSON config component `port` does no longer mark port as occupied if it is only occupied on another host\nregister news as notifications\nif upgrade all is stopped on error, activate close button\nExport/import objects with its values",
+        "de": "JSON config-Komponenten-Port markiert nicht mehr den Port als besetzt, wenn er nur auf einem anderen Host besetzt ist\nnachrichten als benachrichtigungen registrieren\nwenn upgrade alles auf fehler gestoppt wird, aktivieren sie die schaltfläche schließen\nExport/Import Objekte mit seinen Werten",
+        "ru": "JSON config компонент порт больше не отмечает порт как занят, если он только занят на другом хосте\nзарегистрировать новости как уведомления\nесли обновление все остановлено на ошибке, активируйте закрыть кнопку\nЭкспорт/импорт объектов с его ценностями",
+        "pt": "A porta do componente JSON config já não marca a porta como ocupada se ela estiver ocupada em outro host\nregistrar notícias como notificações\nse atualizar tudo for interrompido no erro, ative o botão fechar\nExportar/importar objetos com seus valores",
+        "nl": "JSON config component haven markeert niet meer zo bezet als het alleen bezet is op een andere gastheer\nvertaling:\nals de upgrade op fout wordt gestopt, activeer dan dichte knop\nExport/import objecten met zijn waarden",
+        "fr": "JSON config composant port ne marque plus le port comme occupé si elle est seulement occupée sur un autre hôte\nenregistrer les nouvelles comme notifications\nsi la mise à niveau est arrêtée sur erreur, activez le bouton de fermeture\nObjets export/import avec ses valeurs",
+        "it": "JSON config componente porta non segna più la porta come occupato se è occupato solo su un altro host\nregistrare notizie come notifiche\nse l'aggiornamento tutto è bloccato sull'errore, attivare il pulsante di chiusura\nEsportare / importare oggetti con i suoi valori",
+        "es": "El puerto del componente de config JSON ya no marca el puerto como ocupado si sólo está ocupado en otro host\nnotificaciones\nsi actualizar todo se detiene en el error, active el botón de cierre\nExportar/importar objetos con sus valores",
+        "pl": "Port JSON nie ma już większego przeznaczenia, jeśli jest ona okupowana tylko przez inny gospodarz\nrejestracja\njeśli ulepszenie jest zahamowane na błędzie, aktywuje przycisk bliski\nObiekty eksportowe",
+        "uk": "Порт компонента JSON config більше не позначений порт, як зайнятий, якщо він зайнятий тільки на іншому господарстві\nреєструвати новини як повідомлення\nякщо оновлення все припинено на помилки, активувати закриту кнопку\nЕкспорт / імпорт об'єктів з його значеннями",
+        "zh-cn": "如果只在另一东道国被占有,那么联合部队的港口不再是被占的港口。\n通知\n如果所有升级都被排除在错误上,而是停顿。\n出口/进口物品及其价值"
+      },
       "6.10.4": {
         "en": "fixed parsing `jsonConfig`",
         "de": "feste Parsing jsonConfig",
@@ -95,19 +108,6 @@
         "pl": "program info, jeśli czas serwera różni się od czasu klienta\npomyłka z różnymi nazwami dla stanu (dane i stan)\nzawartość 404-stronicowa została otwarta w świetle dziecięcym\nw przypadku, gdy domyślne wartości nie są dostarczane tekstowi komponent jsonConfig\nzaimplementowany klucz w celu usunięcia wybranego obiektu",
         "uk": "показати інформацію, якщо час сервера відрізняється від часу клієнта\nвидалення конфузії з різними назвами для держави (дата даних та стану)\nвиправлено посилання на 404-сторінку, що відкривається всередині дитячого вигляду\nвиправлено проблему, якщо значення нетекстового за замовчуванням наданий на текстовий компонент\nвпроваджено функцію автоматичного видалення вибраного об'єкту",
         "zh-cn": "展示,如果服务时间与客户时间不同\n与国名(数据点和国名)不同的混淆\n404页的固定联系在儿童观点内开放\n如果非实际的违约价值提供给案文丛书,则确定问题。\n删除选定目标的关键执行"
-      },
-      "6.9.1": {
-        "en": "allow resizing of all columns in objects tab\nwithout expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace\nfixed keyboard navigation\nfixed problem with showing controller upgrade instructions if no UI upgrade is supported",
-        "de": "alle spalten in der registerkarte objekte neu formatieren lassen\nohne expertenmodus benutzer sind nur erlaubt, objekte in 0_userdata.0 und alias.0 namespace zu bearbeiten\ntastatur navigation\nbehobenes Problem bei der Anzeige von Controller-Upgrade-Anweisungen, wenn kein UI-Upgrade unterstützt wird",
-        "ru": "позволяют повторно использовать все колонки в вкладке объектов\nбез пользователей экспертного режима разрешается редактировать объекты в 0_userdata.0 и псевдонимов.0\nфиксированная клавиатура навигации\nфиксированная проблема с показывать инструкции по модернизации контроллера, если не поддерживается обновление UI",
-        "pt": "permitir o redimensionamento de todas as colunas na guia objetos\nsem usuários de modo de especialista só são permitidos editar objetos em 0_userdata.0 e alias.0 namespace\nnavegação do teclado fixo\nproblema fixo com a exibição de instruções de atualização do controlador se nenhuma atualização da interface do usuário é suportada",
-        "nl": "_\nzonder deskundige gebruikers mogen alleen objecten in 0userdata.0 en alias\nvertaling:\nhet probleem met het tonen van controleler upgrade instructies als geen UI upgrade ondersteunt",
-        "fr": "permet de redimensionner toutes les colonnes dans l'onglet objets\nsans les utilisateurs de mode expert sont uniquement autorisés à modifier des objets dans 0_userdata.0 et alias.0 namespace\nnavigation à clavier fixe\nproblème fixe avec l'affichage des instructions de mise à niveau du contrôleur si aucune mise à niveau de l'interface utilisateur est supportée",
-        "it": "consentire il ridimensionamento di tutte le colonne nella scheda oggetti\nsenza utenti di modalità esperto sono autorizzati solo a modificare oggetti in 0_userdata.0 e alias.0 namespace\nnavigazione a tastiera fissa\nproblema fisso con la visualizzazione delle istruzioni di aggiornamento del controller se nessun aggiornamento UI è supportato",
-        "es": "permite el tamaño de todas las columnas en la pestaña objetos\nsin los usuarios del modo experto sólo se permite editar objetos en 0_userdata.0 y alias.0 namespace\nnavegación del teclado fijo\nproblema fijo con las instrucciones de actualización del controlador si no se admite actualización UI",
-        "pl": "umożliwia odzyskiwanie wszystkich kolumn w obiektach tabeli\nużytkownicy trybu ekspertów są dozwolone jedynie do edytowania obiektów w 0_userdata.0 i alias.0\nkeyboard navigation\nproblem stały z wyświetlaniem instrukcji sterownika, jeśli nie ma aktualizacji użytkownika",
-        "uk": "дозволяють переоснащення всіх стовпчиків в вкладці об'єктів\nкористувачі не можуть редагувати об'єкти в 0_userdata.0 і alias.0\nфіксована клавіатура навігації\nвиправлена проблема з інструкціями налаштування контролера, якщо не підтримується оновлення UI",
-        "zh-cn": "允许将所有栏目重新列入目标表\n如果没有专家模式用户,只允许在0._userdata.0, 除其他外,使用名称空间。\n固定关键导航\n显示控制媒体升级指示的固定问题,如果不支持升级的UI升级。"
       }
     },
     "desc": {
