@@ -4,20 +4,6 @@ import { withStyles } from '@mui/styles';
 
 import { Button } from '@mui/material';
 
-import {
-    Key as IconAuth,
-    Send as IconSend,
-    Public as IconWeb,
-    Warning as IconWarning,
-    Error as IconError,
-    Info as IconInfo,
-    Search as IconSearch,
-    MenuBook as MenuBookIcon,
-    Help as HelpIcon,
-    UploadFile as UploadFileIcon,
-} from '@mui/icons-material';
-
-import Icon from './wrapper/Components/Icon';
 import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
@@ -35,35 +21,6 @@ const styles = theme => ({
 });
 
 class ConfigStaticText extends ConfigGeneric {
-    getIcon() {
-        let icon = null;
-        if (this.props.schema.icon === 'auth') {
-            icon = <IconAuth />;
-        } else if (this.props.schema.icon === 'send') {
-            icon = <IconSend />;
-        } else if (this.props.schema.icon === 'web') {
-            icon = <IconWeb />;
-        } else if (this.props.schema.icon === 'warning') {
-            icon = <IconWarning />;
-        } else if (this.props.schema.icon === 'error') {
-            icon = <IconError />;
-        } else if (this.props.schema.icon === 'info') {
-            icon = <IconInfo />;
-        } else if (this.props.schema.icon === 'search') {
-            icon = <IconSearch />;
-        } else if (this.props.schema.icon === 'book') {
-            icon = <MenuBookIcon />;
-        } else if (this.props.schema.icon === 'help') {
-            icon = <HelpIcon />;
-        } else if (this.props.schema.icon === 'upload') {
-            icon = <UploadFileIcon />;
-        } else if (this.props.schema.icon) {
-            icon = <Icon src={this.props.schema.icon} />;
-        }
-
-        return icon;
-    }
-
     renderItem(error, disabled) {
         if (this.props.schema.button) {
             const icon = this.getIcon();

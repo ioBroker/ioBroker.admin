@@ -6,12 +6,21 @@ import {
     Info as IconInfo,
     Warning as IconWarning,
     Error as IconError,
+    Key as IconAuth,
+    Send as IconSend,
+    Public as IconWeb,
+    Search as IconSearch,
+    MenuBook as IconMenuBook,
+    Help as IconHelp,
+    UploadFile as IconUploadFile,
 } from '@mui/icons-material';
 
 import type { AdminConnection } from '@iobroker/adapter-react-v5';
+
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
 import ConfirmDialog from './wrapper/Dialogs/Confirm';
+import Icon from './wrapper/Components/Icon';
 import { isObject } from '../../helpers/utils';
 
 export interface ConfigGenericProps {
@@ -334,6 +343,44 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
                     })}
             />
         );
+    }
+
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    getIcon(iconSettings: string | undefined | null): React.JSX.Element | null {
+        iconSettings = iconSettings || this.props.schema.icon;
+        let icon = null;
+        if (iconSettings === 'auth') {
+            icon = <IconAuth />;
+        } else if (iconSettings === 'send') {
+            icon = <IconSend />;
+        } else if (iconSettings === 'web') {
+            icon = <IconWeb />;
+        } else if (iconSettings === 'warning') {
+            icon = <IconWarning />;
+        } else if (iconSettings === 'error') {
+            icon = <IconError />;
+        } else if (iconSettings === 'info') {
+            icon = <IconInfo />;
+        } else if (iconSettings === 'search') {
+            icon = <IconSearch />;
+        }  else if (iconSettings === 'book') {
+            icon = <IconMenuBook />;
+        } else if (iconSettings === 'help') {
+            icon = <IconHelp />;
+        } else if (iconSettings === 'upload') {
+            icon = <IconUploadFile />;
+        } else if (iconSettings) {
+            if (iconSettings.endsWith('.png') || iconSettings.endsWith('.svg') || iconSettings.endsWith('.jpg')) {
+                // this path is relative to ./adapter/NAME
+                if (!iconSettings.startsWith('http://') && !iconSettings.startsWith('https://')) {
+                    iconSettings = `./adapter/${this.props.adapterName}/${iconSettings}`;
+                }
+            }
+
+            icon = <Icon src={iconSettings} style={{ width: 22, height: 22 }} />;
+        }
+
+        return icon;
     }
 
     /**
@@ -779,7 +826,7 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         }
     }
 
-    render() {
+    render(): string | React.JSX.Element | null {
         const schema = this.props.schema;
 
         if (!schema) {

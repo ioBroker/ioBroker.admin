@@ -30,12 +30,13 @@ Possible types:
 
 - `tabs` - Tabs with items
   - `items` - Object with panels `{"tab1": {}, "tab2": {}...}`
+  - `iconPosition` - `bottom`, `end`, `start` or `top`. Only for panels that has `icon` attribute. Default: `start`
   
 - `panel` - Tab with items
-  - `icon` - tab can have icon (base64)
+  - `icon` - tab can have icon (base64 like `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`)
   - `label` - Label of tab
   - `items` - Object `{"attr1": {}, "attr2": {}}...`
-  - `collapsable` - only possible as not part of tabs
+  - `collapsable` - only possible as not part of tabs[jsonConfig.json](..%2F..%2F..%2F..%2F..%2FioBroker.ring%2Fadmin%2FjsonConfig.json)
   - `color` - color of collapsable header `primary` or `secondary` or nothing
 
 - `text` - Text component
@@ -84,13 +85,6 @@ Possible types:
 - `autocomplete`
   - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`
   - `freeSolo` - Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.
-
-- `!icon` - base64 icon
-  - `maxSize`
-  - `maxWidth`
-  - `maxHeight`
-  - `crop` - if true, allow user to crop the image (only for non svg)
-  - `square` - width must be equal to height, or crop must allow only square as shape
 
 - `image` - saves image as file of the `adapter.X` object or as base64 in attribute
   - `filename` - name of file is structure name. In the below example `login-bg.png` is file name for `writeFile("myAdapter.INSTANCE", "login-bg.png")`
@@ -178,7 +172,7 @@ Possible types:
     - `reloadBrowser` - if true - reload the current browser window, if response contains attribute `reloadBrowser`, like `{"reloadBrowser": true}`.
     - `window` - if `openUrl` is true, this is name of the new window. Could be overwritten if response consist `window` attribute.
       `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
-    - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`. You can use `base64` icons. (Request via issue if you need more icons)
+    - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`. You can use `base64` icons (like `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`). (Request via issue if you need more icons)
     - `useNative` - if adapter returns a result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration.
     - `showProcess` - Show spinner while request is in progress
     - `timeout` - timeout for request in ms. Default: none.
@@ -200,7 +194,7 @@ Possible types:
     - `button` - show a link as button
     - `variant` - type of button (`outlined`, `contained`, `text`)
     - `color` - color of button (e.g. `primary`)
-    - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (start with `data:image/svg+xml;base64,...`). (Request via issue if you need more icons)
+    - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`, `book`, `help`, `upload`. You can use `base64` icons (it starts with `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`) . (Request via issue if you need more icons)
 
 - `staticImage` - static image
     - `href` - optional HTTP link
@@ -426,9 +420,6 @@ All types could have:
 - `disabled` - JS function that could use `native.attribute` for calculation
 - `help` - help text (multi-language)
 - `helpLink` - href to help (could be used only together with `help`)
-- `icon` - base64 svg
-- `!encrypted` - is value encrypted or not (of course only for texts)
-  - if encrypted, use `__encrypted__` value for show and if was changed, encrypt it with `socket.encrypt`
 - `style` - css style in ReactJS notation: `radiusBorder` and not `radius-border`.
 - `darkStyle` - css style for dark mode
 - `validator` - JS function: true no error, false - error
