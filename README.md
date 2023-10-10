@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added possibility to show the icon on JSON config tabs
+
 ### 6.10.5 (2023-10-10)
 * (foxriver76) JSON config component `port` does no longer mark port as occupied if it is only occupied on another host
 * (foxriver76) register news as notifications
