@@ -78,22 +78,25 @@ import {
     BedroomParent,
 } from '@mui/icons-material';
 
-import IconExpert from '@iobroker/adapter-react-v5/icons/IconExpert';
-import IconAdapter from '@iobroker/adapter-react-v5/icons/IconAdapter';
-import IconAlias from '@iobroker/adapter-react-v5/icons/IconAlias';
-import IconChannel from '@iobroker/adapter-react-v5/icons/IconChannel';
-import IconCopy from '@iobroker/adapter-react-v5/icons/IconCopy';
-import IconDevice from '@iobroker/adapter-react-v5/icons/IconDevice';
-import IconDocument from '@iobroker/adapter-react-v5/icons/IconDocument';
-import IconDocumentReadOnly from '@iobroker/adapter-react-v5/icons/IconDocumentReadOnly';
-import IconInstance from '@iobroker/adapter-react-v5/icons/IconInstance';
-import IconState from '@iobroker/adapter-react-v5/icons/IconState';
-import IconClosed from '@iobroker/adapter-react-v5/icons/IconClosed';
-import IconOpen from '@iobroker/adapter-react-v5/icons/IconOpen';
-import IconClearFilter from '@iobroker/adapter-react-v5/icons/IconClearFilter';
+import {
+    IconExpert,
+    IconAdapter,
+    IconAlias,
+    IconChannel,
+    IconCopy,
+    IconDevice,
+    IconDocument,
+    IconDocumentReadOnly,
+    IconInstance,
+    IconState,
+    IconClosed,
+    IconOpen,
+    IconClearFilter,
+    Icon,
+    withWidth,
+} from '@iobroker/adapter-react-v5';
 
 // own
-import { Icon, withWidth } from '@iobroker/adapter-react-v5';
 import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
@@ -1501,7 +1504,7 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
         }
 
         const name = getName(common.name, lang);
-        if (common?.members?.includes(id) && !funcs.includes(name)) {
+        if (common.members?.includes(id) && !funcs.includes(name)) {
             if (!withParentInfo) {
                 funcs.push(name);
             } else {
@@ -2012,6 +2015,7 @@ class ObjectBrowser extends Component {
             showDescription:
                 (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.desc`) !== 'false',
             showContextMenu: null,
+            noStatesByExportImport: false,
         };
 
         this.edit = {};
@@ -2364,7 +2368,7 @@ class ObjectBrowser extends Component {
     showDeleteDialog(options) {
         const { id, obj, item } = options;
 
-        // calculate number of children
+        // calculate the number of children
         const keys = Object.keys(this.objects);
         keys.sort();
         let count = 0;
@@ -3494,31 +3498,54 @@ class ObjectBrowser extends Component {
                 }
                 const obj = objs[id];
                 let enums = null;
+                let val;
+                let ack;
                 if (obj && obj.common && obj.common.enums) {
                     enums = obj.common.enums;
                     delete obj.common.enums;
                 } else {
                     enums = null;
                 }
+
+                if (obj.val) {
+                    val = obj.val;
+                    delete obj.val;
+                }
+                if (obj.ack !== undefined) {
+                    ack = obj.ack;
+                    delete obj.ack;
+                }
                 try {
                     await this.props.socket.setObject(id, obj);
                     enums && (await this._createAllEnums(enums, obj._id));
                     if (obj.type === 'state') {
-                        try {
-                            const state = await this.props.socket.getState(obj._id);
-                            if (!state || state.val === null) {
-                                try {
-                                    await this.props.socket.setState(
-                                        obj._id,
-                                        !obj.common || obj.common.def === undefined ? null : obj.common.def,
-                                        true,
-                                    );
-                                } catch (e) {
-                                    window.alert(`Cannot set state "${obj._id}": ${e}`);
-                                }
+                        if (val !== undefined && val !== null) {
+                            try {
+                                await this.props.socket.setState(
+                                    obj._id,
+                                    val,
+                                    ack !== undefined ? ack : true,
+                                );
+                            } catch (e) {
+                                window.alert(`Cannot set state "${obj._id} with ${val}": ${e}`);
                             }
-                        } catch (e) {
-                            window.alert(`Cannot read state "${obj._id}": ${e}`);
+                        } else {
+                            try {
+                                const state = await this.props.socket.getState(obj._id);
+                                if (!state || state.val === null) {
+                                    try {
+                                        await this.props.socket.setState(
+                                            obj._id,
+                                            !obj.common || obj.common.def === undefined ? null : obj.common.def,
+                                            true,
+                                        );
+                                    } catch (e) {
+                                        window.alert(`Cannot set state "${obj._id}": ${e}`);
+                                    }
+                                }
+                            } catch (e) {
+                                window.alert(`Cannot read state "${obj._id}": ${e}`);
+                            }
                         }
                     }
                 } catch (error) {
@@ -3551,15 +3578,26 @@ class ObjectBrowser extends Component {
         return [];
     }
 
-    _exportObjects(isAll) {
+    async _exportObjects(isAll, noStatesByExportImport) {
         if (isAll) {
             generateFile('allObjects.json', this.objects);
         } else if (this.state.selected.length || this.state.selectedNonObject) {
             const result = {};
             const id = this.state.selected[0] || this.state.selectedNonObject;
+            const ids = this._getSelectedIdsForExport();
 
-            this._getSelectedIdsForExport().forEach(key => {
+            for (let i = 0; i < ids.length; i++) {
+                const key = ids[i];
                 result[key] = JSON.parse(JSON.stringify(this.objects[key]));
+
+                // read states values
+                if (result[key]?.type === 'state' && !noStatesByExportImport) {
+                    const state = await this.props.socket.getState(key);
+                    if (state) {
+                        result[key].val = state.val;
+                        result[key].ack = state.ack;
+                    }
+                }
                 // add enum information
                 if (result[key].common) {
                     const enums = this.getEnumsForId(key);
@@ -3567,9 +3605,9 @@ class ObjectBrowser extends Component {
                         result[key].common.enums = enums;
                     }
                 }
-            });
+            }
 
-            generateFile(`${id}.json`, result);
+            generateFile(`${id}.json`, result, noStatesByExportImport);
         } else {
             window.alert(this.props.t('ra_Save of objects-tree is not possible'));
         }
@@ -3580,19 +3618,27 @@ class ObjectBrowser extends Component {
             return null;
         }
         return <Dialog open={!0}>
-            <DialogTitle>{this.props.t('Select type of export')}</DialogTitle>
+            <DialogTitle>{this.props.t('ra_Select type of export')}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    {this.props.t('You can export all objects or just the selected branch.')}
+                    {this.props.t('ra_You can export all objects or just the selected branch.')}
                     <br />
-                    {this.props.t('Selected %s object(s)', this.state.showExportDialog)}
+                    {this.props.t('ra_Selected %s object(s)', this.state.showExportDialog)}
+                    <br />
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={this.state.noStatesByExportImport}
+                            onChange={e => this.setState({ noStatesByExportImport: e.target.checked })}
+                        />}
+                        label={this.props.t('ra_Do not export values of states')}
+                    />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button
                     color="grey"
                     variant="outlined"
-                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(true))}
+                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(true, this.state.noStatesByExportImport))}
                 >
                     {this.props.t('ra_All objects')}
                     {' '}
@@ -3604,7 +3650,7 @@ class ObjectBrowser extends Component {
                     color="primary"
                     variant="contained"
                     autoFocus
-                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(false))}
+                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(false, this.state.noStatesByExportImport))}
                 >
                     {this.props.t('ra_Only selected')}
                     {' '}
@@ -3647,25 +3693,42 @@ class ObjectBrowser extends Component {
                         //    "_id": "xxx",
                         //   "common": "yyy",
                         //   "native": "zzz"
+                        //   "val": JSON.stringify(value)
+                        //   "ack": true
                         // }
                         if (!id) {
                             return window.alert(this.props.t('ra_Invalid structure'));
                         }
                         try {
                             let enums;
+                            let val;
+                            let ack;
                             if (json.common.enums) {
                                 enums = json.common.enums;
                                 delete json.common.enums;
                             }
+                            if (json.val) {
+                                val = json.val;
+                                delete json.val;
+                            }
+                            if (json.ack !== undefined) {
+                                ack = json.ack;
+                                delete json.ack;
+                            }
                             await this.props.socket.setObject(json._id, json);
+
                             if (json.type === 'state') {
-                                const state = await this.props.socket.getState(json._id);
-                                if (!state || state.val === null || state.val === undefined) {
-                                    await this.props.socket.getState(
-                                        json._id,
-                                        json.common.def === undefined ? null : json.common.def,
-                                        true,
-                                    );
+                                if (val !== undefined && val !== null) {
+                                    await this.props.socket.setState(json._id, val, ack === undefined ? true : ack);
+                                } else {
+                                    const state = await this.props.socket.getState(json._id);
+                                    if (!state || state.val === null || state.val === undefined) {
+                                        await this.props.socket.setState(
+                                            json._id,
+                                            json.common.def === undefined ? null : json.common.def,
+                                            true,
+                                        );
+                                    }
                                 }
                             }
                             if (enums) {
@@ -6554,11 +6617,8 @@ class ObjectBrowser extends Component {
                 icon: <IconDelete fontSize="small" className={this.props.classes.contextMenuDelete} />,
                 className: this.props.classes.contextMenuDelete,
                 label: this.texts.deleteObject,
-                onClick: () => {
-                    this.setState({ showContextMenu: null }, () => {
-                        this.showDeleteDialog({ id, obj: obj || {}, item });
-                    });
-                },
+                onClick: () => this.setState({ showContextMenu: null }, () =>
+                    this.showDeleteDialog({ id, obj: obj || {}, item })),
             },
         };
 

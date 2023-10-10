@@ -2283,7 +2283,6 @@ Adapters.propTypes = {
     adaptersWorker: PropTypes.object,
     instancesWorker: PropTypes.object,
     theme: PropTypes.object,
-    themeName: PropTypes.string,
     themeType: PropTypes.string,
     systemConfig: PropTypes.object,
     socket: PropTypes.object,

@@ -11,7 +11,7 @@
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
         "@fnando/sparkline": "^0.3.10",
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
-        "@iobroker/adapter-react-v5": "^4.6.2",
+        "@iobroker/adapter-react-v5": "^4.6.3",
         "@iobroker/admin-component-easy-access": "^0.3.2",
         "@iobroker/socket-client": "^2.3.9",
         "@mui/icons-material": "^5.14.12",
