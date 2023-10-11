@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.10.4",
+    "version": "6.10.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.10.5": {
+        "en": "JSON config component `port` does no longer mark port as occupied if it is only occupied on another host\nregister news as notifications\nif upgrade all is stopped on error, activate close button\nExport/import objects with its values",
+        "de": "JSON config-Komponenten-Port markiert nicht mehr den Port als besetzt, wenn er nur auf einem anderen Host besetzt ist\nnachrichten als benachrichtigungen registrieren\nwenn upgrade alles auf fehler gestoppt wird, aktivieren sie die schaltfläche schließen\nExport/Import Objekte mit seinen Werten",
+        "ru": "JSON config компонент порт больше не отмечает порт как занят, если он только занят на другом хосте\nзарегистрировать новости как уведомления\nесли обновление все остановлено на ошибке, активируйте закрыть кнопку\nЭкспорт/импорт объектов с его ценностями",
+        "pt": "A porta do componente JSON config já não marca a porta como ocupada se ela estiver ocupada em outro host\nregistrar notícias como notificações\nse atualizar tudo for interrompido no erro, ative o botão fechar\nExportar/importar objetos com seus valores",
+        "nl": "JSON config component haven markeert niet meer zo bezet als het alleen bezet is op een andere gastheer\nvertaling:\nals de upgrade op fout wordt gestopt, activeer dan dichte knop\nExport/import objecten met zijn waarden",
+        "fr": "JSON config composant port ne marque plus le port comme occupé si elle est seulement occupée sur un autre hôte\nenregistrer les nouvelles comme notifications\nsi la mise à niveau est arrêtée sur erreur, activez le bouton de fermeture\nObjets export/import avec ses valeurs",
+        "it": "JSON config componente porta non segna più la porta come occupato se è occupato solo su un altro host\nregistrare notizie come notifiche\nse l'aggiornamento tutto è bloccato sull'errore, attivare il pulsante di chiusura\nEsportare / importare oggetti con i suoi valori",
+        "es": "El puerto del componente de config JSON ya no marca el puerto como ocupado si sólo está ocupado en otro host\nnotificaciones\nsi actualizar todo se detiene en el error, active el botón de cierre\nExportar/importar objetos con sus valores",
+        "pl": "Port JSON nie ma już większego przeznaczenia, jeśli jest ona okupowana tylko przez inny gospodarz\nrejestracja\njeśli ulepszenie jest zahamowane na błędzie, aktywuje przycisk bliski\nObiekty eksportowe",
+        "uk": "Порт компонента JSON config більше не позначений порт, як зайнятий, якщо він зайнятий тільки на іншому господарстві\nреєструвати новини як повідомлення\nякщо оновлення все припинено на помилки, активувати закриту кнопку\nЕкспорт / імпорт об'єктів з його значеннями",
+        "zh-cn": "如果只在另一东道国被占有,那么联合部队的港口不再是被占的港口。\n通知\n如果所有升级都被排除在错误上,而是停顿。\n出口/进口物品及其价值"
+      },
       "6.10.4": {
         "en": "fixed parsing `jsonConfig`",
         "de": "feste Parsing jsonConfig",
@@ -95,19 +108,6 @@
         "pl": "program info, jeśli czas serwera różni się od czasu klienta\npomyłka z różnymi nazwami dla stanu (dane i stan)\nzawartość 404-stronicowa została otwarta w świetle dziecięcym\nw przypadku, gdy domyślne wartości nie są dostarczane tekstowi komponent jsonConfig\nzaimplementowany klucz w celu usunięcia wybranego obiektu",
         "uk": "показати інформацію, якщо час сервера відрізняється від часу клієнта\nвидалення конфузії з різними назвами для держави (дата даних та стану)\nвиправлено посилання на 404-сторінку, що відкривається всередині дитячого вигляду\nвиправлено проблему, якщо значення нетекстового за замовчуванням наданий на текстовий компонент\nвпроваджено функцію автоматичного видалення вибраного об'єкту",
         "zh-cn": "展示,如果服务时间与客户时间不同\n与国名(数据点和国名)不同的混淆\n404页的固定联系在儿童观点内开放\n如果非实际的违约价值提供给案文丛书,则确定问题。\n删除选定目标的关键执行"
-      },
-      "6.9.1": {
-        "en": "allow resizing of all columns in objects tab\nwithout expert mode users are only allowed to edit objects in `0_userdata.0` and `alias.0` namespace\nfixed keyboard navigation\nfixed problem with showing controller upgrade instructions if no UI upgrade is supported",
-        "de": "alle spalten in der registerkarte objekte neu formatieren lassen\nohne expertenmodus benutzer sind nur erlaubt, objekte in 0_userdata.0 und alias.0 namespace zu bearbeiten\ntastatur navigation\nbehobenes Problem bei der Anzeige von Controller-Upgrade-Anweisungen, wenn kein UI-Upgrade unterstützt wird",
-        "ru": "позволяют повторно использовать все колонки в вкладке объектов\nбез пользователей экспертного режима разрешается редактировать объекты в 0_userdata.0 и псевдонимов.0\nфиксированная клавиатура навигации\nфиксированная проблема с показывать инструкции по модернизации контроллера, если не поддерживается обновление UI",
-        "pt": "permitir o redimensionamento de todas as colunas na guia objetos\nsem usuários de modo de especialista só são permitidos editar objetos em 0_userdata.0 e alias.0 namespace\nnavegação do teclado fixo\nproblema fixo com a exibição de instruções de atualização do controlador se nenhuma atualização da interface do usuário é suportada",
-        "nl": "_\nzonder deskundige gebruikers mogen alleen objecten in 0userdata.0 en alias\nvertaling:\nhet probleem met het tonen van controleler upgrade instructies als geen UI upgrade ondersteunt",
-        "fr": "permet de redimensionner toutes les colonnes dans l'onglet objets\nsans les utilisateurs de mode expert sont uniquement autorisés à modifier des objets dans 0_userdata.0 et alias.0 namespace\nnavigation à clavier fixe\nproblème fixe avec l'affichage des instructions de mise à niveau du contrôleur si aucune mise à niveau de l'interface utilisateur est supportée",
-        "it": "consentire il ridimensionamento di tutte le colonne nella scheda oggetti\nsenza utenti di modalità esperto sono autorizzati solo a modificare oggetti in 0_userdata.0 e alias.0 namespace\nnavigazione a tastiera fissa\nproblema fisso con la visualizzazione delle istruzioni di aggiornamento del controller se nessun aggiornamento UI è supportato",
-        "es": "permite el tamaño de todas las columnas en la pestaña objetos\nsin los usuarios del modo experto sólo se permite editar objetos en 0_userdata.0 y alias.0 namespace\nnavegación del teclado fijo\nproblema fijo con las instrucciones de actualización del controlador si no se admite actualización UI",
-        "pl": "umożliwia odzyskiwanie wszystkich kolumn w obiektach tabeli\nużytkownicy trybu ekspertów są dozwolone jedynie do edytowania obiektów w 0_userdata.0 i alias.0\nkeyboard navigation\nproblem stały z wyświetlaniem instrukcji sterownika, jeśli nie ma aktualizacji użytkownika",
-        "uk": "дозволяють переоснащення всіх стовпчиків в вкладці об'єктів\nкористувачі не можуть редагувати об'єкти в 0_userdata.0 і alias.0\nфіксована клавіатура навігації\nвиправлена проблема з інструкціями налаштування контролера, якщо не підтримується оновлення UI",
-        "zh-cn": "允许将所有栏目重新列入目标表\n如果没有专家模式用户,只允许在0._userdata.0, 除其他外,使用名称空间。\n固定关键导航\n显示控制媒体升级指示的固定问题,如果不支持升级的UI升级。"
       }
     },
     "desc": {
@@ -182,15 +182,17 @@
     "wwwDontUpload": true,
     "eraseOnUpload": true,
     "nogit": true,
-    "welcomeScreenPro": {
-      "link": "admin/index.html",
-      "name": "Admin",
-      "img": "admin/img/admin.png",
-      "color": "pink",
-      "order": 5,
-      "localLinks": "_default",
-      "localLink": true
-    },
+    "welcomeScreenPro": [
+      {
+        "link": "admin/index.html",
+        "name": "Admin",
+        "img": "admin/img/admin.png",
+        "color": "pink",
+        "order": 5,
+        "localLinks": "_default",
+        "localLink": true
+      }
+    ],
     "localLinks": {
       "_default": {
         "link": "%protocol%://%bind%:%port%",
@@ -236,6 +238,135 @@
     "loadingHideLogo": false,
     "loadingBackgroundImage": false
   },
+  "notifications": [
+    {
+      "scope": "news",
+      "name": {
+        "en": "News",
+        "de": "Nachrichten",
+        "ru": "Новости",
+        "pt": "Notícias",
+        "nl": "Nieuws",
+        "fr": "Actualités",
+        "it": "Notizie",
+        "es": "Noticias",
+        "pl": "News",
+        "uk": "Новини",
+        "zh-cn": "新闻"
+      },
+      "description": {
+        "en": "These notifications represent news regarding installed adapters or general ioBroker information.",
+        "de": "Diese Benachrichtigungen enthalten Neuigkeiten zu installierten Adaptern oder allgemeine ioBroker-Informationen.",
+        "ru": "Эти уведомления представляют новости о установленных адаптерах или общей информации ioBroker.",
+        "pt": "Estas notificações representam notícias sobre adaptadores instalados ou informações gerais do ioBroker.",
+        "nl": "Deze berichten zijn nieuws over geïnstalleerde adapters of algemene ioBroker informatie.",
+        "fr": "Ces notifications représentent des nouvelles concernant les adaptateurs installés ou les informations générales ioBroker.",
+        "it": "Queste notifiche rappresentano notizie riguardanti adattatori installati o informazioni generali su ioBroker.",
+        "es": "Estas notificaciones representan noticias sobre adaptadores instalados o información general ioBroker.",
+        "pl": "Noty te reprezentują informacje dotyczące zainstalowanych adapterów lub ogólnie dostępnych informacji ioBrokera.",
+        "uk": "Ці повідомлення представляють новини про встановлені адаптери або загальні відомості про ioBroker.",
+        "zh-cn": "这些通知是有关安装的适应器或一般的气箱信息的新闻。."
+      },
+      "categories": [
+        {
+          "category": "info",
+          "name": {
+            "en": "General news",
+            "de": "Allgemeine Nachrichten",
+            "ru": "Общие новости",
+            "pt": "Notícia geral",
+            "nl": "Generaal",
+            "fr": "Nouvelles générales",
+            "it": "Notizie generali",
+            "es": "Noticias generales",
+            "pl": "Strona oficjalna",
+            "uk": "Новини",
+            "zh-cn": "新闻"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "These messages represent general news, which just have informal purpose and do not need to be read immediately.",
+            "de": "Diese Nachrichten stellen allgemeine Nachrichten dar, die nur informellen Zweck haben und nicht sofort gelesen werden müssen.",
+            "ru": "Эти сообщения представляют собой общие новости, которые просто имеют неформальную цель и не нужно читать немедленно.",
+            "pt": "Essas mensagens representam notícias gerais, que apenas têm um propósito informal e não precisam ser lidas imediatamente.",
+            "nl": "Deze berichten vertegenwoordigen algemene nieuws, wat informeel doel heeft en niet onmiddellijk hoeft te worden gelezen.",
+            "fr": "Ces messages représentent des nouvelles générales, qui ont juste un but informel et ne doivent pas être lus immédiatement.",
+            "it": "Questi messaggi rappresentano notizie generali, che hanno solo scopo informale e non devono essere letti immediatamente.",
+            "es": "Estos mensajes representan noticias generales, que sólo tienen un propósito informal y no necesitan ser leídos inmediatamente.",
+            "pl": "Wiadomości te reprezentują ogólnokrajowe wiadomości, które tylko mają nieformalny cel i nie muszą być odczytane natychmiast.",
+            "uk": "Ці повідомлення представляють загальні новини, які просто мають неформальне призначення і не потрібно негайно прочитати.",
+            "zh-cn": "这些信息是一般新闻,这只是非正式目的,不需要立即阅读。."
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "warning",
+          "name": {
+            "en": "Important news",
+            "de": "Wichtige Nachrichten",
+            "ru": "Важные новости",
+            "pt": "Notícia importante",
+            "nl": "Belangrijk nieuws",
+            "fr": "Nouvelles importantes",
+            "it": "Notizie importanti",
+            "es": "Noticias importantes",
+            "pl": "Important news",
+            "uk": "Новини",
+            "zh-cn": "重要的新闻"
+          },
+          "severity": "info",
+          "description": {
+            "en": "These messages represent adapter warnings and important changes in the near future.",
+            "de": "Diese Nachrichten stellen Adapterwarnungen und wichtige Veränderungen in der nahen Zukunft dar.",
+            "ru": "Эти сообщения представляют предупреждение о адаптере и важные изменения в ближайшем будущем.",
+            "pt": "Estas mensagens representam avisos de adaptadores e mudanças importantes no futuro próximo.",
+            "nl": "Deze berichten vertegenwoordigen adapter waarschuwingen en belangrijke veranderingen in de nabije toekomst.",
+            "fr": "Ces messages représentent des avertissements d'adaptateur et des changements importants dans un proche avenir.",
+            "it": "Questi messaggi rappresentano avvisi di adattatore e cambiamenti importanti nel prossimo futuro.",
+            "es": "Estos mensajes representan advertencias de adaptador y cambios importantes en el futuro cercano.",
+            "pl": "Wiadomości te reprezentują ostrzeżenia adaptatora i ważne zmiany w najbliższej przyszłości.",
+            "uk": "Ці повідомлення представляють попередження та важливі зміни в найближчому майбутньому.",
+            "zh-cn": "这些信息是适应的预警和近期的重要变化。."
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "danger",
+          "name": {
+            "en": "Very important news",
+            "de": "Sehr wichtige Nachrichten",
+            "ru": "Очень важные новости",
+            "pt": "Notícia muito importante",
+            "nl": "Heel belangrijk",
+            "fr": "Nouvelles très importantes",
+            "it": "Notizie molto importanti",
+            "es": "Noticias muy importantes",
+            "pl": "Ważne wiadomości",
+            "uk": "Останні новини",
+            "zh-cn": "非常重要的新闻"
+          },
+          "severity": "alert",
+          "description": {
+            "en": "These notifications are very important. They may give you a hint that an adapter upgrade is required right now to maintain functionality.",
+            "de": "Diese Benachrichtigungen sind sehr wichtig. Sie können Ihnen einen Hinweis geben, dass ein Adapter-Upgrade jetzt erforderlich ist, um die Funktionalität zu erhalten.",
+            "ru": "Эти уведомления очень важны. Они могут дать вам подсказку, что обновление адаптера требуется прямо сейчас для поддержания функциональности.",
+            "pt": "Estas notificações são muito importantes. Eles podem lhe dar uma dica de que uma atualização do adaptador é necessária agora para manter a funcionalidade.",
+            "nl": "Deze berichten zijn heel belangrijk. Ze kunnen je een hint geven dat een adapter upgrade nu nodig is om functionaliteit te behouden.",
+            "fr": "Ces notifications sont très importantes. Ils peuvent vous donner un indice qu'une mise à niveau d'adaptateur est nécessaire pour maintenir la fonctionnalité.",
+            "it": "Queste notifiche sono molto importanti. Essi possono dare un suggerimento che un aggiornamento adattatore è necessario in questo momento per mantenere la funzionalità.",
+            "es": "Estas notificaciones son muy importantes. Pueden darle una pista de que se requiere una actualización del adaptador ahora mismo para mantener la funcionalidad.",
+            "pl": "Te informacje są bardzo ważne. Mogą dać wskazówki, że ulepszanie adapteru jest niezbędne do utrzymania funkcji.",
+            "uk": "Ці повідомлення дуже важливі. Вони можуть надати вам підказку, що оновлення адаптера потрібно прямо зараз для підтримки функціональності.",
+            "zh-cn": "这些通知非常重要。 他们可以向你说明,适应人员升级现在需要保持功能。."
+          },
+          "regex": [],
+          "limit": 10
+        }
+      ]
+    }
+  ],
   "objects": [],
   "instanceObjects": [
     {

@@ -1528,7 +1528,6 @@ class App extends Router {
                         key="adapters"
                         forceUpdateAdapters={this.state.forceUpdateAdapters}
                         theme={this.state.theme}
-                        themeName={this.state.themeName}
                         adaptersWorker={this.adaptersWorker}
                         instancesWorker={this.instancesWorker}
                         themeType={this.state.themeType}

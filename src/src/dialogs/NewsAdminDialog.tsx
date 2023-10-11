@@ -189,6 +189,7 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
             if (!message) {
                 continue;
             }
+
             if (message.id === lastMessageId) {
                 break;
             }

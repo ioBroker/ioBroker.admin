@@ -8,14 +8,9 @@ import {
     Warning as IconWarning,
     Error as IconError,
     Info as IconInfo,
-    Key as IconAuth,
-    Send as IconSend,
-    Public as IconWeb,
-    Search as IconSearch,
 } from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
-import Icon from './wrapper/Components/Icon';
 import DialogError from './wrapper/Dialogs/Error';
 import DialogMessage from './wrapper/Dialogs/Message';
 import DialogConfirm from './wrapper/Dialogs/Confirm';
@@ -290,29 +285,6 @@ class ConfigSendto extends ConfigGeneric {
                 this.setState({ confirmDialog: false }, () =>
                     isOk && this._onClick())}
         />;
-    }
-
-    getIcon() {
-        let icon = null;
-        if (this.props.schema.icon === 'auth') {
-            icon = <IconAuth />;
-        } else if (this.props.schema.icon === 'send') {
-            icon = <IconSend />;
-        } else if (this.props.schema.icon === 'web') {
-            icon = <IconWeb />;
-        } else if (this.props.schema.icon === 'warning') {
-            icon = <IconWarning />;
-        } else if (this.props.schema.icon === 'error') {
-            icon = <IconError />;
-        } else if (this.props.schema.icon === 'info') {
-            icon = <IconInfo />;
-        } else if (this.props.schema.icon === 'search') {
-            icon = <IconSearch />;
-        } else if (this.props.schema.icon) {
-            icon = <Icon src={this.props.schema.icon} />;
-        }
-
-        return icon;
     }
 
     renderItem(error, disabled /* , defaultValue */) {

@@ -15,7 +15,8 @@
 
 const semver = require('semver');
 const axios = require('axios').default;
-const fs = require('fs');
+const fs = require('node:fs');
+const os = require('node:os');
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const getInstalledInfo = utils.commonTools.getInstalledInfo;
@@ -679,10 +680,10 @@ class Admin extends utils.Adapter {
         return (
             this.getStateAsync('info.newsETag')
                 .then(state => {
-                    oldEtag = state && state.val;
+                    oldEtag = state?.val;
                     return axios
                         .get('https://iobroker.live/repo/news-hash.json', {
-                            timeout: 13000,
+                            timeout: 13_000,
                             validateStatus: status => status < 400,
                         })
                         .then(response => response.data)
@@ -699,7 +700,7 @@ class Admin extends utils.Adapter {
                         newEtag = etag.hash;
                         return axios
                             .get('https://iobroker.live/repo/news.json', {
-                                timeout: 14000,
+                                timeout: 14_000,
                                 validateStatus: status => status < 400,
                             })
                             .then(response => response.data)
@@ -722,7 +723,7 @@ class Admin extends utils.Adapter {
                 .then(state => {
                     try {
                         /** @ts-expect-error */
-                        oldNews = state && state.val ? JSON.parse(state.val) : [];
+                        oldNews = state?.val ? JSON.parse(state.val) : [];
                     } catch (e) {
                         oldNews = [];
                     }
@@ -734,7 +735,7 @@ class Admin extends utils.Adapter {
                 .then(lastState => {
                     // find time of last ID
                     let time = '';
-                    if (lastState && lastState.val) {
+                    if (lastState?.val) {
                         const item = oldNews.find(item => item.id === lastState.val);
                         if (item) {
                             time = item.created;
@@ -761,6 +762,7 @@ class Admin extends utils.Adapter {
                     }
 
                     if (originalOldNews !== JSON.stringify(oldNews)) {
+                        this.registerNewsNotifications(oldNews, lastState?.val);
                         return this.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
                     } else {
                         return Promise.resolve();
@@ -773,6 +775,152 @@ class Admin extends utils.Adapter {
                 .catch(e => this.log.error(`Cannot update news: ${e}`))
                 .then(() => (this.timerNews = setTimeout(() => this.updateNews(), 24 * ONE_HOUR_MS + 1)))
         );
+    }
+
+    /**
+     * Add the nes to the notification system
+     *
+     * @param {Record<string, any>[]} messages sorted news
+     * @param {string | undefined | null} lastMessageId lastMessageId, all after this has already been seen
+     *
+     * @return {Promise<void>}
+     */
+    async registerNewsNotifications(messages, lastMessageId) {
+        const adapters = await this.getObjectViewAsync('system', 'adapter', {
+            startkey: 'system.adapter.\u0000',
+            endkey: 'system.adapter.\u9999',
+        });
+
+        const operatingSystem = os.platform();
+
+        const instances = await this.getObjectViewAsync('system', 'instance', {
+            startkey: 'system.adapter.\u0000',
+            endkey: 'system.adapter.\u9999',
+        });
+
+        const activeRepo = (await this.getForeignObjectAsync('system.config'))?.common.activeRepo;
+        const uuid = (await this.getForeignObjectAsync('system.meta.uuid'))?.native.uuid;
+        const nodeVersion = process.version;
+        const npmVersion = await this.getNpmVersion();
+
+        const today = Date.now();
+        for (const message of messages) {
+            if (!message) {
+                continue;
+            }
+
+            if (message.id === lastMessageId) {
+                break;
+            }
+            let showIt = true;
+
+            if (showIt && message['date-start'] && new Date(message['date-start']).getTime() > today) {
+                showIt = false;
+            } else if (showIt && message['date-end'] && new Date(message['date-end']).getTime() < today) {
+                showIt = false;
+            } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
+                Object.keys(message.conditions).forEach(key => {
+                    if (showIt) {
+                        const adapter = adapters.rows.find(adapter => adapter.id === `system.adapter.${key}`);
+                        const condition = message.conditions[key];
+
+                        if (!adapter && condition !== '!installed') {
+                            showIt = false;
+                        } else if (adapter && condition === '!installed') {
+                            showIt = false;
+                        } else if (adapter && condition === 'active') {
+                            showIt = this.checkActive(key, instances);
+                        } else if (adapter && condition === '!active') {
+                            showIt = !this.checkActive(key, instances);
+                        } else if (adapter?.value) {
+                            showIt = this.checkConditions(condition, adapter.value.common.version);
+                        }
+                    }
+                });
+            }
+
+            if (showIt && message['node-version']) {
+                showIt = this.checkConditions(message['node-version'], nodeVersion);
+            }
+            if (showIt && message['npm-version']) {
+                showIt = this.checkConditions(message['npm-version'], npmVersion);
+            }
+            if (showIt && message.os) {
+                showIt = operatingSystem === message.os;
+            }
+            if (showIt && message.repo) {
+                // If multi-repo
+                if (Array.isArray(activeRepo)) {
+                    showIt = activeRepo.includes(message.repo);
+                } else {
+                    showIt = activeRepo === message.repo;
+                }
+            }
+            if (showIt && message.uuid) {
+                if (Array.isArray(message.uuid)) {
+                    showIt = uuid && message.uuid.find(msgUuid => uuid === msgUuid);
+                } else {
+                    showIt = !!(uuid && uuid === message.uuid);
+                }
+            }
+
+            if (showIt) {
+                this.log.info(`register notification ${message.class}`);
+                await this.registerNotification('news', message.class, message.title.en + '\n' + message.content.en);
+            }
+        }
+    }
+
+    /**
+     * Check if adapter is active
+     *
+     * @param {string} adapterName
+     * @param {Awaited<ioBroker.GetObjectViewPromise<ioBroker.InstanceObject>>} instances
+     * @return {boolean}
+     */
+    checkActive(adapterName, instances) {
+        return !!Object.keys(instances)
+            .filter(id => id.startsWith(`adapter.system.${adapterName}.`))
+            .find(id => instances.rows.find(row => id === row.id)?.value?.common.enabled);
+    }
+
+    /**
+     * Check if conditions met
+     *
+     * @param {string} condition
+     * @param {string} installedVersion
+     * @return {boolean}
+     */
+    checkConditions(condition, installedVersion) {
+        if (condition.startsWith('equals')) {
+            const vers = condition.substring(7, condition.length - 1).trim();
+            return installedVersion === vers;
+        }
+        if (condition.startsWith('bigger') || condition.startsWith('greater')) {
+            const vers = condition.substring(7, condition.length - 1).trim();
+            try {
+                return semver.gt(vers, installedVersion);
+            } catch (e) {
+                return false;
+            }
+        } else if (condition.startsWith('smaller')) {
+            const vers = condition.substring(8, condition.length - 1).trim();
+            try {
+                return semver.lt(installedVersion, vers);
+            } catch (e) {
+                return false;
+            }
+        } else if (condition.startsWith('between')) {
+            const vers1 = condition.substring(8, condition.indexOf(',')).trim();
+            const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
+            try {
+                return semver.gte(installedVersion, vers1) && semver.lte(installedVersion, vers2);
+            } catch (e) {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 
     /**

@@ -58,7 +58,15 @@ class ConfigTabs extends ConfigGeneric {
                         }
                         disabled = this.execute(items[name].disabled, false);
                     }
-                    return <Tab wrapped disabled={disabled} key={name} value={name} label={this.getText(items[name].label)} />;
+                    return <Tab
+                        wrapped
+                        disabled={disabled}
+                        key={name}
+                        value={name}
+                        iconPosition={this.props.schema.iconPosition || 'start'}
+                        icon={this.getIcon(items[name].icon)}
+                        label={this.getText(items[name].label)}
+                    />;
                 })}
             </Tabs>
             <ConfigPanel
