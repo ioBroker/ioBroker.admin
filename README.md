@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected adapter termination if the alias has no target
+
 ### 6.10.6 (2023-10-11)
 * (bluefox) Added possibility to show the icon on JSON config tabs
 * (foxriver76) on upgrade all, not yet started commands can now be aborted
