@@ -15,6 +15,7 @@ import { IconButton, Tooltip } from '@mui/material';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import CancelIcon from '@mui/icons-material/Cancel';
 import LanguageIcon from '@mui/icons-material/Language';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
@@ -74,7 +75,8 @@ class AdaptersUpdaterDialog extends Component {
             finished: false,
             current: '',
             updated: [],
-            stoppedOnError: false,
+            /** If upgrade process has been stopped e.g. due to an error */
+            stopped: false,
             debug: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.debug') === 'true',
             stopOnError: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.stopOnError') !== 'false',
             closeOnFinished: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.closeOnFinished') === 'true',
@@ -108,7 +110,7 @@ class AdaptersUpdaterDialog extends Component {
     }
 
     updateAdapters(cb) {
-        if (!this.processList || !this.processList.length) {
+        if (!this.processList || !this.processList.length || this.state.stopped) {
             cb && cb();
         } else {
             const { adapter, version } = this.processList.shift();
@@ -172,7 +174,7 @@ class AdaptersUpdaterDialog extends Component {
                                 inProcess={this.state.inProcess}
                                 selected={this.state.selected}
                                 current={this.state.current}
-                                stoppedOnError={this.state.stoppedOnError}
+                                stopped={this.state.stopped}
                                 updated={this.state.updated}
                                 lang={this.props.lang}
                                 socket={this.props.socket}
@@ -209,7 +211,7 @@ class AdaptersUpdaterDialog extends Component {
                             onFinished={() => this.onAdapterFinished()}
                             errorFunc={() => {
                                 if (this.state.stopOnError) {
-                                    this.setState({ stoppedOnError: true, finished: true });
+                                    this.setState({ stopped: true, finished: true });
                                     this.onAdapterFinished = null;
                                     this.props.onSetCommandRunning(false);
                                 } else {
@@ -258,7 +260,7 @@ class AdaptersUpdaterDialog extends Component {
             <DialogActions>
                 <Button
                     variant="contained"
-                    disabled={this.state.stoppedOnError || this.state.inProcess || this.state.finished || !this.state.selected.length}
+                    disabled={this.state.stopped || this.state.inProcess || this.state.finished || !this.state.selected.length}
                     onClick={() => this.onStartUpdate()}
                     color="primary"
                     autoFocus
@@ -268,9 +270,21 @@ class AdaptersUpdaterDialog extends Component {
                 </Button>
                 <Button
                     variant="contained"
+                    disabled={!this.state.inProcess}
+                    color="grey"
+                    startIcon={<CancelIcon />}
+                    onClick={() => {
+                        this.setState({ stopped: true, finished: true });
+                        this.props.onSetCommandRunning(false);
+                    }}
+                >
+                    {this.props.t('Cancel')}
+                </Button>
+                <Button
+                    variant="contained"
                     onClick={() => this.props.onClose(!!this.state.updated.length)}
-                    disabled={this.state.inProcess && !this.state.stoppedOnError}
-                    color={this.state.stoppedOnError ? 'error' : 'grey'}
+                    disabled={this.state.inProcess && !this.state.stopped}
+                    color={this.state.stopped ? 'error' : 'grey'}
                     startIcon={<CloseIcon />}
                 >
                     {this.props.t('Close')}

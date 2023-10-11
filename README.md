@@ -88,6 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (bluefox) Added possibility to show the icon on JSON config tabs
+* (foxriver76) on upgrade all, not yet started commands can now be aborted
 * (bluefox) Added security check if the server is available from the internet without protection
 * (bluefox) Corrected navigation after the settings closing
 
