@@ -87,5 +87,5 @@
   "Use iobroker.acme adapter for letsencrypt certificates": "Verwenden Sie den iobroker.acme-Adapter für letsencrypt-Zertifikate",
   "Reverse proxy": "Reverse-Proxy",
   "You can use admin behind a reverse proxy.": "Sie können den Admin hinter einem Reverse-Proxy verwenden.",
-  "Do not check if this instance is available from internet": "Nicht überprüfen, ob diese Instanz im Internet verfügbar ist"
+  "Do not check if this instance is available from internet": "Nicht überprüfen, ob diese Instanz aus dem Internet erreichbar ist"
 }
