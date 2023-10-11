@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.10.7 (2023-10-11)
 * (bluefox) Corrected adapter termination if the alias has no target
 
 ### 6.10.6 (2023-10-11)
@@ -108,15 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed `installedFrom` other source indicator not shown on adapter's tab
 * (foxriver76) allowed using enter key to save changes in object edit dialog
 * (foxriver76) fixed json config crash with empty table
-
-### 6.10.2 (2023-09-20)
-* (foxriver76) harmonized data on csv export with actual data shown by admin
-* (foxriver76) on expert mode installation tab, on no selection deactivate install button
-* (foxriver76) ensure the latest version is installed on `npm install`
-* (foxriver76) optimized enum objects
-* (foxriver76) disallow Google Translate as the plugin causes crash cases
-* (foxriver76) fixed crash on intro tab on docker hosts
-* (foxriver76) fixed crash case on invalid state objects
 
 ## License
 The MIT License (MIT)

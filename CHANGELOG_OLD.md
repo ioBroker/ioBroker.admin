@@ -4,6 +4,22 @@
 * (jogibear9988) fixed link on 404-page being opened inside child view
 * (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
 * (foxriver76) implemented del key shortcut to delete a selected object
+## 6.10.2 (2023-09-20)
+* (foxriver76) harmonized data on csv export with actual data shown by admin
+* (foxriver76) on expert mode installation tab, on no selection deactivate install button
+* (foxriver76) ensure the latest version is installed on `npm install`
+* (foxriver76) optimized enum objects
+* (foxriver76) disallow Google Translate as the plugin causes crash cases
+* (foxriver76) fixed crash on intro tab on docker hosts
+* (foxriver76) fixed crash case on invalid state objects
+
+## 6.9.2 (2023-09-01)
+* (foxriver76) show info if server time differs from client time
+* (foxriver76) remove confusion with different names for state (datapoint and state)
+* (jogibear9988) fixed link on 404-page being opened inside child view
+* (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
+* (foxriver76) implemented del key shortcut to delete a selected object
+
 ## 6.10.1 (2023-09-11)
 * (foxriver76) fixed `between` function for showing news
 * (foxriver76) if date string is not parseable show the original string instead of `Invalid Date`
