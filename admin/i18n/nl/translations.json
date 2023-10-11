@@ -86,5 +86,6 @@
   "Loading background": "Achtergrond laden",
   "Use iobroker.acme adapter for letsencrypt certificates": "Gebruik de iobroker.acme-adapter voor letsencrypt-certificaten",
   "Reverse proxy": "Omgekeerde proxy",
-  "You can use admin behind a reverse proxy.": "U kunt admin gebruiken achter een Reverse Proxy."
+  "You can use admin behind a reverse proxy.": "U kunt admin gebruiken achter een Reverse Proxy.",
+  "Do not check if this instance is available from internet": "Controleer niet of dit exemplaar beschikbaar is via internet"
 }

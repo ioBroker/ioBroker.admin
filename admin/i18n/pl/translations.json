@@ -86,5 +86,6 @@
   "Loading background": "Ładowanie tła",
   "Use iobroker.acme adapter for letsencrypt certificates": "Użyj adaptera iobroker.acme dla certyfikatów letsencrypt",
   "Reverse proxy": "Odwrotne proxy",
-  "You can use admin behind a reverse proxy.": "Możesz użyć administratora za Reverse Proxy."
+  "You can use admin behind a reverse proxy.": "Możesz użyć administratora za Reverse Proxy.",
+  "Do not check if this instance is available from internet": "Nie sprawdzaj, czy ta instancja jest dostępna z Internetu"
 }

@@ -130,6 +130,15 @@
           "md": 4,
           "lg": 2
         },
+        "doNotCheckPublicIP": {
+          "newLine": true,
+          "label": "Do not check if this instance is available from internet",
+          "type": "checkbox",
+          "sm": 12,
+          "md": 4,
+          "lg": 2,
+          "hidden": "!!data.auth"
+        }
       }
     },
     "loadingTab": {
