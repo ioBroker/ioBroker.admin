@@ -1286,6 +1286,11 @@ class App extends Router {
                         .getCompactInstances()
                         .catch(() => null);
 
+                    const objectsDbType = (await this.socket.getDiagData(this.state.currentHost, 'normal')).objectsType;
+
+                    const objects = await this.objectsWorker.getObjects(true);
+                    const noObjects = Object.keys(objects).length;
+
                     const checkNews = checkMessages(news, lastNewsId?.val, {
                         lang: I18n.getLanguage(),
                         adapters: this.state.adapters,
@@ -1295,6 +1300,8 @@ class App extends Router {
                         os: info ? info.os || '?' : '?',
                         activeRepo: this.state.systemConfig.common.activeRepo,
                         uuid,
+                        objectsDbType,
+                        noObjects,
                     });
 
                     if (checkNews?.length) {
