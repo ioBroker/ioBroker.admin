@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.10.6 (2023-10-11)
 * (bluefox) Added possibility to show the icon on JSON config tabs
 * (foxriver76) on upgrade all, not yet started commands can now be aborted
 * (bluefox) Added security check if the server is available from the internet without protection
@@ -114,11 +114,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) disallow Google Translate as the plugin causes crash cases
 * (foxriver76) fixed crash on intro tab on docker hosts
 * (foxriver76) fixed crash case on invalid state objects
-
-### 6.10.1 (2023-09-11)
-* (foxriver76) fixed `between` function for showing news
-* (foxriver76) if date string is not parseable show the original string instead of `Invalid Date`
-* (foxriver76) updated socket classes to not crash on invalid patterns
 
 ## License
 The MIT License (MIT)
