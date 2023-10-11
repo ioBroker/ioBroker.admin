@@ -86,5 +86,6 @@
   "tooltip_ttl": "Тривалість входу в систему. Після закінчення цього часу користувач автоматично вийде з системи.",
   "users permissions": "Дозволи користувачів",
   "Reverse proxy": "Reverse проксі",
-  "You can use admin behind a reverse proxy.": "Ви можете використовувати admin за Reverse Proxy."
+  "You can use admin behind a reverse proxy.": "Ви можете використовувати admin за Reverse Proxy.",
+  "Do not check if this instance is available from internet": "Не перевіряйте, чи доступний цей екземпляр в Інтернеті"
 }

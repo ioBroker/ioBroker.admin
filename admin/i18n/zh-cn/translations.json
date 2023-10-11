@@ -86,5 +86,6 @@
   "Loading background": "加载背景",
   "Use iobroker.acme adapter for letsencrypt certificates": "使用 iobroker.acme 适配器获取 letsencrypt 证书",
   "Reverse proxy": "反向代理",
-  "You can use admin behind a reverse proxy.": "您可以在反向代理后面使用 admin。"
+  "You can use admin behind a reverse proxy.": "您可以在反向代理后面使用 admin。",
+  "Do not check if this instance is available from internet": "不检查此实例是否可从 Internet 获取"
 }
