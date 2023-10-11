@@ -262,7 +262,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                         })));
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         super.componentWillUnmount();
         if (this.fileSubscribed) {
             this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
@@ -278,7 +278,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
      * @private
      * @param evt
      */
-    handleFileSelect = (evt: Record<string, any>) => {
+    handleFileSelect = (evt: Record<string, any>): void => {
         const f = evt.target.files[0];
         if (f) {
             const r = new FileReader();
@@ -301,7 +301,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         }
     };
 
-    getExportImportButtons() {
+    getExportImportButtons(): React.JSX.Element {
         return <div className={this.props.classes.exportImportButtons}>
             <Tooltip title={this.props.t('Import settings from JSON file')}>
                 <Fab
@@ -338,7 +338,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         </div>;
     }
 
-    onFileChange = async (id: string, fileName: string, size: number) => {
+    onFileChange = async (id: string, fileName: string, size: number): Promise<void> => {
         if (id === `${this.props.adapterName}.admin` && size) {
             if (fileName === this.fileLangSubscribed)  {
                 try {
@@ -383,7 +383,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             .catch((e: any) => window.alert(`[JsonConfig] Cannot read instance object: ${e}`));
     }
 
-    renderConfirmDialog() {
+    renderConfirmDialog(): React.JSX.Element | null {
         if (!this.state.confirmDialog) {
             return null;
         }
@@ -444,7 +444,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             .catch((e: any) => !this.state.schema && window.alert(`[JsonConfig] Cannot read file: ${e}`));
     }
 
-    renderSaveConfigDialog() {
+    renderSaveConfigDialog(): React.JSX.Element | null {
         if (!this.state.saveConfigDialog) {
             return null;
         }
@@ -476,7 +476,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
     }
 
     // this function is called recursively and trims all text fields, that must be trimmed
-    postProcessing(data: Record<string, unknown>, attr: string, schema: Schema) {
+    postProcessing(data: Record<string, unknown>, attr: string, schema: Schema): void {
         schema = schema || this.state.schema;
         if (!data) {
             // should not happen
@@ -594,11 +594,11 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 updateData: this.state.updateData + 1,
                 originalData: JSON.parse(JSON.stringify(obj.native)),
             }, () =>
-                close && Router.doNavigate());
+                close && Router.doNavigate(null));
         } else if (this.state.changed) {
             this.setState({ confirmDialog: true });
         } else {
-            Router.doNavigate();
+            Router.doNavigate(null);
         }
     }
 
@@ -608,7 +608,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         }
     }
 
-    render() {
+    render(): React.JSX.Element {
         const { classes } = this.props;
         if (!this.state.data || !this.state.schema) {
             return <LinearProgress />;
