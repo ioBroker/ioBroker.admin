@@ -433,8 +433,6 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                     this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
                 }
 
-                console.log(content);
-
                 try {
                     return JSON5.parse(content);
                 } catch (e) {
