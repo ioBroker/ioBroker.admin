@@ -143,6 +143,8 @@ function checkConditions(condition: string, installedVersion: string): boolean {
     }
 }
 
+type DbType = 'file' | 'jsonl' | 'redis'
+
 interface Context {
     adapters: Record<string, any>;
     instances: ioBroker.InstanceObject[];
@@ -152,6 +154,10 @@ interface Context {
     activeRepo: string;
     uuid?: string;
     lang: ioBroker.Languages;
+    /** Current configured database for objects */
+    objectsDbType: DbType;
+    /** Number of objects in the database */
+    noObjects: number;
 }
 
 interface Message {
@@ -178,6 +184,10 @@ interface Message {
     linkTitle?: string;
     /** E.g. a base64 encoded image like, data:image/png;base64,iVBORw0KG... */
     img?: 'string';
+    /** e.g. >= 15000 to address installations with more than 15k objects */
+    noObjects?: string;
+    /** All object db types which this message is valid for */
+    objectsDbType?: (DbType)[];
 }
 
 export const checkMessages = (messages: Message[], lastMessageId: string, context: Context) => {
@@ -242,6 +252,16 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                     showIt = context.uuid && message.uuid.find(uuid => context.uuid === uuid);
                 } else {
                     showIt = !!(context.uuid && context.uuid === message.uuid);
+                }
+            }
+
+            if (showIt && message.noObjects) {
+                showIt = eval(`${context.noObjects} ${message.noObjects}`);
+            }
+
+            if (showIt && message.objectsDbType) {
+                if (!message.objectsDbType.includes(context.objectsDbType)) {
+                    showIt = false;
                 }
             }
 

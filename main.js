@@ -864,6 +864,21 @@ class Admin extends utils.Adapter {
                 }
             }
 
+            if (showIt && message.noObjects) {
+                const res = await this.getObjectListAsync({ include_docs: true });
+                const noObjects = res.rows.length;
+
+                showIt = eval(`${noObjects} ${message.noObjects}`);
+            }
+
+            if (showIt && message.objectsDbType) {
+                const objectsDbType = await this.getObjectsDbType();
+
+                if (!message.objectsDbType.includes(objectsDbType)) {
+                    showIt = false;
+                }
+            }
+
             if (showIt) {
                 this.log.info(`register notification ${message.class}`);
                 await this.registerNotification('news', message.class, message.title.en + '\n' + message.content.en);
@@ -921,6 +936,17 @@ class Admin extends utils.Adapter {
         } else {
             return true;
         }
+    }
+
+    /**
+     * Get the objects db type
+     * @return {Promise<string>}
+     */
+    async getObjectsDbType() {
+        /** @ts-expect-error */
+        const diagData = await this.sendToHostAsync(this.host, 'getDiagData', 'normal');
+        /** @ts-expect-error */
+        return diagData.objectsType;
     }
 
     /**
