@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) update adapter-react-v5 to fix issues with object browser
+
 ### 6.10.7 (2023-10-11)
 * (bluefox) Corrected adapter termination if the alias has no target
 
