@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.10.7",
+    "version": "6.10.8",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.10.8": {
+        "en": "update adapter-react-v5 to fix issues with object browser",
+        "de": "update adapter-react-v5 um probleme mit objektbrowser zu beheben",
+        "ru": "обновление адаптер-react-v5 для исправления проблем с браузером объекта",
+        "pt": "atualizar o adaptador-react-v5 para corrigir problemas com navegador objeto",
+        "nl": "vertaling:",
+        "fr": "mettre à jour adaptateur-react-v5 pour corriger les problèmes avec le navigateur objet",
+        "it": "aggiornamento adattatore-react-v5 per risolvere problemi con il browser dell'oggetto",
+        "es": "actualizar adaptador-react-v5 para solucionar problemas con el navegador objeto",
+        "pl": "adaptator-react-v5 w celu rozwiązania problemów z przeglądarką obiektową",
+        "uk": "оновлення адаптера-реакт-v5 для виправлення проблем з браузером",
+        "zh-cn": "a. 更新适应行动-v5以防投机问题"
+      },
       "6.10.7": {
         "en": "Corrected adapter termination if the alias has no target",
         "de": "Korrigierter Adapterabschluss, wenn der Alias kein Ziel hat",
@@ -95,19 +108,6 @@
         "pl": "zaszkodowane dane na temat eksportu csv z danymi pokazanymi przez admin\nw trybie ekspercyjnej tabele instalacyjne nie deaktywuje przycisku instalacyjnego\nna przykład instalacja, aby nowa wersja została zainstalowana\noptymalizowane obiekty enum\nniezwykłe Tłumaczenie Google jako wtyczki powoduje przypadki katastrofy\nzbliżona katastrofa w internecie na dockerach\nsprawa rozbicia obiektów uwarunkowana",
         "uk": "пошкоджені дані на експорт csv з фактичними даними, що відображаються адміністратором\nна вкладці \"експерт\" не підбирає деактивацію кнопки установки\nна npm встановити, забезпечити останню версію\nоптимізовані об'єкти\ndisallow Google Translate як плагін викликає випадки аварії\nфіксована аварія на вкладці intro на шезлонгах\nфіксований випадок збій на недійсних об'єктах держави",
         "zh-cn": "a. 专用数据显示的出口量统一数据\n专家模式设置表:无选择的排他装置\n页:1\n优化目标\n谷歌转化为Plugins crash案\n飞机主机的固定坠落\na. 对无效国家物体的固定事故"
-      },
-      "6.10.1": {
-        "en": "fixed `between` function for showing news\nif date string is not parseable show the original string instead of `Invalid Date`\nupdated socket classes to not crash on invalid patterns",
-        "de": "zwischen der funktion, nachrichten anzuzeigen\nwenn Datumsstring nicht parseable den ursprünglichen String anstelle von `Invalid Date` anzeigen\naktualisierte steckdosenklassen, um nicht ungültige muster abzustürzen",
-        "ru": "исправлена между функцией для показа новостей\nесли строка даты не parseable показать оригинальную строку вместо `Invalid Date`\nобновленные классы розетки, чтобы не сломать на недействительных картинах",
-        "pt": "fixo entre a função para mostrar notícias\nse a cadeia de data não for parseable mostrar a string original em vez de `Data inválida`\nclasses de tomada atualizadas para não travar em padrões inválidos",
-        "nl": "vertaling:\nals datum string niet geschikt is voor de originele snaar in plaats van 'Invalid Date'\ngeïnformeerde socket lessen om niet te crashen op invalide patronen",
-        "fr": "fixe entre fonction pour montrer des nouvelles\nsi la chaîne de date n'est pas parseable afficher la chaîne d'origine au lieu de ` Date invalide`\nclasses de socket mises à jour pour ne pas s'écraser sur des modèles invalides",
-        "it": "fisso tra funzione per mostrare notizie\nse la stringa di data non è parseable mostrare la stringa originale invece di ` Data non valida`\nclassi di socket aggiornate per non schiantarsi su modelli non validi",
-        "es": "fijo entre función para mostrar noticias\nsi la cadena de fecha no es parseable mostrar la cadena original en lugar de 'Fecha inválida'\nclases actualizadas de socket para no estrellarse en patrones inválidos",
-        "pl": "zastosowanie funkcji do pokazania wiadomości\njeśli ciąg dzienny nie jest parsewalny pokaz pierwotnego ciągu zamiast 'Invalid Date'\nzaktualizowane klasy gniazda nie rozbijają się na nieprawidłowych wzorach",
-        "uk": "фіксована між функцією відображення новин\nякщо дата рядка не є оригінальним елементом замість `Invalid Date`\nоновлені класи розетки не збиток на недійсних шаблонах",
-        "zh-cn": "新闻显示职能之间的固定关系\n如果日期不大可显示原来的“有效日期”\na. 更新的单元班,不用关于无效模式的碰撞"
       }
     },
     "desc": {

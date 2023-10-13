@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.10.8 (2023-10-13)
 * (foxriver76) update adapter-react-v5 to fix issues with object browser
 
 ### 6.10.7 (2023-10-11)
@@ -106,11 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.10.4 (2023-09-25)
 * (foxriver76) fixed parsing `jsonConfig`
-
-### 6.10.3 (2023-09-25)
-* (foxriver76) fixed `installedFrom` other source indicator not shown on adapter's tab
-* (foxriver76) allowed using enter key to save changes in object edit dialog
-* (foxriver76) fixed json config crash with empty table
 
 ## License
 The MIT License (MIT)
