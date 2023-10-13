@@ -864,17 +864,17 @@ class Admin extends utils.Adapter {
                 }
             }
 
-            if (showIt && message.noObjects) {
+            if (showIt && message['number-of-objects']) {
                 const res = await this.getObjectListAsync({ include_docs: true });
                 const noObjects = res.rows.length;
 
-                showIt = eval(`${noObjects} ${message.noObjects}`);
+                showIt = eval(`${noObjects} ${message['number-of-objects']}`);
             }
 
-            if (showIt && message.objectsDbType) {
+            if (showIt && message['objects-db-type']) {
                 const objectsDbType = await this.getObjectsDbType();
 
-                if (!message.objectsDbType.includes(objectsDbType)) {
+                if (!message['objects-db-type'].includes(objectsDbType)) {
                     showIt = false;
                 }
             }

@@ -185,9 +185,9 @@ interface Message {
     /** E.g. a base64 encoded image like, data:image/png;base64,iVBORw0KG... */
     img?: 'string';
     /** e.g. >= 15000 to address installations with more than 15k objects */
-    noObjects?: string;
+    'number-of-objects'?: string;
     /** All object db types which this message is valid for */
-    objectsDbType?: (DbType)[];
+    'objects-db-type'?: (DbType)[];
 }
 
 export const checkMessages = (messages: Message[], lastMessageId: string, context: Context) => {
@@ -255,12 +255,12 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                 }
             }
 
-            if (showIt && message.noObjects) {
-                showIt = eval(`${context.noObjects} ${message.noObjects}`);
+            if (showIt && message['number-of-objects']) {
+                showIt = eval(`${context.noObjects} ${message['number-of-objects']}`);
             }
 
-            if (showIt && message.objectsDbType) {
-                if (!message.objectsDbType.includes(context.objectsDbType)) {
+            if (showIt && message['objects-db-type']) {
+                if (!message['objects-db-type'].includes(context.objectsDbType)) {
                     showIt = false;
                 }
             }
