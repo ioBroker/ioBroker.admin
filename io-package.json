@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.10.8",
+    "version": "6.10.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.10.9": {
+        "en": "Improvement of the public accessibility check",
+        "de": "Verbesserung der öffentlichen Zugänglichkeitsprüfung",
+        "ru": "Улучшение проверки доступности населения",
+        "pt": "Melhoria da verificação de acessibilidade pública",
+        "nl": "Improviseren van de publieke toegangscontrole",
+        "fr": "Amélioration du contrôle de l'accessibilité publique",
+        "it": "Miglioramento del controllo dell'accessibilità pubblica",
+        "es": "Mejora del control de accesibilidad pública",
+        "pl": "Poprawa kontroli dostępu publicznego",
+        "uk": "Удосконалення перевірки публічної доступності",
+        "zh-cn": "改善公众无障碍检查"
+      },
       "6.10.8": {
         "en": "update adapter-react-v5 to fix issues with object browser",
         "de": "update adapter-react-v5 um probleme mit objektbrowser zu beheben",
@@ -95,19 +108,6 @@
         "pl": "zainstalowany Z innych wskaźników źródłowych nie można wyjaśnić na temat adapterów tabele\numożliwia wykorzystanie klucza do zapisywania zmian w dialogu obiektowym\nnaprawić json config z pustym stołem",
         "uk": "фіксована встановлена З іншого індикатора джерела не відображається на вкладці адаптерів\nдозволяє використовувати ключ для збереження змін у діалоговому вікні редагування об'єктів\nвиправити json configcrash з порожнім столом",
         "zh-cn": "固定装置 其他来源指标未显示适应者表格\n允许使用关键手段来挽救目标口号的改变。\nfixson 装有空桌的突发事件"
-      },
-      "6.10.2": {
-        "en": "harmonized data on csv export with actual data shown by admin\non expert mode installation tab, on no selection deactivate install button\non npm install, ensure the latest version is installed\noptimized enum objects\ndisallow Google Translate as the plugin causes crash cases\nfixed crash on intro tab on docker hosts\nfixed crash case on invalid state objects",
-        "de": "harmonisierte daten über csv export mit tatsächlichen daten von admin\nauf der registerkarte der installation des expertenmodus, auf keine auswahl deaktivieren installationstaste\nauf npm installieren, stellen sie sicher, dass die neueste version installiert ist\noptimierte enum-objekte\ndisallow Google Translate als Plugin verursacht Crash-Fälle\nfester crash auf intro-tab auf docking-hosts\nfester crashfall auf ungültigen zustandsobjekten",
-        "ru": "гармонизированные данные по экспорту csv с фактическими данными, показанными админ\nна вкладке экспертного режима установки, без выбора деактивировать кнопку установки\nна npm установки, убедитесь, что последняя версия установлена\nоптимизированные объекты enum\ndisallow Google Translate как плагин вызывает случаи сбоя\nфиксированная авария на вкладке intro на docker hosts\nфиксированный случай аварии на недействительных государственных объектах",
-        "pt": "dados harmonizados na exportação csv com dados reais mostrados por admin\nna guia de instalação do modo de especialista, em nenhuma seleção desativar o botão de instalação\nem npm instalar, garantir que a versão mais recente está instalada\nobjetos enum otimizados\ndisallow Google Translate como o plugin causa casos de acidente\nacidente fixo na aba intro em hosts de docker\ncaso de acidente fixo em objetos de estado inválidos",
-        "nl": "gevaarlijke gegevens over csv export met daadwerkelijke gegevens getoond door administratie\nop geen enkel gedeactiveerde knop\n_\noptimaal enum objecten\nvertaling:\nvertaling:\nvertaling:",
-        "fr": "données harmonisées sur l'exportation csv avec les données réelles affichées par admin\nsur l'onglet d'installation du mode expert, sur aucun bouton d'installation de sélection\nsur npm install, assurez-vous que la dernière version est installée\nobjets enum optimisés\ndisallow Google Translate comme le plugin provoque des cas de crash\ncrash fixe sur l'onglet intro sur les hôtes docker\ncas de crash fixe sur des objets d'état invalide",
-        "it": "dati armonizzati sull'esportazione di csv con dati reali mostrati da admin\nsulla scheda di installazione della modalità esperta, senza selezione disattivare il pulsante di installazione\nsu npm install, assicurarsi che l'ultima versione sia installata\noggetti enum ottimizzati\ndisallow Google Tradurre come plugin cause crash casi\ncrash fisso sulla scheda intro sugli host docker\ncaso di crash fisso su oggetti di stato non validi",
-        "es": "datos armonizados en la exportación csv con datos reales mostrados por admin\nen la pestaña de instalación del modo experto, en ninguna selección desactivar el botón de instalación\non npm install, ensure the latest version is installed\nobjetos enum optimizados\ngoogle Traducir como el plugin causa casos de choque\naccidente fijo en la pestaña de entrada en los hosts de muelle\ncaso de accidente fijo en objetos estatales inválidos",
-        "pl": "zaszkodowane dane na temat eksportu csv z danymi pokazanymi przez admin\nw trybie ekspercyjnej tabele instalacyjne nie deaktywuje przycisku instalacyjnego\nna przykład instalacja, aby nowa wersja została zainstalowana\noptymalizowane obiekty enum\nniezwykłe Tłumaczenie Google jako wtyczki powoduje przypadki katastrofy\nzbliżona katastrofa w internecie na dockerach\nsprawa rozbicia obiektów uwarunkowana",
-        "uk": "пошкоджені дані на експорт csv з фактичними даними, що відображаються адміністратором\nна вкладці \"експерт\" не підбирає деактивацію кнопки установки\nна npm встановити, забезпечити останню версію\nоптимізовані об'єкти\ndisallow Google Translate як плагін викликає випадки аварії\nфіксована аварія на вкладці intro на шезлонгах\nфіксований випадок збій на недійсних об'єктах держави",
-        "zh-cn": "a. 专用数据显示的出口量统一数据\n专家模式设置表:无选择的排他装置\n页:1\n优化目标\n谷歌转化为Plugins crash案\n飞机主机的固定坠落\na. 对无效国家物体的固定事故"
       }
     },
     "desc": {
