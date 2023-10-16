@@ -77,9 +77,9 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
 
                 // if let's encrypt is enabled and update is enabled, then add port to check
                 if (instance?.native &&
-                            instance.native.secure &&
-                            instance.native.leEnabled &&
-                            instance.native.leUpdate
+                    instance.native.secure &&
+                    instance.native.leEnabled &&
+                    instance.native.leUpdate
                 ) {
                     const port = parseInt(instance.native.leCheckPort || instance.native.lePort, 10);
                     port && ports.push({
