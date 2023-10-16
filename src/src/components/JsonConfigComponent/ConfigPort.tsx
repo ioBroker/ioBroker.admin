@@ -25,6 +25,8 @@ const styles = () => ({
 interface Port {
     name: string;
     port: number;
+    bind: string;
+    v6bind: string;
     enabled: boolean;
 }
 
@@ -64,10 +66,15 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
         const ports: Port[] = [];
         instances
             .forEach(instance => {
-                // ignore own instance and instances on other host
-                if (instance._id === ownId || instance.common.host !== ownHostname) {
+                // ignore own instance and instances on another host
+                if (!instance || instance._id === ownId || instance.common.host !== ownHostname) {
                     return;
                 }
+                // check port only if bind attribute is present too
+                if (!instance.native?.bind) {
+                    return;
+                }
+
                 // if let's encrypt is enabled and update is enabled, then add port to check
                 if (instance?.native &&
                             instance.native.secure &&
@@ -78,6 +85,8 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
                     port && ports.push({
                         name: `${instance._id.replace('system.adapter.', '')} (LE)`,
                         port,
+                        v6bind: instance.native.bind.includes(':') ? instance.native.bind : instance.native.v6bind,
+                        bind: instance.native.bind,
                         enabled: !!instance.common?.enabled,
                     });
                 }
@@ -86,6 +95,8 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
                 if (port) {
                     ports.push({
                         name: instance._id.replace('system.adapter.', ''),
+                        bind: instance.native.bind,
+                        v6bind: instance.native.bind.includes(':') ? instance.native.bind : instance.native.v6bind,
                         port,
                         enabled: !!instance.common?.enabled,
                     });
@@ -158,11 +169,19 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
         let warning;
         if (this.state.ports) {
             const num = parseInt(this.state._value, 10);
-            let idx = this.state.ports.findIndex(item => item.port === num && item.enabled);
+
+            // filter ports only with the same bind address
+            // todo: IPv6 (v6bind or '::/0')
+            const ports = this.state.ports.filter(item => !this.props.data.bind ||
+                this.props.data.bind === item.bind ||
+                this.props.data.bind === '0.0.0.0' ||
+                item.bind === '0.0.0.0');
+
+            let idx = ports.findIndex(item => item.port === num && item.enabled);
             if (idx !== -1) {
                 error = I18n.t('ra_Port is already used by %s', this.state.ports[idx].name);
             } else {
-                idx = this.state.ports.findIndex(item => item.port === num && !item.enabled);
+                idx = ports.findIndex(item => item.port === num && !item.enabled);
                 if (idx !== -1) {
                     warning = true;
                     error = I18n.t('ra_Port could be used by %s', this.state.ports[idx].name);
