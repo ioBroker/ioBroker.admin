@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Improvement of the public accessibility check
+
 ### 6.10.8 (2023-10-13)
 * (foxriver76) update adapter-react-v5 to fix issues with object browser
 
