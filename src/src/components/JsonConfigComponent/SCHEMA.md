@@ -142,7 +142,9 @@ Possible types:
 
 - `instance`
     - `adapter` - name of adapter. With special name `_dataSources` you can get all adapters with flag `common.getHistory`.
+    - `adapters` - optional list of adapters, that should be shown. If not defined, all adapters will be shown. Only active if `adapter` attribute is not defined.
     - `allowDeactivate` - if true. Additional option "deactivate" is shown
+    - `onlyEnabled` - if true. Only enabled instances will be shown
     - `long` - value will look like `system.adapter.ADAPTER.0` and not `ADAPTER.0`
     - `short` - value will look like `0` and not `ADAPTER.0`
     - `all` - Add to the options "all" option with value `*`
