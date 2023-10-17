@@ -58,7 +58,6 @@ export interface ConfigGenericState {
     value?: any;
     confirmDepAttr?: any;
     confirmDepNewValue?: any;
-    confirmOldValue?: any;
 }
 
 export default class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGenericState> extends Component<Props, State> {
@@ -321,8 +320,6 @@ export default class ConfigGeneric<Props extends ConfigGenericProps, State exten
                                     confirmDepNewValue: null,
                                     confirmNewValue: null,
                                     confirmAttr: null,
-                                    // eslint-disable-next-line react/no-unused-state
-                                    confirmOldValue: null,
                                     confirmData: null,
                                 },
                                 () => this.props.onChange(data),
@@ -334,8 +331,6 @@ export default class ConfigGeneric<Props extends ConfigGenericProps, State exten
                                 confirmDepNewValue: null,
                                 confirmNewValue: null,
                                 confirmAttr: null,
-                                // eslint-disable-next-line react/no-unused-state
-                                confirmOldValue: null,
                                 confirmData: null,
                             });
                         }
