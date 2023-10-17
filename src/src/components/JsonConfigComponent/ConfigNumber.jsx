@@ -155,7 +155,7 @@ class ConfigNumber extends ConfigGeneric {
                     }
 
                     this.setState({ _value, oldValue: this.state._value }, () =>
-                        this.onChange(this.props.attr, _value));
+                        this.onChange(this.props.attr, parseFloat(_value)));
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
