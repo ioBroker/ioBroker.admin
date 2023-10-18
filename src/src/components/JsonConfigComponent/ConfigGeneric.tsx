@@ -58,10 +58,9 @@ export interface ConfigGenericState {
     value?: any;
     confirmDepAttr?: any;
     confirmDepNewValue?: any;
-    confirmOldValue?: any;
 }
 
-class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGenericState> extends Component<Props, State> {
+export default class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGenericState> extends Component<Props, State> {
     static DIFFERENT_VALUE = '__different__';
 
     static DIFFERENT_LABEL = 'ra___different__';
@@ -137,7 +136,6 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
                     if (this.props.custom) {
                         this.props.onChange(this.props.attr, this.defaultValue, () =>
                             setTimeout(() => this.props.forceUpdate([this.props.attr], this.props.data), 100));
-                        // this.onChange(this.props.attr, this.defaultValue);
                     } else {
                         ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
                         this.props.onChange(this.props.data, undefined, () =>
@@ -322,8 +320,6 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
                                     confirmDepNewValue: null,
                                     confirmNewValue: null,
                                     confirmAttr: null,
-                                    // eslint-disable-next-line react/no-unused-state
-                                    confirmOldValue: null,
                                     confirmData: null,
                                 },
                                 () => this.props.onChange(data),
@@ -335,8 +331,6 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
                                 confirmDepNewValue: null,
                                 confirmNewValue: null,
                                 confirmAttr: null,
-                                // eslint-disable-next-line react/no-unused-state
-                                confirmOldValue: null,
                                 confirmData: null,
                             });
                         }
@@ -970,5 +964,3 @@ class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGeneri
         return item;
     }
 }
-
-export default ConfigGeneric;

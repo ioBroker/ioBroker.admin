@@ -1,12 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { Styles, withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField, FormControl } from '@mui/material';
 
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
 
-import ConfigGeneric from './ConfigGeneric';
+import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
 
 const styles = () => ({
     indeterminate: {
@@ -16,9 +16,29 @@ const styles = () => ({
         flexDirection: 'row',
         width: '100%',
     },
-});
+}) satisfies Styles<any, any>;
 
-class ConfigNumber extends ConfigGeneric {
+interface ConfigNumberProps extends ConfigGenericProps {
+    socket: AdminConnection;
+    themeType: string;
+    themeName: string;
+    style: Record<string, any>;
+    className: string;
+    data: Record<string, any>;
+    schema: Record<string, any>;
+    onError: () => void;
+    onChange: () => void;
+    classes: Record<string, any>;
+}
+
+interface ConfigNumberState extends ConfigGenericState {
+    _value: string;
+    oldValue: string | null;
+}
+
+class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
+    private updateTimeout?: NodeJS.Timeout;
+
     componentDidMount() {
         super.componentDidMount();
         let _value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -29,7 +49,7 @@ class ConfigNumber extends ConfigGeneric {
         // this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: ConfigNumberProps, state: ConfigNumberState) {
         if (
             (props.schema.min !== undefined && props.schema.min < 0) ||
             (props.schema.max !== undefined && props.schema.max < 0)
@@ -50,7 +70,7 @@ class ConfigNumber extends ConfigGeneric {
         return null;
     }
 
-    checkValue(value) {
+    checkValue(value: string): string | null {
         if (value === null || value === undefined) {
             return null;
         }
@@ -62,7 +82,7 @@ class ConfigNumber extends ConfigGeneric {
         }
 
         // eslint-disable-next-line no-restricted-properties
-        if (value !== '' && window.isFinite(value)) {
+        if (value !== '' && window.isFinite(f)) {
             if (this.props.schema.min !== undefined && f < this.props.schema.min) {
                 return 'ra_Too small';
             }
@@ -79,18 +99,18 @@ class ConfigNumber extends ConfigGeneric {
         return 'ra_Not a number';
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean) {
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
             this.updateTimeout = setTimeout(() => {
-                this.updateTimeout = null;
+                this.updateTimeout = undefined;
                 this.setState({ oldValue: null });
             }, 30);
         } else if (this.updateTimeout) {
             clearTimeout(this.updateTimeout);
-            this.updateTimeout = null;
+            this.updateTimeout = undefined;
         }
 
         if (isIndeterminate) {
@@ -101,9 +121,10 @@ class ConfigNumber extends ConfigGeneric {
                 className={this.props.classes.indeterminate}
                 fullWidth
                 value={arr[0]}
+                // @ts-expect-error needs investigation if this really has no effect
                 getOptionSelected={(option, value) => option.label === value.label}
                 onChange={(_, value) =>
-                    this.onChange(this.props.attr, value.value)}
+                    this.onChange(this.props.attr, value?.value)}
                 options={arr}
                 getOptionLabel={option => option.label}
                 renderInput={params => (
@@ -127,7 +148,7 @@ class ConfigNumber extends ConfigGeneric {
         if (!error && this.state._value !== null && this.state._value !== undefined && this.state._value) {
             error = this.checkValue(this.state._value);
             if (error) {
-                error = I18n.t(error);
+                error = I18n.t(error as string);
             }
         }
 
@@ -155,7 +176,7 @@ class ConfigNumber extends ConfigGeneric {
                     }
 
                     this.setState({ _value, oldValue: this.state._value }, () =>
-                        this.onChange(this.props.attr, _value));
+                        this.onChange(this.props.attr, parseFloat(_value)));
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
@@ -172,17 +193,5 @@ class ConfigNumber extends ConfigGeneric {
         </FormControl>;
     }
 }
-
-ConfigNumber.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigNumber);
