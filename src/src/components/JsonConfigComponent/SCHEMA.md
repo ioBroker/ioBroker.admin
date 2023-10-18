@@ -392,13 +392,11 @@ adapter.on('message', obj => {
   - `longitudeName` - if defined, the longitude will be stored in this attribute, divider will be ignored
   - `latitudeName` - if defined, the latitude will be stored in this attribute, divider will be ignored
   - `useSystemName` - if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from system.config, a boolean will be saved to the given name
-
-- `license` - shows the license information if not already accepted. One of attributes `texts` or `licenseUrl` must be defined. When the license is accepted, the defined configuration attribute will be set to `true`.
-  - `texts` - array of paragraphs with texts, which will be shown each as a separate paragraph
-  - `licenseUrl` - URL to the license file (e.g. https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/LICENSE)
-  - `title` - Title of the license dialog
-  - `agreeText` - Text of the agreed button
-  - `checkBox` - If defined, the checkbox with the given name will be shown. If checked, the agreed button will be enabled.
+ 
+- `interface`
+  Selects the interface from of the host, where the instance runs
+  - `ignoreLoopback` - do not show loopback interface (127.0.0.1) 
+  - `ignoreInternal` - do not show internal interfaces (normally it is 127.0.0.1 too) 
 
 - `checkLicense` - Very special component to check the license online. It's required exactly `license` and `useLicenseManager` properties in native.
   - `uuid` - Check UUID

@@ -88,6 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) jsonConfig type number now stores values as number instead of string
+* (bluefox) Added component `interfaces` to the JSON config
 
 ### 6.10.9 (2023-10-16)
 * (bluefox) Improvement of the public accessibility check

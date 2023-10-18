@@ -38,6 +38,7 @@ import ConfigIP from './ConfigIP';
 import ConfigImageSendTo from './ConfigImageSendTo';
 import ConfigImageUpload from './ConfigImageUpload';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
+import ConfigInterface from './ConfigInterface';
 import ConfigJsonEditor from './ConfigJsonEditor';
 import ConfigLanguage from './ConfigLanguage';
 import ConfigLicense from './ConfigLicense';
@@ -90,6 +91,7 @@ const components = {
     image: ConfigImageUpload,
     imageSendTo: ConfigImageSendTo,
     instance: ConfigInstanceSelect,
+    interface: ConfigInterface,
     ip: ConfigIP,
     jsonEditor: ConfigJsonEditor,
     language: ConfigLanguage,
