@@ -78,9 +78,8 @@ class ConfigInterface extends ConfigGeneric {
                                 {item.value}
                                 <span className={this.props.classes.address}>{item.address}</span>
                             </span>;
-                        } else {
-                            return val;
                         }
+                        return val;
                     }}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
                 >
