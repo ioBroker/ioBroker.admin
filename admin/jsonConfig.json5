@@ -7,11 +7,6 @@
       "type": "panel",
       "label": "Main settings",
       "items": {
-        "interface": {
-          "type": "interface",
-          "label": "Interface",
-          "sm": 12
-        },
         "bind": {
           "newLine": true,
           "type": "ip",
