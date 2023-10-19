@@ -3702,9 +3702,9 @@ class ObjectBrowser extends Component {
                 >
                     {this.props.t('ra_All objects')}
                     {' '}
-                    (
+(
                     {Object.keys(this.objects).length}
-                    )
+)
                 </Button>
                 <Button
                     color="primary"
@@ -3717,9 +3717,9 @@ class ObjectBrowser extends Component {
                 >
                     {this.props.t('ra_Only selected')}
                     {' '}
-                    (
+(
                     {this.state.showExportDialog}
-                    )
+)
                 </Button>
                 <Button
                     color="grey"
@@ -4720,7 +4720,7 @@ class ObjectBrowser extends Component {
                 .map(id => ({
                     name: getName(
                         this.objects[id]?.common?.name ||
-                        id.split('.').pop(),
+                            id.split('.').pop(),
                         this.props.lang,
                     ),
                     value: id,
