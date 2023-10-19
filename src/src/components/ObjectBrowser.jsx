@@ -803,7 +803,7 @@ const styles = theme => ({
     },
 });
 
-function filterObject(obj, filterKeys) {
+function filterObject(obj, filterKeys, excludeTranslations) {
     return _.transform(obj, (result, value, key) => {
         if (value === undefined || value === null) {
             return;
@@ -812,17 +812,25 @@ function filterObject(obj, filterKeys) {
             return;
         }
         // if the key is an object run it through the inner function - omitFromObject
-        result[key] = _.isObject(value) ? filterObject(value, filterKeys) : value;
+        const isObject = _.isObject(value);
+        if (excludeTranslations && isObject) {
+            const keys = Object.keys(value);
+            if (keys.includes('en') && keys.includes('de') && typeof value.en === 'string' && typeof value.de === 'string') {
+                result[key] = value.en;
+                return;
+            }
+        }
+        result[key] = isObject ? filterObject(value, filterKeys, excludeTranslations) : value;
     });
 }
 
-function generateFile(filename, obj, beautify = true, excludeSystemRepositories = true) {
+function generateFile(filename, obj, beautify = true, excludeSystemRepositories = true, excludeTranslations = false) {
     const el = document.createElement('a');
     const filterKeys = [];
     if (excludeSystemRepositories) {
         filterKeys.push('system.repositories');
     }
-    const filteredObject = filterKeys.length > 0 ? filterObject(obj, filterKeys) : obj;
+    const filteredObject = filterKeys.length > 0 || excludeTranslations ? filterObject(obj, filterKeys, excludeTranslations) : obj;
     const data = beautify ? JSON.stringify(filteredObject, null, 2) : JSON.stringify(filteredObject);
     el.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`);
     el.setAttribute('download', filename);
@@ -2038,6 +2046,7 @@ class ObjectBrowser extends Component {
             noStatesByExportImport: false,
             beautifyJsonExport: true,
             excludeSystemRepositoriesFromExport: true,
+            excludeTranslations: false,
         };
 
         this.edit = {};
@@ -3600,9 +3609,9 @@ class ObjectBrowser extends Component {
         return [];
     }
 
-    async _exportObjects(isAll, noStatesByExportImport, beautifyJsonExport, excludeSystemRepositoriesFromExport) {
+    async _exportObjects(isAll, noStatesByExportImport, beautifyJsonExport, excludeSystemRepositoriesFromExport, excludeTranslations) {
         if (isAll) {
-            generateFile('allObjects.json', this.objects, beautifyJsonExport, excludeSystemRepositoriesFromExport);
+            generateFile('allObjects.json', this.objects, beautifyJsonExport, excludeSystemRepositoriesFromExport, excludeTranslations);
             return;
         }
         if (!(this.state.selected.length || this.state.selectedNonObject)) {
@@ -3634,7 +3643,7 @@ class ObjectBrowser extends Component {
             }
         }
 
-        generateFile(`${id}.json`, result, beautifyJsonExport, excludeSystemRepositoriesFromExport);
+        generateFile(`${id}.json`, result, beautifyJsonExport, excludeSystemRepositoriesFromExport, excludeTranslations);
     }
 
     renderExportDialog() {
@@ -3673,6 +3682,13 @@ class ObjectBrowser extends Component {
                         />}
                         label={this.props.t('ra_Exclude system repositories from export JSON')}
                     />
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={this.state.excludeTranslations}
+                            onChange={e => this.setState({ excludeTranslations: e.target.checked })}
+                        />}
+                        label={this.props.t('ra_Exclude translations (except english) from export JSON')}
+                    />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -3681,7 +3697,7 @@ class ObjectBrowser extends Component {
                     variant="outlined"
                     onClick={() => this.setState(
                         { showExportDialog: false },
-                        () => this._exportObjects(true, this.state.noStatesByExportImport, this.state.beautifyJsonExport, this.state.excludeSystemRepositoriesFromExport)
+                        () => this._exportObjects(true, this.state.noStatesByExportImport, this.state.beautifyJsonExport, this.state.excludeSystemRepositoriesFromExport, this.state.excludeTranslations),
                     )}
                 >
                     {this.props.t('ra_All objects')}
@@ -3696,7 +3712,7 @@ class ObjectBrowser extends Component {
                     autoFocus
                     onClick={() => this.setState(
                         { showExportDialog: false },
-                        () => this._exportObjects(false, this.state.noStatesByExportImport, this.state.beautifyJsonExport, this.state.excludeSystemRepositoriesFromExport),
+                        () => this._exportObjects(false, this.state.noStatesByExportImport, this.state.beautifyJsonExport, this.state.excludeSystemRepositoriesFromExport, this.state.excludeTranslations),
                     )}
                 >
                     {this.props.t('ra_Only selected')}
