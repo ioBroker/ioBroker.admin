@@ -101,6 +101,7 @@ import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
+import _ from 'lodash';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -802,9 +803,27 @@ const styles = theme => ({
     },
 });
 
-function generateFile(filename, obj, beautify = true) {
+function filterObject(obj, filterKeys) {
+    return _.transform(obj, (result, value, key) => {
+        if (value === undefined || value === null) {
+            return;
+        }
+        if (typeof key === 'string' && filterKeys.includes(key)) {
+            return;
+        }
+        // if the key is an object run it through the inner function - omitFromObject
+        result[key] = _.isObject(value) ? filterObject(value, filterKeys) : value;
+    });
+}
+
+function generateFile(filename, obj, beautify = true, excludeSystemRepositories = true) {
     const el = document.createElement('a');
-    const data = beautify ? JSON.stringify(obj, null, 2) : JSON.stringify(obj);
+    const filterKeys = [];
+    if (excludeSystemRepositories) {
+        filterKeys.push('system.repositories');
+    }
+    const filteredObject = filterKeys.length > 0 ? filterObject(obj, filterKeys) : obj;
+    const data = beautify ? JSON.stringify(filteredObject, null, 2) : JSON.stringify(filteredObject);
     el.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`);
     el.setAttribute('download', filename);
 
@@ -2018,6 +2037,7 @@ class ObjectBrowser extends Component {
             showContextMenu: null,
             noStatesByExportImport: false,
             beautifyJsonExport: true,
+            excludeSystemRepositoriesFromExport: true,
         };
 
         this.edit = {};
@@ -3580,9 +3600,9 @@ class ObjectBrowser extends Component {
         return [];
     }
 
-    async _exportObjects(isAll, noStatesByExportImport, beautifyJsonExport) {
+    async _exportObjects(isAll, noStatesByExportImport, beautifyJsonExport, excludeSystemRepositoriesFromExport) {
         if (isAll) {
-            generateFile('allObjects.json', this.objects, beautifyJsonExport);
+            generateFile('allObjects.json', this.objects, beautifyJsonExport, excludeSystemRepositoriesFromExport);
             return;
         }
         if (!(this.state.selected.length || this.state.selectedNonObject)) {
@@ -3614,7 +3634,7 @@ class ObjectBrowser extends Component {
             }
         }
 
-        generateFile(`${id}.json`, result, beautifyJsonExport);
+        generateFile(`${id}.json`, result, beautifyJsonExport, excludeSystemRepositoriesFromExport);
     }
 
     renderExportDialog() {
@@ -3637,6 +3657,7 @@ class ObjectBrowser extends Component {
                         label={this.props.t('ra_Do not export values of states')}
                     />
                     <br />
+                    {this.props.t('ra_These options can reduce the size of the export file:')}
                     <FormControlLabel
                         control={<Checkbox
                             checked={this.state.beautifyJsonExport}
@@ -3644,13 +3665,24 @@ class ObjectBrowser extends Component {
                         />}
                         label={this.props.t('ra_Beautify JSON output')}
                     />
+                    <br />
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={this.state.excludeSystemRepositoriesFromExport}
+                            onChange={e => this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })}
+                        />}
+                        label={this.props.t('ra_Exclude system repositories from export JSON')}
+                    />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button
                     color="grey"
                     variant="outlined"
-                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(true, this.state.noStatesByExportImport, this.state.beautifyJsonExport))}
+                    onClick={() => this.setState(
+                        { showExportDialog: false },
+                        () => this._exportObjects(true, this.state.noStatesByExportImport, this.state.beautifyJsonExport, this.state.excludeSystemRepositoriesFromExport)
+                    )}
                 >
                     {this.props.t('ra_All objects')}
                     {' '}
@@ -3662,7 +3694,10 @@ class ObjectBrowser extends Component {
                     color="primary"
                     variant="contained"
                     autoFocus
-                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(false, this.state.noStatesByExportImport, this.state.beautifyJsonExport))}
+                    onClick={() => this.setState(
+                        { showExportDialog: false },
+                        () => this._exportObjects(false, this.state.noStatesByExportImport, this.state.beautifyJsonExport, this.state.excludeSystemRepositoriesFromExport),
+                    )}
                 >
                     {this.props.t('ra_Only selected')}
                     {' '}
