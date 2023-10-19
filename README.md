@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.11.0 (2023-10-19)
 * (foxriver76) jsonConfig type number now stores values as number instead of string
 * (foxriver76) objects browser number value input behavior change to allow leading minus
 * (bluefox) Added component `interfaces` to the JSON config
@@ -106,12 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) on upgrade all, not yet started commands can now be aborted
 * (bluefox) Added security check if the server is available from the internet without protection
 * (bluefox) Corrected navigation after the settings closing
-
-### 6.10.5 (2023-10-10)
-* (foxriver76) JSON config component `port` does no longer mark port as occupied if it is only occupied on another host
-* (foxriver76) register news as notifications
-* (foxriver76) if upgrade all is stopped on error, activate close button
-* (bluefox) Export/import objects with its values
 
 ## License
 The MIT License (MIT)

@@ -4,6 +4,19 @@
 * (jogibear9988) fixed link on 404-page being opened inside child view
 * (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
 * (foxriver76) implemented del key shortcut to delete a selected object
+## 6.10.5 (2023-10-10)
+* (foxriver76) JSON config component `port` does no longer mark port as occupied if it is only occupied on another host
+* (foxriver76) register news as notifications
+* (foxriver76) if upgrade all is stopped on error, activate close button
+* (bluefox) Export/import objects with its values
+
+## 6.9.2 (2023-09-01)
+* (foxriver76) show info if server time differs from client time
+* (foxriver76) remove confusion with different names for state (datapoint and state)
+* (jogibear9988) fixed link on 404-page being opened inside child view
+* (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
+* (foxriver76) implemented del key shortcut to delete a selected object
+
 ## 6.10.4 (2023-09-25)
 * (foxriver76) fixed parsing `jsonConfig`
 
