@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) jsonConfig type number now stores values as number instead of string
 * (foxriver76) objects browser number value input behavior change to allow leading minus
 * (bluefox) Added component `interfaces` to the JSON config
+* (bluefox) Implemented Backend to GUI communication
 
 ### 6.10.9 (2023-10-16)
 * (bluefox) Improvement of the public accessibility check

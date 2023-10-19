@@ -152,7 +152,7 @@ class Admin extends utils.Adapter {
     }
 
     /**
-     * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
+     * Some message was sent to this instance over the message box. Used by email, pushover, text2speech, ...
      * Using this method requires "common.messagebox" property to be set to true in io-package.json
      * @param {ioBroker.Message} obj
      */
@@ -160,7 +160,10 @@ class Admin extends utils.Adapter {
         if (!obj) {
             return false;
         }
-        if (obj.command === 'checkFiles') {
+        if (obj.command === 'im') {
+            // if not instance message
+            socket.publishInstanceMessageAll(obj.from, obj.message.m, obj.message.s, obj.message.d);
+        } else if (obj.command === 'checkFiles') {
             if (typeof obj.message === 'string') {
                 try {
                     return (
