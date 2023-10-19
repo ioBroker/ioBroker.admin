@@ -316,6 +316,11 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     isNumberValid(options: NumberValidationOptions): boolean {
         const { common } = options;
         const { value } = options;
+
+        if (value === '') {
+            return false;
+        }
+
         const numVal  = Number(value);
 
         if (typeof common.min === 'number'  && numVal < common.min) {
@@ -612,12 +617,12 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                         helperText={this.props.t(
                                             'Press ENTER to write the value, when focused',
                                         )}
-                                        value={this.state.targetValue.toString() || 0}
+                                        value={this.state.targetValue.toString()}
                                         label={this.props.t('Value')}
                                         onKeyUp={e => e.key === 'Enter' && this.state.valid && this.onUpdate(e)}
                                         onChange={e => {
                                             this.setState({
-                                                targetValue: Number(e.target.value),
+                                                targetValue: e.target.value,
                                                 valid: this.isNumberValid({ value: e.target.value, common: this.props.object.common }),
                                             });
                                         }}
