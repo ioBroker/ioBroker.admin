@@ -831,14 +831,23 @@ function filterObject(obj, filterKeys, excludeTranslations) {
     });
 }
 
-function generateFile(filename, obj, beautify = true, excludeSystemRepositories = true, excludeTranslations = false) {
+/**
+ * Function to generate a json-file for an object and trigger download it
+ * @param filename {string} The desired filename
+ * @param obj {unknown} The obj which should be downloaded
+ * @param options Options to filter/reduce the output
+ * @param options.beautify {boolean} Whether the output should be beautified
+ * @param options.excludeSystemRepositories {boolean} Whether "system.repositories" should be excluded
+ * @param options.excludeTranslations {boolean} Whether translations should be reduced to only the english value
+ */
+function generateFile(filename, obj, options) {
     const el = document.createElement('a');
     const filterKeys = [];
-    if (excludeSystemRepositories) {
+    if (options.excludeSystemRepositories) {
         filterKeys.push('system.repositories');
     }
-    const filteredObject = filterKeys.length > 0 || excludeTranslations ? filterObject(obj, filterKeys, excludeTranslations) : obj;
-    const data = beautify ? JSON.stringify(filteredObject, null, 2) : JSON.stringify(filteredObject);
+    const filteredObject = filterKeys.length > 0 || options.excludeTranslations ? filterObject(obj, filterKeys, options.excludeTranslations) : obj;
+    const data = options.beautify ? JSON.stringify(filteredObject, null, 2) : JSON.stringify(filteredObject);
     el.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`);
     el.setAttribute('download', filename);
 
@@ -3616,6 +3625,16 @@ class ObjectBrowser extends Component {
         return [];
     }
 
+    /**
+     * Exports the selected objects based on the given options and triggers file generation
+     * @param options Options to filter/reduce the output
+     * @param options.isAll {boolean} Whether all objects should be exported or only the selected ones
+     * @param options.beautify {boolean} Whether the output should be beautified
+     * @param options.excludeSystemRepositories {boolean} Whether "system.repositories" should be excluded
+     * @param options.excludeTranslations {boolean} Whether translations should be reduced to only the english value
+     * @returns {Promise<void>}
+     * @private
+     */
     async _exportObjects(options) {
         if (options.isAll) {
             generateFile('allObjects.json', this.objects, options);
@@ -3705,8 +3724,8 @@ class ObjectBrowser extends Component {
                         () => this._exportObjects({
                             isAll: true,
                             noStatesByExportImport: this.state.noStatesByExportImport,
-                            beautifyJsonExport: this.state.beautifyJsonExport,
-                            excludeSystemRepositoriesFromExport: this.state.excludeSystemRepositoriesFromExport,
+                            beautify: this.state.beautifyJsonExport,
+                            excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
                             excludeTranslations: this.state.excludeTranslations,
                         }),
                     )}
@@ -3726,8 +3745,8 @@ class ObjectBrowser extends Component {
                         () => this._exportObjects({
                             isAll: false,
                             noStatesByExportImport: this.state.noStatesByExportImport,
-                            beautifyJsonExport: this.state.beautifyJsonExport,
-                            excludeSystemRepositoriesFromExport: this.state.excludeSystemRepositoriesFromExport,
+                            beautify: this.state.beautifyJsonExport,
+                            excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
                             excludeTranslations: this.state.excludeTranslations,
                         }),
                     )}
