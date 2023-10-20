@@ -101,6 +101,7 @@ import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
+import _ from 'lodash';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -802,9 +803,52 @@ const styles = theme => ({
     },
 });
 
-function generateFile(filename, obj) {
+/**
+ * Function to reduce an object primarily by a given list of keys
+ * @param obj The object which should be filtered
+ * @param filterKeys The keys which should be excluded
+ * @param excludeTranslations Whether translations should be reduced to only the english value
+ * @returns {unknown} The filtered object
+ */
+function filterObject(obj, filterKeys, excludeTranslations) {
+    return _.transform(obj, (result, value, key) => {
+        if (value === undefined || value === null) {
+            return;
+        }
+        if (typeof key === 'string' && filterKeys.includes(key)) {
+            return;
+        }
+        // if the key is an object run it through the inner function - omitFromObject
+        const isObject = _.isObject(value);
+        if (excludeTranslations && isObject) {
+            const keys = Object.keys(value);
+            if (keys.includes('en') && keys.includes('de') && typeof value.en === 'string' && typeof value.de === 'string') {
+                result[key] = value.en;
+                return;
+            }
+        }
+        result[key] = isObject ? filterObject(value, filterKeys, excludeTranslations) : value;
+    });
+}
+
+/**
+ * Function to generate a json-file for an object and trigger download it
+ * @param filename {string} The desired filename
+ * @param obj {unknown} The obj which should be downloaded
+ * @param options Options to filter/reduce the output
+ * @param options.beautify {boolean} Whether the output should be beautified
+ * @param options.excludeSystemRepositories {boolean} Whether "system.repositories" should be excluded
+ * @param options.excludeTranslations {boolean} Whether translations should be reduced to only the english value
+ */
+function generateFile(filename, obj, options) {
     const el = document.createElement('a');
-    el.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(obj, null, 2))}`);
+    const filterKeys = [];
+    if (options.excludeSystemRepositories) {
+        filterKeys.push('system.repositories');
+    }
+    const filteredObject = filterKeys.length > 0 || options.excludeTranslations ? filterObject(obj, filterKeys, options.excludeTranslations) : obj;
+    const data = options.beautify ? JSON.stringify(filteredObject, null, 2) : JSON.stringify(filteredObject);
+    el.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`);
     el.setAttribute('download', filename);
 
     el.style.display = 'none';
@@ -2016,6 +2060,9 @@ class ObjectBrowser extends Component {
                 (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.desc`) !== 'false',
             showContextMenu: null,
             noStatesByExportImport: false,
+            beautifyJsonExport: true,
+            excludeSystemRepositoriesFromExport: true,
+            excludeTranslations: false,
         };
 
         this.edit = {};
@@ -3578,39 +3625,49 @@ class ObjectBrowser extends Component {
         return [];
     }
 
-    async _exportObjects(isAll, noStatesByExportImport) {
-        if (isAll) {
-            generateFile('allObjects.json', this.objects);
-        } else if (this.state.selected.length || this.state.selectedNonObject) {
-            const result = {};
-            const id = this.state.selected[0] || this.state.selectedNonObject;
-            const ids = this._getSelectedIdsForExport();
+    /**
+     * Exports the selected objects based on the given options and triggers file generation
+     * @param options Options to filter/reduce the output
+     * @param options.isAll {boolean} Whether all objects should be exported or only the selected ones
+     * @param options.beautify {boolean} Whether the output should be beautified
+     * @param options.excludeSystemRepositories {boolean} Whether "system.repositories" should be excluded
+     * @param options.excludeTranslations {boolean} Whether translations should be reduced to only the english value
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _exportObjects(options) {
+        if (options.isAll) {
+            generateFile('allObjects.json', this.objects, options);
+            return;
+        }
+        if (!(this.state.selected.length || this.state.selectedNonObject)) {
+            window.alert(this.props.t('ra_Save of objects-tree is not possible'));
+            return;
+        }
+        const result = {};
+        const id = this.state.selected[0] || this.state.selectedNonObject;
+        const ids = this._getSelectedIdsForExport();
 
-            for (let i = 0; i < ids.length; i++) {
-                const key = ids[i];
-                result[key] = JSON.parse(JSON.stringify(this.objects[key]));
-
-                // read states values
-                if (result[key]?.type === 'state' && !noStatesByExportImport) {
-                    const state = await this.props.socket.getState(key);
-                    if (state) {
-                        result[key].val = state.val;
-                        result[key].ack = state.ack;
-                    }
-                }
-                // add enum information
-                if (result[key].common) {
-                    const enums = this.getEnumsForId(key);
-                    if (enums) {
-                        result[key].common.enums = enums;
-                    }
+        for (const key of ids) {
+            result[key] = JSON.parse(JSON.stringify(this.objects[key]));
+            // read states values
+            if (result[key]?.type === 'state' && !options.noStatesByExportImport) {
+                const state = await this.props.socket.getState(key);
+                if (state) {
+                    result[key].val = state.val;
+                    result[key].ack = state.ack;
                 }
             }
-
-            generateFile(`${id}.json`, result, noStatesByExportImport);
-        } else {
-            window.alert(this.props.t('ra_Save of objects-tree is not possible'));
+            // add enum information
+            if (result[key].common) {
+                const enums = this.getEnumsForId(key);
+                if (enums) {
+                    result[key].common.enums = enums;
+                }
+            }
         }
+
+        generateFile(`${id}.json`, result, options);
     }
 
     renderExportDialog() {
@@ -3632,13 +3689,46 @@ class ObjectBrowser extends Component {
                         />}
                         label={this.props.t('ra_Do not export values of states')}
                     />
+                    <br />
+                    {this.props.t('These options can reduce the size of the export file:')}
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={this.state.beautifyJsonExport}
+                            onChange={e => this.setState({ beautifyJsonExport: e.target.checked })}
+                        />}
+                        label={this.props.t('Beautify JSON output')}
+                    />
+                    <br />
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={this.state.excludeSystemRepositoriesFromExport}
+                            onChange={e => this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })}
+                        />}
+                        label={this.props.t('Exclude system repositories from export JSON')}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={this.state.excludeTranslations}
+                            onChange={e => this.setState({ excludeTranslations: e.target.checked })}
+                        />}
+                        label={this.props.t('Exclude translations (except english) from export JSON')}
+                    />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button
                     color="grey"
                     variant="outlined"
-                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(true, this.state.noStatesByExportImport))}
+                    onClick={() => this.setState(
+                        { showExportDialog: false },
+                        () => this._exportObjects({
+                            isAll: true,
+                            noStatesByExportImport: this.state.noStatesByExportImport,
+                            beautify: this.state.beautifyJsonExport,
+                            excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
+                            excludeTranslations: this.state.excludeTranslations,
+                        }),
+                    )}
                 >
                     {this.props.t('ra_All objects')}
                     {' '}
@@ -3650,7 +3740,16 @@ class ObjectBrowser extends Component {
                     color="primary"
                     variant="contained"
                     autoFocus
-                    onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(false, this.state.noStatesByExportImport))}
+                    onClick={() => this.setState(
+                        { showExportDialog: false },
+                        () => this._exportObjects({
+                            isAll: false,
+                            noStatesByExportImport: this.state.noStatesByExportImport,
+                            beautify: this.state.beautifyJsonExport,
+                            excludeSystemRepositories: this.state.excludeSystemRepositoriesFromExport,
+                            excludeTranslations: this.state.excludeTranslations,
+                        }),
+                    )}
                 >
                     {this.props.t('ra_Only selected')}
                     {' '}
