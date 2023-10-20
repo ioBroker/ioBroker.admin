@@ -803,6 +803,13 @@ const styles = theme => ({
     },
 });
 
+/**
+ * Function to reduce an object primarily by a given list of keys
+ * @param obj The object which should be filtered
+ * @param filterKeys The keys which should be excluded
+ * @param excludeTranslations Whether translations should be reduced to only the english value
+ * @returns {unknown} The filtered object
+ */
 function filterObject(obj, filterKeys, excludeTranslations) {
     return _.transform(obj, (result, value, key) => {
         if (value === undefined || value === null) {
@@ -3609,9 +3616,9 @@ class ObjectBrowser extends Component {
         return [];
     }
 
-    async _exportObjects(isAll, noStatesByExportImport, beautifyJsonExport, excludeSystemRepositoriesFromExport, excludeTranslations) {
-        if (isAll) {
-            generateFile('allObjects.json', this.objects, beautifyJsonExport, excludeSystemRepositoriesFromExport, excludeTranslations);
+    async _exportObjects(options) {
+        if (options.isAll) {
+            generateFile('allObjects.json', this.objects, options);
             return;
         }
         if (!(this.state.selected.length || this.state.selectedNonObject)) {
@@ -3622,12 +3629,10 @@ class ObjectBrowser extends Component {
         const id = this.state.selected[0] || this.state.selectedNonObject;
         const ids = this._getSelectedIdsForExport();
 
-        for (let i = 0; i < ids.length; i++) {
-            const key = ids[i];
+        for (const key of ids) {
             result[key] = JSON.parse(JSON.stringify(this.objects[key]));
-
             // read states values
-            if (result[key]?.type === 'state' && !noStatesByExportImport) {
+            if (result[key]?.type === 'state' && !options.noStatesByExportImport) {
                 const state = await this.props.socket.getState(key);
                 if (state) {
                     result[key].val = state.val;
@@ -3643,7 +3648,7 @@ class ObjectBrowser extends Component {
             }
         }
 
-        generateFile(`${id}.json`, result, beautifyJsonExport, excludeSystemRepositoriesFromExport, excludeTranslations);
+        generateFile(`${id}.json`, result, options);
     }
 
     renderExportDialog() {
@@ -3697,7 +3702,13 @@ class ObjectBrowser extends Component {
                     variant="outlined"
                     onClick={() => this.setState(
                         { showExportDialog: false },
-                        () => this._exportObjects(true, this.state.noStatesByExportImport, this.state.beautifyJsonExport, this.state.excludeSystemRepositoriesFromExport, this.state.excludeTranslations),
+                        () => this._exportObjects({
+                            isAll: true,
+                            noStatesByExportImport: this.state.noStatesByExportImport,
+                            beautifyJsonExport: this.state.beautifyJsonExport,
+                            excludeSystemRepositoriesFromExport: this.state.excludeSystemRepositoriesFromExport,
+                            excludeTranslations: this.state.excludeTranslations,
+                        }),
                     )}
                 >
                     {this.props.t('ra_All objects')}
@@ -3712,7 +3723,13 @@ class ObjectBrowser extends Component {
                     autoFocus
                     onClick={() => this.setState(
                         { showExportDialog: false },
-                        () => this._exportObjects(false, this.state.noStatesByExportImport, this.state.beautifyJsonExport, this.state.excludeSystemRepositoriesFromExport, this.state.excludeTranslations),
+                        () => this._exportObjects({
+                            isAll: false,
+                            noStatesByExportImport: this.state.noStatesByExportImport,
+                            beautifyJsonExport: this.state.beautifyJsonExport,
+                            excludeSystemRepositoriesFromExport: this.state.excludeSystemRepositoriesFromExport,
+                            excludeTranslations: this.state.excludeTranslations,
+                        }),
                     )}
                 >
                     {this.props.t('ra_Only selected')}
