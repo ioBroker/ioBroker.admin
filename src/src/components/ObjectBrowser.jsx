@@ -3671,13 +3671,13 @@ class ObjectBrowser extends Component {
                         label={this.props.t('ra_Do not export values of states')}
                     />
                     <br />
-                    {this.props.t('ra_These options can reduce the size of the export file:')}
+                    {this.props.t('These options can reduce the size of the export file:')}
                     <FormControlLabel
                         control={<Checkbox
                             checked={this.state.beautifyJsonExport}
                             onChange={e => this.setState({ beautifyJsonExport: e.target.checked })}
                         />}
-                        label={this.props.t('ra_Beautify JSON output')}
+                        label={this.props.t('Beautify JSON output')}
                     />
                     <br />
                     <FormControlLabel
@@ -3685,14 +3685,14 @@ class ObjectBrowser extends Component {
                             checked={this.state.excludeSystemRepositoriesFromExport}
                             onChange={e => this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })}
                         />}
-                        label={this.props.t('ra_Exclude system repositories from export JSON')}
+                        label={this.props.t('Exclude system repositories from export JSON')}
                     />
                     <FormControlLabel
                         control={<Checkbox
                             checked={this.state.excludeTranslations}
                             onChange={e => this.setState({ excludeTranslations: e.target.checked })}
                         />}
-                        label={this.props.t('ra_Exclude translations (except english) from export JSON')}
+                        label={this.props.t('Exclude translations (except english) from export JSON')}
                     />
                 </DialogContentText>
             </DialogContent>
