@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) fixed issue when updating news in backend
+
 ### 6.11.0 (2023-10-19)
 * (foxriver76) jsonConfig type number now stores values as number instead of string
 * (foxriver76) objects browser number value input behavior change to allow leading minus

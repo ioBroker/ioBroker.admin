@@ -667,121 +667,116 @@ class Admin extends utils.Adapter {
         });
     }
 
-    // read news from server
-    updateNews() {
+    /**
+     * Read news from server and register them as notifications
+     *
+     * @return {Promise<void>}
+     */
+    async updateNews() {
         this.timerNews && clearTimeout(this.timerNews);
         this.timerNews = null;
 
         this.checkNodeJsVersion().catch(e => this.log.warn(`Cannot check node.js versions: ${e}`));
 
-        let oldEtag;
-        let newNews;
         let oldNews;
-        let originalOldNews;
         let newEtag;
 
-        return (
-            this.getStateAsync('info.newsETag')
-                .then(state => {
-                    oldEtag = state?.val;
-                    return axios
-                        .get('https://iobroker.live/repo/news-hash.json', {
-                            timeout: 13_000,
-                            validateStatus: status => status < 400,
-                        })
-                        .then(response => response.data)
-                        .catch(error =>
-                            this.log.warn(
-                                `Cannot update news: ${
-                                    error.response ? error.response.data : error.message || error.code
-                                }`
-                            )
-                        );
-                })
-                .then(etag => {
-                    if (etag && etag.hash !== oldEtag) {
-                        newEtag = etag.hash;
-                        return axios
-                            .get('https://iobroker.live/repo/news.json', {
-                                timeout: 14_000,
-                                validateStatus: status => status < 400,
-                            })
-                            .then(response => response.data)
-                            .catch(error =>
-                                this.log.warn(
-                                    `Cannot update news_: ${
-                                        error.response ? error.response.data : error.message || error.code
-                                    }`
-                                )
-                            );
-                    } else {
-                        newEtag = oldEtag;
-                        return Promise.resolve([]);
-                    }
-                })
-                .then(_newNews => {
-                    newNews = _newNews || [];
-                    return this.getStateAsync('info.newsFeed');
-                })
-                .then(state => {
-                    try {
-                        /** @ts-expect-error */
-                        oldNews = state?.val ? JSON.parse(state.val) : [];
-                    } catch (e) {
-                        oldNews = [];
-                    }
-                    originalOldNews = JSON.stringify(oldNews);
+        const oldEtag = (await this.getStateAsync('info.newsETag'))?.val;
 
-                    return this.getStateAsync('info.newsLastId');
-                })
-                /** @ts-expect-error */
-                .then(lastState => {
-                    // find time of last ID
-                    let time = '';
-                    if (lastState?.val) {
-                        const item = oldNews.find(item => item.id === lastState.val);
-                        if (item) {
-                            time = item.created;
-                        }
+        let etag;
+
+        try {
+            const res = await axios.get('https://iobroker.live/repo/news-hash.json', {
+                timeout: 13_000,
+                validateStatus: status => status < 400,
+            });
+
+            etag = res.data;
+        } catch (e) {
+            this.log.warn(`Cannot update news: ${e.response ? e.response.data : e.message || e.code}`);
+        }
+
+        let _newNews;
+
+        if (etag && etag.hash !== oldEtag) {
+            newEtag = etag.hash;
+
+            try {
+                const res = await axios.get('https://iobroker.live/repo/news.json', {
+                    timeout: 14_000,
+                    validateStatus: status => status < 400,
+                });
+
+                _newNews = res.data;
+            } catch (e) {
+                this.log.warn(`Cannot update news_: ${e.response ? e.response.data : e.message || e.code}`);
+            }
+        } else {
+            newEtag = oldEtag;
+            _newNews = [];
+        }
+
+        const newNews = Array.isArray(_newNews) ? _newNews : [];
+
+        const newsState = await this.getStateAsync('info.newsFeed');
+
+        try {
+            /** @ts-expect-error */
+            oldNews = newsState?.val ? JSON.parse(newsState.val) : [];
+        } catch {
+            oldNews = [];
+        }
+
+        const originalOldNews = JSON.stringify(oldNews);
+
+        const lastState = await this.getStateAsync('info.newsLastId');
+
+        // find time of last ID
+        let time = '';
+        if (lastState?.val) {
+            const item = oldNews.find(item => item.id === lastState.val);
+            if (item) {
+                time = item.created;
+            }
+        }
+
+        try {
+            // add all IDs newer than last seen
+            newNews.forEach(item => {
+                if (!lastState || !time || item.created > time) {
+                    if (!oldNews.find(it => it.created === item.created)) {
+                        oldNews.push(item);
                     }
+                }
+            });
 
-                    // add all IDs newer than last seen
-                    newNews.forEach(item => {
-                        if (!lastState || !time || item.created > time) {
-                            if (!oldNews.find(it => it.created === item.created)) {
-                                oldNews.push(item);
-                            }
-                        }
-                    });
+            oldNews.sort((a, b) => (a.created > b.created ? -1 : a.created < b.created ? 1 : 0));
 
-                    oldNews.sort((a, b) => (a.created > b.created ? -1 : a.created < b.created ? 1 : 0));
+            // delete news older than 3 months
+            let i;
+            for (i = oldNews.length - 1; i >= 0; i--) {
+                if (Date.now() - new Date(oldNews[i].created).getTime() > 180 * 24 * 3600000) {
+                    oldNews.splice(i, 1);
+                }
+            }
 
-                    // delete news older than 3 months
-                    let i;
-                    for (i = oldNews.length - 1; i >= 0; i--) {
-                        if (Date.now() - new Date(oldNews[i].created).getTime() > 180 * 24 * 3600000) {
-                            oldNews.splice(i, 1);
-                        }
-                    }
+            if (originalOldNews !== JSON.stringify(oldNews)) {
+                this.registerNewsNotifications(oldNews, lastState?.val);
+                this.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
+            }
 
-                    if (originalOldNews !== JSON.stringify(oldNews)) {
-                        this.registerNewsNotifications(oldNews, lastState?.val);
-                        return this.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
-                    } else {
-                        return Promise.resolve();
-                    }
-                })
-                /** @ts-expect-error */
-                .then(() =>
-                    newEtag !== oldEtag ? this.setStateAsync('info.newsETag', newEtag, true) : Promise.resolve()
-                )
-                .catch(e => this.log.error(`Cannot update news: ${e}`))
-                .then(() => (this.timerNews = setTimeout(() => this.updateNews(), 24 * ONE_HOUR_MS + 1)))
-        );
+            if (newEtag !== oldEtag) {
+                this.setStateAsync('info.newsETag', newEtag, true);
+            }
+        } catch (e) {
+            this.log.error(`Cannot update news: ${e.message}`);
+        }
+
+        this.timerNews = setTimeout(() => this.updateNews(), 24 * ONE_HOUR_MS + 1);
     }
 
     /**
-     * Add the nes to the notification system
+     * Add the news to the notification system
      *
      * @param {Record<string, any>[]} messages sorted news
      * @param {string | undefined | null} lastMessageId lastMessageId, all after this has already been seen
