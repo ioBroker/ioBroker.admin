@@ -19,6 +19,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const Ajv = require('ajv');
+const JSON5 = require('json5');
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const getInstalledInfo = utils.commonTools.getInstalledInfo;
@@ -1523,13 +1524,23 @@ class Admin extends utils.Adapter {
                     const adapterPath = path.dirname(
                         require.resolve(`iobroker.${adapterName.toLowerCase()}/package.json`)
                     );
-                    const jsonConf = fs.readFileSync(path.join(adapterPath, 'admin', 'jsonConfig.json'), {
-                        encoding: 'utf-8',
-                    });
-                    // TODO: also handle .json5
+
+                    const jsonConfPath = path.join(adapterPath, 'admin', 'jsonConfig.json');
+                    const json5ConfPath = path.join(adapterPath, 'admin', 'jsonConfig.json5');
+                    let jsonConf;
+
+                    if (fs.existsSync(jsonConfPath)) {
+                        jsonConf = fs.readFileSync(jsonConfPath, {
+                            encoding: 'utf-8',
+                        });
+                    } else {
+                        jsonConf = fs.readFileSync(json5ConfPath, {
+                            encoding: 'utf-8',
+                        });
+                    }
 
                     const validate = ajv.compile(schema);
-                    const valid = validate(JSON.parse(jsonConf));
+                    const valid = validate(JSON5.parse(jsonConf));
 
                     if (!valid) {
                         this.log.warn(`${row.id} has an invalid jsonConfig: ${JSON.stringify(validate.errors)}`);
