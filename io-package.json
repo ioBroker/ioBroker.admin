@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.11.0",
+    "version": "6.12.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.0": {
+        "en": "fixed issue when updating news in backend\nvalidate json config against the schema\nupdate socket-client to improve performance",
+        "de": "fixes problem bei der aktualisierung von nachrichten im backend\njson config gegen das schema validieren\naktualisierung von steckdosen-client zur leistungsverbesserung",
+        "ru": "фиксированная проблема при обновлении новостей в backend\nвалидировать json config против схемы\nобновление socket-client для повышения производительности",
+        "pt": "problema fixo ao atualizar notícias no backend\nvalidar json config contra o esquema\natualizar socket-client para melhorar o desempenho",
+        "nl": "vertaling:\njson configeert tegen de schema\nupdate socket-cliënt om de prestaties te verbeteren",
+        "fr": "problème fixe lors de la mise à jour des nouvelles dans backend\nvalider la configuration json contre le schéma\nmettre à jour le client socket pour améliorer la performance",
+        "it": "problema fisso durante l'aggiornamento di notizie in backend\nconvalidare json config contro lo schema\naggiornamento socket-client per migliorare le prestazioni",
+        "es": "edición fija al actualizar noticias en backend\nvalidate json config contra el esquema\nactualizar socket-client para mejorar el rendimiento",
+        "pl": "bezpośrednie wydanie, kiedy podsumowuje wiadomości\nwniosek json konfiguje przeciwko schema\naktualizacja gniazda w celu poprawy wydajności",
+        "uk": "виправлено проблему при оновленні новин у додатку\nвалідувати json config проти schema\nоновлення гнізда-клієнта для поліпшення продуктивності",
+        "zh-cn": "定期发布新闻的问题\n反希马的有效 json config\n改进业绩的更新指标"
+      },
       "6.11.0": {
         "en": "jsonConfig type number now stores values as number instead of string\nobjects browser number value input behavior change to allow leading minus\nAdded component `interfaces` to the JSON config\nImplemented Backend to GUI communication",
         "de": "jsonConfig Typ Nummer speichert nun Werte als Anzahl statt String\nobjekten browser-nummer-wert-eingabe-verhaltensänderung, um führende minus zu ermöglichen\nKomponentenschnittstellen zum JSON config hinzugefügt\nImplementiert Backend zur GUI-Kommunikation",
@@ -95,19 +108,6 @@
         "pl": "Port JSON nie ma już większego przeznaczenia, jeśli jest ona okupowana tylko przez inny gospodarz\nrejestracja\njeśli ulepszenie jest zahamowane na błędzie, aktywuje przycisk bliski\nObiekty eksportowe",
         "uk": "Порт компонента JSON config більше не позначений порт, як зайнятий, якщо він зайнятий тільки на іншому господарстві\nреєструвати новини як повідомлення\nякщо оновлення все припинено на помилки, активувати закриту кнопку\nЕкспорт / імпорт об'єктів з його значеннями",
         "zh-cn": "如果只在另一东道国被占有,那么联合部队的港口不再是被占的港口。\n通知\n如果所有升级都被排除在错误上,而是停顿。\n出口/进口物品及其价值"
-      },
-      "6.10.4": {
-        "en": "fixed parsing `jsonConfig`",
-        "de": "feste Parsing jsonConfig",
-        "ru": "фиксированный парсинг jsonConfig",
-        "pt": "fixo parsing jsonConfig",
-        "nl": "jsonConfig",
-        "fr": "jsonConfig",
-        "it": "parsing fisso jsonConfig",
-        "es": "fija persiguiendo jsonConfig",
-        "pl": "oficjalna strona jsonConfig",
-        "uk": "фіксована парсинг jsonConfig",
-        "zh-cn": "固定假"
       }
     },
     "desc": {
