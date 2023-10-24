@@ -608,6 +608,15 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         }
     }
 
+    /**
+     * Validate the JSON config once on mount
+     */
+    async componentDidMount() {
+        const link = `${window.location.protocol}//${window.location.host}${window.location.pathname}validate_config/${this.props.adapterName}`;
+        console.log(`fetch ${link}`);
+        await fetch(link);
+    }
+
     render(): React.JSX.Element {
         const { classes } = this.props;
         if (!this.state.data || !this.state.schema) {

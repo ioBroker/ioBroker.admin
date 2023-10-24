@@ -88,6 +88,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) fixed issue when updating news in backend
+* (foxriver76) validate json config against the schema
+* (foxriver76) update socket-client to improve performance
 
 ### 6.11.0 (2023-10-19)
 * (foxriver76) jsonConfig type number now stores values as number instead of string
