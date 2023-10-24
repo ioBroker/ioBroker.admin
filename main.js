@@ -17,9 +17,6 @@ const semver = require('semver');
 const axios = require('axios').default;
 const fs = require('node:fs');
 const os = require('node:os');
-const path = require('node:path');
-const Ajv = require('ajv');
-const JSON5 = require('json5');
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const getInstalledInfo = utils.commonTools.getInstalledInfo;
@@ -46,8 +43,6 @@ let systemLanguage = 'en';
 class Admin extends utils.Adapter {
     /** secret used for the socket connection */
     secret;
-    /** URL to the JSON config schema */
-    JSON_CONFIG_SCHEMA_URL = 'https://raw.githubusercontent.com/ioBroker/adapter-react-v5/main/schemas/jsonConfig.json';
 
     /**
      * @param {Partial<utils.AdapterOptions>} [options={}]
@@ -1476,7 +1471,6 @@ class Admin extends utils.Adapter {
         this.updateNews();
         this.updateIcons();
         this.validateUserData0();
-        this.validateJsonConfig();
     }
 
     /**
@@ -1501,55 +1495,6 @@ class Admin extends utils.Adapter {
                 }
             }
         });
-    }
-
-    /**
-     * Validate, al JSON configs from alla adapters against the current schema
-     */
-    async validateJsonConfig() {
-        const schemaRes = await axios.get(this.JSON_CONFIG_SCHEMA_URL);
-        const schema = schemaRes.data;
-
-        const res = await this.getObjectViewAsync('system', 'adapter', {
-            startkey: 'system.adapter.',
-            endkey: 'system.adapter.\u9999',
-        });
-
-        for (const row of res.rows) {
-            if (row.value?.common.adminUI?.config === 'json') {
-                try {
-                    const ajv = new Ajv({ allErrors: false });
-                    const adapterName = row.value.common.name;
-
-                    const adapterPath = path.dirname(
-                        require.resolve(`iobroker.${adapterName.toLowerCase()}/package.json`)
-                    );
-
-                    const jsonConfPath = path.join(adapterPath, 'admin', 'jsonConfig.json');
-                    const json5ConfPath = path.join(adapterPath, 'admin', 'jsonConfig.json5');
-                    let jsonConf;
-
-                    if (fs.existsSync(jsonConfPath)) {
-                        jsonConf = fs.readFileSync(jsonConfPath, {
-                            encoding: 'utf-8',
-                        });
-                    } else {
-                        jsonConf = fs.readFileSync(json5ConfPath, {
-                            encoding: 'utf-8',
-                        });
-                    }
-
-                    const validate = ajv.compile(schema);
-                    const valid = validate(JSON5.parse(jsonConf));
-
-                    if (!valid) {
-                        this.log.warn(`${row.id} has an invalid jsonConfig: ${JSON.stringify(validate.errors)}`);
-                    }
-                } catch (e) {
-                    this.log.debug(`Error validating schema of ${row.id}: ${e.message}`);
-                }
-            }
-        }
     }
 }
 
