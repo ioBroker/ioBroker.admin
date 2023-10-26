@@ -761,12 +761,12 @@ class Admin extends utils.Adapter {
             }
 
             if (originalOldNews !== JSON.stringify(oldNews)) {
-                this.registerNewsNotifications(oldNews, lastState?.val);
-                this.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
+                await this.registerNewsNotifications(oldNews, lastState?.val);
+                await this.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
             }
 
             if (newEtag !== oldEtag) {
-                this.setStateAsync('info.newsETag', newEtag, true);
+                await this.setStateAsync('info.newsETag', newEtag, true);
             }
         } catch (e) {
             this.log.error(`Cannot update news: ${e.message}`);
