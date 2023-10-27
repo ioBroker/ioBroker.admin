@@ -12,10 +12,12 @@ import { makeStyles } from '@mui/styles';
 import UpdateIcon from '@mui/icons-material/Update';
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
 import CancelIcon from '@mui/icons-material/Cancel';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import PermDeviceInformationIcon from '@mui/icons-material/PermDeviceInformation';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import WarningIcon from '@mui/icons-material/Warning';
-import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import BellIcon from '@mui/icons-material/Notifications';
+import InfoIcon from '@mui/icons-material/Info';
 import MemoryIcon from '@mui/icons-material/Memory';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from '@mui/icons-material/Check';
@@ -178,7 +180,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const Status = ({ name, ...props }) => {
+const Status = ({ name, severity, ...props }) => {
     switch (name) {
         case 'restartLoop':
             return <UpdateIcon style={{ color: '#ffca00' }} {...props} />;
@@ -206,6 +208,14 @@ const Status = ({ name, ...props }) => {
             />;
 
         default:
+            if (severity === 'notify') {
+                return <BellIcon color="primary" {...props} />;
+            }
+
+            if (severity === 'info') {
+                return <InfoIcon color="info" {...props} />;
+            }
+
             return <WarningIcon style={{ color: '#ffca00' }} {...props} />;
     }
 };
@@ -234,6 +244,7 @@ const HostWarningDialog = ({
     messages, onClose, ackCallback, dateFormat, themeType, instances,
 }) => {
     const classes = useStyles();
+    console.log(messages);
 
     const [value, setValue] = useState(0);
     const [disabled, setDisabled] = useState([]);
@@ -267,12 +278,12 @@ const HostWarningDialog = ({
                         indicatorColor={black ? 'primary' : 'secondary'}
                         textColor="primary"
                     >
-                        {Object.keys(messages).map((name, idx) => <Tab
+                        {Object.entries(messages).map(([name, entry], idx) => <Tab
                             style={black ? null : { color: 'white' }}
                             disabled={disabled.includes(name)}
                             key={name}
                             label={I18n.t(name)}
-                            icon={<Status name={name} />}
+                            icon={<Status name={name} severity={entry.severity} />}
                             {...a11yProps(idx)}
                         />)}
                     </Tabs>
