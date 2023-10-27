@@ -1555,5 +1555,7 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
-  "yesterday": "yesterday"
+  "yesterday": "yesterday",
+  "Select/Unselect all": "Select/Unselect all",
+  "Update %s adapter(s)": "Update %s adapter(s)"
 }
