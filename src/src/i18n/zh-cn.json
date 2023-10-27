@@ -1555,5 +1555,7 @@
   "write": "写",
   "write operation": "写",
   "wrongPassword": "用户名或密码无效",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "Select/Unselect all": "全选/取消全选",
+  "Update %s adapter(s)": "更新 %s 适配器"
 }

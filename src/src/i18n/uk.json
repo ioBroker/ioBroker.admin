@@ -1555,5 +1555,7 @@
   "write": "писати",
   "write operation": "писати",
   "wrongPassword": "Неправильне ім'я користувача або пароль",
-  "yesterday": "вчора"
+  "yesterday": "вчора",
+  "Select/Unselect all": "Вибрати/Скасувати вибір усіх",
+  "Update %s adapter(s)": "Оновити адаптер(и) %s"
 }

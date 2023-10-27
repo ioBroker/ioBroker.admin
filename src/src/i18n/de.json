@@ -1555,5 +1555,7 @@
   "write": "schreiben",
   "write operation": "schreiben",
   "wrongPassword": "Name oder Kennwort sind falsch",
-  "yesterday": "gestern"
+  "yesterday": "gestern",
+  "Select/Unselect all": "Alle auswählen/Auswahl aufheben",
+  "Update %s adapter(s)": "%s Adapter aktualisieren"
 }

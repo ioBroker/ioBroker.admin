@@ -1555,5 +1555,7 @@
   "write": "Scrivi",
   "write operation": "Scrivi",
   "wrongPassword": "Nome utente o password errati",
-  "yesterday": "Ieri"
+  "yesterday": "Ieri",
+  "Select/Unselect all": "Seleziona/Deseleziona tutto",
+  "Update %s adapter(s)": "Aggiorna %s adattatori"
 }

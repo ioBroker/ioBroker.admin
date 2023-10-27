@@ -1555,5 +1555,7 @@
   "write": "schrijven",
   "write operation": "schrijven",
   "wrongPassword": "ongeldige gebruikersnaam of wachtwoord",
-  "yesterday": "gisteren"
+  "yesterday": "gisteren",
+  "Select/Unselect all": "Alles selecteren/deselecteren",
+  "Update %s adapter(s)": "%s adapter(s) bijwerken"
 }
