@@ -244,7 +244,6 @@ const HostWarningDialog = ({
     messages, onClose, ackCallback, dateFormat, themeType, instances,
 }) => {
     const classes = useStyles();
-    console.log(messages);
 
     const [value, setValue] = useState(0);
     const [disabled, setDisabled] = useState([]);
