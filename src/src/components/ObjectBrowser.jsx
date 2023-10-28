@@ -3007,6 +3007,8 @@ class ObjectBrowser extends Component {
                     } else {
                         delete this.objects[event.id];
                     }
+                } else if (event.obj) {
+                    this.objects[event.id] = event.obj;
                 }
             });
         } else {
@@ -3031,6 +3033,8 @@ class ObjectBrowser extends Component {
                 } else {
                     delete this.objects[id];
                 }
+            } else if (obj) {
+                this.objects[id] = obj;
             }
         }
 
