@@ -86,6 +86,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+
+### **WORK IN PROGRESS**
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+
 ### 6.12.0 (2023-10-24)
 * (foxriver76) fixed issue when updating news in backend
 * (foxriver76) validate json config against the schema

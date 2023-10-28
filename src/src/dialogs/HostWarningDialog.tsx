@@ -12,10 +12,12 @@ import { makeStyles } from '@mui/styles';
 import UpdateIcon from '@mui/icons-material/Update';
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
 import CancelIcon from '@mui/icons-material/Cancel';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import PermDeviceInformationIcon from '@mui/icons-material/PermDeviceInformation';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import WarningIcon from '@mui/icons-material/Warning';
-import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import BellIcon from '@mui/icons-material/Notifications';
+import InfoIcon from '@mui/icons-material/Info';
 import MemoryIcon from '@mui/icons-material/Memory';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from '@mui/icons-material/Check';
@@ -25,6 +27,7 @@ import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 const useStyles = makeStyles(theme => ({
     root: {
+        // @ts-expect-error probably needs better types
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
@@ -91,10 +94,12 @@ const useStyles = makeStyles(theme => ({
     headerText: {
         fontWeight: 'bold',
         fontSize: 20,
+        // @ts-expect-error probably needs better types
         color: theme.palette.mode === 'dark' ? '#DDD' : '#111',
     },
     descriptionHeaderText: {
         margin: '18px 0',
+        // @ts-expect-error probably needs better types
         color: theme.palette.mode === 'dark' ? '#CCC' : '#222',
     },
     silver: {
@@ -112,6 +117,7 @@ const useStyles = makeStyles(theme => ({
         fontFamily: 'monospace',
         fontSize: 14,
         marginLeft: 20,
+        whiteSpace: 'pre-wrap',
     },
     img2: {
         width: 25,
@@ -178,7 +184,17 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const Status = ({ name, ...props }) => {
+/** Possible message severities */
+type Severity = 'notify' | 'info' | 'alert';
+
+interface StatusOptions {
+    /** Id of the message */
+    name: string;
+    /** Severity of the message */
+    severity?: Severity;
+}
+
+const Status = ({ name, severity, ...props }: StatusOptions) => {
     switch (name) {
         case 'restartLoop':
             return <UpdateIcon style={{ color: '#ffca00' }} {...props} />;
@@ -206,18 +222,33 @@ const Status = ({ name, ...props }) => {
             />;
 
         default:
+            if (severity === 'notify') {
+                return <BellIcon color="primary" {...props} />;
+            }
+
+            if (severity === 'info') {
+                return <InfoIcon color="info" {...props} />;
+            }
+
             return <WarningIcon style={{ color: '#ffca00' }} {...props} />;
     }
 };
 
-const a11yProps = index => ({
+const a11yProps = (index: number) => ({
     id: `scrollable-force-tab-${index}`,
     'aria-controls': `scrollable-force-tabpanel-${index}`,
 });
 
+interface TabPanelOptions {
+    value: number;
+    index: number;
+    classNameBox: string;
+    children: React.JSX.Element;
+}
+
 const TabPanel = ({
     children, value, index, classNameBox, ...other
-}) => <div
+}: TabPanelOptions) => <div
     role="tabpanel"
     hidden={value !== index}
     id={`scrollable-force-tabpanel-${index}`}
@@ -230,20 +261,49 @@ const TabPanel = ({
             </Box>}
 </div>;
 
+type Translated = Record<ioBroker.Languages, string>;
+
+interface InstanceMessage {
+    messages: {
+        message: string;
+        ts: number;
+    }[];
+}
+
+interface Message {
+    name: Translated;
+    severity: Severity;
+    description: Translated;
+    instances: Record<string, InstanceMessage>;
+}
+
+interface HostWarningDialogOptions {
+    messages: Record<string, Message>;
+    onClose: () => void;
+    ackCallback: (name: string) => void;
+    dateFormat: string;
+    themeType: string;
+    instances: any;
+}
+
 const HostWarningDialog = ({
     messages, onClose, ackCallback, dateFormat, themeType, instances,
-}) => {
+}: HostWarningDialogOptions) => {
     const classes = useStyles();
 
     const [value, setValue] = useState(0);
-    const [disabled, setDisabled] = useState([]);
-    const [expanded, setExpanded] = useState(false);
+    const [disabled, setDisabled] = useState<string[]>([]);
+    const [expanded, setExpanded] = useState('');
+    const [autoCollapse, setAutoCollapse] = useState(true);
 
-    const handleChange = (event, newValue) =>
+    const handleChange = (event: unknown, newValue: number) => {
+        setAutoCollapse(true);
         setValue(newValue);
+        setExpanded('');
+    };
 
-    const handleChangeAccordion = panel => (event, isExpanded) =>
-        setExpanded(isExpanded ? panel : false);
+    const handleChangeAccordion = (panel: string) => (_event: unknown, isExpanded: boolean) =>
+        setExpanded(isExpanded ? panel : '');
 
     const black = themeType === 'dark';
 
@@ -263,20 +323,21 @@ const HostWarningDialog = ({
                         value={value}
                         onChange={handleChange}
                         variant="scrollable"
-                        scrollButtons="on"
+                        scrollButtons
                         indicatorColor={black ? 'primary' : 'secondary'}
                         textColor="primary"
                     >
-                        {Object.keys(messages).map((name, idx) => <Tab
-                            style={black ? null : { color: 'white' }}
+                        {Object.entries(messages).map(([name, entry], idx) => <Tab
+                            style={black ? undefined : { color: 'white' }}
                             disabled={disabled.includes(name)}
                             key={name}
-                            label={I18n.t(name)}
-                            icon={<Status name={name} />}
+                            label={entry.name[I18n.getLanguage()]}
+                            icon={<Status name={name} severity={entry.severity} />}
                             {...a11yProps(idx)}
                         />)}
                     </Tabs>
                 </AppBar>
+                {/** @ts-expect-error seems to work with multiple children */}
                 {Object.keys(messages).map((name, idx) => <TabPanel
                     className={classes.overflowAuto}
                     classNameBox={classes.classNameBox}
@@ -293,13 +354,20 @@ const HostWarningDialog = ({
                     </div>
                     <div>
                         {messages[name].instances ? Object.keys(messages[name].instances).map(nameInst => {
+                            const index = Object.keys(messages).indexOf(name);
+
+                            if (autoCollapse && value === index) {
+                                handleChangeAccordion(`${name}-${nameInst}`)('', true);
+                                setAutoCollapse(false);
+                            }
+
                             const currentInstance = instances && instances[nameInst];
                             let icon = 'img/no-image.png';
                             if (currentInstance?.common?.icon && currentInstance?.common?.name) {
                                 icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
                             }
                             return <Accordion
-                                style={black ? null : { background: '#c0c0c052' }}
+                                style={black ? undefined : { background: '#c0c0c052' }}
                                 key={nameInst}
                                 expanded={expanded === `${name}-${nameInst}`}
                                 onChange={handleChangeAccordion(`${name}-${nameInst}`)}
@@ -332,12 +400,13 @@ const HostWarningDialog = ({
                             variant="contained"
                             autoFocus={Object.keys(messages).length !== 1}
                             disabled={disabled.includes(name)}
-                            style={disabled.includes(name) ? { background: 'silver' } : null}
+                            style={disabled.includes(name) ? { background: 'silver' } : undefined}
                             className={classes.buttonStyle}
                             onClick={() => {
                                 ackCallback(name);
                                 setDisabled([...disabled, name]);
                             }}
+                            // @ts-expect-error grey is ok
                             color={Object.keys(messages).length !== 1 ? 'primary' : 'grey'}
                             startIcon={<CheckIcon />}
                         >
@@ -347,7 +416,7 @@ const HostWarningDialog = ({
                             variant="contained"
                             disabled={disabled.includes(name)}
                             className={classes.buttonStyle}
-                            style={disabled.includes(name) ? { background: 'silver' } : null}
+                            style={disabled.includes(name) ? { background: 'silver' } : undefined}
                             onClick={() => {
                                 setDisabled([...disabled, name]);
                                 ackCallback(name);
@@ -370,6 +439,7 @@ const HostWarningDialog = ({
                 variant="contained"
                 onClick={() => onClose()}
                 startIcon={<CloseIcon />}
+                // @ts-expect-error grey is ok
                 color="grey"
             >
                 {I18n.t('Ok')}
