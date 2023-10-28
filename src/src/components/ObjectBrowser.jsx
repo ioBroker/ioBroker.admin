@@ -2371,9 +2371,9 @@ class ObjectBrowser extends Component {
     async componentDidMount() {
         await this.loadAllObjects(!objectsAlreadyLoaded);
         if (this.props.objectsWorker) {
-            this.props.objectsWorker.registerHandler(this.onObjectChange);
+            this.props.objectsWorker.registerHandler(this.onObjectChange.bind(this));
         } else {
-            this.props.socket.subscribeObject('*', this.onObjectChange);
+            this.props.socket.subscribeObject('*', this.onObjectChange.bind(this));
         }
 
         objectsAlreadyLoaded = true;
@@ -2390,9 +2390,9 @@ class ObjectBrowser extends Component {
         window.removeEventListener('contextmenu', this.onContextMenu, true);
 
         if (this.props.objectsWorker) {
-            this.props.objectsWorker.unregisterHandler(this.onObjectChange, true);
+            this.props.objectsWorker.unregisterHandler(this.onObjectChange.bind(this), true);
         } else {
-            this.props.socket.unsubscribeObject('*', this.onObjectChange);
+            this.props.socket.unsubscribeObject('*', this.onObjectChange.bind(this));
         }
 
         // remove all subscribes
