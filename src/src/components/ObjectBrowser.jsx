@@ -10,6 +10,7 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 import SVG from 'react-inlinesvg';
+import _ from 'lodash';
 
 import {
     IconButton,
@@ -101,7 +102,6 @@ import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
-import _ from 'lodash';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
