@@ -114,6 +114,7 @@ const useStyles = makeStyles(theme => ({
         fontFamily: 'monospace',
         fontSize: 14,
         marginLeft: 20,
+        whiteSpace: 'pre-wrap',
     },
     img2: {
         width: 25,
@@ -248,9 +249,13 @@ const HostWarningDialog = ({
     const [value, setValue] = useState(0);
     const [disabled, setDisabled] = useState([]);
     const [expanded, setExpanded] = useState(false);
+    const [autoCollapse, setAutoCollapse] = useState(true);
 
-    const handleChange = (event, newValue) =>
+    const handleChange = (event, newValue) => {
+        setAutoCollapse(true);
         setValue(newValue);
+        setExpanded(false);
+    };
 
     const handleChangeAccordion = panel => (event, isExpanded) =>
         setExpanded(isExpanded ? panel : false);
@@ -281,7 +286,7 @@ const HostWarningDialog = ({
                             style={black ? null : { color: 'white' }}
                             disabled={disabled.includes(name)}
                             key={name}
-                            label={I18n.t(name)}
+                            label={entry.name[I18n.getLanguage()]}
                             icon={<Status name={name} severity={entry.severity} />}
                             {...a11yProps(idx)}
                         />)}
@@ -303,6 +308,13 @@ const HostWarningDialog = ({
                     </div>
                     <div>
                         {messages[name].instances ? Object.keys(messages[name].instances).map(nameInst => {
+                            const index = Object.keys(messages).indexOf(name);
+
+                            if (autoCollapse && value === index) {
+                                handleChangeAccordion(`${name}-${nameInst}`)(_, true);
+                                setAutoCollapse(false);
+                            }
+
                             const currentInstance = instances && instances[nameInst];
                             let icon = 'img/no-image.png';
                             if (currentInstance?.common?.icon && currentInstance?.common?.name) {
