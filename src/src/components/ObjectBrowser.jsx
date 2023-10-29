@@ -2985,57 +2985,20 @@ class ObjectBrowser extends Component {
 
         if (Array.isArray(id)) {
             id.forEach(event => {
-                console.log(`> objectChange ${event.id}`);
-
-                if (event.obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(event.obj)) {
+                const { newInnerState, filtered } = this.processOnObjectChangeElement(event.id, event.obj);
+                if (filtered) {
                     return;
                 }
-
-                if (event.id.startsWith('system.adapter.') && event.obj && event.obj.type === 'adapter') {
-                    const columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
-
-                    this.parseObjectForAdmins(columnsForAdmin, event.obj);
-
-                    if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
-                        newState = { columnsForAdmin };
-                    }
-                }
-                this.objects = this.objects || [];
-                if (this.objects[event.id]) {
-                    if (event.obj) {
-                        this.objects[event.id] = event.obj;
-                    } else {
-                        delete this.objects[event.id];
-                    }
-                } else if (event.obj) {
-                    this.objects[event.id] = event.obj;
+                if (newInnerState) {
+                    newState = newInnerState;
                 }
             });
         } else {
-            console.log(`> objectChange ${id}`);
-            this.objects = this.objects || [];
-
-            if (obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(obj)) {
+            const { newInnerState, filtered } = this.processOnObjectChangeElement(id, obj);
+            if (filtered) {
                 return;
             }
-
-            if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
-                const columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
-                this.parseObjectForAdmins(columnsForAdmin, obj);
-                if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
-                    newState = { columnsForAdmin };
-                }
-            }
-
-            if (this.objects[id]) {
-                if (obj) {
-                    this.objects[id] = obj;
-                } else {
-                    delete this.objects[id];
-                }
-            } else if (obj) {
-                this.objects[id] = obj;
-            }
+            newState = newInnerState;
         }
 
         newState && this.setState(newState);
@@ -3055,6 +3018,38 @@ class ObjectBrowser extends Component {
             }, 500);
         }
     };
+
+    /**
+     * Processes a single element in regards to certain filters, columns for admin and updates object dict
+     * @param id The id of the object
+     * @param obj The object itself
+     * @returns {{filtered: boolean, newState: null}} Returns an object containing the new state (if any) and whether the object was filtered.
+     */
+    processOnObjectChangeElement(id, obj) {
+        console.log(`> objectChange ${id}`);
+        let newState = null;
+
+        if (obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(obj)) {
+            return { newState, filtered: true };
+        }
+
+        if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
+            const columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
+
+            this.parseObjectForAdmins(columnsForAdmin, obj);
+
+            if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
+                newState = { columnsForAdmin };
+            }
+        }
+        this.objects = this.objects || [];
+        if (obj) {
+            this.objects[id] = obj;
+        } else if (this.objects[id]) {
+            delete this.objects[id];
+        }
+        return { newState, filtered: false };
+    }
 
     /**
      * @private
