@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.0",
+    "version": "6.12.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.1": {
+        "en": "optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)\n#2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.",
+        "de": "optimzied die notificaiton popup (auto-extend erster eintrag pro kategorie, respektieren linienbrüche, respektieren schwere für icons)\n#2178 Stabilisieren aufObjekt Ändern Sie die Handhabung bei der Erstellung neuer Objekte in WebUi, um direkt neues Element zu zeigen.",
+        "ru": "оптимизировал попап нотификайтон (авто-расширить первый вход в категорию, респект линии перерывов, уважение тяжести для икон)\n#2178 Стабилизировать на объекте Изменение обработки во время создания новых объектов в WebUi, чтобы напрямую показать новый элемент.",
+        "pt": "optimzied the notificaiton popup (auto-extender primeira entrada por categoria, intervalos de linha de respeito, respeitar a gravidade para ícones)\n#2178 Estabilizar em Object Alterar o manuseio durante a criação de novos objetos na WebUi, para mostrar diretamente novo elemento.",
+        "nl": "optimistisch de notificaiton popup (auto-extend eerste entree per categorie, respectabele lijn breaks, respecteer severity for icons\nQuality over Quantity (QoQ) Releases Vertaling: Verander tijdens de creatie van nieuwe objecten in WebUi, om direct nieuw element te laten zien.",
+        "fr": "optimiser le popup notificaiton (auto-étendre la première entrée par catégorie, respect de la ligne, respect de la gravité des icônes)\n#2178 Stabilize onObject Changement de manipulation lors de la création de nouveaux objets dans WebUi, pour montrer directement un nouvel élément.",
+        "it": "optimzied the notificaiton popup (auto-extend first entry per categoria, rispettare le interruzioni della linea, rispettare la gravità per le icone)\n#2178 Stabilizzare l'oggetto Cambiare la gestione durante la creazione di nuovi oggetti in WebUi, per mostrare direttamente nuovo elemento.",
+        "es": "optimzied the notificaiton popup (auto-extendir primera entrada por categoría, rupturas de línea de respeto, severidad de respeto por los iconos)\n#2178 Stabilize onObject Cambio de manejo durante la creación de nuevos objetos en WebUi, para mostrar directamente nuevo elemento.",
+        "pl": "optymizował popup (auto-rozszerzenie pierwszego wejścia na kategorię, linia szacunkowa, szacunek dla ikon)\n2178 Stabilize onObject (ang.). Przejście zmian w czasie tworzenia nowych obiektów w WebUi w celu bezpośredniego ukazania nowego elementu.",
+        "uk": "оптимізував неупереджений поштовх (auto-extend перший запис за категоріями, повагу розривів лінії, повагу тяжкості для ікон)\n#2178 Стабілізація наObject Зміна обробки під час створення нових об'єктів в WebUi, щоб безпосередньо показати новий елемент.",
+        "zh-cn": "赞成“无大开顿”人口(每类首次进入,尊重线破裂,尊重墓地的严重程度”\n第2178号行动 在建立万维网新物品期间进行变革,直接显示新的因素。."
+      },
       "6.12.0": {
         "en": "fixed issue when updating news in backend\nvalidate json config against the schema\nupdate socket-client to improve performance",
         "de": "fixes problem bei der aktualisierung von nachrichten im backend\njson config gegen das schema validieren\naktualisierung von steckdosen-client zur leistungsverbesserung",
@@ -95,19 +108,6 @@
         "pl": "Zamknięta możliwość pokazania ikony na tablicach konfigumentowych JSON\nna ulepszenie wszystkich, nie jeszcze gotowych dowództw może zostać przerwane\nW przypadku, gdy serwer jest dostępny z Internetu bez ochrony\nWykwalifikowana nawigacja po zamknięciu ustaw zamknięcia",
         "uk": "Додано можливість показати іконку на вкладках JSON config\nна оновлення всіх, поки не запущених команд тепер може бути\nДодано контроль безпеки, якщо сервер доступний з Інтернету без захисту\nВиправлена навігація після закриття налаштувань",
         "zh-cn": "增加显示联索行动一角的表格的可能性\n现在可以推断所有升级,但尚未开始的指挥。\n如果没有保护,如果服务器可以从互联网上查看安全检查。\n关闭环境后改正导航"
-      },
-      "6.10.5": {
-        "en": "JSON config component `port` does no longer mark port as occupied if it is only occupied on another host\nregister news as notifications\nif upgrade all is stopped on error, activate close button\nExport/import objects with its values",
-        "de": "JSON config-Komponenten-Port markiert nicht mehr den Port als besetzt, wenn er nur auf einem anderen Host besetzt ist\nnachrichten als benachrichtigungen registrieren\nwenn upgrade alles auf fehler gestoppt wird, aktivieren sie die schaltfläche schließen\nExport/Import Objekte mit seinen Werten",
-        "ru": "JSON config компонент порт больше не отмечает порт как занят, если он только занят на другом хосте\nзарегистрировать новости как уведомления\nесли обновление все остановлено на ошибке, активируйте закрыть кнопку\nЭкспорт/импорт объектов с его ценностями",
-        "pt": "A porta do componente JSON config já não marca a porta como ocupada se ela estiver ocupada em outro host\nregistrar notícias como notificações\nse atualizar tudo for interrompido no erro, ative o botão fechar\nExportar/importar objetos com seus valores",
-        "nl": "JSON config component haven markeert niet meer zo bezet als het alleen bezet is op een andere gastheer\nvertaling:\nals de upgrade op fout wordt gestopt, activeer dan dichte knop\nExport/import objecten met zijn waarden",
-        "fr": "JSON config composant port ne marque plus le port comme occupé si elle est seulement occupée sur un autre hôte\nenregistrer les nouvelles comme notifications\nsi la mise à niveau est arrêtée sur erreur, activez le bouton de fermeture\nObjets export/import avec ses valeurs",
-        "it": "JSON config componente porta non segna più la porta come occupato se è occupato solo su un altro host\nregistrare notizie come notifiche\nse l'aggiornamento tutto è bloccato sull'errore, attivare il pulsante di chiusura\nEsportare / importare oggetti con i suoi valori",
-        "es": "El puerto del componente de config JSON ya no marca el puerto como ocupado si sólo está ocupado en otro host\nnotificaciones\nsi actualizar todo se detiene en el error, active el botón de cierre\nExportar/importar objetos con sus valores",
-        "pl": "Port JSON nie ma już większego przeznaczenia, jeśli jest ona okupowana tylko przez inny gospodarz\nrejestracja\njeśli ulepszenie jest zahamowane na błędzie, aktywuje przycisk bliski\nObiekty eksportowe",
-        "uk": "Порт компонента JSON config більше не позначений порт, як зайнятий, якщо він зайнятий тільки на іншому господарстві\nреєструвати новини як повідомлення\nякщо оновлення все припинено на помилки, активувати закриту кнопку\nЕкспорт / імпорт об'єктів з його значеннями",
-        "zh-cn": "如果只在另一东道国被占有,那么联合部队的港口不再是被占的港口。\n通知\n如果所有升级都被排除在错误上,而是停顿。\n出口/进口物品及其价值"
       }
     },
     "desc": {

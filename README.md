@@ -86,8 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
 
@@ -107,9 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.10.8 (2023-10-13)
 * (foxriver76) update adapter-react-v5 to fix issues with object browser
-
-### 6.10.7 (2023-10-11)
-* (bluefox) Corrected adapter termination if the alias has no target
 
 ## License
 The MIT License (MIT)
