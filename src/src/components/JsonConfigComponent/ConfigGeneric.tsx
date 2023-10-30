@@ -15,13 +15,22 @@ import {
     UploadFile as IconUploadFile,
 } from '@mui/icons-material';
 
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type AdminConnection from './wrapper/AdminConnection';
 
 import I18n from './wrapper/i18n';
 import Utils from './wrapper/Components/Utils';
 import ConfirmDialog from './wrapper/Dialogs/Confirm';
 import Icon from './wrapper/Components/Icon';
-import { isObject } from '../../helpers/utils';
+
+// because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
+export function isObject(it: any): it is Record<string, any> {
+    // This is necessary because:
+    // typeof null === 'object'
+    // typeof [] === 'object'
+    // [] instanceof Object === true
+    return Object.prototype.toString.call(it) === '[object Object]'; // this code is 25% faster than below one
+    // return it && typeof it === 'object' && !(it instanceof Array);
+}
 
 export interface ConfigGenericProps {
     /** Provided props by the specific component */
