@@ -10,7 +10,6 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 import SVG from 'react-inlinesvg';
-import _ from 'lodash';
 
 import {
     IconButton,
@@ -804,6 +803,28 @@ const styles = theme => ({
 });
 
 /**
+ * Function that walks through all keys of an object or array and applies a function to each key.
+ * @returns {unknown} The copied object
+ */
+function walkThrough(object, iteratee) {
+    if (Array.isArray(object)) {
+        const copiedObject = [];
+        for (let index = 0; index < object.length; index++) {
+            iteratee(copiedObject, object[index], index);
+        }
+        return copiedObject;
+    }
+
+    const copiedObject = {};
+    for (const key in object) {
+        if (Object.prototype.hasOwnProperty.call(object, key)) {
+            iteratee(copiedObject, object[key], key);
+        }
+    }
+    return copiedObject;
+}
+
+/**
  * Function to reduce an object primarily by a given list of keys
  * @param obj The object which should be filtered
  * @param filterKeys The keys which should be excluded
@@ -811,18 +832,17 @@ const styles = theme => ({
  * @returns {unknown} The filtered object
  */
 function filterObject(obj, filterKeys, excludeTranslations) {
-    return _.transform(obj, (result, value, key) => {
+    return walkThrough(obj, (result, value, key) => {
         if (value === undefined || value === null) {
             return;
         }
         if (typeof key === 'string' && filterKeys.includes(key)) {
             return;
         }
-        // if the key is an object run it through the inner function - omitFromObject
-        const isObject = _.isObject(value);
+        // if the key is an object, run it through the inner function - omitFromObject
+        const isObject = typeof value === 'object';
         if (excludeTranslations && isObject) {
-            const keys = Object.keys(value);
-            if (keys.includes('en') && keys.includes('de') && typeof value.en === 'string' && typeof value.de === 'string') {
+            if (typeof value.en === 'string' && typeof value.de === 'string') {
                 result[key] = value.en;
                 return;
             }
@@ -1634,7 +1654,7 @@ function formatValue(options) {
         } else {
             if (v > 946681200 && v < 946681200000) {
                 // '2000-01-01T00:00:00' => 946681200000
-                v *= 1_000; // may be the time is in seconds (UNIX time)
+                v *= 1_000; // maybe the time is in seconds (UNIX time)
             }
             // null and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
             v = v ? new Date(v).toString() : v;
@@ -2371,9 +2391,9 @@ class ObjectBrowser extends Component {
     async componentDidMount() {
         await this.loadAllObjects(!objectsAlreadyLoaded);
         if (this.props.objectsWorker) {
-            this.props.objectsWorker.registerHandler(this.onObjectChange.bind(this));
+            this.props.objectsWorker.registerHandler(this.onObjectChange);
         } else {
-            this.props.socket.subscribeObject('*', this.onObjectChange.bind(this));
+            this.props.socket.subscribeObject('*', this.onObjectChange);
         }
 
         objectsAlreadyLoaded = true;
@@ -2390,9 +2410,9 @@ class ObjectBrowser extends Component {
         window.removeEventListener('contextmenu', this.onContextMenu, true);
 
         if (this.props.objectsWorker) {
-            this.props.objectsWorker.unregisterHandler(this.onObjectChange.bind(this), true);
+            this.props.objectsWorker.unregisterHandler(this.onObjectChange, true);
         } else {
-            this.props.socket.unsubscribeObject('*', this.onObjectChange.bind(this));
+            this.props.socket.unsubscribeObject('*', this.onObjectChange);
         }
 
         // remove all subscribes
