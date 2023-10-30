@@ -40,7 +40,7 @@ const styles = () => ({
     },
 });
 
-const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp'];
+const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp', 'gif', 'apng', 'avif', 'webp'];
 const AUDIO_EXT = ['mp3', 'ogg', 'wav', 'aac'];
 const VIDEO_EXT = ['avi', 'mp4', 'mov'];
 const DOC_EXT = ['txt', 'log', 'html', 'htm'];

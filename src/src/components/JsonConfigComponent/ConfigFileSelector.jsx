@@ -115,7 +115,7 @@ const styles = () => ({
     },
 });
 
-const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp'];
+const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp', 'gif', 'apng', 'avif', 'webp'];
 const AUDIO_EXT = ['mp3', 'ogg', 'wav', 'aac'];
 const VIDEO_EXT = ['avi', 'mp4', 'mov'];
 const DOC_EXT = ['txt', 'log', 'html', 'htm'];
@@ -417,7 +417,7 @@ class ConfigFileSelector extends ConfigGeneric {
         let accept = { '*/*': [] };
         if (this.props.schema.fileTypes === 'image') {
             accept = {
-                'image/*': ['.png', '.jpg', '.svg'],
+                'image/*': ['.png', '.jpg', '.svg', '.gif', '.apng', '.avif', '.webp'],
             };
         } else if (this.props.schema.fileTypes === 'audio') {
             accept = {
@@ -430,9 +430,9 @@ class ConfigFileSelector extends ConfigGeneric {
         }
         if (this.props.schema.pattern) {
             const last = this.props.schema.pattern.split('/').pop().toLowerCase().replace(/.*\./, '');
-            if (last === 'png' || last === 'jpg' || last === 'svg') {
+            if (last === 'png' || last === 'jpg' || last === 'svg' || last === 'gif' || last === 'apng' || last === 'avif' || last === 'webp') {
                 accept = {
-                    'image/*': ['.png', '.jpg', '.svg'],
+                    'image/*': ['.png', '.jpg', '.svg', '.gif', '.apng', '.avif', '.webp'],
                 };
             } else if (last === 'mp3' || last === 'ogg' || last === 'wav') {
                 accept = {

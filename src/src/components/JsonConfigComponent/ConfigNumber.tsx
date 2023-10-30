@@ -167,7 +167,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                 error={!!error}
                 disabled={!!disabled}
                 onChange={e => {
-                    const _value = e.target.value; // value is always a string and it is valid formatted
+                    const _value = e.target.value; // value is always a string and it is validly formatted
                     const _error = this.checkValue(_value);
                     if (_error) {
                         this.onError(this.props.attr, I18n.t(_error));

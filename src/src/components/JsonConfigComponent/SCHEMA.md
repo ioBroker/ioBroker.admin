@@ -280,7 +280,7 @@ Possible types:
   Input field with file selector
     - `disableEdit` - if user can manually enter the file name and not only through select dialog
     - `limitPath` - limit selection to one specific object of type `meta` and following path (not mandatory)
-    - `filterFiles` - like `['png', 'svg', 'bmp', 'jpg', 'jpeg']`
+    - `filterFiles` - like `['png', 'svg', 'bmp', 'jpg', 'jpeg', 'gif']`
     - `filterByType` - `images, code, txt, audio, video`
     - `allowUpload` - allowed upload of files
     - `allowDownload` - allowed download of files (default true)
