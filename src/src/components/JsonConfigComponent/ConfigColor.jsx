@@ -37,7 +37,7 @@ class ConfigColor extends ConfigGeneric {
             textColor = undefined;
         }
         return <>
-            { this.renderColorDialog() }
+            {this.renderColorDialog()}
             <TextField
                 variant="standard"
                 disabled={!!disabled}

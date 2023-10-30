@@ -54,7 +54,7 @@ class ConfigIP extends ConfigGeneric {
         const item = this.state.ips?.find(it => it.address === value);
 
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
-            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
+            {this.state.ips && this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             {!this.state.ips ?
                 <TextField
                     fullWidth
@@ -63,6 +63,7 @@ class ConfigIP extends ConfigGeneric {
                     disabled={!!disabled}
                     value={value}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
+                    label={this.getText(this.props.schema.label)}
                 /> :
                 <Select
                     variant="standard"

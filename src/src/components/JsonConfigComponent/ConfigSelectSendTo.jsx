@@ -153,14 +153,16 @@ class ConfigSelectSendTo extends ConfigGeneric {
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
-        } if (!this.state.list) {
+        }
+        if (!this.state.list) {
             return <CircularProgress size="small" />;
         }
         const selectOptions = this.state.list
             .filter(item => {
                 if (!item.hidden) {
                     return true;
-                } if (this.props.custom) {
+                }
+                if (this.props.custom) {
                     return !this.executeCustom(item.hidden, this.props.schema.default, this.props.data, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
                 }
                 return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
@@ -169,7 +171,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
         const item = selectOptions.find(it => it.value === value);
 
         return <FormControl variant="standard" className={this.props.classes.fullWidth}>
-            { this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null }
+            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
                 error={!!error}

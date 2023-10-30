@@ -27,9 +27,7 @@ class ConfigUUID extends ConfigGeneric {
             fullWidth
             error={!!error}
             disabled={!!disabled}
-            inputProps={{
-                readOnly: true,
-            }}
+            inputProps={{ readOnly: true }}
             // eslint-disable-next-line react/jsx-no-duplicate-props
             InputProps={{
                 endAdornment: <IconButton onClick={() => {

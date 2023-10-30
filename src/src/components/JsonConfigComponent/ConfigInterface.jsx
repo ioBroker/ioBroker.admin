@@ -57,7 +57,7 @@ class ConfigInterface extends ConfigGeneric {
         const item = this.state.interfaces?.find(it => it.value === value);
 
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
-            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
+            {this.state.interfaces?.length && this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             {!this.state.interfaces?.length ?
                 <TextField
                     fullWidth
@@ -66,6 +66,7 @@ class ConfigInterface extends ConfigGeneric {
                     disabled={!!disabled}
                     value={value}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
+                    label={this.getText(this.props.schema.label)}
                 /> :
                 <Select
                     variant="standard"

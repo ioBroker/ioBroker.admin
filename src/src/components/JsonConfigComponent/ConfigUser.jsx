@@ -58,7 +58,7 @@ class ConfigUser extends ConfigGeneric {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
         return <FormControl variant="standard" className={this.props.classes.fullWidth}>
-            {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
+            {this.state.users && this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             {!this.state.users ?
                 <TextField
                     variant="standard"
@@ -66,6 +66,7 @@ class ConfigUser extends ConfigGeneric {
                     disabled={!!disabled}
                     value={value}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
+                    label={this.getText(this.props.schema.label)}
                 />
                 :
                 <Select
