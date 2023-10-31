@@ -665,22 +665,52 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                     // @ts-expect-error need to be added to types if this can exist
                     if (a.order === undefined && b.order === undefined) {
-                        if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                        if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                        let aName = a.name;
+                        let bName = b.name;
+                        if (typeof aName === 'object') {
+                            aName = aName[this.props.lang] || aName.en;
+                        }
+                        if (typeof bName === 'object') {
+                            bName = bName[this.props.lang] || bName.en;
+                        }
+                        if (aName.toLowerCase() > bName.toLowerCase()) {
+                            return 1;
+                        }
+                        if (aName.toLowerCase() < bName.toLowerCase()) {
+                            return -1;
+                        }
                         return 0;
-                        // @ts-expect-error need to be added to types if this can exist
-                    } if (a.order === undefined) {
+                    }
+                    // @ts-expect-error need to be added to types if this can exist
+                    if (a.order === undefined) {
                         return -1;
-                        // @ts-expect-error need to be added to types if this can exist
-                    } if (b.order === undefined) {
+                    }
+                    // @ts-expect-error need to be added to types if this can exist
+                    if (b.order === undefined) {
                         return 1;
                     }
                     // @ts-expect-error need to be added to types if this can exist
-                    if (a.order > b.order) return 1;
+                    if (a.order > b.order) {
+                        return 1;
+                    }
                     // @ts-expect-error need to be added to types if this can exist
-                    if (a.order < b.order) return -1;
-                    if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                    if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                    if (a.order < b.order) {
+                        return -1;
+                    }
+                    let aName = a.name;
+                    let bName = b.name;
+                    if (typeof aName === 'object') {
+                        aName = aName[this.props.lang] || aName.en;
+                    }
+                    if (typeof bName === 'object') {
+                        bName = bName[this.props.lang] || bName.en;
+                    }
+                    if (aName.toLowerCase() > bName.toLowerCase()) {
+                        return 1;
+                    }
+                    if (aName.toLowerCase() < bName.toLowerCase()) {
+                        return -1;
+                    }
                     return 0;
                 });
 
@@ -691,17 +721,22 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const common     = obj.common || null;
                     const objId      = obj._id.split('.');
                     const instanceId = objId.pop() as string;
+                    let name = common?.name;
+                    if (name && typeof name === 'object') {
+                        name = name[this.props.lang] || name.en;
+                    }
 
-                    if (common.name && common.name === 'admin' && common.localLink === (this.props.hostname || '')) {
+                    if (name === 'admin' && common.localLink === (this.props.hostname || '')) {
                         return;
                     }
-                    if (common.name && common.name === 'web') {
+                    if (name === 'web') {
                         return;
                     }
-                    if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
+
+                    if (name && name !== 'vis-web-admin' && name.match(/^vis-/)) {
                         return;
                     }
-                    if (common.name && common.name.match(/^icons-/)) {
+                    if (name && name.match(/^icons-/)) {
                         return;
                     }
                     if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
@@ -721,13 +756,13 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             instance.color       = link.color || '';
                             // @ts-expect-error needs to be added to types if InstanceCommon can have desc
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                            instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
+                            instance.image       = common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png';
 
                             // @ts-expect-error fix all the constructs here later on
                             this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
                         });
                     }
-                    if (common && (common.enabled || common.onlyWWW) && common.name !== 'admin' && (common.welcomeScreen || common.welcomeScreenPro)) {
+                    if (common && (common.enabled || common.onlyWWW) && name !== 'admin' && (common.welcomeScreen || common.welcomeScreenPro)) {
                         const links = [];
                         common.welcomeScreen && links.push(common.welcomeScreen);
                         common.welcomeScreenPro && links.push(common.welcomeScreenPro);
@@ -742,7 +777,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                                 color: link.color || '',
                                 // @ts-expect-error fix link
                                 description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '',
-                                image: common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png',
+                                image: common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png',
                                 // @ts-expect-error fix link
                                 order: link.order,
                             };
@@ -781,12 +816,16 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                 Object.keys(hosts as any).forEach(key => {
                     const obj = hosts?.[key];
-                    const common = obj && obj.common;
+                    const common = obj?.common;
+                    let name = common?.name;
+                    if (name && typeof name === 'object') {
+                        name = name[this.props.lang] || name.en;
+                    }
 
                     if (common) {
                         const instance    = {
                             id       : obj._id,
-                            name     : common.name && typeof common.name === 'object' ? (common.name[this.props.lang] || common.name.en) : (common.name || ''),
+                            name     : name || '',
                             color    : '',
                             image    : common.icon || 'img/no-image.png',
                             info     : this.t('Info'),

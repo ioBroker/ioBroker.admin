@@ -36,7 +36,7 @@ class ConfigInterface extends ConfigGeneric {
                         if (this.props.schema.ignoreInternal && !list[inter].find(_ip => !_ip.internal)) {
                             return;
                         }
-                        if (this.props.schema.ignoreLoopback && list[inter].find(_ip => ip.address === '127.0.0.1' || ip.address === '::1')) {
+                        if (this.props.schema.ignoreLoopback && list[inter].find(_ip => _ip.address === '127.0.0.1' || _ip.address === '::1')) {
                             return;
                         }
 

@@ -22,7 +22,6 @@
     // "noUnusedLocals": true,
     // "noUnusedParameters": true,
     "useUnknownInCatchVariables": false,
-
   },
   "include": [
     "**/*.js",
