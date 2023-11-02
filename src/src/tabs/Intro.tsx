@@ -665,14 +665,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                     // @ts-expect-error need to be added to types if this can exist
                     if (a.order === undefined && b.order === undefined) {
-                        let aName = a.name;
-                        let bName = b.name;
-                        if (typeof aName === 'object') {
-                            aName = aName[this.props.lang] || aName.en;
-                        }
-                        if (typeof bName === 'object') {
-                            bName = bName[this.props.lang] || bName.en;
-                        }
+                        const aName = a.name;
+                        const bName = b.name;
+
                         if (aName.toLowerCase() > bName.toLowerCase()) {
                             return 1;
                         }
@@ -697,14 +692,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     if (a.order < b.order) {
                         return -1;
                     }
-                    let aName = a.name;
-                    let bName = b.name;
-                    if (typeof aName === 'object') {
-                        aName = aName[this.props.lang] || aName.en;
-                    }
-                    if (typeof bName === 'object') {
-                        bName = bName[this.props.lang] || bName.en;
-                    }
+                    const aName = a.name;
+                    const bName = b.name;
+
                     if (aName.toLowerCase() > bName.toLowerCase()) {
                         return 1;
                     }
@@ -721,10 +711,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const common     = obj.common || null;
                     const objId      = obj._id.split('.');
                     const instanceId = objId.pop() as string;
-                    let name = common?.name;
-                    if (name && typeof name === 'object') {
-                        name = name[this.props.lang] || name.en;
-                    }
+                    const name = common?.name;
 
                     if (name === 'admin' && common.localLink === (this.props.hostname || '')) {
                         return;
