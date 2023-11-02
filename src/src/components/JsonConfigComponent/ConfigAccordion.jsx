@@ -60,9 +60,7 @@ class ConfigAccordion extends ConfigGeneric {
         this.setState({
             value,
             activeIndex: -1,
-            order: 'asc',
             iteration: 0,
-            filterOn: [],
         });
     }
 
@@ -236,12 +234,12 @@ class ConfigAccordion extends ConfigGeneric {
                                     <DownIcon />
                                 </IconButton>
                             </Tooltip> : <div className={classes.buttonEmpty} />}
-                            <Tooltip title={I18n.t('ra_Delete current row')}>
+                            {!schema.noDelete ? <Tooltip title={I18n.t('ra_Delete current row')}>
                                 <IconButton size="small" onClick={this.onDelete(i)}>
                                     <DeleteIcon />
                                 </IconButton>
-                            </Tooltip>
-                            {this.props.schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')}>
+                            </Tooltip> : null}
+                            {schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')}>
                                 <IconButton size="small" onClick={this.onClone(i)}>
                                     <CopyContentIcon />
                                 </IconButton>
@@ -249,7 +247,7 @@ class ConfigAccordion extends ConfigGeneric {
                         </Toolbar>
                     </AccordionDetails>
                 </Accordion>)}
-            {!schema.noDelete ? <Toolbar variant="dense" className={classes.rootTool}>
+            {!schema.noDelete && value.length > 0 ? <Toolbar variant="dense" className={classes.rootTool}>
                 <IconButton size="small" color="primary" onClick={this.onAdd}>
                     <AddIcon />
                 </IconButton>
