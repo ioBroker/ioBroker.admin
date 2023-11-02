@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.1",
+    "version": "6.12.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.2": {
+        "en": "fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties\nfixed crash case when schema cannot be read\nFixed noDelete attribute of JSON config accordion",
+        "de": "problem mit jsonConfig senden Mit nativer Option bei der Rückgabe mehrerer Eigenschaften\nfester crashfall, wenn schema nicht gelesen werden kann\nFixed noDelete Attribut von JSON config Akkordeon",
+        "ru": "фиксированная проблема с jsonConfig отправить С родным вариантом при возврате нескольких свойств\nфиксированный случай аварии, когда схема не может быть прочитана\nФиксированный noDelete атрибут JSON config аккордеон",
+        "pt": "problema fixo com jsonConfig enviar Para com opção nativa ao retornar várias propriedades\ncaso de acidente fixo quando o esquema não pode ser lido\nAtributo noDelete fixo de acordeão de configuração JSON",
+        "nl": "_ Met inheemse optie als je meerdere eigenschappen terugbrengt\nvertaling:\n_",
+        "fr": "problème fixe avec jsonConfig envoyer À l'option native lorsque vous retournez plusieurs propriétés\ncas de crash fixe lorsque le schéma ne peut pas être lu\nCorrection de l'attribut noDelete de JSON config accordéion",
+        "it": "problema fisso con jsonConfig inviare A con opzione nativo quando si ritorna più proprietà\ncaso di crash fisso quando lo schema non può essere letto\nAttributo noDelete fisso della fisarmonica di configurazione JSON",
+        "es": "edición fija con jsonConfig enviar A con opción nativa al devolver múltiples propiedades\ncaso de accidente fijo cuando el esquema no se puede leer\nAtributo fijo no único del acordeón de config JSON",
+        "pl": "prawdziwy problem z jsonConfig wysyła na rynek. Przyjmowaniu możliwości rodzimej, gdy wracamy do wielu własności\nsprawa rozbłysku, gdy schema nie może być odczytana\nFixed noDelete attributes",
+        "uk": "виправлено проблему з jsonConfig відправити Щоб при поверненні декількох властивостей\nвиправлений випадок аварії, коли не можна читати\nФіксований атрибут налаштування JSON",
+        "zh-cn": "json Config发送的固定问题 在归还多种财产时,采用当地办法\n无法阅读shiema的固定事故案件\n九. 未确定联合协商会的名称"
+      },
       "6.12.1": {
         "en": "optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)\n#2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.",
         "de": "optimzied die notificaiton popup (auto-extend erster eintrag pro kategorie, respektieren linienbrüche, respektieren schwere für icons)\n#2178 Stabilisieren aufObjekt Ändern Sie die Handhabung bei der Erstellung neuer Objekte in WebUi, um direkt neues Element zu zeigen.",
@@ -95,19 +108,6 @@
         "pl": "Poprawne rozwiązanie adaptacyjne, jeśli alias nie ma docelowego celu",
         "uk": "Виправлено припинення адаптера, якщо псевдонім не має цілей",
         "zh-cn": "如果除其它外别无目标,适应适应人员终止"
-      },
-      "6.10.6": {
-        "en": "Added possibility to show the icon on JSON config tabs\non upgrade all, not yet started commands can now be aborted\nAdded security check if the server is available from the internet without protection\nCorrected navigation after the settings closing",
-        "de": "Zusätzliche Möglichkeit, das Icon auf JSON config Tabs anzeigen\nauf upgrade alle, noch nicht gestartete befehle können jetzt abgebrochen werden\nSicherheitsüberprüfung hinzugefügt, wenn der Server im Internet ohne Schutz verfügbar ist\nKorrigierte Navigation nach dem Schließen der Einstellungen",
-        "ru": "Добавлена возможность показать иконку на вкладках JSON config\nна обновление все, еще не начал команды теперь могут быть аборд\nДобавлена проверка безопасности, если сервер доступен из интернета без защиты\nИсправлена навигация после закрытия настроек",
-        "pt": "Adicionado possibilidade de mostrar o ícone em JSON config tabs\nem upgrade all, ainda não iniciado comandos agora podem ser abortados\nVerificação de segurança adicionada se o servidor estiver disponível na internet sem proteção\nNavegação correta após o fechamento das configurações",
-        "nl": "Toegevoegd de mogelijkheid het icoon te laten zien op JSON config tabs\n_\nControleer of de server beschikbaar is van het internet zonder bescherming\nVertaling:",
-        "fr": "Ajout de la possibilité de montrer l'icône sur les onglets de configuration JSON\nsur la mise à niveau, pas encore commencé les commandes peuvent maintenant être avortés\nVérification de sécurité supplémentaire si le serveur est disponible sur Internet sans protection\nNavigation corrigée après la fermeture des paramètres",
-        "it": "Aggiunta possibilità di mostrare l'icona su JSON config schede\nsu aggiornamento tutti, non ancora i comandi avviati possono ora essere abortiti\nAggiunto controllo di sicurezza se il server è disponibile da internet senza protezione\nNavigazione corretta dopo la chiusura delle impostazioni",
-        "es": "Añadido posibilidad de mostrar el icono en las pestañas de configuración JSON\nen la actualización de todos, los comandos no iniciados ahora pueden ser abortados\nControl de seguridad adicional si el servidor está disponible en Internet sin protección\nNavegación corregida después del cierre de la configuración",
-        "pl": "Zamknięta możliwość pokazania ikony na tablicach konfigumentowych JSON\nna ulepszenie wszystkich, nie jeszcze gotowych dowództw może zostać przerwane\nW przypadku, gdy serwer jest dostępny z Internetu bez ochrony\nWykwalifikowana nawigacja po zamknięciu ustaw zamknięcia",
-        "uk": "Додано можливість показати іконку на вкладках JSON config\nна оновлення всіх, поки не запущених команд тепер може бути\nДодано контроль безпеки, якщо сервер доступний з Інтернету без захисту\nВиправлена навігація після закриття налаштувань",
-        "zh-cn": "增加显示联索行动一角的表格的可能性\n现在可以推断所有升级,但尚未开始的指挥。\n如果没有保护,如果服务器可以从互联网上查看安全检查。\n关闭环境后改正导航"
       }
     },
     "desc": {
