@@ -349,7 +349,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps, State exten
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    getIcon(iconSettings: string | undefined | null): React.JSX.Element | null {
+    getIcon(iconSettings?: string | null): React.JSX.Element | null {
         iconSettings = iconSettings || this.props.schema.icon;
         let icon = null;
         if (iconSettings === 'auth') {

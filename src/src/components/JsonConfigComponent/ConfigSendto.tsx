@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import { Button, CircularProgress } from '@mui/material';
@@ -10,12 +9,13 @@ import {
     Info as IconInfo,
 } from '@mui/icons-material';
 
+import { AdminConnection } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
 import DialogError from './wrapper/Dialogs/Error';
 import DialogMessage from './wrapper/Dialogs/Message';
 import DialogConfirm from './wrapper/Dialogs/Confirm';
 
-import ConfigGeneric from './ConfigGeneric';
+import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
 
 const styles = () => ({
     fullWidth: {
@@ -28,23 +28,23 @@ const styles = () => ({
     },
 });
 
-function ip2int(ip) {
+function ip2int(ip: string) {
     // eslint-disable-next-line no-bitwise
     return ip.split('.').reduce((ipInt, octet) => (ipInt << 8) + parseInt(octet, 10), 0) >>> 0;
 }
 
 // copied from iobroker.admin/src-rx/src/Utils.js
-function findNetworkAddressOfHost(obj, localIp) {
+function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string) {
     const networkInterfaces = obj?.native?.hardware?.networkInterfaces;
     if (!networkInterfaces) {
         return null;
     }
 
-    let hostIp;
+    let hostIp: string | undefined;
 
     // check ipv4 addresses
     Object.keys(networkInterfaces).forEach(inter =>
-        networkInterfaces[inter].forEach(ip => {
+        networkInterfaces[inter].forEach((ip: Record<string, any>) => {
             if (ip.internal) {
                 return;
             }
@@ -71,7 +71,7 @@ function findNetworkAddressOfHost(obj, localIp) {
     // check ipv6 addresses
     if (!hostIp) {
         Object.keys(networkInterfaces).forEach(inter =>
-            networkInterfaces[inter].forEach(ip => {
+            networkInterfaces[inter].forEach((ip: Record<string, any>) => {
                 if (ip.internal) {
                     return;
                 } if (localIp.includes(':') && ip.family !== 'IPv6') {
@@ -95,7 +95,7 @@ function findNetworkAddressOfHost(obj, localIp) {
 
     if (!hostIp) {
         Object.keys(networkInterfaces).forEach(inter => {
-            networkInterfaces[inter].forEach(ip => {
+            networkInterfaces[inter].forEach((ip: Record<string, any>) => {
                 if (ip.internal) {
                     return;
                 } if (localIp.includes(':') && ip.family !== 'IPv6') {
@@ -114,7 +114,7 @@ function findNetworkAddressOfHost(obj, localIp) {
 
     if (!hostIp) {
         Object.keys(networkInterfaces).forEach(inter => {
-            networkInterfaces[inter].forEach(ip => {
+            networkInterfaces[inter].forEach((ip: Record<string, any>) => {
                 if (ip.internal) {
                     return;
                 }
@@ -126,7 +126,29 @@ function findNetworkAddressOfHost(obj, localIp) {
     return hostIp;
 }
 
-class ConfigSendto extends ConfigGeneric {
+interface ConfigSendToProps extends ConfigGenericProps {
+    socket: AdminConnection;
+    themeType: string;
+    themeName: string;
+    style: Record<string, any>;
+    className: string;
+    data: Record<string, any>;
+    schema: Record<string, any>;
+    adapterName: string;
+    instance:number;
+    commandRunning: boolean;
+    onCommandRunning: (running: boolean) => void;
+    classes: Record<string, any>;
+}
+
+interface ConfigSendToState extends ConfigGenericState {
+    _error: string;
+    _message: string;
+    hostname: string;
+    running?: boolean;
+}
+
+class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
     async componentDidMount() {
         super.componentDidMount();
 
@@ -150,6 +172,7 @@ class ConfigSendto extends ConfigGeneric {
 
     renderErrorDialog() {
         if (this.state._error) {
+            // @ts-expect-error classes should be optional in adapter-react
             return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({ _error: '' })} />;
         }
         return null;
@@ -157,7 +180,7 @@ class ConfigSendto extends ConfigGeneric {
 
     renderMessageDialog() {
         if (this.state._message) {
-            return <DialogMessage text={this.state._message} classes={undefined} onClose={() => this.setState({ _message: '' })} />;
+            return <DialogMessage text={this.state._message} onClose={() => this.setState({ _message: '' })} />;
         }
         return null;
     }
@@ -191,7 +214,7 @@ class ConfigSendto extends ConfigGeneric {
                 _originIp,
             };
         }
-        let timeout;
+        let timeout: ReturnType<typeof setTimeout> | undefined;
         if (this.props.schema.timeout) {
             timeout = setTimeout(() => {
                 this.props.onCommandRunning(false);
@@ -204,16 +227,16 @@ class ConfigSendto extends ConfigGeneric {
             this.props.schema.command || 'send',
             data,
         )
-            .then(async response => {
+            .then(async (response: Record<string, any>) => {
                 if (timeout) {
                     clearTimeout(timeout);
-                    timeout = null;
+                    timeout = undefined;
                 }
                 if (response?.error) {
                     if (this.props.schema.error && this.props.schema.error[response.error]) {
                         let error = this.getText(this.props.schema.error[response.error]);
                         if (response.args) {
-                            response.args.forEach(arg => error = error.replace('%s', arg));
+                            response.args.forEach((arg: string) => error = error.replace('%s', arg));
                         }
                         this.setState({ _error: error });
                     } else {
@@ -227,7 +250,7 @@ class ConfigSendto extends ConfigGeneric {
                     } else if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
                         let text = this.getText(this.props.schema.result[response.result]);
                         if (response.args) {
-                            response.args.forEach(arg => text = text.replace('%s', arg));
+                            response.args.forEach((arg: string) => text = text.replace('%s', arg));
                         }
                         window.alert(text);
                     }
@@ -246,11 +269,12 @@ class ConfigSendto extends ConfigGeneric {
                     }
 
                     if (response?.saveConfig) {
+                        // @ts-expect-error 4 values intended?
                         this.props.onChange(null, null, null, true);
                     }
                 }
             })
-            .catch(e => {
+            .catch((e: any) => {
                 if (this.props.schema.error && this.props.schema.error[e.toString()]) {
                     this.setState({ _error: this.getText(this.props.schema.error[e.toString()]) });
                 } else {
@@ -289,7 +313,7 @@ class ConfigSendto extends ConfigGeneric {
         />;
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: Error | undefined, disabled: boolean /* , defaultValue */) {
         const icon = this.getIcon();
 
         return <div className={this.props.classes.fullWidth}>
@@ -316,21 +340,5 @@ class ConfigSendto extends ConfigGeneric {
         </div>;
     }
 }
-
-ConfigSendto.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-    commandRunning: PropTypes.bool,
-    onCommandRunning: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigSendto);
