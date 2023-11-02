@@ -317,6 +317,7 @@ adapter.on('message', obj => {
     - `noTranslation` - do not translate label of selects  
       To use this option, your adapter must implement message handler:
       The result of command must be an array in form `[{"value": 1, "label": "one"}, ...]`
+    - `alsoDependsOn` - by change of which attributes, the command must be resent
 ```
 adapter.on('message', obj => {
    if (obj) {
