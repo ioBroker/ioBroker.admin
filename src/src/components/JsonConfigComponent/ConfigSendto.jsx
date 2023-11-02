@@ -204,7 +204,7 @@ class ConfigSendto extends ConfigGeneric {
             this.props.schema.command || 'send',
             data,
         )
-            .then(response => {
+            .then(async response => {
                 if (timeout) {
                     clearTimeout(timeout);
                     timeout = null;
@@ -234,8 +234,10 @@ class ConfigSendto extends ConfigGeneric {
 
                     if (response?.native && this.props.schema.useNative) {
                         const attrs = Object.keys(response.native);
-                        attrs.forEach(attr =>
-                            this.onChange(attr, response.native[attr]));
+                        for (const attr of attrs) {
+                            await this.onChange(attr, response.native[attr]);
+                        }
+
                         setTimeout(() => this.props.forceUpdate(attrs, this.props.data), 300);
                     } else if (response?.result) {
                         window.alert(typeof response.result === 'object' ? JSON.stringify(response.result) : response.result);
