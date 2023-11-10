@@ -87,6 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) fixed problem that disabled checkbox is still clickable
 * (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
 
 ### 6.12.2 (2023-11-02)

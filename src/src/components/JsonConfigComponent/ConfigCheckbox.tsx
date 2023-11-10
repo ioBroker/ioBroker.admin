@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -9,7 +8,8 @@ import {
     FormControl,
 } from '@mui/material';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
 import I18n from './wrapper/i18n';
 
 const styles = () => ({
@@ -18,8 +18,19 @@ const styles = () => ({
     },
 });
 
-class ConfigCheckbox extends ConfigGeneric {
-    renderItem(error, disabled) {
+interface ConfigCheckboxProps extends ConfigGenericProps{
+    socket: AdminConnection;
+    themeType: string;
+    themeName: string;
+    style: Record<string, any>;
+    className: string;
+    data: Record<string, any>;
+    schema: Record<string, any>;
+    classes: Record<string, any>;
+}
+
+class ConfigCheckbox extends ConfigGeneric<ConfigCheckboxProps, ConfigGenericState> {
+    renderItem(error: unknown, disabled: boolean): React.JSX.Element {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const isIndeterminate = Array.isArray(value);
 
@@ -28,7 +39,10 @@ class ConfigCheckbox extends ConfigGeneric {
                 onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    this.onChange(this.props.attr, !value);
+
+                    if (!disabled) {
+                        this.onChange(this.props.attr, !value);
+                    }
                 }}
                 control={<Checkbox
                     indeterminate={isIndeterminate}
@@ -40,7 +54,7 @@ class ConfigCheckbox extends ConfigGeneric {
                             this.onChange(this.props.attr, e.target.checked);
                         }
                     }}
-                    disabled={!!disabled}
+                    disabled={disabled}
                 />}
                 label={this.getText(this.props.schema.label)}
             />
@@ -54,17 +68,5 @@ class ConfigCheckbox extends ConfigGeneric {
         </FormControl>;
     }
 }
-
-ConfigCheckbox.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigCheckbox);
