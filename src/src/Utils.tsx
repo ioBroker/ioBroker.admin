@@ -502,7 +502,7 @@ class Utils {
                         changed = true;
                     }
                 } else if (obj.common.adminTab) {
-                    if (obj.common.adminUI.tab !== 'html') {
+                    if (obj.common.adminUI.tab !== 'html' && obj.common.adminUI.tab !== 'materialize') {
                         obj.common.adminUI.tab = 'html';
                         changed = true;
                     }
