@@ -28,7 +28,10 @@ class ConfigCheckbox extends ConfigGeneric {
                 onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    this.onChange(this.props.attr, !value);
+
+                    if (!disabled) {
+                        this.onChange(this.props.attr, !value);
+                    }
                 }}
                 control={<Checkbox
                     indeterminate={isIndeterminate}
