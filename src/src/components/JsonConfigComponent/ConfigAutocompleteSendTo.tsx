@@ -6,10 +6,25 @@ import { Autocomplete, TextField } from '@mui/material';
 import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
-import type { ConfigAutocompleteProps, ConfigAutocompleteState } from './ConfigAutocomplete';
+import type { ConfigAutocompleteProps, ConfigAutocompleteSchema, ConfigAutocompleteState } from './ConfigAutocomplete';
 
 interface ConfigAutocompleteSendToState extends ConfigAutocompleteState {
     context: string;
+}
+
+interface ConfigAutocompleteSendToSchema extends ConfigAutocompleteSchema {
+    /** Data to send to adapter as json */
+    jsonData: Record<string, any>;
+    /** Command to send to adapter */
+    command: string;
+    /** String data to send to instance */
+    data?: string | null;
+    /** Resend command if one of the listed attributes change */
+    alsoDependsOn: boolean;
+}
+
+interface ConfigAutocompleteSendToProps extends ConfigAutocompleteProps {
+    schema: ConfigAutocompleteSendToSchema;
 }
 
 const styles = () => ({
@@ -18,7 +33,7 @@ const styles = () => ({
     },
 });
 
-class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteProps, ConfigAutocompleteSendToState> {
+class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToProps, ConfigAutocompleteSendToState> {
     componentDidMount() {
         super.componentDidMount();
 
@@ -37,7 +52,9 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteProps, Co
             if (data === undefined && this.props.schema.jsonData) {
                 data = this.getPattern(this.props.schema.jsonData);
                 try {
-                    data = JSON.parse(data);
+                    if (typeof data === 'string') {
+                        data = JSON.parse(data);
+                    }
                 } catch (e) {
                     console.error(`Cannot parse json data: ${data}`);
                 }

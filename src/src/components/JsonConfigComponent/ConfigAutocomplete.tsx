@@ -18,6 +18,20 @@ export interface ConfigAutocompleteState extends ConfigGenericState {
     selectOptions: { value: string; label: string }[];
 }
 
+type SchemaOptions = { label: string; value: unknown }[]
+
+export interface ConfigAutocompleteSchema {
+    freeSolo?: boolean;
+    options: SchemaOptions;
+    placeholder?: string;
+    label: string;
+    help: string;
+    helpLink: string;
+    noTranslation: boolean;
+    maxLength: number;
+    max: number;
+}
+
 export interface ConfigAutocompleteProps extends ConfigGenericProps {
     socket: AdminConnection;
     themeType: string;
@@ -25,9 +39,9 @@ export interface ConfigAutocompleteProps extends ConfigGenericProps {
     style: Record<string, any>;
     className: string;
     data: Record<string, any>;
-    schema: Record<string, any>;
     onError: () => void;
     onChange: () => void;
+    schema: ConfigAutocompleteSchema;
 }
 
 class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAutocompleteState> {
@@ -52,19 +66,19 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
         }
 
         let item;
-        const options = JSON.parse(JSON.stringify(this.state.selectOptions));
+        const options: SchemaOptions = JSON.parse(JSON.stringify(this.state.selectOptions));
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (isIndeterminate) {
             [...this.state.value]
-                .filter(val => !options.find((it: {value: any}) => it.value === val))
+                .filter(val => !options.find(it => it.value === val))
                 .forEach(it => options.push({ label: it.toString(), value: it }));
 
             item = { label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE };
             options.unshift(item);
         } else {
             // eslint-disable-next-line
-            item = this.state.value !== null && this.state.value !== undefined && options.find((item: any) => item.value == this.state.value); // let "==" be and not ===
+            item = this.state.value !== null && this.state.value !== undefined && options.find(item => item.value == this.state.value); // let "==" be and not ===
             if (this.state.value !== null && this.state.value !== undefined && !item && this.props.schema.freeSolo) {
                 item = { value: this.state.value, label: this.state.value };
                 options.push(item);
@@ -94,7 +108,7 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
                     this.setState({ value: val }, () => this.onChange(this.props.attr, val));
                 }
             }}
-            getOptionLabel={option => option?.label ?? ''}
+            getOptionLabel={option => (typeof option === 'object' ? (option?.label ?? '') : '')}
             renderInput={params => <TextField
                 variant="standard"
                 {...params}
