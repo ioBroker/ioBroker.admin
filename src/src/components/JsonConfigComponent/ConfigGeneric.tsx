@@ -57,6 +57,7 @@ export interface ConfigGenericProps {
     themeType: string;
     commandRunning: any;
     disabled?: boolean;
+    classes: Record<string, any>;
 }
 
 export interface ConfigGenericState {
@@ -729,7 +730,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps, State exten
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    renderItem(_error: unknown, _disabled: boolean, _defaultValue?: unknown): React.JSX.Element | string {
+    renderItem(_error: unknown, _disabled: boolean, _defaultValue?: unknown): React.JSX.Element | string | null {
         return this.getText(this.props.schema.label) || this.getText(this.props.schema.text);
     }
 
