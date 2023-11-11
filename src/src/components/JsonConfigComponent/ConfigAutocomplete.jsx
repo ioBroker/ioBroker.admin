@@ -30,7 +30,7 @@ class ConfigAutocomplete extends ConfigGeneric {
         }
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error, disabled) {
         if (!this.state.selectOptions) {
             return null;
         }
@@ -48,7 +48,7 @@ class ConfigAutocomplete extends ConfigGeneric {
         } else {
             // eslint-disable-next-line
             item = this.state.value !== null && this.state.value !== undefined && options.find(item => item.value == this.state.value); // let "==" be and not ===
-            if (this.state.value !== null && this.state.value !== undefined && !item) {
+            if (this.state.value !== null && this.state.value !== undefined && !item && this.props.schema.freeSolo) {
                 item = { value: this.state.value, label: this.state.value };
                 options.push(item);
             }
@@ -59,13 +59,16 @@ class ConfigAutocomplete extends ConfigGeneric {
             fullWidth
             freeSolo={!!this.props.schema.freeSolo}
             value={item}
+            options={options}
             // autoComplete
             onInputChange={e => {
-                if (e) {
-                    const val = e.target.value;
-                    if (val !== this.state.value) {
-                        this.setState({ value: val }, () => this.onChange(this.props.attr, val));
-                    }
+                if (!e || !this.props.schema.freeSolo) {
+                    return;
+                }
+
+                const val = e.target.value;
+                if (val !== this.state.value) {
+                    this.setState({ value: val }, () => this.onChange(this.props.attr, val));
                 }
             }}
             onChange={(_, value) => {
@@ -74,8 +77,7 @@ class ConfigAutocomplete extends ConfigGeneric {
                     this.setState({ value: val }, () => this.onChange(this.props.attr, val));
                 }
             }}
-            options={options}
-            getOptionLabel={option => (option && option.label) || ''}
+            getOptionLabel={option => option?.label ?? ''}
             renderInput={params => <TextField
                 variant="standard"
                 {...params}

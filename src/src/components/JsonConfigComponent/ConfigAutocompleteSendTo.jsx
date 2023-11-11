@@ -104,7 +104,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
                 // eslint-disable-next-line
                 options.find(item => item.value == this.state.value); // let "==" be and not ===
 
-            if (this.state.value !== null && this.state.value !== undefined && !item) {
+            if (this.state.value !== null && this.state.value !== undefined && !item && this.props.schema.freeSolo) {
                 item = { value: this.state.value, label: this.state.value };
                 options.push(item);
             }
@@ -135,14 +135,16 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
             freeSolo={!!this.props.schema.freeSolo}
             options={options}
             // autoComplete
-            getOptionLabel={option => (option && option.label) || ''}
+            getOptionLabel={option => option?.label ?? ''}
             className={this.props.classes.indeterminate}
             onInputChange={e => {
-                if (e) {
-                    const val = e.target.value;
-                    if (val !== this.state.value) {
-                        this.setState({ value: val }, () => this.onChange(this.props.attr, val));
-                    }
+                if (!e || !this.props.schema.freeSolo) {
+                    return;
+                }
+
+                const val = e.target.value;
+                if (val !== this.state.value) {
+                    this.setState({ value: val }, () => this.onChange(this.props.attr, val));
                 }
             }}
             onChange={(_, value) => {
