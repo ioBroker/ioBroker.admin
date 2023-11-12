@@ -52,27 +52,27 @@ body:
     validations:
       required: true
 
-  - type: textarea
+  - type: input
     attributes:
       label: Adapter version
     validations:
       required: true
 
-  - type: textarea
+  - type: input
     attributes:
       label: js-controller version
-      description: determine this with `iobroker -v` on the console
+      description: determine this with "iobroker -v" on the console
     validations:
       required: true
 
-  - type: textarea
+  - type: input
     attributes:
       label: Node version
-      description: determine this with `node -v` on the console
+      description: determine this with "node -v" on the console
     validations:
       required: true
 
-  - type: textarea
+  - type: input
     attributes:
       label: Operating system
     validations:
