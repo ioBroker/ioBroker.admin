@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed problem that disabled checkbox is still clickable
 * (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
 * (foxriver76) fixed `freeSolo` option for autocomplete components
+* (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
 
 ### 6.12.2 (2023-11-02)
 * (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
