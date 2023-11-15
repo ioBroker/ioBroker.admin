@@ -176,8 +176,8 @@ jobs:
           export SENTRY_RELEASE=${{ steps.extract_release.outputs.VERSION }}
           sentry-cli releases new $SENTRY_VERSION
           sentry-cli releases finalize $SENTRY_VERSION
-          sentry-cli sourcemaps inject ./www
-          sentry-cli sourcemaps upload ./www
+          sentry-cli sourcemaps inject ./adminWww
+          sentry-cli sourcemaps upload ./adminWww
 
         # Add the following line BEFORE finalize if repositories are connected in Sentry
         # sentry-cli releases set-commits $SENTRY_VERSION --auto
