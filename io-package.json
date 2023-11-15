@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.2",
+    "version": "6.12.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.3": {
+        "en": "fixed problem that disabled checkbox is still clickable\nno longer replace valid `common.adminUI.tab` values of adapters\nfixed `freeSolo` option for autocomplete components\nfixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties\nfixed empty dropdown selection after selecting `system language` in JsonConfig",
+        "de": "problem behoben, dass die deaktivierte checkbox noch anklickbar ist\nnicht mehr gültige Common.adminUI.tab-Werte von Adaptern ersetzen\nfrei Solo-Option für autokomplete Komponenten\nproblem mit jsonConfig senden Mit nativer Option bei der Rückgabe mehrerer Eigenschaften\nfeste leere Dropdown-Auswahl nach Auswahl der Systemsprache in JsonConfig",
+        "ru": "исправлена проблема, которая отключена checkbox по-прежнему кликабельна\nбольше не заменяет действительные общие.adminUI.tab значения адаптеров\nфиксированный бесплатно Solo вариант для автополных компонентов\nфиксированная проблема с jsonConfig отправить С родным вариантом при возврате нескольких свойств\nфиксированный пустой отбор после выбора языка `system' в JsonConfig",
+        "pt": "problema fixo que desativado caixa de seleção ainda é clicável\nnão substituir mais valores comuns válidos.adminUI.tab de adaptadores\nlivre fixo Opção de Solo para componentes autocompletos\nproblema fixo com jsonConfig enviar Para com opção nativa ao retornar várias propriedades\nseleção suspensa vazia fixa depois de selecionar `linguagem do sistema` em JsonConfig",
+        "nl": "het probleem dat gehandicapte cheques uitschakelde is nog steeds klikkend\nniet langer geldig vervangen\nvrij gemaakt Solo optie voor autocomplete componenten\n_ Met inheemse optie als je meerdere eigenschappen terugbrengt\n_",
+        "fr": "problème fixe que la case à cocher désactivée est toujours cliquable\nne remplace plus les valeurs communes valides.adminUI.tab des adaptateurs\ngratuit Option solo pour composants autocomplet\nproblème fixe avec jsonConfig envoyer À l'option native lorsque vous retournez plusieurs propriétés\nla sélection d'abandons vides fixes après avoir sélectionné `langage système` dans JsonConfig",
+        "it": "problema fisso che la casella di controllo disabilitata è ancora cliccabile\nnon sostituire più i valori comuni.adminUI.tab validi degli adattatori\nfisso libero Solo opzione per componenti autocompleti\nproblema fisso con jsonConfig inviare A con opzione nativo quando si ritorna più proprietà\nselezione a discesa vuota fissa dopo aver selezionato \"lingua di sistema\" in JsonConfig",
+        "es": "problema fijo que la casilla de verificación deshabilitada sigue siendo clicable\nno reemplazar los valores comunes válidos.adminUI.tab\nlibre fijo Solo opción para componentes autocompletos\nedición fija con jsonConfig enviar A con opción nativa al devolver múltiples propiedades\nselección desplegable vacía fija después de seleccionar `idioma del sistema' en JsonConfig",
+        "pl": "stabilny problem, w jaki sposób uszkodzenie skrzynki jest nadal clickowalne\nnie zastępuje już wartości adminUI.tab\nwolny Opcja Solo w autokompletnych częściach\nprawdziwy problem z jsonConfig wysyła na rynek. Przyjmowaniu możliwości rodzimej, gdy wracamy do wielu własności\nuruchomiony spadek po wybraniu języka `system' w JsonConfig",
+        "uk": "виправлена проблема, яка відключена прапорець все ще клацається\nне замінює дійсний загальний.adminUI.tab значення адаптерів\nбезкоштовно Індивідуальний варіант для автоматичних компонентів\nвиправлено проблему з jsonConfig відправити Щоб при поверненні декількох властивостей\nвиправлений вибір порожніх випадань після вибору `system language` в JsonConfig",
+        "zh-cn": "残疾检查箱的固定问题仍然难以预测。\n不再取代有效共同的、adminUI\n定期存款 汽车单元的选择\njson Config发送的固定问题 在归还多种财产时,采用当地办法\n在选择“JsonConfig”的“系统语言”之后,定期撤退。"
+      },
       "6.12.2": {
         "en": "fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties\nfixed crash case when schema cannot be read\nFixed noDelete attribute of JSON config accordion",
         "de": "problem mit jsonConfig senden Mit nativer Option bei der Rückgabe mehrerer Eigenschaften\nfester crashfall, wenn schema nicht gelesen werden kann\nFixed noDelete Attribut von JSON config Akkordeon",
@@ -95,19 +108,6 @@
         "pl": "adaptator-react-v5 w celu rozwiązania problemów z przeglądarką obiektową",
         "uk": "оновлення адаптера-реакт-v5 для виправлення проблем з браузером",
         "zh-cn": "a. 更新适应行动-v5以防投机问题"
-      },
-      "6.10.7": {
-        "en": "Corrected adapter termination if the alias has no target",
-        "de": "Korrigierter Adapterabschluss, wenn der Alias kein Ziel hat",
-        "ru": "Исправлено прекращение адаптера, если псевдоним не имеет цели",
-        "pt": "Terminação correta do adaptador se o alias não tiver nenhum alvo",
-        "nl": "Verminderde adapter terminatie als de alias geen doelwit heeft",
-        "fr": "Résiliation correcte de l'adaptateur si l'alias n'a pas de cible",
-        "it": "Rescissione adattatore corretta se l'alias non ha un obiettivo",
-        "es": "Terminación corregida del adaptador si el alias no tiene objetivo",
-        "pl": "Poprawne rozwiązanie adaptacyjne, jeśli alias nie ma docelowego celu",
-        "uk": "Виправлено припинення адаптера, якщо псевдонім не має цілей",
-        "zh-cn": "如果除其它外别无目标,适应适应人员终止"
       }
     },
     "desc": {

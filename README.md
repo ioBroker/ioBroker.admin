@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.12.3 (2023-11-15)
 * (foxriver76) fixed problem that disabled checkbox is still clickable
 * (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
 * (foxriver76) fixed `freeSolo` option for autocomplete components
@@ -112,9 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) objects browser number value input behavior change to allow leading minus
 * (bluefox) Added component `interfaces` to the JSON config
 * (bluefox) Implemented Backend to GUI communication
-
-### 6.10.9 (2023-10-16)
-* (bluefox) Improvement of the public accessibility check
 
 ## License
 The MIT License (MIT)
