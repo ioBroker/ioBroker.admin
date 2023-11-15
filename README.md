@@ -91,6 +91,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
 * (foxriver76) fixed `freeSolo` option for autocomplete components
 * (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
+* (foxriver76) fixed empty dropdown selection after selecting `system language` in JsonConfig
 
 ### 6.12.2 (2023-11-02)
 * (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties

@@ -110,7 +110,7 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
                 value={this.state.value || '_'}
                 renderValue={() => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
-                    const value = e.target.value === '_' ? '' : e.target.value;
+                    const { value } = e.target;
                     this.setState({ value }, () => {
                         this.onChange(this.props.attr, value);
                         if (this.props.schema.changeGuiLanguage) {
