@@ -392,10 +392,20 @@ export default class ConfigGeneric<Props extends ConfigGenericProps, State exten
      *
      * @param attr the changed attribute
      * @param newValue new value of the attribute
+     */
+    onChangeAsync(attr: string, newValue: unknown): Promise<void> {
+        return new Promise(resolve => this.onChange(attr, newValue, resolve));
+    }
+
+    /**
+     * Trigger onChange, to activate save button on change
+     *
+     * @param attr the changed attribute
+     * @param newValue new value of the attribute
      * @param cb optional callback function, else returns a Promise
      */
     // eslint-disable-next-line react/no-unused-class-component-methods
-    onChange(attr: string, newValue: any, cb?: () => void): Promise<void> {
+    onChange(attr: string, newValue: unknown, cb?: () => void): Promise<void> {
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
 

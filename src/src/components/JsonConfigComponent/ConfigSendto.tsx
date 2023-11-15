@@ -199,6 +199,8 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                 _originIp,
                 ...this.props.data,
             });
+
+            console.log(this.props.schema.jsonData);
             try {
                 data = JSON.parse(data);
             } catch (e) {
@@ -256,12 +258,11 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                     }
 
                     if (response?.native && this.props.schema.useNative) {
-                        const attrs = Object.keys(response.native);
-                        for (const attr of attrs) {
-                            await this.onChange(attr, response.native[attr]);
+                        for (const [attr, val] of Object.entries(response.native)) {
+                            await this.onChangeAsync(attr, val);
                         }
 
-                        setTimeout(() => this.props.forceUpdate(attrs, this.props.data), 300);
+                        setTimeout(() => this.props.forceUpdate(Object.keys(response.native), this.props.data), 300);
                     } else if (response?.result) {
                         window.alert(typeof response.result === 'object' ? JSON.stringify(response.result) : response.result);
                     } else {
