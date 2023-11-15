@@ -70,7 +70,7 @@ export interface ConfigGenericState {
     confirmDepNewValue?: any;
 }
 
-export default class ConfigGeneric<Props extends ConfigGenericProps, State extends ConfigGenericState> extends Component<Props, State> {
+export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGenericProps, State extends ConfigGenericState = ConfigGenericState> extends Component<Props, State> {
     static DIFFERENT_VALUE = '__different__';
 
     static DIFFERENT_LABEL = 'ra___different__';
