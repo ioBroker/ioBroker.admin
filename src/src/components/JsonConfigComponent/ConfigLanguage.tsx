@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -10,9 +9,11 @@ import {
     Select,
 } from '@mui/material';
 
+// @ts-expect-error optimize export of socket-client types
+import type { SystemConfig } from '@iobroker/socket-client';
 import I18n from './wrapper/i18n';
 
-import ConfigGeneric from './ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles = () => ({
     fullWidth: {
@@ -65,13 +66,28 @@ const LANGUAGES = [
         value: 'zh-ch',
         label: '简体中文',
     },
-];
+] as const;
 
-class ConfigLanguage extends ConfigGeneric {
+interface LanguageSelectOption {
+    /** Value to save */
+    value: string;
+    /** Label to show */
+    label: string;
+}
+
+interface ConfigLanguageProps extends ConfigGenericProps {
+    changeLanguage: () => void;
+}
+
+interface ConfigLanguageState extends ConfigGenericState {
+    selectOptions: LanguageSelectOption[];
+}
+
+class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageState> {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        const languages = [...LANGUAGES];
+        const languages: LanguageSelectOption[] = [...LANGUAGES];
         if (this.props.schema.system) {
             languages.unshift({ value: '_', label: I18n.t('ra_System language') });
         }
@@ -79,7 +95,7 @@ class ConfigLanguage extends ConfigGeneric {
         this.setState({ value: this.props.schema.system ? (value || '') : (value || I18n.getLanguage()), selectOptions: languages });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean): React.JSX.Element | null {
         if (!this.state.selectOptions) {
             return null;
         }
@@ -91,11 +107,11 @@ class ConfigLanguage extends ConfigGeneric {
             <Select
                 variant="standard"
                 error={!!error}
-                disabled={!!disabled}
+                disabled={disabled}
                 value={this.state.value || '_'}
                 renderValue={() => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
-                    const value = e.target.value === '_' ? '' : e.target.value;
+                    const { value } = e.target;
                     this.setState({ value }, () => {
                         this.onChange(this.props.attr, value);
                         if (this.props.schema.changeGuiLanguage) {
@@ -107,7 +123,7 @@ class ConfigLanguage extends ConfigGeneric {
                                 this.props.changeLanguage && this.props.changeLanguage();
                             } else {
                                 this.props.socket.getSystemConfig()
-                                    .then(systemConfig => {
+                                    .then((systemConfig: SystemConfig) => {
                                         if (systemConfig.common.language === I18n.getLanguage()) {
                                             return;
                                         }
@@ -128,17 +144,5 @@ class ConfigLanguage extends ConfigGeneric {
         </FormControl>;
     }
 }
-
-ConfigLanguage.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigLanguage);
