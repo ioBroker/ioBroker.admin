@@ -9,10 +9,27 @@
     "sourceMap": true,
     "sourceRoot": "./src",
     "noImplicitAny": true,
-    "lib": ["es2018", "DOM"],
+    "lib": [
+      "es2018",
+      "DOM"
+    ],
     "jsx": "react",
-    "types": ["@iobroker/types"],
+    "types": [
+      "@iobroker/types"
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["./**/*.ts", "./**/*.tsx", "../src/lib/adapter-config.d.ts"],
-  "exclude": ["./**/*.test.ts", "./**/*.test.tsx"]
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "../src/lib/adapter-config.d.ts"
+  ],
+  "exclude": [
+    "./**/*.test.ts",
+    "./**/*.test.tsx"
+  ]
 }

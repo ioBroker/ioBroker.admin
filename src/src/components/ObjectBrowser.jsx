@@ -537,7 +537,7 @@ const styles = theme => ({
         marginTop: -2,
     },
     cellButtonsButtonWithCustoms: {
-        color: theme.palette.secondary.main,
+        color: theme.palette.mode === 'dark' ? theme.palette.primary.main : theme.palette.secondary.main,
     },
     cellButtonsButtonWithoutCustoms: {
         opacity: 0.2,
