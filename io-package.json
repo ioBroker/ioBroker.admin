@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.3",
+    "version": "6.12.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.4": {
+        "en": "custom settings icon has no a brighter color in dark mode\nfixed color of host selector in dark mode\nfixed problem with json config language component",
+        "de": "benutzerdefinierte einstellungen symbol hat keine hellere farbe im dunklen modus\nfeste farbe des host-selektors im dunklen modus\nfestes problem mit json config sprachkomponente",
+        "ru": "иконка пользовательских настроек не имеет более яркого цвета в темном режиме\nфиксированный цвет выбора хоста в темном режиме\nфиксированная проблема с компонентом языка json config",
+        "pt": "ícone de configurações personalizadas não tem uma cor mais brilhante no modo escuro\ncor fixa do seletor do host no modo escuro\nproblema fixo com componente de linguagem json config",
+        "nl": "de douane heeft geen heldere kleur in donkere modus\ngerepareerde kleur van gastheer in donkere mode\n_",
+        "fr": "icône de paramètres personnalisés n'a pas une couleur plus lumineuse en mode noir\ncouleur fixe du sélecteur d'hôte en mode noir\nproblème fixe avec json config language component",
+        "it": "icona delle impostazioni personalizzate non ha un colore più luminoso in modalità oscura\ncolore fisso del selettore host in modalità buio\nproblema fisso con componente di linguaggio di configurazione di json",
+        "es": "icono de configuración personalizada no tiene un color más brillante en modo oscuro\ncolor fijo del selector de host en modo oscuro\nproblema fijo con componente de lenguaje json config",
+        "pl": "ikony nie mają jaśniejszych kolorów w ciemnym trybie\nkoloru hosta w trybie ciemnym\nstały problem z konfigumentem języka jsona",
+        "uk": "настройка іконки не має яскравого кольору в темному режимі\nфіксований колір селектора в темному режимі\nвиправлена проблема з json config мов компонент",
+        "zh-cn": "习俗环境 icon没有光明色色色色彩色色色色色彩色彩色彩色彩色彩色彩色色色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色彩色。\nb. 穿黑暗的旅舍固定颜色\n固定问题"
+      },
       "6.12.3": {
         "en": "fixed problem that disabled checkbox is still clickable\nno longer replace valid `common.adminUI.tab` values of adapters\nfixed `freeSolo` option for autocomplete components\nfixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties\nfixed empty dropdown selection after selecting `system language` in JsonConfig",
         "de": "problem behoben, dass die deaktivierte checkbox noch anklickbar ist\nnicht mehr gültige Common.adminUI.tab-Werte von Adaptern ersetzen\nfrei Solo-Option für autokomplete Komponenten\nproblem mit jsonConfig senden Mit nativer Option bei der Rückgabe mehrerer Eigenschaften\nfeste leere Dropdown-Auswahl nach Auswahl der Systemsprache in JsonConfig",
@@ -95,19 +108,6 @@
         "pl": "Poprawa kontroli dostępu publicznego",
         "uk": "Удосконалення перевірки публічної доступності",
         "zh-cn": "改善公众无障碍检查"
-      },
-      "6.10.8": {
-        "en": "update adapter-react-v5 to fix issues with object browser",
-        "de": "update adapter-react-v5 um probleme mit objektbrowser zu beheben",
-        "ru": "обновление адаптер-react-v5 для исправления проблем с браузером объекта",
-        "pt": "atualizar o adaptador-react-v5 para corrigir problemas com navegador objeto",
-        "nl": "vertaling:",
-        "fr": "mettre à jour adaptateur-react-v5 pour corriger les problèmes avec le navigateur objet",
-        "it": "aggiornamento adattatore-react-v5 per risolvere problemi con il browser dell'oggetto",
-        "es": "actualizar adaptador-react-v5 para solucionar problemas con el navegador objeto",
-        "pl": "adaptator-react-v5 w celu rozwiązania problemów z przeglądarką obiektową",
-        "uk": "оновлення адаптера-реакт-v5 для виправлення проблем з браузером",
-        "zh-cn": "a. 更新适应行动-v5以防投机问题"
       }
     },
     "desc": {

@@ -86,9 +86,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.12.4 (2023-11-16)
 * (foxriver76) custom settings icon has no a brighter color in dark mode
 * (foxriver76) fixed color of host selector in dark mode
+* (foxriver76) fixed problem with json config language component
 
 ### 6.12.3 (2023-11-15)
 * (foxriver76) fixed problem that disabled checkbox is still clickable
@@ -110,12 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed issue when updating news in backend
 * (foxriver76) validate json config against the schema
 * (foxriver76) update socket-client to improve performance
-
-### 6.11.0 (2023-10-19)
-* (foxriver76) jsonConfig type number now stores values as number instead of string
-* (foxriver76) objects browser number value input behavior change to allow leading minus
-* (bluefox) Added component `interfaces` to the JSON config
-* (bluefox) Implemented Backend to GUI communication
 
 ## License
 The MIT License (MIT)
