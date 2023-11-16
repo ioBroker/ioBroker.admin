@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) custom settings icon has no a brighter color in dark mode
+
 ### 6.12.3 (2023-11-15)
 * (foxriver76) fixed problem that disabled checkbox is still clickable
 * (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
