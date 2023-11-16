@@ -2427,6 +2427,7 @@ class App extends Router {
                                                     )
                                                     : undefined
                                             }
+                                            themeType={this.state.themeType}
                                             expertMode={this.state.expertMode}
                                             socket={this.socket}
                                             hostsWorker={this.hostsWorker}
