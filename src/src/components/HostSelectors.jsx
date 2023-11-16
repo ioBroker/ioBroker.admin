@@ -229,7 +229,7 @@ class HostSelectors extends Component {
                 >
                     <span>
                         <Button
-                            color="secondary"
+                            color={this.props.themeType === 'dark' ? 'primary' : 'secondary'}
                             className={this.props.classes.button}
                             style={{
                                 background: selectedHostObj?.common?.color || 'none',
@@ -316,6 +316,7 @@ HostSelectors.propTypes = {
     expertMode: PropTypes.bool,
     setCurrentHost: PropTypes.func.isRequired,
     tooltip: PropTypes.string,
+    themeType: PropTypes.string,
 };
 
 export default withStyles(styles)(HostSelectors);

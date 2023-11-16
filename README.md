@@ -88,6 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) custom settings icon has no a brighter color in dark mode
+* (foxriver76) fixed color of host selector in dark mode
 
 ### 6.12.3 (2023-11-15)
 * (foxriver76) fixed problem that disabled checkbox is still clickable
