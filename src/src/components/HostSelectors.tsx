@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import { Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
@@ -7,7 +6,12 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-import { I18n, Icon, Utils } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, I18n, Icon, Utils,
+} from '@iobroker/adapter-react-v5';
+import type HostsWorker from '@/Workers/HostsWorker';
+// @ts-expect-error fix socket-client
+import type { CompactHost } from '@iobroker/socket-client';
 
 const styles = () => ({
     img: {
@@ -64,10 +68,35 @@ const styles = () => ({
     tooltip: {
         pointerEvents: 'none',
     },
-});
+}) as any;
 
-class HostSelectors extends Component {
-    constructor(props) {
+interface HostEvent {
+    type: string;
+    id: ioBroker.ObjectIDs.Host;
+    alive: boolean;
+    obj: ioBroker.HostObject | null;
+}
+
+interface HostSelectorsProps {
+    disabled: boolean;
+    socket: AdminConnection;
+    currentHost: string;
+    hostsWorker: InstanceType<typeof HostsWorker>;
+    expertMode: boolean;
+    setCurrentHost: (hostname: string, aliveHost: string) => void;
+    tooltip: string;
+    themeType?: string;
+    classes: Record<string, any>;
+}
+
+interface HostSelectorsState {
+    anchorEl: any;
+    alive: Record<string, boolean>;
+    hosts: ioBroker.HostObject[];
+}
+
+class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
+    constructor(props: HostSelectorsProps) {
         super(props);
 
         this.state = {
@@ -80,14 +109,14 @@ class HostSelectors extends Component {
     componentDidMount() {
         this.props.socket
             .getCompactHosts(true)
-            .then(hosts => {
+            .then((hosts: CompactHost[]) => {
                 this.setState({ hosts }, async () => {
                     // request for all host the alive status
-                    const alive = {};
+                    const alive: Record<string, boolean> = {};
                     for (let h = 0; h < hosts.length; h++) {
-                        alive[hosts[h]._id] = await this.props.socket.getState(`${hosts[h]._id}.alive`);
-                        if (alive[hosts[h]._id]) {
-                            alive[hosts[h]._id] = !!alive[hosts[h]._id].val;
+                        const state = await this.props.socket.getState(`${hosts[h]._id}.alive`);
+                        if (state) {
+                            alive[hosts[h]._id] = !!state.val;
                         } else {
                             alive[hosts[h]._id] = false;
                         }
@@ -98,7 +127,7 @@ class HostSelectors extends Component {
                     });
                 });
             })
-            .catch(e => {
+            .catch((e: any) => {
                 window.alert(`Cannot get hosts: ${e}`);
             });
     }
@@ -108,8 +137,8 @@ class HostSelectors extends Component {
         this.props.hostsWorker.unregisterAliveHandler(this.onAliveChanged);
     }
 
-    onAliveChanged = events => {
-        const alive = JSON.parse(JSON.stringify(this.state.alive));
+    onAliveChanged = (events: HostEvent[]) => {
+        const alive: Record<string, boolean> = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
         events.forEach(event => {
             if (event.type === 'delete') {
@@ -143,9 +172,9 @@ class HostSelectors extends Component {
         }
     };
 
-    onHostsObjectChange = events => {
-        const hosts = JSON.parse(JSON.stringify(this.state.hosts));
-        const alive = JSON.parse(JSON.stringify(this.state.alive));
+    onHostsObjectChange = (events: HostEvent[]) => {
+        const hosts: ioBroker.HostObject[] = JSON.parse(JSON.stringify(this.state.hosts));
+        const alive: Record<string, boolean> = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
 
         Promise.all(
@@ -156,7 +185,7 @@ class HostSelectors extends Component {
                     if (host) {
                         const pos = hosts.indexOf(host);
                         if (pos !== -1) {
-                            delete alive[host];
+                            delete alive[event.id];
                             hosts.splice(pos);
                             changed = true;
                         }
@@ -178,6 +207,7 @@ class HostSelectors extends Component {
                     changed = true;
                     hosts.push({
                         _id: event.id,
+                        // @ts-expect-error only a partial host object
                         common: {
                             name: event.obj.common?.name || '',
                             color: event.obj.common?.color || '',
@@ -234,7 +264,7 @@ class HostSelectors extends Component {
                             style={{
                                 background: selectedHostObj?.common?.color || 'none',
                                 borderColor: selectedHostObj?.common?.color
-                                    ? Utils.invertColor(selectedHostObj.common.color)
+                                    ? Utils.invertColor(selectedHostObj.common.color, false)
                                     : 'none',
                             }}
                             variant={this.props.disabled || this.state.hosts.length < 2 ? 'text' : 'outlined'}
@@ -307,16 +337,5 @@ class HostSelectors extends Component {
         );
     }
 }
-
-HostSelectors.propTypes = {
-    disabled: PropTypes.bool,
-    socket: PropTypes.object,
-    currentHost: PropTypes.string.isRequired,
-    hostsWorker: PropTypes.object,
-    expertMode: PropTypes.bool,
-    setCurrentHost: PropTypes.func.isRequired,
-    tooltip: PropTypes.string,
-    themeType: PropTypes.string,
-};
 
 export default withStyles(styles)(HostSelectors);
