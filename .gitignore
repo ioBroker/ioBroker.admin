@@ -2,7 +2,6 @@ node_modules
 .idea
 /src/.eslintcache
 /src/.cache
-www
 tmp/
 *.tgz
 .i18n-editor-metadata

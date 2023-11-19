@@ -1,0 +1,941 @@
+.dialog-select-object-ids {
+  /** inline edit **/
+  /**/
+  /*select ~ .select-id-quick-edit-ok,        // only if type = combobx
+    select ~ .select-id-quick-edit-cancel {   // only if type = combobx
+        top:1px;
+    }*/
+}
+.dialog-select-object-ids .true {
+  color: #06960E;
+  font-weight: bold;
+}
+.dialog-select-object-ids .false {
+  color: #D92626;
+  font-weight: normal;
+}
+.dialog-select-object-ids .error {
+  color: #D92626;
+  font-weight: normal;
+}
+.dialog-select-object-ids .highlight {
+  animation: highlight 2s;
+}
+.dialog-select-object-ids .grid-main-div {
+  height: calc(100% - 50px);
+}
+.dialog-select-object-ids .grid-main-wh-div {
+  height: calc(100% -  48px);
+}
+.dialog-select-object-ids .grid-main-wob-div {
+  height: calc(100% -  38px - 26px);
+}
+.dialog-select-object-ids .grid-main-wh-div,
+.dialog-select-object-ids .grid-main-wob-div {
+  overflow-x: hidden;
+  width: 100%;
+  padding: 0;
+  overflow-y: scroll;
+}
+.dialog-select-object-ids .grid-main-wh-div > table,
+.dialog-select-object-ids .grid-main-wob-div > table {
+  width: calc(100% - 5px);
+}
+@-moz-keyframes spin {
+  100% {
+    -moz-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.dialog-select-object-ids .objects-folder {
+  height: 0.8em;
+  width: 0.8em;
+  margin: 0.3em;
+}
+.dialog-select-object-ids .objects-name-coll-table-td {
+  border-spacing: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.dialog-select-object-ids .objects-name-coll-icon {
+  /*position: relative;*/
+  /*top: 3px;*/
+  vertical-align: sub;
+}
+.dialog-select-object-ids .objects-name-coll-title {
+  border-spacing: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  display: inline-block;
+  padding-left: 5px;
+  vertical-align: middle;
+}
+.dialog-select-object-ids .objects-inline-edit {
+  width: 100%;
+  height: 24px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  padding-left: 4px;
+}
+.dialog-select-object-ids table.objects-list-table td {
+  border: 1px solid #e0e0e0;
+}
+.dialog-select-object-ids .objects-list-table {
+  background: #efefef;
+  white-space: nowrap;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+  font-size: 0.82rem !important;
+  border-top: 0;
+  width: calc(100% - 10px);
+  margin: 0 5px 0 1px;
+  /* for mouse over rahmen */
+  outline: 5px;
+  outline-offset: -1px;
+}
+.dialog-select-object-ids .objects-list-table > tbody > tr > td {
+  padding-left: 5px;
+}
+.dialog-select-object-ids .objects-list-table .fancytree-title {
+  font-weight: normal !important;
+}
+.dialog-select-object-ids .select-id-quick-edit {
+  height: 17px;
+}
+.dialog-select-object-ids .select-id-quick-edit-buttons {
+  position: absolute;
+  z-index: 3;
+  top: 2px;
+  right: 5px;
+}
+.dialog-select-object-ids .select-id-quick-edit-buttons.text {
+  top: 23px;
+}
+.dialog-select-object-ids .select-id-quick-edit-buttons.text .select-id-quick-edit-ok,
+.dialog-select-object-ids .select-id-quick-edit-buttons.text .select-id-quick-edit-cancel {
+  border: 1px solid gray;
+  background-color: white;
+}
+.dialog-select-object-ids .select-id-quick-edit-buttons .select-id-quick-edit-ok,
+.dialog-select-object-ids .select-id-quick-edit-buttons .select-id-quick-edit-cancel {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  border-radius: 0;
+  display: inline-block;
+}
+.dialog-select-object-ids .objects-inline-edit {
+  position: relative;
+  left: -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  width: calc(100% - 0px);
+  z-index: 2;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-size: 0.82rem;
+  vertical-align: middle;
+  text-overflow-mode: clip;
+}
+.dialog-select-object-ids .objects-name-coll-title .objects-inline-edit {
+  width: calc(100% +  4px - 1);
+}
+.dialog-select-object-ids input.objects-inline-edit {
+  width: calc(100% - 2px);
+  z-index: 2;
+}
+.dialog-select-object-ids .objects-list-table > colgroup > col:nth-child(8) {
+  width: 80px !important;
+  min-width: 80px !important;
+}
+.dialog-select-object-ids .filter-btn {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  background: #fff;
+}
+.dialog-select-object-ids .main-header-table tr {
+  background: #ffffff;
+}
+.dialog-select-object-ids .main-header-table td.input {
+  width: 100%;
+}
+.dialog-select-object-ids .main-header-table select.filter option {
+  line-height: 0.5em;
+  background: #fff;
+}
+.dialog-select-object-ids .objects-list-running {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5rem;
+  padding: 12px;
+  background: rgba(185, 185, 185, 0.5);
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 10px;
+}
+.dialog-select-object-ids .ui-state-active.fancytree-active {
+  color: black !important;
+}
+.dialog-select-object-ids .ui-state-active.fancytree-active .ui-icon {
+  background-image: url(../lib/css/themes/jquery-ui/redmond/images/ui-icons_777777_256x240.png) !important;
+}
+.dialog-select-object-ids *::-webkit-scrollbar-track {
+  background-color: #ccc;
+}
+.dialog-select-object-ids *::-webkit-scrollbar {
+  width: 10px;
+  background-color: #ccc;
+}
+.dialog-select-object-ids *::-webkit-scrollbar-thumb {
+  background-color: #575757;
+}
+.dialog-select-object-ids .select-button-push,
+.dialog-select-object-ids .select-button-edit,
+.dialog-select-object-ids .select-button-ok,
+.dialog-select-object-ids .select-button-cancel {
+  width: 26px;
+  height: 20px;
+}
+.dialog-select-object-ids .main-toolbar-table {
+  position: relative;
+}
+.dialog-select-object-ids .main-toolbar-table .select-id-custom-buttons {
+  display: inline-block;
+}
+.dialog-select-object-ids .main-toolbar-table .iob-toolbar-sep {
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+.dialog-select-object-ids .main-toolbar-table .panel-button {
+  display: inline-block;
+  line-height: 24px;
+  height: 24px;
+  width: 24px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 0;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.dialog-select-object-ids .main-toolbar-table .panel-button:hover {
+  border: 0;
+}
+.dialog-select-object-ids .main-toolbar-table .panel-button i {
+  margin-left: -0.5px;
+  font-size: 1.1rem;
+  line-height: 28px;
+  margin-top: -1px;
+}
+.dialog-select-object-ids .main-toolbar-table .btn-expert {
+  margin-right: 3px;
+}
+.dialog-select-object-ids .main-toolbar-table .expert-mode-icon {
+  color: white;
+  width: 21px;
+  padding-left: 2px;
+}
+.dialog-select-object-ids .main-toolbar-table .btn-history {
+  float: right;
+  margin-right: 20px;
+}
+.dialog-select-object-ids .main-toolbar-table .objects-info {
+  display: inline-block;
+  float: right;
+  padding-right: 1rem;
+  margin-top: 5px;
+}
+.dialog-select-object-ids .old-style .main-header-table {
+  width: 100%;
+}
+.dialog-select-object-ids .old-style .main-header-table th span {
+  font-size: 11px;
+  font-weight: normal;
+}
+.dialog-select-object-ids .old-style .grid-main-wob-div {
+  height: calc(100% - 50px);
+}
+.dialog-select-object-ids .old-style .iob-list-icon {
+  height: 16px;
+}
+.dialog-select-object-ids .old-style .clippy-button {
+  height: 16px;
+}
+.dialog-select-object-ids .old-style .ui-state-active,
+.dialog-select-object-ids .old-style .ui-widget-content .ui-state-active {
+  background: inherit !important;
+}
+.dialog-select-object-ids .material .objects-list-running {
+  height: 5rem;
+}
+.dialog-select-object-ids .material .filter-btn i {
+  font-size: 12px;
+}
+.dialog-select-object-ids .material .td-button-placeholder {
+  width: 21px;
+}
+.dialog-select-object-ids .material .custom-obj-btn {
+  cursor: pointer;
+  color: #4c4c4c;
+  background: white;
+  border: 0;
+  padding-left: 4px;
+  margin-right: 1px;
+  margin-top: 3px;
+}
+.dialog-select-object-ids .material .custom-obj-btn:hover {
+  background: #64b5f6;
+}
+.dialog-select-object-ids .material .custom-obj-btn i {
+  font-size: 12px;
+}
+.dialog-select-object-ids .material .iob-list-icon,
+.dialog-select-object-ids .material .instance-image {
+  width: 18px;
+  height: 18px;
+}
+.dialog-select-object-ids .material .main-toolbar-table .panel-button {
+  background-color: #2196f3;
+}
+.dialog-select-object-ids .main-header-table th {
+  border-right: 1px solid #b9b9b9;
+  color: gray;
+}
+.dialog-select-object-ids .main-header-table .filter {
+  display: inline-block;
+  border: 0;
+  height: 24px;
+  width: calc(100% - 5px);
+  padding: 0 0 0 5px;
+  background: transparent;
+  color: gray;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-size: 0.82rem !important;
+  margin-bottom: 0;
+}
+.dialog-select-object-ids .main-header-table .filter-btn {
+  display: none;
+}
+.dialog-select-object-ids .main-header-table .filter-active .filter {
+  color: black;
+  width: calc(100% - 24px);
+}
+.dialog-select-object-ids .main-header-table .filter-active .filter-btn {
+  padding: 0;
+  display: inline-block;
+  width: 19px;
+  height: 16px;
+  background: transparent;
+  border: 0;
+  margin-top: 3px;
+}
+.dialog-select-object-ids .main-header-table .filter-active .filter-btn i {
+  font-size: 12px;
+}
+.dialog-select-object-ids .clippy-button,
+.dialog-select-object-ids .edit-dialog-button {
+  position: absolute;
+  top: 1px;
+  z-index: 1;
+  margin-top: 1px;
+}
+.dialog-select-object-ids .clippy-button .tiny,
+.dialog-select-object-ids .edit-dialog-button .tiny {
+  font-size: 10px;
+}
+.dialog-select-object-ids .clippy-button {
+  right: 0;
+}
+.dialog-select-object-ids .edit-dialog-button {
+  right: 22px;
+}
+.dialog-select-object-ids .edit-enum .edit-dialog-button {
+  right: 0;
+}
+.dialog-select-object-ids .select-value {
+  display: inline-block;
+  width: 100%;
+  padding-left: 5px;
+  position: relative;
+}
+@keyframes highlight {
+  0% {
+    color: #00f900;
+  }
+  80% {
+    color: green;
+  }
+  100% {
+    color: black;
+  }
+}
+.dialog-select-object-ids .highlight {
+  animation: highlight 2s;
+}
+.dialog-select-object-ids .select-button-push {
+  background: white;
+  border: none;
+}
+.dialog-select-object-ids .select-button-push i {
+  font-size: 16px;
+  margin-left: -1px;
+}
+#select-id-dialog > span {
+  float: left;
+  margin: 0 7px 50px 0;
+}
+.m #dialog-select-member {
+  width: calc(100% - 2rem);
+  height: calc(90% - 2rem) !important;
+  left: 0.7rem;
+  border: 3px solid #2196f3;
+  box-sizing: border-box;
+}
+.m #dialog-select-member td,
+.m #dialog-select-member th {
+  padding: 1px 4px;
+}
+.m #dialog-select-member .modal-content {
+  padding: 0.5rem 0.2rem !important;
+  width: 100% !important;
+  overflow: hidden;
+}
+.m #dialog-select-member .modal-content .title {
+  padding: 3px 10px;
+}
+.m #dialog-select-member .modal-content .grid-main-wob-div {
+  height: calc(100% - 103px);
+}
+.m #dialog-select-member .modal-footer {
+  margin-left: 1rem;
+}
+.m #dialog-enum-edit {
+  top: 1rem !important;
+  height: calc(100% - 2rem);
+  max-height: calc(100% - 2rem);
+}
+.m #dialog-enum-edit .dialog-enum-list-col {
+  height: calc(100% - 81px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.m #dialog-enum-edit .dialog-enum-list-col .dialog-enum-list-id {
+  margin-left: 10px;
+  font-size: 10px;
+}
+.m #dialog-enum-edit .dialog-enum-list-col .iob-list-icon {
+  height: 24px;
+  width: 24px;
+}
+.m #dialog-enum-edit .dialog-enum-list-col .title {
+  padding-left: 10px;
+  font-size: 18px;
+}
+.m #dialog-enum-edit .btn-close {
+  background-color: #b5b5b5;
+}
+.m #dialog-enum-edit .name {
+  margin-left: 10px;
+}
+body {
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+  overflow: hidden;
+  background: #fff;
+}
+/* Load material icons */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../lib/fonts/material.woff2) format('woff2'), url(../lib/fonts/material.woff) format('woff');
+}
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+#tabs {
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+#connecting {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 20000;
+}
+#connecting .connecting-div {
+  left: 40%;
+  top: 40%;
+  width: 20%;
+  height: 20%;
+  position: absolute;
+}
+#connecting .connecting-div .spinner {
+  animation: rotator 1.4s linear infinite;
+}
+#connecting .connecting-div .path {
+  stroke-dasharray: 187;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+}
+/* -------------------------- LEDS ------------------------------------ */
+.led-all,
+.led-green,
+.led-yellow,
+.led-gray,
+.led-red,
+.led-orange,
+.led-blue {
+  border-radius: 50%;
+  box-shadow: #555D0D 0 0 1px 1px, #446f44 0 0 0, inset #e44949 0 0 0;
+  height: 0.9em;
+  width: 0.9em;
+  margin-left: 0.6em;
+}
+.led-red {
+  background-color: #FF9999;
+}
+.led-green {
+  background-color: #86d686;
+}
+.led-yellow {
+  background-color: #A90;
+}
+.led-orange {
+  background-color: #F7E43B;
+}
+.led-blue {
+  background-color: #4AB;
+}
+.led-gray {
+  background-color: #bababa;
+}
+.user-view #current-user-icon img {
+  height: 96px;
+  width: auto;
+  border-radius: 96px;
+}
+/****/
+.main-admin-buttons {
+  border-spacing: 4px;
+  width: auto;
+  position: relative;
+  height: 27px;
+  margin-top: 1px;
+  padding-left: 0.5rem;
+}
+.main-admin-buttons #host-adapters {
+  min-width: 200px;
+}
+.main-admin-buttons #host-adapters .imgHost {
+  max-height: 30px;
+  margin-top: -3px;
+  padding-right: 1rem;
+}
+.main-admin-buttons #host-adapters a {
+  margin-left: 0;
+  white-space: nowrap;
+}
+.main-admin-buttons .dropdown-button {
+  padding-left: 5px;
+}
+.main-admin-buttons .dropdown-button .imgHost {
+  max-height: 30px;
+  padding-top: 3px;
+  margin-right: 5px;
+}
+.main-admin-buttons a {
+  margin-left: 1.5rem;
+}
+.main-admin-buttons .safari #host-adapters-btn,
+.main-admin-buttons .ie #host-adapters-btn {
+  margin-top: 10px !important;
+}
+.main-admin-buttons .button-version {
+  color: #FFF;
+  position: absolute;
+  top: 0;
+  right: 4rem;
+}
+.main-admin-buttons .button-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+.main-admin-buttons .button-icon img {
+  width: 32px;
+}
+@media screen and (min-width: 600px) and (max-width: 700px) {
+  .main-admin-buttons .button-version {
+    display: none;
+  }
+}
+@media screen and (max-width: 600px) {
+  .main-admin-buttons .button-icon,
+  .main-admin-buttons .button-version {
+    display: none;
+  }
+}
+.main-admin-buttons .button-current-user {
+  padding-left: 1rem;
+}
+.main-admin-buttons .button-current-user div {
+  position: relative;
+  height: 64px;
+}
+.main-admin-buttons .button-current-user div span {
+  position: absolute;
+  top: 0;
+  left: 2rem;
+}
+.main-admin-buttons .safari li,
+.main-admin-buttons .ie li {
+  vertical-align: middle;
+}
+.ram-info-td {
+  white-space: nowrap;
+  font-size: 14px;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+}
+.ram-font-weight {
+  font-weight: 600;
+}
+.choose-tabs-config-button {
+  height: 34px;
+  width: 18px;
+  background: #fff;
+  position: relative;
+  text-align: center;
+  font-size: 10px;
+  color: #a0a0a0;
+  cursor: pointer;
+}
+.events-grid-div {
+  height: calc(100% - 24px) !important;
+}
+table#grid-states {
+  border-collapse: collapse;
+}
+table#grid-states {
+  position: relative;
+  top: -1px;
+}
+table#grid-states > tbody > tr {
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+  font-size: 0.82rem !important;
+  border: 1px solid #e0e0e0 !important;
+  white-space: nowrap;
+  border: 0;
+  height: 25px !important;
+  padding: 0;
+  padding-left: 5px;
+}
+table#grid-states > tbody > tr:first-child {
+  height: 0 !important;
+  visibility: hidden !important;
+}
+table#grid-groups {
+  border-collapse: collapse;
+}
+table#grid-groups {
+  position: relative;
+  top: -1px;
+}
+table#grid-groups > tbody > tr {
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+  font-size: 0.82rem !important;
+  border: 1px solid #e0e0e0 !important;
+  white-space: nowrap;
+  border: 0;
+  height: 25px !important;
+  padding: 0;
+  padding-left: 5px;
+}
+table#grid-groups > tbody > tr:first-child {
+  height: 0 !important;
+  visibility: hidden !important;
+}
+table#grid-users {
+  border-collapse: collapse;
+}
+table#grid-users {
+  position: relative;
+  top: -1px;
+}
+table#grid-users > tbody > tr {
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+  font-size: 0.82rem !important;
+  border: 1px solid #e0e0e0 !important;
+  white-space: nowrap;
+  border: 0;
+  height: 25px !important;
+  padding: 0;
+  padding-left: 5px;
+}
+table#grid-users > tbody > tr:first-child {
+  height: 0 !important;
+  visibility: hidden !important;
+}
+table#grid-enums {
+  border-collapse: collapse;
+}
+table#grid-enums {
+  position: relative;
+  top: -1px;
+}
+table#grid-enums > tbody > tr {
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+  font-size: 0.82rem !important;
+  border: 1px solid #e0e0e0 !important;
+  white-space: nowrap;
+  border: 0;
+  height: 25px !important;
+  padding: 0;
+  padding-left: 5px;
+}
+table#grid-enums > tbody > tr:first-child {
+  height: 0 !important;
+  visibility: hidden !important;
+}
+.admin-tab {
+  height: calc(100% - 47px);
+}
+.grid-main-div {
+  height: calc(100% - 50px);
+}
+#grid-instances-head > tr {
+  height: 24px;
+}
+#grid-hosts-head > tr:first-child {
+  height: 24px;
+}
+#iob-body .ui-button-text-only,
+#iob-body .ui-button-text {
+  font-size: 0.82rem !important;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+}
+.dialog-icon {
+  float: right;
+}
+.dialog-text {
+  font-size: 1.2rem;
+}
+#dialog-host-update p {
+  font-size: 1rem;
+}
+#dialog-host-update textarea {
+  font-family: monospace;
+  width: 100%;
+  height: 7rem;
+  resize: none;
+}
+#dialog-license-main h5 {
+  background: #64b5f6;
+  color: #FFF;
+  padding: 0.5rem;
+}
+#dialog-license-main .license-text {
+  margin-bottom: 0;
+}
+#dialog-license-main .license_text {
+  width: 100%;
+  height: calc(100% - 190px);
+  margin-bottom: 0;
+  overflow: auto;
+}
+#dialog-license-main input[type="checkbox"].filled-in:not(:checked) + span:not(.lever):after {
+  -webkit-animation: colorBlink 3s ease-out infinite;
+  -moz-animation: colorBlink 3s ease-out infinite;
+  -o-animation: colorBlink 3s ease-out infinite;
+  animation: colorBlink 3s ease-out infinite;
+}
+#dialog-license-main .license-checkbox-box {
+  color: #ff636e;
+}
+@-webkit-keyframes colorBlink {
+  0% {
+    border-color: #5a5a5a;
+  }
+  50% {
+    border-color: #ff636e;
+  }
+  100% {
+    border-color: #5a5a5a;
+  }
+}
+@-moz-keyframes colorBlink {
+  0% {
+    border-color: #5a5a5a;
+  }
+  50% {
+    border-color: #ff636e;
+  }
+  100% {
+    border-color: #5a5a5a;
+  }
+}
+@-o-keyframes colorBlink {
+  0% {
+    border-color: #5a5a5a;
+  }
+  50% {
+    border-color: #ff636e;
+  }
+  100% {
+    border-color: #5a5a5a;
+  }
+}
+@keyframes colorBlink {
+  0% {
+    border-color: #5a5a5a;
+  }
+  50% {
+    border-color: #ff636e;
+  }
+  100% {
+    border-color: #5a5a5a;
+  }
+}
+.modal-overlay {
+  background: gray;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+#dialog-command .title {
+  background: #64b5f6;
+  color: #FFF;
+  padding: 0.5rem;
+}
+#dialog-command .textarea .ack {
+  margin-bottom: 0;
+}
+#dialog-command textarea {
+  background: #e9e9e9;
+  font-family: courier, monospace;
+  font-size: 11px;
+  resize: none;
+  width: 100%;
+  height: calc(100% - 185px);
+  margin-bottom: 0;
+}
+#dialog-command .progress-dont-close {
+  float: left;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  /*&.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }*/
+}
+#dialog-command .switch {
+  text-align: right;
+}
+#dialog-command .command {
+  font-style: italic;
+}
+#dialog-command .btn {
+  margin-right: 1.5rem;
+}
+#dialog-command .progress-text {
+  font-size: 14px;
+}
+#dialog-command .progress-text.error {
+  color: #ff636e;
+}
+.button-command {
+  right: 12rem;
+  position: absolute;
+  top: 0;
+  cursor: pointer;
+}
+.button-command.error::after {
+  content: "";
+  background: #ff636e;
+  position: absolute;
+  opacity: 0.5;
+  top: 1.4rem;
+  bottom: 1.4rem;
+  left: 0;
+  right: 0;
+}
+.button-command.in-progress {
+  animation-name: in-progress;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+@keyframes in-progress {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.text-overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dialog-system-buttons a {
+  margin: 0.5em;
+}
+
+/*# sourceMappingURL=admin.css.map */
