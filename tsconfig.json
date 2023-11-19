@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@iobroker/json-config": ["./packages/json-config/src"],
+      "iobroker.admin": ["./packages/admin/src/src"]
+    }
+  }
+}

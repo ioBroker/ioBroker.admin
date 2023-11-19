@@ -20,19 +20,7 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@iobroker/json-config": [
-        "./../../json-config/src"
       ]
     }
-  },
-  "include": [
-    "./**/*.ts",
-    "./**/*.tsx",
-    "../src/lib/adapter-config.d.ts"
-  ],
-  "exclude": [
-    "./**/*.test.ts",
-    "./**/*.test.tsx"
-  ]
+  }
 }

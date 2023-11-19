@@ -16,7 +16,7 @@ import {
     Confirm as ConfirmDialog, AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from '@iobroker/adapter-react-v5/Components/JsonConfigComponent/ConfigGeneric';
+import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import { Theme } from '@iobroker/adapter-react-v5/types';
 // @ts-expect-error optimize socket-client types
 import type { SystemConfig } from '@iobroker/socket-client';
