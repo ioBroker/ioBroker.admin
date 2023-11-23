@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.4",
+    "version": "6.12.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.5": {
+        "en": "fixed json config ConfigFileSelector\nfixed title bar layout with username and icon",
+        "de": "fester json config KonfigFile Sektor\nfeste titelleiste layout mit benutzername und symbol",
+        "ru": "фиксированный json config ConfigFileSelector\nфиксированная планировка заголовка с именем пользователя и иконкой",
+        "pt": "corrigido json config Eletrodomésticos\nlayout da barra de título fixo com nome de usuário e ícone",
+        "nl": "json Config ConfigFiles\nvertaling:",
+        "fr": "json config ConfigFileSelector\nmise en page de barre de titre fixe avec nom d'utilisateur et icône",
+        "it": "fisso json configurazione ConfigFileSelettore\nlayout barra titolo fisso con nome utente e icona",
+        "es": "fijo json config ConfigFileSelector\ndiseño de barra de título fijo con nombre de usuario e icono",
+        "pl": "json configencja ConfigSelector\noficjalna strona baru",
+        "uk": "виправлено json config Налаштування\nвиправлена назва барної верстки з ім'ям користувача та іконою",
+        "zh-cn": "固定礼拜 ConfigFileSelector\n固定名称禁止用户名称和icon"
+      },
       "6.12.4": {
         "en": "custom settings icon has no a brighter color in dark mode\nfixed color of host selector in dark mode\nfixed problem with json config language component",
         "de": "benutzerdefinierte einstellungen symbol hat keine hellere farbe im dunklen modus\nfeste farbe des host-selektors im dunklen modus\nfestes problem mit json config sprachkomponente",
@@ -95,19 +108,6 @@
         "pl": "liczba typów jsonConfig jest obecnie używana jako liczba zamiast ciągów\nzmienność wejściowa\nWłączane interfejsy komponentowe do konfiguracji JSON\nUlepszenie zwrotu do komunikacji GUI",
         "uk": "jsonConfig type number now зберігає значення як номер замість рядка\nзміни вхідної поведінки об'єктів браузера, щоб дозволити провідний мінус\nДодано інтерфейси компонентів до конфігурації JSON\nРеалізовано бекенд на GUI спілкування",
         "zh-cn": "json Config型号现在储存值,而不是附加条件。\n投机性投入数量的变化,使主要用途\n将构成部分接口增到联合协商会大厦\nA. 执行Backend toGUI Communications"
-      },
-      "6.10.9": {
-        "en": "Improvement of the public accessibility check",
-        "de": "Verbesserung der öffentlichen Zugänglichkeitsprüfung",
-        "ru": "Улучшение проверки доступности населения",
-        "pt": "Melhoria da verificação de acessibilidade pública",
-        "nl": "Improviseren van de publieke toegangscontrole",
-        "fr": "Amélioration du contrôle de l'accessibilité publique",
-        "it": "Miglioramento del controllo dell'accessibilità pubblica",
-        "es": "Mejora del control de accesibilidad pública",
-        "pl": "Poprawa kontroli dostępu publicznego",
-        "uk": "Удосконалення перевірки публічної доступності",
-        "zh-cn": "改善公众无障碍检查"
       }
     },
     "desc": {

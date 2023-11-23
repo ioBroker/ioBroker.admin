@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.12.5 (2023-11-23)
 * (foxriver76) fixed json config ConfigFileSelector
 * (klein0r) fixed title bar layout with username and icon
 
@@ -110,11 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
-
-### 6.12.0 (2023-10-24)
-* (foxriver76) fixed issue when updating news in backend
-* (foxriver76) validate json config against the schema
-* (foxriver76) update socket-client to improve performance
 
 ## License
 The MIT License (MIT)
