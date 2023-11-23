@@ -322,7 +322,7 @@ class ConfigFileSelector extends ConfigGeneric {
         return null;
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error, disabled) {
         if (!this.state.files) {
             return null;
         }
@@ -343,6 +343,8 @@ class ConfigFileSelector extends ConfigGeneric {
             });
         }
 
+        /** @typedef {{ value: string, label: string, extension?: string }} Item */
+        /** @type {Item[]} */
         const selectOptions = this.state.files
             .map(file => ({
                 value: file.name,
@@ -354,8 +356,8 @@ class ConfigFileSelector extends ConfigGeneric {
             selectOptions.unshift({ label: I18n.t('ra_none'), value: '' });
         }
 
-        // eslint-disable-next-line
-        const item = selectOptions.find(item => item.value === this.state.value);
+        /** @type {Item | undefined } */
+        const item = selectOptions.find(_item => _item.value === this.state.value);
 
         let buttons = 0;
 
@@ -389,8 +391,8 @@ class ConfigFileSelector extends ConfigGeneric {
                     }}
                 >
                     {selectOptions.map(it => <MenuItem key={it.value} value={it.value}>
-                        <ListItemIcon>{this.getIcon(item)}</ListItemIcon>
-                        <ListItemText>{item.label}</ListItemText>
+                        <ListItemIcon>{this.getIcon(it)}</ListItemIcon>
+                        <ListItemText>{it.label}</ListItemText>
                         {this.props.schema.delete && item.value ?
                             <IconButton
                                 className={this.props.classes.deleteButton}
