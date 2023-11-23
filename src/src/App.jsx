@@ -241,17 +241,21 @@ const styles = theme => ({
     },
     userBadge: {
         lineHeight: '48px',
+        display: 'inline-block',
     },
     userIcon: {
         borderRadius: 4,
-        width: 48,
-        height: 48,
+        width: 44,
+        height: 44,
         verticalAlign: 'middle',
+        marginLeft: 10,
+        marginRight: 10,
     },
     userText: {
         verticalAlign: 'middle',
         fontSize: 16,
-        maxWidth: 100,
+        maxWidth: 250,
+        marginRight: 10,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -275,9 +279,12 @@ const styles = theme => ({
         marginRight: 11,
     },
     siteName: {
+        lineHeight: '48px',
         fontSize: 24,
-        marginRight: 16,
+        marginLeft: 10,
+        marginRight: 10,
         display: 'inline-block',
+        verticalAlign: 'middle',
     },
 });
 
@@ -2016,39 +2023,43 @@ class App extends Router {
 
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return <div
-                title={this.state.user.id}
-                className={Utils.clsx(
-                    this.props.classes.userBadge,
-                    this.state.user.invertBackground && this.props.classes.userBackground,
-                )}
-                ref={this.refUser}
-            >
+            return <div>
                 {this.state.systemConfig.common.siteName ?
                     <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div> : null}
-                {this.state.user.icon ?
-                    <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
-                    :
-                    <UserIcon className={this.props.classes.userIcon} />}
+
                 <div
-                    ref={this.refUserDiv}
-                    style={
-                        this.state.expireWarningMode
-                            ? { color: '#F44' }
-                            : { color: this.state.user?.color || undefined }
-                    }
-                    className={this.props.classes.userText}
+                    title={this.state.user.id}
+                    className={Utils.clsx(
+                        this.props.classes.userBadge,
+                        this.state.user.invertBackground && this.props.classes.userBackground,
+                    )}
+                    ref={this.refUser}
                 >
-                    {this.state.user.name}
+                    {this.state.user.icon ?
+                        <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
+                        :
+                        <UserIcon className={this.props.classes.userIcon} />}
+                    <div
+                        ref={this.refUserDiv}
+                        style={
+                            this.state.expireWarningMode
+                                ? { color: '#F44' }
+                                : { color: this.state.user?.color || undefined }
+                        }
+                        className={this.props.classes.userText}
+                    >
+                        {this.state.user.name}
+                    </div>
+
+                    {this.state.expireWarningMode ? <IconButton
+                        onClick={async () => {
+                            await this.socket.getCurrentSession();
+                            await this.makePingAuth();
+                        }}
+                    >
+                        <UpdateIcon />
+                    </IconButton> : null}
                 </div>
-                {this.state.expireWarningMode ? <IconButton
-                    onClick={async () => {
-                        await this.socket.getCurrentSession();
-                        await this.makePingAuth();
-                    }}
-                >
-                    <UpdateIcon />
-                </IconButton> : null}
             </div>;
         } if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
             return <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div>;
