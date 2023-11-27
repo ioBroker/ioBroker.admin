@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) fixed JSON config file component if no initial value exists
+
 ### 6.12.5 (2023-11-23)
 * (foxriver76) fixed json config ConfigFileSelector
 * (klein0r) fixed title bar layout with username and icon
