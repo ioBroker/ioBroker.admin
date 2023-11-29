@@ -88,6 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) fixed JSON config file component if no initial value exists
+* (bluefox) added the creation state or device possibility to the context menu
 
 ### 6.12.5 (2023-11-23)
 * (foxriver76) fixed json config ConfigFileSelector
@@ -96,7 +97,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.12.4 (2023-11-16)
 * (foxriver76) custom settings icon has no a brighter color in dark mode
 * (foxriver76) fixed color of host selector in dark mode
-* (foxriver76) fixed problem with json config language component
+* (foxriver76) fixed problem with a JSON config language component
 
 ### 6.12.3 (2023-11-15)
 * (foxriver76) fixed problem that disabled checkbox is still clickable

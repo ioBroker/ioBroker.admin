@@ -41,7 +41,10 @@ const styles = theme => ({
 });
 
 const CustomModal = ({
-    toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden,
+    toggleTranslation, noTranslation, title, fullWidth,
+    help, maxWidth, progress, icon, applyDisabled, applyButton,
+    classes, onClose, children, titleButtonApply, titleButtonClose,
+    onApply, textInput, defaultValue, overflowHidden,
 }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
