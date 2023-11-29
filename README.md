@@ -88,7 +88,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) fixed JSON config file component if no initial value exists
-* (bluefox) added the creation state or device possibility to the context menu
+* (bluefox) added the creation of a state or of a device possibility to the context menu
 
 ### 6.12.5 (2023-11-23)
 * (foxriver76) fixed json config ConfigFileSelector
