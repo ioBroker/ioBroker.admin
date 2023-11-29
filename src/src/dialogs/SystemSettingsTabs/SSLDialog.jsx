@@ -1,5 +1,5 @@
 // SSLDialog.js
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -8,7 +8,11 @@ import {
     FormControl,
     TextField,
     Paper,
+    InputAdornment,
+    IconButton,
 } from '@mui/material';
+
+import { Close as CloseIcon } from '@mui/icons-material';
 
 import { withWidth } from '@iobroker/adapter-react-v5';
 
@@ -76,12 +80,23 @@ class SSLDialog extends Component {
                             id="email"
                             disabled={this.props.saving}
                             label={this.props.t('Email for account:')}
-                            value={letsEncrypt ? letsEncrypt.email : ''}
+                            value={letsEncrypt?.email || ''}
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
                             onChange={evt => this.onChangeText(evt, 'email')}
+                            InputProps={{
+                                readOnly: false,
+                                endAdornment: letsEncrypt?.email ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.onChangeText({ target: { value: '' } }, 'email')}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            }}
                         />
                     </FormControl>
                 </Grid>
@@ -92,12 +107,23 @@ class SSLDialog extends Component {
                             variant="standard"
                             id="domains"
                             label={this.props.t('Domains:')}
-                            value={letsEncrypt ? letsEncrypt.domains : ''}
+                            value={letsEncrypt?.domains || ''}
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
                             onChange={evt => this.onChangeText(evt, 'domains')}
+                            InputProps={{
+                                readOnly: false,
+                                endAdornment: letsEncrypt?.domains ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.onChangeText({ target: { value: '' } }, 'domains')}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            }}
                         />
                     </FormControl>
                 </Grid>
@@ -108,12 +134,23 @@ class SSLDialog extends Component {
                             id="path"
                             disabled={this.props.saving}
                             label={this.props.t('Path to storage:')}
-                            value={letsEncrypt ? letsEncrypt.path : ''}
+                            value={letsEncrypt?.path || ''}
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
                             onChange={evt => this.onChangeText(evt, 'path')}
+                            InputProps={{
+                                readOnly: false,
+                                endAdornment: letsEncrypt?.path ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.onChangeText({ target: { value: '' } }, 'path')}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            }}
                         />
                     </FormControl>
                 </Grid>

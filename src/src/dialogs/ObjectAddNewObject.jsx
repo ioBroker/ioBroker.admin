@@ -8,7 +8,8 @@ import {
     Dialog,
     DialogTitle,
     DialogActions,
-    DialogContent,
+    DialogContent, InputAdornment,
+    IconButton,
 } from '@mui/material';
 
 import {
@@ -240,6 +241,16 @@ const ObjectAddNewObject = ({
                             e.preventDefault();
                             name && onLocalApply();
                         }
+                    }}
+                    InputProps={{
+                        endAdornment: name ? <InputAdornment position="end">
+                            <IconButton
+                                size="small"
+                                onClick={() => setName('')}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </InputAdornment> : null,
                     }}
                     onChange={el => {
                         setUnique(!objects[buildId(el.target.value)]);

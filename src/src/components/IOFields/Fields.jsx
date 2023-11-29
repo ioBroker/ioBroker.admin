@@ -1,9 +1,14 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
     TextField,
     FormControl,
+    InputAdornment,
+    IconButton,
 } from '@mui/material';
+
+import { Close as CloseIcon } from '@mui/icons-material';
 
 import { ColorPicker } from '@iobroker/adapter-react-v5';
 
@@ -22,8 +27,18 @@ export function IOTextField(props) {
                 onChange={props.onChange}
                 disabled={props.disabled}
                 InputLabelProps={{ shrink: true }}
-                InputProps={{ readOnly: false }}
                 type={props.type}
+                InputProps={{
+                    readOnly: false,
+                    endAdornment: props.value ? <InputAdornment position="end">
+                        <IconButton
+                            size="small"
+                            onClick={() => props.onChange({ target: { value: '' } })}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </InputAdornment> : null,
+                }}
             />
         </FormControl>
     </div>;

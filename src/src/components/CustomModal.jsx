@@ -4,7 +4,7 @@ import { withStyles } from '@mui/styles';
 
 import {
     Dialog, DialogActions, DialogContent,
-    DialogTitle, IconButton, TextField, Button,
+    DialogTitle, IconButton, TextField, Button, InputAdornment,
 } from '@mui/material';
 
 import {
@@ -89,6 +89,16 @@ const CustomModal = ({
                 multiline
                 value={value}
                 onChange={e => setValue(e.target.value)}
+                InputProps={{
+                    endAdornment: value ? <InputAdornment position="end">
+                        <IconButton
+                            size="small"
+                            onClick={() => setValue('')}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </InputAdornment> : null,
+                }}
                 // customValue
             />}
             {children}

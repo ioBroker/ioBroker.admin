@@ -1,5 +1,5 @@
 // RepositoriesDialog
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
@@ -15,7 +15,7 @@ import {
     TableRow,
     TextField,
     Tooltip,
-    Paper,
+    Paper, InputAdornment, IconButton,
 } from '@mui/material';
 
 import {
@@ -23,6 +23,7 @@ import {
     Delete as DeleteIcon,
     Menu as DragHandleIcon,
     SettingsBackupRestore as RestoreIcon,
+    Close as CloseIcon,
 } from '@mui/icons-material';
 
 import {
@@ -187,9 +188,19 @@ const SortableItem = SortableElement(({
             disabled={disabled_}
             value={item.title}
             InputLabelProps={{ shrink: true }}
-            InputProps={{ readOnly: false }}
             className={UtilsCommon.clsx(classes.input, 'xs-centered')}
             onChange={evt => onValueChanged(evt.target.value, item.title, 'title')}
+            InputProps={{
+                readOnly: false,
+                endAdornment: item.title ? <InputAdornment position="end">
+                    <IconButton
+                        size="small"
+                        onClick={() => onValueChanged('', item.title, 'title')}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </InputAdornment> : null,
+            }}
         />
     </TableCell>
     <TableCell className={UtilsCommon.clsx('grow_cell', 'float_cell')}>
@@ -199,9 +210,19 @@ const SortableItem = SortableElement(({
             id={`default_${_index}`}
             value={item.link}
             InputLabelProps={{ shrink: true }}
-            InputProps={{ readOnly: false }}
             className={UtilsCommon.clsx(classes.input, 'xs-centered')}
             onChange={evt => onValueChanged(evt.target.value, item.title, 'link')}
+            InputProps={{
+                readOnly: false,
+                endAdornment: item.link ? <InputAdornment position="end">
+                    <IconButton
+                        size="small"
+                        onClick={() => onValueChanged('', item.title, 'link')}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </InputAdornment> : null,
+            }}
         />
     </TableCell>
     <TableCell className={UtilsCommon.clsx(classes.buttonColumn, 'float_cell')}>

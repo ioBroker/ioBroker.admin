@@ -2,20 +2,24 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Dialog from '@mui/material/Dialog';
-import Button from '@mui/material/Button';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import { LinearProgress } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import {
+    Dialog,
+    Button,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+    LinearProgress,
+    IconButton,
+} from '@mui/material';
 
-import ClearIcon from '@mui/icons-material/Clear';
-import CustomGroup from '@mui/icons-material/Brush';
-import CloseIcon from '@mui/icons-material/Close';
+import {
+    Clear as ClearIcon,
+    Brush as CustomGroup,
+    Close as CloseIcon,
+} from '@mui/icons-material';
 
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import { Icon } from '@iobroker/adapter-react-v5';
 
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
@@ -126,16 +130,12 @@ class EnumTemplateDialog extends Component {
                     placeholder={this.props.t('Filter')}
                     margin="dense"
                     InputProps={{
-                        endAdornment: this.state.filter
-                            ?
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ filter: '' })}
-                            >
-                                <ClearIcon />
-                            </IconButton>
-                            :
-                            undefined,
+                        endAdornment: this.state.filter ? <IconButton
+                            size="small"
+                            onClick={() => this.setState({ filter: '' })}
+                        >
+                            <ClearIcon />
+                        </IconButton> : null,
                     }}
                 />
             </DialogTitle>

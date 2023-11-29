@@ -20,7 +20,7 @@ import {
     InputLabel,
     MenuItem,
     FormControl,
-    Select,
+    Select, InputAdornment,
 } from '@mui/material';
 
 // icons
@@ -237,6 +237,16 @@ class EditIntroLinkDialog extends Component {
                                         this.setState({ link: e.target.value });
                                     }
                                 }}
+                                InputProps={{
+                                    endAdornment: this.state.link ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setState({ link: '' })}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                }}
                             />
 
                             <TextField
@@ -245,11 +255,53 @@ class EditIntroLinkDialog extends Component {
                                 label={this.props.t('Name')}
                                 value={this.state.name || ''}
                                 onChange={e => this.setState({ name: e.target.value })}
+                                InputProps={{
+                                    endAdornment: this.state.name ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setState({ name: '' })}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                }}
                             />
 
-                            {this.state.link ? <TextField variant="standard" className={this.props.classes.editItem} label={this.props.t('Link name')} value={this.state.linkName || ''} onChange={e => this.setState({ linkName: e.target.value })} /> : null}
+                            {this.state.link ? <TextField
+                                variant="standard"
+                                className={this.props.classes.editItem}
+                                label={this.props.t('Link name')}
+                                value={this.state.linkName || ''}
+                                onChange={e => this.setState({ linkName: e.target.value })}
+                                InputProps={{
+                                    endAdornment: this.state.linkName ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setState({ linkName: '' })}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                }}
+                            /> : null}
 
-                            {this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField variant="standard" className={this.props.classes.editItem} label={this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description')} value={this.state.desc || ''} onChange={e => this.setState({ desc: e.target.value })} /> : null}
+                            {this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField
+                                variant="standard"
+                                className={this.props.classes.editItem}
+                                label={this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description')}
+                                value={this.state.desc || ''}
+                                onChange={e => this.setState({ desc: e.target.value })}
+                                InputProps={{
+                                    endAdornment: this.state.desc ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setState({ desc: '' })}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                }}
+                            /> : null}
 
                             {this.state.camera === 'custom' ? <FormControlLabel
                                 className={this.props.classes.editItem}

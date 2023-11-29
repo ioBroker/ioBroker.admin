@@ -2,25 +2,32 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import DialogTitle from '@mui/material/DialogTitle';
-import Rating from '@mui/material/Rating';
-import { Button, TextField } from '@mui/material';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import {
+    Dialog,
+    DialogContent,
+    DialogActions,
+    DialogTitle,
+    Rating,
+    Button,
+    IconButton,
+    InputAdornment,
+    TextField,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemAvatar,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+    Typography,
+} from '@mui/material';
 
-import VoteIcon from '@mui/icons-material/HowToVote';
-import CloseIcon from '@mui/icons-material/Close';
-import InfoIcon from '@mui/icons-material/Info';
-import Typography from '@mui/material/Typography';
+import {
+    HowToVote as VoteIcon,
+    Close as CloseIcon,
+    Info as InfoIcon,
+} from '@mui/icons-material';
 
 const styles = theme => ({
     rating: {
@@ -302,6 +309,16 @@ class RatingDialog extends Component {
                         helperText={this.props.t('Max length %s characters', 200)}
                         onChange={e =>
                             this.setState({ ratingComment: e.target.value })}
+                        InputProps={{
+                            endAdornment: this.state.ratingComment ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ ratingComment: '' })}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        }}
                     />
                     <FormControl variant="standard" className={this.props.classes.ratingLanguageControl}>
                         <InputLabel>{this.props.t('Language')}</InputLabel>

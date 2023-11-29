@@ -1,12 +1,12 @@
 // CertificatesDialog.js
-import { Component } from 'react';
+import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@mui/styles';
 
 import {
-    Fab,
+    Fab, IconButton, InputAdornment,
     Paper,
     Table,
     TableBody,
@@ -20,6 +20,7 @@ import {
 import {
     Add as AddIcon,
     Delete as DeleteIcon,
+    Close as CloseIcon,
 } from '@mui/icons-material';
 
 import {
@@ -127,11 +128,21 @@ class CertificatesDialog extends Component {
                         variant="standard"
                         value={e.title}
                         InputLabelProps={{ shrink: true }}
-                        InputProps={{ readOnly: false }}
                         className={`${this.props.classes.input} xs-centered`}
                         onChange={evt => this.onChangeText(evt.target.value, e.title, 'title')}
                         error={!type}
                         helperText={type || I18n.t('Unknown type: use in name "private", "public" or "chained" to define the certificate type')}
+                        InputProps={{
+                            readOnly: false,
+                            endAdornment: e.title ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.onChangeText('', e.title, 'title')}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        }}
                     />
                 </TableCell>
                 <TableCell className="grow_cell float_cell">
@@ -141,7 +152,6 @@ class CertificatesDialog extends Component {
                         id={`default_${i}`}
                         value={e.data}
                         InputLabelProps={{ shrink: true }}
-                        InputProps={{ readOnly: false }}
                         className={`${this.props.classes.input} xs-centered`}
                         onChange={evt => {
                             let value = evt.target.value.replace(/\r/g, '').replace(/\n/g, '');
@@ -152,6 +162,17 @@ class CertificatesDialog extends Component {
                             }
 
                             this.onChangeText(value, e.title, 'data');
+                        }}
+                        InputProps={{
+                            readOnly: false,
+                            endAdornment: e.data ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.onChangeText('', e.title, 'data')}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
                         }}
                     />
                 </TableCell>
