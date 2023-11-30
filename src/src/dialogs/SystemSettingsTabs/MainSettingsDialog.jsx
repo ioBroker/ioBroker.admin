@@ -557,7 +557,7 @@ class MainSettingsDialog extends Component {
                                 endAdornment: this.props.data.common.city ? <InputAdornment position="end">
                                     <IconButton
                                         size="small"
-                                        onClick={() => this.onChangeCity({ target: {value: ''} })}
+                                        onClick={() => this.onChangeCity({ target: { value: '' } })}
                                     >
                                         <CloseIcon />
                                     </IconButton>

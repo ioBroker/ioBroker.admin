@@ -309,6 +309,7 @@ class RatingDialog extends Component {
                         helperText={this.props.t('Max length %s characters', 200)}
                         onChange={e =>
                             this.setState({ ratingComment: e.target.value })}
+                        // eslint-disable-next-line react/jsx-no-duplicate-props
                         InputProps={{
                             endAdornment: this.state.ratingComment ? <InputAdornment position="end">
                                 <IconButton

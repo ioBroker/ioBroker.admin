@@ -25,7 +25,6 @@ const styles = () => ({
 class ConfigImageUpload extends ConfigGeneric {
     constructor(props) {
         super(props);
-        this.imageRef = React.createRef();
         this.index = Date.now();
     }
 
@@ -37,12 +36,7 @@ class ConfigImageUpload extends ConfigGeneric {
             this.setState({ value });
         } else {
             this.props.socket.fileExists(`${this.props.adapterName}.${this.props.instance}`, this.props.attr)
-                .then(exist => {
-                    if (exist && this.imageRef.current) {
-                        this.imageRef.current.src = this._getUrl();
-                        this.imageRef.current.style.display = 'block';
-                    }
-                });
+                .then(exist => exist && this.loadImage());
         }
     }
 
@@ -58,6 +52,19 @@ class ConfigImageUpload extends ConfigGeneric {
         return url;
     }
 
+    loadImage() {
+        fetch(this._getUrl())
+            .then(res => res.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    this.setState({ value: reader.result });
+                };
+                reader.readAsDataURL(blob);
+            })
+            .catch(e => console.error(e));
+    }
+
     renderItem(error, disabled /* , defaultValue */) {
         // eslint-disable-next-line
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
@@ -69,48 +76,26 @@ class ConfigImageUpload extends ConfigGeneric {
                 crop={this.props.schema.crop}
                 maxSize={this.props.schema.maxSize || 256 * 1024}
                 icon={this.state.value || undefined}
-                removeIconFunc={() => {
+                removeIconFunc={() => this.setState({ value: null }, () => {
                     if (this.props.schema.base64) {
-                        this.setState({ value: null }, () =>
-                            this.onChange(this.props.attr, this.state.value));
+                        this.onChange(this.props.attr, this.state.value);
                     } else {
                         // delete file to /instance/attr
                         this.props.socket.deleteFile(`${this.props.adapterName}.${this.props.instance}`, this.props.attr);
-                        // update image
-                        if (this.imageRef.current) {
-                            this.imageRef.current.style.display = 'none';
-                            this.imageRef.current.src = '';
-                        }
                     }
-                }}
-                onChange={base64 => {
+                })}
+                onChange={base64 => this.setState({ value: base64 }, () => {
                     if (this.props.schema.base64) {
-                        this.setState({ value: base64 }, () =>
-                            this.onChange(this.props.attr, this.state.value));
-                    } else {
-                        if (base64.startsWith('data')) {
-                            base64 = base64.split(',')[1];
-                        }
-                        // upload file to /instance/attr
-                        this.props.socket.writeFile64(`${this.props.adapterName}.${this.props.instance}`, this.props.attr, base64)
-                            .then(() => {
-                                if (this.imageRef.current) {
-                                    this.imageRef.current.style.display = 'block';
-                                    this.imageRef.current.src = this._getUrl(true);
-                                }
-                            });
+                        this.onChange(this.props.attr, this.state.value);
+                    } else if (base64.startsWith('data')) {
+                        base64 = base64.split(',')[1];
                     }
-                }}
+                    // upload file to /instance/attr
+                    this.props.socket.writeFile64(`${this.props.adapterName}.${this.props.instance}`, this.props.attr, base64);
+                })}
                 t={I18n.t}
             />
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
-            {this.props.schema.base64 ?  null : <img
-                src={this._getUrl()}
-                ref={this.imageRef}
-                className={this.props.classes.image}
-                style={{ display: 'none' }}
-                alt="Background"
-            />}
         </FormControl>;
     }
 }

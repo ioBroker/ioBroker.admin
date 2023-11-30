@@ -239,7 +239,7 @@ class HostEdit extends Component {
                                     endAdornment: json.common.color ? <InputAdornment position="end">
                                         <IconButton
                                             size="small"
-                                            onClick={() => this.setCommonItem(json, 'color', el.target.value)}
+                                            onClick={() => this.setCommonItem(json, 'color', '')}
                                         >
                                             <CloseIcon />
                                         </IconButton>
