@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.5",
+    "version": "6.12.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.6": {
+        "en": "fixed JSON config file component if no initial value exists\nadded the creation of a state or of a device possibility to the context menu",
+        "de": "feste JSON config Dateikomponente, wenn kein Anfangswert vorhanden ist\ndie erstellung eines zustands oder einer gerätemöglichkeit zum kontextmenü hinzugefügt",
+        "ru": "фиксированный компонент файла JSON config если никакое первоначальное значение не существует\nдобавил создание состояния или возможности устройства в контекстное меню",
+        "pt": "componente fixo do arquivo JSON config se nenhum valor inicial existir\nadicionou a criação de um estado ou de uma possibilidade de dispositivo ao menu de contexto",
+        "nl": "_\nvoegde de creatie toe van een staat of een apparaat aan de context menu",
+        "fr": "fichier de configuration JSON fixe si aucune valeur initiale n'existe\na ajouté la création d'un état ou d'une possibilité de dispositif au menu contextuel",
+        "it": "componente fisso del file di configurazione JSON se non esiste un valore iniziale\naggiunto la creazione di uno stato o di una possibilità di dispositivo al menu di contesto",
+        "es": "componente de archivo de configuración JSON fijo si no existe valor inicial\nagregó la creación de un estado o de una posibilidad de dispositivo al menú contextual",
+        "pl": "zdefiniowany komponent plików JSON, jeśli nie ma początkowej wartości\ndodał stworzenie stanu lub możliwości urządzenia do kontekstowego menu",
+        "uk": "виправлений компонент JSON config, якщо початкове значення не існує\nдодано створення стану або можливості пристрою в контекстному меню",
+        "zh-cn": "如果没有初步价值,常设的常设常设常设的档案部分\n增加建立国家或装置的可能性,使人了解情况。"
+      },
       "6.12.5": {
         "en": "fixed json config ConfigFileSelector\nfixed title bar layout with username and icon",
         "de": "fester json config KonfigFile Sektor\nfeste titelleiste layout mit benutzername und symbol",
@@ -95,19 +108,6 @@
         "pl": "bezpośrednie wydanie, kiedy podsumowuje wiadomości\nwniosek json konfiguje przeciwko schema\naktualizacja gniazda w celu poprawy wydajności",
         "uk": "виправлено проблему при оновленні новин у додатку\nвалідувати json config проти schema\nоновлення гнізда-клієнта для поліпшення продуктивності",
         "zh-cn": "定期发布新闻的问题\n反希马的有效 json config\n改进业绩的更新指标"
-      },
-      "6.11.0": {
-        "en": "jsonConfig type number now stores values as number instead of string\nobjects browser number value input behavior change to allow leading minus\nAdded component `interfaces` to the JSON config\nImplemented Backend to GUI communication",
-        "de": "jsonConfig Typ Nummer speichert nun Werte als Anzahl statt String\nobjekten browser-nummer-wert-eingabe-verhaltensänderung, um führende minus zu ermöglichen\nKomponentenschnittstellen zum JSON config hinzugefügt\nImplementiert Backend zur GUI-Kommunikation",
-        "ru": "jsonConfig тип номер теперь хранит значения как число вместо строки\nобъектов номер телефона значение вход поведение изменение, чтобы позволить ведущему минусу\nДобавлены компонентные интерфейсы в конфиг JSON\nРеализовано Backend в GUI коммуникации",
-        "pt": "jsonConfig tipo número agora armazena valores como número em vez de string\nobjetos valor do navegador mudança de comportamento de entrada de valor para permitir menos líder\nAdicionado interfaces de componente para o JSON config\nImplementado backend para a comunicação GUI",
-        "nl": "jsonConfig-type nu bewaart waarde als nummer in plaats van string\nvoorwerpen browser nummer waarde input gedrag veranderen om toe te staan\nVoeg component interface toe aan de JSON\nVertaling:",
-        "fr": "jsonConfig numéro de type stocke maintenant les valeurs comme nombre au lieu de chaîne\nnombre d'objets navigateur valeur d'entrée changement de comportement pour permettre de conduire moins\nAjout d'interfaces de composants à la configuration JSON\nRendement mis en œuvre pour la communication GUI",
-        "it": "il numero di tipo jsonConfig ora memorizza i valori come numero invece di stringa\ncambiamento del comportamento di ingresso del valore del numero del browser degli oggetti per consentire\nInterfacce componenti aggiunti alla configurazione JSON\nBackend implementato alla comunicazione GUI",
-        "es": "jsonConfig tipo número ahora almacena valores como número en lugar de cadena\nobjetos del navegador número de cambio de comportamiento de entrada de valor para permitir el resultado menos\nInterfaz de componente adicional al config JSON\nImplemented Backend to GUI communication",
-        "pl": "liczba typów jsonConfig jest obecnie używana jako liczba zamiast ciągów\nzmienność wejściowa\nWłączane interfejsy komponentowe do konfiguracji JSON\nUlepszenie zwrotu do komunikacji GUI",
-        "uk": "jsonConfig type number now зберігає значення як номер замість рядка\nзміни вхідної поведінки об'єктів браузера, щоб дозволити провідний мінус\nДодано інтерфейси компонентів до конфігурації JSON\nРеалізовано бекенд на GUI спілкування",
-        "zh-cn": "json Config型号现在储存值,而不是附加条件。\n投机性投入数量的变化,使主要用途\n将构成部分接口增到联合协商会大厦\nA. 执行Backend toGUI Communications"
       }
     },
     "desc": {

@@ -4,6 +4,17 @@
 * (jogibear9988) fixed link on 404-page being opened inside child view
 * (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
 * (foxriver76) implemented del key shortcut to delete a selected object
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.9.2 (2023-09-01)
+* (foxriver76) show info if server time differs from client time
+* (foxriver76) remove confusion with different names for state (datapoint and state)
+* (jogibear9988) fixed link on 404-page being opened inside child view
+* (foxriver76) fixed issue if non-text default values are provided to a text jsonConfig component
+* (foxriver76) implemented del key shortcut to delete a selected object
+
 ## 6.12.0 (2023-10-24)
 * (foxriver76) fixed issue when updating news in backend
 * (foxriver76) validate json config against the schema

@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.12.6 (2023-12-01)
 * (foxriver76) fixed JSON config file component if no initial value exists
 * (bluefox) added the creation of a state or of a device possibility to the context menu
 
@@ -110,10 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
 * (foxriver76) fixed crash case when schema cannot be read
 * (klein0r) Fixed noDelete attribute of JSON config accordion
-
-### 6.12.1 (2023-10-29)
-* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
-* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
 
 ## License
 The MIT License (MIT)
