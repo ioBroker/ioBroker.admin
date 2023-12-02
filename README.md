@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) add property `onLoaded` to `sendTo` json config
+
 ### 6.12.6 (2023-12-01)
 * (foxriver76) fixed JSON config file component if no initial value exists
 * (bluefox) added the creation of a state or of a device possibility to the context menu

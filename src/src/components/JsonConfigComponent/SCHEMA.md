@@ -178,6 +178,7 @@ Possible types:
     - `useNative` - if adapter returns a result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration.
     - `showProcess` - Show spinner while request is in progress
     - `timeout` - timeout for request in ms. Default: none.
+    - `onLoaded` - execute the button logic once initially
 
 - `setState` - button that set instance's state
     - `id` - `system.adapter.myAdapter.%INSTANCE%.test`, you can use the placeholder `%INSTANCE%` to replace it with the current instance name
