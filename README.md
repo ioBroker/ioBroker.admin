@@ -87,6 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) add property `onLoaded` to `sendTo` json config
 * (foxriver76) fixed easy admin height
 
 ### 6.12.6 (2023-12-01)

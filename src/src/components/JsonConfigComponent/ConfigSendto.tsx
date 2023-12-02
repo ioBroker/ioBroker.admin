@@ -126,6 +126,12 @@ function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string) {
     return hostIp;
 }
 
+interface ConfigSendToSchema {
+    /** If the component should execute the sendTo command once initially too */
+    onLoaded?: boolean;
+    [other: string]: any;
+}
+
 interface ConfigSendToProps extends ConfigGenericProps {
     socket: AdminConnection;
     themeType: string;
@@ -133,7 +139,7 @@ interface ConfigSendToProps extends ConfigGenericProps {
     style: Record<string, any>;
     className: string;
     data: Record<string, any>;
-    schema: Record<string, any>;
+    schema: ConfigSendToSchema;
     adapterName: string;
     instance:number;
     commandRunning: boolean;
@@ -167,7 +173,12 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                 return;
             }
         }
-        this.setState({ _error: '', _message: '', hostname });
+
+        await new Promise<void>(resolve => { this.setState({ _error: '', _message: '', hostname }, resolve); });
+
+        if (this.props.schema.onLoaded) {
+            this._onClick();
+        }
     }
 
     renderErrorDialog() {
@@ -314,7 +325,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         />;
     }
 
-    renderItem(error: Error | undefined, disabled: boolean /* , defaultValue */) {
+    renderItem(error: Error | undefined, disabled: boolean) {
         const icon = this.getIcon();
 
         return <div className={this.props.classes.fullWidth}>
