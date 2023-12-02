@@ -2249,7 +2249,7 @@ class App extends Router {
             return <StylesProvider generateClassName={generateClassName}>
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
-                        <div>
+                        <div style={{ height: '100%' }}>
                             {!this.state.connected && <Connecting />}
                             <Suspense fallback={<Connecting />}>
                                 <EasyMode
