@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.12.7 (2023-12-03)
 * (foxriver76) add property `onLoaded` to `sendTo` json config
 * (foxriver76) fixed easy admin height
 
@@ -109,11 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed `freeSolo` option for autocomplete components
 * (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
 * (foxriver76) fixed empty dropdown selection after selecting `system language` in JsonConfig
-
-### 6.12.2 (2023-11-02)
-* (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
-* (foxriver76) fixed crash case when schema cannot be read
-* (klein0r) Fixed noDelete attribute of JSON config accordion
 
 ## License
 The MIT License (MIT)

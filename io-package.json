@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.6",
+    "version": "6.12.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.7": {
+        "en": "add property `onLoaded` to `sendTo` json config\nfixed easy admin height",
+        "de": "objekt hinzufügen aufLoaded to sendTo json config\neinfache admin-höhe",
+        "ru": "добавить недвижимость наLoaded для sendTo json config\nфиксированная легкая высота админ",
+        "pt": "adicionar propriedade noLoaded para enviarPara json config\naltura de administrador fácil fixa",
+        "nl": "vertaling:\nmakkelijke administratie",
+        "fr": "ajouter la propriété surLoaded to sendTo json config\nhauteur d'administration facile",
+        "it": "aggiungere la proprietà suLoaded per sendTo json config\naltezza di amministrazione facile fissa",
+        "es": "añadir propiedad enLoaded to sendTo json config\naltura de administración fácil",
+        "pl": "dostarczanie własności do wysłania Tojson configigig\nłatwe wzniesienie",
+        "uk": "додати властивість наLoaded, щоб відправитиTo json config\nфіксована легка висота адміністратора",
+        "zh-cn": "增加Load财产,派遣To json config\nb. 固定的轻易举"
+      },
       "6.12.6": {
         "en": "fixed JSON config file component if no initial value exists\nadded the creation of a state or of a device possibility to the context menu",
         "de": "feste JSON config Dateikomponente, wenn kein Anfangswert vorhanden ist\ndie erstellung eines zustands oder einer gerätemöglichkeit zum kontextmenü hinzugefügt",
@@ -95,19 +108,6 @@
         "pl": "optymizował popup (auto-rozszerzenie pierwszego wejścia na kategorię, linia szacunkowa, szacunek dla ikon)\n2178 Stabilize onObject (ang.). Przejście zmian w czasie tworzenia nowych obiektów w WebUi w celu bezpośredniego ukazania nowego elementu.",
         "uk": "оптимізував неупереджений поштовх (auto-extend перший запис за категоріями, повагу розривів лінії, повагу тяжкості для ікон)\n#2178 Стабілізація наObject Зміна обробки під час створення нових об'єктів в WebUi, щоб безпосередньо показати новий елемент.",
         "zh-cn": "赞成“无大开顿”人口(每类首次进入,尊重线破裂,尊重墓地的严重程度”\n第2178号行动 在建立万维网新物品期间进行变革,直接显示新的因素。."
-      },
-      "6.12.0": {
-        "en": "fixed issue when updating news in backend\nvalidate json config against the schema\nupdate socket-client to improve performance",
-        "de": "fixes problem bei der aktualisierung von nachrichten im backend\njson config gegen das schema validieren\naktualisierung von steckdosen-client zur leistungsverbesserung",
-        "ru": "фиксированная проблема при обновлении новостей в backend\nвалидировать json config против схемы\nобновление socket-client для повышения производительности",
-        "pt": "problema fixo ao atualizar notícias no backend\nvalidar json config contra o esquema\natualizar socket-client para melhorar o desempenho",
-        "nl": "vertaling:\njson configeert tegen de schema\nupdate socket-cliënt om de prestaties te verbeteren",
-        "fr": "problème fixe lors de la mise à jour des nouvelles dans backend\nvalider la configuration json contre le schéma\nmettre à jour le client socket pour améliorer la performance",
-        "it": "problema fisso durante l'aggiornamento di notizie in backend\nconvalidare json config contro lo schema\naggiornamento socket-client per migliorare le prestazioni",
-        "es": "edición fija al actualizar noticias en backend\nvalidate json config contra el esquema\nactualizar socket-client para mejorar el rendimiento",
-        "pl": "bezpośrednie wydanie, kiedy podsumowuje wiadomości\nwniosek json konfiguje przeciwko schema\naktualizacja gniazda w celu poprawy wydajności",
-        "uk": "виправлено проблему при оновленні новин у додатку\nвалідувати json config проти schema\nоновлення гнізда-клієнта для поліпшення продуктивності",
-        "zh-cn": "定期发布新闻的问题\n反希马的有效 json config\n改进业绩的更新指标"
       }
     },
     "desc": {
