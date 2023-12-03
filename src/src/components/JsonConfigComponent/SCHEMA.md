@@ -361,8 +361,11 @@ adapter.on('message', obj => {
   - `freeSolo` - Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.
   - `alsoDependsOn` - by change of which attributes, the command must be resent
   - `maxLength` - max length of the text in field
+    
   To use this option, your adapter must implement message handler:
+  
     The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]` (keys must be unique)
+  
     See `selectSendTo` for handler example
 
 - `textSendTo`
