@@ -83,7 +83,7 @@ Possible types:
                 `[{"items": [{"label": "Val1", "value": 1}, {"label": "Val2", value: "2}], "name": "group1"}, {"items": [{"label": "Val3", "value": 3}, {"label": "Val4", value: "4}], "name": "group2"}, {"label": "Val5", "value": 5}]`
 
 - `autocomplete`
-  - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`
+  - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]` (keys must be unique)
   - `freeSolo` - Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.
 
 - `image` - saves image as file of the `adapter.X` object or as base64 in attribute
@@ -361,8 +361,9 @@ adapter.on('message', obj => {
   - `freeSolo` - Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.
   - `alsoDependsOn` - by change of which attributes, the command must be resent
   - `maxLength` - max length of the text in field
+    
   To use this option, your adapter must implement message handler:
-    The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]`
+    The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]` (keys must be unique)
     See `selectSendTo` for handler example
 
 - `textSendTo`
