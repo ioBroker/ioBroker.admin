@@ -8,10 +8,12 @@ import {
     Fab, Snackbar, Tooltip, Grid, LinearProgress, Skeleton,
 } from '@mui/material';
 
-import AddIcon from '@mui/icons-material/Add';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import CreateIcon from '@mui/icons-material/Create';
+import {
+    Add as AddIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
+    Create as CreateIcon,
+} from '@mui/icons-material';
 
 import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
@@ -665,13 +667,19 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                     // @ts-expect-error need to be added to types if this can exist
                     if (a.order === undefined && b.order === undefined) {
-                        let aName = a.name;
-                        let bName = b.name;
-                        if (typeof aName === 'object') {
-                            aName = aName[this.props.lang] || aName.en;
+                        let aName;
+                        let bName;
+                        if (typeof a.name === 'object') {
+                            const commonNameA: ioBroker.Translated = a.name;
+                            aName = commonNameA[this.props.lang] || commonNameA.en;
+                        } else {
+                            aName = a.name as string || '';
                         }
-                        if (typeof bName === 'object') {
-                            bName = bName[this.props.lang] || bName.en;
+                        if (typeof b.name === 'object') {
+                            const commonNameB: ioBroker.Translated = b.name;
+                            bName = commonNameB[this.props.lang] || commonNameB.en;
+                        } else {
+                            bName = b.name as string || '';
                         }
                         if (aName.toLowerCase() > bName.toLowerCase()) {
                             return 1;
@@ -697,13 +705,20 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     if (a.order < b.order) {
                         return -1;
                     }
-                    let aName = a.name;
-                    let bName = b.name;
-                    if (typeof aName === 'object') {
-                        aName = aName[this.props.lang] || aName.en;
+                    let aName;
+                    if (typeof a.name === 'object') {
+                        const commonNameA: ioBroker.Translated = a.name;
+                        aName = commonNameA[this.props.lang] || commonNameA.en;
+                    } else {
+                        aName = a.name as string || '';
                     }
-                    if (typeof bName === 'object') {
-                        bName = bName[this.props.lang] || bName.en;
+
+                    let bName;
+                    if (typeof b.name === 'object') {
+                        const commonNameB: ioBroker.Translated = b.name;
+                        bName = commonNameB[this.props.lang] || commonNameB.en;
+                    } else {
+                        bName = b.name as string || '';
                     }
                     if (aName.toLowerCase() > bName.toLowerCase()) {
                         return 1;
@@ -721,9 +736,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const common     = obj.common || null;
                     const objId      = obj._id.split('.');
                     const instanceId = objId.pop() as string;
-                    let name = common?.name;
-                    if (name && typeof name === 'object') {
-                        name = name[this.props.lang] || name.en;
+                    let name: string;
+                    if (common?.name && typeof common.name === 'object') {
+                        const commonName: ioBroker.Translated = common?.name;
+                        name = commonName[this.props.lang] || commonName.en;
+                    } else {
+                        name = common?.name as string || '';
                     }
 
                     if (name === 'admin' && common.localLink === (this.props.hostname || '')) {
