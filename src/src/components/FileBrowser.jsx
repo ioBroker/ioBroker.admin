@@ -967,7 +967,11 @@ class FileBrowser extends Component {
     }
 
     renderFolder(item, expanded) {
-        if (this.state.filterEmpty && (!this.state.folders[item.id] || !this.state.folders[item.id].length) && item.id !== USER_DATA && !item.temp) {
+        if (this.state.viewType === TABLE &&
+            this.state.filterEmpty &&
+            (!this.state.folders[item.id] || !this.state.folders[item.id].length) &&
+            item.id !== USER_DATA && !item.temp
+        ) {
             return null;
         }
         const Icon = expanded ? IconOpen : IconClosed;
@@ -1901,7 +1905,7 @@ class FileBrowser extends Component {
     renderBreadcrumb() {
         const parts = this.state.currentDir.startsWith('/') ? this.state.currentDir.split('/') : (`/${this.state.currentDir}`).split('/');
         const p = [];
-        return <Breadcrumbs>
+        return <Breadcrumbs style={{ paddingLeft: 8 }}>
             {parts.map((part, i) => {
                 part && p.push(part);
                 const path = p.join('/');
