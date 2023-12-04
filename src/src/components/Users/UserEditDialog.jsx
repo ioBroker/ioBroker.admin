@@ -2,22 +2,26 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Grid,
+    Button,
+} from '@mui/material';
 
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import DescriptionIcon from '@mui/icons-material/Description';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import PageviewIcon from '@mui/icons-material/Pageview';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
-import ImageIcon from '@mui/icons-material/Image';
-import IconCancel from '@mui/icons-material/Close';
-import IconCheck from '@mui/icons-material/Check';
+import {
+    TextFields as TextFieldsIcon,
+    LocalOffer as LocalOfferIcon,
+    Description as DescriptionIcon,
+    Pageview as PageviewIcon,
+    VpnKey as VpnKeyIcon,
+    ColorLens as ColorLensIcon,
+    Image as ImageIcon,
+    Close as IconCancel,
+    Check as IconCheck,
+} from '@mui/icons-material';
 
 import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
 

@@ -86,6 +86,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) corrected ACL for files
+* (bluefox) corrected the user/group icon selector
+
 ### 6.12.7 (2023-12-03)
 * (foxriver76) add property `onLoaded` to `sendTo` json config
 * (foxriver76) fixed easy admin height

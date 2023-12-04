@@ -1,14 +1,18 @@
 import PropTypes from 'prop-types';
 
-import Dialog from '@mui/material/Dialog';
-import Button from '@mui/material/Button';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Button,
+} from '@mui/material';
 
-import IconCancel from '@mui/icons-material/Close';
-import IconDelete from '@mui/icons-material/Delete';
+import {
+    Close as IconCancel,
+    Delete as IconDelete,
+} from '@mui/icons-material';
 
 function UserDeleteDialog(props) {
     if (!props.open) {
