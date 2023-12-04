@@ -38,7 +38,7 @@
     "express-fileupload": "^1.4.3",
     "express-session": "^1.17.3",
     "json5": "^2.2.3",
-    "mime": "^3.0.0",
+    "mime": "^4.0.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "semver": "^7.5.4",
