@@ -1,7 +1,7 @@
 node_modules
 .idea
-/src/.eslintcache
-/src/.cache
+**/src/.eslintcache
+**/src/.cache
 tmp/
 *.tgz
 .i18n-editor-metadata
@@ -16,9 +16,8 @@ admin/words.js
 /lib/socketAdmin.js
 /lib/socketCommandsAdmin.js
 /lib/passportSocket.js
-/src/build
-/src/package-lock.json
-/package-lock.json
+**/build
+package-lock.json
 /src/.eslintcache
 /src-admin/package-lock.json
 /src/public_aes

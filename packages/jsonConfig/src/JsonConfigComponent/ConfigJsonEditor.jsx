@@ -10,8 +10,8 @@ import {
 
 import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';
-import CustomModal from '../CustomModal';
-import Editor from '../Editor';
+import CustomModal from './wrapper/Components/CustomModal';
+import Editor from './wrapper/Components/Editor';
 
 const styles = () => ({
     fullWidth: {

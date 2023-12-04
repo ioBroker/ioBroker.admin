@@ -16,10 +16,9 @@ import {
     Confirm as ConfirmDialog, AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import { Theme } from '@iobroker/adapter-react-v5/types';
-// @ts-expect-error optimize socket-client types
 import type { SystemConfig } from '@iobroker/socket-client';
+import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 import Utils from './Utils';
 
@@ -360,16 +359,17 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         }
     };
 
-    getInstanceObject(): Promise<ioBroker.InstanceObject> {
+    getInstanceObject(): Promise<ioBroker.InstanceObject | void> {
         return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
             .then((obj: ioBroker.InstanceObject) => {
                 // decode all native attributes listed in obj.encryptedNative
+                // @ts-expect-error wait for type update
                 if (Array.isArray(obj.encryptedNative)) {
                     return this.props.socket.getSystemConfig()
                         .then(async (systemConfig: SystemConfig) => {
                             await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
                             this.secret = systemConfig.native.secret;
-
+                            // @ts-expect-error wait for type update
                             obj.encryptedNative?.forEach(attr => {
                                 if (obj.native[attr]) {
                                     obj.native[attr] = decrypt(this.secret, obj.native[attr]);
@@ -407,7 +407,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 }
                 return this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
             })
-            .then((data: { file: string | BufferObject; mimeType: string; type: string }) => {
+            .then(data => {
                 let content = '';
                 let file: string | BufferObject = '';
 
@@ -417,8 +417,10 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
                 if (typeof file === 'string') {
                     content = file;
+                    // @ts-expect-error revisit
                 } else if (file.type === 'Buffer') {
                     let binary = '';
+                    // @ts-expect-error revisit
                     const bytes = new Uint8Array(file.data);
                     const len = bytes.byteLength;
                     for (let i = 0; i < len; i++) {

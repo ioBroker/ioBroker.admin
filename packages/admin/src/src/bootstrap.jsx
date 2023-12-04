@@ -4,7 +4,6 @@ import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
 
 import theme from '@iobroker/adapter-react-v5/Theme';
-// import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import { Utils } from '@iobroker/adapter-react-v5';
 
 import './index.css';
@@ -23,6 +22,7 @@ let themeName = Utils.getThemeName();
 function build() {
     const container = document.getElementById('root');
     const root = createRoot(container);
+
     return root.render(
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={theme(themeName)}>
