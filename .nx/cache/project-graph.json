@@ -1,0 +1,150 @@
+{
+  "nodes": {
+    "iobroker.admin": {
+      "name": "iobroker.admin",
+      "type": "lib",
+      "data": {
+        "root": ".",
+        "sourceRoot": ".",
+        "name": "iobroker.admin",
+        "projectType": "library",
+        "targets": {
+          "start": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "start"
+            },
+            "configurations": {}
+          },
+          "test": {
+            "cache": true,
+            "executor": "nx:run-script",
+            "options": {
+              "script": "test"
+            },
+            "configurations": {}
+          },
+          "test:package": {
+            "cache": true,
+            "executor": "nx:run-script",
+            "options": {
+              "script": "test:package"
+            },
+            "configurations": {}
+          },
+          "test:unit": {
+            "cache": true,
+            "executor": "nx:run-script",
+            "options": {
+              "script": "test:unit"
+            },
+            "configurations": {}
+          },
+          "test:integration": {
+            "cache": true,
+            "executor": "nx:run-script",
+            "options": {
+              "script": "test:integration"
+            },
+            "configurations": {}
+          },
+          "test:rule": {
+            "cache": true,
+            "executor": "nx:run-script",
+            "options": {
+              "script": "test:rule"
+            },
+            "configurations": {}
+          },
+          "test:gui": {
+            "cache": true,
+            "executor": "nx:run-script",
+            "options": {
+              "script": "test:gui"
+            },
+            "configurations": {}
+          },
+          "release": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "release"
+            },
+            "configurations": {}
+          },
+          "release-patch": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "release-patch"
+            },
+            "configurations": {}
+          },
+          "release-minor": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "release-minor"
+            },
+            "configurations": {}
+          },
+          "release-major": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "release-major"
+            },
+            "configurations": {}
+          },
+          "prepublishOnly": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "prepublishOnly"
+            },
+            "configurations": {}
+          },
+          "build": {
+            "cache": true,
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build"
+            },
+            "configurations": {}
+          },
+          "update-packages": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "update-packages"
+            },
+            "configurations": {}
+          },
+          "npm": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "npm"
+            },
+            "configurations": {}
+          },
+          "_test": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "_test"
+            },
+            "configurations": {}
+          },
+          "nx-release-publish": {
+            "dependsOn": [
+              "^nx-release-publish"
+            ],
+            "executor": "@nx/js:release-publish",
+            "options": {},
+            "configurations": {}
+          }
+        },
+        "implicitDependencies": [],
+        "tags": []
+      }
+    }
+  },
+  "externalNodes": {},
+  "dependencies": {
+    "iobroker.admin": []
+  },
+  "version": "6.0"
+}

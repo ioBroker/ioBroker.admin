@@ -1,6 +1,7 @@
 const { ProvidePlugin } = require('webpack');
 const cracoModuleFederation = require('@iobroker/adapter-react-v5/craco-module-federation');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const path = require('path');
 
 module.exports = {
     plugins: [
@@ -17,6 +18,9 @@ module.exports = {
         },
     },
     webpack: {
+        alias: {
+            '@iobroker/json-config': path.resolve(__dirname, '..', '..', 'jsonConfig', 'src'),
+        },
         output: {
             publicPath: './',
         },
