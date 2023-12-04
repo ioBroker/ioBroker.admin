@@ -1798,7 +1798,8 @@ class FileBrowser extends Component {
         return null;
     }
 
-    /*
+    // used in tabs/Files
+    // eslint-disable-next-line react/no-unused-class-component-methods
     updateItemsAcl(info) {
         const folders = JSON.parse(JSON.stringify(this.state.folders));
         let changed;
@@ -1811,7 +1812,6 @@ class FileBrowser extends Component {
         });
         changed && this.setState({ folders });
     }
-    */
 
     changeToPath() {
         setTimeout(() => {
