@@ -1,6 +1,17 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.12.3 (2023-11-15)
+* (foxriver76) fixed problem that disabled checkbox is still clickable
+* (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
+* (foxriver76) fixed `freeSolo` option for autocomplete components
+* (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
+* (foxriver76) fixed empty dropdown selection after selecting `system language` in JsonConfig
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.12.2 (2023-11-02)
 * (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
 * (foxriver76) fixed crash case when schema cannot be read

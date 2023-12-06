@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.12.8 (2023-12-06)
 * (bluefox) corrected ACL for files
 * (bluefox) allowed changing color of the menu item
 * (bluefox) corrected the user/group icon selector
@@ -107,13 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) custom settings icon has no a brighter color in dark mode
 * (foxriver76) fixed color of host selector in dark mode
 * (foxriver76) fixed problem with a JSON config language component
-
-### 6.12.3 (2023-11-15)
-* (foxriver76) fixed problem that disabled checkbox is still clickable
-* (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
-* (foxriver76) fixed `freeSolo` option for autocomplete components
-* (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
-* (foxriver76) fixed empty dropdown selection after selecting `system language` in JsonConfig
 
 ## License
 The MIT License (MIT)
