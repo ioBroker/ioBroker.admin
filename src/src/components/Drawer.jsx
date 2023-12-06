@@ -2,31 +2,34 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import { Avatar, Drawer as MaterialDrawer } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import AppsIcon from '@mui/icons-material/Apps';
-import InfoIcon from '@mui/icons-material/Info';
-import StoreIcon from '@mui/icons-material/Store';
-import SubtitlesIcon from '@mui/icons-material/Subtitles';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ArtTrackIcon from '@mui/icons-material/ArtTrack';
-import DvrIcon from '@mui/icons-material/Dvr';
-import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
-import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import StorageIcon from '@mui/icons-material/Storage';
-import FilesIcon from '@mui/icons-material/FileCopy';
-
-import LogoutIcon from '@iobroker/adapter-react-v5/icons/IconLogout';
+import {
+    Avatar,
+    Drawer as MaterialDrawer,
+    IconButton,
+    List,
+    Typography,
+    SwipeableDrawer,
+} from '@mui/material';
 
 import {
-    Utils, I18n, Icon, withWidth,
+    ChevronLeft as ChevronLeftIcon,
+    Apps as AppsIcon,
+    Info as InfoIcon,
+    Store as StoreIcon,
+    Subtitles as SubtitlesIcon,
+    ViewList as ViewListIcon,
+    ArtTrack as ArtTrackIcon,
+    Dvr as DvrIcon,
+    ViewHeadline as ViewHeadlineIcon,
+    Subscriptions as SubscriptionsIcon,
+    FlashOn as FlashOnIcon,
+    PersonOutline as PersonOutlineIcon,
+    Storage as StorageIcon,
+    FileCopy as FilesIcon,
+} from '@mui/icons-material';
+
+import {
+    Utils, I18n, Icon, withWidth, IconLogout as LogoutIcon,
 } from '@iobroker/adapter-react-v5';
 
 import DragWrapper from './DragWrapper';
@@ -39,6 +42,7 @@ import Adapters from '../tabs/Adapters';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
+export const DRAWER_EDIT_WIDTH = 250;
 
 function ucFirst(str) {
     return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
@@ -56,6 +60,9 @@ const styles = theme => ({
     },
     rootFullWidth: {
         width: DRAWER_FULL_WIDTH,
+    },
+    rootEditWidth: {
+        width: DRAWER_EDIT_WIDTH,
     },
     rootCompactWidth: {
         width: DRAWER_COMPACT_WIDTH,
@@ -177,7 +184,6 @@ class Drawer extends Component {
 
         this.state = {
             tabs: [],
-            editList: false,
             logErrors: 0,
             logWarnings: 0,
             hostError: 0,
@@ -304,8 +310,8 @@ class Drawer extends Component {
     }
 
     componentDidUpdate() {
-        if (!this.isSwipeable() && this.props.state !== STATES.opened && this.state.editList) {
-            this.setState({ editList: false });
+        if (!this.isSwipeable() && this.props.state !== STATES.opened && this.props.editMenuList) {
+            setTimeout(() => this.props.setEditMenuList(false));
         }
     }
 
@@ -499,17 +505,24 @@ v
         return this.props.width === 'xs' || this.props.width === 'sm';
     }
 
-    tabsEditSystemConfig = async idx => {
+    tabsEditSystemConfig = async (idx, isVisibility, color) => {
         const { tabs } = this.state;
         const { socket } = this.props;
         const newTabs = JSON.parse(JSON.stringify(tabs));
-        if (idx !== undefined) {
+        if (isVisibility) {
             newTabs[idx].visible = !newTabs[idx].visible;
+        }
+        if (color !== undefined) {
+            if (color === null) {
+                delete newTabs[idx].color;
+            } else {
+                newTabs[idx].color = color;
+            }
         }
         const newObjCopy = await this.props.socket.getSystemConfig(true);
         newObjCopy.common.tabsVisible = newTabs.map(({ name, visible }) => ({ name, visible }));
 
-        if (idx !== undefined) {
+        if (isVisibility || color !== undefined) {
             this.setState({ tabs: newTabs }, () =>
                 socket.setSystemConfig(newObjCopy)
                     .catch(e => window.alert(`Cannot set system config: ${e}`)));
@@ -524,7 +537,7 @@ v
 
     getNavigationItems() {
         const {
-            tabs, editList, logErrors, logWarnings,
+            tabs, logErrors, logWarnings,
         } = this.state;
         const {
             systemConfig, currentTab, state, classes, handleNavigation,
@@ -534,7 +547,7 @@ v
             return null;
         }
         return tabs.map((tab, idx) => {
-            if (!editList && !tab.visible) {
+            if (!this.props.editMenuList && !tab.visible) {
                 return null;
             }
 
@@ -544,7 +557,7 @@ v
 
             return <DragWrapper
                 key={tab.name}
-                canDrag={editList}
+                canDrag={this.props.editMenuList}
                 name={tab.name}
                 iconJSX={tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon className={classes.icon} src={tab.icon} />}
                 _id={tab.name}
@@ -560,9 +573,10 @@ v
                 <DrawerItem
                     themeType={this.props.themeType}
                     key={tab.name}
-                    editList={editList}
+                    editMenuList={this.props.editMenuList}
                     visible={tab.visible}
-                    editListFunc={() => this.tabsEditSystemConfig(idx)}
+                    color={tab.color}
+                    editListFunc={(isVisibility, color) => this.tabsEditSystemConfig(idx, isVisibility, color)}
                     compact={!this.isSwipeable() && state !== STATES.opened}
                     onClick={e => {
                         if (e.ctrlKey || e.shiftKey) {
@@ -643,14 +657,15 @@ v
                     />}
                 {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div className={this.props.classes.editButton}>
                     <CustomPopper
-                        editList={this.state.editList}
-                        onClick={() => this.setState({ editList: !this.state.editList })}
+                        editMenuList={this.props.editMenuList}
+                        onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
                     />
                 </div>}
             </SwipeableDrawer>;
         }
+
         return <MaterialDrawer
-            className={Utils.clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
+            className={Utils.clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : (this.props.editMenuList ? classes.rootEditWidth : classes.rootFullWidth))}
             variant="persistent"
             anchor="left"
             open={this.props.state !== STATES.closed}
@@ -659,28 +674,27 @@ v
             onMouseLeave={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = 0)}
         >
             <CustomDragLayer />
-
             {this.getHeader()}
             <List className={classes.list}>
                 {this.getNavigationItems()}
             </List>
             {this.props.isSecure &&
-                    <DrawerItem
-                        themeType={this.props.themeType}
-                        style={{ flexShrink: 0 }}
-                        compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                        onClick={this.props.onLogout}
-                        text={this.props.t('Logout')}
-                        icon={<LogoutIcon />}
-                    />}
+                <DrawerItem
+                    themeType={this.props.themeType}
+                    style={{ flexShrink: 0 }}
+                    compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                    onClick={this.props.onLogout}
+                    text={this.props.t('Logout')}
+                    icon={<LogoutIcon />}
+                />}
             {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div
                 className={this.props.classes.editButton}
                 style={{ opacity: 0 }}
                 ref={this.refEditButton}
             >
                 <CustomPopper
-                    editList={this.state.editList}
-                    onClick={() => this.setState({ editList: !this.state.editList })}
+                    editMenuList={this.props.editMenuList}
+                    onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
                 />
             </div>}
         </MaterialDrawer>;
@@ -701,6 +715,8 @@ Drawer.propTypes = {
     socket: PropTypes.object,
     versionAdmin: PropTypes.string,
     handleNavigation: PropTypes.func,
+    editMenuList: PropTypes.bool,
+    setEditMenuList: PropTypes.func,
 
     instancesWorker: PropTypes.object,
     hostsWorker: PropTypes.object,

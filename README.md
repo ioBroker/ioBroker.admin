@@ -81,13 +81,14 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ## Todo
 - Add to wizard (very first page): how your statistics will be processed.
-
+- Add colors to menu item with the possibility to change turn it off or only icon
 <!--
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
 * (bluefox) corrected ACL for files
+* (bluefox) allowed changing color of the menu item
 * (bluefox) corrected the user/group icon selector
 
 ### 6.12.7 (2023-12-03)

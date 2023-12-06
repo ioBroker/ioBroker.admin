@@ -57,7 +57,12 @@ import {
 import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
 import CommandDialog from './dialogs/CommandDialog';
-import Drawer, { STATES as DrawerStates, DRAWER_FULL_WIDTH, DRAWER_COMPACT_WIDTH } from './components/Drawer';
+import Drawer, {
+    STATES as DrawerStates,
+    DRAWER_FULL_WIDTH,
+    DRAWER_COMPACT_WIDTH,
+    DRAWER_EDIT_WIDTH,
+} from './components/Drawer';
 
 import Connecting from './components/Connecting';
 
@@ -128,6 +133,14 @@ const styles = theme => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
     },
+    appBarShiftEdit: {
+        width: `calc(100% - ${DRAWER_EDIT_WIDTH}px)`,
+        marginLeft: DRAWER_EDIT_WIDTH,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
     appBarShiftCompact: {
         width: `calc(100% - ${DRAWER_COMPACT_WIDTH}px)`,
         marginLeft: DRAWER_COMPACT_WIDTH,
@@ -160,6 +173,9 @@ const styles = theme => ({
     },
     contentMargin: {
         marginLeft: -DRAWER_FULL_WIDTH,
+    },
+    contentMarginEdit: {
+        marginLeft: -DRAWER_EDIT_WIDTH,
     },
     contentMarginCompact: {
         marginLeft: -DRAWER_COMPACT_WIDTH,
@@ -439,6 +455,7 @@ class App extends Router {
                 alertType: 'info',
                 alertMessage: '',
                 drawerState,
+                editMenuList: false,
 
                 tab: null,
                 allStored: true,
@@ -1576,7 +1593,7 @@ class App extends Router {
                             this.state.drawerState === DrawerStates.closed
                                 ? 0
                                 : this.state.drawerState === DrawerStates.opened
-                                    ? DRAWER_FULL_WIDTH
+                                    ? (this.state.editMenuList ? DRAWER_EDIT_WIDTH : DRAWER_FULL_WIDTH)
                                     : DRAWER_COMPACT_WIDTH
                         }
                         socket={this.socket}
@@ -2296,11 +2313,9 @@ class App extends Router {
                             position="fixed"
                             className={Utils.clsx(
                                 classes.appBar,
-                                { [classes.appBarShift]: !small && this.state.drawerState === DrawerStates.opened },
-                                {
-                                    [classes.appBarShiftCompact]:
-                                        !small && this.state.drawerState === DrawerStates.compact,
-                                },
+                                !small && this.state.drawerState === DrawerStates.opened && !this.state.editMenuList && classes.appBarShift,
+                                !small && this.state.drawerState === DrawerStates.opened && this.state.editMenuList && classes.appBarShiftEdit,
+                                !small && this.state.drawerState === DrawerStates.compact && classes.appBarShiftCompact,
                             )}
                         >
                             <Toolbar>
@@ -2563,6 +2578,8 @@ class App extends Router {
                             <Drawer
                                 adminGuiConfig={this.adminGuiConfig}
                                 state={this.state.drawerState}
+                                editMenuList={this.state.editMenuList}
+                                setEditMenuList={editMenuList => this.setState({ editMenuList })}
                                 systemConfig={this.state.systemConfig}
                                 handleNavigation={name => this.handleNavigation(name)}
                                 onStateChange={state => this.handleDrawerState(state)}
@@ -2593,12 +2610,13 @@ class App extends Router {
                         <Paper
                             elevation={0}
                             square
-                            className={Utils.clsx(classes.content, {
-                                [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
-                                [classes.contentMarginCompact]:
-                                    !small && this.state.drawerState !== DrawerStates.opened,
-                                [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed,
-                            })}
+                            className={Utils.clsx(
+                                classes.content,
+                                !small && this.state.drawerState !== DrawerStates.compact && !this.state.editMenuList && classes.contentMargin,
+                                !small && this.state.drawerState !== DrawerStates.compact && this.state.editMenuList && classes.contentMarginEdit,
+                                !small && this.state.drawerState !== DrawerStates.opened && classes.contentMarginCompact,
+                                !small && this.state.drawerState !== DrawerStates.closed && classes.contentShift,
+                            )}
                         >
                             {this.getCurrentTab()}
                         </Paper>

@@ -2,17 +2,20 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@mui/styles';
 
-import Badge from '@mui/material/Badge';
-import Grid from '@mui/material/Grid';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Tooltip from '@mui/material/Tooltip';
+import {
+    Badge,
+    Grid,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Tooltip,
+    Checkbox,
+} from '@mui/material';
+import { DragHandle } from '@mui/icons-material';
 
 import amber from '@mui/material/colors/amber';
 
-import { Checkbox } from '@mui/material';
-import { Utils } from '@iobroker/adapter-react-v5';
+import { Utils, ColorPicker } from '@iobroker/adapter-react-v5';
 import CommonUtils from '../Utils';
 
 const styles = theme => ({
@@ -51,8 +54,9 @@ const DrawerItem = props => {
         onClick,
         selected,
         text,
-        editList,
+        editMenuList,
         visible,
+        color,
         editListFunc,
         badgeAdditionalContent,
         badgeAdditionalColor,
@@ -67,10 +71,12 @@ const DrawerItem = props => {
         content = 'Text→Cmd';
     }
 
-    return <div style={({ display: 'flex', ...style || {} })}>
-        {!!editList && <Checkbox checked={visible} onClick={editListFunc} />}
+    return <div style={({ display: 'flex', alignItems: 'center', ...style || {} })}>
+        {!!editMenuList && <DragHandle />}
+        {!!editMenuList && <Checkbox checked={visible} onClick={() => editListFunc(true)} />}
+        {!!editMenuList && <ColorPicker value={color} noInputField onChange={value => editListFunc(false, value || null)} />}
         <ListItemButton
-            className={Utils.clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
+            className={Utils.clsx(selected && classes.selected, compact && classes.compactBadge)}
             onClick={onClick}
         >
             <Tooltip title={compact ? content : ''}>
@@ -81,7 +87,7 @@ const DrawerItem = props => {
                     className={classes.noWrap}
                 >
                     <Grid item>
-                        <ListItemIcon style={{ minWidth: 0 }} classes={{ root: Utils.clsx(selected && classes.selectedIcon) }}>
+                        <ListItemIcon style={{ minWidth: 0, color }} classes={{ root: selected ? classes.selectedIcon : undefined }}>
                             <Badge
                                 badgeContent={badgeContent || 0}
                                 color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
@@ -93,7 +99,7 @@ const DrawerItem = props => {
                     </Grid>
                     {!compact &&
                         <Grid item>
-                            <ListItemText>
+                            <ListItemText style={{ color }}>
                                 <Badge
                                     badgeContent={badgeAdditionalContent || 0}
                                     color={(badgeAdditionalColor === 'warn' ? 'default' : badgeAdditionalColor) || 'primary'}
@@ -118,6 +124,7 @@ DrawerItem.propTypes = {
     text: PropTypes.string,
     badgeContent: PropTypes.number,
     badgeColor: PropTypes.oneOf(['', 'default', 'primary', 'secondary', 'error', 'warn']),
+    editMenuList: PropTypes.bool,
 };
 
 export default withStyles(styles)(DrawerItem);
