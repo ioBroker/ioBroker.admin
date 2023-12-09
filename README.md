@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) prevent strict schema validation being logged to syslog
+
 ### 6.12.8 (2023-12-06)
 * (bluefox) corrected ACL for files
 * (bluefox) allowed changing color of the menu item
