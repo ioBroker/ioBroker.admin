@@ -9,7 +9,6 @@
     "sourceMap": true,
     "sourceRoot": "./src",
     "noImplicitAny": true,
-    "skipLibCheck": true,
     "lib": [
       "es2018",
       "DOM"
