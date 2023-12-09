@@ -17,7 +17,7 @@ Additionally, to the JSON file, you must define in the `io-package.json` in `com
 ```
 to say that the adapter supports JSON configuration.
 
-You can see almost all components in action if you test this adapter: https://github.com/mcm1957/ioBroker.jsonconfig-demo.
+You can see almost all components in action if you test this adapter: https://github.com/mcm4iob/ioBroker.jsonconfig-demo.
 You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-demo` on the npm tab.
 
 
