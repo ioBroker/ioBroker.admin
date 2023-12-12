@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.12.9 (2023-12-12)
 * (foxriver76) prevented the strict schema validation being logged to syslog
 * (bluefox) corrected the displaying of news with the new lines
 
@@ -106,11 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.12.5 (2023-11-23)
 * (foxriver76) fixed json config ConfigFileSelector
 * (klein0r) fixed title bar layout with username and icon
-
-### 6.12.4 (2023-11-16)
-* (foxriver76) custom settings icon has no a brighter color in dark mode
-* (foxriver76) fixed color of host selector in dark mode
-* (foxriver76) fixed problem with a JSON config language component
 
 ## License
 The MIT License (MIT)
