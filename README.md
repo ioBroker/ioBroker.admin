@@ -87,7 +87,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
-* (foxriver76) prevent strict schema validation being logged to syslog
+* (foxriver76) prevented the strict schema validation being logged to syslog
+* (bluefox) corrected the displaying of news with the new lines
 
 ### 6.12.8 (2023-12-06)
 * (bluefox) corrected ACL for files

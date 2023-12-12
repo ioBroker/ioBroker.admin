@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import semver from 'semver';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import { CardMedia, DialogTitle, Typography } from '@mui/material';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
-import InfoIcon from '@mui/icons-material/Info';
-import WarningIcon from '@mui/icons-material/Warning';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckIcon from '@mui/icons-material/Check';
-import WorldIcon from '@mui/icons-material/Public';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    CardMedia,
+    Typography,
+} from '@mui/material';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import { Theme } from '@iobroker/adapter-react-v5/types';
+import {
+    Info as InfoIcon,
+    Warning as WarningIcon,
+    Cancel as CancelIcon,
+    Check as CheckIcon,
+    Public as WorldIcon,
+} from '@mui/icons-material';
 
-let node: HTMLDivElement | null = null;
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -182,7 +183,7 @@ interface Message {
     link?: string;
     /** Title of the link */
     linkTitle?: string;
-    /** E.g. a base64 encoded image like, data:image/png;base64,iVBORw0KG... */
+    /** E.g., a base64 encoded image like, data:image/png;base64,iVBORw0KG... */
     img?: 'string';
     /** e.g. >= 15000 to address installations with more than 15k objects */
     'number-of-objects'?: string;
@@ -288,10 +289,9 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
 };
 
 const NewsAdminDialog = ({
-    newsArr, current, callback, theme,
-}: {newsArr: any[]; current: any; callback: (id: string) => void; theme: any}) => {
+    newsArr, current, onSetLastNewsId,
+}: { newsArr: any[]; current: any; onSetLastNewsId: (id?: string) => void }) => {
     const classes = useStyles();
-    const [open, setOpen] = useState(true);
     const [id, setId] = useState(current);
     const [last, setLast] = useState(false);
     const [indexArr, setIndexArr] = useState(0);
@@ -307,13 +307,7 @@ const NewsAdminDialog = ({
                     setIndexArr(index + 1);
                 }
             } else {
-                setOpen(false);
-                try {
-                    node && window.document.body.removeChild(node);
-                } catch (e) {
-                    // ignore
-                }
-                node = null;
+                onSetLastNewsId();
             }
         } else {
             setId(newsArr[0].id);
@@ -323,7 +317,7 @@ const NewsAdminDialog = ({
     const onClose = () => {
         // setOpen(false);
         setLast(!last);
-        callback(id);
+        onSetLastNewsId(id);
     };
 
     const lang = I18n.getLanguage();
@@ -341,85 +335,65 @@ const NewsAdminDialog = ({
     if (linkTitle && typeof linkTitle === 'object') {
         linkTitle = linkTitle[lang] || linkTitle.en;
     }
-    return <ThemeProvider theme={theme}>
-        <Dialog
-            onClose={onClose}
-            open={open}
-            classes={{ paper: classes.paper }}
-        >
-            <div className={classes.blockInfo}>
-                {new Date(newsArr[indexArr].created).toLocaleDateString(lang)}
-                <Status className={classes.img} name={newsArr[indexArr].class} />
-            </div>
-            <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogContent className={classes.overflowHidden} dividers>
-                <div className={classes.root}>
-                    <div className={classes.pre}>
-                        {newsArr[indexArr]?.img &&
-                            <CardMedia className={classes.img2} component="img" image={newsArr[indexArr].img} />}
-                        <Typography
-                            variant="body2"
-                            component="p"
-                        >
-                            {Utils.renderTextWithA(text.replace(/\n/g, '<br />'))}
-                        </Typography>
-                        {newsArr[indexArr]?.link &&
-                            <Button
-                                variant="contained"
-                                className={classes.link}
-                                onClick={() => window.open(newsArr[indexArr].link, '_blank')}
-                                color="primary"
-                            >
-                                {linkTitle || I18n.t('Link')}
-                            </Button>}
-                    </div>
-                </div>
-            </DialogContent>
-            <DialogActions>
-                {
-                    link ? <Button
-                        variant="contained"
-                        onClick={() => {
-                            const frame = window.open(link, '_blank');
-                            frame && frame.focus();
-                        }}
-                        color="secondary"
-                        startIcon={<WorldIcon />}
+    return <Dialog
+        onClose={onClose}
+        open={!0}
+        classes={{ paper: classes.paper }}
+    >
+        <div className={classes.blockInfo}>
+            {new Date(newsArr[indexArr].created).toLocaleDateString(lang)}
+            <Status className={classes.img} name={newsArr[indexArr].class} />
+        </div>
+        <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent className={classes.overflowHidden} dividers>
+            <div className={classes.root}>
+                <div className={classes.pre}>
+                    {newsArr[indexArr]?.img &&
+                        <CardMedia className={classes.img2} component="img" image={newsArr[indexArr].img} />}
+                    <Typography
+                        variant="body2"
+                        component="p"
                     >
-                        {linkTitle || I18n.t('Show more info')}
-                    </Button> : null
-                }
-                <Button
+                        {Utils.renderTextWithA(text.replace(/\n/g, '<br />'))}
+                    </Typography>
+                    {newsArr[indexArr]?.link &&
+                        <Button
+                            variant="contained"
+                            className={classes.link}
+                            onClick={() => window.open(newsArr[indexArr].link, '_blank')}
+                            color="primary"
+                        >
+                            {linkTitle || I18n.t('Link')}
+                        </Button>}
+                </div>
+            </div>
+        </DialogContent>
+        <DialogActions>
+            {
+                link ? <Button
                     variant="contained"
-                    autoFocus
-                    onClick={onClose}
-                    color="primary"
-                    startIcon={<CheckIcon />}
+                    onClick={() => {
+                        const frame = window.open(link, '_blank');
+                        frame && frame.focus();
+                    }}
+                    color="secondary"
+                    startIcon={<WorldIcon />}
                 >
-                    {I18n.t('Acknowledge')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
+                    {linkTitle || I18n.t('Show more info')}
+                </Button> : null
+            }
+            <Button
+                variant="contained"
+                autoFocus
+                onClick={onClose}
+                color="primary"
+                startIcon={<CheckIcon />}
+            >
+                {I18n.t('Acknowledge')}
+            </Button>
+        </DialogActions>
+    </Dialog>;
 };
 
-export const newsAdminDialogFunc = (newsArr: any[], current: any, theme: Theme, callback: (id: string) => void | Promise<void>) => {
-    if (!node) {
-        node = document.createElement('div');
-        node.id = 'renderModal';
-        document.body.appendChild(node);
-    }
-    const root = createRoot(node);
-
-    return root.render(<StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-            <NewsAdminDialog
-                newsArr={newsArr}
-                current={current}
-                callback={callback}
-                theme={theme}
-            />
-        </ThemeProvider>
-    </StyledEngineProvider>);
-};
+export default NewsAdminDialog;
