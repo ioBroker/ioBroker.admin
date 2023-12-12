@@ -52,6 +52,15 @@ const STYLES: Record<string, Style> = {
 
 class Utils {
     /**
+     * Perform JSON parse/stringify with type inference
+     *
+     * @param obj the object to clone
+     */
+    static deepClone<T extends Record<string, any>>(obj: T): T {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
+    /**
      * Format bytes to MB or GB
      * @param bytes
      */

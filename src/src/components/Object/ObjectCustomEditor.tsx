@@ -1,6 +1,5 @@
 import React, { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import { Styles, withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 
 import {
@@ -26,9 +25,11 @@ import {
     Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
-import JsonConfigComponent from '../JsonConfigComponent';
-import ConfigGeneric from '../JsonConfigComponent/ConfigGeneric';
-import Utils from '../../Utils';
+import JsonConfigComponent from '@/components/JsonConfigComponent';
+import ConfigGeneric from '@/components/JsonConfigComponent/ConfigGeneric';
+import Utils from '@/Utils';
+import type { BasicComponentProps, ValueOrString } from '@/types';
+import { deepClone } from '@mui/x-data-grid/utils/utils';
 
 const styles = () => ({
     paper: {
@@ -98,17 +99,60 @@ const styles = () => ({
     enabledInvisible: {
         display: 'none',
     },
-});
+}) satisfies Styles<any, any>;
 
 const URL_PREFIX = '.'; // or './' or 'http://localhost:8081' for debug
 
-class ObjectCustomEditor extends Component {
-    constructor(props) {
+interface ObjectCustomEditorProps extends BasicComponentProps {
+    objects: Record<string, any>;
+    customsInstances: string[];
+    objectIDs: string[];
+    registerSaveFunc: (cb?: () => void) => void;
+    onProgress: (progress: boolean) => void;
+    onError: (err?: unknown) => void;
+    data: Record<string, any>;
+    originalData: Record<string, any>;
+    systemConfig: Record<string, any>;
+    classes: Record<ValueOrString<keyof ReturnType<typeof styles>>, any>;
+    onChange: (hasChanges?: boolean, update?: boolean) => void;
+    reportChangedIds: (changedIds: string[]) => void;
+}
+
+interface ObjectCustomEditorState {
+    newValues: Record<string, any>;
+    loaded: boolean;
+    hasChanges?: string;
+    expanded: string[];
+    progress?: number;
+    maxOids: number;
+    confirmed: boolean;
+    showConfirmation: boolean;
+    error?: unknown;
+}
+
+class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustomEditorState> {
+    private readonly changedIds: string[];
+
+    private readonly scrollDivRef: React.RefObject<HTMLDivElement>;
+
+    private readonly jsonConfigs: Record<string, any>;
+
+    private readonly refTemplate: Record<string, any>;
+
+    private readonly customObj: ioBroker.AnyObject;
+
+    private commonConfig: Record<string, any> = {};
+
+    private cb?: (() => void);
+
+    private cachedNewValues?: Record<string, any>;
+
+    constructor(props: ObjectCustomEditorProps) {
         super(props);
 
-        let expanded = (window._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]';
+        let expanded: string[] = [];
         try {
-            expanded = JSON.parse(expanded);
+            expanded = JSON.parse((window._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]');
         } catch (e) {
             expanded = [];
         }
@@ -117,13 +161,11 @@ class ObjectCustomEditor extends Component {
 
         this.state = {
             loaded: false,
-            hasChanges: false,
             expanded,
             newValues: {},
-            progress: null,
-            maxOids: null,
             confirmed: false,
             showConfirmation: false,
+            maxOids: 0,
         };
 
         this.scrollDivRef = createRef();
@@ -133,7 +175,7 @@ class ObjectCustomEditor extends Component {
         this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
 
-        this.customObj    = this.props.objectIDs.length > 1 ? { custom: {}, native: {} } : JSON.parse(JSON.stringify(this.props.objects[this.props.objectIDs[0]] || null));
+        this.customObj = this.props.objectIDs.length > 1 ? { custom: {}, native: {} } : Utils.deepClone(this.props.objects[this.props.objectIDs[0]] || null);
 
         if (this.customObj) {
             this.loadAllCustoms()
@@ -144,16 +186,16 @@ class ObjectCustomEditor extends Component {
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.props.registerSaveFunc && this.props.registerSaveFunc(this.onSave);
     }
 
-    componentWillUnmount() {
-        this.props.registerSaveFunc && this.props.registerSaveFunc(null);
+    componentWillUnmount(): void {
+        this.props.registerSaveFunc && this.props.registerSaveFunc();
     }
 
-    loadAllCustoms() {
-        const promises = [];
+    loadAllCustoms(): Promise<void> {
+        const promises: Promise<void>[] = [];
         this.props.customsInstances.forEach(id => {
             const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.', '');
             if (this.jsonConfigs[adapter] === undefined) {
@@ -178,28 +220,24 @@ class ObjectCustomEditor extends Component {
             });
     }
 
-    // showError(error) {
-    //     this.setState({ error });
-    // }
-
-    getCustomTemplate(adapter) {
-        const ad = this.props.objects[`system.adapter.${adapter}`] ? JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${adapter}`])) : null;
+    getCustomTemplate(adapter: string) {
+        const ad = this.props.objects[`system.adapter.${adapter}`] ? deepClone(this.props.objects[`system.adapter.${adapter}`]) : null;
 
         if (!ad) {
-            console.error(`Cannot find adapter "${ad}"`);
+            console.error(`Cannot find adapter "${adapter}"`);
             return Promise.resolve(null);
         }
         Utils.fixAdminUI(ad);
 
         if (ad.common?.adminUI.custom === 'json') {
             return this.props.socket.fileExists(`${adapter}.admin`, 'jsonCustom.json5')
-                .then(exist => {
+                .then((exist: boolean) => {
                     if (exist) {
                         return this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json5');
                     }
                     return this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json');
                 })
-                .then(json => {
+                .then((json: any) => {
                     if (json.file !== undefined) {
                         json = json.file;
                     }
@@ -212,9 +250,10 @@ class ObjectCustomEditor extends Component {
                         window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
                     }
 
+                    // @ts-expect-error wait for types
                     return JsonConfigComponent.loadI18n(this.props.socket, json.i18n, adapter);
                 })
-                .catch(e => {
+                .catch((e: any) => {
                     console.error(`Cannot load jsonConfig of ${adapter}: ${e}`);
                     window.alert(`Cannot load jsonConfig of ${adapter}: ${e}`);
                 });
@@ -225,19 +264,23 @@ class ObjectCustomEditor extends Component {
     }
 
     // See configGeneric _executeCustom
-    _executeCustom(func, data, customObj, instanceObj, items, attr, processed) {
+    _executeCustom(func: string | Record<string, any>, data: Record<string, any>, customObj: Record<string, any>, instanceObj: ioBroker.InstanceObject, items: Record<string, any>, attr: string, processed: string[]) {
         if (processed.includes(attr)) {
             return undefined;
         }
         processed.push(attr);
 
-        let alsoDependsOn = [];
+        let alsoDependsOn: string[] = [];
+        let strFunc: string;
+
         if (func && typeof func === 'object') {
             alsoDependsOn = func.alsoDependsOn || [];
             if (typeof alsoDependsOn === 'string') {
                 alsoDependsOn = [alsoDependsOn];
             }
-            func = func.func;
+            strFunc = func.func;
+        } else {
+            strFunc = func;
         }
 
         alsoDependsOn.forEach(_attr => {
@@ -253,12 +296,12 @@ class ObjectCustomEditor extends Component {
             }
         });
 
-        if (!func) {
+        if (!strFunc) {
             data[attr] = items[attr].default === undefined ? null : items[attr].default;
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : `return ${func}`);
+                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', strFunc.includes('return') ? strFunc : `return ${strFunc}`);
                 data[attr] = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
@@ -269,8 +312,7 @@ class ObjectCustomEditor extends Component {
         return data[attr];
     }
 
-    static flattenItems(items, _result) {
-        _result = _result || {};
+    static flattenItems(items: Record<string, any>, _result: Record<string, any> = {}): Record<string, any> {
         items && Object.keys(items).forEach(attr => {
             if (items[attr].items) {
                 ObjectCustomEditor.flattenItems(items[attr].items, _result);
@@ -282,15 +324,15 @@ class ObjectCustomEditor extends Component {
         return _result;
     }
 
-    getDefaultValues(instance, obj) {
-        const defaultValues = { enabled: false };
+    getDefaultValues(instance: string, obj: Record<string, any>): Record<string, any> {
+        const defaultValues: Record<string, any> = { enabled: false };
         const adapter = instance.split('.')[0];
 
         if (this.jsonConfigs[adapter] && !this.jsonConfigs[adapter].disabled) {
             const items = ObjectCustomEditor.flattenItems(this.jsonConfigs[adapter].json.items);
 
             if (items) {
-                const processed = [];
+                const processed: string[] = [];
                 const attrs = Object.keys(items).filter(attr => items[attr]);
                 // first init simple defaults
                 attrs.forEach(attr => {
@@ -311,11 +353,11 @@ class ObjectCustomEditor extends Component {
         return defaultValues;
     }
 
-    getCommonConfig() {
+    getCommonConfig(): Record<string, any> {
         const ids     = this.props.objectIDs || [];
         const objects = this.props.objects;
 
-        const commons = {};
+        const commons: Record<string, any> = {};
 
         // calculate common settings
         this.props.customsInstances.forEach(inst => {
@@ -380,14 +422,14 @@ class ObjectCustomEditor extends Component {
         return commons;
     }
 
-    isChanged(newValues) {
+    isChanged(newValues: Record<string, any>): string | undefined {
         newValues = newValues || this.state.newValues;
         return Object.keys(newValues)
             .find(instance => newValues[instance] === null || (newValues[instance] && Object.keys(newValues[instance])
                 .find(attr => !attr.startsWith('_'))));
     }
 
-    combineNewAndOld(instance, ignoreUnderscore) {
+    combineNewAndOld(instance: string, ignoreUnderscore = false) {
         const data = { ...this.commonConfig[instance] || {}, ...this.state.newValues[instance] || {} };
 
         if (ignoreUnderscore) {
@@ -404,7 +446,7 @@ class ObjectCustomEditor extends Component {
         return data;
     }
 
-    renderOneCustom(instance, instanceObj, customObj, i) {
+    renderOneCustom(instance: string, instanceObj: ioBroker.InstanceObject, customObj: ioBroker.AnyObject, i: number) {
         const adapter = instance.split('.')[0];
 
         const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects[`system.adapter.${adapter}`].common.icon}`;
@@ -484,8 +526,8 @@ class ObjectCustomEditor extends Component {
                                 }
                                 this.cachedNewValues = newValues;
                                 this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
-                                    this.cachedNewValues = null;
-                                    this.props.onChange && this.props.onChange(this.state.hasChanges);
+                                    this.cachedNewValues = undefined;
+                                    this.props.onChange && this.props.onChange(!!this.state.hasChanges);
                                 });
                             }}
                         />}
@@ -498,10 +540,10 @@ class ObjectCustomEditor extends Component {
                             instanceObj={instanceObj}
                             customObj={customObj}
                             custom
-                            className=""
                             adapterName={adapter}
-                            instance={parseInt(instance.split('.').pop(), 10) || 0}
+                            instance={parseInt(instance?.split('.').pop() ?? '0', 10) || 0}
                             socket={this.props.socket}
+                            /** @ts-expect-error types needed */
                             theme={this.props.theme}
                             themeName={this.props.themeName}
                             themeType={this.props.themeType}
@@ -515,7 +557,7 @@ class ObjectCustomEditor extends Component {
                                 console.log(`${attr} => ${value}`);
                                 const newValues = JSON.parse(JSON.stringify(this.cachedNewValues));
                                 newValues[instance] = newValues[instance] || {};
-                                if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig[instance], attr)) === JSON.stringify(value)) {
+                                if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig?.[instance], attr)) === JSON.stringify(value)) {
                                     ConfigGeneric.setValue(newValues[instance], attr, null);
                                     if (!Object.keys(newValues[instance]).length) {
                                         delete newValues[instance];
@@ -525,8 +567,8 @@ class ObjectCustomEditor extends Component {
                                 }
                                 this.cachedNewValues = newValues;
                                 this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
-                                    this.cachedNewValues = null;
-                                    this.props.onChange && this.props.onChange(this.state.hasChanges);
+                                    this.cachedNewValues = undefined;
+                                    this.props.onChange && this.props.onChange(!!this.state.hasChanges);
                                 });
                             }}
                         /> : null}
@@ -558,6 +600,7 @@ class ObjectCustomEditor extends Component {
     // }
 
     renderErrorMessage() {
+        // @ts-expect-error types needed
         return !!this.state.error && <DialogError
             classes={{ }}
             title={this.props.t('Error')}
@@ -566,32 +609,32 @@ class ObjectCustomEditor extends Component {
         />;
     }
 
-    getObject(objects, oldObjects, id) {
+    getObject(objects: Record<string, ioBroker.AnyObject>, oldObjects: Record<string, ioBroker.AnyObject>, id: string): Record<string, any> {
         if (objects[id]) {
             return Promise.resolve(objects[id]);
         }
         return this.props.socket.getObject(id)
-            .then(obj => {
-                oldObjects[id] = JSON.parse(JSON.stringify(obj));
+            .then((obj: ioBroker.AnyObject) => {
+                oldObjects[id] = deepClone(obj);
                 objects[id] = obj;
                 return obj;
             });
     }
 
-    saveOneState(ids, cb, _objects, _oldObjects) {
+    saveOneState(ids: string[], cb: () => void, _objects?: any, _oldObjects?: any) {
         _objects    = _objects    || {};
         _oldObjects = _oldObjects || {};
 
-        if (!ids || !ids.length) {
+        if (!ids?.length) {
             // save all objects
             const keys = Object.keys(_objects);
             if (!keys.length) {
-                this.setState({ maxOids: null }, () =>
+                this.setState({ maxOids: 0 }, () =>
                     this.props.onProgress(false));
                 cb && cb();
             } else {
                 this.setState({ progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50 });
-                const id = keys.shift();
+                const id = keys.shift() as string;
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
                     !this.changedIds.includes(id) && this.changedIds.push(id);
 
@@ -600,7 +643,7 @@ class ObjectCustomEditor extends Component {
                             delete _objects[id];
                             delete _oldObjects[id];
                             return this.props.socket.getObject(id)
-                                .then(obj => {
+                                .then((obj: ioBroker.AnyObject) => {
                                     this.props.objects[id] = obj;
                                     setTimeout(() =>
                                         this.saveOneState(ids, cb, _objects, _oldObjects), 0);
@@ -623,9 +666,9 @@ class ObjectCustomEditor extends Component {
             // 0 - 50
             this.setState({ progress: Math.round(((maxOids - ids.length) / maxOids) * 50) });
 
-            const id = ids.shift();
+            const id = ids.shift() as string;
             this.getObject(_objects, _oldObjects, id)
-                .then(obj => {
+                .then((obj: Record<string, any>) => {
                     if (!obj) {
                         window.alert(`Invalid object ${id}`);
                         return;
@@ -701,24 +744,24 @@ class ObjectCustomEditor extends Component {
             return false;
         }
         return <ConfirmDialog
-            text={this.props.t('The changes will be applied to %s states. Are you sure?', this.props.objectIDs.length)}
+            text={this.props.t('The changes will be applied to %s states. Are you sure?', this.props.objectIDs.length.toString())}
             ok={this.props.t('Yes')}
             onClose={result => {
                 if (result) {
                     this.setState({ showConfirmation: false, confirmed: true }, () => {
                         const cb = this.cb;
-                        this.cb = null;
+                        this.cb = undefined;
                         this.onSave(cb);
                     });
                 } else {
-                    this.cb = null;
+                    this.cb = undefined;
                     this.setState({ showConfirmation: false });
                 }
             }}
         />;
     }
 
-    onSave = cb => {
+    onSave = (cb?: () => void): void => {
         if (this.props.objectIDs.length > 10 && !this.state.confirmed) {
             this.cb = cb;
             this.setState({ showConfirmation: true });
@@ -726,7 +769,7 @@ class ObjectCustomEditor extends Component {
             this.saveOneState([...this.props.objectIDs], () => {
                 this.cachedNewValues = {};
                 this.commonConfig = this.getCommonConfig();
-                this.setState({ confirmed: false, hasChanges: false, newValues: {} }, () => {
+                this.setState({ confirmed: false, hasChanges: undefined, newValues: {} }, () => {
                     this.props.reportChangedIds(this.changedIds);
                     this.props.onChange(false, true);
                     cb && setTimeout(() => cb(), 100);
@@ -763,21 +806,5 @@ class ObjectCustomEditor extends Component {
         </Paper>;
     }
 }
-
-ObjectCustomEditor.propTypes = {
-    t: PropTypes.func,
-    onChange: PropTypes.func, // function onChange(haveChanges)
-    lang: PropTypes.string,
-    objects: PropTypes.object,
-    customsInstances: PropTypes.array,
-    socket: PropTypes.object,
-    objectIDs: PropTypes.array,
-    theme: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
-    registerSaveFunc: PropTypes.func,
-    onProgress: PropTypes.func,
-    onError: PropTypes.func,
-};
 
 export default withWidth()(withStyles(styles)(ObjectCustomEditor));
