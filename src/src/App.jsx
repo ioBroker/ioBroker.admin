@@ -71,7 +71,7 @@ import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import ExpertModeDialog from './dialogs/ExpertModeDialog';
-import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
+import NewsAdminDialog, { checkMessages } from './dialogs/NewsAdminDialog';
 import HostWarningDialog from './dialogs/HostWarningDialog';
 import LogsWorker from './Workers/LogsWorker';
 import InstancesWorker from './Workers/InstancesWorker';
@@ -1329,16 +1329,13 @@ class App extends Router {
                     });
 
                     if (checkNews?.length) {
-                        newsAdminDialogFunc(
-                            checkNews,
-                            lastNewsId?.val,
-                            this.state.theme,
-                            id =>
-                                this.socket.setState(`admin.${instance}.info.newsLastId`, {
-                                    val: id,
-                                    ack: true,
-                                }),
-                        );
+                        this.setState({
+                            showNews: {
+                                instance,
+                                checkNews,
+                                lastNewsId: lastNewsId?.val,
+                            },
+                        });
                     }
                 }
             }
@@ -1347,6 +1344,20 @@ class App extends Router {
             this.showAlert(error, 'error');
         }
     };
+
+    renderNewsDialog() {
+        if (!this.state.showNews) {
+            return null;
+        }
+        return <NewsAdminDialog
+            newsArr={this.state.showNews.checkNews}
+            current={this.state.showNews.lastNewsId}
+            onSetLastNewsId={async id => {
+                id && (await this.socket.setState(`admin.${this.state.showNews.instance}.info.newsLastId`, { val: id, ack: true }));
+                this.setState({ showNews: null });
+            }}
+        />;
+    }
 
     renderSlowConnectionWarning() {
         if (!this.state.showSlowConnectionWarning) {
@@ -2629,6 +2640,7 @@ class App extends Router {
                     {this.renderWizardDialog()}
                     {this.showRedirectDialog()}
                     {this.renderSlowConnectionWarning()}
+                    {this.renderNewsDialog()}
                     {this.renderHostWarningDialog()}
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
                         <Connecting />

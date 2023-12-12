@@ -1,6 +1,15 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.12.4 (2023-11-16)
+* (foxriver76) custom settings icon has no a brighter color in dark mode
+* (foxriver76) fixed color of host selector in dark mode
+* (foxriver76) fixed problem with a JSON config language component
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.12.3 (2023-11-15)
 * (foxriver76) fixed problem that disabled checkbox is still clickable
 * (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
