@@ -86,6 +86,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) prevent strict schema validation being logged to syslog
+* (foxriver76) fixed problems with ObjectCustomEditor
+
 ### 6.12.9 (2023-12-12)
 * (foxriver76) prevented the strict schema validation being logged to syslog
 * (bluefox) corrected the displaying of news with the new lines
