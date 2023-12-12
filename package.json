@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "6.12.8",
+  "version": "6.12.9",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -42,7 +42,7 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "semver": "^7.5.4",
-    "ws": "^8.14.2"
+    "ws": "^8.15.0"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.7.0",
@@ -51,8 +51,8 @@
     "@iobroker/legacy-testing": "^1.0.3",
     "@iobroker/testing": "^4.1.0",
     "@tsconfig/node16": "^16.1.1",
-    "@typescript-eslint/eslint-plugin": "^6.13.2",
-    "@typescript-eslint/parser": "^6.13.2",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
     "chai": "^4.3.10",
     "colorette": "^2.0.20",
     "eslint": "^8.55.0",
@@ -66,9 +66,9 @@
     "gulp-replace": "^1.1.4",
     "gulp-sourcemaps": "^3.0.0",
     "mocha": "^10.2.0",
-    "prettier": "^3.1.0",
-    "puppeteer": "^21.5.2",
-    "typescript": "^5.3.2"
+    "prettier": "^3.1.1",
+    "puppeteer": "^21.6.0",
+    "typescript": "^5.3.3"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.8",
+    "version": "6.12.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.9": {
+        "en": "prevented the strict schema validation being logged to syslog\ncorrected the displaying of news with the new lines",
+        "de": "verhindert, dass die strenge schemavalidierung bei syslog angemeldet wird\ndie anzeige von nachrichten mit den neuen zeilen korrigiert",
+        "ru": "предотвратить строгую схему валидации, входя в syslog\nисправили отображение новостей с новыми линиями",
+        "pt": "impediu a validação rigorosa de esquemas sendo logado para syslog\ncorrigiu a exibição de notícias com as novas linhas",
+        "nl": "verhinderde dat de strikte schema-betaling werd ingelogd aan syslog\nvertaling:",
+        "fr": "empêché la validation stricte du schéma de syslog\na corrigé l'affichage des nouvelles avec les nouvelles lignes",
+        "it": "impedire che la validazione rigorosa dello schema venga collegata a syslog\ncorretto la visualizzazione di notizie con le nuove linee",
+        "es": "impidió que la validación estricta de esquema se registrara para syslog\ncorregido el despliegue de noticias con las nuevas líneas",
+        "pl": "zapobiegło to ścisłej walidacji syslogii\nzrekomendowano wyświetlanie wiadomości z nowymi liniami",
+        "uk": "запобігла суворій перевірці схеми, що підлягають списанню\nвиправлено відображення новин новими лініями",
+        "zh-cn": "防止严格辨认药\n修改了新线新闻的展示"
+      },
       "6.12.8": {
         "en": "corrected ACL for files\nallowed changing color of the menu item\ncorrected the user/group icon selector",
         "de": "aCL für Dateien korrigiert\nerlaubte änderung der farbe des menüpunkts\nkorrigierte den benutzer/gruppen-icon-selektor",
@@ -95,19 +108,6 @@
         "pl": "stabilny problem, w jaki sposób uszkodzenie skrzynki jest nadal clickowalne\nnie zastępuje już wartości adminUI.tab\nwolny Opcja Solo w autokompletnych częściach\nprawdziwy problem z jsonConfig wysyła na rynek. Przyjmowaniu możliwości rodzimej, gdy wracamy do wielu własności\nuruchomiony spadek po wybraniu języka `system' w JsonConfig",
         "uk": "виправлена проблема, яка відключена прапорець все ще клацається\nне замінює дійсний загальний.adminUI.tab значення адаптерів\nбезкоштовно Індивідуальний варіант для автоматичних компонентів\nвиправлено проблему з jsonConfig відправити Щоб при поверненні декількох властивостей\nвиправлений вибір порожніх випадань після вибору `system language` в JsonConfig",
         "zh-cn": "残疾检查箱的固定问题仍然难以预测。\n不再取代有效共同的、adminUI\n定期存款 汽车单元的选择\njson Config发送的固定问题 在归还多种财产时,采用当地办法\n在选择“JsonConfig”的“系统语言”之后,定期撤退。"
-      },
-      "6.12.2": {
-        "en": "fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties\nfixed crash case when schema cannot be read\nFixed noDelete attribute of JSON config accordion",
-        "de": "problem mit jsonConfig senden Mit nativer Option bei der Rückgabe mehrerer Eigenschaften\nfester crashfall, wenn schema nicht gelesen werden kann\nFixed noDelete Attribut von JSON config Akkordeon",
-        "ru": "фиксированная проблема с jsonConfig отправить С родным вариантом при возврате нескольких свойств\nфиксированный случай аварии, когда схема не может быть прочитана\nФиксированный noDelete атрибут JSON config аккордеон",
-        "pt": "problema fixo com jsonConfig enviar Para com opção nativa ao retornar várias propriedades\ncaso de acidente fixo quando o esquema não pode ser lido\nAtributo noDelete fixo de acordeão de configuração JSON",
-        "nl": "_ Met inheemse optie als je meerdere eigenschappen terugbrengt\nvertaling:\n_",
-        "fr": "problème fixe avec jsonConfig envoyer À l'option native lorsque vous retournez plusieurs propriétés\ncas de crash fixe lorsque le schéma ne peut pas être lu\nCorrection de l'attribut noDelete de JSON config accordéion",
-        "it": "problema fisso con jsonConfig inviare A con opzione nativo quando si ritorna più proprietà\ncaso di crash fisso quando lo schema non può essere letto\nAttributo noDelete fisso della fisarmonica di configurazione JSON",
-        "es": "edición fija con jsonConfig enviar A con opción nativa al devolver múltiples propiedades\ncaso de accidente fijo cuando el esquema no se puede leer\nAtributo fijo no único del acordeón de config JSON",
-        "pl": "prawdziwy problem z jsonConfig wysyła na rynek. Przyjmowaniu możliwości rodzimej, gdy wracamy do wielu własności\nsprawa rozbłysku, gdy schema nie może być odczytana\nFixed noDelete attributes",
-        "uk": "виправлено проблему з jsonConfig відправити Щоб при поверненні декількох властивостей\nвиправлений випадок аварії, коли не можна читати\nФіксований атрибут налаштування JSON",
-        "zh-cn": "json Config发送的固定问题 在归还多种财产时,采用当地办法\n无法阅读shiema的固定事故案件\n九. 未确定联合协商会的名称"
       }
     },
     "desc": {
