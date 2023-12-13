@@ -15,6 +15,7 @@ import {
     UploadFile as IconUploadFile,
 } from '@mui/icons-material';
 
+import BaseUtils from '@/Utils';
 import type AdminConnection from './wrapper/AdminConnection';
 
 import I18n from './wrapper/i18n';
@@ -187,7 +188,6 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                         if (this.props.custom) {
                             this.props.onChange(this.props.attr, value, () =>
                                 this.props.forceUpdate([this.props.attr], this.props.data));
-                            // this.onChange(this.props.attr, this.defaultValue);
                         } else {
                             ConfigGeneric.setValue(this.props.data, this.props.attr, value);
                             this.props.onChange(this.props.data, undefined, () =>
@@ -197,7 +197,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 });
         } else {
             this.defaultSendToDone = false;
-            // show error, that instance does not started
+            // show error, that instance did not start
             this.onError(this.props.attr, I18n.t('ra_Instance %s is not alive', this.props.instance.toString()));
         }
     }
@@ -406,7 +406,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
      */
     // eslint-disable-next-line react/no-unused-class-component-methods
     onChange(attr: string, newValue: unknown, cb?: () => void): Promise<void> {
-        const data = JSON.parse(JSON.stringify(this.props.data));
+        const data = BaseUtils.deepClone(this.props.data);
         ConfigGeneric.setValue(data, attr, newValue);
 
         if (
@@ -568,7 +568,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         return Promise.resolve();
     }
 
-    execute(func: string| Record<string, string>, defaultValue: any, data: Record<string, any>, arrayIndex: number, globalData: Record<string, any>) {
+    execute(func: string | Record<string, string>, defaultValue: any, data: Record<string, any>, arrayIndex: number, globalData: Record<string, any>) {
         let fun: string;
 
         if (isObject(func)) {
