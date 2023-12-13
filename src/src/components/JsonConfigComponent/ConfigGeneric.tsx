@@ -15,7 +15,7 @@ import {
     UploadFile as IconUploadFile,
 } from '@mui/icons-material';
 
-import { deepClone } from '@mui/x-data-grid/utils/utils';
+import BaseUtils from '@/Utils';
 import type AdminConnection from './wrapper/AdminConnection';
 
 import I18n from './wrapper/i18n';
@@ -406,7 +406,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
      */
     // eslint-disable-next-line react/no-unused-class-component-methods
     onChange(attr: string, newValue: unknown, cb?: () => void): Promise<void> {
-        const data = deepClone(this.props.data);
+        const data = BaseUtils.deepClone(this.props.data);
         ConfigGeneric.setValue(data, attr, newValue);
 
         if (
