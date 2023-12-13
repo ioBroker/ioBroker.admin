@@ -87,7 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
-* (foxriver76) remove undocumented legacy behavior of json config not saving attributes starting with underscore, use `doNotSave` property instead
+* (foxriver76) fixed problem with default value of underscore attributes in Json Config
 * (foxriver76) prevent strict schema validation being logged to syslog
 * (foxriver76) fixed problems with ObjectCustomEditor
 

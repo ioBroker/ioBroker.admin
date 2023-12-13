@@ -563,7 +563,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
             for (const attr of Object.keys(this.state.data)) {
                 const item = this.findAttr(attr);
-                if (!item || !item.doNotSave) {
+                if ((!item || !item.doNotSave) && !attr.startsWith('_')) {
                     ConfigGeneric.setValue(obj.native, attr, this.state.data[attr]);
                 } else {
                     ConfigGeneric.setValue(obj.native, attr, null);
