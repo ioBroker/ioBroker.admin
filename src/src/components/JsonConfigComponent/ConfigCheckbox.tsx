@@ -8,7 +8,7 @@ import {
     FormControl,
 } from '@mui/material';
 
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type AdminConnection from './wrapper/AdminConnection';
 import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
 import I18n from './wrapper/i18n';
 

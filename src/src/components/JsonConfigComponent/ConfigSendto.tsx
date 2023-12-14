@@ -9,7 +9,7 @@ import {
     Info as IconInfo,
 } from '@mui/icons-material';
 
-import { AdminConnection } from '@iobroker/adapter-react-v5';
+import type AdminConnection from './wrapper/AdminConnection';
 import I18n from './wrapper/i18n';
 import DialogError from './wrapper/Dialogs/Error';
 import DialogMessage from './wrapper/Dialogs/Message';
@@ -162,15 +162,19 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         if (this.props.schema.openUrl) {
             // read admin host
             const adminInstance = await this.props.socket.getCurrentInstance();
-            const instanceObj = await this.props.socket.getObject(`system.adapter.${adminInstance}`);
-            const hostObj = await this.props.socket.getObject(`system.host.${instanceObj.common.host}`);
 
-            const ip = findNetworkAddressOfHost(hostObj, window.location.hostname);
-            if (ip) {
-                hostname = `${ip}:${window.location.port}`;
-            } else {
-                console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
-                return;
+            const instanceObj: ioBroker.InstanceObject | null | undefined = await this.props.socket.getObject(`system.adapter.${adminInstance}`) as ioBroker.InstanceObject | null | undefined;
+            if (instanceObj) {
+                const hostObj = await this.props.socket.getObject(`system.host.${instanceObj?.common?.host}`);
+                if (hostObj) {
+                    const ip = findNetworkAddressOfHost(hostObj, window.location.hostname);
+                    if (ip) {
+                        hostname = `${ip}:${window.location.port}`;
+                    } else {
+                        console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
+                        return;
+                    }
+                }
             }
         }
 
@@ -183,8 +187,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
 
     renderErrorDialog() {
         if (this.state._error) {
-            // @ts-expect-error classes should be optional in adapter-react
-            return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({ _error: '' })} />;
+            return <DialogError text={this.state._error} onClose={() => this.setState({ _error: '' })} />;
         }
         return null;
     }
@@ -318,7 +321,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
             text={this.getText(confirm.text)}
             ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
             cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
-            icon={icon}
+            icon={icon || undefined}
             onClose={isOk =>
                 this.setState({ confirmDialog: false }, () =>
                     isOk && this._onClick())}

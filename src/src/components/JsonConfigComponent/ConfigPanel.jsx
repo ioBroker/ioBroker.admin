@@ -314,7 +314,7 @@ class ConfigPanel extends ConfigGeneric {
                     container
                     className={Utils.clsx(classes.fullWidth, this.props.isParentTab && classes.padding)}
                     spacing={2}
-                    style={this.props.isParentTab ? { width: '100%', height: '100%', overflow: 'hidden' } : null}
+                    style={this.props.schema.innerStyle}
                 >
                     {this.renderItems(items, disabled)}
                 </Grid>

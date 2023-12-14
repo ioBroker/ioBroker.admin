@@ -15,7 +15,6 @@ import {
     UploadFile as IconUploadFile,
 } from '@mui/icons-material';
 
-import BaseUtils from '@/Utils';
 import type AdminConnection from './wrapper/AdminConnection';
 
 import I18n from './wrapper/i18n';
@@ -307,46 +306,44 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             icon = <IconInfo />;
         }
 
-        return (
-            <ConfirmDialog
-                title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
-                text={this.getText(confirm.text)}
-                ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
-                cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
-                icon={icon}
-                onClose={isOk =>
-                    this.setState({ confirmDialog: false }, () => {
-                        if (isOk) {
-                            const data = JSON.parse(JSON.stringify(this.props.data));
-                            if (this.state.confirmDepAttr) {
-                                ConfigGeneric.setValue(data, this.state.confirmDepAttr, this.state.confirmDepNewValue);
-                            }
+        return <ConfirmDialog
+            title={this.getText(confirm.title) || I18n.t('ra_Please confirm')}
+            text={this.getText(confirm.text)}
+            ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
+            cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
+            icon={icon || undefined}
+            onClose={isOk =>
+                this.setState({ confirmDialog: false }, () => {
+                    if (isOk) {
+                        const data = JSON.parse(JSON.stringify(this.props.data));
+                        if (this.state.confirmDepAttr) {
+                            ConfigGeneric.setValue(data, this.state.confirmDepAttr, this.state.confirmDepNewValue);
+                        }
 
-                            ConfigGeneric.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
-                            this.setState(
-                                {
-                                    confirmDialog: false,
-                                    confirmDepAttr: null,
-                                    confirmDepNewValue: null,
-                                    confirmNewValue: null,
-                                    confirmAttr: null,
-                                    confirmData: null,
-                                },
-                                () => this.props.onChange(data),
-                            );
-                        } else {
-                            this.setState({
+                        ConfigGeneric.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
+                        this.setState(
+                            {
                                 confirmDialog: false,
                                 confirmDepAttr: null,
                                 confirmDepNewValue: null,
                                 confirmNewValue: null,
                                 confirmAttr: null,
                                 confirmData: null,
-                            });
-                        }
-                    })}
-            />
-        );
+                            },
+                            () => this.props.onChange(data),
+                        );
+                    } else {
+                        this.setState({
+                            confirmDialog: false,
+                            confirmDepAttr: null,
+                            confirmDepNewValue: null,
+                            confirmNewValue: null,
+                            confirmAttr: null,
+                            confirmData: null,
+                        });
+                    }
+                })}
+        />;
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
@@ -406,7 +403,8 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
      */
     // eslint-disable-next-line react/no-unused-class-component-methods
     onChange(attr: string, newValue: unknown, cb?: () => void): Promise<void> {
-        const data = BaseUtils.deepClone(this.props.data);
+        // Do not use here deep copy, as it is not JsonConfig
+        const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
 
         if (

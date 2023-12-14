@@ -3,7 +3,7 @@ import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField } from '@mui/material';
 
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type AdminConnection from './wrapper/AdminConnection';
 import I18n from './wrapper/i18n';
 
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
