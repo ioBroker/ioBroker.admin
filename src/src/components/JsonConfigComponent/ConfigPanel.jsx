@@ -31,6 +31,7 @@ import ConfigColor from './ConfigColor';
 import ConfigCoordinates from './ConfigCoordinates';
 import ConfigCustom from './ConfigCustom';
 import ConfigDatePicker from './ConfigDatePicker';
+import ConfigDeviceManager from './ConfigDeviceManager';
 import ConfigFile from './ConfigFile';
 import ConfigFileSelector from './ConfigFileSelector';
 import ConfigFunc from './ConfigFunc';
@@ -83,6 +84,7 @@ const components = {
     cron: ConfigCRON,
     custom: ConfigCustom,
     datePicker: ConfigDatePicker,
+    deviceManager: ConfigDeviceManager,
     divider: ConfigStaticDivider,
     file: ConfigFile,
     fileSelector: ConfigFileSelector,
@@ -308,7 +310,12 @@ class ConfigPanel extends ConfigGeneric {
                 className={Utils.clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
                 style={style}
             >
-                <Grid container className={Utils.clsx(classes.fullWidth, this.props.isParentTab && classes.padding)} spacing={2}>
+                <Grid
+                    container
+                    className={Utils.clsx(classes.fullWidth, this.props.isParentTab && classes.padding)}
+                    spacing={2}
+                    style={this.props.isParentTab ? { width: '100%', height: '100%', overflow: 'hidden' } : null}
+                >
                     {this.renderItems(items, disabled)}
                 </Grid>
             </div>;

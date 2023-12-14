@@ -936,10 +936,9 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 marginBottom: 0,
                 // marginRight: 8,
                 textAlign: 'left',
-                width:
-                            schema.type === 'divider' || schema.type === 'header'
-                                ? schema.width || '100%'
-                                : undefined,
+                width: schema.type === 'divider' || schema.type === 'header'
+                    ? schema.width || '100%'
+                    : undefined,
                 ...schema.style,
                 ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
             })}
