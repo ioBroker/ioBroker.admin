@@ -42,7 +42,7 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "semver": "^7.5.4",
-    "ws": "^8.15.0"
+    "ws": "^8.15.1"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.7.0",
@@ -67,7 +67,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "mocha": "^10.2.0",
     "prettier": "^3.1.1",
-    "puppeteer": "^21.6.0",
+    "puppeteer": "^21.6.1",
     "typescript": "^5.3.3"
   },
   "bugs": {
