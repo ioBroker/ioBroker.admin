@@ -1089,7 +1089,8 @@ class Markdown extends Component {
             const prefixHttp = this.props.link
                 .substring(0, this.props.link.lastIndexOf('/'))
                 .replace('https://raw.githubusercontent.com/', 'https://github.com/')
-                .replace(/\/master$/, '/blob/master');
+                .replace(/\/master$/, '/blob/master')
+                .replace(/\/main$/, '/blob/main');
 
             const prefixImage = this.props.link.substring(0, this.props.link.lastIndexOf('/'));
             mm.forEach(link => {
