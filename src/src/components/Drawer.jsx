@@ -365,11 +365,13 @@ class Drawer extends Component {
                         if (tabsInfo[tab]) {
                             obj = { name: tab, ...tabsInfo[tab] };
                         } else {
-                            obj = { name: tab, order: instance.adminTab.order !== undefined ? instance.adminTab.order : 200 };
+                            obj = { name: tab, order: instance.adminTab.order !== undefined ? instance.adminTab.order : 200, icon: instance.adminTab.icon };
                         }
 
                         if (!obj.icon) {
                             obj.icon = `adapter/${instance.name}/${instance.icon}`;
+                        } else if (!obj.icon.startsWith('data:image') && !obj.icon.includes('/')) {
+                            obj.icon = `adapter/${instance.name}/${obj.icon}`;
                         }
 
                         obj.title = title;
