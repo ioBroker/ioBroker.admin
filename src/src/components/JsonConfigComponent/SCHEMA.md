@@ -414,6 +414,37 @@ adapter.on('message', obj => {
 
 - `uuid` - Show iobroker UUID
 - `port` - Special input for ports. It checks automatically if port is used by other instances and shows a warning
+  - `min` - minimal allowed port number. It could be 0. And if the value is then zero, the check if the port is occupied will not happen. 
+
+- `deviceManager` - show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
+  Here is an example of how to show device manager in a tab:
+```
+"_deviceManager": {
+  "type": "panel",
+  "label": "Device manager",
+  "items": {
+    "_dm": {
+      "type": "deviceManager",
+      "sm": 12,
+      "style": {
+        "width": "100%",
+        "height": "100%",
+        "overflow": "hidden"
+      }
+    }
+  },
+  "style": {
+    "width": "100%",
+    "height": "100%",
+    "overflow": "hidden"
+  },
+  "innerStyle": {
+    "width": "100%",
+    "height": "100%",
+    "overflow": "hidden"
+  }
+}
+```
 
 **Note: attributes or controls marked with "!", are not yet implemented.**
 
@@ -422,7 +453,7 @@ All types could have:
 - `sm` - width in 1/12 of screen on small screen
 - `md` - width in 1/12 of screen on middle screens
 - `lg` - width in 1/12 of screen on large screens
-- `xs` - width in 1/12 of screen on very small screens
+- `xs` - width in 1/12 of screen on tiny screens
 - `newLine` - should be shown from new line
 - `label` - String or object like {en: 'Name', ru: 'Имя'}
 - `hidden` - JS function that could use `native.attribute` for calculation
@@ -519,8 +550,8 @@ data: {
    timeout: [1000, 2000, 3000]
 }
 ```
-In this case input must be text, where shown `__different__`, with the autocomplete option of 3 possible values.
-Users can select from dropdown 1000, 2000 or 3000 or input their own new value, e.g. 500.
+In this case input must be text, where shown `__different__`, with the autocomplete option of three possible values.
+Users can select from dropdown 1000, 2000 or 3000 or input their own new value, e.g., 500.
 
 Boolean must support indeterminate if value is [false, true]
 

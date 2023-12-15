@@ -123,7 +123,7 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
             return null;
         }
 
-        const min = this.props.schema.min || 20;
+        const min = this.props.schema.min === undefined ? 20 : this.props.schema.min;
         const max = this.props.schema.max || 0xFFFF;
 
         value = value.toString().trim();
@@ -163,28 +163,30 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
             this.updateTimeout = undefined;
         }
 
-        const min = this.props.schema.min || 20;
+        const min = this.props.schema.min === undefined ? 20 : this.props.schema.min;
         const max = this.props.schema.max || 0xFFFF;
 
         let warning;
         if (this.state.ports) {
             const num = parseInt(this.state._value, 10);
 
-            // filter ports only with the same bind address
-            // todo: IPv6 (v6bind or '::/0')
-            const ports = this.state.ports.filter(item => !this.props.data.bind ||
-                this.props.data.bind === item.bind ||
-                this.props.data.bind === '0.0.0.0' ||
-                item.bind === '0.0.0.0');
+            if (num) {
+                // filter ports only with the same bind address
+                // todo: IPv6 (v6bind or '::/0')
+                const ports = this.state.ports.filter(item => !this.props.data.bind ||
+                    this.props.data.bind === item.bind ||
+                    this.props.data.bind === '0.0.0.0' ||
+                    item.bind === '0.0.0.0');
 
-            let idx = ports.findIndex(item => item.port === num && item.enabled);
-            if (idx !== -1) {
-                error = I18n.t('ra_Port is already used by %s', this.state.ports[idx].name);
-            } else {
-                idx = ports.findIndex(item => item.port === num && !item.enabled);
+                let idx = ports.findIndex(item => item.port === num && item.enabled);
                 if (idx !== -1) {
-                    warning = true;
-                    error = I18n.t('ra_Port could be used by %s', this.state.ports[idx].name);
+                    error = I18n.t('ra_Port is already used by %s', this.state.ports[idx].name);
+                } else {
+                    idx = ports.findIndex(item => item.port === num && !item.enabled);
+                    if (idx !== -1) {
+                        warning = true;
+                        error = I18n.t('ra_Port could be used by %s', this.state.ports[idx].name);
+                    }
                 }
             }
         }
