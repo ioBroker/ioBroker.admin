@@ -370,7 +370,7 @@ class Drawer extends Component {
 
                         if (!obj.icon) {
                             obj.icon = `adapter/${instance.name}/${instance.icon}`;
-                        } else if (!obj.icon.startsWith('data:image') && !obj.icon.includes('/')) {
+                        } else if (typeof obj.icon !== 'object' && !obj.icon.startsWith('data:image') && !obj.icon.includes('/')) {
                             obj.icon = `adapter/${instance.name}/${obj.icon}`;
                         }
 
