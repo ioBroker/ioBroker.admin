@@ -201,7 +201,7 @@ const styles = theme => ({
     },
 });
 
-class IntroCard extends React.Component {
+class IntroCard extends Component {
     constructor(props) {
         super(props);
 

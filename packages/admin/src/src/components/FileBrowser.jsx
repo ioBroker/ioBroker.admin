@@ -1227,6 +1227,7 @@ class FileBrowser extends Component {
                     :
                     <div className={this.props.classes[`itemDeleteButton${this.state.viewType}`]} />}
             </Hidden>
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             {this.state.viewType === TABLE && this.props.allowDownload ? <a
                 className={Utils.clsx('MuiButtonBase-root', 'MuiIconButton-root', 'MuiIconButton-sizeLarge', this.props.classes.itemDownloadButtonTable)}
                 tabIndex="0"
