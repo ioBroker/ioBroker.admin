@@ -23,7 +23,7 @@
     "@iobroker/json-config": "file:../../jsonConfig",
     "@iobroker/socket-client": "^2.3.11",
     "@mui/icons-material": "^5.14.15",
-    "@mui/lab": "^5.0.0-alpha.150",
+    "@mui/lab": "5.0.0-alpha.150",
     "@mui/material": "5.14.14",
     "@mui/styles": "5.14.14",
     "@mui/x-data-grid": "^6.17.0",
