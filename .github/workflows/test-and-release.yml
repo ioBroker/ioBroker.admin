@@ -44,6 +44,9 @@ jobs:
           cd packages/admin/src
           npm i --force
 
+      - name: 'Build JsonConfig'
+        run: npm run build -w packages/jsonConfig/
+
       - name: Check TypeScript files
         run: |
           cd packages/admin/src
