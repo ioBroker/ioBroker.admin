@@ -1,14 +1,18 @@
 import PropTypes from 'prop-types';
 
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import DialogContentText from '@mui/material/DialogContentText';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Button,
+} from '@mui/material';
 
-import IconDelete from '@mui/icons-material/Delete';
-import IconCancel from '@mui/icons-material/Close';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+    Close as IconCancel,
+    Delete as IconDelete,
+} from '@mui/icons-material';
 
 function GroupDeleteDialog(props) {
     if (!props.open) {

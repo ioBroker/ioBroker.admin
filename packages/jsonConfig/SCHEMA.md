@@ -17,7 +17,7 @@ Additionally, to the JSON file, you must define in the `io-package.json` in `com
 ```
 to say that the adapter supports JSON configuration.
 
-You can see almost all components in action if you test this adapter: https://github.com/mcm1957/ioBroker.jsonconfig-demo.
+You can see almost all components in action if you test this adapter: https://github.com/mcm4iob/ioBroker.jsonconfig-demo.
 You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-demo` on the npm tab.
 
 
@@ -83,7 +83,7 @@ Possible types:
                 `[{"items": [{"label": "Val1", "value": 1}, {"label": "Val2", value: "2}], "name": "group1"}, {"items": [{"label": "Val3", "value": 3}, {"label": "Val4", value: "4}], "name": "group2"}, {"label": "Val5", "value": 5}]`
 
 - `autocomplete`
-  - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`
+  - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]` (keys must be unique)
   - `freeSolo` - Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.
 
 - `image` - saves image as file of the `adapter.X` object or as base64 in attribute
@@ -178,6 +178,7 @@ Possible types:
     - `useNative` - if adapter returns a result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration.
     - `showProcess` - Show spinner while request is in progress
     - `timeout` - timeout for request in ms. Default: none.
+    - `onLoaded` - execute the button logic once initially
 
 - `setState` - button that set instance's state
     - `id` - `system.adapter.myAdapter.%INSTANCE%.test`, you can use the placeholder `%INSTANCE%` to replace it with the current instance name
@@ -360,8 +361,9 @@ adapter.on('message', obj => {
   - `freeSolo` - Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.
   - `alsoDependsOn` - by change of which attributes, the command must be resent
   - `maxLength` - max length of the text in field
+    
   To use this option, your adapter must implement message handler:
-    The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]`
+    The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]` (keys must be unique)
     See `selectSendTo` for handler example
 
 - `textSendTo`
@@ -412,6 +414,37 @@ adapter.on('message', obj => {
 
 - `uuid` - Show iobroker UUID
 - `port` - Special input for ports. It checks automatically if port is used by other instances and shows a warning
+  - `min` - minimal allowed port number. It could be 0. And if the value is then zero, the check if the port is occupied will not happen. 
+
+- `deviceManager` - show device manager. For that, the adapter must support device manager protocol. See iobroker/dm-utils.
+  Here is an example of how to show device manager in a tab:
+```
+"_deviceManager": {
+  "type": "panel",
+  "label": "Device manager",
+  "items": {
+    "_dm": {
+      "type": "deviceManager",
+      "sm": 12,
+      "style": {
+        "width": "100%",
+        "height": "100%",
+        "overflow": "hidden"
+      }
+    }
+  },
+  "style": {
+    "width": "100%",
+    "height": "100%",
+    "overflow": "hidden"
+  },
+  "innerStyle": {
+    "width": "100%",
+    "height": "100%",
+    "overflow": "hidden"
+  }
+}
+```
 
 **Note: attributes or controls marked with "!", are not yet implemented.**
 
@@ -420,7 +453,7 @@ All types could have:
 - `sm` - width in 1/12 of screen on small screen
 - `md` - width in 1/12 of screen on middle screens
 - `lg` - width in 1/12 of screen on large screens
-- `xs` - width in 1/12 of screen on very small screens
+- `xs` - width in 1/12 of screen on tiny screens
 - `newLine` - should be shown from new line
 - `label` - String or object like {en: 'Name', ru: 'Имя'}
 - `hidden` - JS function that could use `native.attribute` for calculation
@@ -445,7 +478,7 @@ All types could have:
   - `buttonTooltipNoTranslation` - Do not translate button tooltip
 - `placeholder` - placeholder (for text control)
 - `noTranslation` - do not translate selects or other options (not for help, label or placeholder)
-- `onChange` - Structure in form `{"alsoDependsOn": ["attr1", "attr2], "calculateFunc": "attr1 + attr2", "ignoreOwnChanges": true}`
+- `onChange` - Structure in form `{"alsoDependsOn": ["attr1", "attr2"], "calculateFunc": "data.attr1 + data.attr2", "ignoreOwnChanges": true}`
 - `doNotSave` - Do not save this attribute as used only for internal calculations
 - `noMultiEdit` - if this flag set to true, this field will not be shown if user selected more than one object for edit.
 - `confirm`
@@ -517,8 +550,8 @@ data: {
    timeout: [1000, 2000, 3000]
 }
 ```
-In this case input must be text, where shown `__different__`, with the autocomplete option of 3 possible values.
-Users can select from dropdown 1000, 2000 or 3000 or input their own new value, e.g. 500.
+In this case input must be text, where shown `__different__`, with the autocomplete option of three possible values.
+Users can select from dropdown 1000, 2000 or 3000 or input their own new value, e.g., 500.
 
 Boolean must support indeterminate if value is [false, true]
 

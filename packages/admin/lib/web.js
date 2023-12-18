@@ -374,7 +374,7 @@ class Web {
 
         if (res?.common.adminUI?.config === 'json') {
             try {
-                const ajv = new Ajv({ allErrors: false });
+                const ajv = new Ajv({ allErrors: false, strict: false });
 
                 const adapterPath = path.dirname(require.resolve(`iobroker.${adapterName}/package.json`));
 

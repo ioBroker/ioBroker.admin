@@ -59,44 +59,46 @@ class Files extends Component {
                     allowDelete
                     expertMode={this.props.expertMode}
                     // eslint-disable-next-line react/no-unstable-nested-components
-                    modalEditOfAccessControl={(context /* , objData */) =>
+                    modalEditOfAccessControl={context =>
                         <FileEditOfAccessControl
-                            open={context.state.modalEditOfAccess}
                             themeType={this.props.themeType}
                             extendObject={async (adapter, file, data) => {
-                                let promise;
+                                let result;
                                 if (file && typeof file === 'object') {
                                     const obj = file;
                                     // it is setObject
-                                    promise = this.props.socket.getObject(obj._id)
-                                        .then(oldObj => {
-                                            oldObj.acl = obj.acl;
-                                            return this.props.socket.setObject(oldObj._id, oldObj)
-                                                .then(() => oldObj);
-                                        });
+                                    const oldObj = await this.props.socket.getObject(obj._id);
+                                    oldObj.acl = obj.acl;
+                                    await this.props.socket.setObject(oldObj._id, oldObj);
+                                    result = oldObj;
                                 } else if (file) {
                                     if ((data.owner || data.ownerGroup) && data.permissions) {
-                                        promise = this.props.socket.chownFile(adapter, file, { owner: data.owner, ownerGroup: data.ownerGroup })
-                                            .then(() => this.props.socket.chmodFile(adapter, file, { mode: data.permissions }));
+                                        await this.props.socket.chownFile(adapter, file, { owner: data.owner, ownerGroup: data.ownerGroup });
+                                        result = await this.props.socket.chmodFile(adapter, file, { mode: data.permissions });
                                     } else
                                         if (data.permissions) {
-                                            promise = this.props.socket.chmodFile(adapter, file, { mode: data.permissions });
+                                            result = await this.props.socket.chmodFile(adapter, file, { mode: data.permissions });
                                         } else if (data.owner || data.ownerGroup) {
-                                            promise = this.props.socket.chownFile(adapter, file, { owner: data.owner, ownerGroup: data.ownerGroup });
+                                            result = await this.props.socket.chownFile(adapter, file, { owner: data.owner, ownerGroup: data.ownerGroup });
                                         }
                                 }
 
-                                if (promise) {
-                                    const result = await promise;
-                                    if (result.entries) {
-                                        if (result?.entries) {
-                                            for (let i = 0; i < result?.entries.length; i++) {
-                                                await context.updateItemsAcl([{ id: `${adapter}/${result.entries[i].path ? `${result.entries[i].path}/` : ''}${result.entries[i].file}`, acl: result.entries[i].acl }]);
-                                            }
+                                if (Array.isArray(result)) {
+                                    for (let i = 0; i < result.length; i++) {
+                                        const item = result[i];
+                                        if (item && item.file && item.acl) {
+                                            await context.updateItemsAcl([{ id: `${adapter}/${item.path ? `${item.path}/` : ''}${item.file}`, acl: item.acl }]);
                                         }
-                                    } else if (result) {
-                                        await context.updateItemsAcl([{ id: result._id, acl: result.acl }]);
                                     }
+                                } else if (result?.entries) {
+                                    for (let i = 0; i < result.entries.length; i++) {
+                                        const item =  result.entries[i];
+                                        if (item && item.file && item.acl) {
+                                            await context.updateItemsAcl([{ id: `${adapter}/${item.path ? `${item.path}/` : ''}${item.file}`, acl: item.acl }]);
+                                        }
+                                    }
+                                } else if (result?.acl) {
+                                    await context.updateItemsAcl([{ id: result._id, acl: result.acl }]);
                                 }
                             }}
                             selected={context.state.selected}

@@ -7,6 +7,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Tooltip from '@mui/material/Tooltip';
 import Fab from '@mui/material/Fab';
 import PublishIcon from '@mui/icons-material/Publish';
+import BasicUtils from '@/Utils';
 
 import {
     I18n,
@@ -561,17 +562,20 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 return;
             }
 
+            const doNotSaveAttributes: Record<string, any> = {};
+
             for (const attr of Object.keys(this.state.data)) {
                 const item = this.findAttr(attr);
-                if (!item || !item.doNotSave) {
+                if ((!item || !item.doNotSave) && !attr.startsWith('_')) {
                     ConfigGeneric.setValue(obj.native, attr, this.state.data[attr]);
                 } else {
                     ConfigGeneric.setValue(obj.native, attr, null);
+                    doNotSaveAttributes[attr] = this.state.data[attr];
                 }
             }
 
             try {
-                const encryptedObj = JSON.parse(JSON.stringify(obj));
+                const encryptedObj = BasicUtils.deepClone(obj);
                 // encode all native attributes listed in obj.encryptedNative
                 if (Array.isArray(encryptedObj.encryptedNative)) {
                     await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
@@ -588,11 +592,15 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 window.alert(`[JsonConfig] Cannot set object: ${e}`);
             }
 
+            /** We want to preserve the doNotSaveAttributes too, just not save it */
+            const nativeWithNonSaved = { ...obj.native, ...doNotSaveAttributes };
+            console.log(nativeWithNonSaved);
+
             this.setState({
                 changed: false,
-                data: obj.native,
+                data: nativeWithNonSaved,
                 updateData: this.state.updateData + 1,
-                originalData: JSON.parse(JSON.stringify(obj.native)),
+                originalData: nativeWithNonSaved,
             }, () =>
                 close && Router.doNavigate(null));
         } else if (this.state.changed) {

@@ -57,7 +57,12 @@ import {
 import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
 import CommandDialog from './dialogs/CommandDialog';
-import Drawer, { STATES as DrawerStates, DRAWER_FULL_WIDTH, DRAWER_COMPACT_WIDTH } from './components/Drawer';
+import Drawer, {
+    STATES as DrawerStates,
+    DRAWER_FULL_WIDTH,
+    DRAWER_COMPACT_WIDTH,
+    DRAWER_EDIT_WIDTH,
+} from './components/Drawer';
 
 import Connecting from './components/Connecting';
 
@@ -66,7 +71,7 @@ import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import ExpertModeDialog from './dialogs/ExpertModeDialog';
-import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
+import NewsAdminDialog, { checkMessages } from './dialogs/NewsAdminDialog';
 import HostWarningDialog from './dialogs/HostWarningDialog';
 import LogsWorker from './Workers/LogsWorker';
 import InstancesWorker from './Workers/InstancesWorker';
@@ -128,6 +133,14 @@ const styles = theme => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
     },
+    appBarShiftEdit: {
+        width: `calc(100% - ${DRAWER_EDIT_WIDTH}px)`,
+        marginLeft: DRAWER_EDIT_WIDTH,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
     appBarShiftCompact: {
         width: `calc(100% - ${DRAWER_COMPACT_WIDTH}px)`,
         marginLeft: DRAWER_COMPACT_WIDTH,
@@ -160,6 +173,9 @@ const styles = theme => ({
     },
     contentMargin: {
         marginLeft: -DRAWER_FULL_WIDTH,
+    },
+    contentMarginEdit: {
+        marginLeft: -DRAWER_EDIT_WIDTH,
     },
     contentMarginCompact: {
         marginLeft: -DRAWER_COMPACT_WIDTH,
@@ -241,17 +257,21 @@ const styles = theme => ({
     },
     userBadge: {
         lineHeight: '48px',
+        display: 'inline-block',
     },
     userIcon: {
         borderRadius: 4,
-        width: 48,
-        height: 48,
+        width: 44,
+        height: 44,
         verticalAlign: 'middle',
+        marginLeft: 10,
+        marginRight: 10,
     },
     userText: {
         verticalAlign: 'middle',
         fontSize: 16,
-        maxWidth: 100,
+        maxWidth: 250,
+        marginRight: 10,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -275,9 +295,12 @@ const styles = theme => ({
         marginRight: 11,
     },
     siteName: {
+        lineHeight: '48px',
         fontSize: 24,
-        marginRight: 16,
+        marginLeft: 10,
+        marginRight: 10,
         display: 'inline-block',
+        verticalAlign: 'middle',
     },
 });
 
@@ -432,6 +455,7 @@ class App extends Router {
                 alertType: 'info',
                 alertMessage: '',
                 drawerState,
+                editMenuList: false,
 
                 tab: null,
                 allStored: true,
@@ -1305,16 +1329,13 @@ class App extends Router {
                     });
 
                     if (checkNews?.length) {
-                        newsAdminDialogFunc(
-                            checkNews,
-                            lastNewsId?.val,
-                            this.state.theme,
-                            id =>
-                                this.socket.setState(`admin.${instance}.info.newsLastId`, {
-                                    val: id,
-                                    ack: true,
-                                }),
-                        );
+                        this.setState({
+                            showNews: {
+                                instance,
+                                checkNews,
+                                lastNewsId: lastNewsId?.val,
+                            },
+                        });
                     }
                 }
             }
@@ -1323,6 +1344,20 @@ class App extends Router {
             this.showAlert(error, 'error');
         }
     };
+
+    renderNewsDialog() {
+        if (!this.state.showNews) {
+            return null;
+        }
+        return <NewsAdminDialog
+            newsArr={this.state.showNews.checkNews}
+            current={this.state.showNews.lastNewsId}
+            onSetLastNewsId={async id => {
+                id && (await this.socket.setState(`admin.${this.state.showNews.instance}.info.newsLastId`, { val: id, ack: true }));
+                this.setState({ showNews: null });
+            }}
+        />;
+    }
 
     renderSlowConnectionWarning() {
         if (!this.state.showSlowConnectionWarning) {
@@ -1569,7 +1604,7 @@ class App extends Router {
                             this.state.drawerState === DrawerStates.closed
                                 ? 0
                                 : this.state.drawerState === DrawerStates.opened
-                                    ? DRAWER_FULL_WIDTH
+                                    ? (this.state.editMenuList ? DRAWER_EDIT_WIDTH : DRAWER_FULL_WIDTH)
                                     : DRAWER_COMPACT_WIDTH
                         }
                         socket={this.socket}
@@ -2016,39 +2051,43 @@ class App extends Router {
 
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return <div
-                title={this.state.user.id}
-                className={Utils.clsx(
-                    this.props.classes.userBadge,
-                    this.state.user.invertBackground && this.props.classes.userBackground,
-                )}
-                ref={this.refUser}
-            >
+            return <div>
                 {this.state.systemConfig.common.siteName ?
                     <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div> : null}
-                {this.state.user.icon ?
-                    <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
-                    :
-                    <UserIcon className={this.props.classes.userIcon} />}
+
                 <div
-                    ref={this.refUserDiv}
-                    style={
-                        this.state.expireWarningMode
-                            ? { color: '#F44' }
-                            : { color: this.state.user?.color || undefined }
-                    }
-                    className={this.props.classes.userText}
+                    title={this.state.user.id}
+                    className={Utils.clsx(
+                        this.props.classes.userBadge,
+                        this.state.user.invertBackground && this.props.classes.userBackground,
+                    )}
+                    ref={this.refUser}
                 >
-                    {this.state.user.name}
+                    {this.state.user.icon ?
+                        <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
+                        :
+                        <UserIcon className={this.props.classes.userIcon} />}
+                    <div
+                        ref={this.refUserDiv}
+                        style={
+                            this.state.expireWarningMode
+                                ? { color: '#F44' }
+                                : { color: this.state.user?.color || undefined }
+                        }
+                        className={this.props.classes.userText}
+                    >
+                        {this.state.user.name}
+                    </div>
+
+                    {this.state.expireWarningMode ? <IconButton
+                        onClick={async () => {
+                            await this.socket.getCurrentSession();
+                            await this.makePingAuth();
+                        }}
+                    >
+                        <UpdateIcon />
+                    </IconButton> : null}
                 </div>
-                {this.state.expireWarningMode ? <IconButton
-                    onClick={async () => {
-                        await this.socket.getCurrentSession();
-                        await this.makePingAuth();
-                    }}
-                >
-                    <UpdateIcon />
-                </IconButton> : null}
             </div>;
         } if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
             return <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div>;
@@ -2238,7 +2277,7 @@ class App extends Router {
             return <StylesProvider generateClassName={generateClassName}>
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
-                        <div>
+                        <div style={{ height: '100%' }}>
                             {!this.state.connected && <Connecting />}
                             <Suspense fallback={<Connecting />}>
                                 <EasyMode
@@ -2285,11 +2324,9 @@ class App extends Router {
                             position="fixed"
                             className={Utils.clsx(
                                 classes.appBar,
-                                { [classes.appBarShift]: !small && this.state.drawerState === DrawerStates.opened },
-                                {
-                                    [classes.appBarShiftCompact]:
-                                        !small && this.state.drawerState === DrawerStates.compact,
-                                },
+                                !small && this.state.drawerState === DrawerStates.opened && !this.state.editMenuList && classes.appBarShift,
+                                !small && this.state.drawerState === DrawerStates.opened && this.state.editMenuList && classes.appBarShiftEdit,
+                                !small && this.state.drawerState === DrawerStates.compact && classes.appBarShiftCompact,
                             )}
                         >
                             <Toolbar>
@@ -2552,6 +2589,8 @@ class App extends Router {
                             <Drawer
                                 adminGuiConfig={this.adminGuiConfig}
                                 state={this.state.drawerState}
+                                editMenuList={this.state.editMenuList}
+                                setEditMenuList={editMenuList => this.setState({ editMenuList })}
                                 systemConfig={this.state.systemConfig}
                                 handleNavigation={name => this.handleNavigation(name)}
                                 onStateChange={state => this.handleDrawerState(state)}
@@ -2582,12 +2621,13 @@ class App extends Router {
                         <Paper
                             elevation={0}
                             square
-                            className={Utils.clsx(classes.content, {
-                                [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
-                                [classes.contentMarginCompact]:
-                                    !small && this.state.drawerState !== DrawerStates.opened,
-                                [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed,
-                            })}
+                            className={Utils.clsx(
+                                classes.content,
+                                !small && this.state.drawerState !== DrawerStates.compact && !this.state.editMenuList && classes.contentMargin,
+                                !small && this.state.drawerState !== DrawerStates.compact && this.state.editMenuList && classes.contentMarginEdit,
+                                !small && this.state.drawerState !== DrawerStates.opened && classes.contentMarginCompact,
+                                !small && this.state.drawerState !== DrawerStates.closed && classes.contentShift,
+                            )}
                         >
                             {this.getCurrentTab()}
                         </Paper>
@@ -2600,6 +2640,7 @@ class App extends Router {
                     {this.renderWizardDialog()}
                     {this.showRedirectDialog()}
                     {this.renderSlowConnectionWarning()}
+                    {this.renderNewsDialog()}
                     {this.renderHostWarningDialog()}
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
                         <Connecting />

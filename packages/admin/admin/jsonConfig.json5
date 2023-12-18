@@ -136,7 +136,7 @@
           "type": "checkbox",
           "sm": 12,
           "md": 4,
-          "lg": 2,
+          "lg": 4,
           "hidden": "!!data.auth"
         }
       }

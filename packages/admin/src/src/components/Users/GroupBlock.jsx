@@ -1,16 +1,20 @@
 import { useDrop } from 'react-dnd';
 import PropTypes from 'prop-types';
 
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import IconButton from '@mui/material/IconButton';
+import {
+    Typography,
+    Card,
+    CardContent,
+    IconButton,
+} from '@mui/material';
 
-import GroupIcon from '@mui/icons-material/Group';
-import PersonIcon from '@mui/icons-material/Person';
-import ClearIcon from '@mui/icons-material/Clear';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+    Person as PersonIcon,
+    Group as GroupIcon,
+    Clear as ClearIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+} from '@mui/icons-material';
 
 import { Utils, Icon } from '@iobroker/adapter-react-v5';
 

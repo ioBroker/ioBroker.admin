@@ -20,6 +20,7 @@ module.exports = {
     webpack: {
         alias: {
             '@iobroker/json-config': path.resolve(__dirname, '..', '..', 'jsonConfig', 'src'),
+            '@': path.resolve(__dirname, 'src'),
         },
         output: {
             publicPath: './',

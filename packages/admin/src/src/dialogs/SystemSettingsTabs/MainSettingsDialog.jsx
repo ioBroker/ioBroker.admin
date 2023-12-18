@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -15,8 +15,10 @@ import {
     Select,
     TextField,
     Autocomplete,
-    FormHelperText,
+    FormHelperText, InputAdornment, IconButton,
 } from '@mui/material';
+
+import { Close as CloseIcon } from '@mui/icons-material';
 
 import {
     Confirm as ConfirmDialog,
@@ -305,23 +307,34 @@ class MainSettingsDialog extends Component {
 
         // If value is not in known values, show text input
         if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
-            return <Grid item sm={6} xs={12} key={i}>
-                <FormControl className={classes.formControl} variant="standard">
-                    <InputLabel shrink id={`${e.id}-label`}>
-                        {this.props.t(e.title)}
-                    </InputLabel>
-                    <TextField
-                        disabled={this.props.saving}
-                        variant="standard"
-                        id={e.id}
-                        value={value.toString()}
-                        InputLabelProps={{ shrink: true }}
-                        InputProps={{ readOnly: false }}
-                        onChange={evt => this.handleChange(evt, i)}
-                        helperText={e.help ? this.props.t(e.help) : ''}
-                    />
-                </FormControl>
-            </Grid>;
+            return (
+                <Grid item sm={6} xs={12} key={i}>
+                    <FormControl className={classes.formControl} variant="standard">
+                        <InputLabel shrink id={`${e.id}-label`}>
+                            {this.props.t(e.title)}
+                        </InputLabel>
+                        <TextField
+                            disabled={this.props.saving}
+                            variant="standard"
+                            id={e.id}
+                            value={value.toString()}
+                            InputLabelProps={{ shrink: true }}
+                            onChange={evt => this.handleChange(evt, i)}
+                            helperText={e.help ? this.props.t(e.help) : ''}
+                            InputProps={{
+                                readOnly: false,
+                                endAdornment: value.toString() ? (
+                                    <InputAdornment position="end">
+                                        <IconButton size="small" onClick={() => this.handleChange({ target: { value: '' } }, i)}>
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ) : null,
+                            }}
+                        />
+                    </FormControl>
+                </Grid>
+            );
         }
 
         const items = e.values.map((elem, index) => <MenuItem value={elem.id} key={index}>
@@ -488,6 +501,16 @@ class MainSettingsDialog extends Component {
                                 value={this.props.data.common.siteName || ''}
                                 onChange={e => this.doChange('siteName', e.target.value)}
                                 helperText={this.props.t('This name will be shown in admin\'s header. Just to identify the whole installation')}
+                                InputProps={{
+                                    endAdornment: this.props.data.common.siteName ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.doChange('siteName', '')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                }}
                             />
                         </Grid>
                         {selectors}
@@ -528,8 +551,18 @@ class MainSettingsDialog extends Component {
                             label={this.props.t('City:')}
                             value={this.props.data.common.city}
                             InputLabelProps={{ shrink: true }}
-                            InputProps={{ readOnly: false }}
                             onChange={evt => this.onChangeCity(evt)}
+                            InputProps={{
+                                readOnly: false,
+                                endAdornment: this.props.data.common.city ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.onChangeCity({ target: { value: '' } })}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            }}
                         />
                     </FormControl>
                 </Grid>

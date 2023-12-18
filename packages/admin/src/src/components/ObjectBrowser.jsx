@@ -12,87 +12,90 @@ import { withStyles } from '@mui/styles';
 import SVG from 'react-inlinesvg';
 
 import {
-    IconButton,
-    CircularProgress,
-    MenuItem,
-    Select,
-    FormControl,
-    Input,
-    Grid,
     Badge,
-    Tooltip,
-    Snackbar,
+    Button,
     Checkbox,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Fab,
+    FormControl,
+    FormControlLabel,
+    Grid,
+    IconButton,
+    Input,
     List,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemSecondaryAction,
     ListItemText,
-    DialogTitle,
-    Dialog,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Button,
-    Fab,
+    Menu,
+    MenuItem,
+    Select,
+    Snackbar,
+    Switch,
     TextField,
-    FormControlLabel,
-    Switch, Menu,
+    Tooltip,
 } from '@mui/material';
 
 // Icons
 import {
-    Edit as IconEdit,
-    FindInPage,
+    Add as AddIcon,
+    ArrowRight as ArrowRightIcon,
+    BedroomParent,
+    BorderColor,
+    Build as BuildIcon,
+    CalendarToday as IconSchedule,
+    Check as IconCheck,
+    Close as IconClose,
+    Code as IconScript,
     Construction,
-    Link as IconLink,
-    FormatItalic as IconValueEdit,
+    CreateNewFolder as IconFolder,
     Delete as IconDelete,
+    Description as IconMeta,
+    Edit as IconEdit,
+    Error as IconError,
+    FindInPage,
+    FormatItalic as IconValueEdit,
+    Info as IconInfo,
+    Link as IconLink,
+    ListAlt as IconEnum,
+    LooksOne as LooksOneIcon,
+    PersonOutlined as IconUser,
+    Photo as IconPhoto,
+    Publish as PublishIcon,
+    Refresh as RefreshIcon,
+    RoomService as PressButtonIcon,
+    Router as IconHost,
     Settings as IconConfig,
     SettingsApplications as IconSystem,
-    Photo as IconPhoto,
-    SupervisedUserCircle as IconGroup,
-    CalendarToday as IconSchedule,
-    PersonOutlined as IconUser,
-    Router as IconHost,
-    Wifi as IconConnection,
-    Info as IconInfo,
-    Description as IconMeta,
-    Code as IconScript,
     ShowChart as IconChart,
-    ListAlt as IconEnum,
-    ViewColumn as IconColumns,
-    Close as IconClose,
-    Check as IconCheck,
-    Build as BuildIcon,
-    Publish as PublishIcon,
-    Add as AddIcon,
-    Refresh as RefreshIcon,
-    LooksOne as LooksOneIcon,
-    RoomService as PressButtonIcon,
-    Error as IconError,
-    WifiOff as IconDisconnected,
+    SupervisedUserCircle as IconGroup,
     TextFields as TextFieldsIcon,
-    BorderColor,
-    BedroomParent,
+    ViewColumn as IconColumns,
+    Wifi as IconConnection,
+    WifiOff as IconDisconnected,
 } from '@mui/icons-material';
 
 import {
-    IconExpert,
+    Icon,
     IconAdapter,
     IconAlias,
     IconChannel,
+    IconClearFilter,
+    IconClosed,
     IconCopy,
     IconDevice,
     IconDocument,
     IconDocumentReadOnly,
+    IconExpert,
     IconInstance,
-    IconState,
-    IconClosed,
     IconOpen,
-    IconClearFilter,
-    Icon,
+    IconState,
     withWidth,
 } from '@iobroker/adapter-react-v5';
 
@@ -799,6 +802,9 @@ const styles = theme => ({
         marginLeft: theme.spacing(1),
         opacity: 0.7,
         fontSize: 'smaller',
+    },
+    contextMenuWithSubMenu: {
+        display: 'flex',
     },
 });
 
@@ -2133,6 +2139,15 @@ class ObjectBrowser extends Component {
             aclEveryone_read_state:   props.t('ra_aclEveryone_read_state'),
             aclEveryone_write_object: props.t('ra_aclEveryone_write_object'),
             aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
+
+            create:                   props.t('ra_Create'),
+            createBooleanState:       props.t('ra_create_boolean_state'),
+            createNumberState:        props.t('ra_create_number_state'),
+            createStringState:        props.t('ra_create_string_state'),
+            createState:              props.t('ra_create_state'),
+            createChannel:            props.t('ra_create_channel'),
+            createDevice:             props.t('ra_create_device'),
+            createFolder:             props.t('ra_Create folder'),
         };
 
         this.levelPadding = props.levelPadding || ITEM_LEVEL;
@@ -2463,7 +2478,10 @@ class ObjectBrowser extends Component {
         // console.log(`CONTEXT MENU: ${this.contextMenu ? Date.now() - this.contextMenu.ts : 'false'}`);
         if (this.contextMenu && Date.now() - this.contextMenu.ts < 2000) {
             e.preventDefault();
-            this.setState({ showContextMenu: this.contextMenu.item });
+            this.setState({ showContextMenu: { item: this.contextMenu.item } });
+        } else if (this.state.showContextMenu) {
+            e.preventDefault();
+            this.setState({ showContextMenu: null });
         }
         this.contextMenu = null;
     };
@@ -4124,7 +4142,11 @@ class ObjectBrowser extends Component {
                         <div>
                             <IconButton
                                 disabled={!allowObjectCreation}
-                                onClick={() => this.setState({ modalNewObj: true })}
+                                onClick={() => this.setState({
+                                    modalNewObj: {
+                                        id: this.state.selected[0] || this.state.selectedNonObject,
+                                    },
+                                })}
                                 size="large"
                             >
                                 <AddIcon />
@@ -6543,6 +6565,17 @@ class ObjectBrowser extends Component {
         />;
     }
 
+    showAddDataPointDialog(id, initialType, initialStateType) {
+        this.setState({
+            showContextMenu: null,
+            modalNewObj: {
+                id,
+                initialType,
+                initialStateType,
+            },
+        });
+    }
+
     /**
      * Renders the right mouse button context menu
      *
@@ -6553,7 +6586,7 @@ class ObjectBrowser extends Component {
         if (!this.state.showContextMenu) {
             return null;
         }
-        const item = this.state.showContextMenu;
+        const item = this.state.showContextMenu.item;
         const id = item.data.id;
         const items = [];
         // const ctrl = isIOS() ? '⌘' : (this.props.lang === 'de' ? 'Strg+' : 'Ctrl+');
@@ -6581,6 +6614,11 @@ class ObjectBrowser extends Component {
 
         const enumEditable = !this.props.notEditable && obj &&
             (this.state.filter.expertMode || obj.type === 'state' || obj.type === 'channel' || obj.type === 'device');
+
+        const createStateVisible = !item.data.obj || item.data.obj.type === 'folder'  || item.data.obj.type === 'channel' || item.data.obj.type === 'device' || item.data.id === '0_userdata.0' || item.data.obj.type === 'meta';
+        const createChannelVisible = !item.data.obj || item.data.obj.type === 'folder' || item.data.obj.type === 'device' || item.data.id === '0_userdata.0' || item.data.obj.type === 'meta';
+        const createDeviceVisible = !item.data.obj || item.data.obj.type === 'folder' || item.data.id === '0_userdata.0' || item.data.obj.type === 'meta';
+        const createFolderVisible = !item.data.obj || item.data.obj.type === 'folder' || item.data.id === '0_userdata.0' || item.data.obj.type === 'meta';
 
         const ITEMS = {
             EDIT: {
@@ -6729,6 +6767,58 @@ class ObjectBrowser extends Component {
                     }
                 },
             },
+            CREATE: {
+                key: '+',
+                visibility: (item.data.id.startsWith('0_userdata.0') || item.data.id.startsWith('javascript.')) &&
+                    (createStateVisible || createChannelVisible || createDeviceVisible || createFolderVisible),
+                icon: <AddIcon fontSize="small" className={this.props.classes.cellButtonsButtonWithCustoms} />,
+                className: this.props.classes.contextMenuWithSubMenu,
+                label: this.texts.create,
+                subMenu: [
+                    {
+                        label: this.texts.createBooleanState,
+                        visibility: createStateVisible,
+                        icon: <IconState fontSize="small" />,
+                        onClick: () => this.showAddDataPointDialog(item.data.id, 'state', 'boolean'),
+                    },
+                    {
+                        label: this.texts.createNumberState,
+                        visibility: createStateVisible,
+                        icon: <IconState fontSize="small" />,
+                        onClick: () => this.showAddDataPointDialog(item.data.id, 'state', 'number'),
+                    },
+                    {
+                        label: this.texts.createStringState,
+                        visibility: createStateVisible,
+                        icon: <IconState fontSize="small" />,
+                        onClick: () => this.showAddDataPointDialog(item.data.id, 'state', 'string'),
+                    },
+                    {
+                        label: this.texts.createState,
+                        visibility: createStateVisible,
+                        icon: <IconState fontSize="small" />,
+                        onClick: () => this.showAddDataPointDialog(item.data.id, 'state'),
+                    },
+                    {
+                        label: this.texts.createChannel,
+                        visibility: createChannelVisible,
+                        icon: <IconChannel fontSize="small" />,
+                        onClick: () => this.showAddDataPointDialog(item.data.id, 'channel'),
+                    },
+                    {
+                        label: this.texts.createDevice,
+                        visibility: createDeviceVisible,
+                        icon: <IconDevice fontSize="small" />,
+                        onClick: () => this.showAddDataPointDialog(item.data.id, 'device'),
+                    },
+                    {
+                        label: this.texts.createFolder,
+                        icon: <IconFolder fontSize="small" />,
+                        visibility: createFolderVisible,
+                        onClick: () => this.showAddDataPointDialog(item.data.id, 'folder'),
+                    },
+                ],
+            },
             DELETE: {
                 key: 'Delete',
                 visibility: this.props.onObjectDelete && (item.children?.length || (obj && !obj.common?.dontDelete)),
@@ -6742,15 +6832,56 @@ class ObjectBrowser extends Component {
 
         Object.keys(ITEMS).forEach(key => {
             if (ITEMS[key].visibility) {
-                items.push(<MenuItem key={key} onClick={ITEMS[key].onClick} className={ITEMS[key].className}>
-                    <ListItemIcon style={ITEMS[key].iconStyle} className={ITEMS[key].listItemIconClass}>
-                        {ITEMS[key].icon}
-                    </ListItemIcon>
-                    <ListItemText>{ITEMS[key].label}</ListItemText>
-                    {ITEMS[key].key ? <div className={this.props.classes.contextMenuKeys}>
-                        {`Alt+${ITEMS[key].key === 'Delete' ? this.props.t('ra_Del') : ITEMS[key].key}`}
-                    </div> : null}
-                </MenuItem>);
+                if (ITEMS[key].subMenu) {
+                    items.push(<MenuItem
+                        key={key}
+                        onClick={e => this.setState({ showContextMenu: { item: this.state.showContextMenu.item, subItem: key, subAnchor: e.target } })}
+                        className={ITEMS[key].className}
+                    >
+                        <ListItemIcon style={ITEMS[key].iconStyle} className={ITEMS[key].listItemIconClass}>
+                            {ITEMS[key].icon}
+                        </ListItemIcon>
+                        <ListItemText>
+                            {ITEMS[key].label}
+                            ...
+                        </ListItemText>
+                        <ListItemSecondaryAction>
+                            <ArrowRightIcon />
+                        </ListItemSecondaryAction>
+                    </MenuItem>);
+                    if (this.state.showContextMenu.subItem === key) {
+                        items.push(<Menu
+                            key="subContextMenu"
+                            open={!0}
+                            anchorEl={this.state.showContextMenu.subAnchor}
+                            onClose={() => {
+                                this.setState({ showContextMenu: { item: this.state.showContextMenu.item } });
+                                this.contextMenu = null;
+                            }}
+                        >
+                            {ITEMS[key].subMenu.map(subItem => (subItem.visibility ? <MenuItem
+                                key={subItem.label}
+                                onClick={subItem.onClick}
+                                className={subItem.className}
+                            >
+                                <ListItemIcon style={subItem.iconStyle} className={subItem.listItemIconClass}>
+                                    {subItem.icon}
+                                </ListItemIcon>
+                                <ListItemText>{subItem.label}</ListItemText>
+                            </MenuItem> : null))}
+                        </Menu>);
+                    }
+                } else {
+                    items.push(<MenuItem key={key} onClick={ITEMS[key].onClick} className={ITEMS[key].className}>
+                        <ListItemIcon style={ITEMS[key].iconStyle} className={ITEMS[key].listItemIconClass}>
+                            {ITEMS[key].icon}
+                        </ListItemIcon>
+                        <ListItemText>{ITEMS[key].label}</ListItemText>
+                        {ITEMS[key].key ? <div className={this.props.classes.contextMenuKeys}>
+                            {`Alt+${ITEMS[key].key === 'Delete' ? this.props.t('ra_Del') : ITEMS[key].key}`}
+                        </div> : null}
+                    </MenuItem>);
+                }
             }
         });
 

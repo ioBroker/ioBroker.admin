@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 
 let timer;
 
-const CustomPopper = ({ editList, onClick }) => {
+const CustomPopper = ({ editMenuList, onClick }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const [placement, setPlacement] = React.useState();
@@ -30,10 +30,10 @@ const CustomPopper = ({ editList, onClick }) => {
     return <>
         <IconButton
             size="large"
-            style={editList ? { color: 'red' } : null}
+            style={editMenuList ? { color: 'red' } : null}
             onClick={el => {
                 onClick();
-                if (!editList) {
+                if (!editMenuList) {
                     handleClick('right')(el);
                     timer = setTimeout(() => setOpen(false), 3000);
                 } else {

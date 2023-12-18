@@ -7,13 +7,17 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 
-import LinearProgress from '@mui/material/LinearProgress';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Fab from '@mui/material/Fab';
+import {
+    LinearProgress,
+    Grid,
+    Typography,
+    Fab,
+} from '@mui/material';
 
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import {
+    PersonAdd as PersonAddIcon,
+    GroupAdd as GroupAddIcon,
+} from '@mui/icons-material';
 
 import { Utils } from '@iobroker/adapter-react-v5';
 

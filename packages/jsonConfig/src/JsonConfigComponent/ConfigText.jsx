@@ -5,8 +5,12 @@ import { withStyles } from '@mui/styles';
 import {
     Autocomplete,
     TextField,
-    TextareaAutosize,
+    TextareaAutosize, InputAdornment, IconButton,
 } from '@mui/material';
+
+import {
+    Close as CloseIcon,
+} from '@mui/icons-material';
 
 import I18n from './wrapper/i18n';
 
@@ -128,6 +132,18 @@ class ConfigText extends ConfigGeneric {
             inputProps={{
                 maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
                 readOnly: this.props.schema.readOnly || false,
+            }}
+            // eslint-disable-next-line react/jsx-no-duplicate-props
+            InputProps={{
+                endAdornment: this.state.value ? <InputAdornment position="end">
+                    <IconButton
+                        size="small"
+                        onClick={() => this.setState({ value: '', oldValue: this.state.value }, () =>
+                            this.onChange(this.props.attr, ''))}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </InputAdornment> : null,
             }}
             onChange={e => {
                 const value = e.target.value;

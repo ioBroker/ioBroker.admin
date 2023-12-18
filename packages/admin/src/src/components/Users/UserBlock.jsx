@@ -3,20 +3,23 @@ import { useRef, useEffect } from 'react';
 import { /* DragPreviewImage, */useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import IconButton from '@mui/material/IconButton';
-import Checkbox from '@mui/material/Checkbox';
+import {
+    Typography,
+    Card,
+    CardContent,
+    IconButton,
+    Checkbox,
+} from '@mui/material';
 
-import PersonIcon from '@mui/icons-material/Person';
-import GroupIcon from '@mui/icons-material/Group';
-import ClearIcon from '@mui/icons-material/Clear';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+    Person as PersonIcon,
+    Group as GroupIcon,
+    Clear as ClearIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+} from '@mui/icons-material';
 
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { Icon, Utils } from '@iobroker/adapter-react-v5';
 
 function UserBlock(props) {
     const opacity = props.isDragging ? 0 : 1;

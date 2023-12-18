@@ -316,8 +316,6 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
 
         const img = style.backgroundImage.substring(5, style.backgroundImage.length - 2);
 
-        console.log(other);
-
         return <img
             {...other}
             alt={alt}

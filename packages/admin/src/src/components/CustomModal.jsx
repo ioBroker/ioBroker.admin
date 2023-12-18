@@ -4,7 +4,7 @@ import { withStyles } from '@mui/styles';
 
 import {
     Dialog, DialogActions, DialogContent,
-    DialogTitle, IconButton, TextField, Button,
+    DialogTitle, IconButton, TextField, Button, InputAdornment,
 } from '@mui/material';
 
 import {
@@ -41,7 +41,10 @@ const styles = theme => ({
 });
 
 const CustomModal = ({
-    toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden,
+    toggleTranslation, noTranslation, title, fullWidth,
+    help, maxWidth, progress, icon, applyDisabled, applyButton,
+    classes, onClose, children, titleButtonApply, titleButtonClose,
+    onApply, textInput, defaultValue, overflowHidden,
 }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
@@ -86,6 +89,16 @@ const CustomModal = ({
                 multiline
                 value={value}
                 onChange={e => setValue(e.target.value)}
+                InputProps={{
+                    endAdornment: value ? <InputAdornment position="end">
+                        <IconButton
+                            size="small"
+                            onClick={() => setValue('')}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </InputAdornment> : null,
+                }}
                 // customValue
             />}
             {children}

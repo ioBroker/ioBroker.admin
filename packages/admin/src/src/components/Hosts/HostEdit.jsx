@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -9,13 +9,14 @@ import {
     DialogActions,
     Button,
     TextField,
-    Tooltip,
+    Tooltip, InputAdornment, IconButton,
 } from '@mui/material';
 
 import {
     Close as IconClose,
     Check as IconCheck,
     Add as IconAdd,
+    Close as CloseIcon,
 } from '@mui/icons-material';
 
 import { Utils, UploadImage } from '@iobroker/adapter-react-v5';
@@ -212,6 +213,16 @@ class HostEdit extends Component {
                             fullWidth
                             value={json.common.title}
                             onChange={el => this.setCommonItem(json, 'title', el.target.value)}
+                            InputProps={{
+                                endAdornment: json.common.title ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.setCommonItem(json, 'title', '')}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            }}
                         /> :
                         this.buttonAddKey('title', () => this.setCommonItem(json, 'title', ''))}
                     {typeof json.common.color !== 'undefined' ?
@@ -224,6 +235,16 @@ class HostEdit extends Component {
                                 type="color"
                                 value={json.common.color}
                                 onChange={el => this.setCommonItem(json, 'color', el.target.value)}
+                                InputProps={{
+                                    endAdornment: json.common.color ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setCommonItem(json, 'color', '')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null,
+                                }}
                             />
                             {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
                         </div> :

@@ -259,7 +259,7 @@ async function loadPath(socket, folders, path, adapter, part, level) {
 const DIFFERENT = 'different';
 
 const FileEditOfAccessControl2 = ({
-    onClose, onApply, open, selected, extendObject, objects, t, themeType, folders, socket,
+    onClose, onApply, selected, extendObject, objects, t, themeType, folders, socket,
 }) => {
     const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
     const object = selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected);
@@ -418,7 +418,7 @@ const FileEditOfAccessControl2 = ({
         return <LinearProgress />;
     }
     return <CustomModal
-        open={open}
+        open={!0}
         titleButtonApply="apply"
         overflowHidden
         applyDisabled={disabledButton}
@@ -477,7 +477,7 @@ const FileEditOfAccessControl2 = ({
                         let changed = false;
 
                         if (item._id) {
-                            // it is object
+                            // it is an object
                             const permissions = newValueAccessControl(item.acl?.file || defaultAclFile, valueFileAccessControl, _maskObject);
                             if (permissions !== item.acl?.file) {
                                 item.acl = item.acl || {};
@@ -494,7 +494,12 @@ const FileEditOfAccessControl2 = ({
                                 item.acl.ownerGroup = stateOwnerGroup;
                                 changed = true;
                             }
-                            changed && (await extendObject(item._id, item));
+
+                            try {
+                                changed && (await extendObject(item._id, item));
+                            } catch (error) {
+                                console.error(error);
+                            }
                         } else if (item && !item.folder) {
                             const newAcl = {};
                             const permissions = newValueAccessControl(item.acl?.permissions || defaultAclFile, valueFileAccessControl, _maskObject);
@@ -514,7 +519,11 @@ const FileEditOfAccessControl2 = ({
                                 const parts = item.id.split('/');
                                 const adapter = parts.shift();
                                 const path = parts.join('/');
-                                changed && (await extendObject(adapter, path, newAcl));
+                                try {
+                                    changed && (await extendObject(adapter, path, newAcl));
+                                } catch (error) {
+                                    console.error(error);
+                                }
                             }
                         }
                     }

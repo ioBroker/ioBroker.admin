@@ -1,4 +1,4 @@
-import { createRef, Component } from 'react';
+import React, { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
@@ -13,7 +13,15 @@ import {
     Fab,
     Button,
     Paper,
+    InputAdornment,
+    IconButton,
+    Autocomplete,
 } from '@mui/material';
+
+import {
+    Close as CloseIcon,
+    Check as IconCheck,
+} from '@mui/icons-material';
 
 import 'ol/ol.css';
 import { Map, View, Feature } from 'ol';
@@ -27,8 +35,6 @@ import { withWidth } from '@iobroker/adapter-react-v5';
 
 // Icons
 import { FaCrosshairs as GeoIcon } from 'react-icons/fa';
-import IconCheck from '@mui/icons-material/Check';
-import Autocomplete from '@mui/material/Autocomplete';
 import PinSVG from '../../assets/pin.svg';
 
 const TOOLBAR_HEIGHT = 64;
@@ -572,6 +578,16 @@ class WizardSettingsTab extends Component {
                                     className={this.props.classes.controlItem}
                                     value={this.state.city}
                                     onChange={e => this.setState({ city: e.target.value })}
+                                    InputProps={{
+                                        endAdornment: this.state.city ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ city: '' })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    }}
                                 />
                             </Grid>
                             <Grid item>
@@ -583,6 +599,16 @@ class WizardSettingsTab extends Component {
                                     onKeyUp={e => e.keyCode === 13 && this.getPositionForAddress()}
                                     onChange={e => this.setState({ address: e.target.value })}
                                     helperText={this.props.t('Used only to calculate position.')}
+                                    InputProps={{
+                                        endAdornment: this.state.address ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ address: '' })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    }}
                                 />
                                 <Fab size="small" onClick={() => this.getPositionForAddress()}><GeoIcon /></Fab>
                             </Grid>
@@ -593,6 +619,16 @@ class WizardSettingsTab extends Component {
                                     className={this.props.classes.controlItem}
                                     value={this.state.longitude}
                                     onChange={e => this.setState({ longitude: parseFloat(e.target.value.replace(',', '.')) })}
+                                    InputProps={{
+                                        endAdornment: this.state.longitude ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ longitude: '' })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    }}
                                 />
                             </Grid>
                             <Grid item>
@@ -602,6 +638,16 @@ class WizardSettingsTab extends Component {
                                     className={this.props.classes.controlItem}
                                     value={this.state.latitude}
                                     onChange={e => this.setState({ latitude: parseFloat(e.target.value.replace(',', '.')) })}
+                                    InputProps={{
+                                        endAdornment: this.state.latitude ? <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => this.setState({ latitude: '' })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment> : null,
+                                    }}
                                 />
                             </Grid>
                             <Grid item style={{ textAlign: 'left' }}>

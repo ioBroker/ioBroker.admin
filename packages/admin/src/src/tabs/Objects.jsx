@@ -237,12 +237,13 @@ class Objects extends Component {
                     <ObjectAddNewObject
                         objects={context.objects}
                         expertMode={this.props.expertMode}
-                        open={context.state.modalNewObj}
                         setObject={(id, data) => this.props.socket.setObject(id, data)
                             .catch(error => window.alert(error))}
-                        selected={context.state.selected[0] || context.state.selectedNonObject}
-                        onClose={() => context.setState({ modalNewObj: false })}
-                        onApply={() => context.setState({ modalNewObj: false })}
+                        selected={context.state.modalNewObj.id}
+                        initialType={context.state.modalNewObj.initialType}
+                        initialStateType={context.state.modalNewObj.initialStateType}
+                        onClose={() => context.setState({ modalNewObj: null })}
+                        onApply={() => context.setState({ modalNewObj: null })}
                     />}
                 // eslint-disable-next-line react/no-unstable-nested-components
                 modalEditOfAccessControl={(context, objData) =>

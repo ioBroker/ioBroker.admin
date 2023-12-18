@@ -51,13 +51,13 @@ class ConfigFile extends ConfigGeneric {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         this.imagePrefix = this.props.imagePrefix === undefined ? './files' : this.props.imagePrefix;
-        this.setState({ value });
+        this.setState({ value: value ?? '' });
     }
 
     static getDerivedStateFromProps(props, state) {
         const value = ConfigGeneric.getValue(props.data, props.attr);
         if (value === null || value === undefined || value.toString().trim() !== (state.value ||  '').toString().trim()) {
-            return { value };
+            return { value: value ?? '' };
         }
         return null;
     }

@@ -1,3 +1,4 @@
+// File viewer in adapter-react does not support write
 import { Buffer } from 'buffer';
 import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
@@ -22,6 +23,7 @@ import {
 } from '@mui/icons-material';
 
 import { Utils, withWidth, IconNoIcon } from '@iobroker/adapter-react-v5';
+// File viewer in adapter-react does not use ace editor
 import Editor from './Editor';
 
 const styles = () => ({
@@ -90,6 +92,7 @@ class FileViewer extends Component {
             text: null,
             code: null,
             ext,
+            // File viewer in adapter-react does not support write
             editing: !!this.props.formatEditFile || false,
             editingValue: null,
             copyPossible: EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext),
@@ -186,6 +189,7 @@ class FileViewer extends Component {
     };
 
     writeFile64 = () => {
+        // File viewer in adapter-react does not support write
         const parts = this.props.href.split('/');
         const data = this.state.editingValue;
         parts.splice(0, 2);
@@ -229,6 +233,7 @@ class FileViewer extends Component {
             />;
         }
         if (this.state.code !== null || this.state.text !== null || this.state.editing) {
+            // File viewer in adapter-react does not support write
             return <Editor
                 mode={FileViewer.getEditFile(this.props.formatEditFile)}
                 themeType={this.props.themeType}

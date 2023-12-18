@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.12.4",
+    "version": "6.12.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,71 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.12.9": {
+        "en": "prevented the strict schema validation being logged to syslog\ncorrected the displaying of news with the new lines",
+        "de": "verhindert, dass die strenge schemavalidierung bei syslog angemeldet wird\ndie anzeige von nachrichten mit den neuen zeilen korrigiert",
+        "ru": "предотвратить строгую схему валидации, входя в syslog\nисправили отображение новостей с новыми линиями",
+        "pt": "impediu a validação rigorosa de esquemas sendo logado para syslog\ncorrigiu a exibição de notícias com as novas linhas",
+        "nl": "verhinderde dat de strikte schema-betaling werd ingelogd aan syslog\nvertaling:",
+        "fr": "empêché la validation stricte du schéma de syslog\na corrigé l'affichage des nouvelles avec les nouvelles lignes",
+        "it": "impedire che la validazione rigorosa dello schema venga collegata a syslog\ncorretto la visualizzazione di notizie con le nuove linee",
+        "es": "impidió que la validación estricta de esquema se registrara para syslog\ncorregido el despliegue de noticias con las nuevas líneas",
+        "pl": "zapobiegło to ścisłej walidacji syslogii\nzrekomendowano wyświetlanie wiadomości z nowymi liniami",
+        "uk": "запобігла суворій перевірці схеми, що підлягають списанню\nвиправлено відображення новин новими лініями",
+        "zh-cn": "防止严格辨认药\n修改了新线新闻的展示"
+      },
+      "6.12.8": {
+        "en": "corrected ACL for files\nallowed changing color of the menu item\ncorrected the user/group icon selector",
+        "de": "aCL für Dateien korrigiert\nerlaubte änderung der farbe des menüpunkts\nkorrigierte den benutzer/gruppen-icon-selektor",
+        "ru": "исправлен ACL для файлов\nразрешено изменение цвета элемента меню\nисправлено селектор иконы пользователя/группы",
+        "pt": "aCL corrigido para arquivos\npermitido mudar a cor do item do menu\ncorrigido o seletor do ícone do usuário/grupo",
+        "nl": "vertaling:\nverandering van kleur van het menu item\nvertaling:",
+        "fr": "aCL corrigé pour les fichiers\ncouleur de l'élément de menu\ncorrigé le sélecteur utilisateur/groupe",
+        "it": "aCL corretto per i file\npermesso cambiare il colore della voce del menu\ncorretto il selettore dell'icona dell'utente/gruppo",
+        "es": "aCL corregido para archivos\npermite cambiar el color del elemento del menú\ncorregido el selector de iconos usuario/grupo",
+        "pl": "poprawić ACL do plików\npozwoliło to na zmianę koloru menu\nzrekomendowany użytkownik/group icon selektor",
+        "uk": "виправлено ACL для файлів\nдопускається зміна кольору меню\nвиправлено вибір іконки користувача/групи",
+        "zh-cn": "更正\n允许改变男u项目的颜色\n更正了用户/群体iconyoor"
+      },
+      "6.12.7": {
+        "en": "add property `onLoaded` to `sendTo` json config\nfixed easy admin height",
+        "de": "objekt hinzufügen aufLoaded to sendTo json config\neinfache admin-höhe",
+        "ru": "добавить недвижимость наLoaded для sendTo json config\nфиксированная легкая высота админ",
+        "pt": "adicionar propriedade noLoaded para enviarPara json config\naltura de administrador fácil fixa",
+        "nl": "vertaling:\nmakkelijke administratie",
+        "fr": "ajouter la propriété surLoaded to sendTo json config\nhauteur d'administration facile",
+        "it": "aggiungere la proprietà suLoaded per sendTo json config\naltezza di amministrazione facile fissa",
+        "es": "añadir propiedad enLoaded to sendTo json config\naltura de administración fácil",
+        "pl": "dostarczanie własności do wysłania Tojson configigig\nłatwe wzniesienie",
+        "uk": "додати властивість наLoaded, щоб відправитиTo json config\nфіксована легка висота адміністратора",
+        "zh-cn": "增加Load财产,派遣To json config\nb. 固定的轻易举"
+      },
+      "6.12.6": {
+        "en": "fixed JSON config file component if no initial value exists\nadded the creation of a state or of a device possibility to the context menu",
+        "de": "feste JSON config Dateikomponente, wenn kein Anfangswert vorhanden ist\ndie erstellung eines zustands oder einer gerätemöglichkeit zum kontextmenü hinzugefügt",
+        "ru": "фиксированный компонент файла JSON config если никакое первоначальное значение не существует\nдобавил создание состояния или возможности устройства в контекстное меню",
+        "pt": "componente fixo do arquivo JSON config se nenhum valor inicial existir\nadicionou a criação de um estado ou de uma possibilidade de dispositivo ao menu de contexto",
+        "nl": "_\nvoegde de creatie toe van een staat of een apparaat aan de context menu",
+        "fr": "fichier de configuration JSON fixe si aucune valeur initiale n'existe\na ajouté la création d'un état ou d'une possibilité de dispositif au menu contextuel",
+        "it": "componente fisso del file di configurazione JSON se non esiste un valore iniziale\naggiunto la creazione di uno stato o di una possibilità di dispositivo al menu di contesto",
+        "es": "componente de archivo de configuración JSON fijo si no existe valor inicial\nagregó la creación de un estado o de una posibilidad de dispositivo al menú contextual",
+        "pl": "zdefiniowany komponent plików JSON, jeśli nie ma początkowej wartości\ndodał stworzenie stanu lub możliwości urządzenia do kontekstowego menu",
+        "uk": "виправлений компонент JSON config, якщо початкове значення не існує\nдодано створення стану або можливості пристрою в контекстному меню",
+        "zh-cn": "如果没有初步价值,常设的常设常设常设的档案部分\n增加建立国家或装置的可能性,使人了解情况。"
+      },
+      "6.12.5": {
+        "en": "fixed json config ConfigFileSelector\nfixed title bar layout with username and icon",
+        "de": "fester json config KonfigFile Sektor\nfeste titelleiste layout mit benutzername und symbol",
+        "ru": "фиксированный json config ConfigFileSelector\nфиксированная планировка заголовка с именем пользователя и иконкой",
+        "pt": "corrigido json config Eletrodomésticos\nlayout da barra de título fixo com nome de usuário e ícone",
+        "nl": "json Config ConfigFiles\nvertaling:",
+        "fr": "json config ConfigFileSelector\nmise en page de barre de titre fixe avec nom d'utilisateur et icône",
+        "it": "fisso json configurazione ConfigFileSelettore\nlayout barra titolo fisso con nome utente e icona",
+        "es": "fijo json config ConfigFileSelector\ndiseño de barra de título fijo con nombre de usuario e icono",
+        "pl": "json configencja ConfigSelector\noficjalna strona baru",
+        "uk": "виправлено json config Налаштування\nвиправлена назва барної верстки з ім'ям користувача та іконою",
+        "zh-cn": "固定礼拜 ConfigFileSelector\n固定名称禁止用户名称和icon"
+      },
       "6.12.4": {
         "en": "custom settings icon has no a brighter color in dark mode\nfixed color of host selector in dark mode\nfixed problem with json config language component",
         "de": "benutzerdefinierte einstellungen symbol hat keine hellere farbe im dunklen modus\nfeste farbe des host-selektors im dunklen modus\nfestes problem mit json config sprachkomponente",
@@ -43,71 +108,6 @@
         "pl": "stabilny problem, w jaki sposób uszkodzenie skrzynki jest nadal clickowalne\nnie zastępuje już wartości adminUI.tab\nwolny Opcja Solo w autokompletnych częściach\nprawdziwy problem z jsonConfig wysyła na rynek. Przyjmowaniu możliwości rodzimej, gdy wracamy do wielu własności\nuruchomiony spadek po wybraniu języka `system' w JsonConfig",
         "uk": "виправлена проблема, яка відключена прапорець все ще клацається\nне замінює дійсний загальний.adminUI.tab значення адаптерів\nбезкоштовно Індивідуальний варіант для автоматичних компонентів\nвиправлено проблему з jsonConfig відправити Щоб при поверненні декількох властивостей\nвиправлений вибір порожніх випадань після вибору `system language` в JsonConfig",
         "zh-cn": "残疾检查箱的固定问题仍然难以预测。\n不再取代有效共同的、adminUI\n定期存款 汽车单元的选择\njson Config发送的固定问题 在归还多种财产时,采用当地办法\n在选择“JsonConfig”的“系统语言”之后,定期撤退。"
-      },
-      "6.12.2": {
-        "en": "fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties\nfixed crash case when schema cannot be read\nFixed noDelete attribute of JSON config accordion",
-        "de": "problem mit jsonConfig senden Mit nativer Option bei der Rückgabe mehrerer Eigenschaften\nfester crashfall, wenn schema nicht gelesen werden kann\nFixed noDelete Attribut von JSON config Akkordeon",
-        "ru": "фиксированная проблема с jsonConfig отправить С родным вариантом при возврате нескольких свойств\nфиксированный случай аварии, когда схема не может быть прочитана\nФиксированный noDelete атрибут JSON config аккордеон",
-        "pt": "problema fixo com jsonConfig enviar Para com opção nativa ao retornar várias propriedades\ncaso de acidente fixo quando o esquema não pode ser lido\nAtributo noDelete fixo de acordeão de configuração JSON",
-        "nl": "_ Met inheemse optie als je meerdere eigenschappen terugbrengt\nvertaling:\n_",
-        "fr": "problème fixe avec jsonConfig envoyer À l'option native lorsque vous retournez plusieurs propriétés\ncas de crash fixe lorsque le schéma ne peut pas être lu\nCorrection de l'attribut noDelete de JSON config accordéion",
-        "it": "problema fisso con jsonConfig inviare A con opzione nativo quando si ritorna più proprietà\ncaso di crash fisso quando lo schema non può essere letto\nAttributo noDelete fisso della fisarmonica di configurazione JSON",
-        "es": "edición fija con jsonConfig enviar A con opción nativa al devolver múltiples propiedades\ncaso de accidente fijo cuando el esquema no se puede leer\nAtributo fijo no único del acordeón de config JSON",
-        "pl": "prawdziwy problem z jsonConfig wysyła na rynek. Przyjmowaniu możliwości rodzimej, gdy wracamy do wielu własności\nsprawa rozbłysku, gdy schema nie może być odczytana\nFixed noDelete attributes",
-        "uk": "виправлено проблему з jsonConfig відправити Щоб при поверненні декількох властивостей\nвиправлений випадок аварії, коли не можна читати\nФіксований атрибут налаштування JSON",
-        "zh-cn": "json Config发送的固定问题 在归还多种财产时,采用当地办法\n无法阅读shiema的固定事故案件\n九. 未确定联合协商会的名称"
-      },
-      "6.12.1": {
-        "en": "optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)\n#2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.",
-        "de": "optimzied die notificaiton popup (auto-extend erster eintrag pro kategorie, respektieren linienbrüche, respektieren schwere für icons)\n#2178 Stabilisieren aufObjekt Ändern Sie die Handhabung bei der Erstellung neuer Objekte in WebUi, um direkt neues Element zu zeigen.",
-        "ru": "оптимизировал попап нотификайтон (авто-расширить первый вход в категорию, респект линии перерывов, уважение тяжести для икон)\n#2178 Стабилизировать на объекте Изменение обработки во время создания новых объектов в WebUi, чтобы напрямую показать новый элемент.",
-        "pt": "optimzied the notificaiton popup (auto-extender primeira entrada por categoria, intervalos de linha de respeito, respeitar a gravidade para ícones)\n#2178 Estabilizar em Object Alterar o manuseio durante a criação de novos objetos na WebUi, para mostrar diretamente novo elemento.",
-        "nl": "optimistisch de notificaiton popup (auto-extend eerste entree per categorie, respectabele lijn breaks, respecteer severity for icons\nQuality over Quantity (QoQ) Releases Vertaling: Verander tijdens de creatie van nieuwe objecten in WebUi, om direct nieuw element te laten zien.",
-        "fr": "optimiser le popup notificaiton (auto-étendre la première entrée par catégorie, respect de la ligne, respect de la gravité des icônes)\n#2178 Stabilize onObject Changement de manipulation lors de la création de nouveaux objets dans WebUi, pour montrer directement un nouvel élément.",
-        "it": "optimzied the notificaiton popup (auto-extend first entry per categoria, rispettare le interruzioni della linea, rispettare la gravità per le icone)\n#2178 Stabilizzare l'oggetto Cambiare la gestione durante la creazione di nuovi oggetti in WebUi, per mostrare direttamente nuovo elemento.",
-        "es": "optimzied the notificaiton popup (auto-extendir primera entrada por categoría, rupturas de línea de respeto, severidad de respeto por los iconos)\n#2178 Stabilize onObject Cambio de manejo durante la creación de nuevos objetos en WebUi, para mostrar directamente nuevo elemento.",
-        "pl": "optymizował popup (auto-rozszerzenie pierwszego wejścia na kategorię, linia szacunkowa, szacunek dla ikon)\n2178 Stabilize onObject (ang.). Przejście zmian w czasie tworzenia nowych obiektów w WebUi w celu bezpośredniego ukazania nowego elementu.",
-        "uk": "оптимізував неупереджений поштовх (auto-extend перший запис за категоріями, повагу розривів лінії, повагу тяжкості для ікон)\n#2178 Стабілізація наObject Зміна обробки під час створення нових об'єктів в WebUi, щоб безпосередньо показати новий елемент.",
-        "zh-cn": "赞成“无大开顿”人口(每类首次进入,尊重线破裂,尊重墓地的严重程度”\n第2178号行动 在建立万维网新物品期间进行变革,直接显示新的因素。."
-      },
-      "6.12.0": {
-        "en": "fixed issue when updating news in backend\nvalidate json config against the schema\nupdate socket-client to improve performance",
-        "de": "fixes problem bei der aktualisierung von nachrichten im backend\njson config gegen das schema validieren\naktualisierung von steckdosen-client zur leistungsverbesserung",
-        "ru": "фиксированная проблема при обновлении новостей в backend\nвалидировать json config против схемы\nобновление socket-client для повышения производительности",
-        "pt": "problema fixo ao atualizar notícias no backend\nvalidar json config contra o esquema\natualizar socket-client para melhorar o desempenho",
-        "nl": "vertaling:\njson configeert tegen de schema\nupdate socket-cliënt om de prestaties te verbeteren",
-        "fr": "problème fixe lors de la mise à jour des nouvelles dans backend\nvalider la configuration json contre le schéma\nmettre à jour le client socket pour améliorer la performance",
-        "it": "problema fisso durante l'aggiornamento di notizie in backend\nconvalidare json config contro lo schema\naggiornamento socket-client per migliorare le prestazioni",
-        "es": "edición fija al actualizar noticias en backend\nvalidate json config contra el esquema\nactualizar socket-client para mejorar el rendimiento",
-        "pl": "bezpośrednie wydanie, kiedy podsumowuje wiadomości\nwniosek json konfiguje przeciwko schema\naktualizacja gniazda w celu poprawy wydajności",
-        "uk": "виправлено проблему при оновленні новин у додатку\nвалідувати json config проти schema\nоновлення гнізда-клієнта для поліпшення продуктивності",
-        "zh-cn": "定期发布新闻的问题\n反希马的有效 json config\n改进业绩的更新指标"
-      },
-      "6.11.0": {
-        "en": "jsonConfig type number now stores values as number instead of string\nobjects browser number value input behavior change to allow leading minus\nAdded component `interfaces` to the JSON config\nImplemented Backend to GUI communication",
-        "de": "jsonConfig Typ Nummer speichert nun Werte als Anzahl statt String\nobjekten browser-nummer-wert-eingabe-verhaltensänderung, um führende minus zu ermöglichen\nKomponentenschnittstellen zum JSON config hinzugefügt\nImplementiert Backend zur GUI-Kommunikation",
-        "ru": "jsonConfig тип номер теперь хранит значения как число вместо строки\nобъектов номер телефона значение вход поведение изменение, чтобы позволить ведущему минусу\nДобавлены компонентные интерфейсы в конфиг JSON\nРеализовано Backend в GUI коммуникации",
-        "pt": "jsonConfig tipo número agora armazena valores como número em vez de string\nobjetos valor do navegador mudança de comportamento de entrada de valor para permitir menos líder\nAdicionado interfaces de componente para o JSON config\nImplementado backend para a comunicação GUI",
-        "nl": "jsonConfig-type nu bewaart waarde als nummer in plaats van string\nvoorwerpen browser nummer waarde input gedrag veranderen om toe te staan\nVoeg component interface toe aan de JSON\nVertaling:",
-        "fr": "jsonConfig numéro de type stocke maintenant les valeurs comme nombre au lieu de chaîne\nnombre d'objets navigateur valeur d'entrée changement de comportement pour permettre de conduire moins\nAjout d'interfaces de composants à la configuration JSON\nRendement mis en œuvre pour la communication GUI",
-        "it": "il numero di tipo jsonConfig ora memorizza i valori come numero invece di stringa\ncambiamento del comportamento di ingresso del valore del numero del browser degli oggetti per consentire\nInterfacce componenti aggiunti alla configurazione JSON\nBackend implementato alla comunicazione GUI",
-        "es": "jsonConfig tipo número ahora almacena valores como número en lugar de cadena\nobjetos del navegador número de cambio de comportamiento de entrada de valor para permitir el resultado menos\nInterfaz de componente adicional al config JSON\nImplemented Backend to GUI communication",
-        "pl": "liczba typów jsonConfig jest obecnie używana jako liczba zamiast ciągów\nzmienność wejściowa\nWłączane interfejsy komponentowe do konfiguracji JSON\nUlepszenie zwrotu do komunikacji GUI",
-        "uk": "jsonConfig type number now зберігає значення як номер замість рядка\nзміни вхідної поведінки об'єктів браузера, щоб дозволити провідний мінус\nДодано інтерфейси компонентів до конфігурації JSON\nРеалізовано бекенд на GUI спілкування",
-        "zh-cn": "json Config型号现在储存值,而不是附加条件。\n投机性投入数量的变化,使主要用途\n将构成部分接口增到联合协商会大厦\nA. 执行Backend toGUI Communications"
-      },
-      "6.10.9": {
-        "en": "Improvement of the public accessibility check",
-        "de": "Verbesserung der öffentlichen Zugänglichkeitsprüfung",
-        "ru": "Улучшение проверки доступности населения",
-        "pt": "Melhoria da verificação de acessibilidade pública",
-        "nl": "Improviseren van de publieke toegangscontrole",
-        "fr": "Amélioration du contrôle de l'accessibilité publique",
-        "it": "Miglioramento del controllo dell'accessibilità pubblica",
-        "es": "Mejora del control de accesibilidad pública",
-        "pl": "Poprawa kontroli dostępu publicznego",
-        "uk": "Удосконалення перевірки публічної доступності",
-        "zh-cn": "改善公众无障碍检查"
       }
     },
     "desc": {

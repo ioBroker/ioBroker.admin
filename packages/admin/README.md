@@ -81,36 +81,38 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ## Todo
 - Add to wizard (very first page): how your statistics will be processed.
-
+- Add colors to menu item with the possibility to change turn it off or only icon
 <!--
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 6.12.4 (2023-11-16)
-* (foxriver76) custom settings icon has no a brighter color in dark mode
-* (foxriver76) fixed color of host selector in dark mode
-* (foxriver76) fixed problem with json config language component
+### **WORK IN PROGRESS**
+* (foxriver76) fixed problem with default value of underscore attributes in Json Config
+* (foxriver76) prevent strict schema validation being logged to syslog
+* (foxriver76) fixed problems with ObjectCustomEditor
+* (klein0r) fixed markdown links (if default branch main)
+* (foxriver76) fixed global dependencies check
 
-### 6.12.3 (2023-11-15)
-* (foxriver76) fixed problem that disabled checkbox is still clickable
-* (foxriver76) no longer replace valid `common.adminUI.tab` values of adapters
-* (foxriver76) fixed `freeSolo` option for autocomplete components
-* (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
-* (foxriver76) fixed empty dropdown selection after selecting `system language` in JsonConfig
+### 6.12.9 (2023-12-12)
+* (foxriver76) prevented the strict schema validation being logged to syslog
+* (bluefox) corrected the displaying of news with the new lines
 
-### 6.12.2 (2023-11-02)
-* (foxriver76) fixed issue with jsonConfig `sendTo` with `native` option when returning multiple properties
-* (foxriver76) fixed crash case when schema cannot be read
-* (klein0r) Fixed noDelete attribute of JSON config accordion
+### 6.12.8 (2023-12-06)
+* (bluefox) corrected ACL for files
+* (bluefox) allowed changing color of the menu item
+* (bluefox) corrected the user/group icon selector
 
-### 6.12.1 (2023-10-29)
-* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
-* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+### 6.12.7 (2023-12-03)
+* (foxriver76) add property `onLoaded` to `sendTo` json config
+* (foxriver76) fixed easy admin height
 
-### 6.12.0 (2023-10-24)
-* (foxriver76) fixed issue when updating news in backend
-* (foxriver76) validate json config against the schema
-* (foxriver76) update socket-client to improve performance
+### 6.12.6 (2023-12-01)
+* (foxriver76) fixed JSON config file component if no initial value exists
+* (bluefox) added the creation of a state or of a device possibility to the context menu
+
+### 6.12.5 (2023-11-23)
+* (foxriver76) fixed json config ConfigFileSelector
+* (klein0r) fixed title bar layout with username and icon
 
 ## License
 The MIT License (MIT)

@@ -139,14 +139,10 @@ class JsonConfigComponent extends Component {
         } else if (data) {
             const newState = { data };
 
-            const _data = {};
-            // remove all attributes starting with "_"
-            Object.keys(data).forEach(attr => !attr.startsWith('_') && (_data[attr] = data[attr]));
-
-            newState.changed = JSON.stringify(_data) !== this.state.originalData;
+            newState.changed = JSON.stringify(data) !== this.state.originalData;
 
             this.setState(newState, () => {
-                this.props.onChange(_data, newState.changed, saveConfig);
+                this.props.onChange(data, newState.changed, saveConfig);
                 cb && cb();
             });
         } else if (saveConfig) {
@@ -316,7 +312,7 @@ class JsonConfigComponent extends Component {
         if (item.type === 'panel' || !item.type) {
             return <ConfigPanel
                 index={1000}
-                isParentTab
+                isParentTab={!this.props.embedded}
                 changed={this.state.changed}
                 onCommandRunning={this.onCommandRunning}
                 commandRunning={this.state.commandRunning}
@@ -376,7 +372,7 @@ class JsonConfigComponent extends Component {
             return <LinearProgress />;
         }
 
-        return <div className={this.props.classes.root}>
+        return <div className={!this.props.embedded && this.props.classes.root} style={this.state.schema.style}>
             {this.renderItem(this.state.schema)}
         </div>;
     }
@@ -406,6 +402,7 @@ JsonConfigComponent.propTypes = {
     onError: PropTypes.func,
     onChange: PropTypes.func,
     onValueChange: PropTypes.func,
+    embedded: PropTypes.bool, // Config is embedded in other component, like dialog or what else
 };
 
 export default withStyles(styles)(JsonConfigComponent);

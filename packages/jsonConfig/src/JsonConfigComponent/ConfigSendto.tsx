@@ -9,7 +9,7 @@ import {
     Info as IconInfo,
 } from '@mui/icons-material';
 
-import { AdminConnection } from '@iobroker/adapter-react-v5';
+import type AdminConnection from './wrapper/AdminConnection';
 import I18n from './wrapper/i18n';
 import DialogError from './wrapper/Dialogs/Error';
 import DialogMessage from './wrapper/Dialogs/Message';
@@ -126,6 +126,12 @@ function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string) {
     return hostIp;
 }
 
+interface ConfigSendToSchema {
+    /** If the component should execute the sendTo command once initially too */
+    onLoaded?: boolean;
+    [other: string]: any;
+}
+
 interface ConfigSendToProps extends ConfigGenericProps {
     socket: AdminConnection;
     themeType: string;
@@ -133,7 +139,7 @@ interface ConfigSendToProps extends ConfigGenericProps {
     style: Record<string, any>;
     className: string;
     data: Record<string, any>;
-    schema: Record<string, any>;
+    schema: ConfigSendToSchema;
     adapterName: string;
     instance:number;
     commandRunning: boolean;
@@ -157,22 +163,31 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
             // read admin host
             const adminInstance = await this.props.socket.getCurrentInstance();
             const instanceObj = await this.props.socket.getObject(`system.adapter.${adminInstance}` as ioBroker.ObjectIDs.Instance);
-            const hostObj = await this.props.socket.getObject(`system.host.${instanceObj.common.host}`);
 
-            const ip = findNetworkAddressOfHost(hostObj, window.location.hostname);
-            if (ip) {
-                hostname = `${ip}:${window.location.port}`;
-            } else {
-                console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
-                return;
+            if (instanceObj) {
+                const hostObj = await this.props.socket.getObject(`system.host.${instanceObj?.common?.host}`);
+                if (hostObj) {
+                    const ip = findNetworkAddressOfHost(hostObj, window.location.hostname);
+                    if (ip) {
+                        hostname = `${ip}:${window.location.port}`;
+                    } else {
+                        console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
+                        return;
+                    }
+                }
             }
         }
-        this.setState({ _error: '', _message: '', hostname });
+
+        await new Promise<void>(resolve => { this.setState({ _error: '', _message: '', hostname }, resolve); });
+
+        if (this.props.schema.onLoaded) {
+            this._onClick();
+        }
     }
 
     renderErrorDialog() {
         if (this.state._error) {
-            return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({ _error: '' })} />;
+            return <DialogError text={this.state._error} onClose={() => this.setState({ _error: '' })} />;
         }
         return null;
     }
@@ -306,14 +321,14 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
             text={this.getText(confirm.text)}
             ok={this.getText(confirm.ok) || I18n.t('ra_Ok')}
             cancel={this.getText(confirm.cancel) || I18n.t('ra_Cancel')}
-            icon={icon}
+            icon={icon || undefined}
             onClose={isOk =>
                 this.setState({ confirmDialog: false }, () =>
                     isOk && this._onClick())}
         />;
     }
 
-    renderItem(error: Error | undefined, disabled: boolean /* , defaultValue */) {
+    renderItem(error: Error | undefined, disabled: boolean) {
         const icon = this.getIcon();
 
         return <div className={this.props.classes.fullWidth}>
