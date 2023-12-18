@@ -17,7 +17,6 @@ import {
 
 import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
-// @ts-expect-error check what's wrong here
 import type { SystemConfig } from '@iobroker/socket-client';
 import Utils from '../Utils';
 import IntroCard from '../components/IntroCard';
@@ -132,9 +131,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
     /** // e.g. /admin/; */
     private readonly currentProxyPath = window.location.pathname;
 
-    private introLinksOriginal = null;
+    private introLinksOriginal?: Record<string, any>[];
 
-    private deactivatedOriginal = null;
+    private deactivatedOriginal?: string[];
 
     private readonly t: typeof i18n.t;
 
@@ -338,7 +337,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                 const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
                 const timeDiff = this.state.hostTimeDiffMap.get(instance.id) ?? 0;
-
                 return <IntroCard
                     key={`${instance.id}_${instance.link}`}
                     socket={this.props.socket}
@@ -662,8 +660,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 instances.forEach(obj => objects[obj._id] = obj);
 
                 instances.sort((_a, _b) => {
-                    const a = _a?.common ?? {};
-                    const b = _b?.common ?? {};
+                    const a: Partial<ioBroker.InstanceCommon> = _a?.common ?? {};
+                    const b: Partial<ioBroker.InstanceCommon> = _b?.common ?? {};
 
                     // @ts-expect-error need to be added to types if this can exist
                     if (a.order === undefined && b.order === undefined) {
@@ -705,7 +703,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     if (a.order < b.order) {
                         return -1;
                     }
-                    let aName;
+                    let aName: string;
                     if (typeof a.name === 'object') {
                         const commonNameA: ioBroker.Translated = a.name;
                         aName = commonNameA[this.props.lang] || commonNameA.en;

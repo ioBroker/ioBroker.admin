@@ -42,7 +42,6 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
-// @ts-expect-error this is weird
 import type { SystemConfig } from '@iobroker/socket-client';
 import { localeMap } from './utils';
 
@@ -460,6 +459,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             q:         true,
             addID:     false,
             aggregate: 'none',
+            // @ts-expect-error needs a type update
             returnNewestEntries: true,
         })
             .then((values: ioBroker.GetHistoryResult) => {

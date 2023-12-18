@@ -1,4 +1,4 @@
-import { createRef, Component } from 'react';
+import React, { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -201,7 +201,7 @@ const styles = theme => ({
     },
 });
 
-class IntroCard extends Component {
+class IntroCard extends React.Component {
     constructor(props) {
         super(props);
 

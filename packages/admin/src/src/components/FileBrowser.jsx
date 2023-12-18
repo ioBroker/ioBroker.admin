@@ -730,7 +730,7 @@ class FileBrowser extends Component {
                 return new Promise((resolve, reject) => {
                     Promise.all(_newFolders[folderId].filter(item => item.folder).map(item =>
                         this.browseFolder(item.id, _newFolders, true)
-                            .catch(() => { })))
+                            .catch(() => undefined)))
                         .then(() => resolve(_newFolders))
                         .catch(error => reject(error));
                 });
@@ -793,7 +793,7 @@ class FileBrowser extends Component {
                     if (!_checkEmpty) {
                         return Promise.all(_folders.filter(item => item.folder).map(item =>
                             this.browseFolder(item.id, _newFolders, true)
-                                .catch(() => { })))
+                                .catch(() => undefined)))
                             .then(() => _newFolders);
                     }
 
@@ -1996,7 +1996,7 @@ class FileBrowser extends Component {
 }
 
 FileBrowser.defaultProps = {
-    modalEditOfAccessControl: () => { },
+    modalEditOfAccessControl: () => undefined,
 };
 
 FileBrowser.propTypes = {

@@ -70,7 +70,7 @@ const CustomDragLayer = ({ classes }) => {
                         key={item.name}
                         editList
                         visible={item.visible}
-                        editListFunc={() => { }}
+                        editListFunc={() => undefined}
                         compact={item.compact}
                         // onClick={() => this.props.handleNavigation(tab.name)}
                         icon={item.iconJSX}

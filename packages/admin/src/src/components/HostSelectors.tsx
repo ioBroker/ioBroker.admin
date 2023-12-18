@@ -9,9 +9,9 @@ import MenuItem from '@mui/material/MenuItem';
 import {
     type AdminConnection, I18n, Icon, Utils,
 } from '@iobroker/adapter-react-v5';
-import type HostsWorker from '@/Workers/HostsWorker';
 // @ts-expect-error fix socket-client
 import type { CompactHost } from '@iobroker/socket-client';
+import type HostsWorker from '@/Workers/HostsWorker';
 
 const styles = () => ({
     img: {
@@ -215,7 +215,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                         },
                     });
                     const state = await this.props.socket.getState(`${event.id}.alive`);
-                    alive[event.id] = state ? state.val : false;
+                    alive[event.id] = state ? state.val as boolean : false;
                 }
             }),
         ).then(() => {

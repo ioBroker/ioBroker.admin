@@ -128,8 +128,8 @@ const CustomModal = ({
 };
 
 CustomModal.defaultProps = {
-    onApply: () => { },
-    onClose: () => { },
+    onApply: () => undefined,
+    onClose: () => undefined,
     applyButton: true,
     applyDisabled: false,
     titleButtonClose: 'Cancel',

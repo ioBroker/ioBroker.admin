@@ -7,7 +7,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Tooltip from '@mui/material/Tooltip';
 import Fab from '@mui/material/Fab';
 import PublishIcon from '@mui/icons-material/Publish';
-import BasicUtils from '@/Utils';
 
 import {
     I18n,
@@ -19,9 +18,9 @@ import {
 
 import { Theme } from '@iobroker/adapter-react-v5/types';
 import type { SystemConfig } from '@iobroker/socket-client';
+import Utils from '@/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
-import Utils from './Utils';
 
 const styles = {
     root: {
@@ -575,7 +574,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             }
 
             try {
-                const encryptedObj = BasicUtils.deepClone(obj);
+                const encryptedObj = JSON.parse(JSON.stringify(obj));
                 // encode all native attributes listed in obj.encryptedNative
                 if (Array.isArray(encryptedObj.encryptedNative)) {
                     await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');

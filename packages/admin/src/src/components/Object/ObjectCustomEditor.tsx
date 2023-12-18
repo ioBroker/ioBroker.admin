@@ -25,7 +25,7 @@ import {
     Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
-import { JsonConfigComponent, type ConfigGeneric } from '@iobroker/json-config';
+import { JsonConfigComponent, ConfigGeneric } from '@iobroker/json-config';
 import { deepClone } from '@mui/x-data-grid/utils/utils';
 import Utils from '@/Utils';
 import type { BasicComponentProps, ValueOrString } from '@/types';
@@ -284,7 +284,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             }
             strFunc = func.func;
         } else {
-            strFunc = func;
+            strFunc = func as string;
         }
 
         alsoDependsOn.forEach(_attr => {

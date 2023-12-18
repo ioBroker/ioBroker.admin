@@ -89,9 +89,8 @@ if (!Array.prototype.flat) {
             // eslint-disable-next-line
             const depth = Number.isNaN(arguments[0]) ? 1 : Number(arguments[0]);
 
-            return depth ? Array.prototype.reduce.call(this, (acc: any, cur) => {
+            return depth ? Array.prototype.reduce.call(this, (acc: any, cur: any) => {
                 if (Array.isArray(cur)) {
-                    // @ts-expect-error fix later
                     // eslint-disable-next-line prefer-spread
                     acc.push.apply(acc, flat.call(cur, depth - 1));
                 } else {
@@ -264,12 +263,11 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
                                     this.setState({ autoCompleteValue: newValue });
                                 }}
-                                // @ts-expect-error check later
                                 options={_list}
                                 getOptionLabel={option => option?.name ?? ''}
                                 renderInput={params => {
                                     const _params = { ...params };
-                                    _params.InputProps = _params.InputProps || {};
+                                    _params.InputProps = _params.InputProps || {} as any;
                                     _params.InputProps.startAdornment = <InputAdornment position="start">
                                         <Icon src={this.state.autoCompleteValue?.icon || ''} className={this.props.classes.listIcon} />
                                     </InputAdornment>;
@@ -346,12 +344,11 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
                                     this.setState({ autoCompleteValue: newValue });
                                 }}
-                                // @ts-expect-error check later
                                 options={_list}
                                 getOptionLabel={option => option?.name ?? ''}
                                 renderInput={params => {
                                     const _params = { ...params };
-                                    _params.InputProps = _params.InputProps || {};
+                                    _params.InputProps = _params.InputProps || {} as any;
                                     _params.InputProps.startAdornment = <InputAdornment position="start">
                                         <Icon
                                             src={this.state.autoCompleteValue?.icon || ''}

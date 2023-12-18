@@ -239,8 +239,8 @@ class MDUtils {
         return { body: newLines.join('\n'), license: license.join('\n'), changelog: changelog.join('\n') };
     }
 
-    static findTitleFromH1(/* line, level, path */) {
-
+    static findTitleFromH1() {
+        throw new Error('not implemented');
     }
 
     static findTitle(line, level, path) {

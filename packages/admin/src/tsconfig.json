@@ -3,7 +3,8 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "checkJs": true,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": false,
     "noEmit": false,
     "outDir": "./build",
     "sourceMap": true,
@@ -18,10 +19,12 @@
     "types": [
       "@iobroker/types"
     ],
+    // need to be relative to base config
     "paths": {
       "@/*": [
-        "./src/*"
-      ]
-    }
-  }
+        "./packages/admin/src/src/*"
+      ],
+    },
+  },
+  "include": ["./**/*"]
 }

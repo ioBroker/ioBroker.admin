@@ -6,6 +6,7 @@
     "allowJs": true,
     "checkJs": false,
     "noEmit": false,
+    "declaration": true,
     "outDir": "./build",
     "sourceMap": true,
     "sourceRoot": "./src",
@@ -19,10 +20,11 @@
     "types": [
       "@iobroker/types"
     ],
+    // need to be relative to base config
     "paths": {
       "@/*": [
-        "./src/*"
+        "./packages/jsonConfig/src/*"
       ]
     },
-  }
+  },
 }

@@ -737,7 +737,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         </Tabs>;
     }
 
-    renderSelectDialog() {
+    renderSelectDialog(): React.JSX.Element {
         if (!this.state.selectId && !this.state.selectRead && !this.state.selectWrite) {
             return null;
         }
@@ -792,7 +792,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     }
 
     setAliasItem(json: ioBroker.StateObject, name: string, value: string, cb?: () => void) {
-        json.common = json.common || {};
+        json.common = json.common || {} as any;
         const commonAlias = json.common.alias || {} as Record<string, any>;
 
         if (name === 'id.read') {

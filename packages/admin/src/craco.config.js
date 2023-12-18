@@ -5,7 +5,6 @@ const path = require('path');
 
 module.exports = {
     plugins: [
-        // { plugin: CracoEsbuildPlugin },
         { plugin: cracoModuleFederation },
     ],
     devServer: {

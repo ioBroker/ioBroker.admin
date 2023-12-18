@@ -322,7 +322,7 @@ class EnumsList extends Component {
                             this.scrollToItem = null;
                         }
                     })
-                    .catch(() => {});
+                    .catch(() => undefined);
             }, this.fastUpdate ? 0 : 200);
 
             this.fastUpdate = false;

@@ -522,7 +522,7 @@ class Adapters extends Component {
         update = update || this.props.adaptersWorker.isForceUpdate();
 
         if (!this.state.update && (update || indicateUpdate)) {
-            this.setState({ update: true }, () => resolve());
+            this.setState({ update: true });
         }
 
         let adapters;

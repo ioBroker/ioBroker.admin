@@ -1676,6 +1676,7 @@ class Utils {
      * @return {boolean}
      */
     static isValidDate(date) {
+        // eslint-disable-next-line no-restricted-globals
         return date instanceof Date && !isNaN(date);
     }
 }
