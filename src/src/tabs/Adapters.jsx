@@ -245,8 +245,10 @@ class Adapters extends Component {
         this.state = {
             lastUpdate: 0,
             repository: {},
-            /** without object changes installed just contains io-package information, not enriched information like installedFrom */
+            /** Adapters installed on same host, without object changes installed just contains io-package information, not enriched information like installedFrom */
             installed: {},
+            /** This contains the adapters installed on same and other hosts */
+            installedGlobal: {},
             adapters: {},
             instances: {},
             categories: [],
@@ -426,13 +428,25 @@ class Adapters extends Component {
             const instances = this.tempInstances;
             this.tempInstances = null;
 
-            this.analyseInstalled(adapters, installed, null, () => this.calculateInfo(instances));
+            this.analyseInstalled({ adapters, installedLocal: installed, cb: () => this.calculateInfo(instances) });
         }, 300);
     };
 
-    analyseInstalled(adapters, installed, repository, cb) {
+    /** @typedef {{ adapters?: Record<string, any>, installedLocal?: Record<string, any>, installedGlobal?: Record<string, any>, repository?: any, cb?: () => void }} AnalyseInstalledOptions */
+    /**
+     * Enriches information of the installed adapters with those of the repository and sets them to the state
+     *
+     * @param {AnalyseInstalledOptions} options information of installed adapters
+     */
+    analyseInstalled(options) {
+        let {
+            adapters, repository,
+        } = options;
+
+        const { cb, installedLocal, installedGlobal } = options;
+
         adapters = adapters || this.state.adapters;
-        installed = installed || this.state.installed;
+        const installed = installedLocal || this.state.installed;
         repository = repository || this.state.repository;
 
         const updateAvailable = [];
@@ -461,53 +475,83 @@ class Adapters extends Component {
                 updateAvailable,
                 installed,
                 repository,
+                installedGlobal,
             },
             () => cb && cb(),
         );
     }
 
-    getAdapters = (update, bigUpdate, indicateUpdate) => {
+    /**
+     * Get the installed adapters, for current host and other hosts
+     *
+     * @param {boolean} update
+     */
+    async getInstalled(update) {
+        /** Installed adapters on same host */
+        let installedLocal;
+        /** Installed adapters on any hosts */
+        let installedGlobal = {};
+
+        const hosts = await this.props.socket.getHosts(update);
+
+        for (const host of hosts) {
+            try {
+                const res = await this.props.socket.getInstalled(host._id, update, this.state.readTimeoutMs);
+
+                if (host._id === this.state.currentHost) {
+                    installedLocal = res;
+                }
+
+                // TODO: handle cases where different versions of adapters are installed on different hosts
+                installedGlobal = { ...installedGlobal, ...res };
+            } catch (e) {
+                window.alert(
+                    `Cannot getInstalled from "${host._id}" (timeout ${this.state.readTimeoutMs}ms): ${e}`,
+                );
+                e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+            }
+        }
+
+        return { installedLocal, installedGlobal };
+    }
+
+    getAdapters = async (update, bigUpdate, indicateUpdate) => {
         console.log('[ADAPTERS] getAdapters');
-        let adapters;
-        let installed;
+
         const currentHost = this.state.currentHost;
         update = update || this.props.adaptersWorker.isForceUpdate();
 
-        return new Promise(resolve => {
-            if (!this.state.update && (update || indicateUpdate)) {
-                this.setState({ update: true }, () => resolve());
-            } else {
-                resolve();
-            }
-        })
-            .then(() => this.props.adaptersWorker.getAdapters(update))
-            .catch(e => window.alert(`Cannot getAdapters: ${e}`))
-            .then(_adapters => {
-                adapters = _adapters;
-                return this.props.socket.getInstalled(currentHost, update, this.state.readTimeoutMs).catch(e => {
-                    window.alert(
-                        `Cannot getInstalled from "${currentHost}" (timeout ${this.state.readTimeoutMs}ms): ${e}`,
-                    );
-                    e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
-                    return null;
-                });
-            })
-            .then(_installed => {
-                installed = _installed;
-                return this.props.socket
-                    .getRepository(
-                        currentHost,
-                        { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate || indicateUpdate },
-                        update,
-                        this.state.readTimeoutMs,
-                    )
-                    .catch(e => {
-                        window.alert(`Cannot getRepository: ${e}`);
-                        e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
-                        return null;
-                    });
-            })
-            .then(repository => this.analyseInstalled(adapters, installed, repository));
+        if (!this.state.update && (update || indicateUpdate)) {
+            this.setState({ update: true }, () => resolve());
+        }
+
+        let adapters;
+
+        try {
+            adapters = await this.props.adaptersWorker.getAdapters(update);
+        } catch (e) {
+            window.alert(`Cannot getAdapters: ${e}`);
+        }
+
+        const { installedLocal, installedGlobal } = await this.getInstalled(update);
+
+        let repository;
+        try {
+            repository = await this.props.socket
+                .getRepository(
+                    currentHost,
+                    { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate || indicateUpdate },
+                    update,
+                    this.state.readTimeoutMs,
+                );
+        } catch (e)  {
+            window.alert(`Cannot getRepository: ${e}`);
+            e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+        }
+
+        return this.analyseInstalled({
+            adapters, installedLocal, repository, installedGlobal,
+        });
     };
 
     getWordVotes(votes) {
@@ -871,10 +915,6 @@ class Adapters extends Component {
         this.props.executeCommand(`upload ${adapter}${this.props.expertMode ? ' --debug' : ''}`);
     }
 
-    /* rebuild(adapter) {
-        this.props.executeCommand('rebuild ' + adapter)
-    } */
-
     delete(adapter, deleteCustom) {
         this.props.executeCommand(
             `del ${adapter}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`,
@@ -979,12 +1019,10 @@ class Adapters extends Component {
                 adapter.globalDependencies = [adapter.globalDependencies];
             }
 
-            const dependencies = [...(adapter.dependencies || []), ...(adapter.globalDependencies || [])];
             const nodeVersion = adapter.node;
 
-            dependencies &&
-                dependencies.length &&
-                dependencies.forEach(dependency => {
+            if (adapter.dependencies?.length) {
+                for (const dependency of adapter.dependencies) {
                     const entry = {
                         name: '',
                         version: null,
@@ -1015,7 +1053,43 @@ class Adapters extends Component {
                     }
 
                     result.push(entry);
-                });
+                }
+            }
+
+            if (adapter.globalDependencies?.length) {
+                for (const dependency of adapter.globalDependencies) {
+                    const entry = {
+                        name: '',
+                        version: null,
+                        installed: false,
+                        installedVersion: null,
+                        rightVersion: false,
+                    };
+
+                    const checkVersion = typeof dependency !== 'string';
+                    const keys = Object.keys(dependency);
+                    entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
+                    entry.version = checkVersion ? dependency[entry.name] : null;
+
+                    if (result && entry.name) {
+                        const installed = this.state.installedGlobal[entry.name];
+
+                        entry.installed = !!installed;
+                        entry.installedVersion = installed ? installed.version : null;
+                        try {
+                            entry.rightVersion = installed
+                                ? checkVersion
+                                    ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
+                                    : true
+                                : false;
+                        } catch (e) {
+                            entry.rightVersion = true;
+                        }
+                    }
+
+                    result.push(entry);
+                }
+            }
 
             if (nodeVersion) {
                 const entry = {
