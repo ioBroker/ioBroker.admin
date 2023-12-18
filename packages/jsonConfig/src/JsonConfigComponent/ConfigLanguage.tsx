@@ -9,7 +9,6 @@ import {
     Select,
 } from '@mui/material';
 
-// @ts-expect-error optimize export of socket-client types
 import type { SystemConfig } from '@iobroker/socket-client';
 import I18n from './wrapper/i18n';
 

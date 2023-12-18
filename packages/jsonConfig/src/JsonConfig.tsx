@@ -363,13 +363,11 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
             .then((obj: ioBroker.InstanceObject) => {
                 // decode all native attributes listed in obj.encryptedNative
-                // @ts-expect-error wait for type update
                 if (Array.isArray(obj.encryptedNative)) {
                     return this.props.socket.getSystemConfig()
                         .then(async (systemConfig: SystemConfig) => {
                             await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
                             this.secret = systemConfig.native.secret;
-                            // @ts-expect-error wait for type update
                             obj.encryptedNative?.forEach(attr => {
                                 if (obj.native[attr]) {
                                     obj.native[attr] = decrypt(this.secret, obj.native[attr]);

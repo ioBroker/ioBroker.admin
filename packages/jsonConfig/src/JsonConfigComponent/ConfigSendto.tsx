@@ -156,7 +156,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         if (this.props.schema.openUrl) {
             // read admin host
             const adminInstance = await this.props.socket.getCurrentInstance();
-            const instanceObj = await this.props.socket.getObject(`system.adapter.${adminInstance}`);
+            const instanceObj = await this.props.socket.getObject(`system.adapter.${adminInstance}` as ioBroker.ObjectIDs.Instance);
             const hostObj = await this.props.socket.getObject(`system.host.${instanceObj.common.host}`);
 
             const ip = findNetworkAddressOfHost(hostObj, window.location.hostname);
@@ -172,7 +172,6 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
 
     renderErrorDialog() {
         if (this.state._error) {
-            // @ts-expect-error classes should be optional in adapter-react
             return <DialogError text={this.state._error} classes={undefined} onClose={() => this.setState({ _error: '' })} />;
         }
         return null;
