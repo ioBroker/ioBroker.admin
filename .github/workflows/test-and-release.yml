@@ -30,14 +30,14 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: 'Install '
+      - name: 'Install'
         run: |
           npm i -f
 
       - name: 'Install Adapter'
         run: |
           cd packages/admin
-          npm i
+          npm i -f
 
       - name: 'Install FE'
         run: | 
