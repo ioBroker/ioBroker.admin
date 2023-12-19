@@ -11,6 +11,7 @@
   "devDependencies": {
     "@alcalzone/release-script": "^3.6.0",
     "@alcalzone/release-script-plugin-iobroker": "^3.6.0",
+    "@alcalzone/release-script-plugin-lerna": "^3.7.0",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-decorators": "^7.23.2",
