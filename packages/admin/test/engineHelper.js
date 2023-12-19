@@ -1,11 +1,11 @@
 const fs = require('fs');
+const path = require('path');
 const setup = require('@iobroker/legacy-testing');
 
-let rootDir = `${__dirname}/../../../`;
+let rootDir = path.join(__dirname, '../');
 let objects = null;
-let states  = null;
+let states = null;
 let onStateChanged = null;
-let gOptions;
 
 function deleteFoldersRecursive(path) {
     if (path.endsWith('/')) {
@@ -32,40 +32,46 @@ function startIoBroker(options) {
         rootDir = options.rootDir;
     }
 
-    gOptions = options;
-
     return new Promise(async resolve => {
         // delete the old project
         deleteFoldersRecursive(`${rootDir}tmp/screenshots`);
 
+        setup.setOptions({ rootDir });
+        setup.initialize();
+
         await setup.setOfflineState('system.adapter.admin.0.alive', { val: false });
 
-        setup.setupController(null, async systemConfig => {
-            // disable statistics and set license accepted
-            systemConfig.common.licenseConfirmed = true;
-            systemConfig.common.diag = 'none';
-            await setup.setObject('system.config', systemConfig);
+        setup.setupController(
+            null,
+            async systemConfig => {
+                // disable statistics and set license accepted
+                systemConfig.common.licenseConfirmed = true;
+                systemConfig.common.diag = 'none';
+                await setup.setObject('system.config', systemConfig);
 
-            // lets the web adapter start on port 18081
-            let config = await setup.getAdapterConfig(0, 'admin');
-            if (config && config.common) {
-                config.native.port = 18081;
-                config.common.enabled = true;
-                await setup.setAdapterConfig(config.common, config.native, 0, 'admin');
-            }
+                // lets the web adapter start on port 18081
+                const config = await setup.getAdapterConfig(0, 'admin');
+                if (config?.common) {
+                    config.native.port = 18081;
+                    config.common.enabled = true;
+                    await setup.setAdapterConfig(config.common, config.native, 0, 'admin');
+                }
 
-            setup.startController(
-                false, // do not start widgets
-                (id, obj) => {},
-                (id, state) => onStateChanged && onStateChanged(id, state),
-                async (_objects, _states) => {
-                    objects = _objects;
-                    states = _states;
-                    setup.startCustomAdapter('admin', 0);
-                    await checkIsAdminStartedAsync(states);
-                    resolve({ objects, states });
-                });
-        });
+                setup.startController(
+                    false, // do not start widgets
+                    (id, obj) => {},
+                    (id, state) => onStateChanged && onStateChanged(id, state),
+                    async (_objects, _states) => {
+                        objects = _objects;
+                        states = _states;
+                        setup.startCustomAdapter('admin', 0);
+                        await checkIsAdminStartedAsync(states);
+                        resolve({ objects, states });
+                    }
+                );
+            },
+            options
+        );
     });
 }
 
@@ -76,7 +82,8 @@ async function stopIoBroker() {
         setup.stopController(normalTerminated => {
             console.log(`Adapter normal terminated: ${normalTerminated}`);
             resolve();
-        }));
+        })
+    );
 }
 
 function checkIsAdminStarted(states, cb, counter) {
@@ -91,8 +98,7 @@ function checkIsAdminStarted(states, cb, counter) {
         if (state && state.val) {
             cb && cb();
         } else {
-            setTimeout(() =>
-                checkIsAdminStarted(states, cb, counter - 1), 500);
+            setTimeout(() => checkIsAdminStarted(states, cb, counter - 1), 500);
         }
     });
 }
@@ -104,5 +110,5 @@ function checkIsAdminStartedAsync(states, counter) {
 module.exports = {
     startIoBroker,
     stopIoBroker,
-    setOnStateChanged: cb => onStateChanged = cb,
-}
+    setOnStateChanged: cb => (onStateChanged = cb),
+};
