@@ -1,5 +1,6 @@
 node_modules
 .idea
+.nx
 **/src/.eslintcache
 **/src/.cache
 tmp/
@@ -18,12 +19,11 @@ admin/words.js
 /lib/passportSocket.js
 **/build
 package-lock.json
-/src/.eslintcache
-/src-admin/package-lock.json
-/src/public_aes
-/src/public/js/adapter-settings-aes.js
+**/src-admin/package-lock.json
+**/src/public_aes
+**/src/public/js/adapter-settings-aes.js
 testSentry.bat
-/adminWww/
+**/adminWww/
 
 # ioBroker dev-server
 .dev-server/

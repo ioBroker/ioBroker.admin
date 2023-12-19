@@ -6,9 +6,11 @@ const sourcemaps = require('gulp-sourcemaps');
 const less = require('gulp-less');
 const concat = require('gulp-concat');
 const cleanCSS = require('gulp-clean-css');
+const path = require('path');
 
 const srcRx = 'src/';
 const src = `${__dirname}/${srcRx}`;
+const rootFolder = path.join(__dirname, '..', '..');
 const dest = 'adminWww/';
 
 function deleteFoldersRecursive(path, exceptions) {
@@ -62,14 +64,14 @@ function npmInstall() {
 function build() {
     fs.writeFileSync(
         `${src}public/lib/js/sparkline.js`,
-        fs.readFileSync(`${src}node_modules/@fnando/sparkline/dist/sparkline.js`)
+        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js`)
     );
     fs.writeFileSync(
         `${src}public/lib/js/sparkline.js.map`,
-        fs.readFileSync(`${src}node_modules/@fnando/sparkline/dist/sparkline.js.map`)
+        fs.readFileSync(`${rootFolder}/node_modules/@fnando/sparkline/dist/sparkline.js.map`)
     );
 
-    const ace = `${__dirname}/${srcRx}node_modules/ace-builds/src-min-noconflict/`;
+    const ace = `${rootFolder}/node_modules/ace-builds/src-min-noconflict/`;
     fs.writeFileSync(`${__dirname}/${srcRx}public/lib/js/ace/worker-json.js`, fs.readFileSync(`${ace}worker-json.js`));
     fs.writeFileSync(
         `${__dirname}/${srcRx}public/lib/js/ace/ext-searchbox.js`,
@@ -91,9 +93,9 @@ function build() {
 
         console.log(options.cwd);
 
-        let script = `${src}node_modules/@craco/craco/dist/bin/craco.js`;
+        let script = `${rootFolder}/node_modules/@craco/craco/dist/bin/craco.js`;
         if (!fs.existsSync(script)) {
-            script = `${__dirname}/node_modules/@craco/craco/dist/bin/craco.js`;
+            script = `${rootFolder}/node_modules/@craco/craco/dist/bin/craco.js`;
         }
 
         if (!fs.existsSync(script)) {
