@@ -25,7 +25,7 @@
     "@iobroker/admin-component-easy-access": "^0.3.2",
     "@iobroker/dm-gui-components": "^0.0.10",
     "@iobroker/json-config": "file:../../jsonConfig",
-    "@iobroker/legacy-testing": "^1.0.7",
+    "@iobroker/legacy-testing": "^1.0.8",
     "@iobroker/socket-client": "^2.3.11",
     "@iobroker/testing": "^4.1.0",
     "@mui/icons-material": "^5.14.15",
