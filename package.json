@@ -112,7 +112,7 @@
     "typescript": "^5.2.2"
   },
   "scripts": {
-    "build": "cd packages/admin/src && npm run build",
+    "build": "lerna run build",
     "start": "cd packages/admin/src && npm run start"
   },
   "main": "./build/index.tsx"

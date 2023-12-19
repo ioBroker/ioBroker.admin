@@ -79,7 +79,7 @@ jobs:
         run: npm i -f
 
       - name: Run local tests
-        run: npm test
+        run: npm test -w packages/admin/
 
   adapter-tests-gui:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
@@ -107,7 +107,7 @@ jobs:
         run: NODE_OPTIONS=--max_old_space_size=8192 npm run build
 
       - name: Run GUI tests
-        run: npm run test:gui
+        run: npm run test:gui -w packages/admin/
 
       - name: Archive screenshots
         if: always()
