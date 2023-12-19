@@ -163,7 +163,8 @@ jobs:
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
-          npm publish
+          npm publish -w packages/admin
+          npm publish -w packages/jsonConfig
 
       - name: Create Github Release
         uses: actions/create-release@v1

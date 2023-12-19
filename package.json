@@ -114,7 +114,11 @@
   },
   "scripts": {
     "build": "lerna run build",
-    "start": "cd packages/admin/src && npm run start"
+    "start": "cd packages/admin/src && npm run start",
+    "release": "release-script",
+    "release-patch": "release-script patch --yes",
+    "release-minor": "release-script minor --yes",
+    "release-major": "release-script major --yes"
   },
   "main": "./build/index.tsx"
 }
