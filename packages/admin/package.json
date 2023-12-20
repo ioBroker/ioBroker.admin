@@ -1,0 +1,75 @@
+{
+  "name": "iobroker.admin",
+  "description": "The adapter opens a webserver for the ioBroker admin UI.",
+  "version": "6.12.9",
+  "contributors": [
+    "bluefox <dogafox@gmail.com>",
+    "apollon77",
+    "soef <soef@gmx.net>",
+    "hobbyquaker <hq@ccu.io>",
+    "ldittmar <iobroker@lmdsoft.de>"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "homepage": "https://github.com/ioBroker/ioBroker.admin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ioBroker/ioBroker.admin"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "setup"
+  ],
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.0.4",
+    "@iobroker/socket-classes": "^1.4.6",
+    "@iobroker/webserver": "^1.0.3",
+    "@iobroker/ws-server": "^2.1.1",
+    "ajv": "^8.12.0",
+    "archiver": "^6.0.1",
+    "axios": "^1.6.0",
+    "body-parser": "^1.20.2",
+    "compression": "^1.7.4",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.1",
+    "express-session": "^1.17.3",
+    "json5": "^2.2.3",
+    "mime": "^3.0.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "semver": "^7.5.4",
+    "ws": "^8.14.2"
+  },
+  "bugs": {
+    "url": "https://github.com/ioBroker/ioBroker.admin/issues"
+  },
+  "main": "main.js",
+  "files": [
+    "admin/",
+    "lib/",
+    "docs/",
+    "adminWww/",
+    "public/",
+    "io-package.json",
+    "LICENSE",
+    "main.js"
+  ],
+  "scripts": {
+    "start": "cd src && npm run start",
+    "test": "npm run test:package && npm run test:unit",
+    "test:package": "mocha test/package --exit",
+    "test:unit": "mocha test/unit --exit",
+    "test:integration": "mocha test/integration --exit",
+    "test:rule": "mocha test/rule --exit",
+    "test:gui": "mocha test/*.gui.js --exit",
+    "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
+    "build": "gulp",
+    "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ..",
+    "npm": "npm i && cd src && npm i -f && cd .."
+  },
+  "author": "bluefox <dogafox@gmail.com>"
+}

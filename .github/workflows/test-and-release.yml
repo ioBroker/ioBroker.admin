@@ -31,20 +31,30 @@ jobs:
           node-version: 18.x
 
       - name: 'Install'
-        run: npm i
+        run: |
+          npm i -f
+
+      - name: 'Install Adapter'
+        run: |
+          cd packages/admin
+          npm i -f
 
       - name: 'Install FE'
         run: | 
-          cd src
+          cd packages/admin/src
           npm i --force
+
+      - name: 'Build JsonConfig'
+        run: npm run build -w packages/jsonConfig/
 
       - name: Check TypeScript files
         run: |
-          cd src
+          cd packages/admin/src
           npm run check-ts
 
       - name: 'Build'
-        run: NODE_OPTIONS=--max_old_space_size=4096 npm run build
+        run: |
+          NODE_OPTIONS=--max_old_space_size=4096 npm run build
 
   # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
@@ -66,18 +76,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run: npm install
+        run: npm i -f
 
       - name: Run local tests
-        run: npm test
-#      - name: Run unit tests
-#        run: npm run test:unit
-#      - name: Run integration tests # (linux/osx)
-#        if: startsWith(runner.OS, 'windows') == false
-#        run: DEBUG=testing:* npm run test:integration
-#      - name: Run integration tests # (windows)
-#        if: startsWith(runner.OS, 'windows')
-#        run: set DEBUG=testing:* & npm run test:integration
+        run: npm test -w packages/admin/
 
   adapter-tests-gui:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
@@ -94,13 +96,18 @@ jobs:
           node-version: 18.x
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm i -f
+          npm i -f -w packages/jsonConfig
+          npm i -f -w packages/admin
+          cd packages/admin/src
+          npm i -f
 
       - name: Build
         run: NODE_OPTIONS=--max_old_space_size=8192 npm run build
 
       - name: Run GUI tests
-        run: npm run test:gui
+        run: npm run test:gui -w packages/admin/
 
       - name: Archive screenshots
         if: always()
@@ -145,13 +152,19 @@ jobs:
           echo "::set-output name=BODY::$BODY"
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm i -f
+          npm i -f -w packages/jsonConfig
+          npm i -f -w packages/admin
+          cd packages/admin/src
+          npm i -f
 
       - name: Publish package to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
-          npm publish
+          npm publish -w packages/admin
+          npm publish -w packages/jsonConfig
 
       - name: Create Github Release
         uses: actions/create-release@v1
