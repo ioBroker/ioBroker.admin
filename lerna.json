@@ -1,7 +1,21 @@
 {
+  "version": "6.12.9",
   "packages": [
     "packages/*"
   ],
-  "version": "independent",
+  "command": {
+    "run": {
+      "stream": true
+    },
+    "version": {
+      "allowBranch": [
+        "master"
+      ],
+      "ignoreChanges": [
+        "*.md"
+      ],
+      "exact": true
+    }
+  },
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
