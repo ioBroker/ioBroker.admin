@@ -13,6 +13,9 @@ User interface for configuration and administration of ioBroker.
 
 **This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
 
+## JSON config schema
+The JSON config schema description can be found at [JSON config schema](/packages/jsonConfig/SCHEMA.md).
+
 ## Using common.localLink
 - `%ip%` - ioBroker ip address (address of the admin)
 - `%secure%` or `%protocol%` - read from `native.secure` the value and use http or https
