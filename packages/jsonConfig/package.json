@@ -6,5 +6,9 @@
   "types": "./build/index.d.ts",
   "scripts": {
     "build": "tsc"
-  }
+  },
+  "files": [
+    "build/",
+    "LICENSE"
+  ]
 }
