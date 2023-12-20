@@ -1,0 +1,21 @@
+{
+  "manufacturer": "Fabrikant",
+  "model": "Model",
+  "batteryTooltip": "Batterij",
+  "connectedIconTooltip": "Verbonden",
+  "allDevicesFilteredOut": "Alle apparaten zijn eruit gefilterd",
+  "cancelButtonText": "Annuleren",
+  "closeButtonText": "Dichtbij",
+  "copied": "Gekopieerd",
+  "disconnectedIconTooltip": "Losgekoppeld",
+  "filterLabelText": "Filter op naam",
+  "instanceLabelText": "Voorbeeld",
+  "instanceNotAlive": "Instantie leeft niet",
+  "noButtonText": "Nee",
+  "noDevicesFoundText": "Geen apparaten gevonden",
+  "noInstanceSelectedText": "Selecteer een exemplaar",
+  "okButtonText": "OK",
+  "refreshInstanceList": "Ververs de exemplaarlijst",
+  "toClipboard": "naar klembord",
+  "yesButtonText": "Ja"
+}

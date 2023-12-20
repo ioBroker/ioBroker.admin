@@ -24,6 +24,7 @@
     "@iobroker/adapter-react-v5": "^4.7.0",
     "@iobroker/admin-component-easy-access": "^0.3.2",
     "@iobroker/dm-gui-components": "^0.0.10",
+    "@iobroker/dm-utils": "^0.1.8",
     "@iobroker/json-config": "file:../../jsonConfig",
     "@iobroker/legacy-testing": "^1.0.9",
     "@iobroker/socket-client": "^2.3.11",
