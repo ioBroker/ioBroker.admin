@@ -1,0 +1,21 @@
+{
+  "manufacturer": "Manufacturer",
+  "model": "Model",
+  "batteryTooltip": "Battery",
+  "connectedIconTooltip": "Connected",
+  "disconnectedIconTooltip": "Disconnected",
+  "cancelButtonText": "Cancel",
+  "closeButtonText": "Close",
+  "okButtonText": "OK",
+  "yesButtonText": "Yes",
+  "noButtonText": "No",
+  "noInstanceSelectedText": "Please select instance",
+  "filterLabelText": "Filter by name",
+  "instanceLabelText": "Instance",
+  "refreshInstanceList": "Refresh instance list",
+  "noDevicesFoundText": "No devices found",
+  "copied": "Copied",
+  "toClipboard": "to clipboard",
+  "instanceNotAlive": "Instance is not alive",
+  "allDevicesFilteredOut": "All devices filtered out"
+}

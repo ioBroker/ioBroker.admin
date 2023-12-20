@@ -1,0 +1,21 @@
+{
+  "manufacturer": "Hersteller",
+  "model": "Modell",
+  "batteryTooltip": "Batterie",
+  "connectedIconTooltip": "Verbunden",
+  "disconnectedIconTooltip": "Getrennt",
+  "cancelButtonText": "Abbrechen",
+  "okButtonText": "OK",
+  "yesButtonText": "Ja",
+  "noButtonText": "Nein",
+  "noInstanceSelectedText": "Bitte Instanz auswählen",
+  "filterLabelText": "Nach Name filtern",
+  "instanceLabelText": "Instanz",
+  "refreshInstanceList": "Instanz Liste aktualisieren",
+  "copied": " Kopiert",
+  "toClipboard": " in die Zwischenablage kopiert",
+  "allDevicesFilteredOut": "Alle Geräte herausgefiltert",
+  "closeButtonText": "Schließen",
+  "instanceNotAlive": "Instanz ist nicht aktiv",
+  "noDevicesFoundText": "Keine Geräte gefunden"
+}

@@ -1,0 +1,21 @@
+{
+  "manufacturer": "Produttore",
+  "model": "Modello",
+  "batteryTooltip": "Batteria",
+  "connectedIconTooltip": "Connesso",
+  "allDevicesFilteredOut": "Tutti i dispositivi sono stati filtrati",
+  "cancelButtonText": "Annulla",
+  "closeButtonText": "Vicino",
+  "copied": "Copiato",
+  "disconnectedIconTooltip": "Disconnesso",
+  "filterLabelText": "Filtra per nome",
+  "instanceLabelText": "Esempio",
+  "instanceNotAlive": "L'istanza non è viva",
+  "noButtonText": "NO",
+  "noDevicesFoundText": "Nessun dispositivo trovato",
+  "noInstanceSelectedText": "Seleziona l'istanza",
+  "okButtonText": "OK",
+  "refreshInstanceList": "Aggiorna l'elenco delle istanze",
+  "toClipboard": "negli appunti",
+  "yesButtonText": "SÌ"
+}
