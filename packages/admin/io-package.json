@@ -152,7 +152,7 @@
     "icon": "admin.png",
     "messagebox": true,
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/admin/admin/admin.png",
     "keywords": [
       "setup",
       "config",
@@ -206,7 +206,8 @@
     },
     "adminUI": {
       "config": "json"
-    }
+    },
+    "tier": 1
   },
   "native": {
     "autoUpdate": 24,
