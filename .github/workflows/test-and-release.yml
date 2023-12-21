@@ -180,6 +180,7 @@ jobs:
 
       - name: Notify Sentry.io about the release
         run: |
+          cd packages/admin
           npm i -g @sentry/cli
           export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
           export SENTRY_URL=https://sentry.iobroker.net
