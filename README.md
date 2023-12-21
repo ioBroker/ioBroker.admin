@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.3 (2023-12-21)
 * (foxriver76) fixed problem with default value of underscore attributes in Json Config
 * (foxriver76) prevent strict schema validation being logged to syslog
 * (foxriver76) fixed problems with ObjectCustomEditor

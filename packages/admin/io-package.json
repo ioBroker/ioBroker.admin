@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.2",
+    "version": "6.13.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.3": {
+        "en": "fixed problem with default value of underscore attributes in Json Config\nprevent strict schema validation being logged to syslog\nfixed problems with ObjectCustomEditor\nfixed markdown links (if default branch main)\nfixed global dependencies check",
+        "de": "behobenes Problem mit Standardwert von Underscore-Attributen in Json Config\nverhindern, dass strenge schemavalidierung bei syslog angemeldet wird\nprobleme mit ObjectCustom behoben Herausgeber\nfeste markdown-links (falls standard-verzweigung haupt)\nüberprüfung der globalen abhängigkeiten",
+        "ru": "исправлена проблема с по умолчанию значение атрибутов подчеркивания в Json Config\nпредотвратить строгие проверки схемы быть авторизован к syslog\nфиксированные проблемы с ObjectCustom Редактор\nфиксированные ссылки (если основной филиал по умолчанию)\nфиксированная глобальная проверка зависимости",
+        "pt": "problema fixo com valor padrão de atributos underscore em Json Config\nevitar a validação estrita de esquemas sendo logado para syslog\nproblemas fixos com ObjectCustom Editor\nlinks fixos de marcação (se padrão branch main)\nverificação de dependências globais fixas",
+        "nl": "_\nom te voorkomen dat strikte schema-geld wordt ingelogd\nproblemen met ObjectCustom Editor\nvertaling:\nvertaling:",
+        "fr": "problème fixe avec valeur par défaut des attributs de souligne dans Json Config\nempêcher la validation stricte du schéma être connecté à syslog\nproblèmes fixes avec ObjectCustom Editeur\nles liens de balisage fixe (si la branche principale par défaut)\nvérification des dépendances mondiales fixes",
+        "it": "problema fisso con il valore predefinito degli attributi underscore in Json Config\nimpedire l'accesso a syslog alla validazione dello schema rigoroso\nproblemi fissi con ObjectCustom Editore\nlink di markdown fissi (se ramo predefinito principale)\ncontrollo delle dipendenze globali fisse",
+        "es": "problema fijo con valor predeterminado de los atributos de subrayado en Json Config\nevitar la validación estricta de esquemas que se registran para syslog\nproblemas fijos con ObjectCustom Editor\nenlaces de marcado fijos (si rama principal predeterminada)\ncontrol de las dependencias globales fijas",
+        "pl": "stały problem z domyślną wartością podkreśleń w Json Config\nzapobiega ścisłej walidacji syslogii\nproblemy z obiektem redaktor\nzwiązane ze stałym znakiem (jeśli domyślny oddział)\nstabilność globalna",
+        "uk": "виправлена проблема з значенням за замовчуванням атрибутів json Config\nзапобігання суворої перевірки схеми, що записується на syslog\nвиправлені проблеми з об'єктомCustom Головна\nфіксовані посилання розмітки (якщо основний за замовчуванням)\nперевірка глобальних залежностей",
+        "zh-cn": "json Configg强调属性的固定问题\n防止严格辨认药\n目标Cu习惯的固定问题 编辑\n固定标记联系(如违约分支主要)\n固定的全球依赖检查"
+      },
       "6.13.2": {
         "en": "fixed problem with default value of underscore attributes in Json Config\nprevent strict schema validation being logged to syslog\nfixed problems with ObjectCustomEditor\nfixed markdown links (if default branch main)\nfixed global dependencies check",
         "de": "behobenes Problem mit Standardwert von Underscore-Attributen in Json Config\nverhindern, dass strenge schemavalidierung bei syslog angemeldet wird\nprobleme mit ObjectCustom behoben Herausgeber\nfeste markdown-links (falls standard-verzweigung haupt)\nüberprüfung der globalen abhängigkeiten",
@@ -95,19 +108,6 @@
         "pl": "dostarczanie własności do wysłania Tojson configigig\nłatwe wzniesienie",
         "uk": "додати властивість наLoaded, щоб відправитиTo json config\nфіксована легка висота адміністратора",
         "zh-cn": "增加Load财产,派遣To json config\nb. 固定的轻易举"
-      },
-      "6.12.6": {
-        "en": "fixed JSON config file component if no initial value exists\nadded the creation of a state or of a device possibility to the context menu",
-        "de": "feste JSON config Dateikomponente, wenn kein Anfangswert vorhanden ist\ndie erstellung eines zustands oder einer gerätemöglichkeit zum kontextmenü hinzugefügt",
-        "ru": "фиксированный компонент файла JSON config если никакое первоначальное значение не существует\nдобавил создание состояния или возможности устройства в контекстное меню",
-        "pt": "componente fixo do arquivo JSON config se nenhum valor inicial existir\nadicionou a criação de um estado ou de uma possibilidade de dispositivo ao menu de contexto",
-        "nl": "_\nvoegde de creatie toe van een staat of een apparaat aan de context menu",
-        "fr": "fichier de configuration JSON fixe si aucune valeur initiale n'existe\na ajouté la création d'un état ou d'une possibilité de dispositif au menu contextuel",
-        "it": "componente fisso del file di configurazione JSON se non esiste un valore iniziale\naggiunto la creazione di uno stato o di una possibilità di dispositivo al menu di contesto",
-        "es": "componente de archivo de configuración JSON fijo si no existe valor inicial\nagregó la creación de un estado o de una posibilidad de dispositivo al menú contextual",
-        "pl": "zdefiniowany komponent plików JSON, jeśli nie ma początkowej wartości\ndodał stworzenie stanu lub możliwości urządzenia do kontekstowego menu",
-        "uk": "виправлений компонент JSON config, якщо початкове значення не існує\nдодано створення стану або можливості пристрою в контекстному меню",
-        "zh-cn": "如果没有初步价值,常设的常设常设常设的档案部分\n增加建立国家或装置的可能性,使人了解情况。"
       }
     },
     "desc": {
