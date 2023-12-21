@@ -118,9 +118,9 @@
     "build": "lerna run build",
     "start": "cd packages/admin/src && npm run start",
     "release": "release-script",
-    "release-patch": "release-script patch --yes",
-    "release-minor": "release-script minor --yes",
-    "release-major": "release-script major --yes"
+    "release-patch": "release-script patch --yes --no-update-lockfile",
+    "release-minor": "release-script minor --yes --no-update-lockfile",
+    "release-major": "release-script major --yes --no-update-lockfile"
   },
   "main": "./build/index.tsx"
 }
