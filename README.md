@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.0 (2023-12-21)
 * (foxriver76) fixed problem with default value of underscore attributes in Json Config
 * (foxriver76) prevent strict schema validation being logged to syslog
 * (foxriver76) fixed problems with ObjectCustomEditor
@@ -112,10 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.12.6 (2023-12-01)
 * (foxriver76) fixed JSON config file component if no initial value exists
 * (bluefox) added the creation of a state or of a device possibility to the context menu
-
-### 6.12.5 (2023-11-23)
-* (foxriver76) fixed json config ConfigFileSelector
-* (klein0r) fixed title bar layout with username and icon
 
 ## License
 The MIT License (MIT)
