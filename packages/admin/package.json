@@ -66,7 +66,7 @@
     "test:integration": "mocha test/integration --exit",
     "test:rule": "mocha test/rule --exit",
     "test:gui": "mocha test/*.gui.js --exit",
-    "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
+    "prepublishOnly": "npm run build",
     "build": "gulp",
     "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ..",
     "npm": "npm i && cd src && npm i -f && cd .."
