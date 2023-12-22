@@ -154,14 +154,16 @@ function copyFiles() {
             .pipe(gulp.dest(dest)),
 
         // copy custom plugin
-        gulp.src([`${srcRx}node_modules/@iobroker/admin-component-easy-access/admin/**/*`]).pipe(gulp.dest('admin/')),
+        gulp
+            .src([`${rootFolder}/node_modules/@iobroker/admin-component-easy-access/admin/**/*`])
+            .pipe(gulp.dest('admin/')),
 
         // copy crypto-js
         gulp
             .src([
-                `${srcRx}node_modules/crypto-js/*.*`,
-                `!${srcRx}node_modules/crypto-js/CONTRIBUTING.md`,
-                `!${srcRx}node_modules/crypto-js/README.md`,
+                `${rootFolder}/node_modules/crypto-js/*.*`,
+                `!${rootFolder}/node_modules/crypto-js/CONTRIBUTING.md`,
+                `!${rootFolder}/node_modules/crypto-js/README.md`,
             ])
             .pipe(gulp.dest(dest + 'lib/js/crypto-js')),
 

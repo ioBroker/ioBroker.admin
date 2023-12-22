@@ -44,9 +44,6 @@
     "semver": "^7.5.4",
     "ws": "^8.15.1"
   },
-  "devDependencies": {
-    "@iobroker/json-config": "file:../json-config"
-  },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
   },

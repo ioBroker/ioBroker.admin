@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) bring back missing `crypto-js`
 * (foxriver76) fix crash case due to global dependency check
 
 ### 6.13.3 (2023-12-21)

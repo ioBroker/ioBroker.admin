@@ -42,7 +42,7 @@ jobs:
       - name: 'Install FE'
         run: | 
           cd packages/admin/src
-          npm i --force
+          npm i -f
 
       - name: 'Build JsonConfig'
         run: npm run build -w packages/jsonConfig/
