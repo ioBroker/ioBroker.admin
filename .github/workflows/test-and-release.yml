@@ -35,9 +35,7 @@ jobs:
           npm i -f
 
       - name: 'Install Adapter'
-        run: |
-          cd packages/admin
-          npm i -f
+        run: npm i -w packages/admin -f
 
       - name: 'Install FE'
         run: | 
