@@ -1,4 +1,29 @@
-## How to install from Github
+## Development
+If you want to contribute to the Admin adapter, follow these steps:
+
+Install all packages
+
+```bash
+npm i -f
+npm i -f -w packages/jsonConfig
+npm i -w packages/admin -f
+```
+
+Build the project
+
+```bash
+npm run build
+```
+
+Ensure you have a running admin instance on your host on port `8081`, then run
+
+```bash
+npm run start
+```
+
+You now have the admin UI running on port `3000` with hot code reload from your local project.
+
+## How to install from GitHub
 
 ```
 npm install <GitHub URL>
