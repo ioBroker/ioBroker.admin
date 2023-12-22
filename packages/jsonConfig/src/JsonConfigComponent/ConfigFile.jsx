@@ -15,7 +15,7 @@ import {
     Videocam as IconVideo,
 } from '@mui/icons-material';
 
-import SelectFileDialog from './wrapper/Dialogs/SelectFile';
+import { SelectFile as SelectFileDialog } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigFileSelector from './ConfigFileSelector';

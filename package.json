@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "@iobroker/json-config": "file:packages/json-config",
+    "@iobroker/json-config": "file:packages/jsonConfig",
     "iobroker.admin": "file:packages/admin"
   },
   "devDependencies": {
@@ -25,7 +25,6 @@
     "@iobroker/admin-component-easy-access": "^0.3.2",
     "@iobroker/dm-gui-components": "^0.1.0",
     "@iobroker/dm-utils": "^0.1.8",
-    "@iobroker/json-config": "file:../../jsonConfig",
     "@iobroker/legacy-testing": "^1.0.9",
     "@iobroker/socket-client": "^2.3.13",
     "@iobroker/testing": "^4.1.0",
@@ -115,8 +114,9 @@
     "typescript": "^5.2.2"
   },
   "scripts": {
-    "build": "cd packages/jsonConfig && npm run clean && cd ../.. && lerna run build",
+    "build": "npm run clean && lerna run build",
     "clean": "lerna run clean",
+    "install-monorepo": "npm i -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f",
     "start": "cd packages/admin/src && npm run start",
     "fix-release": "node fixRelease.js",
     "release": "release-script",

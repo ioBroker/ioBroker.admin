@@ -2,7 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "@iobroker/json-config": ["./packages/json-config/src"],
+      "@iobroker/jsonConfig": ["./packages/jsonConfig/src"],
       "iobroker.admin": ["./packages/admin/src/src"]
     }
   }

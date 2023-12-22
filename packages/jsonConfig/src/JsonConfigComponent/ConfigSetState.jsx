@@ -10,10 +10,9 @@ import {
     Info as IconInfo,
 } from '@mui/icons-material';
 
+import { Confirm as ConfirmDialog, Icon } from '@iobroker/adapter-react-v5';
 import ConfigGeneric from './ConfigGeneric';
 import I18n from './wrapper/i18n';
-import Icon from './wrapper/Components/Icon';
-import ConfirmDialog from './wrapper/Dialogs/Confirm';
 
 const styles = () => ({
     fullWidth: {

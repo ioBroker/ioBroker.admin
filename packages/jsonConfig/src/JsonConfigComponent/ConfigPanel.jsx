@@ -12,7 +12,7 @@ import {
 
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import Utils from './wrapper/Components/Utils';
+import { Utils } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 // eslint-disable-next-line import/no-cycle

@@ -9,7 +9,7 @@ import {
     TextField,
 } from '@mui/material';
 
-import DialogSelectID from './wrapper/Dialogs/SelectID';
+import { SelectID as DialogSelectID } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 

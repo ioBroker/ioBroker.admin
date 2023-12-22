@@ -26,9 +26,8 @@ import {
 } from '@mui/icons-material';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 
-import Utils from './wrapper/Components/Utils';
+import { Confirm as ConfirmDialog, Utils } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
-import ConfirmDialog from './wrapper/Dialogs/Confirm';
 
 import ConfigGeneric from './ConfigGeneric';
 

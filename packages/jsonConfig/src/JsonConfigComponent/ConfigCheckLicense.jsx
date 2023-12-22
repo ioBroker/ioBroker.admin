@@ -20,10 +20,10 @@ import {
 
 import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
+import { Confirm as ConfirmDialog } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
-import ConfirmDialog from './wrapper/Dialogs/Confirm';
 
 const styles = theme => ({
     fullWidth: {

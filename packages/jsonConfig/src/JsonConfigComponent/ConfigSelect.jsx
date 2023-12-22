@@ -11,8 +11,8 @@ import  {
     ListSubheader,
 } from '@mui/material';
 
+import { Utils } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
-import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 
