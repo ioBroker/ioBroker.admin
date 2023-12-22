@@ -1,7 +1,14 @@
 ## Development
+### Getting started
 If you want to contribute to the Admin adapter, follow these steps:
 
-Install all packages
+Install all packages all in one via
+
+```bash
+npm run install-monorepo
+```
+
+or step-by-step
 
 ```bash
 npm i -f
@@ -22,6 +29,10 @@ npm run start
 ```
 
 You now have the admin UI running on port `3000` with hot code reload from your local project.
+
+### Guidelines
+The packages in the workspace folder (`packages`) should not contain any `devDependencies`, all `devDependencies` should be added to the root `package.json`. 
+There is one exception to this rule: defining dependencies between workspace packages should be done via defining them as development dependency to ensure `lerna` is respecting the build order.
 
 ## How to install from GitHub
 
