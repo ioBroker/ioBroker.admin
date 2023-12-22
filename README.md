@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
-* (foxriver76) optimized global dependency check
+* (foxriver76) fix crash case due to global dependency check
 
 ### 6.13.3 (2023-12-21)
 * (foxriver76) fixed problem with default value of underscore attributes in Json Config
