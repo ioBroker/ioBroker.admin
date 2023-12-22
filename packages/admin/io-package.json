@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.4",
+    "version": "6.13.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.5": {
+        "en": "bring back missing `crypto-js`\nfix crash case due to global dependency check",
+        "de": "vermisste krypto-js zurückbringen\ncrashfall durch globale abhängigkeitsprüfung beheben",
+        "ru": "вернуть отсутствующие крипто-js\nисправить случай аварии из-за глобальной проверки зависимости",
+        "pt": "trazer de volta cripto-js ausentes\ncorrigir caso de acidente devido à verificação de dependência global",
+        "nl": "breng de vermiste crypto-j\nvertaling:",
+        "fr": "ramener crypto-js manquant\nle cas de crash en raison du contrôle de dépendance global",
+        "it": "portare indietro crypto-js mancanti\nrisolvere caso di crash a causa del controllo della dipendenza globale",
+        "es": "traer de vuelta cripto-js desaparecidos\nsolucionar caso de accidente debido a la comprobación de dependencia global",
+        "pl": "wskazuje się, że krypto-j\nsprawa naprawy ze względu na globalną zależność",
+        "uk": "повернути відсутні крипто-js\nвиправити випадок аварії через глобальну перевірку залежності",
+        "zh-cn": "后盾\nf 因全球依赖检查而造成的事故"
+      },
       "6.13.4": {
         "en": "fix crash case due to global dependency check",
         "de": "crashfall durch globale abhängigkeitsprüfung beheben",
@@ -95,19 +108,6 @@
         "pl": "zapobiegło to ścisłej walidacji syslogii\nzrekomendowano wyświetlanie wiadomości z nowymi liniami",
         "uk": "запобігла суворій перевірці схеми, що підлягають списанню\nвиправлено відображення новин новими лініями",
         "zh-cn": "防止严格辨认药\n修改了新线新闻的展示"
-      },
-      "6.12.8": {
-        "en": "corrected ACL for files\nallowed changing color of the menu item\ncorrected the user/group icon selector",
-        "de": "aCL für Dateien korrigiert\nerlaubte änderung der farbe des menüpunkts\nkorrigierte den benutzer/gruppen-icon-selektor",
-        "ru": "исправлен ACL для файлов\nразрешено изменение цвета элемента меню\nисправлено селектор иконы пользователя/группы",
-        "pt": "aCL corrigido para arquivos\npermitido mudar a cor do item do menu\ncorrigido o seletor do ícone do usuário/grupo",
-        "nl": "vertaling:\nverandering van kleur van het menu item\nvertaling:",
-        "fr": "aCL corrigé pour les fichiers\ncouleur de l'élément de menu\ncorrigé le sélecteur utilisateur/groupe",
-        "it": "aCL corretto per i file\npermesso cambiare il colore della voce del menu\ncorretto il selettore dell'icona dell'utente/gruppo",
-        "es": "aCL corregido para archivos\npermite cambiar el color del elemento del menú\ncorregido el selector de iconos usuario/grupo",
-        "pl": "poprawić ACL do plików\npozwoliło to na zmianę koloru menu\nzrekomendowany użytkownik/group icon selektor",
-        "uk": "виправлено ACL для файлів\nдопускається зміна кольору меню\nвиправлено вибір іконки користувача/групи",
-        "zh-cn": "更正\n允许改变男u项目的颜色\n更正了用户/群体iconyoor"
       }
     },
     "desc": {
