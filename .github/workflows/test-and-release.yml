@@ -52,6 +52,7 @@ jobs:
 
       - name: 'Build'
         run: |
+          npm run clean
           NODE_OPTIONS=--max_old_space_size=4096 npm run build
 
   # Runs adapter tests on all supported node versions and OSes
