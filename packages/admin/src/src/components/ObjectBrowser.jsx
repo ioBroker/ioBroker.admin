@@ -97,6 +97,7 @@ import {
     IconOpen,
     IconState,
     withWidth,
+    Connection,
 } from '@iobroker/adapter-react-v5';
 
 // own
@@ -1366,7 +1367,7 @@ function buildTree(objects, options) {
         do {
             repeat = false;
 
-            // If current level is still OK, and we can add ID to children
+            // If the current level is still OK, and we can add ID to children
             if (!currentPath || id.startsWith(`${currentPath}.`)) {
                 // if more than one level added
                 if (parts.length - currentPathLen > 1) {
@@ -2178,140 +2179,129 @@ class ObjectBrowser extends Component {
         this.calculateColumnsVisibility();
     }
 
-    loadAllObjects(update) {
+    async loadAllObjects(update) {
         const props = this.props;
-        let objects;
 
-        return new Promise(resolve => {
-            this.setState({ updating: true }, () => resolve());
-        })
-            .then(() =>
-                (this.props.objectsWorker
-                    ? this.props.objectsWorker.getObjects(update)
-                    : props.socket.getObjects(update, true)))
-            .then(_objects => {
-                objects = _objects;
-                if (props.types && props.types[0] !== 'state') {
-                    if (props.length >= 1) {
-                        console.error('more than one type does not supported! Use filterFunc instead');
-                    }
-                    return props.socket.getObjectViewSystem(props.types[0], null, null);
-                }
-                return !objects['system.config']
-                    ? props.socket.getObject('system.config').then(obj => ({ 'system.config': obj }))
-                    : Promise.resolve(null);
-            })
-            .then(moreObjects => {
-                this.systemConfig = objects['system.config'] || moreObjects['system.config'] || {};
+        try {
+            await new Promise(resolve => {
+                this.setState({ updating: true }, () => resolve());
+            });
 
-                if (moreObjects) {
-                    if (moreObjects['system.config']) {
-                        delete moreObjects['system.config'];
+            const objects = this.props.objectsWorker ? (await this.props.objectsWorker.getObjects(update)) : (await props.socket.getObjects(update, true));
+            if (props.types && Connection.isWeb()) {
+                for (let i = 0; i < props.types.length; i++) {
+                    // admin has ALL objects
+                    // web has only state, channel, device, enum, and system.config
+                    if (props.types[i] === 'state' || props.types[i] === 'channel' || props.types[i] === 'device' || props.types[i] === 'enum') {
+                        continue;
                     }
+                    const moreObjects = await props.socket.getObjectViewSystem(props.types[i], null, null);
                     Object.assign(objects, moreObjects);
                 }
+            }
 
-                this.systemConfig.common = this.systemConfig.common || {};
-                this.systemConfig.common.defaultNewAcl = this.systemConfig.common.defaultNewAcl || {};
-                this.systemConfig.common.defaultNewAcl.owner =
-                    this.systemConfig.common.defaultNewAcl.owner || 'system.user.admin';
-                this.systemConfig.common.defaultNewAcl.ownerGroup =
-                    this.systemConfig.common.defaultNewAcl.ownerGroup || 'system.group.administrator';
-                if (typeof this.systemConfig.common.defaultNewAcl.state !== 'number') {
-                    // TODO: may be convert here from string
-                    this.systemConfig.common.defaultNewAcl.state = 0x664;
-                }
-                if (typeof this.systemConfig.common.defaultNewAcl.object !== 'number') {
-                    // TODO: may be convert here from string
-                    this.systemConfig.common.defaultNewAcl.state = 0x664;
-                }
+            this.systemConfig = this.systemConfig || objects['system.config'] || (await props.socket.getObject('system.config'));
 
-                if (typeof props.filterFunc === 'function') {
-                    this.objects = {};
-                    Object.keys(objects).forEach(id => {
-                        try {
-                            if (props.filterFunc(objects[id])) {
-                                this.objects[id] = objects[id];
-                            }
-                        } catch (e) {
-                            console.log(`Error by filtering of "${id}": ${e}`);
-                        }
-                    });
-                } else if (props.types) {
-                    this.objects = {};
-                    Object.keys(objects).forEach(id => {
-                        const type = objects[id] && objects[id].type;
-                        // include "folder" types too
-                        if (
-                            type &&
-                            (type === 'channel' ||
-                                type === 'device' ||
-                                type === 'enum' ||
-                                type === 'folder' ||
-                                type === 'adapter' ||
-                                type === 'instance' ||
-                                props.types.includes(type))
-                        ) {
+            this.systemConfig.common = this.systemConfig.common || {};
+            this.systemConfig.common.defaultNewAcl = this.systemConfig.common.defaultNewAcl || {};
+            this.systemConfig.common.defaultNewAcl.owner =
+                this.systemConfig.common.defaultNewAcl.owner || 'system.user.admin';
+            this.systemConfig.common.defaultNewAcl.ownerGroup =
+                this.systemConfig.common.defaultNewAcl.ownerGroup || 'system.group.administrator';
+            if (typeof this.systemConfig.common.defaultNewAcl.state !== 'number') {
+                // TODO: may be convert here from string
+                this.systemConfig.common.defaultNewAcl.state = 0x664;
+            }
+            if (typeof this.systemConfig.common.defaultNewAcl.object !== 'number') {
+                // TODO: may be convert here from string
+                this.systemConfig.common.defaultNewAcl.state = 0x664;
+            }
+
+            if (typeof props.filterFunc === 'function') {
+                this.objects = {};
+                Object.keys(objects).forEach(id => {
+                    try {
+                        if (props.filterFunc(objects[id])) {
                             this.objects[id] = objects[id];
                         }
-                    });
-                } else {
-                    this.objects = objects;
-                }
+                    } catch (e) {
+                        console.log(`Error by filtering of "${id}": ${e}`);
+                    }
+                });
+            } else if (props.types) {
+                this.objects = {};
+                Object.keys(objects).forEach(id => {
+                    const type = objects[id] && objects[id].type;
+                    // include "folder" types too
+                    if (
+                        type &&
+                        (type === 'channel' ||
+                            type === 'device' ||
+                            type === 'enum' ||
+                            type === 'folder' ||
+                            type === 'adapter' ||
+                            type === 'instance' ||
+                            props.types.includes(type))
+                    ) {
+                        this.objects[id] = objects[id];
+                    }
+                });
+            } else {
+                this.objects = objects;
+            }
 
-                // read default history
-                this.defaultHistory = this.systemConfig.common.defaultHistory;
-                if (this.defaultHistory) {
-                    props.socket
-                        .getState(`system.adapter.${this.defaultHistory}.alive`)
-                        .then(state => {
-                            if (!state || !state.val) {
-                                this.defaultHistory = '';
-                            }
-                        })
-                        .catch(e => window.alert(`Cannot get state: ${e}`));
-                }
+            // read default history
+            this.defaultHistory = this.systemConfig.common.defaultHistory;
+            if (this.defaultHistory) {
+                props.socket
+                    .getState(`system.adapter.${this.defaultHistory}.alive`)
+                    .then(state => {
+                        if (!state || !state.val) {
+                            this.defaultHistory = '';
+                        }
+                    })
+                    .catch(e => window.alert(`Cannot get state: ${e}`));
+            }
 
-                return this.getAdditionalColumns();
-            })
-            .then(columnsForAdmin => {
-                this.calculateColumnsVisibility(null, null, columnsForAdmin);
+            const columnsForAdmin = await this.getAdditionalColumns();
+            this.calculateColumnsVisibility(null, null, columnsForAdmin);
 
-                const { info, root } = buildTree(this.objects, this.props);
-                this.root = root;
-                this.info = info;
+            const { info, root } = buildTree(this.objects, this.props);
+            this.root = root;
+            this.info = info;
 
-                // Show first selected item
-                const node =
-                    this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
+            // Show first selected item
+            const node =
+                this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
 
-                this.lastAppliedFilter = null;
+            this.lastAppliedFilter = null;
 
-                // If the selected ID is not visible, reset filter
-                if (
-                    node &&
-                    !applyFilter(
-                        node,
-                        this.state.filter,
-                        this.props.lang,
-                        this.objects,
-                        null,
-                        null,
-                        props.customFilter,
-                        props.types,
-                    )
-                ) {
-                    // reset filter
-                    this.setState({ filter: { ...DEFAULT_FILTER }, columnsForAdmin }, () => {
-                        this.setState({ loaded: true, updating: false }, () =>
-                            this.expandAllSelected(() => this.onAfterSelect()));
-                    });
-                } else {
-                    this.setState({ loaded: true, updating: false, columnsForAdmin }, () =>
+            // If the selected ID is not visible, reset filter
+            if (
+                node &&
+                !applyFilter(
+                    node,
+                    this.state.filter,
+                    this.props.lang,
+                    this.objects,
+                    null,
+                    null,
+                    props.customFilter,
+                    props.types,
+                )
+            ) {
+                // reset filter
+                this.setState({ filter: { ...DEFAULT_FILTER }, columnsForAdmin }, () => {
+                    this.setState({ loaded: true, updating: false }, () =>
                         this.expandAllSelected(() => this.onAfterSelect()));
-                }
-            })
-            .catch(e => this.showError(e));
+                });
+            } else {
+                this.setState({ loaded: true, updating: false, columnsForAdmin }, () =>
+                    this.expandAllSelected(() => this.onAfterSelect()));
+            }
+        } catch (e1) {
+            this.showError(e1);
+        }
     }
 
     /**
