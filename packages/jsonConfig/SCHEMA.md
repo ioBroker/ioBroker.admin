@@ -117,19 +117,19 @@ Possible types:
 ```
 
 - `objectId` - object ID: show it with name, color and icon
-    - `types` - Desired type: `channel`, `device`, ... (has only `state` by default). It is singular, because `type` is already occupied.
+    - `types` - Desired type: `channel`, `device`, ... (has only `state` by default). It is plural, because `type` is already occupied.
     - `root` - [optional] Show only this root object and its children
     - `customFilter` - [optional] Cannot be used together with `type` settings. Examples
-       `{common: {custom: true}}` - show only objects with some custom settings
-       `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
-       `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb` or `sql` or `history`
-       `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
-       `{type: 'channel'}` - show only channels
-       `{type: ['channel', 'device']}` - show only channels and devices
-       `{common: {type: 'number'}` - show only states of type 'number
-       `{common: {type: ['number', 'string']}` - show only states of type 'number and string
-       `{common: {role: 'switch']}` - show only states with roles starting from switch
-       `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
+       - `{common: {custom: true}}` - show only objects with some custom settings
+       - `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
+       - `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb` or `sql` or `history`
+       - `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
+       - `{type: 'channel'}` - show only channels
+       - `{type: ['channel', 'device']}` - show only channels and devices
+       - `{common: {type: 'number'}` - show only states of type 'number
+       - `{common: {type: ['number', 'string']}` - show only states of type 'number and string
+       - `{common: {role: 'switch']}` - show only states with roles starting from switch
+       - `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
 
 - `password` - password field
   This field-type just have an effect in the UI.

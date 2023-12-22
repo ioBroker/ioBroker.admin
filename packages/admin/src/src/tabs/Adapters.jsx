@@ -443,10 +443,12 @@ class Adapters extends Component {
             adapters, repository,
         } = options;
 
-        const { cb, installedLocal, installedGlobal } = options;
+        const { cb, installedLocal } = options;
+        let { installedGlobal } = options;
 
         adapters = adapters || this.state.adapters;
         const installed = installedLocal || this.state.installed;
+        installedGlobal = installedGlobal || this.state.installedGlobal;
         repository = repository || this.state.repository;
 
         const updateAvailable = [];
