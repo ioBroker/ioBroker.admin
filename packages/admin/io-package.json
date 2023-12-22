@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.3",
+    "version": "6.13.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.4": {
+        "en": "fix crash case due to global dependency check",
+        "de": "crashfall durch globale abhängigkeitsprüfung beheben",
+        "ru": "исправить случай аварии из-за глобальной проверки зависимости",
+        "pt": "corrigir caso de acidente devido à verificação de dependência global",
+        "nl": "vertaling:",
+        "fr": "le cas de crash en raison du contrôle de dépendance global",
+        "it": "risolvere caso di crash a causa del controllo della dipendenza globale",
+        "es": "solucionar caso de accidente debido a la comprobación de dependencia global",
+        "pl": "sprawa naprawy ze względu na globalną zależność",
+        "uk": "виправити випадок аварії через глобальну перевірку залежності",
+        "zh-cn": "f 因全球依赖检查而造成的事故"
+      },
       "6.13.3": {
         "en": "fixed problem with default value of underscore attributes in Json Config\nprevent strict schema validation being logged to syslog\nfixed problems with ObjectCustomEditor\nfixed markdown links (if default branch main)\nfixed global dependencies check",
         "de": "behobenes Problem mit Standardwert von Underscore-Attributen in Json Config\nverhindern, dass strenge schemavalidierung bei syslog angemeldet wird\nprobleme mit ObjectCustom behoben Herausgeber\nfeste markdown-links (falls standard-verzweigung haupt)\nüberprüfung der globalen abhängigkeiten",
@@ -95,19 +108,6 @@
         "pl": "poprawić ACL do plików\npozwoliło to na zmianę koloru menu\nzrekomendowany użytkownik/group icon selektor",
         "uk": "виправлено ACL для файлів\nдопускається зміна кольору меню\nвиправлено вибір іконки користувача/групи",
         "zh-cn": "更正\n允许改变男u项目的颜色\n更正了用户/群体iconyoor"
-      },
-      "6.12.7": {
-        "en": "add property `onLoaded` to `sendTo` json config\nfixed easy admin height",
-        "de": "objekt hinzufügen aufLoaded to sendTo json config\neinfache admin-höhe",
-        "ru": "добавить недвижимость наLoaded для sendTo json config\nфиксированная легкая высота админ",
-        "pt": "adicionar propriedade noLoaded para enviarPara json config\naltura de administrador fácil fixa",
-        "nl": "vertaling:\nmakkelijke administratie",
-        "fr": "ajouter la propriété surLoaded to sendTo json config\nhauteur d'administration facile",
-        "it": "aggiungere la proprietà suLoaded per sendTo json config\naltezza di amministrazione facile fissa",
-        "es": "añadir propiedad enLoaded to sendTo json config\naltura de administración fácil",
-        "pl": "dostarczanie własności do wysłania Tojson configigig\nłatwe wzniesienie",
-        "uk": "додати властивість наLoaded, щоб відправитиTo json config\nфіксована легка висота адміністратора",
-        "zh-cn": "增加Load财产,派遣To json config\nb. 固定的轻易举"
       }
     },
     "desc": {

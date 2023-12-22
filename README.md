@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.4 (2023-12-22)
 * (foxriver76) fix crash case due to global dependency check
 
 ### 6.13.3 (2023-12-21)
@@ -111,10 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.12.7 (2023-12-03)
 * (foxriver76) add property `onLoaded` to `sendTo` json config
 * (foxriver76) fixed easy admin height
-
-### 6.12.6 (2023-12-01)
-* (foxriver76) fixed JSON config file component if no initial value exists
-* (bluefox) added the creation of a state or of a device possibility to the context menu
 
 ## License
 The MIT License (MIT)
