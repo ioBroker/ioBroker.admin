@@ -119,7 +119,7 @@ Possible types:
 - `objectId` - object ID: show it with name, color and icon
     - `types` - Desired type: `channel`, `device`, ... (has only `state` by default). It is plural, because `type` is already occupied.
     - `root` - [optional] Show only this root object and its children
-    - `customFilter` - [optional] Cannot be used together with `type` settings. Examples
+    - `customFilter` - [optional] Cannot be used together with `type` settings. It is an object and not a JSON string. Examples
        - `{common: {custom: true}}` - show only objects with some custom settings
        - `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
        - `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb` or `sql` or `history`
@@ -130,6 +130,7 @@ Possible types:
        - `{common: {type: ['number', 'string']}` - show only states of type 'number and string
        - `{common: {role: 'switch']}` - show only states with roles starting from switch
        - `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
+    - `filterFunc` - [optional] Cannot be used together with `type` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`
 
 - `password` - password field
   This field-type just have an effect in the UI.

@@ -88,7 +88,9 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const languages: LanguageSelectOption[] = [...LANGUAGES];
         if (this.props.schema.system) {
-            languages.unshift({ value: '', label: I18n.t('ra_System language') });
+            languages.unshift({ value: '_', label: I18n.t('ra_System language') });
+        } else {
+            languages.unshift({ value: '_', label: I18n.t('ra_none') });
         }
 
         this.setState({ value: this.props.schema.system ? (value || '') : (value || I18n.getLanguage()), selectOptions: languages });
@@ -110,7 +112,10 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
                 value={this.state.value || '_'}
                 renderValue={() => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
-                    const { value } = e.target;
+                    let { value } = e.target;
+                    if (value === '_') {
+                        value = '';
+                    }
                     this.setState({ value }, () => {
                         this.onChange(this.props.attr, value);
                         if (this.props.schema.changeGuiLanguage) {
