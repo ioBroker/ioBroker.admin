@@ -107,6 +107,7 @@ class ConfigAccordion extends ConfigGeneric {
                     this.onChangeWrapper(newObj, true));
             }}
             onError={(error, attr) => this.onError(error, attr)}
+            table={this.props.table}
         />;
     }
 

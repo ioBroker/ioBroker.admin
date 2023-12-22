@@ -104,6 +104,7 @@ class ConfigTabs extends ConfigGeneric {
                 instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
                 schema={items[this.state.tab]}
+                table={this.props.table}
             />
         </div>;
     }

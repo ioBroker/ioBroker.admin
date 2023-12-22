@@ -58,6 +58,8 @@ export interface ConfigGenericProps {
     commandRunning: any;
     disabled?: boolean;
     classes: Record<string, any>;
+    /* this item is in the table. Maybe some layouts must be changed */
+    table?: boolean;
 }
 
 export interface ConfigGenericState {

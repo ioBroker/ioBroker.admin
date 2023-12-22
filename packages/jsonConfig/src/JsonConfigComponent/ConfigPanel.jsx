@@ -220,6 +220,7 @@ class ConfigPanel extends ConfigGeneric {
                 custom={this.props.custom}
                 schema={items[attr]}
                 attr={attr}
+                table={this.props.table}
             />;
         }) : null;
     }
@@ -382,6 +383,7 @@ ConfigPanel.propTypes = {
     onChange: PropTypes.func,
     changed: PropTypes.bool,
     registerOnForceUpdate: PropTypes.func,
+    table: PropTypes.bool, // indicator, this panel is in the table
 };
 
 const ConfigPanelStyled = withStyles(styles)(ConfigPanel);

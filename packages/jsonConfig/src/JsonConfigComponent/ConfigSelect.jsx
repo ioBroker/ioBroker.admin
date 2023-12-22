@@ -76,7 +76,7 @@ class ConfigSelect extends ConfigGeneric {
 
         return <FormControl
             variant="standard"
-            className={Utils.clsx(this.props.classes.fullWidth, this.props.arrayIndex !== undefined && this.props.classes.noMargin)}
+            className={Utils.clsx(this.props.classes.fullWidth, this.props.table !== undefined && this.props.classes.noMargin)}
             id={`jsonSelect_${this.props.schema.attr}_${this.props.index || this.props.index === 0 ? this.props.index : ''}`}
         >
             {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}

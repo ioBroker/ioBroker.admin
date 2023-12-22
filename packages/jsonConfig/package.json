@@ -4,10 +4,14 @@
   "version": "6.13.5",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
+  "dependencies": {
+    "eslint": "^8.56.0"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "npm": "npm i -f"
   },
   "publishConfig": {
     "access": "public"

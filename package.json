@@ -115,7 +115,7 @@
     "typescript": "^5.2.2"
   },
   "scripts": {
-    "build": "lerna run build",
+    "build": "cd packages/jsonConfig && npm run clean && cd ../.. && lerna run build",
     "clean": "lerna run clean",
     "start": "cd packages/admin/src && npm run start",
     "fix-release": "node fixRelease.js",
