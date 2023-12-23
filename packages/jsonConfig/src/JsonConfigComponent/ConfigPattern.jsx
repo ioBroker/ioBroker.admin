@@ -6,10 +6,8 @@ import {
     TextField,
 } from '@mui/material';
 
+import { IconCopy, Utils } from '@iobroker/adapter-react-v5';
 import ConfigGeneric from './ConfigGeneric';
-
-import Utils from './wrapper/Components/Utils';
-import CopyIcon from './wrapper/icons/IconCopy';
 
 class ConfigPattern extends ConfigGeneric {
     renderItem(error, disabled) {
@@ -26,7 +24,7 @@ class ConfigPattern extends ConfigGeneric {
                             window.alert('Copied');
                         }}
                     >
-                        <CopyIcon />
+                        <IconCopy />
                     </IconButton>
                     : undefined,
             }}

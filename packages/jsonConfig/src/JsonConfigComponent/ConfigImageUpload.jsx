@@ -8,7 +8,7 @@ import {
     FormControl,
 } from '@mui/material';
 
-import UploadImage from './wrapper/Components/UploadImage';
+import { UploadImage } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
 
 import ConfigGeneric from './ConfigGeneric';

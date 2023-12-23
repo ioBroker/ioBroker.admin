@@ -10,8 +10,7 @@ import {
 
 import { Close as ClearIcon } from '@mui/icons-material';
 
-import Utils from './wrapper/Components/Utils';
-import ColorPicker from './wrapper/Components/ColorPicker';
+import { ColorPicker, Utils } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 

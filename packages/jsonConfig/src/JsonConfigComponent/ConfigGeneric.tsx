@@ -15,12 +15,10 @@ import {
     UploadFile as IconUploadFile,
 } from '@mui/icons-material';
 
+import { Confirm as ConfirmDialog, Icon, Utils } from '@iobroker/adapter-react-v5';
 import type AdminConnection from './wrapper/AdminConnection';
 
 import I18n from './wrapper/i18n';
-import Utils from './wrapper/Components/Utils';
-import ConfirmDialog from './wrapper/Dialogs/Confirm';
-import Icon from './wrapper/Components/Icon';
 
 // because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
 export function isObject(it: any): it is Record<string, any> {

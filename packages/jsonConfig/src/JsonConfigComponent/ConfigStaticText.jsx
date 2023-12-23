@@ -4,7 +4,7 @@ import { withStyles } from '@mui/styles';
 
 import { Button } from '@mui/material';
 
-import Utils from './wrapper/Components/Utils';
+import { Utils } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 

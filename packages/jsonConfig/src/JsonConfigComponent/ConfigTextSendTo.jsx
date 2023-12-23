@@ -7,8 +7,7 @@ import {
     IconButton,
 } from '@mui/material';
 
-import Utils from './wrapper/Components/Utils';
-import CopyIcon from './wrapper/icons/IconCopy';
+import { IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -80,7 +79,7 @@ class ConfigTextSendTo extends ConfigGeneric {
                                 window.alert('Copied');
                             }}
                         >
-                            <CopyIcon />
+                            <IconCopy />
                         </IconButton>
                         : undefined,
                 }}

@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
+import { Utils } from '@iobroker/adapter-react-v5';
 import ConfigGeneric from './ConfigGeneric';
 
 import I18n from './wrapper/i18n';
-import Utils from './wrapper/Components/Utils';
 
 const styles = () => ({
     root: {

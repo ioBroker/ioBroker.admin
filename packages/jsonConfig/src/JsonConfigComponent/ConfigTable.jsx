@@ -28,8 +28,8 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
+import { Utils } from '@iobroker/adapter-react-v5';
 import I18n from './wrapper/i18n';
-import Utils from './wrapper/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 // eslint-disable-next-line import/no-cycle
