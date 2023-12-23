@@ -1212,7 +1212,7 @@ function getVisibleItems(item, type, objects, _result) {
 function getSystemIcon(objects, id, k, imagePrefix) {
     let icon;
 
-    // system or design have special icons
+    // system or design has special icons
     if (id.startsWith('_design/') || id === 'system') {
         icon = <IconSystem className="iconOwn" />;
     } else if (id === '0_userdata' || id === '0_userdata.0') {
