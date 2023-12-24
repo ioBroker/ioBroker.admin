@@ -1,5 +1,5 @@
 {
-  "version": "6.13.8",
+  "version": "6.13.9",
   "packages": [
     "packages/*"
   ],
@@ -17,7 +17,8 @@
       "ignoreChanges": [
         "*.md"
       ],
-      "exact": true
+      "exact": true,
+      "forcePublish": true
     }
   },
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
