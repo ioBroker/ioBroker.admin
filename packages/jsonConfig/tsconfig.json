@@ -24,7 +24,8 @@
     "paths": {
       "@/*": [
         "./packages/jsonConfig/src/*"
-      ]
+      ],
+      "@iobroker/dm-gui-components": ["./packages/dm-gui-components/src"]
     },
   },
 }

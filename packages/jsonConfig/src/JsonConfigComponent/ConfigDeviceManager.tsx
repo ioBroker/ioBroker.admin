@@ -1,7 +1,7 @@
 import React from 'react';
 
+import DeviceManager from '@iobroker/dm-gui-components';
 import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
-import DeviceManager from "@iobroker/dm-gui-components";
 
 class ConfigDeviceManager extends ConfigGeneric<ConfigGenericProps, ConfigGenericState> {
     renderItem(): React.JSX.Element | null {

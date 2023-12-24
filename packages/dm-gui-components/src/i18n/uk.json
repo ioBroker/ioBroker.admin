@@ -1,0 +1,21 @@
+{
+  "manufacturer": "Виробник",
+  "model": "Модель",
+  "batteryTooltip": "Батарея",
+  "allDevicesFilteredOut": "Усі пристрої відфільтровано",
+  "cancelButtonText": "Скасувати",
+  "closeButtonText": "Закрити",
+  "connectedIconTooltip": "Підключено",
+  "copied": "Скопійовано",
+  "disconnectedIconTooltip": "Відключено",
+  "filterLabelText": "Фільтрувати за назвою",
+  "instanceLabelText": "Екземпляр",
+  "instanceNotAlive": "Примірник не живий",
+  "noButtonText": "Немає",
+  "noDevicesFoundText": "Пристроїв не знайдено",
+  "noInstanceSelectedText": "Виберіть екземпляр",
+  "okButtonText": "в порядку",
+  "refreshInstanceList": "Оновити список екземплярів",
+  "toClipboard": "в буфер обміну",
+  "yesButtonText": "Так"
+}

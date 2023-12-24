@@ -1,0 +1,21 @@
+{
+  "manufacturer": "Производитель",
+  "model": "Модель",
+  "batteryTooltip": "Батарея",
+  "connectedIconTooltip": "Подключено",
+  "allDevicesFilteredOut": "Все устройства отфильтрованы",
+  "cancelButtonText": "Отмена",
+  "closeButtonText": "Закрыть",
+  "copied": "Скопировано",
+  "disconnectedIconTooltip": "Отключено",
+  "filterLabelText": "Фильтровать по имени",
+  "instanceLabelText": "Екземпляр",
+  "instanceNotAlive": "Экземпляр не жив",
+  "noButtonText": "Нет",
+  "noDevicesFoundText": "Устройства не найдены",
+  "noInstanceSelectedText": "Пожалуйста, выберите экземпляр",
+  "okButtonText": "ХОРОШО",
+  "refreshInstanceList": "Обновить список экземпляров",
+  "toClipboard": "в буфер обмена",
+  "yesButtonText": "Да"
+}
