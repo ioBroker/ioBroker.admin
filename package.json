@@ -120,9 +120,9 @@
     "react-sortable-hoc": "^2.0.0",
     "semver": "^7.5.4",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.8",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
-    "typescript": "^5.3.3",
-    "typescript-transform-paths": "^3.4.6"
+    "typescript": "^5.3.3"
   },
   "scripts": {
     "build": "npm run clean && lerna run build",
