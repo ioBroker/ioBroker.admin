@@ -18,7 +18,7 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "clean": "rimraf build",
-    "build": "tsc"
+    "build": "tsc && tsc-alias"
   },
   "repository": {
     "type": "git",
