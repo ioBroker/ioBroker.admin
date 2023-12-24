@@ -20,7 +20,6 @@
     "types": [
       "@iobroker/types"
     ],
-    // need to be relative to base config
     "paths": {
       "@/*": [
         "./src/*"
