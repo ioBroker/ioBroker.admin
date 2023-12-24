@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.10",
+    "version": "6.13.11",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.11": {
+        "en": "internal optimizations",
+        "de": "interne optimierungen",
+        "ru": "внутренние оптимизации",
+        "pt": "otimizações internas",
+        "nl": "inwendige optimisatie",
+        "fr": "optimisation interne",
+        "it": "ottimizzazioni interne",
+        "es": "optimizaciones internas",
+        "pl": "optymalizacja wewnętrznych",
+        "uk": "внутрішня оптимізація",
+        "zh-cn": "b. 优化内部环境"
+      },
       "6.13.10": {
         "en": "internal optimizations",
         "de": "interne optimierungen",
@@ -95,19 +108,6 @@
         "pl": "wskazuje się, że krypto-j\nsprawa naprawy ze względu na globalną zależność",
         "uk": "повернути відсутні крипто-js\nвиправити випадок аварії через глобальну перевірку залежності",
         "zh-cn": "后盾\nf 因全球依赖检查而造成的事故"
-      },
-      "6.13.4": {
-        "en": "fix crash case due to global dependency check",
-        "de": "crashfall durch globale abhängigkeitsprüfung beheben",
-        "ru": "исправить случай аварии из-за глобальной проверки зависимости",
-        "pt": "corrigir caso de acidente devido à verificação de dependência global",
-        "nl": "vertaling:",
-        "fr": "le cas de crash en raison du contrôle de dépendance global",
-        "it": "risolvere caso di crash a causa del controllo della dipendenza globale",
-        "es": "solucionar caso de accidente debido a la comprobación de dependencia global",
-        "pl": "sprawa naprawy ze względu na globalną zależność",
-        "uk": "виправити випадок аварії через глобальну перевірку залежності",
-        "zh-cn": "f 因全球依赖检查而造成的事故"
       }
     },
     "desc": {
