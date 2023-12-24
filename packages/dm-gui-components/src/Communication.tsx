@@ -13,7 +13,7 @@ import {
     Snackbar,
 } from '@mui/material';
 
-import { Connection } from '@iobroker/socket-client';
+import { Connection } from '@iobroker/adapter-react-v5';
 import { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 import { DeviceRefresh } from '@iobroker/dm-utils/build/types';
 

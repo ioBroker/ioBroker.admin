@@ -5,12 +5,15 @@
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "clean": "rimraf build",
     "prepublishOnly": "npm run build"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "@iobroker/dm-gui-components": "file:../dm-gui-components"
   },
   "files": [
     "build/",

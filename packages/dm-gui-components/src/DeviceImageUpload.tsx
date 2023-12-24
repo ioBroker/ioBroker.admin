@@ -1,5 +1,5 @@
 import React, { ChangeEvent, ChangeEventHandler } from 'react';
-import { Connection } from '@iobroker/socket-client';
+import { Connection } from '@iobroker/adapter-react-v5';
 
 interface DeviceImageUploadProps {
     socket: Connection;

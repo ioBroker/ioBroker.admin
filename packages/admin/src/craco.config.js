@@ -19,6 +19,7 @@ module.exports = {
     webpack: {
         alias: {
             '@iobroker/json-config': path.resolve(__dirname, '..', '..', 'jsonConfig', 'src'),
+            '@iobroker/dm-gui-components': path.resolve(__dirname, '..', '..', 'dm-gui-components', 'src'),
             '@': path.resolve(__dirname, 'src'),
         },
         output: {

@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@iobroker/dm-gui-components": "file:packages/dm-gui-components",
     "@iobroker/json-config": "file:packages/jsonConfig",
     "iobroker.admin": "file:packages/admin"
   },
@@ -13,9 +14,15 @@
     "@alcalzone/release-script-plugin-iobroker": "^3.7.0",
     "@alcalzone/release-script-plugin-lerna": "^3.7.0",
     "@alcalzone/release-script-plugin-license": "^3.7.0",
+    "@babel/core": "^7.23.6",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-decorators": "^7.23.6",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/plugin-syntax-jsx": "^7.23.3",
+    "@babel/plugin-transform-runtime": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
+    "@babel/preset-flow": "^7.23.3",
+    "@babel/preset-react": "^7.23.3",
     "@craco/craco": "^7.1.0",
     "@dilesoft/vite-plugin-federation-dynamic": "^1.1.9",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
@@ -23,7 +30,6 @@
     "@honkhonk/vite-plugin-svgr": "^1.1.0",
     "@iobroker/adapter-react-v5": "^4.9.1",
     "@iobroker/admin-component-easy-access": "^0.3.2",
-    "@iobroker/dm-gui-components": "^0.1.0",
     "@iobroker/dm-utils": "^0.1.8",
     "@iobroker/legacy-testing": "^1.0.9",
     "@iobroker/socket-client": "^2.3.13",
@@ -44,9 +50,12 @@
     "@tsconfig/node16": "^16.1.1",
     "@types/crypto-js": "^4.2.1",
     "@types/mocha": "^10.0.6",
+    "@types/node": "^20.10.4",
     "@types/react": "^18.2.45",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
+    "babel": "^6.23.0",
+    "babel-plugin-inline-json-import": "^0.3.2",
     "buffer": "^6.0.3",
     "chai": "^4.3.10",
     "colorette": "^2.0.20",
@@ -110,20 +119,21 @@
     "react-showdown": "^2.3.1",
     "react-sortable-hoc": "^2.0.0",
     "semver": "^7.5.4",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.8",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.3"
   },
   "scripts": {
     "build": "npm run clean && lerna run build",
     "clean": "lerna run clean",
-    "install-monorepo": "npm i -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f",
+    "install-monorepo": "npm i -f && npm i -w packages/dm-gui-components -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f",
     "start": "cd packages/admin/src && npm run start",
     "fix-release": "node fixRelease.js",
     "release": "release-script",
     "release-patch": "release-script patch --yes --no-update-lockfile",
     "release-minor": "release-script minor --yes --no-update-lockfile",
     "release-major": "release-script major --yes --no-update-lockfile",
-    "update-packages": "ncu --upgrade && cd packages/admin && ncu --upgrade",
-    "npm": "npm i -f && cd packages/admin && npm i -f && cd ./src && npm i -f "
+    "update-packages": "ncu --upgrade && cd packages/admin && ncu --upgrade"
   }
 }

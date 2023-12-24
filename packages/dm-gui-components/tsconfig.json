@@ -1,12 +1,13 @@
-// Specialized tsconfig for the admin directory,
-// includes DOM typings and configures the admin build
 {
-  "extends": "../tsconfig.json",
+  "extends": "../admin/src/tsconfig.json",
+  "include": ["./src"],
   "compilerOptions": {
     "baseUrl": "./",
     "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "checkJs": false,
     "noEmit": false,
+    "declaration": true,
     "outDir": "./build",
     "sourceMap": true,
     "sourceRoot": "./src",
@@ -26,5 +27,4 @@
       ],
     },
   },
-  "include": ["./**/*"]
 }

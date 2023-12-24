@@ -1,0 +1,35 @@
+{
+  "name": "@iobroker/dm-gui-components",
+  "version": "-.-.-",
+  "description": "React classes for device manager",
+  "author": {
+    "name": "Jey Cee",
+    "email": "iobroker@all-smart.net"
+  },
+  "contributors": [
+    {
+      "name": "UncleSamSwiss"
+    }
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ioBroker/dm-gui-components.git"
+  },
+  "module": "./index.js",
+  "keywords": [
+    "iobroker",
+    "adapter",
+    "iot"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ioBroker/dm-gui-components/issues"
+  },
+  "homepage": "https://github.com/ioBroker/dm-gui-components#readme",
+  "devDependencies": {},
+  "dependencies": {}
+}

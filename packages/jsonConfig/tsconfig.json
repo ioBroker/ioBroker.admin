@@ -8,6 +8,7 @@
     "noEmit": false,
     "declaration": true,
     "outDir": "./build",
+    "baseUrl": "./",
     "sourceMap": true,
     "sourceRoot": "./src",
     "noImplicitAny": true,
@@ -20,11 +21,10 @@
     "types": [
       "@iobroker/types"
     ],
-    // need to be relative to base config
     "paths": {
       "@/*": [
-        "./packages/jsonConfig/src/*"
+        "./src/*"
       ]
-    },
+    }
   },
 }

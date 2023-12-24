@@ -1,8 +1,8 @@
 import React from 'react';
 
+import TooltipButton from './TooltipButton';
+import { renderIcon, getTranslation } from './Utils';
 import { ActionBase } from '@iobroker/dm-utils/build/types/base';
-import TooltipButton from './TooltipButton.js';
-import { renderIcon, getTranslation } from './Utils.js';
 
 interface DeviceActionButtonProps {
     deviceId: string;

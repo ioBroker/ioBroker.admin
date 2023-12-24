@@ -13,13 +13,9 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Connection } from '@iobroker/socket-client';
-
+import { Utils, Icon, Connection, I18n } from '@iobroker/adapter-react-v5';
 import { DeviceDetails, DeviceInfo } from '@iobroker/dm-utils';
 import { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
-import Utils from '@/Utils';
-import I18n from '@/JsonConfigComponent/wrapper/i18n';
-import { Icon } from '@iobroker/adapter-react-v5';
 
 import DeviceActionButton from './DeviceActionButton';
 import DeviceControlComponent from './DeviceControl';
@@ -28,7 +24,7 @@ import JsonConfig from './JsonConfig';
 import DeviceImageUpload from './DeviceImageUpload';
 import { getTranslation } from './Utils';
 
-const NoImageIcon = (props: { style?: React.CSSProperties; className?: string }) => <svg viewBox="0 0 24 24" width="24" height="24" style={props.style} className={props.className}>
+const NoImageIcon = (props: { style?: React.CSSProperties, className?: string }) => <svg viewBox="0 0 24 24" width="24" height="24" style={props.style} className={props.className}>
     <path
         fill="currentColor"
         d="M21.9,21.9l-8.49-8.49l0,0L3.59,3.59l0,0L2.1,2.1L0.69,3.51L3,5.83V19c0,1.1,0.9,2,2,2h13.17l2.31,2.31L21.9,21.9z M5,18 l3.5-4.5l2.5,3.01L12.17,15l3,3H5z M21,18.17L5.83,3H19c1.1,0,2,0.9,2,2V18.17z"
@@ -123,7 +119,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         const details: DeviceDetails | null = await this.props.socket.sendTo(this.props.instanceId, 'dm:deviceDetails', this.props.device.id);
         console.log(`Got device details for ${this.props.device.id}:`, details);
         this.setState({ details, data: details?.data || {} });
-    }
+    };
 
     /**
      * Refresh the device details
