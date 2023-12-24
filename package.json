@@ -131,9 +131,9 @@
     "start": "cd packages/admin/src && npm run start",
     "fix-release": "node fixRelease.js",
     "release": "release-script",
-    "release-patch": "release-script patch --yes --no-update-lockfile",
-    "release-minor": "release-script minor --yes --no-update-lockfile",
-    "release-major": "release-script major --yes --no-update-lockfile",
+    "release-patch": "release-script patch --yes --no-update-lockfile --publishAll",
+    "release-minor": "release-script minor --yes --no-update-lockfile --publishAll",
+    "release-major": "release-script major --yes --no-update-lockfile --publishAll",
     "update-packages": "ncu --upgrade && cd packages/admin && ncu --upgrade"
   }
 }
