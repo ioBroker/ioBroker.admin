@@ -2,6 +2,7 @@
   "extends": "../admin/src/tsconfig.json",
   "include": ["./src"],
   "compilerOptions": {
+    "baseUrl": "./",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "checkJs": false,
@@ -23,7 +24,7 @@
     // need to be relative to base config
     "paths": {
       "@/*": [
-        "./packages/dm-gui-components/src/*"
+        "./src/*"
       ],
     },
   },

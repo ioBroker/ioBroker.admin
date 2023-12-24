@@ -3,6 +3,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": "./",
     "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "noEmit": false,
@@ -22,7 +23,7 @@
     // need to be relative to base config
     "paths": {
       "@/*": [
-        "./packages/admin/src/src/*"
+        "./src/*"
       ],
     },
   },
