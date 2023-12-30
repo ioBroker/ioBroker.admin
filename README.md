@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 6.13.12 (2023-12-30)
+### 6.13.13 (2023-12-30)
 * (foxriver76) internal optimizations
 
 ### 6.13.5 (2023-12-22)
