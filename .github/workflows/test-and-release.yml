@@ -155,9 +155,7 @@ jobs:
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
-          npm publish -w packages/dm-gui-components
-          npm publish -w packages/jsonConfig
-          npm publish -w packages/admin
+          lerna publish from-package --yes
 
       - name: Create Github Release
         uses: actions/create-release@v1
