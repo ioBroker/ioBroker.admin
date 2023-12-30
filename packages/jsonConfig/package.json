@@ -15,6 +15,7 @@
   "dependencies": {
     "@iobroker/adapter-react-v5": "^4.9.1",
     "@iobroker/dm-gui-components": "file:../dm-gui-components",
+    "crypto-js": "^4.2.0",
     "react-ace": "^10.1.0"
   },
   "files": [
