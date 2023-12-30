@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.11",
+    "version": "6.13.12",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.12": {
+        "en": "internal optimizations",
+        "de": "interne optimierungen",
+        "ru": "внутренние оптимизации",
+        "pt": "otimizações internas",
+        "nl": "inwendige optimisatie",
+        "fr": "optimisation interne",
+        "it": "ottimizzazioni interne",
+        "es": "optimizaciones internas",
+        "pl": "optymalizacja wewnętrznych",
+        "uk": "внутрішня оптимізація",
+        "zh-cn": "b. 优化内部环境"
+      },
       "6.13.11": {
         "en": "internal optimizations",
         "de": "interne optimierungen",
@@ -95,19 +108,6 @@
         "pl": "optymalizacja wewnętrznych",
         "uk": "внутрішня оптимізація",
         "zh-cn": "b. 优化内部环境"
-      },
-      "6.13.5": {
-        "en": "bring back missing `crypto-js`\nfix crash case due to global dependency check",
-        "de": "vermisste krypto-js zurückbringen\ncrashfall durch globale abhängigkeitsprüfung beheben",
-        "ru": "вернуть отсутствующие крипто-js\nисправить случай аварии из-за глобальной проверки зависимости",
-        "pt": "trazer de volta cripto-js ausentes\ncorrigir caso de acidente devido à verificação de dependência global",
-        "nl": "breng de vermiste crypto-j\nvertaling:",
-        "fr": "ramener crypto-js manquant\nle cas de crash en raison du contrôle de dépendance global",
-        "it": "portare indietro crypto-js mancanti\nrisolvere caso di crash a causa del controllo della dipendenza globale",
-        "es": "traer de vuelta cripto-js desaparecidos\nsolucionar caso de accidente debido a la comprobación de dependencia global",
-        "pl": "wskazuje się, że krypto-j\nsprawa naprawy ze względu na globalną zależność",
-        "uk": "повернути відсутні крипто-js\nвиправити випадок аварії через глобальну перевірку залежності",
-        "zh-cn": "后盾\nf 因全球依赖检查而造成的事故"
       }
     },
     "desc": {
