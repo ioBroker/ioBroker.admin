@@ -27,3 +27,6 @@ testSentry.bat
 
 # ioBroker dev-server
 .dev-server/
+
+# Lerna
+lerna-debug.log

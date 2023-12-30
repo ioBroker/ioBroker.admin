@@ -4,7 +4,7 @@ import {
     Switch,
 } from '@mui/material';
 import { renderIcon, getTranslation } from './Utils';
-import { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
+import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 
 interface DeviceControlProps {
     deviceId: string;
