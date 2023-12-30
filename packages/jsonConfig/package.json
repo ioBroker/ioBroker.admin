@@ -17,7 +17,6 @@
     "@iobroker/dm-gui-components": "file:../dm-gui-components",
     "react-ace": "^10.1.0"
   },
-
   "files": [
     "build/",
     "LICENSE"
