@@ -17,7 +17,7 @@ import {
     TextField,
     Autocomplete,
 } from '@mui/material';
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 import UrlIcon from '@mui/icons-material/Language';

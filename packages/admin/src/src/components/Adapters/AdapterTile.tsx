@@ -1,5 +1,5 @@
 import React from 'react';
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Card, CardContent, CardMedia, Fab,

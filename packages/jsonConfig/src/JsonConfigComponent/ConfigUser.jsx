@@ -11,8 +11,7 @@ import {
     Select,
 } from '@mui/material';
 
-import { Icon, Utils } from '@iobroker/adapter-react-v5';
-import I18n from './wrapper/i18n';
+import { Icon, Utils, I18n } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 
