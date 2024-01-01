@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 
 import  { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles = () => ({
     error: {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 import semver from 'semver';
 
 import List from '@mui/material/List';

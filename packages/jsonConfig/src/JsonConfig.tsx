@@ -1,5 +1,5 @@
 import React from 'react';
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 import MD5 from 'crypto-js/md5';
 
@@ -16,7 +16,7 @@ import {
     Confirm as ConfirmDialog, AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
-import { Theme } from '@iobroker/adapter-react-v5/types';
+import type { Theme } from '@iobroker/adapter-react-v5/types';
 import type { SystemConfig } from '@iobroker/socket-client';
 import Utils from '@/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
