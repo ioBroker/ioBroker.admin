@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.15 (2024-01-01)
 * (foxriver76) fixed scrolling of Select ID dialogs
 
 ### 6.13.14 (2023-12-30)
@@ -109,11 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.12.9 (2023-12-12)
 * (foxriver76) prevented the strict schema validation being logged to syslog
 * (bluefox) corrected the displaying of news with the new lines
-
-### 6.12.8 (2023-12-06)
-* (bluefox) corrected ACL for files
-* (bluefox) allowed changing color of the menu item
-* (bluefox) corrected the user/group icon selector
 
 ## License
 The MIT License (MIT)

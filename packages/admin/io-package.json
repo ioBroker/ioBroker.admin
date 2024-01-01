@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.14",
+    "version": "6.13.15",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.15": {
+        "en": "fixed scrolling of Select ID dialogs",
+        "de": "festes Scrollen von Wählen Sie ID Dialoge",
+        "ru": "фиксированная прокрутка из Select ID dialogs",
+        "pt": "rolagem fixa de diálogos Select ID",
+        "nl": "vertaling:",
+        "fr": "défilement fixe des dialogues d'ID",
+        "it": "scorrimento fisso di Seleziona dialogo ID",
+        "es": "desplazamiento fijo de diálogos Seleccionar ID",
+        "pl": "przeszukiwanie dialogów wybranego ID",
+        "uk": "виправлено прокручування діалогів Вибрати ідентифікатор",
+        "zh-cn": "b. 固定疏散喷雾器"
+      },
       "6.13.14": {
         "en": "internal optimizations",
         "de": "interne optimierungen",
@@ -84,19 +97,6 @@
         "zh-cn": "b. 优化内部环境"
       },
       "6.13.9": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
-      },
-      "6.13.8": {
         "en": "internal optimizations",
         "de": "interne optimierungen",
         "ru": "внутренние оптимизации",
