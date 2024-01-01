@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) redirect correctly when exiting json config with unsaved changes
+
 ### 6.13.15 (2024-01-01)
 * (foxriver76) fixed scrolling of Select ID dialogs
 

@@ -391,7 +391,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             ok={I18n.t('ra_Discard')}
             cancel={I18n.t('ra_Cancel')}
             onClose={isYes =>
-                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate())}
+                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
         />;
     }
 
