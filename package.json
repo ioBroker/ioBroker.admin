@@ -53,7 +53,7 @@
     "@types/node": "^20.10.4",
     "@types/react": "^18.2.45",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
+    "@typescript-eslint/parser": "^6.16.0",
     "babel": "^6.23.0",
     "babel-plugin-inline-json-import": "^0.3.2",
     "buffer": "^6.0.3",
