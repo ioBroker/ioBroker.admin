@@ -9,9 +9,9 @@ import {
     Info as IconInfo,
 } from '@mui/icons-material';
 
-import { Confirm as DialogConfirm, Error  as DialogError, Message  as DialogMessage } from '@iobroker/adapter-react-v5';
-import type AdminConnection from './wrapper/AdminConnection';
-import I18n from './wrapper/i18n';
+import {
+    Confirm as DialogConfirm, Error  as DialogError, Message  as DialogMessage, type AdminConnection, I18n,
+} from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
 

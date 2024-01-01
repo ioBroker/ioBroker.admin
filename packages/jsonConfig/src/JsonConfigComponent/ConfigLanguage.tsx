@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 import type { SystemConfig } from '@iobroker/socket-client';
-import I18n from './wrapper/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
