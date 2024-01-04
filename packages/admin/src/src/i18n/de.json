@@ -716,7 +716,7 @@
     "No restart": "Kein Neustart",
     "No states selected!": "Keine Zustände ausgewählt!",
     "No stdout outputs": "Kein Ausgabe in Kommandozeile",
-    "No version of %s": "Die neueste verfügbare Version von \"%s\" ist erforderlich, es ist jedoch nichts installiert. Bitte installieren Sie zuerst \"%s\" und versuchen Sie es dann erneut.",
+    "No version of %s": "Die neueste verfügbare Version von \"%s\" ist erforderlich, es ist jedoch nichts installiert. Bitte installiere zuerst \"%s\" und versuche es dann erneut.",
     "Node.js": "Node.js",
     "Non-allowed duplicate entry \"%s\" in column \"%s\"": "Unzulässiger doppelter Eintrag „%s“ in Spalte „%s“",
     "None": "Keiner",
