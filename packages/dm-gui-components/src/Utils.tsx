@@ -18,6 +18,7 @@ import {
     Power,
     Fluorescent,
     WbIncandescent,
+    Settings
 } from '@mui/icons-material';
 
 import {
@@ -159,6 +160,9 @@ export function renderIcon(
     }
     if (action.id === 'socket') {
         return <Power style={{ color }} />;
+    }
+    if (action.id === 'settings') {
+        return <Settings style={{ color }} />;
     }
     return null;
 }
