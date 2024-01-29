@@ -668,7 +668,7 @@ or
 }
 ```
 
-We suggest using variant 2, as it will be possible to process the texts with Weblate.
+We suggest using variant 1 whenever possible, as it will be possible to process the texts with Weblate.
 
 ## JS Functions
 ### Configuration dialog
