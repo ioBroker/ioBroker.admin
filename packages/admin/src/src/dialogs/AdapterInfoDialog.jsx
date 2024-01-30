@@ -65,7 +65,18 @@ class AdapterInfoDialog extends Component {
         Router.doNavigate('tab-adapters');
     }
 
+    /**
+     * Transform the link prop to point to the raw file
+     *
+     * @return {string}
+     */
+    transformLink() {
+        return this.props.link.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/');
+    }
+
     render() {
+        const link = this.transformLink();
+
         if (!this.state.text) {
             return <Loader theme={this.props.theme} />;
         }
@@ -90,7 +101,7 @@ class AdapterInfoDialog extends Component {
                 adapter={this.props.adapter}
                 // https://github.com/ioBroker/ioBroker.admin/blob/master/README.md =>
                 // https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/README.md
-                link={this.props.link.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/')}
+                link={link}
             />
             <AppBar color="default" position="static">
                 <Toolbar>
