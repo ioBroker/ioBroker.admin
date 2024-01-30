@@ -1,6 +1,14 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.12.9 (2023-12-12)
+* (foxriver76) prevented the strict schema validation being logged to syslog
+* (bluefox) corrected the displaying of news with the new lines
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.12.8 (2023-12-06)
 * (bluefox) corrected ACL for files
 * (bluefox) allowed changing color of the menu item

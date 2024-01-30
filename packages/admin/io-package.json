@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.15",
+    "version": "6.13.16",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.16": {
+        "en": "allow to display and modify `ics` files\nredirect correctly when exiting json config with unsaved changes",
+        "de": "`ics` dateien anzeigen und ändern\nkorrekt umleiten, wenn json config mit ungehinderten änderungen verlassen",
+        "ru": "позволяет отображать и изменять файлы `ics'\nправильно перенаправлять при выходе на конфигурацию json с невыполненными изменениями",
+        "pt": "permitir exibir e modificar arquivos `ics`\nredirecionar corretamente ao sair json config com mudanças não salvas",
+        "nl": "toestaan om te tonen en wijzigen van de bestanden\ncorrect omleiden bij het afsluiten van json-configuratie met niet opgeslagen wijzigingen",
+        "fr": "permettre d'afficher et de modifier les fichiers `ics`\nrediriger correctement lors de la sortie de json config avec des modifications non enregistrées",
+        "it": "consentire di visualizzare e modificare i file `ics`\nreindirizzare correttamente quando si esce da json config con modifiche non salvate",
+        "es": "permite mostrar y modificar archivos 'ics'\nredireccionar correctamente al salir de json config con cambios sin salvar",
+        "pl": "umożliwia wyświetlanie i modyfikowanie plików 'ics'\nprzekierowanie poprawnie po wyjściu z konfiguracji json z niezapisanymi zmianami",
+        "uk": "дозволяє відображати та змінювати файли `ics`\nперенаправлення правильно при виході з json config з незбережених змін",
+        "zh-cn": "允许显示和修改“ics”文件\n未保存的更改退出 json 配置时正确定向"
+      },
       "6.13.15": {
         "en": "fixed scrolling of Select ID dialogs",
         "de": "festes Scrollen von Wählen Sie ID Dialoge",
@@ -84,19 +97,6 @@
         "zh-cn": "b. 优化内部环境"
       },
       "6.13.10": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
-      },
-      "6.13.9": {
         "en": "internal optimizations",
         "de": "interne optimierungen",
         "ru": "внутренние оптимизации",

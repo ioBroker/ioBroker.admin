@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.16 (2024-01-30)
 * (foxriver76) allow to display and modify `ics` files
 * (foxriver76) redirect correctly when exiting json config with unsaved changes
 
@@ -109,10 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) fixed problems with ObjectCustomEditor
 * (klein0r) fixed markdown links (if default branch main)
 * (foxriver76) fixed global dependencies check
-
-### 6.12.9 (2023-12-12)
-* (foxriver76) prevented the strict schema validation being logged to syslog
-* (bluefox) corrected the displaying of news with the new lines
 
 ## License
 The MIT License (MIT)
