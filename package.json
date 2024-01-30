@@ -128,7 +128,7 @@
     "build": "npm run clean && lerna run build",
     "clean": "lerna run clean",
     "install-monorepo": "npm i -f && npm i -w packages/dm-gui-components -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f",
-    "start": "cd packages/admin/src && npm run start",
+    "start": "npm run start -w packages/admin",
     "fix-release": "node fixRelease.js",
     "release": "release-script",
     "release-patch": "release-script patch --yes --no-update-lockfile --publishAll",

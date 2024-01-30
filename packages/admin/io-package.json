@@ -177,6 +177,10 @@
     ],
     "type": "general",
     "license": "MIT",
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
     "logTransporter": true,
     "stopBeforeUpdate": true,
     "wwwDontUpload": true,

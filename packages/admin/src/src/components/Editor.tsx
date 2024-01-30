@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-min-noconflict/mode-json';
@@ -9,21 +7,27 @@ import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-min-noconflict/theme-chrome';
 import 'ace-builds/src-min-noconflict/ext-language_tools';
 
-const styles = {
-    jsonError: {
-        border: '1px solid red',
-        minHeight: 200,
-    },
-    jsonNoError: {
-        border: '1px solid #00000000',
-        minHeight: 200,
-    },
-};
+interface EditorProps {
+    fontSize?: number;
+    value?: string;
+    defaultValue?: string;
+    mode?: string;
+    name?: string;
+    onChange: (newVal: string) => void;
+    themeType: string;
+    /** flag that indicates the "value edit mode" */
+    editValueMode?: boolean;
+    error?: boolean;
+}
 
-class Editor extends Component {
+class Editor extends Component<EditorProps> {
     render() {
         return <AceEditor
-            className={this.props.error === true ? this.props.classes.jsonError : (this.props.error === false ? this.props.classes.jsonNoError : undefined)}
+            style={{
+                border: '1px solid',
+                borderColor: this.props.error ? 'red' : '#00000000',
+                minHeight: 200,
+            }}
             mode={this.props.mode || 'json'}
             width="100%"
             height="100%"
@@ -50,16 +54,4 @@ class Editor extends Component {
     }
 }
 
-Editor.propTypes = {
-    fontSize: PropTypes.number,
-    value: PropTypes.string,
-    defaultValue: PropTypes.string,
-    mode: PropTypes.string,
-    name: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    themeType: PropTypes.string,
-    editValueMode: PropTypes.bool, // flag that indicates the "value edit mode"
-    error: PropTypes.bool,
-};
-
-export default withStyles(styles)(Editor);
+export default Editor;

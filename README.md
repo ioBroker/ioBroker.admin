@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) allow to display and modify `ics` files
 * (foxriver76) redirect correctly when exiting json config with unsaved changes
 
 ### 6.13.15 (2024-01-01)
