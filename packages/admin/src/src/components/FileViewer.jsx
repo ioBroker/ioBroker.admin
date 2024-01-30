@@ -24,7 +24,11 @@ import {
 
 import { Utils, withWidth, IconNoIcon } from '@iobroker/adapter-react-v5';
 // File viewer in adapter-react does not use ace editor
+import * as ace from 'ace-builds';
+import 'ace-builds/src-noconflict/ext-modelist';
 import Editor from './Editor';
+
+const modelist = ace.require('ace/ext/modelist');
 
 const styles = () => ({
     dialog: {
@@ -213,7 +217,8 @@ class FileViewer extends Component {
             case 'txt':
                 return 'html';
             default:
-                return 'json';
+                // e.g. ace/mode/text
+                return modelist.getModeForPath(`testFile.${ext}`).mode.split('/').pop();
         }
     }
 
