@@ -42,6 +42,9 @@ jobs:
           cd packages/admin/src
           npm i -f
 
+      - name: 'Build dm-gui-components'
+        run: npm run build -w packages/dm-gui-components/
+
       - name: 'Build JsonConfig'
         run: npm run build -w packages/jsonConfig/
 
@@ -95,12 +98,7 @@ jobs:
           node-version: 18.x
 
       - name: Install Dependencies
-        run: |
-          npm i -f
-          npm i -f -w packages/jsonConfig
-          npm i -f -w packages/admin
-          cd packages/admin/src
-          npm i -f
+        run: npm run install-monorepo
 
       - name: Build
         run: NODE_OPTIONS=--max_old_space_size=8192 npm run build
@@ -151,19 +149,13 @@ jobs:
           echo "::set-output name=BODY::$BODY"
 
       - name: Install Dependencies
-        run: |
-          npm i -f
-          npm i -f -w packages/jsonConfig
-          npm i -f -w packages/admin
-          cd packages/admin/src
-          npm i -f
+        run: npm run install-monorepo
 
       - name: Publish package to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
-          npm publish -w packages/jsonConfig
-          npm publish -w packages/admin
+          npx lerna publish from-package --yes
 
       - name: Create Github Release
         uses: actions/create-release@v1

@@ -2,7 +2,7 @@ import React from 'react';
 
 import semver from 'semver';
 
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Fab, Snackbar, Tooltip, Grid, LinearProgress, Skeleton,

@@ -3,9 +3,9 @@ import { withStyles } from '@mui/styles';
 
 import { TextField } from '@mui/material';
 
-import I18n from './wrapper/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles = () => ({
     indeterminate: {

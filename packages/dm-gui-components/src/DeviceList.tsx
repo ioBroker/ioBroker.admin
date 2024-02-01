@@ -6,12 +6,12 @@ import {
 
 import { Clear, Refresh } from '@mui/icons-material';
 
-import I18n from '@/JsonConfigComponent/wrapper/i18n';
-import { DeviceInfo, InstanceDetails } from '@iobroker/dm-utils';
+import { I18n } from '@iobroker/adapter-react-v5';
+import type { DeviceInfo, InstanceDetails } from '@iobroker/dm-utils';
 
 import DeviceCard from './DeviceCard';
 import { getTranslation } from './Utils';
-import Communication, { CommunicationProps, CommunicationState } from './Communication';
+import Communication, { type CommunicationProps, type CommunicationState } from './Communication';
 import InstanceActionButton from './InstanceActionButton';
 
 import de from './i18n/de.json';

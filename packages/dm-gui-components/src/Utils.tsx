@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ControlBase } from '@iobroker/dm-utils/build/types/base';
+import type { ControlBase } from '@iobroker/dm-utils/build/types/base';
 import {
     Add, Delete, Edit,
     Refresh, Search,
@@ -18,14 +18,17 @@ import {
     Power,
     Fluorescent,
     WbIncandescent,
+    Settings
 } from '@mui/icons-material';
 
-import I18n from '@/JsonConfigComponent/wrapper/i18n';
-import { Icon } from '@iobroker/adapter-react-v5';
+import {
+    I18n,
+    Icon,
+} from '@iobroker/adapter-react-v5';
 
 export function renderIcon(
     action: ControlBase,
-    colors?: { primary: string; secondary: string },
+    colors?: { primary: string, secondary: string },
     value?: string | number | boolean | null,
 ): React.JSX.Element | null {
     if (!action) {
@@ -158,6 +161,9 @@ export function renderIcon(
     if (action.id === 'socket') {
         return <Power style={{ color }} />;
     }
+    if (action.id === 'settings') {
+        return <Settings style={{ color }} />;
+    }
     return null;
 }
 
@@ -173,7 +179,7 @@ export function getTranslation(text: ioBroker.StringOrTranslated): string {
 
     if (typeof text === 'object') {
         const words = text as ioBroker.StringOrTranslated;
-        // @ts-expect-error fix later
+        // @ts-ignore
         return words[language] || text.en;
     }
 

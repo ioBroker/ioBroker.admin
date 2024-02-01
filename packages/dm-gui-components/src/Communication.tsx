@@ -13,9 +13,9 @@ import {
     Snackbar,
 } from '@mui/material';
 
-import { Connection } from '@iobroker/socket-client';
-import { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
-import { DeviceRefresh } from '@iobroker/dm-utils/build/types';
+import { Connection } from '@iobroker/adapter-react-v5';
+import type { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
+import type { DeviceRefresh } from '@iobroker/dm-utils/build/types';
 
 import { getTranslation } from './Utils';
 import JsonConfig from './JsonConfig';

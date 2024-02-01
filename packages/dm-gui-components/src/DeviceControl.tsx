@@ -3,8 +3,8 @@ import {
     Button, Fab,
     Switch,
 } from '@mui/material';
-import { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 import { renderIcon, getTranslation } from './Utils';
+import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 
 interface DeviceControlProps {
     deviceId: string;

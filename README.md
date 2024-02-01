@@ -89,6 +89,16 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 6.13.16 (2024-01-30)
+* (foxriver76) allow to display and modify `ics` files
+* (foxriver76) redirect correctly when exiting json config with unsaved changes
+
+### 6.13.15 (2024-01-01)
+* (foxriver76) fixed scrolling of Select ID dialogs
+
+### 6.13.14 (2023-12-30)
+* (foxriver76) internal optimizations
+
 ### 6.13.5 (2023-12-22)
 * (foxriver76) bring back missing `crypto-js`
 * (foxriver76) fix crash case due to global dependency check
@@ -100,20 +110,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (klein0r) fixed markdown links (if default branch main)
 * (foxriver76) fixed global dependencies check
 
-### 6.12.9 (2023-12-12)
-* (foxriver76) prevented the strict schema validation being logged to syslog
-* (bluefox) corrected the displaying of news with the new lines
-
-### 6.12.8 (2023-12-06)
-* (bluefox) corrected ACL for files
-* (bluefox) allowed changing color of the menu item
-* (bluefox) corrected the user/group icon selector
-
-### 6.12.7 (2023-12-03)
-* (foxriver76) add property `onLoaded` to `sendTo` json config
-* (foxriver76) fixed easy admin height
-
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2023 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>

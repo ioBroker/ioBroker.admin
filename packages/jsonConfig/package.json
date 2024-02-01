@@ -1,16 +1,22 @@
 {
   "name": "@iobroker/json-config",
   "description": "This package contains the ioBroker JSON config UI components",
-  "version": "6.13.5",
+  "version": "6.13.16",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "clean": "rimraf build",
     "prepublishOnly": "npm run build"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@iobroker/adapter-react-v5": "^4.9.5",
+    "@iobroker/dm-gui-components": "file:../dm-gui-components",
+    "crypto-js": "^4.2.0",
+    "react-ace": "^10.1.0"
   },
   "files": [
     "build/",

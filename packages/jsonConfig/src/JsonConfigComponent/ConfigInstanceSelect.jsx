@@ -10,7 +10,7 @@ import {
     Select,
 } from '@mui/material';
 
-import I18n from './wrapper/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
 import ConfigGeneric from './ConfigGeneric';
 
 const styles = () => ({

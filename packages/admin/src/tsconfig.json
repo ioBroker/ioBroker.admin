@@ -3,6 +3,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": "./",
     "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "noEmit": false,
@@ -11,6 +12,7 @@
     "sourceRoot": "./src",
     "noImplicitAny": true,
     "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
     "lib": [
       "es2018",
       "DOM"
@@ -19,10 +21,9 @@
     "types": [
       "@iobroker/types"
     ],
-    // need to be relative to base config
     "paths": {
       "@/*": [
-        "./packages/admin/src/src/*"
+        "./src/*"
       ],
     },
   },

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import JsonConfigComponent from '@/JsonConfigComponent';
-import { Connection } from '@iobroker/socket-client';
+import { Connection, JsonConfigComponent } from '@iobroker/adapter-react-v5';
 
 interface JsonConfigProps {
     instanceId: string;
@@ -32,6 +31,7 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
             schema={schema}
             data={data}
             onError={setError}
+            // @ts-expect-error types needed
             onChange={_data => onChange(_data)}
             embedded
         />

@@ -138,7 +138,7 @@ Possible types:
   To do this, the key must be provided in the io-package.json under [nativeEncrypted](https://github.com/ioBroker/ioBroker.js-controller#automatically-encryptdecrypt-configuration-fields).
   Additionally, you can protect this property from being served to other adapters but `admin` and `cloud` by adding it to `protectedNative` in `io-package.json` file.
     - `repeat` - repeat password must be compared with password
-    - `visible` - true if allow viewing the password by toggling the view button
+    - `visible` - true if allow viewing the password by toggling the view button (only for a new password while entering)
     - `maxLength` - max length of the text in field
 
 - `instance`
@@ -668,7 +668,7 @@ or
 }
 ```
 
-We suggest using variant 2, as it will be possible to process the texts with Weblate.
+We suggest using variant 1 whenever possible, as it will be possible to process the texts with Weblate.
 
 ## JS Functions
 ### Configuration dialog

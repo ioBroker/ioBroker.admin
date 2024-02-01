@@ -19,6 +19,7 @@ import {
 
 import { getTranslation } from './Utils';
 
+
 interface DeviceStatusProps {
     status: any;
 }

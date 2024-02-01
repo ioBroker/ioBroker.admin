@@ -8,8 +8,7 @@ import {
 
 import { ContentCopy as IconCopy } from '@mui/icons-material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
-import I18n from './wrapper/i18n';
+import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 
