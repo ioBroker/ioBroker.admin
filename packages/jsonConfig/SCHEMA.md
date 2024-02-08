@@ -226,7 +226,7 @@ Possible types:
 - `jsonEditor` - json editor
 
 - `language` - select language
-    - `system` - allow the usage of the system language from `system.config` as default
+    - `system` - allow the usage of the system language from `system.config` as default (will have an empty string value if selected)
 
 - `certificate`
     - `certType` - on of: `public`, `private`, `chained`. But from 6.4.0 you can use `certificates` type.
