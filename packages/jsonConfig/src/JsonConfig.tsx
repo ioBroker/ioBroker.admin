@@ -18,7 +18,7 @@ import {
 
 import type { Theme } from '@iobroker/adapter-react-v5/types';
 import type { SystemConfig } from '@iobroker/socket-client';
-import Utils from '@/Utils';
+import Utils from '#JC/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 

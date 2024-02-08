@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) fixed issue when exporting jsonConfig
 * (klein0r) Allow to install specific version of adapter
 
 ### 6.13.16 (2024-01-30)
