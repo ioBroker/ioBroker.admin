@@ -252,14 +252,16 @@ class AdapterRow extends Component {
             <TableCell />
             <TableCell>
                 <Grid container spacing={1} alignItems="center" className={classes.name}>
-                    <Grid item className={classes.paddingNone}>
-                        <Avatar
-                            variant="square"
-                            alt={name}
-                            src={this.props.image}
-                            className={classes.smallAvatar}
-                        />
-                    </Grid>
+                    <Tooltip title={this.props.adapter}>
+                        <Grid item className={classes.paddingNone}>
+                            <Avatar
+                                variant="square"
+                                alt={name}
+                                src={this.props.image}
+                                className={classes.smallAvatar}
+                            />
+                        </Grid>
+                    </Tooltip>
                     {this.props.allowAdapterRating !== false ?
                         <Grid item className={classes.nameCell}>
                             <div>{name}</div>
