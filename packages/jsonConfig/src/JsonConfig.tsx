@@ -328,8 +328,6 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                             return;
                         }
 
-                        console.log('save');
-                        console.log(Utils);
                         Utils.generateFile(`${this.props.adapterName}.${this.props.instance}.json`, this.state.data);
                     }}
                 >
