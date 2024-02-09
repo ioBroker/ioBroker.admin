@@ -1,36 +1,38 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import { TimePicker } from '@mui/x-date-pickers';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = () => ({
-    indeterminate: {
-        opacity: 0.5,
-    },
-});
-
-class ConfigTimePicker extends ConfigGeneric {
+export default class ConfigTimePicker extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         this.setState({ value });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean) {
+        const legacyReturnFormat = this.props.schema.returnFormat !== 'HH:mm:ss';
+
         return <TimePicker
+            /** @ts-expect-error check this later on */
             fullWidth
+            ampm={false}
+            timeSteps={this.props.schema.timesteps || { hours: 1, minutes: 5, seconds: 5 }}
             margin="normal"
-            format="HH:mm:ss"
+            format={this.props.schema.format || 'HH:mm:ss'}
             error={!!error}
             disabled={!!disabled}
-            value={this.state.value === null || this.state.value === undefined ? new Date() : this.state.value}
+            value={this.state.value && !legacyReturnFormat ? new Date(Date.parse(`Thu, 01 Jan 1970 ${this.state.value}`)) : this.state.value}
             onChange={value => {
+                if (!legacyReturnFormat) {
+                    value = value instanceof Date ? value.toTimeString().split(' ')[0] : value;
+                }
+
                 this.setState({ value }, () =>
                     this.onChange(this.props.attr, value));
             }}
+            views={this.props.schema.views || ['hours', 'minutes', 'seconds']}
             InputLabelProps={{
                 shrink: true,
             }}
@@ -40,17 +42,3 @@ class ConfigTimePicker extends ConfigGeneric {
         />;
     }
 }
-
-ConfigTimePicker.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigTimePicker);
