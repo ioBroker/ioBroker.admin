@@ -21,6 +21,8 @@ module.exports = {
             '@iobroker/json-config': path.resolve(__dirname, '..', '..', 'jsonConfig', 'src'),
             '@iobroker/dm-gui-components': path.resolve(__dirname, '..', '..', 'dm-gui-components', 'src'),
             '@': path.resolve(__dirname, 'src'),
+            '#DM': path.resolve(__dirname, '..', '..', 'dm-gui-components', 'src'),
+            '#JC': path.resolve(__dirname, '..', '..', 'jsonConfig', 'src'),
         },
         output: {
             publicPath: './',

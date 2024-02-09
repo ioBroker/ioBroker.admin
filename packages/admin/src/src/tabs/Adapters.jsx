@@ -37,6 +37,7 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import UpdateIcon from '@mui/icons-material/Update';
 import StarIcon from '@mui/icons-material/Star';
 import CloseIcon from '@mui/icons-material/Close';
+import LinkIcon from '@mui/icons-material/Link';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import { blue, green } from '@mui/material/colors';
@@ -170,6 +171,10 @@ const styles = theme => ({
     containerVersion: {
         borderBottom: 0,
     },
+    containerSpecificVersion: {
+        display: 'flex',
+        marginTop: 20,
+    },
     currentVersion: {
         display: 'flex',
         padding: 20,
@@ -285,6 +290,7 @@ class Adapters extends Component {
             showSlowConnectionWarning: false,
             adapterToUpdate: '',
             adapterInstallVersion: '',
+            adapterInstallSpecificVersion: '',
             currentHost: this.props.currentHost,
             forceUpdateAdapters: this.props.forceUpdateAdapters,
             triggerUpdate: props.triggerUpdate,
@@ -2329,7 +2335,7 @@ class Adapters extends Component {
             {this.state.adapterInstallVersion && <CustomModal
                 title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
                 applyButton={false}
-                onClose={() => this.setState({ adapterInstallVersion: '' })}
+                onClose={() => this.setState({ adapterInstallVersion: '', adapterInstallSpecificVersion: '' })}
                 toggleTranslation={this.props.toggleTranslation}
                 noTranslation={this.props.noTranslation}
             >
@@ -2344,6 +2350,50 @@ class Adapters extends Component {
                     >
                         <ListItemText primary={version} secondary={formatNews(news)} />
                     </div>)}
+                </div>
+                <div className={classes.containerSpecificVersion}>
+                    <TextField
+                        variant="standard"
+                        fullWidth
+                        label={this.props.t('Version')}
+                        value={this.state.adapterInstallSpecificVersion}
+                        onChange={event => {
+                            this.setState({ adapterInstallSpecificVersion: event.target.value });
+                        }}
+                        InputProps={{
+                            endAdornment: this.state.url ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ url: '' })}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        }}
+                    />
+                    <Tooltip title={this.props.t('npmjs.com')}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                window.open(`https://www.npmjs.com/package/iobroker.${this.state.adapterInstallVersion}?activeTab=versions`, this.state.adapterInstallVersion).focus();
+                            }}
+                        >
+                            <LinkIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        size="small"
+                        onClick={() => {
+                            if (this.state.adapterInstallSpecificVersion !== '') {
+                                this.update(this.state.adapterInstallVersion, this.state.adapterInstallSpecificVersion);
+                                this.setState({ adapterInstallVersion: '', adapterInstallSpecificVersion: '' });
+                            }
+                        }}
+                    >
+                        {this.props.t('Install')}
+                    </Button>
                 </div>
             </CustomModal>}
         </TabContainer>;

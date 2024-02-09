@@ -381,6 +381,20 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     </Paper> : null}
                     {this.state.currentTab === 'URL' ? <Paper className={this.props.classes.tabPaper}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={this.state.debug}
+                                        onChange={e => {
+                                            (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                            this.setState({ debug: e.target.checked });
+                                        }}
+                                    />
+                                }
+                                label={this.props.t('Debug outputs')}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
                             <TextField
                                 variant="standard"
                                 fullWidth
@@ -410,24 +424,6 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         </IconButton>
                                     </InputAdornment> : null,
                                 }}
-                            />
-                        </div>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                        >
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={this.state.debug}
-                                        onChange={e => {
-                                            (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
-                                            this.setState({ debug: e.target.checked });
-                                        }}
-                                    />
-                                }
-                                label={this.props.t('Debug outputs')}
                             />
                         </div>
                         <div
