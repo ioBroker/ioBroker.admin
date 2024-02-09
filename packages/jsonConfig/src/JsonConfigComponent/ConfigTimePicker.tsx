@@ -15,6 +15,7 @@ export default class ConfigTimePicker extends ConfigGeneric {
         const legacyReturnFormat = this.props.schema.returnFormat !== 'HH:mm:ss';
 
         return <TimePicker
+            /** @ts-expect-error check this later on */
             fullWidth
             ampm={false}
             timeSteps={this.props.schema.timesteps || { hours: 1, minutes: 5, seconds: 5 }}

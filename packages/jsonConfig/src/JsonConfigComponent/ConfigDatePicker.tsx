@@ -13,6 +13,7 @@ export default class ConfigDatePicker extends ConfigGeneric<ConfigGenericProps, 
 
     renderItem(error: unknown, disabled: boolean /* , defaultValue */): React.JSX.Element {
         return <DatePicker
+            /** @ts-expect-error check this later on */
             fullWidth
             margin="normal"
             format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
