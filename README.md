@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.17 (2024-02-09)
 * (foxriver76) fix date and time picker json config components showing current time even though the value is undefined
 * (foxriver76) added new options for time picker json config component
 * (foxriver76) fixed issue when exporting jsonConfig
@@ -108,13 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.13.5 (2023-12-22)
 * (foxriver76) bring back missing `crypto-js`
 * (foxriver76) fix crash case due to global dependency check
-
-### 6.13.3 (2023-12-21)
-* (foxriver76) fixed problem with default value of underscore attributes in Json Config
-* (foxriver76) prevent strict schema validation being logged to syslog
-* (foxriver76) fixed problems with ObjectCustomEditor
-* (klein0r) fixed markdown links (if default branch main)
-* (foxriver76) fixed global dependencies check
 
 ## License
 The MIT License (MIT)

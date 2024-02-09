@@ -1,6 +1,17 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.13.3 (2023-12-21)
+* (foxriver76) fixed problem with default value of underscore attributes in Json Config
+* (foxriver76) prevent strict schema validation being logged to syslog
+* (foxriver76) fixed problems with ObjectCustomEditor
+* (klein0r) fixed markdown links (if default branch main)
+* (foxriver76) fixed global dependencies check
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.12.9 (2023-12-12)
 * (foxriver76) prevented the strict schema validation being logged to syslog
 * (bluefox) corrected the displaying of news with the new lines

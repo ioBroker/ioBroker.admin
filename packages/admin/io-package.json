@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.16",
+    "version": "6.13.17",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.17": {
+        "en": "fix date and time picker json config components showing current time even though the value is undefined\nadded new options for time picker json config component\nfixed issue when exporting jsonConfig\nAllow to install specific version of adapter",
+        "de": "fix datum und zeit picker json config komponenten zeigen aktuelle zeit, obwohl der wert undefiniert ist\nneue optionen für zeit picker json config komponente\nproblem beim Export von jsonConfig\nLassen Sie bestimmte Version des Adapters installieren",
+        "ru": "фиксированная дата и время пикера json конфигурации компоненты, показывающие текущее время, даже если значение не определено\nдобавлены новые опции для компонента настройки пикера времени\nфиксированная проблема при экспорте jsonConfig\nПозволить установить конкретную версию адаптера",
+        "pt": "corrigir data e time picker json componentes de configuração mostrando o tempo atual, mesmo que o valor seja indefinido\nadicionou novas opções para o componente json config do picador de tempo\nproblema fixo ao exportar jsonConfig\nPermitir instalar a versão específica do adaptador",
+        "nl": "fix datum en tijd picker json config componenten tonen huidige tijd, hoewel de waarde is ongedefinieerd\ntoegevoegd nieuwe opties voor tijd picker json config component\nvast probleem bij het exporteren van jsonConfig\nLaat toe om specifieke versie van adapter te installeren",
+        "fr": "fixer la date et l'heure des composants de configuration json montrant l'heure actuelle même si la valeur n'est pas définie\najout de nouvelles options pour le composant de configuration de json\nproblème fixe lors de l'exportation de jsonConfig\nPermettre d'installer une version spécifique de l'adaptateur",
+        "it": "fissare la data e l'ora picker json componenti di configurazione che mostrano l'ora corrente anche se il valore non è definito\naggiunto nuove opzioni per il componente di configurazione del picker di tempo\nemissione fissa quando si esporta jsonConfig\nConsentire di installare una versione specifica di adattatore",
+        "es": "fijar fecha y hora picker json config componentes que muestran el tiempo actual, aunque el valor no está definido\nnuevas opciones para el componente de configuración json json\ncuestión fija al exportar jsonConfig\nPermitir instalar la versión específica del adaptador",
+        "pl": "fix date and time picker json config components showing current time even though the value is undefined\ndodane nowe opcje dla time picker json config komponent\nstałe wydanie przy eksporcie jsonConfig\nPozwól na zainstalowanie określonej wersji adaptera",
+        "uk": "виправлено дату та часовий пікіратор json config компоненти, що показують поточний час, навіть якщо значення не визначено\nдодано нові параметри для таймера json config компонент\nвиправлено проблему при експорті jsonConfig\nДозволяє встановити конкретну версію адаптера",
+        "zh-cn": "固定日期和时间拾取器 json 配置组件, 显示当前时间, 即使数值未定义\n添加取时器 json 配置组件的新选项\n导出 jsonConfig 时的固定发行\n允许安装特定版本的适配器"
+      },
       "6.13.16": {
         "en": "allow to display and modify `ics` files\nredirect correctly when exiting json config with unsaved changes",
         "de": "`ics` dateien anzeigen und ändern\nkorrekt umleiten, wenn json config mit ungehinderten änderungen verlassen",
@@ -84,19 +97,6 @@
         "zh-cn": "b. 优化内部环境"
       },
       "6.13.11": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
-      },
-      "6.13.10": {
         "en": "internal optimizations",
         "de": "interne optimierungen",
         "ru": "внутренние оптимизации",
