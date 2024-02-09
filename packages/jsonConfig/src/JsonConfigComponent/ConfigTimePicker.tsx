@@ -12,6 +12,8 @@ export default class ConfigTimePicker extends ConfigGeneric {
     }
 
     renderItem(error: unknown, disabled: boolean) {
+        const legacyReturnFormat = this.props.schema.returnFormat !== 'HH:mm:ss';
+
         return <TimePicker
             fullWidth
             ampm={false}
@@ -20,9 +22,11 @@ export default class ConfigTimePicker extends ConfigGeneric {
             format={this.props.schema.format || 'HH:mm:ss'}
             error={!!error}
             disabled={!!disabled}
-            value={this.state.value ? new Date(Date.parse(`Thu, 01 Jan 1970 ${this.state.value}`)) : this.state.value}
+            value={this.state.value && !legacyReturnFormat ? new Date(Date.parse(`Thu, 01 Jan 1970 ${this.state.value}`)) : this.state.value}
             onChange={value => {
-                value = value instanceof Date ? value.toTimeString().split(' ')[0] : value;
+                if (!legacyReturnFormat) {
+                    value = value instanceof Date ? value.toTimeString().split(' ')[0] : value;
+                }
 
                 this.setState({ value }, () =>
                     this.onChange(this.props.attr, value));

@@ -257,10 +257,11 @@ Possible types:
 - `datePicker` - allow the user to select a date input the UI format comes from the configured `dateFormat` in the users' installation. The
 component returns a parseable date string.
 
-- `timePicker` - allow the user to select a date input the returned string is always of format `HH:mm:ss`
+- `timePicker` - allow the user to select a date input the returned string is a parseable date string or of format `HH:mm:ss`
     - `format` - format passed to the date picker defaults to `HH:mm:ss`
     - `views`  - Configure which views should be shown to the users. Defaults to `['hours', 'minutes', 'seconds']`
     - `timeSteps` - Represent the available time steps for each view. Defaults to `{ hours: 1, minutes: 5, seconds: 5 }`
+    - `returnFormat` - `fullDate` or `HH:mm:ss`. Defaults to full date for backward compatibility reasons.
 
 - `divider` - horizontal line
     - `height` - optional height
