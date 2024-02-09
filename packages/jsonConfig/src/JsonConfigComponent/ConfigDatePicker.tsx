@@ -1,32 +1,24 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import { DatePicker } from '@mui/x-date-pickers';
 
-import ConfigGeneric from './ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    indeterminate: {
-        opacity: 0.5,
-    },
-});
-
-class ConfigDatePicker extends ConfigGeneric {
+export default class ConfigDatePicker extends ConfigGeneric<ConfigGenericProps, ConfigGenericState> {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         this.setState({ value });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean /* , defaultValue */): React.JSX.Element {
         return <DatePicker
             fullWidth
             margin="normal"
             format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
             error={!!error}
             disabled={!!disabled}
-            value={this.state.value === null || this.state.value === undefined ? new Date() : this.state.value}
+            value={this.state.value}
             KeyboardButtonProps={{
                 'aria-label': 'change date',
             }}
@@ -44,17 +36,3 @@ class ConfigDatePicker extends ConfigGeneric {
         />;
     }
 }
-
-ConfigDatePicker.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigDatePicker);
