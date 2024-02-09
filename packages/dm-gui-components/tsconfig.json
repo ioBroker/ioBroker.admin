@@ -22,7 +22,7 @@
       "@iobroker/types"
     ],
     "paths": {
-      "@/*": [
+      "#DM/*": [
         "./src/*"
       ],
     },
