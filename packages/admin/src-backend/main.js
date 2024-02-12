@@ -555,6 +555,10 @@ class Admin extends utils.Adapter {
             this.setState('info.updatesJson', JSON.stringify(updatesJson), true);
             this.setState('info.lastUpdateCheck', Date.now(), true);
 
+            if (!newUpdateIndicator) {
+                return;
+            }
+
             const textArr = [];
             for (const [adapter, updateInfo] of Object.entries(updatesJson)) {
                 const text = getAdapterUpdateText({
@@ -567,10 +571,8 @@ class Admin extends utils.Adapter {
                 textArr.push(text);
             }
 
-            if (textArr.length) {
-                // @ts-expect-error extend scope
-                this.registerNotification('admin', 'adapterUpdates', textArr.join('\n'));
-            }
+            // @ts-expect-error extend scope
+            this.registerNotification('admin', 'adapterUpdates', textArr.join('\n'));
         });
     }
 
