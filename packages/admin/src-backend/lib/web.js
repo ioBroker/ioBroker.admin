@@ -30,7 +30,7 @@ let socketIoFile;
 let uuid;
 const page404 = fs.readFileSync(`${__dirname}/../../public/404.html`).toString('utf8');
 // const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g; // with space
-const ONE_MONTH_SEC = 30 * 24 * 3600;
+const ONE_MONTH_SEC = 30 * 24 * 3_600;
 
 // copied from here: https://github.com/component/escape-html/blob/master/index.js
 const matchHtmlRegExp = /["'&<>]/;
@@ -153,11 +153,11 @@ class Web {
     bruteForce = {};
     store = null;
     indexHTML;
-    dirName = path.normalize(`${__dirname}/../admin/`.replace(/\\/g, '/')).replace(/\\/g, '/');
+    baseDir = path.join(__dirname, '..', '..');
+    dirName = path.normalize(`${this.baseDir}/admin/`.replace(/\\/g, '/')).replace(/\\/g, '/');
     unprotectedFiles;
     systemLanguage = this.options?.systemLanguage || 'en';
     systemConfig;
-    baseDir = path.join(__dirname, '..', '..');
 
     // todo delete after React will be main
     wwwDir = path.join(this.baseDir, 'adminWww');
@@ -705,7 +705,7 @@ class Web {
                             this.unprotectedFiles =
                                 this.unprotectedFiles ||
                                 fs.readdirSync(this.wwwDir).map(file => {
-                                    const stat = fs.lstatSync(path.join(__dirname, `../../${this.wwwDir}/`, file));
+                                    const stat = fs.lstatSync(path.join(this.wwwDir, file));
                                     return { name: file, isDir: stat.isDirectory() };
                                 });
                             if (
@@ -831,11 +831,11 @@ class Web {
 
                             if (logFolder[0] !== '/' && logFolder[0] !== '\\' && !logFolder.match(/^[a-zA-Z]:/)) {
                                 const _logFolder = path
-                                    .normalize(path.join(`${__dirname}/../../../`, logFolder).replace(/\\/g, '/'))
+                                    .normalize(path.join(`${this.baseDir}/../../`, logFolder).replace(/\\/g, '/'))
                                     .replace(/\\/g, '/');
                                 if (!fs.existsSync(_logFolder)) {
                                     logFolder = path
-                                        .normalize(path.join(`${__dirname}/../../`, logFolder).replace(/\\/g, '/'))
+                                        .normalize(path.join(`${this.baseDir}/../`, logFolder).replace(/\\/g, '/'))
                                         .replace(/\\/g, '/');
                                 } else {
                                     logFolder = _logFolder;
@@ -1150,7 +1150,7 @@ class Web {
                 let timeout = setTimeout(() => {
                     if (timeout) {
                         timeout = null;
-                        let text = fs.readFileSync(`${__dirname}/../public/oauthError.html`).toString('utf8');
+                        let text = fs.readFileSync(`${this.baseDir}/public/oauthError.html`).toString('utf8');
                         text = text.replace('%LANGUAGE%', this.systemLanguage);
                         text = text.replace('%ERROR%', 'TIMEOUT');
                         res.setHeader('Content-Type', 'text/html');
@@ -1164,14 +1164,14 @@ class Web {
                         timeout = null;
                         // @ts-expect-error
                         if (result?.error) {
-                            let text = fs.readFileSync(`${__dirname}/../public/oauthError.html`).toString('utf8');
+                            let text = fs.readFileSync(`${this.baseDir}/public/oauthError.html`).toString('utf8');
                             text = text.replace('%LANGUAGE%', this.systemLanguage);
                             // @ts-expect-error
                             text = text.replace('%ERROR%', result.error);
                             res.setHeader('Content-Type', 'text/html');
                             res.status(500).send(text);
                         } else {
-                            let text = fs.readFileSync(`${__dirname}/../public/oauthSuccess.html`).toString('utf8');
+                            let text = fs.readFileSync(`${this.baseDir}/public/oauthSuccess.html`).toString('utf8');
                             text = text.replace('%LANGUAGE%', this.systemLanguage);
                             // @ts-expect-error
                             text = text.replace('%MESSAGE%', result ? result.result || '' : '');
