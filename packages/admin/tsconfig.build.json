@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": false,
+    "declaration": false,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src-backend/**/*.ts",
+    "src-backend/**/*.js"
+  ],
+  "exclude": [
+    "src-backend/**/*.d.ts"
+  ]
+}
