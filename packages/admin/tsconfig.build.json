@@ -5,7 +5,8 @@
     "checkJs": false,
     "noEmit": false,
     "declaration": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "module": "commonjs"
   },
   "include": [
     "src-backend/**/*.ts",
