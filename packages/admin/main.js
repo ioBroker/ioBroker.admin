@@ -553,6 +553,17 @@ class Admin extends utils.Adapter {
             this.setState('info.newUpdates', newUpdateIndicator, true);
             this.setState('info.updatesJson', JSON.stringify(updatesJson), true);
             this.setState('info.lastUpdateCheck', Date.now(), true);
+
+            let text = 'Die folgenden Adapter sind aktualisierbar:\n';
+            for (const [adapter, updateInfo] of Object.entries(updatesJson)) {
+                text += `Adapter ${JSON.stringify(adapter)} kann von ${updateInfo.installedVersion} auf ${
+                    updateInfo.availableVersion
+                } aktualisiert werden.
+`;
+            }
+
+            // @ts-expect-error extend scope
+            this.registerNotification('admin', 'adapterUpdates', text);
         });
     }
 
@@ -755,7 +766,7 @@ class Admin extends utils.Adapter {
             // delete news older than 3 months
             let i;
             for (i = oldNews.length - 1; i >= 0; i--) {
-                if (Date.now() - new Date(oldNews[i].created).getTime() > 180 * 24 * 3600000) {
+                if (Date.now() - new Date(oldNews[i].created).getTime() > 180 * 24 * 3_600_000) {
                     oldNews.splice(i, 1);
                 }
             }
@@ -879,7 +890,12 @@ class Admin extends utils.Adapter {
 
             if (showIt) {
                 this.log.info(`register notification ${message.class}`);
-                await this.registerNotification('news', message.class, message.title.en + '\n' + message.content.en);
+                await this.registerNotification(
+                    // @ts-expect-error extend scope
+                    'admin',
+                    `${message.class}News`,
+                    message.title.en + '\n' + message.content.en
+                );
             }
         }
     }
@@ -941,7 +957,6 @@ class Admin extends utils.Adapter {
      * @return {Promise<string>}
      */
     async getObjectsDbType() {
-        /** @ts-expect-error */
         const diagData = await this.sendToHostAsync(this.host, 'getDiagData', 'normal');
         /** @ts-expect-error */
         return diagData.objectsType;
@@ -952,7 +967,6 @@ class Admin extends utils.Adapter {
      * @returns {Promise<string>}
      */
     async getNpmVersion() {
-        /** @ts-expect-error */
         const hostInfo = await this.sendToHostAsync(this.host, 'getHostInfo', {});
         /** @ts-expect-error */
         return hostInfo.NPM;
@@ -970,7 +984,6 @@ class Admin extends utils.Adapter {
             for (const row of objs.rows) {
                 const obj = row.value;
                 if (obj?.common.enabled && obj.common.host === this.host) {
-                    /** @ts-expect-error */
                     const instance = parseInt(row.id.split('.').pop());
                     if (min === null || min < instance) {
                         min = instance;
@@ -1365,7 +1378,6 @@ class Admin extends utils.Adapter {
                         this.log.info('Request actual repository...');
                         // request repo from host
                         this.sendToHost(
-                            /** @ts-expect-error */
                             this.host,
                             'getRepository',
                             {

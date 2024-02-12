@@ -246,19 +246,19 @@
   },
   "notifications": [
     {
-      "scope": "news",
+      "scope": "admin",
       "name": {
-        "en": "News",
-        "de": "Nachrichten",
-        "ru": "Новости",
-        "pt": "Notícias",
-        "nl": "Nieuws",
-        "fr": "Actualités",
-        "it": "Notizie",
-        "es": "Noticias",
-        "pl": "News",
-        "uk": "Новини",
-        "zh-cn": "新闻"
+        "en": "Administration",
+        "de": "Administration",
+        "ru": "Администрация",
+        "pt": "Administração",
+        "nl": "Administratie",
+        "fr": "Administration",
+        "it": "Amministrazione",
+        "es": "Administración",
+        "pl": "Administracja",
+        "uk": "Адміністрація",
+        "zh-cn": "行政部门"
       },
       "description": {
         "en": "These notifications represent news regarding installed adapters or general ioBroker information.",
@@ -275,7 +275,39 @@
       },
       "categories": [
         {
-          "category": "info",
+          "category": "adapterUpdates",
+          "name": {
+            "en": "Adapter updates",
+            "de": "Adapter-Updates",
+            "ru": "Обновления адаптера",
+            "pt": "Actualizações do adaptador",
+            "nl": "Adapter updates",
+            "fr": "Mises à jour de l'adaptateur",
+            "it": "Aggiornamenti dell'adattatore",
+            "es": "Actualizaciones de adaptadores",
+            "pl": "Aktualizacje adapterów",
+            "uk": "Оновлення адаптерів",
+            "zh-cn": "适配器更新"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "New adapter updates are available for your ioBroker.",
+            "de": "Es sind neue Adapter Updates für deinen ioBroker verfügbar.",
+            "ru": "Для вашего ioBroker доступны новые обновления адаптера.",
+            "pt": "Estão disponíveis novas actualizações de adaptadores para o seu ioBroker.",
+            "nl": "Nieuwe adapterupdates zijn beschikbaar voor uw ioBroker.",
+            "fr": "De nouvelles mises à jour de l'adaptateur sont disponibles pour ton ioBroker.",
+            "it": "Sono disponibili nuovi aggiornamenti dell'adattatore per il vostro ioBroker.",
+            "es": "Hay nuevas actualizaciones de adaptadores disponibles para su ioBroker.",
+            "pl": "Dostępne są nowe aktualizacje adaptera dla ioBroker.",
+            "uk": "Для вашого ioBroker доступні нові оновлення адаптерів.",
+            "zh-cn": "您的 ioBroker 可以使用新的适配器更新。"
+          },
+          "regex": [],
+          "limit": 1
+        },
+        {
+          "category": "infoNews",
           "name": {
             "en": "General news",
             "de": "Allgemeine Nachrichten",
@@ -307,7 +339,7 @@
           "limit": 10
         },
         {
-          "category": "warning",
+          "category": "warningNews",
           "name": {
             "en": "Important news",
             "de": "Wichtige Nachrichten",
@@ -339,7 +371,7 @@
           "limit": 10
         },
         {
-          "category": "danger",
+          "category": "dangerNews",
           "name": {
             "en": "Very important news",
             "de": "Sehr wichtige Nachrichten",
