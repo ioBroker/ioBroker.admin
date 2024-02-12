@@ -555,18 +555,22 @@ class Admin extends utils.Adapter {
             this.setState('info.updatesJson', JSON.stringify(updatesJson), true);
             this.setState('info.lastUpdateCheck', Date.now(), true);
 
-            let text = '';
+            const textArr = [];
             for (const [adapter, updateInfo] of Object.entries(updatesJson)) {
-                text += getAdapterUpdateText({
+                const text = getAdapterUpdateText({
                     adapter,
                     installedVersion: updateInfo.installedVersion,
                     newVersion: updateInfo.availableVersion,
                     lang: systemLanguage,
                 });
+
+                textArr.push(text);
             }
 
-            // @ts-expect-error extend scope
-            this.registerNotification('admin', 'adapterUpdates', text);
+            if (textArr.length) {
+                // @ts-expect-error extend scope
+                this.registerNotification('admin', 'adapterUpdates', textArr.join('\n'));
+            }
         });
     }
 
