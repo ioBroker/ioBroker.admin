@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) generate notification if new adapter updates are available
+
 ### 6.13.17 (2024-02-09)
 * (foxriver76) fix date and time picker json config components showing current time even though the value is undefined
 * (foxriver76) added new options for time picker json config component

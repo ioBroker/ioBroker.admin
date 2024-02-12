@@ -30,3 +30,5 @@ testSentry.bat
 
 # Lerna
 lerna-debug.log
+
+packages/admin/build-backend

@@ -28,9 +28,9 @@ let cookieParser;
 let fileUpload;
 let socketIoFile;
 let uuid;
-const page404 = fs.readFileSync(`${__dirname}/../public/404.html`).toString('utf8');
+const page404 = fs.readFileSync(`${__dirname}/../../public/404.html`).toString('utf8');
 // const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g; // with space
-const ONE_MONTH_SEC = 30 * 24 * 3600;
+const ONE_MONTH_SEC = 30 * 24 * 3_600;
 
 // copied from here: https://github.com/component/escape-html/blob/master/index.js
 const matchHtmlRegExp = /["'&<>]/;
@@ -153,13 +153,14 @@ class Web {
     bruteForce = {};
     store = null;
     indexHTML;
-    dirName = path.normalize(`${__dirname}/../admin/`.replace(/\\/g, '/')).replace(/\\/g, '/');
+    baseDir = path.join(__dirname, '..', '..');
+    dirName = path.normalize(`${this.baseDir}/admin/`.replace(/\\/g, '/')).replace(/\\/g, '/');
     unprotectedFiles;
     systemLanguage = this.options?.systemLanguage || 'en';
     systemConfig;
 
     // todo delete after React will be main
-    wwwDir = 'adminWww';
+    wwwDir = path.join(this.baseDir, 'adminWww');
 
     close = () => {
         this.checkTimeout && clearTimeout(this.checkTimeout);
@@ -257,7 +258,7 @@ class Web {
     }
 
     prepareIndex() {
-        let template = fs.readFileSync(`${__dirname}/../${this.wwwDir}/index.html`).toString('utf8');
+        let template = fs.readFileSync(path.join(this.wwwDir, 'index.html')).toString('utf8');
         const m = template.match(/(["']?@@\w+@@["']?)/g);
         // @ts-expect-error
         m.forEach(pattern => {
@@ -464,7 +465,7 @@ class Web {
                         const text = this.systemConfig.native.vendor.ico.split(',')[1];
                         return res.send(Buffer.from(text, 'base64'));
                     } else {
-                        return res.send(fs.readFileSync(`${__dirname}/../${this.wwwDir}/favicon.ico`));
+                        return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
                     }
                 } else if (
                     socketIoFile !== false &&
@@ -474,7 +475,7 @@ class Web {
                         res.contentType('text/javascript');
                         return res.status(200).send(socketIoFile);
                     } else {
-                        socketIoFile = fs.readFileSync(path.join(__dirname, `../${this.wwwDir}/lib/js/socket.io.js`));
+                        socketIoFile = fs.readFileSync(path.join(this.wwwDir, 'lib', 'js', 'socket.io.js'));
                         if (socketIoFile) {
                             res.contentType('text/javascript');
                             return res.status(200).send(socketIoFile);
@@ -683,7 +684,7 @@ class Web {
                             const text = this.systemConfig.native.vendor.ico.split(',')[1];
                             return res.send(Buffer.from(text, 'base64'));
                         } else {
-                            return res.send(fs.readFileSync(`${__dirname}/../${this.wwwDir}/favicon.ico`));
+                            return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
                         }
                     } else if (/admin\.\d+\/login-bg\.png(\?.*)?$/.test(req.originalUrl)) {
                         // Read the names of files for gong
@@ -703,8 +704,8 @@ class Web {
                             // protect all paths except
                             this.unprotectedFiles =
                                 this.unprotectedFiles ||
-                                fs.readdirSync(path.join(__dirname, `../${this.wwwDir}/`)).map(file => {
-                                    const stat = fs.lstatSync(path.join(__dirname, `../${this.wwwDir}/`, file));
+                                fs.readdirSync(this.wwwDir).map(file => {
+                                    const stat = fs.lstatSync(path.join(this.wwwDir, file));
                                     return { name: file, isDir: stat.isDirectory() };
                                 });
                             if (
@@ -830,11 +831,11 @@ class Web {
 
                             if (logFolder[0] !== '/' && logFolder[0] !== '\\' && !logFolder.match(/^[a-zA-Z]:/)) {
                                 const _logFolder = path
-                                    .normalize(path.join(`${__dirname}/../../../`, logFolder).replace(/\\/g, '/'))
+                                    .normalize(path.join(`${this.baseDir}/../../`, logFolder).replace(/\\/g, '/'))
                                     .replace(/\\/g, '/');
                                 if (!fs.existsSync(_logFolder)) {
                                     logFolder = path
-                                        .normalize(path.join(`${__dirname}/../../`, logFolder).replace(/\\/g, '/'))
+                                        .normalize(path.join(`${this.baseDir}/../`, logFolder).replace(/\\/g, '/'))
                                         .replace(/\\/g, '/');
                                 } else {
                                     logFolder = _logFolder;
@@ -924,7 +925,7 @@ class Web {
                 });
             }
 
-            if (!fs.existsSync(`${__dirname}/../${this.wwwDir}`)) {
+            if (!fs.existsSync(this.wwwDir)) {
                 this.server.app.use('/', (req, res) =>
                     res.send(
                         'This adapter cannot be installed directly from GitHub.<br>You must install it from npm.<br>Write for that <i>"npm install iobroker.admin"</i> in according directory.'
@@ -944,7 +945,7 @@ class Web {
                     res.status(200).send(this.indexHTML);
                 });
 
-                this.server.app.use('/', express.static(`${__dirname}/../${this.wwwDir}`, appOptions));
+                this.server.app.use('/', express.static(this.wwwDir, appOptions));
             }
 
             // reverse proxy with url rewrite for couchdb attachments in <adapter-name>.admin
@@ -1149,7 +1150,7 @@ class Web {
                 let timeout = setTimeout(() => {
                     if (timeout) {
                         timeout = null;
-                        let text = fs.readFileSync(`${__dirname}/../public/oauthError.html`).toString('utf8');
+                        let text = fs.readFileSync(`${this.baseDir}/public/oauthError.html`).toString('utf8');
                         text = text.replace('%LANGUAGE%', this.systemLanguage);
                         text = text.replace('%ERROR%', 'TIMEOUT');
                         res.setHeader('Content-Type', 'text/html');
@@ -1163,14 +1164,14 @@ class Web {
                         timeout = null;
                         // @ts-expect-error
                         if (result?.error) {
-                            let text = fs.readFileSync(`${__dirname}/../public/oauthError.html`).toString('utf8');
+                            let text = fs.readFileSync(`${this.baseDir}/public/oauthError.html`).toString('utf8');
                             text = text.replace('%LANGUAGE%', this.systemLanguage);
                             // @ts-expect-error
                             text = text.replace('%ERROR%', result.error);
                             res.setHeader('Content-Type', 'text/html');
                             res.status(500).send(text);
                         } else {
-                            let text = fs.readFileSync(`${__dirname}/../public/oauthSuccess.html`).toString('utf8');
+                            let text = fs.readFileSync(`${this.baseDir}/public/oauthSuccess.html`).toString('utf8');
                             text = text.replace('%LANGUAGE%', this.systemLanguage);
                             // @ts-expect-error
                             text = text.replace('%MESSAGE%', result ? result.result || '' : '');

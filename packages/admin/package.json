@@ -50,16 +50,15 @@
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
   },
-  "main": "main.js",
+  "main": "build-backend/main.js",
   "files": [
     "admin/",
-    "lib/",
+    "build-backend",
     "docs/",
     "adminWww/",
     "public/",
     "io-package.json",
-    "LICENSE",
-    "main.js"
+    "LICENSE"
   ],
   "scripts": {
     "start": "cd src && npm run start",
@@ -71,6 +70,7 @@
     "test:gui": "mocha test/*.gui.js --exit",
     "prepublishOnly": "npm run build",
     "build": "gulp",
+    "build:ts": "tsc -p tsconfig.build.json",
     "clean": "rimraf src/build"
   },
   "author": "bluefox <dogafox@gmail.com>"
