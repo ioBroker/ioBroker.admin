@@ -53,7 +53,6 @@ class Admin extends utils.Adapter {
         options = {
             ...options,
             name: adapterName, // adapter name
-            dirname: __dirname, // say own position
             logTransporter: true, // receive the logs
             systemConfig: true,
             install: callback => typeof callback === 'function' && callback(),
