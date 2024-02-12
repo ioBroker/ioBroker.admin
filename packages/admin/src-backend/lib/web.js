@@ -157,9 +157,10 @@ class Web {
     unprotectedFiles;
     systemLanguage = this.options?.systemLanguage || 'en';
     systemConfig;
+    baseDir = path.join(__dirname, '..', '..');
 
     // todo delete after React will be main
-    wwwDir = 'adminWww';
+    wwwDir = path.join(this.baseDir, 'adminWww');
 
     close = () => {
         this.checkTimeout && clearTimeout(this.checkTimeout);
@@ -257,7 +258,7 @@ class Web {
     }
 
     prepareIndex() {
-        let template = fs.readFileSync(`${__dirname}/../${this.wwwDir}/index.html`).toString('utf8');
+        let template = fs.readFileSync(path.join(this.wwwDir, 'index.html')).toString('utf8');
         const m = template.match(/(["']?@@\w+@@["']?)/g);
         // @ts-expect-error
         m.forEach(pattern => {
@@ -464,7 +465,7 @@ class Web {
                         const text = this.systemConfig.native.vendor.ico.split(',')[1];
                         return res.send(Buffer.from(text, 'base64'));
                     } else {
-                        return res.send(fs.readFileSync(`${__dirname}/../${this.wwwDir}/favicon.ico`));
+                        return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
                     }
                 } else if (
                     socketIoFile !== false &&
@@ -474,7 +475,7 @@ class Web {
                         res.contentType('text/javascript');
                         return res.status(200).send(socketIoFile);
                     } else {
-                        socketIoFile = fs.readFileSync(path.join(__dirname, `../${this.wwwDir}/lib/js/socket.io.js`));
+                        socketIoFile = fs.readFileSync(path.join(this.wwwDir, 'lib', 'js', 'socket.io.js'));
                         if (socketIoFile) {
                             res.contentType('text/javascript');
                             return res.status(200).send(socketIoFile);
@@ -683,7 +684,7 @@ class Web {
                             const text = this.systemConfig.native.vendor.ico.split(',')[1];
                             return res.send(Buffer.from(text, 'base64'));
                         } else {
-                            return res.send(fs.readFileSync(`${__dirname}/../${this.wwwDir}/favicon.ico`));
+                            return res.send(fs.readFileSync(path.join(this.wwwDir, 'favicon.ico')));
                         }
                     } else if (/admin\.\d+\/login-bg\.png(\?.*)?$/.test(req.originalUrl)) {
                         // Read the names of files for gong
@@ -703,8 +704,8 @@ class Web {
                             // protect all paths except
                             this.unprotectedFiles =
                                 this.unprotectedFiles ||
-                                fs.readdirSync(path.join(__dirname, `../${this.wwwDir}/`)).map(file => {
-                                    const stat = fs.lstatSync(path.join(__dirname, `../${this.wwwDir}/`, file));
+                                fs.readdirSync(this.wwwDir).map(file => {
+                                    const stat = fs.lstatSync(path.join(__dirname, `../../${this.wwwDir}/`, file));
                                     return { name: file, isDir: stat.isDirectory() };
                                 });
                             if (
@@ -924,7 +925,7 @@ class Web {
                 });
             }
 
-            if (!fs.existsSync(`${__dirname}/../${this.wwwDir}`)) {
+            if (!fs.existsSync(this.wwwDir)) {
                 this.server.app.use('/', (req, res) =>
                     res.send(
                         'This adapter cannot be installed directly from GitHub.<br>You must install it from npm.<br>Write for that <i>"npm install iobroker.admin"</i> in according directory.'
@@ -944,7 +945,7 @@ class Web {
                     res.status(200).send(this.indexHTML);
                 });
 
-                this.server.app.use('/', express.static(`${__dirname}/../${this.wwwDir}`, appOptions));
+                this.server.app.use('/', express.static(this.wwwDir, appOptions));
             }
 
             // reverse proxy with url rewrite for couchdb attachments in <adapter-name>.admin
