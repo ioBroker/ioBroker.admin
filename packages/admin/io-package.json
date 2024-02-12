@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.17",
+    "version": "6.13.18",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.18": {
+        "en": "generate notification if new adapter updates are available",
+        "de": "benachrichtigung generieren, wenn neue adapter-updates verfügbar sind",
+        "ru": "генерировать уведомление, если доступны новые обновления адаптера",
+        "pt": "gerar notificação se novas atualizações do adaptador estiverem disponíveis",
+        "nl": "melding genereren als er nieuwe updates beschikbaar zijn",
+        "fr": "générer une notification si de nouvelles mises à jour d'adaptateur sont disponibles",
+        "it": "generare notifica se sono disponibili nuovi aggiornamenti dell'adattatore",
+        "es": "generar notificación si nuevas actualizaciones de adaptador están disponibles",
+        "pl": "generować powiadomienie, jeśli dostępne są nowe aktualizacje adaptera",
+        "uk": "генерувати повідомлення, якщо нові оновлення адаптера доступні",
+        "zh-cn": "如果有新的适配器更新,则生成通知"
+      },
       "6.13.17": {
         "en": "fix date and time picker json config components showing current time even though the value is undefined\nadded new options for time picker json config component\nfixed issue when exporting jsonConfig\nAllow to install specific version of adapter",
         "de": "fix datum und zeit picker json config komponenten zeigen aktuelle zeit, obwohl der wert undefiniert ist\nneue optionen für zeit picker json config komponente\nproblem beim Export von jsonConfig\nLassen Sie bestimmte Version des Adapters installieren",
@@ -84,19 +97,6 @@
         "zh-cn": "b. 优化内部环境"
       },
       "6.13.12": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
-      },
-      "6.13.11": {
         "en": "internal optimizations",
         "de": "interne optimierungen",
         "ru": "внутренние оптимизации",

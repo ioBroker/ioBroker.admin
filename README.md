@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.18 (2024-02-12)
 * (foxriver76) generate notification if new adapter updates are available
 
 ### 6.13.17 (2024-02-09)
@@ -107,10 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.13.14 (2023-12-30)
 * (foxriver76) internal optimizations
-
-### 6.13.5 (2023-12-22)
-* (foxriver76) bring back missing `crypto-js`
-* (foxriver76) fix crash case due to global dependency check
 
 ## License
 The MIT License (MIT)
