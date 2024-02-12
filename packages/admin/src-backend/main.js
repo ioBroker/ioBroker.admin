@@ -1474,7 +1474,7 @@ class Admin extends utils.Adapter {
         // check info.connected
         this.getObjectAsync('info.connected').then(obj => {
             if (!obj) {
-                const packageJson = JSON.parse(fs.readFileSync(`${__dirname}/io-package.json`).toString('utf8'));
+                const packageJson = JSON.parse(fs.readFileSync(`${__dirname}/../io-package.json`).toString('utf8'));
                 const obj = packageJson.instanceObjects.find(o => o._id === 'info.connected');
                 if (obj) {
                     return this.setObjectAsync(obj._id, obj);
