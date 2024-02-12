@@ -23,7 +23,7 @@ const getInstalledInfo = utils.commonTools.getInstalledInfo;
 const SocketAdmin = require('@iobroker/socket-classes').SocketAdmin;
 const ws = require('@iobroker/ws-server');
 
-const adapterName = require('./package.json').name.split('.').pop();
+const adapterName = require(`${__dirname}/../package.json`).name.split('.').pop();
 const Web = require('./lib/web');
 const { getAdapterUpdateText } = require('./lib/translations');
 
