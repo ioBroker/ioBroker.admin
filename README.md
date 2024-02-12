@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.19 (2024-02-12)
 * (foxriver76) generate notification if new adapter updates are available
 
 ### 6.13.17 (2024-02-09)
