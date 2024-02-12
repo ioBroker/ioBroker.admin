@@ -160,6 +160,9 @@ jobs:
       - name: Install Dependencies
         run: npm run install-monorepo
 
+      - name: 'Build backend'
+        run: npm run build:ts -w packages/admin
+
       - name: Publish package to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
