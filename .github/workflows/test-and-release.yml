@@ -106,6 +106,9 @@ jobs:
       - name: Install Dependencies
         run: npm run install-monorepo
 
+      - name: 'Build backend'
+        run: npm run build:ts -w packages/admin
+
       - name: Build
         run: NODE_OPTIONS=--max_old_space_size=8192 npm run build
 
