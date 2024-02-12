@@ -8,6 +8,7 @@
     "allowJs": true,
     "checkJs": true,
     "outDir": "./build-backend/",
+    "module": "commonjs",
 
     // This is necessary for the automatic typing of the adapter config
     "resolveJsonModule": true,
