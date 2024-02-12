@@ -28,7 +28,7 @@ let cookieParser;
 let fileUpload;
 let socketIoFile;
 let uuid;
-const page404 = fs.readFileSync(`${__dirname}/../public/404.html`).toString('utf8');
+const page404 = fs.readFileSync(`${__dirname}/../../public/404.html`).toString('utf8');
 // const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g; // with space
 const ONE_MONTH_SEC = 30 * 24 * 3600;
 
