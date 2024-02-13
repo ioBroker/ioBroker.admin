@@ -176,6 +176,10 @@ class Command extends Component {
                 console.log('cmdExit');
                 console.log(id);
                 console.log(exitCode);
+
+                if (typeof this.props.callback === 'function') {
+                    this.props.callback();
+                }
             });
         }
     }

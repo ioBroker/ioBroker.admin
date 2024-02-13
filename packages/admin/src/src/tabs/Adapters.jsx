@@ -909,13 +909,16 @@ class Adapters extends Component {
                 }
             }
             const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
-            this.props.executeCommand(
-                `${customUrl ? 'url' : 'add'} ${adapter} ${instance ? `${instance} ` : ''}--host ${host} ${
-                    debug || this.props.expertMode ? '--debug' : ''
-                }`,
-                host,
-                true,
-            );
+
+            return new Promise(resolve => {
+                this.props.executeCommand(
+                    `${customUrl ? 'url' : 'add'} ${adapter} ${instance ? `${instance} ` : ''}--host ${host} ${
+                        debug || this.props.expertMode ? '--debug' : ''
+                    }`,
+                    host,
+                    resolve,
+                );
+            });
         }
     }
 
@@ -2286,8 +2289,10 @@ class Adapters extends Component {
             {this.state.gitHubInstallDialog && <GitHubInstallDialog
                 t={this.t}
                 categories={this.state.categories}
-                installFromUrl={(value, debug, customUrl) =>
-                    this.addInstance(value, undefined, debug, customUrl)}
+                upload={adapter => this.upload(adapter)}
+                installFromUrl={async (value, debug, customUrl) => {
+                    await this.addInstance(value, undefined, debug, customUrl);
+                }}
                 repository={this.state.repository}
                 onClose={() => {
                     this.setState({ gitHubInstallDialog: false });
