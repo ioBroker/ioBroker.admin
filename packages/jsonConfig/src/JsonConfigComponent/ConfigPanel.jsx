@@ -160,10 +160,14 @@ class ConfigPanel extends ConfigGeneric {
     renderItems(items, disabled) {
         const classes = this.props.classes || {};
 
+        console.log('render items');
+
         return items ? Object.keys(items).map(attr => {
             if (this.props.multiEdit && items[attr].noMultiEdit) {
                 return null;
             }
+
+            console.log(attr);
 
             const type = items[attr].type || 'panel';
             let ItemComponent;

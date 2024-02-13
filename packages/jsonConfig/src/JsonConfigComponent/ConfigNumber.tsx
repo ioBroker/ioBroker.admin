@@ -41,11 +41,12 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
     componentDidMount() {
         super.componentDidMount();
         let _value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+
         if (_value === null || _value === undefined) {
             _value = '';
         }
-        this.setState({ _value: _value.toString(), oldValue: _value.toString() });
-        // this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
+
+        this.setState({ _value: this.props.multiEdit ? _value : _value.toString(), oldValue: _value.toString() });
     }
 
     static getDerivedStateFromProps(props: ConfigNumberProps, state: ConfigNumberState) {
@@ -99,7 +100,9 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
     }
 
     renderItem(error: unknown, disabled: boolean) {
-        const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
+        const isIndeterminate = Array.isArray(this.state._value) || this.state._value === ConfigGeneric.DIFFERENT_VALUE;
+
+        console.log(this.state._value);
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
@@ -113,12 +116,13 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         }
 
         if (isIndeterminate) {
-            const arr = [...this.state.value].map(item => ({ label: item.toString(), value: item }));
+            const arr = [...this.state._value].map(item => ({ label: item.toString(), value: item }));
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
             return <Autocomplete
                 className={this.props.classes.indeterminate}
                 fullWidth
+                freeSolo
                 value={arr[0]}
                 // @ts-expect-error needs investigation if this really has no effect
                 getOptionSelected={(option, value) => option.label === value.label}
@@ -128,12 +132,12 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                 getOptionLabel={option => option.label}
                 renderInput={params => (
                     <TextField
-                        variant="standard"
                         {...params}
-                        inputProps={{ readOnly: this.props.schema.readOnly || false }}
+                        label={this.getText(this.props.schema.label)}
+                        variant="standard"
+                        inputProps={{ ...params.inputProps, readOnly: this.props.schema.readOnly || false }}
                         error={!!error}
                         placeholder={this.getText(this.props.schema.placeholder)}
-                        label={this.getText(this.props.schema.label)}
                         helperText={this.renderHelp(
                             this.props.schema.help,
                             this.props.schema.helpLink,

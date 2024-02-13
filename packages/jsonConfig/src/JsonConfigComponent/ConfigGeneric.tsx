@@ -57,6 +57,8 @@ export interface ConfigGenericProps {
     classes: Record<string, any>;
     /* this item is in the table. Maybe some layouts must be changed */
     table?: boolean;
+    /** If true, this field edits multiple datapoints at once and thus contains an array, should not be saved if not changed */
+    multiEdit?: boolean;
 }
 
 export interface ConfigGenericState {

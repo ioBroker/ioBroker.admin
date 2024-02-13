@@ -54,7 +54,7 @@ class ConfigText extends ConfigGeneric {
         return null;
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error, disabled) {
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
