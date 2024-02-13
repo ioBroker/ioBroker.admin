@@ -910,13 +910,13 @@ class Adapters extends Component {
             }
             const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
 
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
                 this.props.executeCommand(
                     `${customUrl ? 'url' : 'add'} ${adapter} ${instance ? `${instance} ` : ''}--host ${host} ${
                         debug || this.props.expertMode ? '--debug' : ''
                     }`,
                     host,
-                    resolve,
+                    exitCode => (!exitCode ? resolve() : reject(new Error(`The process returned an exit code of ${exitCode}`))),
                 );
             });
         }
@@ -1245,7 +1245,7 @@ class Adapters extends Component {
         const installed = this.state.installed[value];
         const news = [];
 
-        if (installed && adapter && adapter.news) {
+        if (installed && adapter?.news) {
             Object.keys(adapter.news).forEach(version => {
                 try {
                     if (semver.gt(version, installed.version) || all) {
@@ -1258,7 +1258,7 @@ class Adapters extends Component {
                     }
                 } catch (e) {
                     // ignore it
-                    console.warn(`[ADAPTERS] Cannot compare "${version}" and "${installed.version}"`);
+                    console.warn(`[ADAPTERS] Cannot compare "${version}" and "${installed.version}" (${value})`);
                 }
             });
         }
@@ -2290,9 +2290,7 @@ class Adapters extends Component {
                 t={this.t}
                 categories={this.state.categories}
                 upload={adapter => this.upload(adapter)}
-                installFromUrl={async (value, debug, customUrl) => {
-                    await this.addInstance(value, undefined, debug, customUrl);
-                }}
+                installFromUrl={(value, debug, customUrl) => this.addInstance(value, undefined, debug, customUrl)}
                 repository={this.state.repository}
                 onClose={() => {
                     this.setState({ gitHubInstallDialog: false });

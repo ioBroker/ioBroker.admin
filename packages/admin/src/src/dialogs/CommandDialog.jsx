@@ -125,7 +125,7 @@ CommandDialog.propTypes = {
     t: PropTypes.func,
     confirmText: PropTypes.string,
     onClose: PropTypes.func.isRequired,
-    callback: PropTypes.bool,
+    callback: PropTypes.func,
     onInBackground: PropTypes.func.isRequired,
     visible: PropTypes.bool.isRequired,
     ready: PropTypes.bool.isRequired,

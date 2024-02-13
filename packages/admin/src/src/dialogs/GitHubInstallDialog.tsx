@@ -466,10 +466,13 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
                             const adapterName = fullAdapterName.includes('.') ? fullAdapterName.split('.')[1] : fullAdapterName;
 
-                            await this.props.installFromUrl(`iobroker.${adapterName}@latest`, this.state.debug, true);
-
-                            // on npm installs we want to perform a upload
-                            this.props.upload(adapterName);
+                            try {
+                                await this.props.installFromUrl(`iobroker.${adapterName}@latest`, this.state.debug, true);
+                                // on npm installs we want to perform an additional upload
+                                this.props.upload(adapterName);
+                            } catch (e) {
+                                console.error(`Installation from url failed: ${e.message}`);
+                            }
                         }
                         this.props.onClose();
                         closeInit();
