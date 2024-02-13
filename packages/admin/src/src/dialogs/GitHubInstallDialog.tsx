@@ -110,8 +110,10 @@ interface GitHubInstallDialogProps {
     onClose: () => void;
     t: typeof I18n.t;
     /** Method to install adapter */
-    installFromUrl: (adapter: string, debug: boolean, customUrl: boolean) => void;
+    installFromUrl: (adapter: string, debug: boolean, customUrl: boolean) => Promise<void>;
     classes: Record<string, any>;
+    /** Upload the adapter */
+    upload: (adapter: string) => void;
 }
 
 interface AutoCompleteValue {
@@ -449,7 +451,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     variant="contained"
                     disabled={((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') && !this.state.autoCompleteValue?.value) || (this.state.currentTab === 'URL' && !this.state.url)}
                     autoFocus
-                    onClick={() => {
+                    onClick={async () => {
                         if (this.state.currentTab === 'GitHub') {
                             const parts = (this.state.autoCompleteValue?.value || '').split('/');
                             const _url = `${parts[1]}/ioBroker.${parts[0]}`;
@@ -461,11 +463,15 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 this.props.installFromUrl(this.state.url, this.state.debug, true);
                             }
                         } else if (this.state.currentTab === 'npm') {
-                            const parts = (this.state.autoCompleteValue?.value || '').split('/');
-                            if (!parts[0].includes('.')) {
-                                this.props.installFromUrl(`iobroker.${parts[0]}@latest`, this.state.debug, true);
-                            } else {
-                                this.props.installFromUrl(`${parts[0]}@latest`, this.state.debug, true);
+                            const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
+                            const adapterName = fullAdapterName.includes('.') ? fullAdapterName.split('.')[1] : fullAdapterName;
+
+                            try {
+                                await this.props.installFromUrl(`iobroker.${adapterName}@latest`, this.state.debug, true);
+                                // on npm installs we want to perform an additional upload
+                                this.props.upload(adapterName);
+                            } catch (e) {
+                                console.error(`Installation from url failed: ${e.message}`);
                             }
                         }
                         this.props.onClose();
