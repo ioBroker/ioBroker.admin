@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.20 (2024-02-14)
 * (foxriver76) after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally
 * (foxriver76) fixed problem with saving on multi edit custom settings
 
@@ -108,9 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.13.15 (2024-01-01)
 * (foxriver76) fixed scrolling of Select ID dialogs
-
-### 6.13.14 (2023-12-30)
-* (foxriver76) internal optimizations
 
 ## License
 The MIT License (MIT)

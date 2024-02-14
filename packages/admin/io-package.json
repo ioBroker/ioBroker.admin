@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.19",
+    "version": "6.13.20",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.20": {
+        "en": "after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally\nfixed problem with saving on multi edit custom settings",
+        "de": "nach erfolgreichem update über npm tab, führen sie einen zusätzlichen upload als `iob url` befehle nicht intern tun\nbehobenes problem mit dem speichern von benutzerdefinierten multi edit-einstellungen",
+        "ru": "после успешного обновления через вкладку npm выполните дополнительную загрузку, так как команды `iob url' не делают это внутри\nфиксированная проблема с сохранением многообразных пользовательских настроек",
+        "pt": "após a atualização bem sucedida via aba npm, execute um upload adicional como comandos `iob url` não fazê-lo internamente\nproblema fixo com a economia em multi editar configurações personalizadas",
+        "nl": "na succesvolle update via npm tabblad, voer een extra upload als \nvast probleem met opslaan op aangepaste instellingen voor meerdere bewerkingen",
+        "fr": "après une mise à jour réussie via l`onglet npm, effectuer un téléchargement supplémentaire car les commandes `iob url` ne le font pas en interne\nproblème corrigé avec l'enregistrement sur les paramètres personnalisés multi-édition",
+        "it": "dopo l'aggiornamento di successo tramite la scheda npm, eseguire un upload aggiuntivo come comandi `iob url` non farlo internamente\nproblema fisso con il salvataggio su più impostazioni personalizzate",
+        "es": "después de la actualización exitosa a través de la pestaña npm, realizar una carga adicional como comandos `iob url` no lo hacen internamente\nproblema fijo con el ahorro en ajustes personalizados multi edición",
+        "pl": "po udanej aktualizacji za pomocą zakładki npm, wykonaj dodatkową transmisję jako komendy 'iob url' nie robią tego wewnętrznie\nnaprawiony problem z zapisaniem na niestandardowych ustawieniach wielu edycji",
+        "uk": "після успішного оновлення за допомогою вкладки npm виконайте додатковий завантажень як команди `iob url` не робити це внутрішньо\nвиправлена проблема з збереженням на багато редагування користувацьких налаштувань",
+        "zh-cn": "在通过 npm 标签成功更新后, 执行额外的上传, 因为“ iob url” 命令不会在内部执行 \n在多编辑自定义设置中保存的固定问题"
+      },
       "6.13.19": {
         "en": "generate notification if new adapter updates are available",
         "de": "benachrichtigung generieren, wenn neue adapter-updates verfügbar sind",
@@ -84,19 +97,6 @@
         "zh-cn": "b. 固定疏散喷雾器"
       },
       "6.13.14": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
-      },
-      "6.13.13": {
         "en": "internal optimizations",
         "de": "interne optimierungen",
         "ru": "внутренние оптимизации",
