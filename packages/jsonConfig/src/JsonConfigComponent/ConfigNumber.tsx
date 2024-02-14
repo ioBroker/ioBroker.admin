@@ -36,7 +36,7 @@ interface ConfigNumberState extends ConfigGenericState {
 }
 
 class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
-    private updateTimeout?: NodeJS.Timeout;
+    private updateTimeout?: ReturnType<typeof setTimeout>;
 
     componentDidMount() {
         super.componentDidMount();
@@ -138,13 +138,13 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                 value={arr[0]}
                 // @ts-expect-error needs investigation if this really has no effect
                 getOptionSelected={(option, value) => option.label === value.label}
-                onChange={(_, value) => {
+                onChange={(_, value: typeof arr[number]) => {
                     this.setState({ _value: value?.value, oldValue: this.state._value }, () => {
                         this.onChange(this.props.attr, value?.value);
                     });
                 }}
                 options={arr}
-                getOptionLabel={option => option.label}
+                getOptionLabel={(option: typeof arr[number]) => option.label}
                 renderInput={params => (
                     <TextField
                         {...params}
