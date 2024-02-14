@@ -144,6 +144,7 @@ class ObjectCustomDialog extends MobileDialog {
             onProgress={progressRunning => this.setState({ progressRunning })}
             reportChangedIds={this.props.reportChangedIds}
             onChange={(hasChanges, update) => {
+                console.log(`changes ${hasChanges}`);
                 this.setState({ hasChanges }, () => {
                     if (update) {
                         const chartAvailable = this.isChartAvailable();

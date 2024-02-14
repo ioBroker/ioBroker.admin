@@ -559,7 +559,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             onValueChange={(attr, value) => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                 console.log(`${attr} => ${value}`);
-                                const newValues = JSON.parse(JSON.stringify(this.cachedNewValues));
+                                const newValues = deepClone(this.cachedNewValues);
                                 newValues[instance] = newValues[instance] || {};
                                 if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig?.[instance], attr)) === JSON.stringify(value)) {
                                     ConfigGeneric.setValue(newValues[instance], attr, null);

@@ -46,7 +46,13 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             _value = '';
         }
 
-        this.setState({ _value: this.props.multiEdit ? _value : _value.toString(), oldValue: _value.toString() });
+        if (Array.isArray(_value) && this.props.multiEdit) {
+            _value = ConfigGeneric.DIFFERENT_VALUE;
+            this.setState({ _value: ConfigGeneric.DIFFERENT_VALUE, oldValue: _value });
+            return;
+        }
+
+        this.setState({ _value: _value.toString(), oldValue: _value.toString() });
     }
 
     static getDerivedStateFromProps(props: ConfigNumberProps, state: ConfigNumberState) {
@@ -57,6 +63,11 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             return null;
         }
         const _value = ConfigGeneric.getValue(props.data, props.attr);
+
+        if (props.multiEdit && state._value === ConfigGeneric.DIFFERENT_VALUE) {
+            return ConfigGeneric.DIFFERENT_VALUE;
+        }
+
         if (
             _value === null ||
             _value === undefined ||
@@ -67,6 +78,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         ) {
             return { _value };
         }
+
         return null;
     }
 
@@ -102,8 +114,6 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
     renderItem(error: unknown, disabled: boolean) {
         const isIndeterminate = Array.isArray(this.state._value) || this.state._value === ConfigGeneric.DIFFERENT_VALUE;
 
-        console.log(this.state._value);
-
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
             this.updateTimeout = setTimeout(() => {
@@ -116,7 +126,9 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         }
 
         if (isIndeterminate) {
-            const arr = [...this.state._value].map(item => ({ label: item.toString(), value: item }));
+            const autoCompleteOptions = ConfigGeneric.getValue(this.props.data, this.props.attr);
+            const arr = [...autoCompleteOptions].map(item => ({ label: item.toString(), value: item }));
+
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
             return <Autocomplete
@@ -126,8 +138,11 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                 value={arr[0]}
                 // @ts-expect-error needs investigation if this really has no effect
                 getOptionSelected={(option, value) => option.label === value.label}
-                onChange={(_, value) =>
-                    this.onChange(this.props.attr, value?.value)}
+                onChange={(_, value) => {
+                    this.setState({ _value: value?.value, oldValue: this.state._value }, () => {
+                        this.onChange(this.props.attr, value?.value);
+                    });
+                }}
                 options={arr}
                 getOptionLabel={option => option.label}
                 renderInput={params => (
