@@ -91,6 +91,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally
+* (foxriver76) fixed problem with saving on multi edit custom settings
 
 ### 6.13.19 (2024-02-12)
 * (foxriver76) generate notification if new adapter updates are available
