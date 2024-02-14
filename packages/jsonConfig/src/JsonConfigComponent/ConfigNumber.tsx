@@ -48,7 +48,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
 
         if (Array.isArray(_value) && this.props.multiEdit) {
             _value = ConfigGeneric.DIFFERENT_VALUE;
-            this.setState({ _value: ConfigGeneric.DIFFERENT_VALUE, oldValue: _value });
+            this.setState({ _value, oldValue: _value });
             return;
         }
 

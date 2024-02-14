@@ -38,12 +38,24 @@ const styles = () => ({
 class ConfigText extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
-        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+        let value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+
+        if (Array.isArray(value) && this.props.multiEdit) {
+            value = ConfigGeneric.DIFFERENT_VALUE;
+            this.setState({ value, oldValue: value });
+            return;
+        }
+
         this.setState({ value, oldValue: value });
     }
 
     static getDerivedStateFromProps(props, state) {
+        if (props.multiEdit && state.value === ConfigGeneric.DIFFERENT_VALUE) {
+            return ConfigGeneric.DIFFERENT_VALUE;
+        }
+
         let value = ConfigGeneric.getValue(props.data, props.attr);
+
         if (value !== null && value !== undefined) {
             value = value.toString();
         }
@@ -57,6 +69,8 @@ class ConfigText extends ConfigGeneric {
     renderItem(error, disabled) {
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
+        console.log(this.state.value);
+
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
             this.updateTimeout = setTimeout(() => {
@@ -69,7 +83,8 @@ class ConfigText extends ConfigGeneric {
         }
 
         if (isIndeterminate) {
-            const arr = [...this.state.value].map(item => ({ label: item.toString(), value: item }));
+            const autoCompleteOptions = ConfigGeneric.getValue(this.props.data, this.props.attr);
+            const arr = [...autoCompleteOptions].map(item => ({ label: item.toString(), value: item }));
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
             return <Autocomplete
@@ -87,6 +102,7 @@ class ConfigText extends ConfigGeneric {
                     error={!!error}
                     placeholder={this.getText(this.props.schema.placeholder)}
                     inputProps={{
+                        ...params.inputProps,
                         maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
                         readOnly: this.props.schema.readOnly || false,
                     }}
