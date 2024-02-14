@@ -133,7 +133,6 @@ class JsonConfigComponent extends Component {
     };
 
     onChange = (data, value, cb, saveConfig) => {
-        console.log('changee');
         if (this.props.onValueChange) {
             this.props.onValueChange(data, value, saveConfig);
             cb && cb();

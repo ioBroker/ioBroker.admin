@@ -627,7 +627,6 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
                     !this.changedIds.includes(id) && this.changedIds.push(id);
 
-                    console.log(`save ${id}`);
                     this.props.socket.setObject(id, _objects[id])
                         .then(() => {
                             delete _objects[id];
@@ -649,7 +648,6 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         } else {
             const maxOids = this.state.maxOids || ids.length;
 
-            console.log('multi save');
             if (this.state.maxOids === null) {
                 this.setState({ maxOids: ids.length }, () =>
                     this.props.onProgress(true));

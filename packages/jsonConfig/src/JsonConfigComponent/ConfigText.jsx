@@ -69,8 +69,6 @@ class ConfigText extends ConfigGeneric {
     renderItem(error, disabled) {
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
-        console.log(this.state.value);
-
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
             this.updateTimeout = setTimeout(() => {
