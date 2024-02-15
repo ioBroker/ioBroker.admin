@@ -4,27 +4,33 @@ import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { withStyles } from '@mui/styles';
 
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Tooltip from '@mui/material/Tooltip';
+import {
+    IconButton,
+    Typography,
+    Card,
+    CardContent,
+    Tooltip,
+} from '@mui/material';
 
-import IconButton from '@mui/material/IconButton';
-import ListIcon from '@mui/icons-material/List';
-import ClearIcon from '@mui/icons-material/Clear';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import DownIcon from '@mui/icons-material/KeyboardArrowDown';
-import UpIcon from '@mui/icons-material/KeyboardArrowUp';
-import AddIcon from '@mui/icons-material/Add';
+import {
+    List as ListIcon,
+    Clear as ClearIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+    FileCopy as FileCopyIcon,
+    KeyboardArrowDown as DownIcon,
+    KeyboardArrowUp as UpIcon,
+    Add as AddIcon,
+} from '@mui/icons-material';
 import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 
-import IconChannel from '@iobroker/adapter-react-v5/icons/IconChannel';
-import IconDevice from '@iobroker/adapter-react-v5/icons/IconDevice';
-import IconState from '@iobroker/adapter-react-v5/icons/IconState';
-
-import { Utils, Icon } from '@iobroker/adapter-react-v5';
+import {
+    Utils,
+    Icon,
+    IconChannel,
+    IconDevice,
+    IconState,
+} from '@iobroker/adapter-react-v5';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
