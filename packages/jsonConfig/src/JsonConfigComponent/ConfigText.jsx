@@ -90,8 +90,12 @@ class ConfigText extends ConfigGeneric {
                 fullWidth
                 value={arr[0]}
                 getOptionSelected={(option, value) => option.label === value.label}
-                onChange={(_, value) =>
-                    this.onChange(this.props.attr, value ? value.value : '')}
+                onChange={(_, value) =>  {
+                    const val = value ? value.value : '';
+                    this.onChange(this.props.attr, val, () => {
+                        this.setState({ value: val, oldValue: val });
+                    });
+                }}
                 options={arr}
                 getOptionLabel={option => option.label}
                 renderInput={params => <TextField
