@@ -68,8 +68,8 @@
     "test:integration": "mocha test/integration --exit",
     "test:rule": "mocha test/rule --exit",
     "test:gui": "mocha test/*.gui.js --exit",
-    "prepublishOnly": "npm run build",
-    "build": "gulp",
+    "prepublishOnly": "npm run build && npm run build:ts",
+    "build": "gulp && npm run build:ts",
     "build:ts": "tsc -p tsconfig.build.json",
     "clean": "rimraf src/build"
   },
