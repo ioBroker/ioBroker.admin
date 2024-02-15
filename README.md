@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.13.21 (2024-02-15)
 * (foxriver76) do not crash when using the dropdown on multi edit custom settings
 
 ### 6.13.20 (2024-02-14)
@@ -108,9 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.13.16 (2024-01-30)
 * (foxriver76) allow to display and modify `ics` files
 * (foxriver76) redirect correctly when exiting json config with unsaved changes
-
-### 6.13.15 (2024-01-01)
-* (foxriver76) fixed scrolling of Select ID dialogs
 
 ## License
 The MIT License (MIT)

@@ -1,6 +1,6 @@
 {
   "name": "@iobroker/dm-gui-components",
-  "version": "6.13.20",
+  "version": "6.13.21",
   "description": "ReactJS components to develop admin interface for ioBroker device manager.",
   "author": {
     "name": "Jey Cee",

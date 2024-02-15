@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.20",
+    "version": "6.13.21",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.13.21": {
+        "en": "do not crash when using the dropdown on multi edit custom settings",
+        "de": "nicht abstürzen, wenn sie den dropdown auf multi edit benutzerdefinierte einstellungen verwenden",
+        "ru": "не сбои при использовании отключения на многообразных пользовательских условиях",
+        "pt": "não falhar ao usar o dropdown em multi editar configurações personalizadas",
+        "nl": "niet crashen bij het gebruik van de dropdown op aangepaste instellingen voor meerdere bewerkingen",
+        "fr": "ne pas planter lors de l'utilisation du menu déroulant sur les paramètres personnalisés de multi-édition",
+        "it": "non crash quando si utilizza il menu a tendina su più impostazioni personalizzate",
+        "es": "no se bloquea cuando se utiliza el desplegable en la configuración personalizada multi editar",
+        "pl": "nie awarii podczas korzystania z rozwijanego ustawienia wielu edycji",
+        "uk": "не збій при використанні випадання на багато редагування користувацьких налаштувань",
+        "zh-cn": "在多编辑自定义设置中使用下拉时不要崩溃"
+      },
       "6.13.20": {
         "en": "after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally\nfixed problem with saving on multi edit custom settings",
         "de": "nach erfolgreichem update über npm tab, führen sie einen zusätzlichen upload als `iob url` befehle nicht intern tun\nbehobenes problem mit dem speichern von benutzerdefinierten multi edit-einstellungen",
@@ -95,19 +108,6 @@
         "pl": "przeszukiwanie dialogów wybranego ID",
         "uk": "виправлено прокручування діалогів Вибрати ідентифікатор",
         "zh-cn": "b. 固定疏散喷雾器"
-      },
-      "6.13.14": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
       }
     },
     "desc": {
