@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) do not crash when using the dropdown on multi edit custom settings
+
 ### 6.13.20 (2024-02-14)
 * (foxriver76) after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally
 * (foxriver76) fixed problem with saving on multi edit custom settings

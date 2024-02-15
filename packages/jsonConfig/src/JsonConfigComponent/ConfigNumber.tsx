@@ -139,8 +139,8 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
                 // @ts-expect-error needs investigation if this really has no effect
                 getOptionSelected={(option, value) => option.label === value.label}
                 onChange={(_, value: typeof arr[number]) => {
-                    this.setState({ _value: value?.value, oldValue: this.state._value }, () => {
-                        this.onChange(this.props.attr, value?.value);
+                    this.onChange(this.props.attr, value?.value, () => {
+                        this.setState({ _value: value?.value, oldValue: this.state._value });
                     });
                 }}
                 options={arr}
