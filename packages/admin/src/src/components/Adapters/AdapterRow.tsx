@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { i18n, Utils } from '@iobroker/adapter-react-v5';
 
 import {
     Avatar,
@@ -14,7 +13,7 @@ import {
     TableRow,
     Tooltip,
     Typography,
-    Rating,
+    Rating, type Theme,
 } from '@mui/material';
 
 import {
@@ -47,9 +46,10 @@ import BalanceIcon from '@mui/icons-material/Balance';
 import TextSnippet from '@mui/icons-material/TextSnippet';
 import IsVisible from '../IsVisible';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+// @ts-expect-error fix later
 import sentryIcon from '../../assets/sentry.svg';
 
-const styles = theme => ({
+const styles = (theme: Theme) => ({
     smallAvatar: {
         width: theme.spacing(4),
         height: theme.spacing(4),
@@ -155,9 +155,66 @@ const styles = theme => ({
     tooltip: {
         pointerEvents: 'none',
     },
-});
+}) satisfies Styles<any, any>;
 
-class AdapterRow extends Component {
+interface AdapterRowProps {
+    /** The adapters license */
+    license: string;
+    /** Detailed license information, like for paid adapters */
+    category: boolean;
+    licenseInformation?: ioBroker.LicenseInformation;
+    commandRunning: boolean;
+    rating: Record<string, any>;
+    onSetRating?: () => void;
+    /** Name of the adapter */
+    name: string;
+    classes: Record<string, any>;
+    image: string;
+    version: string;
+    installedVersion: string;
+    installedCount: number;
+    updateAvailable: boolean;
+    onUpdate: () => void;
+    description: string;
+    rightOs: boolean;
+    onAddInstance: () => void;
+    onInfo: () => void;
+    expertMode: boolean;
+    onUpload: () => void;
+    onDeletion: () => void;
+    hidden: boolean;
+    versionDate: any;
+    /** adapter id without 'system.adapter. */
+    adapter: string;
+    connectionType: string;
+    openInstallVersionDialog: () => void;
+    dataSource: string;
+    t: typeof i18n.t;
+    installedFrom: string;
+    sentry: boolean;
+    allowAdapterInstall: boolean;
+    allowAdapterReadme: boolean;
+    allowAdapterDelete: boolean;
+    allowAdapterUpdate: boolean;
+    allowAdapterRating: boolean;
+    enabledCount: number;
+    /** If dependencies are fulfilled */
+    rightDependencies: boolean;
+    /** Name of category if it is category */
+    categoryName?: string;
+    /** If description should be hidden */
+    descHidden: boolean;
+    /** If category is expanded */
+    expanded?: boolean;
+    rebuild: boolean;
+    onRebuild: () => void;
+    /** If category is toggled */
+    onToggle: () => void;
+    /** Number of adapters in category */
+    count: number;
+}
+
+class AdapterRow extends Component<AdapterRowProps> {
     renderVersion() {
         const {
             adapter,
@@ -234,6 +291,7 @@ class AdapterRow extends Component {
                 </TableCell>
                 <TableCell onClick={this.props.onToggle}>
                     <div className={Utils.clsx(classes.nameDiv, classes.categoryName)}>
+                        {/** @ts-expect-error wait until ported to tsx */}
                         <MaterialDynamicIcon objIconBool iconName={categoryName} className={classes.marginRight5} />
                         {name}
                     </div>
@@ -465,40 +523,5 @@ class AdapterRow extends Component {
         </TableRow>;
     }
 }
-
-AdapterRow.propTypes = {
-    adapter: PropTypes.string.isRequired,
-    category: PropTypes.bool,
-    connectionType: PropTypes.string,
-    count: PropTypes.number,
-    description: PropTypes.string,
-    enabledCount: PropTypes.number,
-    expanded: PropTypes.bool,
-    expertMode: PropTypes.bool,
-    hidden: PropTypes.bool,
-    image: PropTypes.string,
-    installedCount: PropTypes.number,
-    installedFrom: PropTypes.string,
-    installedVersion: PropTypes.string,
-    name: PropTypes.string,
-    license: PropTypes.string,
-    onAddInstance: PropTypes.func,
-    onDeletion: PropTypes.func,
-    onRebuild: PropTypes.func,
-    onToggle: PropTypes.func,
-    onUpdate: PropTypes.func,
-    onUpload: PropTypes.func,
-    rebuild: PropTypes.bool,
-    rightDependencies: PropTypes.bool,
-    rightOs: PropTypes.bool,
-    sentry: PropTypes.bool,
-    t: PropTypes.func,
-    descHidden: PropTypes.bool,
-    updateAvailable: PropTypes.bool,
-    version: PropTypes.string,
-    commandRunning: PropTypes.bool,
-    rating: PropTypes.object,
-    onSetRating: PropTypes.func,
-};
 
 export default withStyles(styles)(AdapterRow);
