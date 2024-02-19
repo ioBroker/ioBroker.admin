@@ -14,6 +14,7 @@ import { I18n } from '@iobroker/adapter-react-v5';
 
 const useStyles = makeStyles(theme => ({
     root: {
+        // @ts-expect-error inspect later
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
@@ -34,7 +35,14 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const LicenseDialog = ({ url, onClose }) => {
+interface LicenseDialogProps {
+    /** URL to show license text from */
+    url: string;
+    /** function called when dialog is closed */
+    onClose: (accepted?: boolean) => void;
+}
+
+const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
     const classes = useStyles();
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(true);
@@ -82,6 +90,7 @@ const LicenseDialog = ({ url, onClose }) => {
                 variant="contained"
                 onClick={() => onClose()}
                 startIcon={<IconClose />}
+                // @ts-expect-error is okay
                 color="grey"
             >
                 {I18n.t('Close')}

@@ -67,7 +67,7 @@ import AdminUpdater from '../dialogs/AdminUpdater';
 const WIDTHS = {
     emptyBlock: 50,
     name: 300,
-    connectionType: 85,
+    connectionType: 120,
     installed: 120,
     available: 120,
     update: 40,
@@ -1450,7 +1450,8 @@ class Adapters extends Component {
                 installedVersion={installed?.version}
                 keywords={adapter.keywords}
                 name={cached.title}
-                license={adapter.license}
+                license={adapter.licenseInformation.license || adapter.license}
+                licenseInformation={adapter.licenseInformation}
                 updateAvailable={cached.updateAvailable}
                 version={adapter.version}
                 hidden={false}
@@ -1474,7 +1475,10 @@ class Adapters extends Component {
                     } else {
                         url = `${url.split('/master')[0]}/master/LICENSE`;
                     }
-                    if (adapter.license === 'MIT') {
+
+                    const license = adapter.licenseInformation?.license || adapter.license;
+
+                    if (license === 'MIT') {
                         this.addInstance(value);
                     } else {
                         this.setState({ showLicenseDialog: { url, instance: value } });
@@ -1763,7 +1767,8 @@ class Adapters extends Component {
                 installedFrom={installed?.installedFrom}
                 installedVersion={installed?.version}
                 keywords={adapter.keywords}
-                license={adapter.license}
+                license={adapter.licenseInformation.license || adapter.license}
+                licenseInformation={adapter.licenseInformation}
                 updateAvailable={cached.updateAvailable}
                 version={adapter.version}
                 hidden={false}
@@ -1805,7 +1810,9 @@ class Adapters extends Component {
                         url = `${url.split('/master')[0]}/master/LICENSE`;
                     }
 
-                    if (adapter.license !== 'MIT') {
+                    const license = adapter.licenseInformation?.license || adapter.license;
+
+                    if (license !== 'MIT') {
                         this.setState({ showLicenseDialog: { url, instance: value, upload: true } });
                     } else {
                         this.upload(value);

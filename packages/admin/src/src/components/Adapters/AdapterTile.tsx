@@ -19,10 +19,15 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RemoveIcon from '@mui/icons-material/Remove';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import MonetizationOn from '@mui/icons-material/MonetizationOn';
+import BusinessCenter from '@mui/icons-material/BusinessCenter';
+import TextSnippet from '@mui/icons-material/TextSnippet';
+import BalanceIcon from '@mui/icons-material/Balance';
 import { amber } from '@mui/material/colors';
 
 import { i18n, Utils } from '@iobroker/adapter-react-v5';
 
+import Link from '@mui/material/Link';
 // @ts-expect-error adapt tsconfig
 import sentryIcon from '../../assets/sentry.svg';
 import IsVisible from '../IsVisible';
@@ -250,6 +255,7 @@ const styles = (theme: Record<string, any>) => ({
 }) satisfies Styles<any, any>;
 
 interface AdapterTileProps {
+    licenseInformation?: ioBroker.LicenseInformation;
     commandRunning: boolean;
     rating: Record<string, any>;
     onSetRating?: () => void;
@@ -477,6 +483,25 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                                         <RemoveIcon className={this.props.classes.classAssumption} />
                                     </Tooltip> : null)}
                     </div>}
+                    <div>
+                        <Link href={this.props.licenseInformation?.link} target="_blank" rel="noopener" sx={{ color: 'black', '&:hover': { color: 'black' } }}>
+                            {this.props.licenseInformation?.type === 'paid' ?
+                                <Tooltip title={this.props.t('The adapter requires a paid license.')}>
+                                    <MonetizationOn />
+                                </Tooltip>
+                                : this.props.licenseInformation?.type === 'commercial' ?
+                                    <Tooltip title={this.props.t('The adapter requires a paid license for commercial use.')}>
+                                        <BusinessCenter />
+                                    </Tooltip>
+                                    : this.props.licenseInformation?.type === 'limited' ?
+                                        <Tooltip title={this.props.t('The adapter has a limited functionality without a paid license.')}>
+                                            <BalanceIcon />
+                                        </Tooltip> :
+                                        <Tooltip title={this.props.t('The adapter can be used free of charge.')}>
+                                            <TextSnippet />
+                                        </Tooltip>}
+                        </Link>
+                    </div>
                     {this.props.sentry && <div className={this.props.classes.marginLeft5}>
                         <Tooltip title="sentry">
                             <CardMedia

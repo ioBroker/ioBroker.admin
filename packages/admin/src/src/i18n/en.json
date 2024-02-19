@@ -888,6 +888,7 @@
   "Select options": "Select options",
   "Select predefined icon": "Select predefined icon",
   "Select type of export": "Select type of the export",
+  "Select/Unselect all": "Select/Unselect all",
   "Selected %s object(s)": "Selected %s object(s)",
   "Selected adapters": "Selected adapters",
   "Senegal": "Senegal",
@@ -1009,6 +1010,10 @@
   "Thailand": "Thailand",
   "The Cloud services from iobroker.net/pro can help here to do that securely:": "The Cloud services from iobroker.net/pro can help here to do that securely:",
   "The JSONL DB is append-only and will contain unnecessary entries after a while.": "The JSONL DB is append-only and will contain unnecessary entries after a while.",
+  "The adapter can be used free of charge.": "The adapter can be used free of charge.",
+  "The adapter has a limited functionality without a paid license.": "The adapter has a limited functionality without a paid license.",
+  "The adapter requires a paid license for commercial use.": "The adapter requires a paid license for commercial use.",
+  "The adapter requires a paid license.": "The adapter requires a paid license.",
   "The apiKey of the seq system": "The apiKey of the seq system",
   "The changes will be applied to %s states. Are you sure?": "The changes will be applied to %s states. Are you sure?",
   "The device or service delivers the new state actively": "The device or service delivers the new state actively",
@@ -1079,6 +1084,7 @@
   "Unsupported image format": "Unsupported image format",
   "Update": "Update",
   "Update \"%s\" to v%s": "Update \"%s\" to v%s",
+  "Update %s adapter(s)": "Update %s adapter(s)",
   "Update all adapters": "Update all adapters",
   "Update info adapter": "Update info adapter",
   "Update objects": "Update objects",
@@ -1555,7 +1561,5 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
-  "yesterday": "yesterday",
-  "Select/Unselect all": "Select/Unselect all",
-  "Update %s adapter(s)": "Update %s adapter(s)"
+  "yesterday": "yesterday"
 }
