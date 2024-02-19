@@ -477,8 +477,6 @@ class Adapters extends Component {
 
         this.cache.listOfVisibleAdapter = null;
 
-        console.log(updateAvailable);
-
         this.setState(
             {
                 adapters,
