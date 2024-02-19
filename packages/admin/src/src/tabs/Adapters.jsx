@@ -1450,7 +1450,7 @@ class Adapters extends Component {
                 installedVersion={installed?.version}
                 keywords={adapter.keywords}
                 name={cached.title}
-                license={adapter.licenseInformation.license || adapter.license}
+                license={adapter.licenseInformation?.license || adapter.license}
                 licenseInformation={adapter.licenseInformation}
                 updateAvailable={cached.updateAvailable}
                 version={adapter.version}
@@ -1767,7 +1767,7 @@ class Adapters extends Component {
                 installedFrom={installed?.installedFrom}
                 installedVersion={installed?.version}
                 keywords={adapter.keywords}
-                license={adapter.licenseInformation.license || adapter.license}
+                license={adapter.licenseInformation?.license || adapter.license}
                 licenseInformation={adapter.licenseInformation}
                 updateAvailable={cached.updateAvailable}
                 version={adapter.version}
@@ -1792,7 +1792,9 @@ class Adapters extends Component {
                         url = `${url.split('/master')[0]}/master/LICENSE`;
                     }
 
-                    if (adapter.license === 'MIT') {
+                    const license = adapter.licenseInformation?.license || adapter.license;
+
+                    if (license === 'MIT') {
                         this.addInstance(value);
                     } else {
                         this.setState({ showLicenseDialog: { url, instance: value } });

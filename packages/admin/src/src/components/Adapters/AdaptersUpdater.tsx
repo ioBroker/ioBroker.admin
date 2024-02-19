@@ -113,6 +113,15 @@ interface AdaptersUpdaterState {
     showNews: null | Record<string, any>;
 }
 
+interface UpdateAvailableCheckOptions {
+    /** The installed version */
+    oldVersion: string;
+    /** The repo version or new version */
+    newVersion: string;
+    /** Adapter name */
+    name: string;
+}
+
 class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterState> {
     private readonly updateAvailable: string[];
 
@@ -146,15 +155,22 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         }
     }
 
-    static isUpdateAvailable(oldVersion: string, newVersion: string) {
+    static isUpdateAvailable(options: UpdateAvailableCheckOptions) {
+        const { oldVersion, newVersion, name } = options;
+
         try {
             return semver.gt(newVersion, oldVersion);
         } catch (e) {
-            console.warn(`Cannot compare "${newVersion}" and "${oldVersion}"`);
+            console.warn(`Cannot compare "${newVersion}" and "${oldVersion}" of adapter ${name}`);
             return false;
         }
     }
 
+    /**
+     * Get list of available adapter updates
+     * Admin and controller is filtered out
+     * and all adapters which have messages for this update are filtered out too
+     */
     detectUpdates(): string[] {
         const updateAvailable: string[] = [];
 
@@ -165,12 +181,15 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                 return;
             }
             if (_installed &&
+                this.props.repository[adapter].version &&
                 _installed.ignoreVersion !== this.props.repository[adapter].version &&
-                AdaptersUpdater.isUpdateAvailable(_installed.version, this.props.repository[adapter].version)
+                AdaptersUpdater.isUpdateAvailable({ oldVersion: _installed.version, newVersion: this.props.repository[adapter].version, name: adapter })
             ) {
                 // @ts-expect-error should be ok wait for ts port
                 if (!AdapterUpdateDialog.checkCondition(this.props.repository[adapter].messages, _installed.version, this.props.repository[adapter].version)) {
                     updateAvailable.push(adapter);
+                } else {
+                    console.log(`Adapter ${adapter} is filtered out from update all functionality, because it has messages which need to be read before update`);
                 }
             }
         });

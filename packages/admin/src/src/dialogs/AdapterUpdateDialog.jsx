@@ -377,6 +377,7 @@ class AdapterUpdateDialog extends Component {
                 spacing={2}
                 direction="column"
                 wrap="nowrap"
+                sx={{ marginBottom: 1 }}
             >
                 {this.messages.map((message, i) => this.renderOneMessage(message, i))}
             </Grid>;
@@ -490,6 +491,7 @@ class AdapterUpdateDialog extends Component {
                 </Typography>
             </DialogTitle>
             <DialogContent dividers>
+                {this.renderMessages()}
                 <Grid
                     container
                     direction="column"
@@ -514,7 +516,6 @@ class AdapterUpdateDialog extends Component {
                         </Grid>
                     </Grid> : this.t('No change log available')}
                 </Grid>
-                {this.renderMessages()}
             </DialogContent>
             <DialogActions className={classes.wrapperButton}>
                 {!!this.props.rightDependencies && this.props.onIgnore && version && <Button
