@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) adapters tab is now showing information from `licenseInformation`
+
 ### 6.13.21 (2024-02-15)
 * (foxriver76) do not crash when using the dropdown on multi edit custom settings
 
