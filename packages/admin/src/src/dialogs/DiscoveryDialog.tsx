@@ -677,7 +677,6 @@ function DiscoveryDialog({
     const licenseDialog = showLicenseDialog ? (
         <LicenseDialog
             url={showLicenseDialog.obj.common.licenseUrl}
-            // @ts-expect-error wait until component is typed
             onClose={result => {
                 const { cb } = showLicenseDialog;
                 const { obj } = showLicenseDialog;
