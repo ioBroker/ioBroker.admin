@@ -41,9 +41,6 @@ import RemoveIcon from '@mui/icons-material/Remove';
 
 import Link from '@mui/material/Link';
 import MonetizationOn from '@mui/icons-material/MonetizationOn';
-import BusinessCenter from '@mui/icons-material/BusinessCenter';
-import BalanceIcon from '@mui/icons-material/Balance';
-import TextSnippet from '@mui/icons-material/TextSnippet';
 import IsVisible from '../IsVisible';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 // @ts-expect-error fix later
@@ -360,8 +357,8 @@ class AdapterRow extends Component<AdapterRowProps> {
                                 title={this.props.t('Adapter does not use the cloud for these devices/service')}
                             >
                                 <CloudOffIcon />
-                            </Tooltip> : null)}
-                    {dataSource && <div className={classes.marginLeft5}>
+                            </Tooltip> : <CloudOffIcon opacity={0} />)}
+                    <div className={classes.marginLeft5}>
                         {(
                             dataSource === 'poll' ?
                                 <Tooltip title={this.props.t('The device or service will be periodically asked')}>
@@ -378,9 +375,9 @@ class AdapterRow extends Component<AdapterRowProps> {
                                             title={this.props.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}
                                         >
                                             <RemoveIcon className={classes.classAssumption} />
-                                        </Tooltip> : null
+                                        </Tooltip> : <RemoveIcon className={classes.classAssumption} opacity={0} />
                         )}
-                    </div>}
+                    </div>
                     <div>
                         <Link
                             href={this.props.licenseInformation?.link}
@@ -396,17 +393,15 @@ class AdapterRow extends Component<AdapterRowProps> {
                                     <Tooltip
                                         title={this.props.t('The adapter requires a paid license for commercial use.')}
                                     >
-                                        <BusinessCenter />
+                                        <MonetizationOn opacity={0.5} />
                                     </Tooltip>
                                     : this.props.licenseInformation?.type === 'limited' ?
                                         <Tooltip
                                             title={this.props.t('The adapter has a limited functionality without a paid license.')}
                                         >
-                                            <BalanceIcon />
+                                            <MonetizationOn opacity={0.5} />
                                         </Tooltip> :
-                                        <Tooltip title={this.props.t('The adapter can be used free of charge.')}>
-                                            <TextSnippet />
-                                        </Tooltip>}
+                                        <MonetizationOn opacity={0} />}
                         </Link>
                     </div>
                     {sentry && <div className={classes.marginLeft5}>
