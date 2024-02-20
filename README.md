@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.14.1 (2024-02-20)
 * (foxriver76) align items better when adapters tab is used in row mode
 
 ### 6.14.0 (2024-02-19)
@@ -105,12 +105,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.13.19 (2024-02-12)
 * (foxriver76) generate notification if new adapter updates are available
-
-### 6.13.17 (2024-02-09)
-* (foxriver76) fix date and time picker json config components showing current time even though the value is undefined
-* (foxriver76) added new options for time picker json config component
-* (foxriver76) fixed issue when exporting jsonConfig
-* (klein0r) Allow to install specific version of adapter
 
 ## License
 The MIT License (MIT)

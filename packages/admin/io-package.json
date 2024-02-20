@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.14.0",
+    "version": "6.14.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.14.1": {
+        "en": "align items better when adapters tab is used in row mode",
+        "de": "die elemente besser ausrichten, wenn die registerkarte adapter im zeilenmodus verwendet wird",
+        "ru": "выравнивать элементы лучше, когда вкладка адаптеров используется в режиме строки",
+        "pt": "alinhar itens melhor quando a aba de adaptadores é usada no modo de linha",
+        "nl": "items beter uitlijnen wanneer het tabblad adapters wordt gebruikt in rijmodus",
+        "fr": "aligner les éléments mieux lorsque l'onglet adaptateurs est utilisé en mode ligne",
+        "it": "allineare gli elementi meglio quando la scheda adattatori viene utilizzata in modalità riga",
+        "es": "alinear los elementos mejor cuando la pestaña adaptadores se utiliza en modo de fila",
+        "pl": "wyrównać elementy lepiej, gdy karta adapterów jest używana w trybie wiersza",
+        "uk": "вирівняти елементи краще, коли вкладки адаптерів використовується в режимі рядка",
+        "zh-cn": "在行模式下使用适配器标签时更好地对齐项目"
+      },
       "6.14.0": {
         "en": "adapters tab is now showing information from `licenseInformation`\nshow important notifications above changelog, so user reads them on update dialog",
         "de": "adapter Tab zeigt jetzt Informationen von `license Informationen `\nwichtige benachrichtigungen über changelog anzeigen, so dass der benutzer sie im update-dialog liest",
@@ -95,19 +108,6 @@
         "pl": "fix date and time picker json config components showing current time even though the value is undefined\ndodane nowe opcje dla time picker json config komponent\nstałe wydanie przy eksporcie jsonConfig\nPozwól na zainstalowanie określonej wersji adaptera",
         "uk": "виправлено дату та часовий пікіратор json config компоненти, що показують поточний час, навіть якщо значення не визначено\nдодано нові параметри для таймера json config компонент\nвиправлено проблему при експорті jsonConfig\nДозволяє встановити конкретну версію адаптера",
         "zh-cn": "固定日期和时间拾取器 json 配置组件, 显示当前时间, 即使数值未定义\n添加取时器 json 配置组件的新选项\n导出 jsonConfig 时的固定发行\n允许安装特定版本的适配器"
-      },
-      "6.13.16": {
-        "en": "allow to display and modify `ics` files\nredirect correctly when exiting json config with unsaved changes",
-        "de": "`ics` dateien anzeigen und ändern\nkorrekt umleiten, wenn json config mit ungehinderten änderungen verlassen",
-        "ru": "позволяет отображать и изменять файлы `ics'\nправильно перенаправлять при выходе на конфигурацию json с невыполненными изменениями",
-        "pt": "permitir exibir e modificar arquivos `ics`\nredirecionar corretamente ao sair json config com mudanças não salvas",
-        "nl": "toestaan om te tonen en wijzigen van de bestanden\ncorrect omleiden bij het afsluiten van json-configuratie met niet opgeslagen wijzigingen",
-        "fr": "permettre d'afficher et de modifier les fichiers `ics`\nrediriger correctement lors de la sortie de json config avec des modifications non enregistrées",
-        "it": "consentire di visualizzare e modificare i file `ics`\nreindirizzare correttamente quando si esce da json config con modifiche non salvate",
-        "es": "permite mostrar y modificar archivos 'ics'\nredireccionar correctamente al salir de json config con cambios sin salvar",
-        "pl": "umożliwia wyświetlanie i modyfikowanie plików 'ics'\nprzekierowanie poprawnie po wyjściu z konfiguracji json z niezapisanymi zmianami",
-        "uk": "дозволяє відображати та змінювати файли `ics`\nперенаправлення правильно при виході з json config з незбережених змін",
-        "zh-cn": "允许显示和修改“ics”文件\n未保存的更改退出 json 配置时正确定向"
       }
     },
     "desc": {

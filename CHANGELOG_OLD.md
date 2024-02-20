@@ -1,6 +1,16 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.13.17 (2024-02-09)
+* (foxriver76) fix date and time picker json config components showing current time even though the value is undefined
+* (foxriver76) added new options for time picker json config component
+* (foxriver76) fixed issue when exporting jsonConfig
+* (klein0r) Allow to install specific version of adapter
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.13.16 (2024-01-30)
 * (foxriver76) allow to display and modify `ics` files
 * (foxriver76) redirect correctly when exiting json config with unsaved changes
