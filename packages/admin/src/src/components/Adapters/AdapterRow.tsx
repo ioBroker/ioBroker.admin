@@ -360,8 +360,8 @@ class AdapterRow extends Component<AdapterRowProps> {
                                 title={this.props.t('Adapter does not use the cloud for these devices/service')}
                             >
                                 <CloudOffIcon />
-                            </Tooltip> : null)}
-                    {dataSource && <div className={classes.marginLeft5}>
+                            </Tooltip> : <CloudOffIcon style={{ opacity: 0 }} />)}
+                    <div className={classes.marginLeft5}>
                         {(
                             dataSource === 'poll' ?
                                 <Tooltip title={this.props.t('The device or service will be periodically asked')}>
@@ -378,9 +378,9 @@ class AdapterRow extends Component<AdapterRowProps> {
                                             title={this.props.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}
                                         >
                                             <RemoveIcon className={classes.classAssumption} />
-                                        </Tooltip> : null
+                                        </Tooltip> : <RemoveIcon className={classes.classAssumption} style={{ opacity: 0 }} />
                         )}
-                    </div>}
+                    </div>
                     <div>
                         <Link
                             href={this.props.licenseInformation?.link}
