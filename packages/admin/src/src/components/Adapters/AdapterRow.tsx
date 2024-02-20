@@ -357,7 +357,7 @@ class AdapterRow extends Component<AdapterRowProps> {
                                 title={this.props.t('Adapter does not use the cloud for these devices/service')}
                             >
                                 <CloudOffIcon />
-                            </Tooltip> : <CloudOffIcon style={{ opacity: 0 }} />)}
+                            </Tooltip> : <CloudOffIcon opacity={0} />)}
                     <div className={classes.marginLeft5}>
                         {(
                             dataSource === 'poll' ?
@@ -375,7 +375,7 @@ class AdapterRow extends Component<AdapterRowProps> {
                                             title={this.props.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}
                                         >
                                             <RemoveIcon className={classes.classAssumption} />
-                                        </Tooltip> : <RemoveIcon className={classes.classAssumption} style={{ opacity: 0 }} />
+                                        </Tooltip> : <RemoveIcon className={classes.classAssumption} opacity={0} />
                         )}
                     </div>
                     <div>
