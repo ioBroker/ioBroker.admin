@@ -20,9 +20,6 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RemoveIcon from '@mui/icons-material/Remove';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import MonetizationOn from '@mui/icons-material/MonetizationOn';
-import BusinessCenter from '@mui/icons-material/BusinessCenter';
-import TextSnippet from '@mui/icons-material/TextSnippet';
-import BalanceIcon from '@mui/icons-material/Balance';
 import { amber } from '@mui/material/colors';
 
 import { i18n, Utils } from '@iobroker/adapter-react-v5';
@@ -484,22 +481,29 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                                     </Tooltip> : null)}
                     </div>}
                     <div>
-                        <Link href={this.props.licenseInformation?.link} target="_blank" rel="noopener" sx={{ color: 'black', '&:hover': { color: 'black' } }}>
+                        <Link
+                            href={this.props.licenseInformation?.link}
+                            target="_blank"
+                            rel="noopener"
+                            sx={{ color: 'black', '&:hover': { color: 'black' } }}
+                        >
                             {this.props.licenseInformation?.type === 'paid' ?
                                 <Tooltip title={this.props.t('The adapter requires a paid license.')}>
                                     <MonetizationOn />
                                 </Tooltip>
                                 : this.props.licenseInformation?.type === 'commercial' ?
-                                    <Tooltip title={this.props.t('The adapter requires a paid license for commercial use.')}>
-                                        <BusinessCenter />
+                                    <Tooltip
+                                        title={this.props.t('The adapter requires a paid license for commercial use.')}
+                                    >
+                                        <MonetizationOn opacity={0.5} />
                                     </Tooltip>
                                     : this.props.licenseInformation?.type === 'limited' ?
-                                        <Tooltip title={this.props.t('The adapter has a limited functionality without a paid license.')}>
-                                            <BalanceIcon />
+                                        <Tooltip
+                                            title={this.props.t('The adapter has a limited functionality without a paid license.')}
+                                        >
+                                            <MonetizationOn opacity={0.5} />
                                         </Tooltip> :
-                                        <Tooltip title={this.props.t('The adapter can be used free of charge.')}>
-                                            <TextSnippet />
-                                        </Tooltip>}
+                                        null}
                         </Link>
                     </div>
                     {this.props.sentry && <div className={this.props.classes.marginLeft5}>
