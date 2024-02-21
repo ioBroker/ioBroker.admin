@@ -152,7 +152,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
         let expanded: string[] = [];
         try {
-            expanded = JSON.parse((window._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]');
+            expanded = JSON.parse(((window as any)._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]');
         } catch (e) {
             expanded = [];
         }
@@ -487,8 +487,8 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 } else {
                     expanded.splice(pos, 1);
                 }
-                (window._localStorage || window.localStorage).setItem('App.customsExpanded', JSON.stringify(expanded));
-                pos === -1 && (window._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
+                ((window as any)._localStorage || window.localStorage).setItem('App.customsExpanded', JSON.stringify(expanded));
+                pos === -1 && ((window as any)._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
                 this.setState({ expanded });
             }}
         >

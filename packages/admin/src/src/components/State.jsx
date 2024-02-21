@@ -6,11 +6,12 @@ import PropTypes from 'prop-types';
 
 import { Grid, Typography } from '@mui/material';
 
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
+import {
+    CheckCircle as CheckCircleIcon,
+    Cancel as CancelIcon,
+} from '@mui/icons-material';
 
-import green from '@mui/material/colors/green';
-import red from '@mui/material/colors/red';
+import { green, red } from '@mui/material/colors';
 
 const styles = {
     checkIcon: {

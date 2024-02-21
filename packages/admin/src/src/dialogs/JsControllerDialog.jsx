@@ -5,20 +5,21 @@ import ReactMarkdown from 'react-markdown';
 import { makeStyles } from '@mui/styles';
 
 import {
-    Accordion, AccordionDetails, AccordionSummary, Card, DialogTitle, IconButton,
+    Accordion, AccordionDetails, AccordionSummary,
+    Card, DialogTitle, IconButton,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
 } from '@mui/material';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DescriptionIcon from '@mui/icons-material/Description';
-import CloseIcon from '@mui/icons-material/Close';
+import {
+    ExpandMore as ExpandMoreIcon,
+    Description as DescriptionIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
 
-import IconCopy from '@iobroker/adapter-react-v5/icons/IconCopy';
-
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, IconCopy } from '@iobroker/adapter-react-v5';
 
 const useStyles = makeStyles(theme => ({
     root: {

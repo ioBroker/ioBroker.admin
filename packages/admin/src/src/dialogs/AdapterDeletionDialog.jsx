@@ -4,18 +4,22 @@ import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    Typography,
+    FormControlLabel,
+    Checkbox,
+} from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    Close as CloseIcon,
+    Check as CheckIcon,
+} from '@mui/icons-material';
 
 const styles = theme => ({
     formControl: {

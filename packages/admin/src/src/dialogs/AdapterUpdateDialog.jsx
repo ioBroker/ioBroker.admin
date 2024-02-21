@@ -10,19 +10,25 @@ import {
     Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Typography,
 } from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
-import BookIcon from '@mui/icons-material/Book';
-import IconWarning from '@mui/icons-material/Warning';
-import IconError from '@mui/icons-material/Error';
-import IconInfo from '@mui/icons-material/Info';
-import IconWeb from '@mui/icons-material/Public';
-import LanguageIcon from '@mui/icons-material/Language';
+import {
+    Close as CloseIcon,
+    Check as CheckIcon,
+    Book as BookIcon,
+    Warning as IconWarning,
+    Error as IconError,
+    Info as IconInfo,
+    Public as IconWeb,
+    Language as LanguageIcon,
+} from '@mui/icons-material';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import {
+    I18n,
+    Utils,
+} from '@iobroker/adapter-react-v5';
+
+import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
+
 import State from '../components/State';
-import { MOBILE_WIDTH } from '../helpers/MobileDialog';
 
 import 'moment/locale/de';
 import 'moment/locale/es';

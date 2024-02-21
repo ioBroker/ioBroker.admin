@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 
 import { Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import {
+    Button,
+    Menu,
+    MenuItem,
+} from '@mui/material';
 
 import {
     type AdminConnection, I18n, Icon, Utils,

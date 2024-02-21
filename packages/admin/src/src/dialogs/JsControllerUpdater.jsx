@@ -2,16 +2,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ipaddr from 'ipaddr.js';
 
-import { LinearProgress } from '@mui/material';
+import {
+    LinearProgress,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from '@mui/material';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-
-import CloseIcon from '@mui/icons-material/Close';
-import ReloadIcon from '@mui/icons-material/Refresh';
+import {
+    Close as CloseIcon,
+    Refresh as ReloadIcon,
+} from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 

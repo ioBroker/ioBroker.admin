@@ -2,24 +2,31 @@ import { withStyles } from '@mui/styles';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import AppBar from '@mui/material/AppBar';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import LinearProgress from '@mui/material/LinearProgress';
-import IconButton from '@mui/material/IconButton';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    AppBar,
+    Tab,
+    Tabs,
+    Box,
+    Typography,
+    Button,
+    LinearProgress,
+    IconButton,
+} from '@mui/material';
 
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import {
+    Check as CheckIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
+
 import Router from '@iobroker/adapter-react-v5/Components/Router';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import {
+    Confirm as ConfirmDialog,
+    withWidth,
+} from '@iobroker/adapter-react-v5';
 
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
 import LicensesDialog from './SystemSettingsTabs/LicensesDialog';

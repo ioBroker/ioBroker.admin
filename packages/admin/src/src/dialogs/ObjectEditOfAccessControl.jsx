@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch,
+    Checkbox, FormControl, InputLabel,
+    LinearProgress, MenuItem, Select, Switch,
 } from '@mui/material';
 
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { Icon, I18n } from '@iobroker/adapter-react-v5';
 
 import Utils from '../components/Utils';
 import CustomModal from '../components/CustomModal';

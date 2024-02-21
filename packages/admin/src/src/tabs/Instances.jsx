@@ -3,35 +3,43 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@mui/styles';
 
-import IconButton from '@mui/material/IconButton';
-import LinearProgress from '@mui/material/LinearProgress';
-import Tooltip from '@mui/material/Tooltip';
-import Paper from '@mui/material/Paper';
-import { Hidden, InputAdornment, TextField } from '@mui/material';
+import {
+    IconButton,
+    LinearProgress,
+    Tooltip,
+    Paper,
+    Hidden,
+    InputAdornment,
+    TextField,
+} from '@mui/material';
 
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import BugReportIcon from '@mui/icons-material/BugReport';
-import InfoIcon from '@mui/icons-material/Info';
-import WarningIcon from '@mui/icons-material/Warning';
-import ErrorIcon from '@mui/icons-material/Error';
-import DevicesIcon from '@mui/icons-material/Devices';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import CloseIcon from '@mui/icons-material/Close';
-import ViewCompactIcon from '@mui/icons-material/ViewCompact';
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import SettingsIcon from '@mui/icons-material/Lens';
-import FolderIcon from '@mui/icons-material/Folder';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import ListIcon from '@mui/icons-material/List';
+import {
+    PlayArrow as PlayArrowIcon,
+    Refresh as RefreshIcon,
+    BugReport as BugReportIcon,
+    Info as InfoIcon,
+    Warning as WarningIcon,
+    Error as ErrorIcon,
+    Devices as DevicesIcon,
+    ViewList as ViewListIcon,
+    ViewModule as ViewModuleIcon,
+    Close as CloseIcon,
+    ViewCompact as ViewCompactIcon,
+    Schedule as ScheduleIcon,
+    Settings as SettingsIcon,
+    Folder as FolderIcon,
+    FolderOpen as FolderOpenIcon,
+    List as ListIcon,
+} from '@mui/icons-material';
 import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
-import amber from '@mui/material/colors/amber';
-import blue from '@mui/material/colors/blue';
-import green from '@mui/material/colors/green';
-import grey from '@mui/material/colors/grey';
-import red from '@mui/material/colors/red';
+import {
+    amber,
+    blue,
+    grey,
+    red,
+    green,
+} from '@mui/material/colors';
 
 import { Router, Utils as UtilsCommon, withWidth } from '@iobroker/adapter-react-v5';
 

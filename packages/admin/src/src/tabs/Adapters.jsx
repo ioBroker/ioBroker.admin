@@ -21,23 +21,25 @@ import {
     InputAdornment,
     ListItemText,
     Hidden,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog,
 } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 
 // import CloudOffIcon from '@mui/icons-material/CloudOff';
-import FolderIcon from '@mui/icons-material/Folder';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import ListIcon from '@mui/icons-material/List';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import UpdateIcon from '@mui/icons-material/Update';
-import StarIcon from '@mui/icons-material/Star';
-import CloseIcon from '@mui/icons-material/Close';
-import LinkIcon from '@mui/icons-material/Link';
+import {
+    Folder as FolderIcon,
+    FolderOpen as FolderOpenIcon,
+    Refresh as RefreshIcon,
+    List as ListIcon,
+    ViewList as ViewListIcon,
+    ViewModule as ViewModuleIcon,
+    Update as UpdateIcon,
+    Star as StarIcon,
+    Close as CloseIcon,
+    Link as LinkIcon,
+} from '@mui/icons-material';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import { blue, green } from '@mui/material/colors';
@@ -495,7 +497,7 @@ class Adapters extends Component {
      * @param {boolean} update
      */
     async getInstalled(update) {
-        /** Installed adapters on same host */
+        /** Installed adapters on the same host */
         let installedLocal;
         /** Installed adapters on any hosts */
         let installedGlobal = {};
@@ -899,27 +901,27 @@ class Adapters extends Component {
                 addInstanceAdapter: adapter,
                 addInstanceHostName: this.state.currentHost.replace(/^system\.host\./, ''),
             });
-        } else {
-            if (instance && !customUrl) {
-                const instances = this.props.instancesWorker.getInstances();
-                // if the instance already exists
-                if (instances[`system.adapter.${adapter}.${instance}`]) {
-                    window.alert(this.props.t('Instance %s already exists', `${adapter}.${instance}`));
-                    return;
-                }
-            }
-            const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
-
-            return new Promise((resolve, reject) => {
-                this.props.executeCommand(
-                    `${customUrl ? 'url' : 'add'} ${adapter} ${instance ? `${instance} ` : ''}--host ${host} ${
-                        debug || this.props.expertMode ? '--debug' : ''
-                    }`,
-                    host,
-                    exitCode => (!exitCode ? resolve() : reject(new Error(`The process returned an exit code of ${exitCode}`))),
-                );
-            });
+            return null;
         }
+        if (instance && !customUrl) {
+            const instances = this.props.instancesWorker.getInstances();
+            // if the instance already exists
+            if (instances[`system.adapter.${adapter}.${instance}`]) {
+                window.alert(this.props.t('Instance %s already exists', `${adapter}.${instance}`));
+                return null;
+            }
+        }
+        const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
+
+        return new Promise((resolve, reject) => {
+            this.props.executeCommand(
+                `${customUrl ? 'url' : 'add'} ${adapter} ${instance ? `${instance} ` : ''}--host ${host} ${
+                    debug || this.props.expertMode ? '--debug' : ''
+                }`,
+                host,
+                exitCode => (!exitCode ? resolve(null) : reject(new Error(`The process returned an exit code of ${exitCode}`))),
+            );
+        });
     }
 
     upload(adapter) {

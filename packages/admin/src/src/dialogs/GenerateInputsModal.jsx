@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react';
-
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import {
-    AppBar, Box, Paper, Typography,
-} from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import SettingsIcon from '@mui/icons-material/Settings';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    Paper,
+    Typography,
+    Box,
+    AppBar,
+} from '@mui/material';
+
+import {
+    Settings as SettingsIcon,
+    Close as CloseIcon,
+    Check as CheckIcon,
+} from '@mui/icons-material';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 

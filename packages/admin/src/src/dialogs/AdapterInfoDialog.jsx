@@ -6,8 +6,10 @@ import {
     AppBar, Button, Grid, Toolbar,
 } from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import LinkIcon from '@mui/icons-material/Link';
+import {
+    Close as CloseIcon,
+    Link as LinkIcon,
+} from '@mui/icons-material';
 
 import { Router, I18n, Loader } from '@iobroker/adapter-react-v5';
 

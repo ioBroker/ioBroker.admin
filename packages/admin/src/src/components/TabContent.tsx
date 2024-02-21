@@ -1,7 +1,8 @@
+import React from 'react';
 import { withStyles } from '@mui/styles';
 import { Grid } from '@mui/material';
+
 import { Utils } from '@iobroker/adapter-react-v5';
-import React from 'react';
 
 const styles = {
     root: {

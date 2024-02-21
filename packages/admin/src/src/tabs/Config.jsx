@@ -28,11 +28,13 @@ import {
     Button,
 } from '@mui/material';
 
-import HelpIcon from '@mui/icons-material/Help';
-import PauseIcon from '@mui/icons-material/Pause';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import EditIcon from '@mui/icons-material/Edit';
+import {
+    Help as HelpIcon,
+    Pause as PauseIcon,
+    PlayArrow as PlayArrowIcon,
+    Refresh as RefreshIcon,
+    Edit as EditIcon,
+} from '@mui/icons-material';
 
 import {
     Router, Utils, Icon, Confirm as ConfirmDialog,

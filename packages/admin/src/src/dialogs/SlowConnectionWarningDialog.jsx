@@ -2,18 +2,23 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContentText from '@mui/material/DialogContentText';
-import { Button, TextField } from '@mui/material';
+import {
+    Dialog,
+    DialogContent,
+    DialogActions,
+    DialogTitle,
+    DialogContentText,
+    TextField,
+    Button,
+} from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import TimeIcon from '@mui/icons-material/AccessTime';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    Close as CloseIcon,
+    AccessTime as TimeIcon,
+    Check as CheckIcon,
+} from '@mui/icons-material';
 
-import { MOBILE_WIDTH } from '../helpers/MobileDialog';
+import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 
 const styles = () => ({
     buttonLabel: {

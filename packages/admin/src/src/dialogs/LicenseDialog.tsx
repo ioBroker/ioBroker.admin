@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
-
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import { DialogTitle, LinearProgress } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import IconClose from '@mui/icons-material/Close';
-import IconCheck from '@mui/icons-material/Check';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    LinearProgress,
+} from '@mui/material';
+
+import {
+    Close as IconClose,
+    Check as IconCheck,
+} from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 

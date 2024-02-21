@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
-
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import BuildIcon from '@mui/icons-material/Build';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
-
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import { DialogTitle, IconButton, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    FormControlLabel,
+    Checkbox,
+    Grid,
+    DialogTitle, IconButton, Typography
+} from '@mui/material';
+import {
+    Build as BuildIcon,
+    Check,
+} from '@mui/icons-material';
+
+import { I18n, IconExpert } from '@iobroker/adapter-react-v5';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -58,7 +60,7 @@ const ExpertModeDialog = ({ expertMode, onClose }) => {
         classes={{ paper: classes.paper }}
     >
         <DialogTitle>
-            <ExpertIcon style={{ marginRight: 8 }} />
+            <IconExpert style={{ marginRight: 8 }} />
             {I18n.t('Expert mode')}
         </DialogTitle>
         <DialogContent className={classes.overflowHidden} dividers>

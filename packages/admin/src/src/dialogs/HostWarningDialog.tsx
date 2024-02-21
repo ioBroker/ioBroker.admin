@@ -1,27 +1,31 @@
 import React, { useState } from 'react';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import {
-    Accordion, AccordionDetails, AccordionSummary, AppBar, Box, CardMedia, Tab, Tabs, Typography,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    Accordion, AccordionDetails, AccordionSummary,
+    AppBar, Box, CardMedia,
+    Tab, Tabs, Typography,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import UpdateIcon from '@mui/icons-material/Update';
-import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
-import PermDeviceInformationIcon from '@mui/icons-material/PermDeviceInformation';
-import ImportExportIcon from '@mui/icons-material/ImportExport';
-import WarningIcon from '@mui/icons-material/Warning';
-import BellIcon from '@mui/icons-material/Notifications';
-import InfoIcon from '@mui/icons-material/Info';
-import MemoryIcon from '@mui/icons-material/Memory';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+import {
+    Update as UpdateIcon,
+    SettingsRemote as SettingsRemoteIcon,
+    Cancel as CancelIcon,
+    CancelPresentation as CancelPresentationIcon,
+    PermDeviceInformation as PermDeviceInformationIcon,
+    ImportExport as ImportExportIcon,
+    Warning as WarningIcon,
+    Notifications as BellIcon,
+    Info as InfoIcon,
+    Memory as MemoryIcon,
+    ExpandMore as ExpandMoreIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 

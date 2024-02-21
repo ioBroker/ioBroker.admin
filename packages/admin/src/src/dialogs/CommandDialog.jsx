@@ -15,8 +15,10 @@ import {
     IconButton,
 } from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
+import {
+    Close as CloseIcon,
+    OpenInBrowser as OpenInBrowserIcon,
+} from '@mui/icons-material';
 
 import Command from '../components/Command';
 

@@ -1,11 +1,12 @@
 import React from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import Paper from '@mui/material/Paper';
 import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    Paper,
     AppBar,
     Box,
     Checkbox,
@@ -17,13 +18,14 @@ import {
     TextField,
     Autocomplete,
 } from '@mui/material';
-import { type Styles, withStyles } from '@mui/styles';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
-import UrlIcon from '@mui/icons-material/Language';
-import SmsIcon from '@mui/icons-material/Sms';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    Language as UrlIcon,
+    Sms as SmsIcon,
+    Close as CloseIcon,
+    Check as CheckIcon,
+} from '@mui/icons-material';
 
 import { I18n, Icon } from '@iobroker/adapter-react-v5';
 
@@ -139,11 +141,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         super(props);
 
         this.state = {
-            // @ts-expect-error check later
-            autoCompleteValue: (window._localStorage || window.localStorage).getItem('App.autocomplete') || null,
-            debug: (window._localStorage || window.localStorage).getItem('App.gitDebug') === 'true',
-            url: (window._localStorage || window.localStorage).getItem('App.userUrl') || '',
-            currentTab: (window._localStorage || window.localStorage).getItem('App.gitTab') || 'npm',
+            autoCompleteValue: ((window as any)._localstorage || window.localStorage).getItem('App.autocomplete') || null,
+            debug: ((window as any)._localstorage || window.localStorage).getItem('App.gitDebug') === 'true',
+            url: ((window as any)._localstorage || window.localStorage).getItem('App.userUrl') || '',
+            currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
         };
     }
 
@@ -205,7 +206,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         <Tabs
                             value={this.state.currentTab}
                             onChange={(_e, newTab) => {
-                                (window._localStorage || window.localStorage).setItem('App.gitTab', newTab);
+                                ((window as any)._localstorage || window.localStorage).setItem('App.gitTab', newTab);
                                 this.setState({ currentTab: newTab });
                             }}
                             variant="fullWidth"
@@ -247,7 +248,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     <Checkbox
                                         checked={this.state.debug}
                                         onChange={e => {
-                                            (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                            ((window as any)._localstorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                             this.setState({ debug: e.target.checked });
                                         }}
                                     />
@@ -261,8 +262,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 fullWidth
                                 value={this.state.autoCompleteValue}
                                 onChange={(_, newValue) => {
-                                    // @ts-expect-error check later
-                                    (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
+                                    ((window as any)._localstorage || window.localStorage).setItem('App.autocomplete', newValue);
                                     this.setState({ autoCompleteValue: newValue });
                                 }}
                                 options={_list}
@@ -313,7 +313,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     <Checkbox
                                         checked={this.state.debug}
                                         onChange={e => {
-                                            (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                            ((window as any)._localstorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                             this.setState({ debug: e.target.checked });
                                         }}
                                     />
@@ -342,8 +342,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         </div>}
                                     </Box>}
                                 onChange={(_, newValue) => {
-                                    // @ts-expect-error check later
-                                    (window._localStorage || window.localStorage).setItem('App.autocomplete', newValue);
+                                    ((window as any)._localstorage || window.localStorage).setItem('App.autocomplete', newValue);
                                     this.setState({ autoCompleteValue: newValue });
                                 }}
                                 options={_list}
@@ -388,7 +387,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     <Checkbox
                                         checked={this.state.debug}
                                         onChange={e => {
-                                            (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                            ((window as any)._localstorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                             this.setState({ debug: e.target.checked });
                                         }}
                                     />
@@ -404,7 +403,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 helperText={this.props.t('URL or file path')}
                                 value={this.state.url}
                                 onChange={event => {
-                                    (window._localStorage || window.localStorage).setItem('App.userUrl', event.target.value);
+                                    ((window as any)._localstorage || window.localStorage).setItem('App.userUrl', event.target.value);
                                     this.setState({ url: event.target.value });
                                 }}
                                 onKeyUp={event => {

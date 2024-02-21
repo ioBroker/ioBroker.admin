@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { DragHandle } from '@mui/icons-material';
 
-import amber from '@mui/material/colors/amber';
+import { amber } from '@mui/material/colors';
 
 import { Utils, ColorPicker } from '@iobroker/adapter-react-v5';
 import CommonUtils from '../Utils';
