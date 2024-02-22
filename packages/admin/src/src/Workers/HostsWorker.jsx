@@ -189,7 +189,7 @@ class HostsWorker {
 
         this.notificationPromises[hostId] = this.socket.getState(`${hostId}.alive`)
             .then(state => {
-                if (state && state.val) {
+                if (state?.val) {
                     return this.socket.getNotifications(hostId)
                         .then(notifications => ({ [hostId]: notifications }))
                         .catch(e => {

@@ -42,6 +42,7 @@ import {
     CloudSync as SyncIcon,
     SyncDisabled as SyncIconDisabled,
     Close as CancelIcon,
+    Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 
 import { AdminConnection as Connection, PROGRESS } from '@iobroker/socket-client';
@@ -498,6 +499,8 @@ class App extends Router {
                 triggerAdapterUpdate: 0,
 
                 updating: false, // js controller updating
+                /** Notifications, excluding the system ones */
+                notifications: {},
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -986,16 +989,17 @@ class App extends Router {
                             );
 
                             setTimeout(
-                                () =>
-                                    this.hostsWorker
-                                        .getNotifications(newState.currentHost)
-                                        .then(notifications =>
-                                            this.showAdaptersWarning(
-                                                notifications,
-                                                this.socket,
-                                                newState.currentHost,
-                                            )),
-                                3000,
+                                async () => {
+                                    const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
+                                    this.showAdaptersWarning(
+                                        notifications,
+                                        this.socket,
+                                        newState.currentHost,
+                                    );
+
+                                    this.handleNewNotifications(notifications);
+                                },
+                                3_000,
                             );
                         })
                         .catch(error => {
@@ -1266,6 +1270,15 @@ class App extends Router {
         />;
     }
 
+    /**
+     * Called when notifications detected, updates the notifications indicator
+     *
+     * @param {ioBroker.Notification} notifications
+     */
+    handleNewNotifications(notifications) {
+        console.log(`new notifications: ${JSON.stringify(notifications)}`);
+    }
+
     showAdaptersWarning = (notifications, socket, host) => {
         if (!notifications || !notifications[host] || !notifications[host].result) {
             return Promise.resolve();
@@ -1273,7 +1286,7 @@ class App extends Router {
 
         const result = notifications[host].result;
 
-        if (result && result.system && Object.keys(result.system.categories).length) {
+        if (result?.system && Object.keys(result.system.categories).length) {
             return this.instancesWorker.getInstances()
                 .then(instances => this.setState({ showHostWarning: { host, instances, result } }));
         }
@@ -2475,24 +2488,20 @@ class App extends Router {
                                                         currentHostName: hostName,
                                                         currentHost: host,
                                                     },
-                                                    () => {
+                                                    async () => {
                                                         this.logsWorkerChanged(host);
                                                         (window._localStorage || window.localStorage).setItem(
                                                             'App.currentHost',
                                                             host,
                                                         );
 
-                                                        this.readRepoAndInstalledInfo(host, this.state.hosts).then(
-                                                            () =>
-                                                                // read notifications from host
-                                                                this.hostsWorker
-                                                                    .getNotifications(host)
-                                                                    .then(notifications =>
-                                                                        this.showAdaptersWarning(
-                                                                            notifications,
-                                                                            this.socket,
-                                                                            host,
-                                                                        )),
+                                                        await this.readRepoAndInstalledInfo(host, this.state.hosts);
+                                                        // read notifications from host
+                                                        const notifications = await this.hostsWorker.getNotifications(host);
+                                                        this.showAdaptersWarning(
+                                                            notifications,
+                                                            this.socket,
+                                                            host,
                                                         );
                                                     },
                                                 );
@@ -2515,6 +2524,18 @@ class App extends Router {
                                             />
                                         </IconButton>}
                                 </div>
+
+                                <IconButton
+                                    size="large"
+                                    onClick={() => Router.doNavigate(null, 'discovery')}
+                                >
+                                    <Badge
+                                        badgeContent={5}
+                                        color="primary"
+                                    >
+                                        <NotificationsIcon />
+                                    </Badge>
+                                </IconButton>
 
                                 {this.renderLoggedUser()}
 
