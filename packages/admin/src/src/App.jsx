@@ -929,6 +929,7 @@ class App extends Router {
                             this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
                             this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
                             this.hostsWorker.registerHandler(this.updateHosts);
+                            this.hostsWorker.registerNotificationHandler(notifications => this.handleNewNotifications(notifications));
 
                             this.subscribeOnHostsStatus();
 
@@ -1269,12 +1270,12 @@ class App extends Router {
         }
 
         return <NotificationsDialog
-            messages={{}}
+            notifications={this.state.notifications.notifications}
+            instances={this.state.notifications.instances}
             onClose={() => this.setState({ notificationsDialog: false })}
-            ackCallback={() => console.log('ask')}
+            ackCallback={(host, name) => this.socket.clearNotifications(host, name)}
             dateFormat={this.state.systemConfig.common.dateFormat}
             themeType={this.state.themeType}
-            instances={{}}
         />;
     }
 
@@ -1298,7 +1299,7 @@ class App extends Router {
      *
      * @param {Record<string, any>} notifications
      */
-    handleNewNotifications(notifications) {
+    async handleNewNotifications(notifications) {
         // console.log(`new notifications: ${JSON.stringify(notifications)}`);
         let noNotifications = 0;
 
@@ -1316,7 +1317,9 @@ class App extends Router {
             }
         }
 
-        this.setState({ noNotifications, notifications });
+        const instances = await this.instancesWorker.getInstances();
+
+        this.setState({ noNotifications, notifications: { notifications, instances } });
     }
 
     showAdaptersWarning = (notifications, socket, host) => {
@@ -2385,6 +2388,19 @@ class App extends Router {
                             <Toolbar>
                                 <IconButton
                                     size="large"
+                                    onClick={() => this.setState({ notificationsDialog: true })}
+                                >
+                                    <Tooltip title={I18n.t('Notifications')}>
+                                        <Badge
+                                            badgeContent={this.state.noNotifications}
+                                            color="primary"
+                                        >
+                                            <NotificationsIcon />
+                                        </Badge>
+                                    </Tooltip>
+                                </IconButton>
+                                <IconButton
+                                    size="large"
                                     edge="start"
                                     className={Utils.clsx(
                                         classes.menuButton,
@@ -2564,20 +2580,6 @@ class App extends Router {
                                             />
                                         </IconButton>}
                                 </div>
-
-                                <IconButton
-                                    size="large"
-                                    onClick={() => this.setState({ notificationsDialog: true })}
-                                >
-                                    <Tooltip title={I18n.t('Notifications')}>
-                                        <Badge
-                                            badgeContent={this.state.noNotifications}
-                                            color="primary"
-                                        >
-                                            <NotificationsIcon />
-                                        </Badge>
-                                    </Tooltip>
-                                </IconButton>
 
                                 {this.renderLoggedUser()}
 

@@ -9,11 +9,11 @@ import {
     FormControlLabel,
     Checkbox,
     Grid,
-    DialogTitle, IconButton, Typography
+    DialogTitle, IconButton, Typography,
 } from '@mui/material';
 import {
     Build as BuildIcon,
-    Check,
+    Check as CheckIcon,
 } from '@mui/icons-material';
 
 import { I18n, IconExpert } from '@iobroker/adapter-react-v5';
