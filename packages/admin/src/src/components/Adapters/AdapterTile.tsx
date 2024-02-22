@@ -485,7 +485,7 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                             href={this.props.licenseInformation?.link}
                             target="_blank"
                             rel="noopener"
-                            sx={{ color: 'black', '&:hover': { color: 'black' } }}
+                            sx={{ color: 'text.primary', '&:hover': { color: 'text.primary' } }}
                         >
                             {this.props.licenseInformation?.type === 'paid' ?
                                 <Tooltip title={this.props.t('The adapter requires a paid license.')}>
