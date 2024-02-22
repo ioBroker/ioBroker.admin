@@ -55,6 +55,7 @@ import {
     IconExpert,
     ToggleThemeMenu,
 } from '@iobroker/adapter-react-v5';
+import NotificationsDialog from '@/dialogs/NotificationsDialog';
 import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
 import CommandDialog from './dialogs/CommandDialog';
@@ -499,6 +500,8 @@ class App extends Router {
                 triggerAdapterUpdate: 0,
 
                 updating: false, // js controller updating
+                /** If the notifications dialog should be shown */
+                notificationsDialog: false,
                 /** Notifications, excluding the system ones */
                 notifications: {},
                 /** Number of new notifications */
@@ -1256,6 +1259,25 @@ class App extends Router {
         });
     };
 
+    /**
+     * Render the notifications dialog
+     * @return {React.ReactNode}
+     */
+    renderNotificationsDialog() {
+        if (!this.state.notificationsDialog) {
+            return null;
+        }
+
+        return <NotificationsDialog
+            messages={{}}
+            onClose={() => this.setState({ notificationsDialog: false })}
+            ackCallback={() => console.log('ask')}
+            dateFormat={this.state.systemConfig.common.dateFormat}
+            themeType={this.state.themeType}
+            instances={{}}
+        />;
+    }
+
     renderHostWarningDialog() {
         if (!this.state.showHostWarning) {
             return null;
@@ -1266,7 +1288,6 @@ class App extends Router {
             messages={this.state.showHostWarning.result.system.categories}
             dateFormat={this.state.systemConfig.common.dateFormat}
             themeType={this.state.themeType}
-            themeName={this.state.themeName}
             ackCallback={name => this.socket.clearNotifications(this.state.showHostWarning.host, name)}
             onClose={() => this.setState({ showHostWarning: null })}
         />;
@@ -1295,7 +1316,7 @@ class App extends Router {
             }
         }
 
-        this.setState({ noNotifications });
+        this.setState({ noNotifications, notifications });
     }
 
     showAdaptersWarning = (notifications, socket, host) => {
@@ -2546,7 +2567,7 @@ class App extends Router {
 
                                 <IconButton
                                     size="large"
-                                    onClick={() => Router.doNavigate(null, 'discovery')}
+                                    onClick={() => this.setState({ notificationsDialog: true })}
                                 >
                                     <Tooltip title={I18n.t('Notifications')}>
                                         <Badge
@@ -2684,6 +2705,7 @@ class App extends Router {
                     {this.renderSlowConnectionWarning()}
                     {this.renderNewsDialog()}
                     {this.renderHostWarningDialog()}
+                    {this.renderNotificationsDialog()}
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
                         <Connecting />
                     ) : null}
