@@ -501,6 +501,8 @@ class App extends Router {
                 updating: false, // js controller updating
                 /** Notifications, excluding the system ones */
                 notifications: {},
+                /** Number of new notifications */
+                noNotifications: 0,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -1273,10 +1275,27 @@ class App extends Router {
     /**
      * Called when notifications detected, updates the notifications indicator
      *
-     * @param {ioBroker.Notification} notifications
+     * @param {Record<string, any>} notifications
      */
     handleNewNotifications(notifications) {
-        console.log(`new notifications: ${JSON.stringify(notifications)}`);
+        // console.log(`new notifications: ${JSON.stringify(notifications)}`);
+        let noNotifications = 0;
+
+        for (const hostDetails of Object.values(notifications)) {
+            for (const [scope, scopeDetails] of Object.entries(hostDetails.result)) {
+                if (scope === 'system') {
+                    continue;
+                }
+
+                for (const categoryDetails of Object.values(scopeDetails.categories)) {
+                    for (const instanceDetails of Object.values(categoryDetails.instances)) {
+                        noNotifications += instanceDetails.messages.length;
+                    }
+                }
+            }
+        }
+
+        this.setState({ noNotifications });
     }
 
     showAdaptersWarning = (notifications, socket, host) => {
@@ -2529,12 +2548,14 @@ class App extends Router {
                                     size="large"
                                     onClick={() => Router.doNavigate(null, 'discovery')}
                                 >
-                                    <Badge
-                                        badgeContent={5}
-                                        color="primary"
-                                    >
-                                        <NotificationsIcon />
-                                    </Badge>
+                                    <Tooltip title={I18n.t('Notifications')}>
+                                        <Badge
+                                            badgeContent={this.state.noNotifications}
+                                            color="primary"
+                                        >
+                                            <NotificationsIcon />
+                                        </Badge>
+                                    </Tooltip>
                                 </IconButton>
 
                                 {this.renderLoggedUser()}
