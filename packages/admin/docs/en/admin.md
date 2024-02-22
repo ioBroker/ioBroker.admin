@@ -76,6 +76,6 @@ lettering of the log appears in red.
 **System settings:**
 Settings such as language, time and date format and other system-wide settings are made in the menu that opens here.
 
-![img_004](img/admin_img_006.jpg)
+![img_006](img/admin_img_006.jpg)
 
 The repositories and security settings can also be set here. 
