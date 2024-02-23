@@ -17,7 +17,7 @@ Dieser Adapter wird direkt bei der Installation von ioBroker angelegt eine manue
 
 ## Konfiguration
 
-![adapter_admin_konfiguration](img/admin_konfiguration.png)
+![adapter_admin_konfiguration](img/admin_img_002.jpg)
 
 #### IP
 
@@ -46,7 +46,7 @@ Soll eine Authentifizierung erfolgen ist hier ein Haken zu setzen.
 
 Die Hauptseite des Administrators besteht aus mehreren Reitern. In der Grundinstallation werden die Reiter wie in der Abbildung angezeigt. Über das Bleistift-Icon rechts oben (1) können nach der Installation zusätzlicher Adapter weitere Reiter hinzugefügt werden. Dort können auch Reiter deaktiviert werden um eine besser Übersicht zu erhalten.
 
-![iobroker_adapter_admin_001a](img/admin_ioBroker_Adapter_Admin_001a.jpg)
+![iobroker_adapter_admin_](img/admin_img_001.jpg)
 
 Ausführliche Informationen sind in den Seiten hinterlegt, die über die Überschriften verlinkt sind.
 
@@ -109,7 +109,7 @@ Reiter befindet sich bei dem entsprechenden Adapter.
 In dem sich hier öffnenden Menü werden Einstellungen wie Sprache, Zeit- und Datumsformat sowie 
 weitere systemweite Einstellungen getätigt. 
 
-![Admin Systemeinstellungen](img/admin_Systemeinstellungen.jpg) 
+![Admin Systemeinstellungen](img/admin_img_006.jpg) 
 
 Auch die Repositorien und Sicherheitseinstellungen können hier eingestellt werden. 
 Eine tiefergehende Beschreibung ist über den Link in dem Titel dieses Abschnitts zu erreichen.

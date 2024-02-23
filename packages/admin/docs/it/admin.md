@@ -7,7 +7,7 @@ nel browser web. Questo adattatore viene installato automaticamente insieme a io
 ## Configurazione:
 
 La finestra di configurazione dell'adattatore "admin" fornisce le seguenti impostazioni:
-![Img_002](img/admin_img_002.png)
+![Img_002](img/admin_img_002.jpg)
 
 **IP:** l'indirizzo IP del server web "admin" può essere scelto qui.
 È possibile selezionare diversi indirizzi IPv4 e IPv6. Il valore predefinito è 0.0.0.0\.
@@ -25,7 +25,7 @@ Normalmente solo lo sviluppatore vuole avere questa opzione deselezionata.
 
 La pagina principale dell'amministratore è composta da diverse schede. **Adattatore:** Qui le istanze di
 un adattatore può essere installato o cancellato. Con il pulsante di aggiornamento
-![Img_005](img/admin_img_005.png)
+![Img_005](img/admin_img_005.jpg)
 in alto a sinistra possiamo ottenere se sono disponibili le nuove versioni di adattatori.
 ![Img_001](img/admin_img_001.jpg)
 
@@ -38,11 +38,11 @@ L'adattatore disponibile è ordinato in ordine alfabetico. L'istanza già instal
 **Istanza:** L'istanza già installata è elencata qui e può essere configurata di conseguenza. Se il titolo del
 l'istanza è sottolineata è possibile fare clic su di esso e il sito web corrispondente verrà aperto.
 
-![Img_003](img/admin_img_003.png)
+![Img_003](img/admin_img_003.jpg)
 
 **Oggetti:** gli oggetti gestiti (ad esempio setup / variabili / programmi dell'hardware connesso)
 
-![Img_004](img/admin_img_004.png)
+![Img_004](img/admin_img_004.jpg)
 
 **Stati:** gli stati attuali (valori degli oggetti)
 Se è installata la cronologia dell'adattatore, è possibile registrare i punti dati scelti.
@@ -65,3 +65,17 @@ icona nell'angolo in basso a sinistra.
 **Evento:** Un elenco degli aggiornamenti in esecuzione delle condizioni. **Registro:** qui viene visualizzato il registro Nell'istanza della scheda il livello di registrazione registrato
 della singola istanza può essere impostato. Nel menu di selezione viene selezionato il livello di registro minimo visualizzato. Se si verifica un errore il
 la scritta del registro appare in rosso.
+
+**Hosts:**
+Informazioni sul computer su cui è installato ioBroker. La versione corrente del controller js può essere aggiornata qui. Se è disponibile una nuova versione, l'etichetta della scheda appare in verde.
+
+**Nella scheda istanza è possibile impostare il livello di log della singola istanza. 
+della singola istanza. Nel menu di selezione è possibile selezionare il livello minimo di log visualizzato. Se si verifica un errore, la 
+Se si verifica un errore, le lettere del log appaiono in rosso.
+
+**Impostazioni di sistema
+Nel menu che si apre vengono effettuate impostazioni quali la lingua, il formato della data e dell'ora e altre impostazioni a livello di sistema.
+
+![img_006](img/admin_img_006.jpg)
+
+Anche i repository e le impostazioni di sicurezza possono essere impostati qui.

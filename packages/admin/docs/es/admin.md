@@ -7,7 +7,7 @@ en el navegador web. Este adaptador se instala automáticamente junto con ioBrok
 ## Configuración:
 
 El cuadro de diálogo de configuración del adaptador "admin" proporciona los siguientes ajustes:
-![img_002](img/admin_img_002.png)
+![img_002](img/admin_img_002.jpg)
 
 **IP:** la dirección IP del servidor web "admin" se puede elegir aquí.
 Se pueden seleccionar diferentes direcciones IPv4 e IPv6. El valor predeterminado es 0.0.0.0\.
@@ -25,7 +25,7 @@ Normalmente solo el desarrollador quiere tener esta opción desactivada.
 
 La página principal del administrador consta de varias pestañas. **Adaptador:** Aquí las instancias de
 Un adaptador puede ser instalado o eliminado. Con el botón de actualización.
-![img_005](img/admin_img_005.png)
+![img_005](img/admin_img_005.jpg)
 en la parte superior izquierda podemos obtener si las nuevas versiones de adaptadores están disponibles.
 ![img_001](img/admin_img_001.jpg)
 
@@ -38,11 +38,11 @@ Los adaptadores disponibles están ordenados alfabéticamente. Las instancias ya
 **Instancia:** Las instancias ya instaladas se enumeran aquí y pueden configurarse en consecuencia. Si el título de la
 Las instancias están subrayadas, puede hacer clic en él y se abrirá el sitio web correspondiente.
 
-![img_003](img/admin_img_003.png)
+![img_003](img/admin_img_003.jpg)
 
 **Objetos:** los objetos gestionados (por ejemplo, configuración / variables / programas del hardware conectado)
 
-![img_004](img/admin_img_004.png)
+![img_004](img/admin_img_004.jpg)
 
 **Estados:** los estados actuales (valores de los objetos)
 Si el historial del adaptador está instalado, puede registrar los puntos de datos elegidos.
@@ -65,3 +65,17 @@ Icono en la esquina inferior izquierda.
 **Evento:** Una lista de las actualizaciones en ejecución de las condiciones. **Registro:** aquí se muestra el registro En la instancia de la pestaña, el nivel de registro registrado
 De la única instancia se puede configurar. En el menú de selección se selecciona el nivel de registro mínimo mostrado. Si se produce un error el
 Las letras del registro aparecen en rojo.
+
+**Hosts:**
+Información sobre el ordenador en el que está instalado ioBroker. Aquí se puede actualizar la versión actual del controlador js. Si hay una nueva versión disponible, la etiqueta de la pestaña aparece en verde.
+
+**Log:** aquí se muestra el log En la pestaña instancia se puede configurar el nivel de log registrado 
+de la instancia individual se puede establecer. En el menú de selección se selecciona el nivel de registro mínimo mostrado. Si se produce un error 
+Si se produce un error, las letras del registro aparecen en rojo.
+
+**Ajustes del sistema
+En el menú que se abre aquí se realizan ajustes como el idioma, el formato de fecha y hora y otros ajustes del sistema.
+
+![img_006](img/admin_img_006.jpg)
+
+Aquí también se pueden configurar los repositorios y la seguridad.

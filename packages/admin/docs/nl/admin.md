@@ -7,7 +7,7 @@ in de webbrowser. Deze adapter wordt automatisch geïnstalleerd samen met ioBrok
 ## Configuratie:
 
 Het configuratiedialoog van de adapter "admin" biedt de volgende instellingen:
-![Img_002](img/admin_img_002.png)
+![Img_002](img/admin_img_002.jpg)
 
 **IP:** hier kan het IP-adres van de "admin" -webserver worden gekozen.
 Verschillende IPv4- en IPv6-adressen kunnen worden geselecteerd. De standaardwaarde is 0.0.0.0\.
@@ -25,7 +25,7 @@ Normaal wil alleen de ontwikkelaar deze optie niet aangevinkt hebben.
 
 De hoofdpagina van de beheerder bestaat uit verschillende tabbladen. **Adapter:** Hier de instanties van
 een adapter kan worden geïnstalleerd of verwijderd. Met de updateknop
-![Img_005](img/admin_img_005.png)
+![Img_005](img/admin_img_005.jpg)
 in de linkerbovenhoek kunnen we krijgen als de nieuwe versies van adapters beschikbaar zijn.
 ![Img_001](img/admin_img_001.jpg)
 
@@ -38,11 +38,11 @@ De beschikbare adapter wordt in alfabetische volgorde gesorteerd. De reeds geïn
 **Exemplaar:** Het reeds geïnstalleerde exemplaar wordt hier weergegeven en kan dienovereenkomstig worden geconfigureerd. Als de titel van de
 bijvoorbeeld zijn onderstreept, kunt u erop klikken en de bijbehorende website wordt geopend.
 
-![Img_003](img/admin_img_003.png)
+![Img_003](img/admin_img_003.jpg)
 
 **Objecten:** de beheerde objecten (bijvoorbeeld setup / variabelen / programma's van de aangesloten hardware)
 
-![Img_004](img/admin_img_004.png)
+![Img_004](img/admin_img_004.jpg)
 
 **Staten:** de huidige staten (waarden van de objecten)
 Als de adaptergeschiedenis is geïnstalleerd, kunt u geselecteerde gegevenspunten registreren.
@@ -65,3 +65,17 @@ pictogram in de linkerbenedenhoek.
 **Event:** Een lijst met de lopende updates van de voorwaarden. **Logboek:** hier wordt het logboek weergegeven In het tabblad exemplaar het logboekniveau van het logboek
 van het enkele exemplaar kan worden ingesteld. In het keuzemenu wordt het weergegeven minimale logniveau geselecteerd. Als er een fout optreedt, is de
 letters van het log verschijnen in rood.
+
+**Hosts:**
+Informatie over de computer waarop ioBroker is geïnstalleerd. De huidige versie van de js-controller kan hier worden bijgewerkt. Als er een nieuwe versie beschikbaar is, verschijnt het label van het tabblad in het groen.
+
+**Log:** hier wordt het logboek weergegeven In het tabblad instance kan het gelogde logniveau 
+van de enkele instantie worden ingesteld. In het keuzemenu wordt het weergegeven minimale logniveau geselecteerd. Als er een fout optreedt, wordt het 
+log in het rood weergegeven.
+
+**Systeeminstellingen:**
+Instellingen zoals taal, tijd- en datumnotatie en andere systeembrede instellingen worden uitgevoerd in het menu dat hier wordt geopend.
+
+![img_006](img/admin_img_006.jpg)
+
+De repositories en beveiligingsinstellingen kunnen hier ook worden ingesteld.
