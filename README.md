@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) new dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)
+
 ### 6.14.1 (2024-02-20)
 * (foxriver76) align items better when adapters tab is used in row mode
 
