@@ -1270,8 +1270,8 @@ class App extends Router {
         }
 
         return <NotificationsDialog
-            notifications={this.state.notifications.notifications}
-            instances={this.state.notifications.instances}
+            notifications={this.state.notifications?.notifications || {}}
+            instances={this.state.notifications?.instances || {}}
             onClose={() => this.setState({ notificationsDialog: false })}
             ackCallback={(host, name) => this.socket.clearNotifications(host, name)}
             dateFormat={this.state.systemConfig.common.dateFormat}

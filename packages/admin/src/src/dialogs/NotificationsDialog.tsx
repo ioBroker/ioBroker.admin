@@ -7,7 +7,7 @@ import {
     DialogContent,
     Accordion, AccordionDetails, AccordionSummary,
     AppBar, Box, CardMedia,
-    Tab, Tabs, Typography,
+    Tab, Tabs, Typography, Tooltip,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
@@ -260,7 +260,7 @@ interface NotificationDialogOptions {
     ackCallback: (host: string, name: string) => void;
     dateFormat: string;
     themeType: string;
-    instances: any;
+    instances: Record<string, any>;
 }
 
 interface MessagesPerScope {
@@ -271,6 +271,8 @@ const NotificationsDialog = ({
     notifications, onClose, ackCallback, dateFormat, themeType, instances,
 }: NotificationDialogOptions) => {
     const classes = useStyles();
+
+    const notificationManagerInstalled = !!Object.values(instances).find(instance => instance.common.name === 'notification-manager');
 
     const messages: MessagesPerScope = {};
 
@@ -320,6 +322,10 @@ const NotificationsDialog = ({
                 }}
             />
             {I18n.t('Notifications')}
+
+            {!notificationManagerInstalled ? <Tooltip sx={{ position: 'absolute', right: 24, color: '#ffb74d' }} title={I18n.t('Tip: Use the "notification-manager" adapter to receive notifications automatically via messaging adapters.')}>
+                <InfoIcon />
+            </Tooltip> : null}
         </h2>
         <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
             <div className={classes.root}>
