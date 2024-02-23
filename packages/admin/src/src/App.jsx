@@ -2393,7 +2393,7 @@ class App extends Router {
                                     <Tooltip title={I18n.t('Notifications')}>
                                         <Badge
                                             badgeContent={this.state.noNotifications}
-                                            color="primary"
+                                            color="secondary"
                                         >
                                             <NotificationsIcon />
                                         </Badge>

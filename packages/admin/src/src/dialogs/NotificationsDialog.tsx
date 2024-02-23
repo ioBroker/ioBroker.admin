@@ -185,15 +185,15 @@ const useStyles = makeStyles(theme => ({
 type Severity = 'notify' | 'info' | 'alert';
 
 interface StatusOptions {
-    /** Id of the message */
-    name: string;
     /** Severity of the message */
     severity?: Severity;
+    /** If dark mode enabled */
+    isDark: boolean;
 }
 
-const Status = ({ severity, ...props }: StatusOptions) => {
+const Status = ({ severity, isDark, ...props }: StatusOptions) => {
     if (severity === 'notify') {
-        return <BellIcon color="primary" {...props} />;
+        return <BellIcon color={isDark ? 'primary' : 'secondary'} {...props} />;
     }
 
     if (severity === 'info') {
@@ -323,7 +323,7 @@ const NotificationsDialog = ({
             />
             {I18n.t('Notifications')}
 
-            {!notificationManagerInstalled ? <Tooltip sx={{ position: 'absolute', right: 24, color: '#ffb74d' }} title={I18n.t('Tip: Use the "notification-manager" adapter to receive notifications automatically via messaging adapters.')}>
+            {!notificationManagerInstalled ? <Tooltip sx={{ position: 'absolute', right: 24, color: 'text.primary' }} title={I18n.t('Tip: Use the "notification-manager" adapter to receive notifications automatically via messaging adapters.')}>
                 <InfoIcon />
             </Tooltip> : null}
         </h2>
@@ -336,14 +336,13 @@ const NotificationsDialog = ({
                         variant="scrollable"
                         scrollButtons
                         indicatorColor={black ? 'primary' : 'secondary'}
-                        textColor="primary"
+                        textColor={black ? 'primary' : 'secondary'}
                     >
                         {Object.values(messages).map(categoryEntry => Object.entries(categoryEntry).map(([name, entry], idx) => <Tab
-                            style={black ? undefined : { color: 'white' }}
                             disabled={disabled.includes(name)}
                             key={name}
-                            label={entry.name[I18n.getLanguage()]}
-                            icon={<Status name={name} severity={entry.severity} />}
+                            label={`${entry.name[I18n.getLanguage()]}`}
+                            icon={<Status severity={entry.severity} isDark={black} />}
                             {...a11yProps(idx)}
                         />))}
                     </Tabs>
