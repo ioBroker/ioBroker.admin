@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) new dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)
 * (foxriver76) the new `licenseInformation` icon now changes color correctly with the theme
 
 ### 6.14.1 (2024-02-20)

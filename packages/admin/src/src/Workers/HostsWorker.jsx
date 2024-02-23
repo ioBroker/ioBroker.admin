@@ -174,7 +174,7 @@ class HostsWorker {
 
             this.notificationTimer = setTimeout(host_ => {
                 this.notificationTimer = null;
-                this.notificationPromises[host_] = this._getNotificationsFromHots(host_, true);
+                this.notificationPromises[host_] = this._getNotificationsFromHosts(host_, true);
 
                 this.notificationPromises[host_].then(notifications =>
                     this.notificationsHandlers.forEach(cb => cb(notifications)));
@@ -182,14 +182,14 @@ class HostsWorker {
         }
     };
 
-    _getNotificationsFromHots(hostId, update) {
+    _getNotificationsFromHosts(hostId, update) {
         if (!update && this.notificationPromises[hostId]) {
             return this.notificationPromises[hostId];
         }
 
         this.notificationPromises[hostId] = this.socket.getState(`${hostId}.alive`)
             .then(state => {
-                if (state && state.val) {
+                if (state?.val) {
                     return this.socket.getNotifications(hostId)
                         .then(notifications => ({ [hostId]: notifications }))
                         .catch(e => {
@@ -205,12 +205,12 @@ class HostsWorker {
 
     getNotifications(hostId, update) {
         if (hostId) {
-            return this._getNotificationsFromHots(hostId, update);
+            return this._getNotificationsFromHosts(hostId, update);
         }
         return this.socket.getCompactHosts(update)
             .then(hosts => {
                 const promises = hosts
-                    .map(host => this._getNotificationsFromHots(host._id, update));
+                    .map(host => this._getNotificationsFromHosts(host._id, update));
 
                 return Promise.all(promises)
                     .then(pResults => {
