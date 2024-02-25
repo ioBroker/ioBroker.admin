@@ -376,7 +376,7 @@ class Instances extends Component {
         let maxCompactGroupNumber = 1;
         const newState = {};
 
-        // Do not make here Object.keys, as we have got invalid order in this case
+        // Do not make here Object.keys, as we have got an invalid order in this case
         for (let i = 0; i < instances.length; i++) {
             const obj = instances[i];
             const common = obj ? obj.common : null;
@@ -786,9 +786,9 @@ class Instances extends Component {
     setMemoryLimitMB = (instance, value) =>
         this.extendObject(`system.adapter.${instance.id}`, { common: { memoryLimitMB: value } });
 
-    onDeleteInstance = (instance, deleteCustom) => {
+    onDeleteInstance = (instance, deleteCustom, deleteAdapter) => {
         this.setState({ deleting: instance.id }, () =>
-            this.props.executeCommand(`del ${instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`));
+            this.props.executeCommand(`del ${deleteAdapter ? instance.id.split('.')[0] : instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`));
     };
 
     setCompact = instance =>
@@ -976,6 +976,7 @@ class Instances extends Component {
                         setSchedule={this.setSchedule}
                         setSentry={this.setSentry}
                         setTier={this.setTier}
+                        socket={this.props.socket}
                         t={this.t}
                         lang={this.props.lang}
                         themeType={this.props.themeType}
@@ -1016,6 +1017,7 @@ class Instances extends Component {
                     setSchedule={this.setSchedule}
                     setSentry={this.setSentry}
                     setTier={this.setTier}
+                    socket={this.props.socket}
                     t={this.t}
                     lang={this.props.lang}
                     themeType={this.props.themeType}

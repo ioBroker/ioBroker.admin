@@ -108,7 +108,7 @@
   "Are you sure to delete all children of %s?": "Вы действительно хотите удалить <b>\"%s\"</b> и <span style=\"color: red; font-weight: bold\">все</span> нижележащие объекты?",
   "Are you sure to delete script %s?": "Вы действительно хотите удалить скрипт '%s'?",
   "Are you sure you want to delete adapter %s?": "Вы действительно хотите удалить адаптер %s?",
-  "Are you sure you want to delete the instance %s?": "Вы уверены, что хотите удалить экземпляр %s?",
+  "Are you sure you want to delete the instance %s?": "Вы уверены, что хотите удалить экземпляр \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Вы действительно хотите удалить экземпляр <b> %s </b>?",
   "Are you sure?": "Вы уверены?",
   "Are you sure? Changes are not saved.": "Изменения не сохранены. Всё равно закрыть?",
@@ -1563,5 +1563,6 @@
   "write": "писать",
   "write operation": "Писать",
   "wrongPassword": "Неверные имя пользователя или пароль",
-  "yesterday": "вчера"
+  "yesterday": "вчера",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Вы уверены, что хотите удалить экземпляр «%s» или весь адаптер «%s»?"
 }

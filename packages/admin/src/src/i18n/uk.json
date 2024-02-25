@@ -108,7 +108,7 @@
   "Are you sure to delete all children of %s?": "Ви впевнені, що хочете видалити <b>\"%s\"</b> і <span style=\"color: red; font-weight: bold\">усі</span> дочірні елементи?",
   "Are you sure to delete script %s?": "Ви впевнені, що хочете видалити сценарій \"%s\"?",
   "Are you sure you want to delete adapter %s?": "Ви впевнені, що хочете видалити адаптер %s?",
-  "Are you sure you want to delete the instance %s?": "Ви впевнені, що бажаєте видалити примірник %s?",
+  "Are you sure you want to delete the instance %s?": "Ви впевнені, що бажаєте видалити примірник \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Ви впевнені, що бажаєте видалити примірник <b>%s</b>?",
   "Are you sure?": "Ти впевнений?",
   "Are you sure? Changes are not saved.": "Ти впевнений? Зміни не зберігаються.",
@@ -1563,5 +1563,6 @@
   "write": "писати",
   "write operation": "писати",
   "wrongPassword": "Неправильне ім'я користувача або пароль",
-  "yesterday": "вчора"
+  "yesterday": "вчора",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Ви впевнені, що хочете видалити примірник \"%s\" або весь адаптер \"%s\"?"
 }

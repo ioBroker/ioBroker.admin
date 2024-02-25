@@ -90,11 +90,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (bluefox) added possibility to delete whole adapter from instance tab if only one instance left
 * (foxriver76) new dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)
 * (foxriver76) the new `licenseInformation` icon now changes color correctly with the theme
 
 ### 6.14.1 (2024-02-20)
-* (foxriver76) align items better when adapters tab is used in row mode
+* (foxriver76) align items better when adapter tab is used in row mode
 
 ### 6.14.0 (2024-02-19)
 * (foxriver76) adapters tab is now showing information from `licenseInformation`

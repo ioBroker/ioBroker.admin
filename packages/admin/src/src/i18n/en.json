@@ -108,7 +108,7 @@
   "Are you sure to delete all children of %s?": "Are you sure to delete <b>\"%s\"</b> and <span style=\"color: red; font-weight: bold\">all</span> children?",
   "Are you sure to delete script %s?": "Are you sure to delete script '%s'?",
   "Are you sure you want to delete adapter %s?": "Are you sure you want to delete adapter %s?",
-  "Are you sure you want to delete the instance %s?": "Are you sure you want to delete the instance %s?",
+  "Are you sure you want to delete the instance %s?": "Are you sure you want to delete the instance \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Are you sure you want to delete the instance <b>%s</b>?",
   "Are you sure?": "Are you sure?",
   "Are you sure? Changes are not saved.": "Are you sure? Changes are not saved.",
@@ -1563,5 +1563,6 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
-  "yesterday": "yesterday"
+  "yesterday": "yesterday",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?"
 }

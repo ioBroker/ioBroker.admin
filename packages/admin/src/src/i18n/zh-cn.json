@@ -108,7 +108,7 @@
   "Are you sure to delete all children of %s?": "您确定要删除<b>\"%s\"</b>的<span style=\"color: red; font-weight: bold\">所有</span>子设备吗？",
   "Are you sure to delete script %s?": "您确定要删除自动化'%s'吗？",
   "Are you sure you want to delete adapter %s?": "您确定要删除插件%s吗？",
-  "Are you sure you want to delete the instance %s?": "您确定要删除实例%s吗？",
+  "Are you sure you want to delete the instance %s?": "您确定要删除实例\"%s\"吗？",
   "Are you sure you want to delete the instance <b>%s</b>?": "您确定要删除程序<b>%s </b>吗？",
   "Are you sure?": "你确定吗？",
   "Are you sure? Changes are not saved.": "你确定吗？更改未保存。",
@@ -1563,5 +1563,6 @@
   "write": "写",
   "write operation": "写",
   "wrongPassword": "用户名或密码无效",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "您确定要删除实例“%s”或整个适配器“%s”吗？"
 }

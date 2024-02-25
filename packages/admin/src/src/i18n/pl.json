@@ -108,7 +108,7 @@
   "Are you sure to delete all children of %s?": "Czy na pewno usunąć wszystkich potmoków z <b> \" %s\" </b>?",
   "Are you sure to delete script %s?": "Czy na pewno chcesz usunąć skrypt \" %s\"?",
   "Are you sure you want to delete adapter %s?": "Czy na pewno chcesz usunąć adapter %s?",
-  "Are you sure you want to delete the instance %s?": "Czy na pewno chcesz usunąć instancję %s?",
+  "Are you sure you want to delete the instance %s?": "Czy na pewno chcesz usunąć instancję \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Czy na pewno chcesz usunąć instancję <b> %s </b>?",
   "Are you sure?": "Jesteś pewny?",
   "Are you sure? Changes are not saved.": "Jesteś pewny? Zmiany nie będą zapisane.",
@@ -1563,5 +1563,6 @@
   "write": "pisać",
   "write operation": "pisać",
   "wrongPassword": "Nieprawidłowa nazwa użytkownika lub hasło",
-  "yesterday": "wczoraj"
+  "yesterday": "wczoraj",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Czy na pewno chcesz usunąć instancję „%s” lub cały adapter „%s”?"
 }

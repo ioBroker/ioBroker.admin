@@ -108,7 +108,7 @@
   "Are you sure to delete all children of %s?": "Você tem certeza que quer deletar <b> \"%s\" </b> e <span style=\"color: red; font-weight: bold\"> todos </span> os objetos subjacentes?",
   "Are you sure to delete script %s?": "Tem certeza que quer deletar o script ' %s'?",
   "Are you sure you want to delete adapter %s?": "Tem certeza de que deseja excluir o adaptador %s?",
-  "Are you sure you want to delete the instance %s?": "Tem certeza de que deseja excluir a instância %s?",
+  "Are you sure you want to delete the instance %s?": "Tem certeza de que deseja excluir a instância \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Tem certeza de que deseja excluir a instância <b> %s </b>?",
   "Are you sure?": "Você tem certeza?",
   "Are you sure? Changes are not saved.": "Você tem certeza? As alterações não estão gravadas.",
@@ -1563,5 +1563,6 @@
   "write": "escrever",
   "write operation": "escrever",
   "wrongPassword": "nome de usuário ou senha inválidos",
-  "yesterday": "ontem"
+  "yesterday": "ontem",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Tem certeza de que deseja excluir a instância \"%s\" ou todo o adaptador \"%s\"?"
 }

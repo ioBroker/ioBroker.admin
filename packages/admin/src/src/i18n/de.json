@@ -108,7 +108,7 @@
   "Are you sure to delete all children of %s?": "Sollen wirklich <b>\"%s\"</b> und <span style=\"color: red; font-weight: bold\">alle</span> Unterobjekte gelöscht werden?",
   "Are you sure to delete script %s?": "Soll das Skript '%s' wirklich gelöscht werden?",
   "Are you sure you want to delete adapter %s?": "Soll der Adapter %s wirklich gelöscht werden?",
-  "Are you sure you want to delete the instance %s?": "Die Instanz %s wirklich löschen?",
+  "Are you sure you want to delete the instance %s?": "Die Instanz \"%s\" wirklich löschen?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Soll die Instanz <b>%s</b> wirklich gelöscht werden?",
   "Are you sure?": "Wirklich sicher?",
   "Are you sure? Changes are not saved.": "Wirklich sicher? Die Änderungen sind nicht gespeichert.",
@@ -1563,5 +1563,6 @@
   "write": "schreiben",
   "write operation": "schreiben",
   "wrongPassword": "Benutzername oder Passwort sind falsch",
-  "yesterday": "gestern"
+  "yesterday": "gestern",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Sind Sie sicher, dass Sie die Instanz „%s“ oder den gesamten Adapter „%s“ löschen möchten?"
 }
