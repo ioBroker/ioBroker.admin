@@ -47,7 +47,6 @@ import { blue, green } from '@mui/material/colors';
 import Router from '@iobroker/adapter-react-v5/Components/Router';
 
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
-import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 import AddInstanceDialog from '../dialogs/AddInstanceDialog';
 import AdapterRow from '../components/Adapters/AdapterRow';
@@ -1211,8 +1210,6 @@ class Adapters extends Component {
     openInfoDialog(options) {
         const { lang, adapter: adapterName } = options;
         window.open(BasicUtils.getDocsLinkForAdapter({ lang, adapterName }), 'help');
-
-        // Router.doNavigate('tab-adapters', 'readme', adapter);
     }
 
     openUpdateDialog(adapterToUpdate) {
@@ -1938,24 +1935,6 @@ class Adapters extends Component {
             setTimeout(() => {
                 this.setState({ triggerUpdate: this.props.triggerUpdate }, () => this.updateAll(true));
             }, 100);
-        }
-
-        if (this.state.dialog === 'readme' && this.state.dialogProp) {
-            const adapter = this.state.repository[this.state.dialogProp] || null;
-            const docLang = adapter.docs?.includes(this.props.lang) ? this.props.lang : 'en';
-
-            if (adapter) {
-                return <TabContainer className={this.props.classes.tabContainer}>
-                    <AdapterInfoDialog
-                        theme={this.props.theme}
-                        themeType={this.props.themeType}
-                        adapter={this.state.dialogProp}
-                        link={BasicUtils.getDocsLinkForAdapter({ adapterName: this.state.dialogProp, lang: docLang })}
-                        socket={this.props.socket}
-                        t={this.t}
-                    />
-                </TabContainer>;
-            }
         }
 
         const { classes } = this.props;
