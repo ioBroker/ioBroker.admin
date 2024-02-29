@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) harmonized the links to adapter documentation (and fallback to english if not explicit doc for sys language provided)
 * (bluefox) added possibility to delete whole adapter from instance tab if only one instance left
 * (foxriver76) new dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)
 * (foxriver76) the new `licenseInformation` icon now changes color correctly with the theme
