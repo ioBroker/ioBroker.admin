@@ -41,6 +41,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { JsonConfig } from '@iobroker/json-config';
+import BasicUtils from '../Utils';
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
@@ -218,6 +219,7 @@ class Config extends Component {
                         tempLogLevel: tempLogLevel?.val || obj?.common?.loglevel || 'info',
                         common: obj?.common || {},
                         native: obj?.native || {},
+                        adapterDocLangs: obj?.common?.docs ? Object.keys(obj.common.docs) : ['en'],
                     });
                 })
                 .catch(error => {
@@ -326,11 +328,8 @@ class Config extends Component {
                     <Fab
                         classes={{ root: this.props.classes.button }}
                         onClick={() => {
-                            let lang = this.props.lang;
-                            if (lang !== 'en' && lang !== 'de' && lang !== 'ru' && lang !== 'zh-cn') {
-                                lang = 'en';
-                            }
-                            window.open(`https://www.iobroker.net/#${lang}/adapters/adapterref/iobroker.${this.props.adapter}/README.md`, 'help');
+                            const lang = this.state.adapterDocLangs?.includes(this.props.lang) ? this.props.lang : 'en';
+                            window.open(BasicUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapter }), 'help');
                         }}
                     >
                         <HelpIcon />

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     AppBar, Button, Grid, Toolbar,
@@ -11,7 +10,9 @@ import {
     Link as LinkIcon,
 } from '@mui/icons-material';
 
-import { Router, I18n, Loader } from '@iobroker/adapter-react-v5';
+import {
+    Router, I18n, Loader, type Connection,
+} from '@iobroker/adapter-react-v5';
 
 import Markdown from '../components/Markdown';
 
@@ -27,10 +28,27 @@ const styles = {
         },
         fontSize: 14,
     },
-};
+} satisfies Styles<any, any>;
 
-class AdapterInfoDialog extends Component {
-    constructor(props) {
+interface AdapterInfoDialogProps {
+    adapter: string;
+    link: string;
+    t: typeof I18n.t;
+    theme: string;
+    themeType: string;
+    socket: Connection;
+    classes: Record<string, any>;
+    mobile: unknown;
+}
+
+interface AdapterInfoDialogState {
+    text: string | null;
+}
+
+class AdapterInfoDialog extends Component<AdapterInfoDialogProps, AdapterInfoDialogState> {
+    private readonly t: typeof I18n.t;
+
+    constructor(props: AdapterInfoDialogProps) {
         super(props);
 
         this.state = {
@@ -46,6 +64,7 @@ class AdapterInfoDialog extends Component {
         const link = this.props.link.replace('github.com', 'raw.githubusercontent.com').replace('blob/', '');
 
         try {
+            console.log(link);
             const data = await fetch(link);
             let readme = await data.text();
 
@@ -58,21 +77,19 @@ class AdapterInfoDialog extends Component {
         }
     }
 
-    openTab(path) {
+    openTab(path: string): void {
         const tab = window.open(path, '_blank');
         tab.focus();
     }
 
-    static closeDialog() {
+    static closeDialog():void {
         Router.doNavigate('tab-adapters');
     }
 
     /**
      * Transform the link prop to point to the raw file
-     *
-     * @return {string}
      */
-    transformLink() {
+    transformLink(): string {
         return this.props.link.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/');
     }
 
@@ -121,6 +138,7 @@ class AdapterInfoDialog extends Component {
                         <Grid item>
                             <Button
                                 variant="contained"
+                                /** @ts-expect-error is ok */
                                 color="grey"
                                 onClick={() => AdapterInfoDialog.closeDialog()}
                                 startIcon={<CloseIcon />}
@@ -134,14 +152,5 @@ class AdapterInfoDialog extends Component {
         </Grid>;
     }
 }
-
-AdapterInfoDialog.propTypes = {
-    adapter: PropTypes.string,
-    link: PropTypes.string,
-    t: PropTypes.func,
-    theme: PropTypes.object,
-    themeType: PropTypes.string,
-    socket: PropTypes.object,
-};
 
 export default withStyles(styles)(AdapterInfoDialog);

@@ -65,6 +65,7 @@ import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog'
 import IsVisible from '../components/IsVisible';
 import Utils from '../components/Utils';
 import AdminUpdater from '../dialogs/AdminUpdater';
+import BasicUtils from '../Utils';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -1202,8 +1203,16 @@ class Adapters extends Component {
         return true;
     }
 
-    static openInfoDialog(adapter) {
-        Router.doNavigate('tab-adapters', 'readme', adapter);
+    /**
+     * Open adapter readme or docs
+     *
+     * @param {{ adapter: string, lang: ioBroker.Languages}} options the adapter name and prefered language
+     */
+    openInfoDialog(options) {
+        const { lang, adapter: adapterName } = options;
+        window.open(BasicUtils.getDocsLinkForAdapter({ lang, adapterName }), 'help');
+
+        // Router.doNavigate('tab-adapters', 'readme', adapter);
     }
 
     openUpdateDialog(adapterToUpdate) {
@@ -1487,7 +1496,10 @@ class Adapters extends Component {
                     }
                 }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
-                onInfo={() => Adapters.openInfoDialog(value)}
+                onInfo={() => {
+                    const lang = adapter.docs?.[this.props.lang] ? this.props.lang : 'en';
+                    this.openInfoDialog({ adapter: value, lang });
+                }}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
@@ -1803,7 +1815,10 @@ class Adapters extends Component {
                     }
                 }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
-                onInfo={() => Adapters.openInfoDialog(value)}
+                onInfo={() => {
+                    const lang = adapter.docs?.[this.props.lang] ? this.props.lang : 'en';
+                    this.openInfoDialog({ adapter: value, lang });
+                }}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
@@ -1927,6 +1942,7 @@ class Adapters extends Component {
 
         if (this.state.dialog === 'readme' && this.state.dialogProp) {
             const adapter = this.state.repository[this.state.dialogProp] || null;
+            const docLang = adapter.docs?.includes(this.props.lang) ? this.props.lang : 'en';
 
             if (adapter) {
                 return <TabContainer className={this.props.classes.tabContainer}>
@@ -1934,7 +1950,7 @@ class Adapters extends Component {
                         theme={this.props.theme}
                         themeType={this.props.themeType}
                         adapter={this.state.dialogProp}
-                        link={adapter.readme || ''}
+                        link={BasicUtils.getDocsLinkForAdapter({ adapterName: this.state.dialogProp, lang: docLang })}
                         socket={this.props.socket}
                         t={this.t}
                     />
