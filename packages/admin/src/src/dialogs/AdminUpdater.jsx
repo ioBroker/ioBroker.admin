@@ -101,46 +101,49 @@ class AdminUpdater extends Component {
 
     /** @typedef {{ running: boolean; stderr: string[]; stdout: string[]; success?: boolean }} ServerResponse */
 
-    checkStatus() {
+    async checkStatus() {
         console.log(`Request update status from: ${this.link}`);
-        fetch(this.link)
-            .then(res => res.json())
-            .then(_response => {
-                /** @type {ServerResponse} */
-                const response = _response;
-                // sometimes stderr has only one empty string in it
-                if (response?.stderr) {
-                    response.stderr = response.stderr.filter(line => line.trim());
-                }
-                if (response && !response.running && response.success && response.stdout) {
-                    response.stdout.push('');
-                    response.stdout.push('---------------------------------------------------');
-                    response.stdout.push(I18n.t('%s was successfully updated to %s', 'admin', this.props.version));
-                } else if (response?.stdout) {
-                    response.stdout.unshift('');
-                    response.stdout.unshift('---------------------------------------------------');
-                    response.stdout.unshift(I18n.t('updating %s to %s...', 'admin', this.props.version));
-                }
-                this.setState({ response, error: null }, async () => {
-                    if (response && !response.running) {
-                        this.interval && clearInterval(this.interval);
-                        this.interval = null;
-                        this.waitForAdapterStart();
-                    } else if (response?.running) {
-                        this.setUpdating(true);
-                    }
+        try {
+            const res = await fetch(this.link);
 
-                    // scroll down
-                    if (this.textareaRef.current) {
-                        setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
-                    }
-                });
-            })
-            .catch(e => {
-                if (!this.state.starting) {
-                    this.setState({ error: e.toString() }, () => this.setUpdating(false));
+            // Just for logging purposes
+            const plainBody = await res.text();
+            console.log(`Received status: ${plainBody}`);
+
+            /** @type {ServerResponse} */
+            const response = await res.json();
+            // sometimes stderr has only one empty string in it
+            if (response?.stderr) {
+                response.stderr = response.stderr.filter(line => line.trim());
+            }
+            if (response && !response.running && response.success && response.stdout) {
+                response.stdout.push('');
+                response.stdout.push('---------------------------------------------------');
+                response.stdout.push(I18n.t('%s was successfully updated to %s', 'admin', this.props.version));
+            } else if (response?.stdout) {
+                response.stdout.unshift('');
+                response.stdout.unshift('---------------------------------------------------');
+                response.stdout.unshift(I18n.t('updating %s to %s...', 'admin', this.props.version));
+            }
+            this.setState({ response, error: null }, async () => {
+                if (response && !response.running) {
+                    this.interval && clearInterval(this.interval);
+                    this.interval = null;
+                    this.waitForAdapterStart();
+                } else if (response?.running) {
+                    this.setUpdating(true);
+                }
+
+                // scroll down
+                if (this.textareaRef.current) {
+                    setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
                 }
             });
+        } catch (e) {
+            if (!this.state.starting) {
+                this.setState({ error: e.toString() }, () => this.setUpdating(false));
+            }
+        }
     }
 
     /**

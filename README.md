@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) make UI update of controller and admin more verbose
+
 ### 6.15.0 (2024-03-01)
 * (foxriver76) harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)
 * (bluefox) added possibility to delete whole adapter from instance tab if only one instance left
