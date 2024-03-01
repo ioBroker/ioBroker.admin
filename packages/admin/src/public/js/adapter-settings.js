@@ -1,3 +1,8 @@
+/* eslint no-var: 0 */
+/* eslint prefer-template: 0 */
+/* eslint prefer-arrow-callback: 0 */
+/* eslint strict: 0 */
+/* eslint object-shorthand: 0 */
 var path = location.pathname;
 var parts = path.split('/');
 parts.splice(-3);
@@ -7,13 +12,13 @@ if (location.pathname.match(/^\/admin\//)) {
 }
 
 var systemConfig;
-var socket = io.connect('/', {path: parts.join('/') + '/socket.io'});
+var socket = io.connect('/', { path: parts.join('/') + '/socket.io' });
 var query  = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
 var args   = {};
 var theme  = null;
 
 // parse parameters
-query.trim().split('&').filter(function (t) {return t.trim();}).forEach(function (b, i) {
+query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(function (b, i) {
     const parts = b.split('=');
     if (!i && parts.length === 1 && !isNaN(parseInt(b, 10))) {
         args.instance = parseInt(b,  10);
@@ -22,7 +27,7 @@ query.trim().split('&').filter(function (t) {return t.trim();}).forEach(function
     args[name] = parts.length === 2 ? parts[1] : true;
 
     if (name === 'instance') {
-        args.instance = parseInt( args.instance,  10) || 0;
+        args.instance = parseInt(args.instance,  10) || 0;
     }
 
     if (args[name] === 'true') {
@@ -48,8 +53,7 @@ var supportedFeatures = [
     'ADAPTER_AUTO_DECRYPT_NATIVE', // all native attributes, that are listed in an array `encryptedNative` in io-pack will be automatically decrypted and encrypted. Since js-controller 3.0
 ];
 
-function preInit () {
-    'use strict';
+function preInit() {
     var tmp = window.location.pathname.split('/');
     adapter = tmp[tmp.length - 2];
     var id = 'system.adapter.' + adapter + '.' + instance;
@@ -59,132 +63,168 @@ function preInit () {
         systemDictionary = {};
     }
 
-    systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve",                   "it": "Salvare",                     "de": "Speichern",                "pl": "Zapisać",                      "ru": "Сохранить",           "zh-cn": "保存"};
-    systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "pl": "Zapisz i zamknij",             "ru": "Сохранить и выйти",   "zh-cn": "保存并关闭"};
-    systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "pl": "Żaden",                        "ru": "ничего",              "zh-cn": "无"};
-    systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": "",                    "zh-cn": ""};
-    systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": "",                    "zh-cn": ""};
-    systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "pl": "wszystko",                     "ru": "все",                 "zh-cn": "所有"};
-    systemDictionary['Device list'] = {"en": "Device list",    "fr": "Liste des périphériques",         "nl": "Lijst met apparaten", "es": "Lista de dispositivos",       "pt": "Lista de dispositivos",   "it": "Elenco dispositivi",          "de": "Geräteliste",              "pl": "Lista urządzeń",               "ru": "Список устройств",    "zh-cn": "设备清单"};
-    systemDictionary['new device'] =  {"en": "new device",     "fr": "nouvel appareil",                 "nl": "nieuw apparaat",      "es": "Nuevo dispositivo",           "pt": "Novo dispositivo",        "it": "nuovo dispositivo",           "de": "Neues Gerät",              "pl": "nowe urządzenie",              "ru": "Новое устройство",    "zh-cn": "新设备"};
-    systemDictionary.edit =           {"en": "edit",           "fr": "modifier",                        "nl": "Bewerk",              "es": "editar",                      "pt": "editar",                  "it": "modificare",                  "de": "Ändern",                   "pl": "edytować",                     "ru": "Изменить",            "zh-cn": "编辑"};
-    systemDictionary.delete =         {"en": "delete",         "fr": "effacer",                         "nl": "Delete",              "es": "borrar",                      "pt": "excluir",                 "it": "Elimina",                     "de": "Löschen",                  "pl": "kasować",                      "ru": "Удалить",             "zh-cn": "删除"};
-    systemDictionary.pair =           {"en": "pair",           "fr": "paire",                           "nl": "paar",                "es": "par",                         "pt": "par",                     "it": "paio",                        "de": "Verbinden",                "pl": "para",                         "ru": "Связать",             "zh-cn": "配对"};
-    systemDictionary.unpair =         {"en": "unpair",         "fr": "unpair",                          "nl": "Unpair",              "es": "desvincular",                 "pt": "unpair",                  "it": "Disaccoppia",                 "de": "Trennen",                  "pl": "unpair",                       "ru": "Разорвать связь",     "zh-cn": "取消配对"};
-    systemDictionary.ok =             {"en": "Ok",             "fr": "D'accord",                        "nl": "OK",                  "es": "De acuerdo",                  "pt": "Está bem",                "it": "Ok",                          "de": "Ok",                       "pl": "Ok",                           "ru": "Ok",                  "zh-cn": "确认"};
-    systemDictionary.cancel =         {"en": "Cancel",         "fr": "Annuler",                         "nl": "Annuleer",            "es": "Cancelar",                    "pt": "Cancelar",                "it": "Annulla",                     "de": "Abbrechen",                "pl": "Anuluj",                       "ru": "Отмена",              "zh-cn": "取消"};
-    systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "pl": "Wiadomość",                    "ru": "Сообщение",           "zh-cn": "信息"};
-    systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "pl": "Blisko",                       "ru": "Закрыть",             "zh-cn": "关闭"};
-    systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anklicken",                "pl": "Kliknij, aby uzyskać pomoc",   "ru": "Перейти по ссылке",   "zh-cn": "单击获取帮助"};
+    systemDictionary.save =           {
+        en: 'Save',           fr: 'Sauvegarder',                     nl: 'Opslaan',             es: 'Salvar',                      pt: 'Salve',                   it: 'Salvare',                     de: 'Speichern',                pl: 'Zapisać',                      ru: 'Сохранить',           'zh-cn': '保存',
+    };
+    systemDictionary.saveclose =      {
+        en: 'Save and close', fr: 'Sauver et fermer',                nl: 'Opslaan en afsluiten', es: 'Guardar y cerrar',            pt: 'Salvar e fechar',         it: 'Salva e chiudi',              de: 'Speichern und schließen',  pl: 'Zapisz i zamknij',             ru: 'Сохранить и выйти',   'zh-cn': '保存并关闭',
+    };
+    systemDictionary.none =           {
+        en: 'none',           fr: 'aucun',                           nl: 'geen',                es: 'ninguna',                     pt: 'Nenhum',                  it: 'nessuna',                     de: 'keins',                    pl: 'Żaden',                        ru: 'ничего',              'zh-cn': '无',
+    };
+    systemDictionary.nonerooms =      {
+        en: '',               fr: '',                                nl: '',                    es: '',                            pt: '',                        it: '',                            de: '',                         pl: '',                             ru: '',                    'zh-cn': '',
+    };
+    systemDictionary.nonefunctions =  {
+        en: '',               fr: '',                                nl: '',                    es: '',                            pt: '',                        it: '',                            de: '',                         pl: '',                             ru: '',                    'zh-cn': '',
+    };
+    systemDictionary.all =            {
+        en: 'all',            fr: 'tout',                            nl: 'alle',                es: 'todas',                       pt: 'todos',                   it: 'tutti',                       de: 'alle',                     pl: 'wszystko',                     ru: 'все',                 'zh-cn': '所有',
+    };
+    systemDictionary['Device list'] = {
+        en: 'Device list',    fr: 'Liste des périphériques',         nl: 'Lijst met apparaten', es: 'Lista de dispositivos',       pt: 'Lista de dispositivos',   it: 'Elenco dispositivi',          de: 'Geräteliste',              pl: 'Lista urządzeń',               ru: 'Список устройств',    'zh-cn': '设备清单',
+    };
+    systemDictionary['new device'] =  {
+        en: 'new device',     fr: 'nouvel appareil',                 nl: 'nieuw apparaat',      es: 'Nuevo dispositivo',           pt: 'Novo dispositivo',        it: 'nuovo dispositivo',           de: 'Neues Gerät',              pl: 'nowe urządzenie',              ru: 'Новое устройство',    'zh-cn': '新设备',
+    };
+    systemDictionary.edit =           {
+        en: 'edit',           fr: 'modifier',                        nl: 'Bewerk',              es: 'editar',                      pt: 'editar',                  it: 'modificare',                  de: 'Ändern',                   pl: 'edytować',                     ru: 'Изменить',            'zh-cn': '编辑',
+    };
+    systemDictionary.delete =         {
+        en: 'delete',         fr: 'effacer',                         nl: 'Delete',              es: 'borrar',                      pt: 'excluir',                 it: 'Elimina',                     de: 'Löschen',                  pl: 'kasować',                      ru: 'Удалить',             'zh-cn': '删除',
+    };
+    systemDictionary.pair =           {
+        en: 'pair',           fr: 'paire',                           nl: 'paar',                es: 'par',                         pt: 'par',                     it: 'paio',                        de: 'Verbinden',                pl: 'para',                         ru: 'Связать',             'zh-cn': '配对',
+    };
+    systemDictionary.unpair =         {
+        en: 'unpair',         fr: 'unpair',                          nl: 'Unpair',              es: 'desvincular',                 pt: 'unpair',                  it: 'Disaccoppia',                 de: 'Trennen',                  pl: 'unpair',                       ru: 'Разорвать связь',     'zh-cn': '取消配对',
+    };
+    systemDictionary.ok =             {
+        en: 'Ok',             fr: "D'accord",                        nl: 'OK',                  es: 'De acuerdo',                  pt: 'Está bem',                it: 'Ok',                          de: 'Ok',                       pl: 'Ok',                           ru: 'Ok',                  'zh-cn': '确认',
+    };
+    systemDictionary.cancel =         {
+        en: 'Cancel',         fr: 'Annuler',                         nl: 'Annuleer',            es: 'Cancelar',                    pt: 'Cancelar',                it: 'Annulla',                     de: 'Abbrechen',                pl: 'Anuluj',                       ru: 'Отмена',              'zh-cn': '取消',
+    };
+    systemDictionary.Message =        {
+        en: 'Message',        fr: 'Message',                         nl: 'Bericht',             es: 'Mensaje',                     pt: 'Mensagem',                it: 'Messaggio',                   de: 'Mitteilung',               pl: 'Wiadomość',                    ru: 'Сообщение',           'zh-cn': '信息',
+    };
+    systemDictionary.close =          {
+        en: 'Close',          fr: 'Fermer',                          nl: 'Dichtbij',            es: 'Cerca',                       pt: 'Fechar',                  it: 'Vicino',                      de: 'Schließen',                pl: 'Blisko',                       ru: 'Закрыть',             'zh-cn': '关闭',
+    };
+    systemDictionary.htooltip =       {
+        en: 'Click for help', fr: "Cliquez pour obtenir de l'aide",  nl: 'Klik voor hulp',      es: 'Haz clic para obtener ayuda', pt: 'Clique para ajuda',       it: 'Fai clic per chiedere aiuto', de: 'Anklicken',                pl: 'Kliknij, aby uzyskać pomoc',   ru: 'Перейти по ссылке',   'zh-cn': '单击获取帮助',
+    };
     systemDictionary.saveConfig =     {
-        "en": "Save configuration to file",
-        "de": "Speichern Sie die Konfiguration in der Datei",
-        "ru": "Сохранить конфигурацию в файл",
-        "pt": "Salvar configuração no arquivo",
-        "nl": "Sla configuratie op naar bestand",
-        "fr": "Enregistrer la configuration dans un fichier",
-        "it": "Salva la configurazione nel file",
-        "es": "Guardar configuración en archivo",
-        "pl": "Zapisz konfigurację do pliku",
-        "zh-cn": "将配置保存到文件"
+        en: 'Save configuration to file',
+        de: 'Speichern Sie die Konfiguration in der Datei',
+        ru: 'Сохранить конфигурацию в файл',
+        pt: 'Salvar configuração no arquivo',
+        nl: 'Sla configuratie op naar bestand',
+        fr: 'Enregistrer la configuration dans un fichier',
+        it: 'Salva la configurazione nel file',
+        es: 'Guardar configuración en archivo',
+        pl: 'Zapisz konfigurację do pliku',
+        'zh-cn': '将配置保存到文件',
     };
     systemDictionary.loadConfig =     {
-        "en": "Load configuration from file",
-        "de": "Laden Sie die Konfiguration aus der Datei",
-        "ru": "Загрузить конфигурацию из файла",
-        "pt": "Carregar configuração do arquivo",
-        "nl": "Laad de configuratie uit het bestand",
-        "fr": "Charger la configuration à partir du fichier",
-        "it": "Carica la configurazione dal file",
-        "es": "Cargar configuración desde archivo",
-        "pl": "Załaduj konfigurację z pliku",
-        "zh-cn": "从文件加载配置"
+        en: 'Load configuration from file',
+        de: 'Laden Sie die Konfiguration aus der Datei',
+        ru: 'Загрузить конфигурацию из файла',
+        pt: 'Carregar configuração do arquivo',
+        nl: 'Laad de configuratie uit het bestand',
+        fr: 'Charger la configuration à partir du fichier',
+        it: 'Carica la configurazione dal file',
+        es: 'Cargar configuración desde archivo',
+        pl: 'Załaduj konfigurację z pliku',
+        'zh-cn': '从文件加载配置',
     };
     systemDictionary.otherConfig = {
-        "en": "Configuration from other adapter %s",
-        "de": "Konfiguration von anderem Adapter %s",
-        "ru": "Конфигурация из другого адаптера %s",
-        "pt": "Configuração de outro adaptador %s",
-        "nl": "Configuratie vanaf andere adapter %s",
-        "fr": "Configuration à partir d'un autre adaptateur %s",
-        "it": "Configurazione da altro adattatore %s",
-        "es": "Configuración desde otro adaptador %s",
-        "pl": "Konfiguracja z innego adaptera %s",
-        "zh-cn": "从其他适配器%s配置"
+        en: 'Configuration from other adapter %s',
+        de: 'Konfiguration von anderem Adapter %s',
+        ru: 'Конфигурация из другого адаптера %s',
+        pt: 'Configuração de outro adaptador %s',
+        nl: 'Configuratie vanaf andere adapter %s',
+        fr: "Configuration à partir d'un autre adaptateur %s",
+        it: 'Configurazione da altro adattatore %s',
+        es: 'Configuración desde otro adaptador %s',
+        pl: 'Konfiguracja z innego adaptera %s',
+        'zh-cn': '从其他适配器%s配置',
     };
     systemDictionary.invalidConfig = {
-        "en": "Invalid JSON file",
-        "de": "Ungültige JSON-Datei",
-        "ru": "Недопустимый файл JSON",
-        "pt": "Arquivo JSON inválido",
-        "nl": "Ongeldig JSON-bestand",
-        "fr": "Fichier JSON non valide",
-        "it": "File JSON non valido",
-        "es": "Archivo JSON no válido",
-        "pl": "Nieprawidłowy plik JSON",
-        "zh-cn": "无效的JSON文件"
+        en: 'Invalid JSON file',
+        de: 'Ungültige JSON-Datei',
+        ru: 'Недопустимый файл JSON',
+        pt: 'Arquivo JSON inválido',
+        nl: 'Ongeldig JSON-bestand',
+        fr: 'Fichier JSON non valide',
+        it: 'File JSON non valido',
+        es: 'Archivo JSON no válido',
+        pl: 'Nieprawidłowy plik JSON',
+        'zh-cn': '无效的JSON文件',
     };
     systemDictionary.configLoaded = {
-        "en": "Configuration was successfully loaded",
-        "de": "Die Konfiguration wurde erfolgreich geladen",
-        "ru": "Конфигурация успешно загружена",
-        "pt": "Configuração foi carregada com sucesso",
-        "nl": "Configuratie is succesvol geladen",
-        "fr": "La configuration a été chargée avec succès",
-        "it": "La configurazione è stata caricata correttamente",
-        "es": "La configuración se cargó correctamente",
-        "pl": "Konfiguracja została pomyślnie załadowana",
-        "zh-cn": "配置已成功加载"
+        en: 'Configuration was successfully loaded',
+        de: 'Die Konfiguration wurde erfolgreich geladen',
+        ru: 'Конфигурация успешно загружена',
+        pt: 'Configuração foi carregada com sucesso',
+        nl: 'Configuratie is succesvol geladen',
+        fr: 'La configuration a été chargée avec succès',
+        it: 'La configurazione è stata caricata correttamente',
+        es: 'La configuración se cargó correctamente',
+        pl: 'Konfiguracja została pomyślnie załadowana',
+        'zh-cn': '配置已成功加载',
     };
     systemDictionary.maxTableRaw =    {
-        "en": "Maximum number of allowed raws",
-        "de": "Maximale Anzahl von erlaubten Tabellenzeilen",
-        "ru": "Достигнуто максимальное число строк",
-        "it": "Numero massimo di raw consentiti",
-        "fr": "Nombre maximum de raw autorisés",
-        "nl": "Maximumaantal toegestane raws",
-        "pt": "Número máximo de raias permitidas",
-        "es": "Número máximo de raws permitidos",
-        "pl": "Maksymalna liczba dozwolonych surowców",
-        "zh-cn": "允许的最大原始数量"
+        en: 'Maximum number of allowed raws',
+        de: 'Maximale Anzahl von erlaubten Tabellenzeilen',
+        ru: 'Достигнуто максимальное число строк',
+        it: 'Numero massimo di raw consentiti',
+        fr: 'Nombre maximum de raw autorisés',
+        nl: 'Maximumaantal toegestane raws',
+        pt: 'Número máximo de raias permitidas',
+        es: 'Número máximo de raws permitidos',
+        pl: 'Maksymalna liczba dozwolonych surowców',
+        'zh-cn': '允许的最大原始数量',
     };
-    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание", "pt": "Atenção",  "nl": "Waarschuwing", "fr": "Attention", "it": "avvertimento", "es": "Advertencia", "pl": "Ostrzeżenie", "zh-cn": "警告"};
-    systemDictionary["Main settings"] = {
-        "en": "Main settings",
-        "de": "Haupteinstellungen",
-        "ru": "Основные настройки",
-        "pt": "Configurações principais",
-        "nl": "Belangrijkste instellingen",
-        "fr": "Réglages principaux",
-        "it": "Impostazioni principali",
-        "es": "Ajustes principales",
-        "pl": "Ustawienia główne",
-        "zh-cn": "主要设置"
+    systemDictionary.maxTableRawInfo = {
+        en: 'Warning',       de: 'Warnung',                  ru: 'Внимание', pt: 'Atenção',  nl: 'Waarschuwing', fr: 'Attention', it: 'avvertimento', es: 'Advertencia', pl: 'Ostrzeżenie', 'zh-cn': '警告',
+    };
+    systemDictionary['Main settings'] = {
+        en: 'Main settings',
+        de: 'Haupteinstellungen',
+        ru: 'Основные настройки',
+        pt: 'Configurações principais',
+        nl: 'Belangrijkste instellingen',
+        fr: 'Réglages principaux',
+        it: 'Impostazioni principali',
+        es: 'Ajustes principales',
+        pl: 'Ustawienia główne',
+        'zh-cn': '主要设置',
     };
 
     systemDictionary["Let's Encrypt SSL"] = {
-        "en": "Let's Encrypt Certificates",
-        "de": "Let's Encrypt Zertifikate",
-        "ru": "Let's Encrypt Сертификаты",
-        "pt": "Let's Encrypt Certificados",
-        "nl": "Let's Encrypt certificaten",
-        "fr": "Let's Encrypt Certificats",
-        "it": "Let's Encrypt certificati",
-        "es": "Let's Encrypt Certificados",
-        "pl": "Let's Encrypt certyfikaty",
-        "zh-cn": "Let's Encrypt证书"
+        en: "Let's Encrypt Certificates",
+        de: "Let's Encrypt Zertifikate",
+        ru: "Let's Encrypt Сертификаты",
+        pt: "Let's Encrypt Certificados",
+        nl: "Let's Encrypt certificaten",
+        fr: "Let's Encrypt Certificats",
+        it: "Let's Encrypt certificati",
+        es: "Let's Encrypt Certificados",
+        pl: "Let's Encrypt certyfikaty",
+        'zh-cn': "Let's Encrypt证书",
     };
-    systemDictionary["Please activate secure communication"] = {
-        "en": "Please activate secure communication",
-        "de": "Bitte sichere Kommunikation aktivieren",
-        "ru": "Включите безопасную связь",
-        "pt": "Active a comunicação segura",
-        "nl": "Activeer alstublieft beveiligde communicatie",
-        "fr": "Veuillez activer la communication sécurisée",
-        "it": "Si prega di attivare la comunicazione sicura",
-        "es": "Por favor active la comunicación segura",
-        "pl": "Aktywuj bezpieczną komunikację",
-        "zh-cn": "请激活安全通信"
+    systemDictionary['Please activate secure communication'] = {
+        en: 'Please activate secure communication',
+        de: 'Bitte sichere Kommunikation aktivieren',
+        ru: 'Включите безопасную связь',
+        pt: 'Active a comunicação segura',
+        nl: 'Activeer alstublieft beveiligde communicatie',
+        fr: 'Veuillez activer la communication sécurisée',
+        it: 'Si prega di attivare la comunicazione sicura',
+        es: 'Por favor active la comunicación segura',
+        pl: 'Aktywuj bezpieczną komunikację',
+        'zh-cn': '请激活安全通信',
     };
 
     if (socket.connected) {
@@ -204,7 +244,7 @@ function preInit () {
     var $body = $('body');
 
     $body.wrapInner('<div class="adapter-body"></div>');
-    /*$body.prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
+    /* $body.prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
         '<button id="save" class="translateB">save</button>&nbsp;' +
         '<button id="saveclose" class="translateB">saveclose</button>&nbsp;' +
         '<button id="close" class="translateB" style="float: right;">cancel</button>&nbsp;' +
@@ -370,7 +410,7 @@ function preInit () {
                             if (res.native.certificates[c].length < 700 && (res.native.certificates[c].indexOf('/') !== -1 || res.native.certificates[c].indexOf('\\') !== -1)) {
                                 var __cert = {
                                     name: c,
-                                    type: ''
+                                    type: '',
                                 };
                                 if (c.toLowerCase().indexOf('private') !== -1) {
                                     __cert.type = 'private';
@@ -387,7 +427,7 @@ function preInit () {
 
                             var _cert = {
                                 name: c,
-                                type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public'
+                                type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public',
                             };
                             if (_cert.type === 'public') {
                                 var m = res.native.certificates[c].split('-----END CERTIFICATE-----');
@@ -448,7 +488,7 @@ function preInit () {
 
     function loadScript(src, onload) {
         var script = document.createElement('script');
-        script.onload = onload
+        script.onload = onload;
         script.src = src;
         document.getElementsByTagName('head')[0].appendChild(script);
     }
@@ -523,7 +563,7 @@ function handleFileSelect(evt) {
     var f = evt.target.files[0];
     if (f) {
         var r = new FileReader();
-        r.onload = function(e) {
+        r.onload = function (e) {
             var contents = e.target.result;
             try {
                 var json = JSON.parse(contents);
@@ -582,9 +622,21 @@ function prepareTooltips() {
         // init tabs
         $('.tabs').mtabs();
 
+        /** Supported languages for docs */
+        var supportedDocLangs = ['en', 'de', 'ru', 'zh-cn'];
+
+        var langToUse = systemLang;
+
+        if (!supportedDocLangs.includes(langToUse) || !common || !common.docs || !common.docs[langToUse]) {
+            langToUse = 'en';
+        }
+
         var buttonsText = '';
-        if (common && common.readme) {
-            buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light" href="' + common.readme +'" target="_blank" rel="noreferrer">' +
+
+        if (common) {
+            var docsLink = 'https://www.iobroker.net/#' + langToUse + '/adapters/adapterref/iobroker.' + common.name + '/README.md';
+
+            buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light" href="' + docsLink + '" target="_blank" rel="noreferrer">' +
                 '       <i class="material-icons">live_help</i>' +
                 '   </a>';
         }
@@ -596,7 +648,6 @@ function prepareTooltips() {
         buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light adapter-config-save" title="' + _('saveConfig') + '">' +
             '       <i class="material-icons">file_download</i>' +
             '   </a>';
-
 
         if (buttonsText) {
             // add help link after logo
@@ -619,7 +670,7 @@ function prepareTooltips() {
                     var result = {
                         _id: 'system.adapter.' + common.name + '.' + instance,
                         common: JSON.parse(JSON.stringify(common)),
-                        native: native
+                        native: native,
                     };
                     // remove unimportant information
                     if (result.common.news) {
@@ -639,10 +690,10 @@ function prepareTooltips() {
                         }
                     }
 
-                    //window.open('data:application/iobroker; content-disposition=attachment; filename=' + result._id + '.json,' + JSON.stringify(result, null, 2));
+                    // window.open('data:application/iobroker; content-disposition=attachment; filename=' + result._id + '.json,' + JSON.stringify(result, null, 2));
                     generateFile(result._id + '.json', result);
                 });
-            })
+            });
         }
 
         $('.value').each(function () {
@@ -654,7 +705,7 @@ function prepareTooltips() {
 
                 var $label = $this.next();
                 if ($label.prop('tagName') === 'LABEL') {
-                    $label.replaceWith('<span style="' + ($label.attr('style') || '') + '" class="' +  ($label.attr('class') || '') + '">' + $label.html() +'</span>');
+                    $label.replaceWith('<span style="' + ($label.attr('style') || '') + '" class="' +  ($label.attr('class') || '') + '">' + $label.html() + '</span>');
                     $label = $this.next();
                 }
 
@@ -807,11 +858,11 @@ function showMessageJQ(message, title, icon, width) {
             buttons: [
                 {
                     text: _('Ok'),
-                    click: function () {
+                    click() {
                         $(this).dialog('close');
-                    }
-                }
-            ]
+                    },
+                },
+            ],
         });
     }
     $dialogMessage.dialog('option', 'width', width + 500);
@@ -850,7 +901,8 @@ function showMessage(message, title, icon) {
             '    <div class="modal-footer">' +
             '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
             '    </div>' +
-            '</div></div>');
+            '</div></div>',
+        );
         $dialogMessage = $('#dialog-message');
     }
     if (icon) {
@@ -881,7 +933,7 @@ function confirmMessageJQ(message, title, icon, buttons, callback) {
         $dialogConfirm = $('#dialog-confirm-settings');
         $dialogConfirm.dialog({
             autoOpen: false,
-            modal:    true
+            modal:    true,
         });
     }
     if (typeof buttons === 'function') {
@@ -889,36 +941,36 @@ function confirmMessageJQ(message, title, icon, buttons, callback) {
         $dialogConfirm.dialog('option', 'buttons', [
             {
                 text: _('Ok'),
-                click: function () {
+                click() {
                     var cb = $(this).data('callback');
                     $(this).data('callback', null);
                     $(this).dialog('close');
                     cb && cb(true);
-                }
+                },
             },
             {
                 text: _('Cancel'),
-                click: function () {
+                click() {
                     var cb = $(this).data('callback');
                     $(this).data('callback', null);
                     $(this).dialog('close');
                     cb && cb(false);
-                }
-            }
+                },
+            },
         ]);
     } else if (typeof buttons === 'object') {
         for (var b = 0; b < buttons.length; b++) {
             buttons[b] = {
                 text: buttons[b],
                 id: 'dialog-confirm-button-' + b,
-                click: function (e) {
+                click(e) {
                     var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
                     var cb = $(this).data('callback');
                     $(this).data('callback', null);
                     $(this).dialog('close');
                     cb && cb(id);
-                }
-            }
+                },
+            };
         }
         $dialogConfirm.dialog('option', 'buttons', buttons);
     }
@@ -954,7 +1006,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
             '    </div>' +
             '    <div class="modal-footer">' +
             '    </div>' +
-            '</div></div>'
+            '</div></div>',
         );
         $dialogConfirm = $('#dialog-confirm');
     }
@@ -962,7 +1014,8 @@ function confirmMessage(message, title, icon, buttons, callback) {
         callback = buttons;
         $dialogConfirm.find('.modal-footer').html(
             '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
-            '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>');
+            '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>',
+        );
         $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
             var cb = $dialogConfirm.data('callback');
             cb && cb($(this).data('result'));
@@ -995,7 +1048,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
     $dialogConfirm.find('.dialog-text').html(message);
     $dialogConfirm.data('callback', callback);
     $dialogConfirm.modal({
-        dismissible: false
+        dismissible: false,
     }).modal('open');
 }
 
@@ -1025,7 +1078,7 @@ function showToast(parent, message, icon, duration, isError, classes) {
         parentSelector: parent || $('body')[0],
         html:           message + (icon ? '<i class="material-icons">' + icon + '</i>' : ''),
         displayLength:  duration || 3000,
-        classes:        classes
+        classes,
     });
 }
 
@@ -1050,7 +1103,7 @@ function getState(id, callback) {
 }
 
 function getEnums(_enum, callback) {
-    socket.emit('getObjectView', 'system', 'enum', {startkey: 'enum.' + _enum, endkey: 'enum.' + _enum + '.\u9999'}, function (err, res) {
+    socket.emit('getObjectView', 'system', 'enum', { startkey: 'enum.' + _enum, endkey: 'enum.' + _enum + '.\u9999' }, function (err, res) {
         if (!err && res) {
             var _res = {};
             for (var i = 0; i < res.rows.length; i++) {
@@ -1066,7 +1119,7 @@ function getEnums(_enum, callback) {
 }
 
 function getGroups(callback) {
-    socket.emit('getObjectView', 'system', 'group', {startkey: 'system.group.', endkey: 'system.group.\u9999'}, function (err, res) {
+    socket.emit('getObjectView', 'system', 'group', { startkey: 'system.group.', endkey: 'system.group.\u9999' }, function (err, res) {
         if (!err && res) {
             var _res   = {};
             for (var i = 0; i < res.rows.length; i++) {
@@ -1080,7 +1133,7 @@ function getGroups(callback) {
 }
 
 function getUsers(callback) {
-    socket.emit('getObjectView', 'system', 'user', {startkey: 'system.user.', endkey: 'system.user.\u9999'}, function (err, res) {
+    socket.emit('getObjectView', 'system', 'user', { startkey: 'system.user.', endkey: 'system.user.\u9999' }, function (err, res) {
         if (!err && res) {
             var _res   = {};
             for (var i = 0; i < res.rows.length; i++) {
@@ -1138,8 +1191,8 @@ function getIPs(host, callback) {
     socket.emit('getHostByIp', host || common.host, function (ip, _host) {
         if (_host) {
             host = _host;
-            var IPs4 = [{name: '[IPv4] 0.0.0.0 - ' + _('Listen on all IPs'), address: '0.0.0.0', family: 'ipv4'}];
-            var IPs6 = [{name: '[IPv6] ::',      address: '::',      family: 'ipv6'}];
+            var IPs4 = [{ name: '[IPv4] 0.0.0.0 - ' + _('Listen on all IPs'), address: '0.0.0.0', family: 'ipv4' }];
+            var IPs6 = [{ name: '[IPv6] ::',      address: '::',      family: 'ipv6' }];
             if (host.native.hardware && host.native.hardware.networkInterfaces) {
                 for (var eth in host.native.hardware.networkInterfaces) {
                     if (!host.native.hardware.networkInterfaces.hasOwnProperty(eth)) {
@@ -1147,9 +1200,9 @@ function getIPs(host, callback) {
                     }
                     for (var num = 0; num < host.native.hardware.networkInterfaces[eth].length; num++) {
                         if (host.native.hardware.networkInterfaces[eth][num].family !== 'IPv6') {
-                            IPs4.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv4'});
+                            IPs4.push({ name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv4' });
                         } else {
-                            IPs6.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv6'});
+                            IPs6.push({ name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv6' });
                         }
                     }
                 }
@@ -1226,7 +1279,6 @@ function fillSelectCertificates(id, type, actualValued) {
     if (isMaterialize) {
         $(id).select();
     }
-
 }
 
 function getAdapterInstances(_adapter, callback) {
@@ -1235,21 +1287,18 @@ function getAdapterInstances(_adapter, callback) {
         _adapter = null;
     }
 
-    socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.' + (_adapter || adapter), endkey: 'system.adapter.' + (_adapter || adapter) + '.\u9999'}, function (err, doc) {
+    socket.emit('getObjectView', 'system', 'instance', { startkey: 'system.adapter.' + (_adapter || adapter), endkey: 'system.adapter.' + (_adapter || adapter) + '.\u9999' }, function (err, doc) {
         if (err) {
             callback && callback([]);
+        } else if (doc.rows.length === 0) {
+            callback && callback([]);
         } else {
-            if (doc.rows.length === 0) {
-                callback && callback([]);
-            } else {
-                var res = [];
-                for (var i = 0; i < doc.rows.length; i++) {
-                    res.push(doc.rows[i].value);
-                }
-                callback && callback(res);
+            var res = [];
+            for (var i = 0; i < doc.rows.length; i++) {
+                res.push(doc.rows[i].value);
             }
+            callback && callback(res);
         }
-
     });
 }
 
@@ -1262,22 +1311,20 @@ function getExtendableInstances(_adapter, callback) {
     socket.emit('getObjectView', 'system', 'instance', null, function (err, doc) {
         if (err) {
             callback && callback([]);
+        } else if (!doc.rows.length) {
+            callback && callback([]);
         } else {
-            if (!doc.rows.length) {
-                callback && callback([]);
-            } else {
-                var res = [];
-                for (var i = 0; i < doc.rows.length; i++) {
-                    var obj = doc.rows[i].value;
-                    if (obj &&
+            var res = [];
+            for (var i = 0; i < doc.rows.length; i++) {
+                var obj = doc.rows[i].value;
+                if (obj &&
                         obj.common &&
                         obj.common.webExtendable &&
                         (!_adapter || obj.common.name === _adapter)) {
-                        res.push(obj);
-                    }
+                    res.push(obj);
                 }
-                callback && callback(res);
             }
+            callback && callback(res);
         }
     });
 }
@@ -1303,7 +1350,7 @@ function getIsAdapterAlive(_adapter, callback) {
 // _isInitial - [optional] - if it is initial fill of the table. To not trigger the onChange
 function addToTable(tabId, value, $grid, _isInitial) {
     $grid = $grid || $('#' + tabId);
-    var obj  = {_id: $grid[0]._maxIdx++};
+    var obj  = { _id: $grid[0]._maxIdx++ };
     var cols = $grid[0]._cols;
 
     for (var i = 0; i < cols.length; i++) {
@@ -1330,8 +1377,8 @@ function _editInitButtons($grid, tabId, objId) {
     var search = objId ? '[data-' + tabId + '-id="' + objId + '"]' : '';
 
     $('.' + tabId + '-edit-submit' + search).off('click').button({
-        icons: {primary: 'ui-icon-pencil'},
-        text:  false
+        icons: { primary: 'ui-icon-pencil' },
+        text:  false,
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
@@ -1340,7 +1387,7 @@ function _editInitButtons($grid, tabId, objId) {
         $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
         $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
 
-        $grid.jqGrid('editRow', tabId + '_' + id, {url: 'clientArray'});
+        $grid.jqGrid('editRow', tabId + '_' + id, { url: 'clientArray' });
         if ($grid[0]._edited.indexOf(id) === -1) {
             $grid[0]._edited.push(id);
         }
@@ -1352,11 +1399,12 @@ function _editInitButtons($grid, tabId, objId) {
         if (onChangeSupported) {
             $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
         }
-    }).css({'height': '18px', width: '22px'});
+    })
+        .css({ height: '18px', width: '22px' });
 
     $('.' + tabId + '-delete-submit' + search).off('click').button({
-        icons: {primary: 'ui-icon-trash'},
-        text:  false
+        icons: { primary: 'ui-icon-trash' },
+        text:  false,
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
         $grid.jqGrid('delRowData', tabId + '_' + id);
@@ -1374,11 +1422,12 @@ function _editInitButtons($grid, tabId, objId) {
             $grid[0]._edited.splice(pos, 1);
         }
         if ($grid[0]._onChange) $grid[0]._onChange('del', id);
-    }).css({'height': '18px', width: '22px'});
+    })
+        .css({ height: '18px', width: '22px' });
 
     $('.' + tabId + '-ok-submit' + search).off('click').button({
-        icons: {primary: 'ui-icon-check'},
-        text:  false
+        icons: { primary: 'ui-icon-check' },
+        text:  false,
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
@@ -1387,7 +1436,7 @@ function _editInitButtons($grid, tabId, objId) {
         $('.' + tabId + '-ok-submit').hide();
         $('.' + tabId + '-cancel-submit').hide();
 
-        $grid.jqGrid('saveRow', tabId + '_' + id, {url: 'clientArray'});
+        $grid.jqGrid('saveRow', tabId + '_' + id, { url: 'clientArray' });
         parent.postMessage('change', '*');
         changed = true;
         var $navButtons = $('.dialog-config-buttons');
@@ -1402,11 +1451,12 @@ function _editInitButtons($grid, tabId, objId) {
             $grid[0]._edited.splice(pos, 1);
         }
         if ($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
-    }).css({'height': '18px', width: '22px'});
+    })
+        .css({ height: '18px', width: '22px' });
 
     $('.' + tabId + '-cancel-submit' + search).off('click').button({
-        icons: {primary: 'ui-icon-close'},
-        text:  false
+        icons: { primary: 'ui-icon-close' },
+        text:  false,
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
@@ -1420,7 +1470,8 @@ function _editInitButtons($grid, tabId, objId) {
         if (pos !== -1) {
             $grid[0]._edited.splice(pos, 1);
         }
-    }).css({'height': '18px', width: '22px'});
+    })
+        .css({ height: '18px', width: '22px' });
 }
 
 function _editTable(tabId, cols, values, rooms, top, onChange) {
@@ -1445,7 +1496,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
     colModel.push({
         name:    '_id',
         index:   '_id',
-        hidden:  true
+        hidden:  true,
     });
     for (var i = 0; i < cols.length; i++) {
         var width = null;
@@ -1462,28 +1513,28 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         var _obj = {
             name:     cols[i],
             index:    cols[i],
-//                width:    160,
-            editable: true
+            //                width:    160,
+            editable: true,
         };
         if (width) {
             _obj.width = width;
         }
         if (checkbox) {
             _obj.edittype    = 'checkbox';
-            _obj.editoptions = {value: 'true:false'};
+            _obj.editoptions = { value: 'true:false' };
         }
 
         if (cols[i] === 'room') {
-            var list = {'': _('none')};
+            var list = { '': _('none') };
             for (room in rooms) {
                 list[room] = _(translateName(rooms[room].common.name));
             }
             _obj.stype =         'select';
             _obj.edittype =      'select';
-            _obj.editoptions =   {value: list};
+            _obj.editoptions =   { value: list };
             _obj.searchoptions = {
                 sopt:  ['eq'],
-                value: ':' + _('all')
+                value: ':' + _('all'),
             };
             for (room in rooms) {
                 _obj.searchoptions.value += ';' + _(translateName(rooms[room].common.name)) + ':' + _(translateName(rooms[room].common.name));
@@ -1492,7 +1543,9 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         colModel.push(_obj);
     }
     colNames.push('');
-    colModel.push({name: '_commands', index: '_commands', width: 50, editable: false, align: 'center', search: false});
+    colModel.push({
+        name: '_commands', index: '_commands', width: 50, editable: false, align: 'center', search: false,
+    });
 
     $grid[0]._cols     = cols;
     $grid[0]._rooms    = rooms;
@@ -1503,20 +1556,20 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 
     $grid.jqGrid({
         datatype:  'local',
-        colNames:  colNames,
-        colModel:  colModel,
+        colNames,
+        colModel,
         width:     800,
         height:    330,
         pager:     $('#pager-' + tabId),
         rowNum:    1000,
         rowList:   [1000],
-        ondblClickRow: function (rowid) {
+        ondblClickRow(rowid) {
             var id = rowid.substring((tabId + '_').length);
             $('.' + tabId + '-edit-submit').hide();
             $('.' + tabId + '-delete-submit').hide();
             $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
             $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
-            $grid.jqGrid('editRow', rowid, {url: 'clientArray'});
+            $grid.jqGrid('editRow', rowid, { url: 'clientArray' });
             if ($grid[0]._edited.indexOf(id) === -1) {
                 $grid[0]._edited.push(id);
             }
@@ -1537,10 +1590,10 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         pgtext: false,
         caption: _(title),
         ignoreCase: true,
-        loadComplete: function () {
+        loadComplete() {
             _editInitButtons($grid, tabId);
         },
-        onSortCol: function () {
+        onSortCol() {
             parent.postMessage('change', '*');
             changed = true;
             var $navButtons = $('.dialog-config-buttons');
@@ -1549,15 +1602,15 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             if (onChangeSupported) {
                 $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
             }
-        }
+        },
     }).jqGrid('filterToolbar', {
         defaultSearch: 'cn',
         autosearch:    true,
         searchOnEnter: false,
         enableClear:   false,
-        afterSearch:   function () {
+        afterSearch() {
             _editInitButtons($grid, tabId);
-        }
+        },
     });
 
     $('#pager-' + tabId + '_center').hide();
@@ -1568,11 +1621,11 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             edit:    false,
             add:     false,
             del:     false,
-            refresh: false
+            refresh: false,
         }).jqGrid('navButtonAdd', '#pager-' + tabId, {
             caption: '',
             buttonicon: 'ui-icon-plus',
-            onClickButton: function () {
+            onClickButton() {
                 // Find new unique name
                 var found;
                 var newText = _('New');
@@ -1610,7 +1663,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             position: 'first',
             id:       'add-cert',
             title:    _('new device'),
-            cursor:   'pointer'
+            cursor:   'pointer',
         });
     }
 
@@ -1625,7 +1678,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
     $(window).trigger('resize');
 
     // hide scrollbar
-    $('.ui-jqgrid-bdiv').css({'overflow-x': 'hidden'});
+    $('.ui-jqgrid-bdiv').css({ 'overflow-x': 'hidden' });
 
     return $grid;
 }
@@ -1646,10 +1699,8 @@ function enumName2Id(enums, name) {
                         return enumId;
                     }
                 }
-            } else {
-                if (enums[enumId].common.name && enums[enumId].common.name.toLowerCase() === name) {
-                    return enumId;
-                }
+            } else if (enums[enumId].common.name && enums[enumId].common.name.toLowerCase() === name) {
+                return enumId;
             }
         }
         if (enums[enumId] && enums[enumId].name) {
@@ -1659,10 +1710,8 @@ function enumName2Id(enums, name) {
                         return enumId;
                     }
                 }
-            } else {
-                if (enums[enumId].name.toLowerCase() === name) {
-                    return enumId;
-                }
+            } else if (enums[enumId].name.toLowerCase() === name) {
+                return enumId;
             }
         }
     }
@@ -1701,7 +1750,7 @@ function editTable(tabId, cols, values, top, onChange) {
 function getTableResult(tabId, cols) {
     var $grid = $('#' + tabId);
     for (var j = 0; j < $grid[0]._edited.length; j++) {
-        $grid.jqGrid('saveRow', tabId + '_' + $grid[0]._edited[j], {url: 'clientArray'});
+        $grid.jqGrid('saveRow', tabId + '_' + $grid[0]._edited[j], { url: 'clientArray' });
     }
 
     $('.' + tabId + '-edit-submit').show();
@@ -1747,9 +1796,9 @@ function showSelectIdDialog(val, callback) {
                 window.tableSelectId = $dialog.selectId('init',  {
                     noMultiselect: true,
                     objects: res,
-                    dialogHeight: '420px!important',//'calc(100% - 100px) !important',
+                    dialogHeight: '420px!important', // 'calc(100% - 100px) !important',
                     imgPath:       '../../lib/css/fancytree/',
-                    filter:        {type: 'state'},
+                    filter:        { type: 'state' },
                     name:          'table-select-state',
                     texts: {
                         select:          _('Select'),
@@ -1768,9 +1817,9 @@ function showSelectIdDialog(val, callback) {
                         ack:             _('Acknowledged'),
                         selectAll:       _('Select all'),
                         unselectAll:     _('Deselect all'),
-                        invertSelection: _('Invert selection')
+                        invertSelection: _('Invert selection'),
                     },
-                    columns: ['image', 'name', 'role', 'room']
+                    columns: ['image', 'name', 'role', 'room'],
                 });
                 window.tableSelectId.selectId('show', val, function (newId, oldId) {
                     newId && callback && callback(newId, oldId || '');
@@ -1871,9 +1920,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
         if (!isMaterialize) {
             $add.button({
-                icons: {primary: 'ui-icon-plus'},
+                icons: { primary: 'ui-icon-plus' },
                 text: !!addText,
-                label: addText ? _(addText) : undefined
+                label: addText ? _(addText) : undefined,
             });
         }
 
@@ -1926,11 +1975,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     b = b.toLowerCase();
                     if (a > b) {
                         return 1;
-                    } else if (a < b) {
+                    } if (a < b) {
                         return -1;
-                    } else {
-                        return 0;
                     }
+                    return 0;
                 });
 
                 for (var l = 0; l < nnames.length; l++) {
@@ -1967,11 +2015,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     b = b.toLowerCase();
                     if (a > b) {
                         return 1;
-                    } else if (a < b) {
+                    } if (a < b) {
                         return -1;
-                    } else {
-                        return 0;
                     }
+                    return 0;
                 });
 
                 for (var l = 0; l < nnames.length; l++) {
@@ -1990,14 +2037,14 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             var name = $(this).data('name');
             if (name) {
                 var obj = {
-                    name:    name,
+                    name,
                     type:    $(this).data('type') || 'text',
                     def:     $(this).data('default'),
                     style:   $(this).data('style'),
                     tdstyle: $(this).data('tdstyle'),
                     // add radio Button Id and optional span
                     radioButtomId: $(this).data('radio'),
-                    radioSpan: $(this).data('span')
+                    radioSpan: $(this).data('span'),
                 };
                 if (obj.type === 'checkbox') {
                     if (obj.def === 'false') {
@@ -2072,9 +2119,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     } else if (names[i].type === 'OID') {
                         line += '<div style="' + (names[i].style ? names[i].style : 'width: calc(100% - 30px') + '"><input class="values-input" style="width: calc(100% - 30px)" type="text" data-index="' + v + '" data-name="' + names[i].name + '"/>';
                         if (isMaterialize) {
-                            line += '<a style="max-width: 30px" class="btn-floating btn-small waves-effect waves-light blue oid-select" data-index="' + v + '" data-name="' + names[i].name + '">...</a>'
+                            line += '<a style="max-width: 30px" class="btn-floating btn-small waves-effect waves-light blue oid-select" data-index="' + v + '" data-name="' + names[i].name + '">...</a>';
                         } else {
-                            line += '<button  style="max-width: 30px" class="oid-select" data-index="' + v + '" data-name="' + names[i].name + '">...</button>'
+                            line += '<button  style="max-width: 30px" class="oid-select" data-index="' + v + '" data-name="' + names[i].name + '">...</button>';
                         }
                         line += '</div>';
                     } else if (names[i].type.substring(0, 6) === 'select') {
@@ -2100,7 +2147,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         }
                         line += '</select>';
                     } else if (names[i].type === 'radio') { // add radio Button in Table
-                        line += '<label><input class="values-input" data-name="' + names[i].name +'" name="' + names[i].radioButtomId + v + '" data-index="' + v + '" type="radio" '+(values[v][names[i].name] ? 'checked' : '')+' data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/><span>'+(names[i].radioSpan ? names[i].radioSpan : '')+'</span></label>'
+                        line += '<label><input class="values-input" data-name="' + names[i].name + '" name="' + names[i].radioButtomId + v + '" data-index="' + v + '" type="radio" ' + (values[v][names[i].name] ? 'checked' : '') + ' data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/><span>' + (names[i].radioSpan ? names[i].radioSpan : '') + '</span></label>';
                     } else {
                         line += '<input class="values-input" style="' + (names[i].style ? names[i].style : 'width: 100%') + '" type="' + names[i].type + '" data-index="' + v + '" data-name="' + names[i].name + '"/>';
                     }
@@ -2115,12 +2162,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                             } else {
                                 line += '<button data-command="' + buttons[i][b] + '" class="values-buttons" disabled>&nbsp;</button>';
                             }
+                        } else if (isMaterialize) {
+                            line += '<a data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons btn-floating btn-small waves-effect waves-light"><i class="material-icons">add</i></a>';
                         } else {
-                            if (isMaterialize) {
-                                line += '<a data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons btn-floating btn-small waves-effect waves-light"><i class="material-icons">add</i></a>';
-                            } else {
-                                line += '<button data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons"></button>';
-                            }
+                            line += '<button data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons"></button>';
                         }
                     }
                 }
@@ -2159,10 +2204,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             if (command === 'copy') {
                 if (!isMaterialize) {
                     $(this).button({
-                        icons: {primary: 'ui-icon-copy'},
-                        text: false
+                        icons: { primary: 'ui-icon-copy' },
+                        text: false,
                     })
-                        .css({width: '1em', height: '1em'});
+                        .css({ width: '1em', height: '1em' });
                 } else {
                     $(this).find('i').html('content_copy');
                 }
@@ -2188,136 +2233,136 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     }
                 });
             } else
-            if (command === 'delete') {
-                if (!isMaterialize) {
-                    $(this).button({
-                        icons: {primary: 'ui-icon-trash'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'});
-                } else {
-                    $(this).addClass('red').find('i').html('delete');
-                }
-
-                $(this).on('click', function () {
-                    var id = $(this).data('index');
-                    var elem = values[id];
-                    values.splice(id, 1);
-                    onChange && onChange();
-
-                    setTimeout(function () {
-                        if (typeof tableEvents === 'function') {
-                            tableEvents(id, elem, 'delete');
-                        }
-
-                        values2table(divId, values, onChange, onReady);
-                    }, 100);
-
-                    if ($add.data('maxraw')) {
-                        $add.data('raw', $add.data('raw') - 1);
+                if (command === 'delete') {
+                    if (!isMaterialize) {
+                        $(this).button({
+                            icons: { primary: 'ui-icon-trash' },
+                            text: false,
+                        })
+                            .css({ width: '1em', height: '1em' });
+                    } else {
+                        $(this).addClass('red').find('i').html('delete');
                     }
-                });
-            } else if (command === 'up') {
-                if (!isMaterialize) {
-                    $(this).button({
-                        icons: {primary: 'ui-icon-triangle-1-n'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'})
-                } else {
-                    $(this).find('i').html('arrow_upward');
-                }
-                $(this).on('click', function () {
-                    var id = $(this).data('index');
-                    var elem = values[id];
-                    values.splice(id, 1);
-                    values.splice(id - 1, 0, elem);
-                    onChange && onChange();
-                    setTimeout(function () {
-                        values2table(divId, values, onChange, onReady);
-                    }, 100);
-                });
-            } else if (command === 'down') {
-                if (!isMaterialize) {
-                    $(this).button({
-                        icons: {primary: 'ui-icon-triangle-1-s'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'});
-                } else {
-                    $(this).find('i').html('arrow_downward');
-                }
-                $(this).on('click', function () {
-                    var id = $(this).data('index');
-                    var elem = values[id];
-                    values.splice(id, 1);
-                    values.splice(id + 1, 0, elem);
-                    onChange && onChange();
-                    setTimeout(function () {
-                        values2table(divId, values, onChange, onReady);
-                    }, 100);
-                });
-            } else if (command === 'pair') {
-                if (!isMaterialize) {
-                    $(this).button({
-                        icons: {primary: 'ui-icon-transferthick-e-w'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'});
-                } else {
-                    $(this).find('i').html('leak_add');
-                }
-                $(this).on('click', function () {
-                    if (typeof tableEvents === 'function') {
+
+                    $(this).on('click', function () {
                         var id = $(this).data('index');
                         var elem = values[id];
-                        tableEvents(id, elem, 'pair');
-                    }
-                }).attr('title', _('pair'));
-            } else if (command === 'unpair') {
-                if (!isMaterialize) {
-                    $(this).button({
-                        icons: {primary: 'ui-icon-scissors'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'});
-                } else {
-                    $(this).find('i').html('leak_remove');
-                }
-                $(this).on('click', function () {
-                    if (typeof tableEvents === 'function') {
-                        var id = $(this).data('index');
-                        var elem = values[id];
-                        tableEvents(id, elem, 'unpair');
-                    }
-                }).attr('title', _('unpair'));
-            } else if (command === 'edit') {
-                if (!isMaterialize) {
-                    $(this).button({
-                        icons: {primary: 'ui-icon-pencil'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'});
-                } else {
-                    $(this).find('i').html('edit');
-                }
-                $(this).on('click', function () {
-                    var id = $(this).data('index');
-                    if (typeof editLine === 'function') {
+                        values.splice(id, 1);
+                        onChange && onChange();
+
                         setTimeout(function () {
-                            editLine(id, JSON.parse(JSON.stringify(values[id])), function (err, id, newValues) {
-                                if (!err) {
-                                    if (JSON.stringify(values[id]) !== JSON.stringify(newValues)) {
-                                        onChange && onChange();
-                                        values[id] = newValues;
-                                        values2table(divId, values, onChange, onReady);
-                                    }
-                                }
-                            });
+                            if (typeof tableEvents === 'function') {
+                                tableEvents(id, elem, 'delete');
+                            }
+
+                            values2table(divId, values, onChange, onReady);
                         }, 100);
+
+                        if ($add.data('maxraw')) {
+                            $add.data('raw', $add.data('raw') - 1);
+                        }
+                    });
+                } else if (command === 'up') {
+                    if (!isMaterialize) {
+                        $(this).button({
+                            icons: { primary: 'ui-icon-triangle-1-n' },
+                            text: false,
+                        })
+                            .css({ width: '1em', height: '1em' });
+                    } else {
+                        $(this).find('i').html('arrow_upward');
                     }
-                });
-            }
+                    $(this).on('click', function () {
+                        var id = $(this).data('index');
+                        var elem = values[id];
+                        values.splice(id, 1);
+                        values.splice(id - 1, 0, elem);
+                        onChange && onChange();
+                        setTimeout(function () {
+                            values2table(divId, values, onChange, onReady);
+                        }, 100);
+                    });
+                } else if (command === 'down') {
+                    if (!isMaterialize) {
+                        $(this).button({
+                            icons: { primary: 'ui-icon-triangle-1-s' },
+                            text: false,
+                        })
+                            .css({ width: '1em', height: '1em' });
+                    } else {
+                        $(this).find('i').html('arrow_downward');
+                    }
+                    $(this).on('click', function () {
+                        var id = $(this).data('index');
+                        var elem = values[id];
+                        values.splice(id, 1);
+                        values.splice(id + 1, 0, elem);
+                        onChange && onChange();
+                        setTimeout(function () {
+                            values2table(divId, values, onChange, onReady);
+                        }, 100);
+                    });
+                } else if (command === 'pair') {
+                    if (!isMaterialize) {
+                        $(this).button({
+                            icons: { primary: 'ui-icon-transferthick-e-w' },
+                            text: false,
+                        })
+                            .css({ width: '1em', height: '1em' });
+                    } else {
+                        $(this).find('i').html('leak_add');
+                    }
+                    $(this).on('click', function () {
+                        if (typeof tableEvents === 'function') {
+                            var id = $(this).data('index');
+                            var elem = values[id];
+                            tableEvents(id, elem, 'pair');
+                        }
+                    }).attr('title', _('pair'));
+                } else if (command === 'unpair') {
+                    if (!isMaterialize) {
+                        $(this).button({
+                            icons: { primary: 'ui-icon-scissors' },
+                            text: false,
+                        })
+                            .css({ width: '1em', height: '1em' });
+                    } else {
+                        $(this).find('i').html('leak_remove');
+                    }
+                    $(this).on('click', function () {
+                        if (typeof tableEvents === 'function') {
+                            var id = $(this).data('index');
+                            var elem = values[id];
+                            tableEvents(id, elem, 'unpair');
+                        }
+                    }).attr('title', _('unpair'));
+                } else if (command === 'edit') {
+                    if (!isMaterialize) {
+                        $(this).button({
+                            icons: { primary: 'ui-icon-pencil' },
+                            text: false,
+                        })
+                            .css({ width: '1em', height: '1em' });
+                    } else {
+                        $(this).find('i').html('edit');
+                    }
+                    $(this).on('click', function () {
+                        var id = $(this).data('index');
+                        if (typeof editLine === 'function') {
+                            setTimeout(function () {
+                                editLine(id, JSON.parse(JSON.stringify(values[id])), function (err, id, newValues) {
+                                    if (!err) {
+                                        if (JSON.stringify(values[id]) !== JSON.stringify(newValues)) {
+                                            onChange && onChange();
+                                            values[id] = newValues;
+                                            values2table(divId, values, onChange, onReady);
+                                        }
+                                    }
+                                });
+                            }, 100);
+                        }
+                    });
+                }
         });
         $lines.find('.oid-select').on('click', function () {
             var name = $(this).data('name');
@@ -2487,7 +2532,7 @@ function decrypt(key, value) {
     }
 
     // if not encrypted as aes-192 or key not a valid 48 digit hex -> fallback
-    if (!value.startsWith(`$/aes-192-cbc:`) || !/^[0-9a-f]{48}$/.test(key)) {
+    if (!value.startsWith('$/aes-192-cbc:') || !/^[0-9a-f]{48}$/.test(key)) {
         return decryptLegacy(key, value);
     }
 
@@ -2499,7 +2544,7 @@ function decrypt(key, value) {
 
     var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: CryptoJS.enc.Hex.parse(textParts[2]) });
 
-    var decryptedBinary = CryptoJS.AES.decrypt(cipherParams, _key, { iv: iv });
+    var decryptedBinary = CryptoJS.AES.decrypt(cipherParams, _key, { iv });
 
     return CryptoJS.enc.Utf8.stringify(decryptedBinary);
 }
@@ -2546,7 +2591,7 @@ function encrypt(key, value, _iv) {
     }
 
     var _key = CryptoJS.enc.Hex.parse(key);
-    var encrypted = CryptoJS.AES.encrypt(value, _key, { iv: iv }).ciphertext;
+    var encrypted = CryptoJS.AES.encrypt(value, _key, { iv }).ciphertext;
 
     return `$/aes-192-cbc:${CryptoJS.enc.Hex.stringify(iv)}:${encrypted}`;
 }

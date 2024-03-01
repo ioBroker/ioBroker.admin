@@ -47,7 +47,6 @@ import { blue, green } from '@mui/material/colors';
 import Router from '@iobroker/adapter-react-v5/Components/Router';
 
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
-import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 import AddInstanceDialog from '../dialogs/AddInstanceDialog';
 import AdapterRow from '../components/Adapters/AdapterRow';
@@ -65,6 +64,7 @@ import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog'
 import IsVisible from '../components/IsVisible';
 import Utils from '../components/Utils';
 import AdminUpdater from '../dialogs/AdminUpdater';
+import BasicUtils from '../Utils';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -1202,8 +1202,14 @@ class Adapters extends Component {
         return true;
     }
 
-    static openInfoDialog(adapter) {
-        Router.doNavigate('tab-adapters', 'readme', adapter);
+    /**
+     * Open adapter readme or docs
+     *
+     * @param {{ adapter: string, lang: ioBroker.Languages}} options the adapter name and prefered language
+     */
+    openInfoDialog(options) {
+        const { lang, adapter: adapterName } = options;
+        window.open(BasicUtils.getDocsLinkForAdapter({ lang, adapterName }), 'help');
     }
 
     openUpdateDialog(adapterToUpdate) {
@@ -1487,7 +1493,10 @@ class Adapters extends Component {
                     }
                 }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
-                onInfo={() => Adapters.openInfoDialog(value)}
+                onInfo={() => {
+                    const lang = adapter.docs?.[this.props.lang] ? this.props.lang : 'en';
+                    this.openInfoDialog({ adapter: value, lang });
+                }}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
@@ -1803,7 +1812,10 @@ class Adapters extends Component {
                     }
                 }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
-                onInfo={() => Adapters.openInfoDialog(value)}
+                onInfo={() => {
+                    const lang = adapter.docs?.[this.props.lang] ? this.props.lang : 'en';
+                    this.openInfoDialog({ adapter: value, lang });
+                }}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
@@ -1923,23 +1935,6 @@ class Adapters extends Component {
             setTimeout(() => {
                 this.setState({ triggerUpdate: this.props.triggerUpdate }, () => this.updateAll(true));
             }, 100);
-        }
-
-        if (this.state.dialog === 'readme' && this.state.dialogProp) {
-            const adapter = this.state.repository[this.state.dialogProp] || null;
-
-            if (adapter) {
-                return <TabContainer className={this.props.classes.tabContainer}>
-                    <AdapterInfoDialog
-                        theme={this.props.theme}
-                        themeType={this.props.themeType}
-                        adapter={this.state.dialogProp}
-                        link={adapter.readme || ''}
-                        socket={this.props.socket}
-                        t={this.t}
-                    />
-                </TabContainer>;
-            }
         }
 
         const { classes } = this.props;
