@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.15.0 (2024-03-01)
 * (foxriver76) harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)
 * (bluefox) added possibility to delete whole adapter from instance tab if only one instance left
 * (foxriver76) new dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)
@@ -108,9 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.13.20 (2024-02-14)
 * (foxriver76) after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally
 * (foxriver76) fixed problem with saving on multi edit custom settings
-
-### 6.13.19 (2024-02-12)
-* (foxriver76) generate notification if new adapter updates are available
 
 ## License
 The MIT License (MIT)

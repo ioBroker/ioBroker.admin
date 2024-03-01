@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.14.1",
+    "version": "6.15.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.15.0": {
+        "en": "harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)\nadded possibility to delete whole adapter from instance tab if only one instance left\nnew dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)\nthe new `licenseInformation` icon now changes color correctly with the theme",
+        "de": "die links zu adapterdokumentation (und rückfall auf englisch, wenn kein expliziter punkt für sys-sprache zur verfügung gestellt)\nhinzufügen der möglichkeit, den gesamten adapter von der registerkarte zu löschen, wenn nur eine instanz links\nneuer dialog für meldungen, die für nicht-system-benachrichtigungen eingeführt werden (system-benachrichtigungen sind noch auf hosts-tab)\ndas neue `licenseInformation`-Symbol ändert nun die Farbe korrekt mit dem Thema",
+        "ru": "гармонизирует ссылки на документацию адаптера (и возвращается на английский, если отсутствует явный док для языка sys)\nвозможность удаления всего адаптера из вкладки примера, если только один экземпляр остался\nновый диалог для уведомлений, введенных для несистемных уведомлений (системные уведомления все еще на вкладке хостов)\nновый значок «LicenseInformation» теперь правильно меняет цвет с темой",
+        "pt": "harmonizou os links para a documentação do adaptador (e a recaída ao inglês se nenhum documento explícito para a linguagem do sys fornecido)\npossibilidade adicionada de excluir o adaptador inteiro da aba da instância se apenas uma instância deixada\nnova caixa de diálogo para notificações introduzidas para notificações não-sistema (as notificações do sistema ainda estão na guia hosts)\no novo ícone `licenseInformation` agora muda a cor corretamente com o tema",
+        "nl": "geharmoniseerde links naar de documentatie van de adapter (en terugval naar het engels als er geen expliciete doc voor de gegeven sys taal)\ntoegevoegd mogelijkheid om hele adapter uit instantie tabblad te verwijderen als er nog maar één instantie over is\nnieuw dialoogvenster voor meldingen ingevoerd voor notificaties buiten het systeem (systeemmeldingen zijn nog steeds op het tabblad hosts)\nhet nieuwe ",
+        "fr": "harmonisation des liens vers la documentation de l'adaptateur (et retour à l'anglais si aucun doc explicite pour la langue de sys fourni)\npossibilité ajoutée de supprimer l'adaptateur entier de l'onglet instance si une seule instance reste\nnouvelle boîte de dialogue pour les notifications introduites pour les notifications non système (les notifications système sont toujours sur l'onglet hôte)\nla nouvelle icône `licenseInformation` change maintenant la couleur correctement avec le thème",
+        "it": "armonizzato i collegamenti alla documentazione dell'adattatore (e il ripiegamento all'inglese, se non un documento esplicito per la lingua sys fornito)\npossibilità aggiunta di eliminare l'intero adattatore dalla scheda di istanza se rimane solo un'istanza\nnuova finestra di dialogo per le notifiche introdotte per le notifiche non-sistema (le notifiche di sistema sono ancora sulla scheda host)\nla nuova icona `licenseInformation` ora cambia colore correttamente con il tema",
+        "es": "armoniza los enlaces a la documentación del adaptador (y retroceder al inglés si no hay un doc explícito para el lenguaje de sís)\nadicional posibilidad de eliminar el adaptador entero de la pestaña de instancia si sólo una instancia izquierda\nnuevo diálogo para las notificaciones introducidas para notificaciones no sistema (las notificaciones del sistema siguen en la pestaña hosts)\nel nuevo icono 'licenseInformation' ahora cambia de color correctamente con el tema",
+        "pl": "harmonizacja linków do dokumentacji adaptera (i powrót do angielskiego, jeśli nie ma wyraźnego doc dla języka sys)\ndodana możliwość usunięcia całego adaptera z zakładki instance, jeśli została tylko jedna instancja\nnowe okno dialogowe dla powiadomień wprowadzonych dla powiadomień niesystemowych (powiadomienia systemowe są nadal w zakładce hosts)\nnowa ikona 'licenseInformation' zmienia kolor poprawnie z motywem",
+        "uk": "гармонізовані посилання на документацію адаптера (і впадок в англійську, якщо немає явного довідка для наданої мови)\nдодано можливість видалити весь адаптер з вкладки екземпляра, якщо тільки один екземпляр залишив\nновий діалог для повідомлень, введених для сповіщення про несистему (системні сповіщення все ще на вкладці hosts)\n`licenseInformation````````````````````````````````________=================================================================================================================================================================================================================",
+        "zh-cn": "协调适配文件的链接(如果未为sys语言提供明确的文件,则回落到英文)\n如果仅剩一个实例, 则添加从实例标签中删除整个适配符的可能性\n为非系统通知引入的通知新对话框(系统通知仍在主机标签上)\n新的“ 许可证信息” 图标现在按照主题正确改变颜色"
+      },
       "6.14.1": {
         "en": "align items better when adapters tab is used in row mode",
         "de": "die elemente besser ausrichten, wenn die registerkarte adapter im zeilenmodus verwendet wird",
@@ -95,19 +108,6 @@
         "pl": "generować powiadomienie, jeśli dostępne są nowe aktualizacje adaptera",
         "uk": "генерувати повідомлення, якщо нові оновлення адаптера доступні",
         "zh-cn": "如果有新的适配器更新,则生成通知"
-      },
-      "6.13.17": {
-        "en": "fix date and time picker json config components showing current time even though the value is undefined\nadded new options for time picker json config component\nfixed issue when exporting jsonConfig\nAllow to install specific version of adapter",
-        "de": "fix datum und zeit picker json config komponenten zeigen aktuelle zeit, obwohl der wert undefiniert ist\nneue optionen für zeit picker json config komponente\nproblem beim Export von jsonConfig\nLassen Sie bestimmte Version des Adapters installieren",
-        "ru": "фиксированная дата и время пикера json конфигурации компоненты, показывающие текущее время, даже если значение не определено\nдобавлены новые опции для компонента настройки пикера времени\nфиксированная проблема при экспорте jsonConfig\nПозволить установить конкретную версию адаптера",
-        "pt": "corrigir data e time picker json componentes de configuração mostrando o tempo atual, mesmo que o valor seja indefinido\nadicionou novas opções para o componente json config do picador de tempo\nproblema fixo ao exportar jsonConfig\nPermitir instalar a versão específica do adaptador",
-        "nl": "fix datum en tijd picker json config componenten tonen huidige tijd, hoewel de waarde is ongedefinieerd\ntoegevoegd nieuwe opties voor tijd picker json config component\nvast probleem bij het exporteren van jsonConfig\nLaat toe om specifieke versie van adapter te installeren",
-        "fr": "fixer la date et l'heure des composants de configuration json montrant l'heure actuelle même si la valeur n'est pas définie\najout de nouvelles options pour le composant de configuration de json\nproblème fixe lors de l'exportation de jsonConfig\nPermettre d'installer une version spécifique de l'adaptateur",
-        "it": "fissare la data e l'ora picker json componenti di configurazione che mostrano l'ora corrente anche se il valore non è definito\naggiunto nuove opzioni per il componente di configurazione del picker di tempo\nemissione fissa quando si esporta jsonConfig\nConsentire di installare una versione specifica di adattatore",
-        "es": "fijar fecha y hora picker json config componentes que muestran el tiempo actual, aunque el valor no está definido\nnuevas opciones para el componente de configuración json json\ncuestión fija al exportar jsonConfig\nPermitir instalar la versión específica del adaptador",
-        "pl": "fix date and time picker json config components showing current time even though the value is undefined\ndodane nowe opcje dla time picker json config komponent\nstałe wydanie przy eksporcie jsonConfig\nPozwól na zainstalowanie określonej wersji adaptera",
-        "uk": "виправлено дату та часовий пікіратор json config компоненти, що показують поточний час, навіть якщо значення не визначено\nдодано нові параметри для таймера json config компонент\nвиправлено проблему при експорті jsonConfig\nДозволяє встановити конкретну версію адаптера",
-        "zh-cn": "固定日期和时间拾取器 json 配置组件, 显示当前时间, 即使数值未定义\n添加取时器 json 配置组件的新选项\n导出 jsonConfig 时的固定发行\n允许安装特定版本的适配器"
       }
     },
     "desc": {
