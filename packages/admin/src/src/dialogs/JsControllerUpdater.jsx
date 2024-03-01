@@ -32,7 +32,7 @@ class JsControllerUpdater extends Component {
 
         this.textareaRef = React.createRef();
 
-        this.link = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+        this.link = `${window.location.protocol}//${window.location.host}/;
     }
 
     setUpdating(updating) {
@@ -141,6 +141,7 @@ class JsControllerUpdater extends Component {
         //     stdout: string[];
         //     success?: boolean; // if installation process succeeded
         // }
+        console.log(`Request update status from: ${this.link}`);
 
         fetch(this.link)
             .then(res => res.json())

@@ -35,7 +35,7 @@ class AdminUpdater extends Component {
 
         this.textareaRef = React.createRef();
 
-        this.link = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+        this.link = `${window.location.protocol}//${window.location.host}/`;
     }
 
     setUpdating(updating) {
@@ -102,6 +102,7 @@ class AdminUpdater extends Component {
     /** @typedef {{ running: boolean; stderr: string[]; stdout: string[]; success?: boolean }} ServerResponse */
 
     checkStatus() {
+        console.log(`Request update status from: ${this.link}`);
         fetch(this.link)
             .then(res => res.json())
             .then(_response => {
