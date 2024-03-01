@@ -39,7 +39,7 @@
     "@mui/lab": "5.0.0-alpha.165",
     "@mui/material": "5.14.14",
     "@mui/styles": "5.15.11",
-    "@mui/x-data-grid": "^6.19.4",
+    "@mui/x-data-grid": "^6.19.5",
     "@mui/x-date-pickers": "^6.19.4",
     "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@react-leaflet/core": "^2.1.0",
