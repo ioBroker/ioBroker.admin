@@ -6,20 +6,22 @@ import {
     IconButton, Tooltip, Typography, Rating,
 } from '@mui/material';
 
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import AddIcon from '@mui/icons-material/Add';
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import HelpIcon from '@mui/icons-material/Help';
-import PublishIcon from '@mui/icons-material/Publish';
-import CloudIcon from '@mui/icons-material/Cloud';
-import CloudOffIcon from '@mui/icons-material/CloudOff';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import RemoveIcon from '@mui/icons-material/Remove';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import MonetizationOn from '@mui/icons-material/MonetizationOn';
+import {
+    MoreVert as MoreVertIcon,
+    Refresh as RefreshIcon,
+    Add as AddIcon,
+    AddToPhotos as AddToPhotosIcon,
+    DeleteForever as DeleteForeverIcon,
+    Help as HelpIcon,
+    Publish as PublishIcon,
+    Cloud as CloudIcon,
+    CloudOff as CloudOffIcon,
+    ArrowUpward as ArrowUpwardIcon,
+    ArrowDownward as ArrowDownwardIcon,
+    Remove as RemoveIcon,
+    GitHub as GitHubIcon,
+    MonetizationOn,
+} from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
 import { i18n, Utils } from '@iobroker/adapter-react-v5';
@@ -530,7 +532,6 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                                 className={Utils.clsx(this.props.updateAvailable && this.props.classes.greenText, this.props.classes.curdContentFlexCenter)}
                             >
                                 {!this.props.commandRunning && this.props.updateAvailable ?
-
                                     <Tooltip title={this.props.t('Update')}>
                                         <div onClick={this.props.onUpdate} className={this.props.classes.buttonUpdate}>
                                             <IconButton

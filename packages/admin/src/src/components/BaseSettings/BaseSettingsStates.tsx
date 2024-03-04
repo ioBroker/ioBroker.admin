@@ -1,7 +1,5 @@
-import { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
-import PropTypes from 'prop-types';
+import React, { createRef, Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -18,17 +16,20 @@ import {
     FormGroup,
     Switch,
     LinearProgress,
+    type Theme,
 } from '@mui/material';
 
-import { Confirm as DialogConfirm, Utils } from '@iobroker/adapter-react-v5';
+import { Confirm as DialogConfirm, Utils, withWidth } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+import { type AdminConnection } from '@iobroker/socket-client';
+
+const styles: Styles<any, any> = (theme: Theme) => ({
     paper: {
-        height:    '100%',
+        height: '100%',
         maxHeight: '100%',
-        maxWidth:  '100%',
-        overflow:  'auto',
-        padding:   theme.spacing(1),
+        maxWidth: '100%',
+        overflow: 'auto',
+        padding: theme.spacing(1),
     },
     controlItem: {
         width: 400,
@@ -68,11 +69,87 @@ const DEFAULT_JSONL_OPTIONS = {
     },
 };
 
-class BaseSettingsObjects extends Component {
-    constructor(props) {
+interface SettingsStates {
+    type?: 'file' | 'jsonl' | 'redis';
+    host?: string;
+    port?: number;
+    pass?: string;
+    connectTimeout?: number;
+    writeFileInterval?: number;
+    dataDir?: string;
+    options?: {
+        auth_pass: string;
+        retry_max_delay: number;
+        retry_max_count: number;
+        db: number;
+        family: number;
+    };
+    backup?: {
+        disabled: boolean;
+        files: number;
+        hours: number;
+        period: number;
+        path: string;
+    };
+    jsonlOptions?: {
+        autoCompress: {
+            sizeFactor: number;
+            sizeFactorMinimumSize: number;
+        };
+        throttleFS: {
+            intervalMs: number;
+            maxBufferedCommands: number;
+        };
+    };
+    noFileCache?: boolean;
+}
+
+interface BaseSettingsStatesProps {
+    t: (text: string) => string;
+    onChange: (settings: SettingsStates) => void;
+    settings: SettingsStates;
+    currentHost: string;
+    socket: AdminConnection;
+    classes: Record<string, string>;
+}
+
+interface BaseSettingsStatesState {
+    type: 'file' | 'jsonl' | 'redis';
+    host: string;
+    port: number | string;
+    connectTimeout: number | string;
+    writeFileInterval: number | string;
+    dataDir: string;
+    options_auth_pass: string;
+    options_retry_max_delay: number | string;
+    options_retry_max_count: number | string;
+    options_db: number | string;
+    options_family: number | string;
+    backup_disabled: boolean;
+    backup_files: number | string;
+    backup_hours: number | string;
+    backup_period: number | string;
+    backup_path: string;
+    jsonlOptions_autoCompress_sizeFactor: number | string;
+    jsonlOptions_autoCompress_sizeFactorMinimumSize: number | string;
+    jsonlOptions_throttleFS_intervalMs: number | string;
+    jsonlOptions_throttleFS_maxBufferedCommands: number | string;
+    textIP: boolean;
+    IPs: string[];
+    loading: boolean;
+    showWarningDialog: boolean;
+    toConfirmType: '' | 'file' | 'jsonl' | 'redis';
+    originalDBType: 'file' | 'jsonl' | 'redis';
+    noFileCache: boolean;
+}
+
+class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettingsStatesState> {
+    private focusRef: React.RefObject<HTMLInputElement>;
+
+    constructor(props: BaseSettingsStatesProps) {
         super(props);
 
-        const settings   = this.props.settings || {};
+        const settings: SettingsStates   = this.props.settings || {};
         settings.options = settings.options || {
             auth_pass: '',
             retry_max_delay: 2000,
@@ -80,7 +157,7 @@ class BaseSettingsObjects extends Component {
             db: 0,
             family: 0,
         };
-        settings.backup  = settings.backup || {
+        settings.backup = settings.backup || {
             disabled: false,
             files: 24,
             hours: 48,
@@ -112,61 +189,65 @@ class BaseSettingsObjects extends Component {
             jsonlOptions_autoCompress_sizeFactorMinimumSize: settings.jsonlOptions.autoCompress.sizeFactorMinimumSize || 25000,
             jsonlOptions_throttleFS_intervalMs: settings.jsonlOptions.throttleFS.intervalMs || 60000,
             jsonlOptions_throttleFS_maxBufferedCommands: settings.jsonlOptions.throttleFS.maxBufferedCommands || 100,
-            textIP:                  Array.isArray(settings.host) || (settings.host || '').match(/[^.\d]/) || (settings.host || '').includes(','),
+            textIP:                  Array.isArray(settings.host) || !!(settings.host || '').match(/[^.\d]/) || (settings.host || '').includes(','),
 
             IPs:                     ['0.0.0.0', '127.0.0.1'],
             loading:                 true,
             showWarningDialog:       false,
             toConfirmType:           '',
             originalDBType:          settings.type                    || 'file',
+            noFileCache:             settings.noFileCache             || false,
         };
 
         this.focusRef = createRef();
+    }
 
+    componentDidMount() {
         this.props.socket.getIpAddresses(this.props.currentHost)
             .then(_IPs => {
                 const IPs = [..._IPs];
                 !IPs.includes('0.0.0.0') && IPs.push('0.0.0.0');
                 !IPs.includes('127.0.0.1') && IPs.push('127.0.0.1');
-                this.setState({ IPs, loading: false });
+                let textIP: boolean = !!this.state.host.match(/[^.\d]/) || (this.state.host || '').includes(',');
+                if (!textIP && !IPs.includes(this.state.host)) {
+                    textIP = true;
+                }
+                this.setState({ IPs, loading: false, textIP }, () =>
+                    this.focusRef.current && this.focusRef.current.focus());
             });
-    }
-
-    componentDidMount() {
-        this.focusRef.current && this.focusRef.current.focus();
     }
 
     onChange() {
         const settings = {
             type:                this.state.type,
             host:                this.state.host,
-            port:                parseInt(this.state.port, 10),
+            port:                parseInt(this.state.port as string, 10),
             noFileCache:         this.state.noFileCache,
-            connectTimeout:      parseInt(this.state.connectTimeout, 10),
-            writeFileInterval:   parseInt(this.state.writeFileInterval, 10),
+            connectTimeout:      parseInt(this.state.connectTimeout as string, 10),
+            writeFileInterval:   parseInt(this.state.writeFileInterval as string, 10),
             dataDir:             this.state.dataDir,
             options: {
                 auth_pass:       this.state.options_auth_pass || null,
-                retry_max_delay: parseInt(this.state.options_retry_max_delay, 10),
-                retry_max_count: parseInt(this.state.options_retry_max_count, 10),
-                db:              parseInt(this.state.options_db, 10),
-                family:          parseInt(this.state.options_family, 10),
+                retry_max_delay: parseInt(this.state.options_retry_max_delay as string, 10),
+                retry_max_count: parseInt(this.state.options_retry_max_count as string, 10),
+                db:              parseInt(this.state.options_db as string, 10),
+                family:          parseInt(this.state.options_family as string, 10),
             },
             backup: {
                 disabled:        this.state.backup_disabled,
-                files:           parseInt(this.state.backup_files, 10),
-                hours:           parseInt(this.state.backup_hours, 10),
-                period:          parseInt(this.state.backup_period, 10),
+                files:           parseInt(this.state.backup_files as string, 10),
+                hours:           parseInt(this.state.backup_hours as string, 10),
+                period:          parseInt(this.state.backup_period as string, 10),
                 path:            this.state.backup_path,
             },
             jsonlOptions: {
                 autoCompress: {
-                    sizeFactor: parseInt(this.state.jsonlOptions_autoCompress_sizeFactor, 10),
-                    sizeFactorMinimumSize: parseInt(this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize, 10),
+                    sizeFactor: parseInt(this.state.jsonlOptions_autoCompress_sizeFactor as string, 10),
+                    sizeFactorMinimumSize: parseInt(this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize as string, 10),
                 },
                 throttleFS: {
-                    intervalMs: parseInt(this.state.jsonlOptions_throttleFS_intervalMs, 10),
-                    maxBufferedCommands: parseInt(this.state.jsonlOptions_throttleFS_maxBufferedCommands, 10),
+                    intervalMs: parseInt(this.state.jsonlOptions_throttleFS_intervalMs as string, 10),
+                    maxBufferedCommands: parseInt(this.state.jsonlOptions_throttleFS_maxBufferedCommands as string, 10),
                 },
             },
         };
@@ -205,7 +286,7 @@ class BaseSettingsObjects extends Component {
                             port = 9000;
                         }
                         this.setState(
-                            { type: this.state.toConfirmType, showWarningDialog: false, port },
+                            { type: this.state.toConfirmType || 'file', showWarningDialog: false, port },
                             () => this.onChange(),
                         );
                     } else {
@@ -234,7 +315,7 @@ class BaseSettingsObjects extends Component {
                                     value={this.state.type}
                                     onChange={e => {
                                         if (e.target.value !== this.state.originalDBType) {
-                                            this.setState({ toConfirmType: e.target.value, showWarningDialog: true });
+                                            this.setState({ toConfirmType: e.target.value as '' | 'file' | 'jsonl' | 'redis', showWarningDialog: true });
                                         } else {
                                             let port;
 
@@ -305,8 +386,7 @@ class BaseSettingsObjects extends Component {
                             className={this.props.classes.controlItem}
                             value={this.state.port}
                             type="number"
-                            min={1}
-                            max={65535}
+                            InputProps={{ inputProps: { min: 1, max: 65535 } }}
                             onChange={e => this.setState({ port: e.target.value }, () => this.onChange())}
                             label={this.props.t('Port')}
                         />
@@ -352,7 +432,7 @@ class BaseSettingsObjects extends Component {
                             value={this.state.connectTimeout}
                             helperText={this.props.t('ms')}
                             type="number"
-                            min={200}
+                            InputProps={{ inputProps: { min: 200 } }}
                             onChange={e => this.setState({ connectTimeout: e.target.value }, () => this.onChange())}
                             label={this.props.t('Connect timeout')}
                         />
@@ -365,7 +445,7 @@ class BaseSettingsObjects extends Component {
                             value={this.state.writeFileInterval}
                             helperText={this.props.t('How often the data from RAM will be saved on disk in ms')}
                             type="number"
-                            min={200}
+                            InputProps={{ inputProps: { min: 200 } }}
                             onChange={e => this.setState({ writeFileInterval: e.target.value }, () => this.onChange())}
                             label={this.props.t('Store file interval')}
                         />
@@ -544,11 +624,4 @@ class BaseSettingsObjects extends Component {
     }
 }
 
-BaseSettingsObjects.propTypes = {
-    t: PropTypes.func,
-    onChange: PropTypes.func.isRequired,
-    settings: PropTypes.object.isRequired,
-    currentHost: PropTypes.string,
-};
-
-export default withWidth()(withStyles(styles)(BaseSettingsObjects));
+export default withWidth()(withStyles(styles)(BaseSettingsStates));

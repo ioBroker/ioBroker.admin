@@ -1,23 +1,22 @@
-import { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
-import PropTypes from 'prop-types';
+import React, { createRef, Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 import {
     Grid,
     FormControlLabel,
     Checkbox,
     TextField,
-    Paper,
+    Paper, type Theme,
 } from '@mui/material';
 
-const styles = theme => ({
+const styles: Styles<any, any> = (theme: Theme) => ({
     paper: {
-        height:    '100%',
+        height: '100%',
         maxHeight: '100%',
-        maxWidth:  '100%',
-        overflow:  'auto',
-        padding:   theme.spacing(1),
+        maxWidth: '100%',
+        overflow: 'auto',
+        padding: theme.spacing(1),
     },
     controlItem: {
         width: `calc(100% - ${theme.spacing(2)})`,
@@ -31,11 +30,47 @@ const styles = theme => ({
     },
 });
 
-class BaseSettingsSystem extends Component {
-    constructor(props) {
+interface SystemSettings {
+    memoryLimitMB?: number;
+    hostname?: string;
+    statisticsInterval?: number;
+    checkDiskInterval?: number;
+    instanceStartInterval?: number;
+    compact?: boolean;
+    allowShellCommands?: boolean;
+    memLimitWarn?: number;
+    memLimitError?: number;
+    noChmod?: boolean;
+}
+
+interface BaseSettingsSystemProps {
+    t: (text: string) => string;
+    onChange: (settings: SystemSettings) => void;
+    settings: SystemSettings;
+    currentHost: string;
+    classes: Record<string, any>;
+}
+
+interface BaseSettingsSystemState {
+    memoryLimitMB: number;
+    hostname: string;
+    statisticsInterval: number;
+    checkDiskInterval: number;
+    instanceStartInterval: number;
+    compact: boolean;
+    allowShellCommands: boolean;
+    memLimitWarn: number;
+    memLimitError: number;
+    noChmod: boolean;
+}
+
+class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettingsSystemState> {
+    private focusRef: React.RefObject<HTMLInputElement>;
+
+    constructor(props: BaseSettingsSystemProps) {
         super(props);
 
-        const settings = this.props.settings || {};
+        const settings: SystemSettings = this.props.settings || {};
 
         this.state = {
             memoryLimitMB:         settings.memoryLimitMB         || 0,
@@ -47,6 +82,7 @@ class BaseSettingsSystem extends Component {
             allowShellCommands:    settings.allowShellCommands    || false,
             memLimitWarn:          settings.memLimitWarn          || 100,
             memLimitError:         settings.memLimitError         || 50,
+            noChmod:               settings.noChmod               || false,
         };
 
         this.focusRef = createRef();
@@ -92,7 +128,7 @@ class BaseSettingsSystem extends Component {
                             className={this.props.classes.controlItem}
                             value={this.state.checkDiskInterval}
                             type="number"
-                            min={1000}
+                            InputProps={{ inputProps: { min: 1000 } }}
                             onChange={e => this.setState({ checkDiskInterval: parseInt(e.target.value, 10) }, () => this.onChange())}
                             helperText={this.props.t('How oft the disk will be checked. Do not set it to low, because it can affect system performance. Value is in ms')}
                         />
@@ -104,7 +140,7 @@ class BaseSettingsSystem extends Component {
                             className={this.props.classes.controlItem}
                             value={this.state.statisticsInterval}
                             type="number"
-                            min={5000}
+                            InputProps={{ inputProps: { min: 5000 } }}
                             onChange={e => this.setState({ statisticsInterval: parseInt(e.target.value, 10) }, () => this.onChange())}
                             helperText={this.props.t('How oft the instance statistics will be updated. Used RAM, CPU and so on. Value is in ms')}
                         />
@@ -175,12 +211,5 @@ class BaseSettingsSystem extends Component {
         </Paper>;
     }
 }
-
-BaseSettingsSystem.propTypes = {
-    t: PropTypes.func,
-    onChange: PropTypes.func.isRequired,
-    settings: PropTypes.object.isRequired,
-    currentHost: PropTypes.string,
-};
 
 export default withWidth()(withStyles(styles)(BaseSettingsSystem));
