@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 import semver from 'semver';
 
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
 import {
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemSecondaryAction,
+    ListItemText,
+    Checkbox,
     Avatar, Button,
     CircularProgress,
     Dialog, DialogActions,
@@ -19,9 +19,11 @@ import {
     Typography,
 } from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import LanguageIcon from '@mui/icons-material/Language';
-import InfoIcon from '@mui/icons-material/Info';
+import {
+    Close as CloseIcon,
+    Language as LanguageIcon,
+    Info as InfoIcon,
+} from '@mui/icons-material';
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
 

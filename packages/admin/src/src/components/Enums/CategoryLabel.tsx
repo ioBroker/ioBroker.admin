@@ -1,14 +1,29 @@
+import React from 'react';
 import { useDrop } from 'react-dnd';
-import PropTypes from 'prop-types';
 
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
+import {
+    Tooltip,
+    IconButton,
+} from '@mui/material';
 
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+} from '@mui/icons-material';
+
 import { Utils } from '@iobroker/adapter-react-v5';
 
-const CategoryLabel = props => {
+interface CategoryLabelProps {
+    categoryData: Record<string, any>;
+    showEnumEditDialog: (category: Record<string, any>, isNew: boolean) => void;
+    showEnumDeleteDialog: (category: Record<string, any>) => void;
+    classes: Record<string, any>;
+    t: (text: string) => string;
+    lang: string;
+    themeType: string;
+}
+
+const CategoryLabel = (props: CategoryLabelProps) => {
     const [, drop] = useDrop(() => ({
         accept: ['enum'],
         drop: () => ({ enumId: props.categoryData._id }),
@@ -45,16 +60,6 @@ const CategoryLabel = props => {
             </Tooltip>
         </IconButton> }
     </span>;
-};
-
-CategoryLabel.propTypes = {
-    categoryData: PropTypes.object,
-    showEnumEditDialog: PropTypes.func,
-    showEnumDeleteDialog: PropTypes.func,
-    classes: PropTypes.object,
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    themeType: PropTypes.string,
 };
 
 export default CategoryLabel;

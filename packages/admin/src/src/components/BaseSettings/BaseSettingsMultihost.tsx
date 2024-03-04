@@ -1,22 +1,23 @@
-import { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { createRef, Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 
-import Grid from '@mui/material/Grid';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import TextField from '@mui/material/TextField';
-import Paper from  '@mui/material/Paper';
+import {
+    Grid,
+    FormControlLabel,
+    Checkbox,
+    TextField,
+    Paper, type Theme,
+} from '@mui/material';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles: Styles<any, any> = (theme: Theme) => ({
     paper: {
-        height:    '100%',
+        height: '100%',
         maxHeight: '100%',
-        maxWidth:  '100%',
-        overflow:  'auto',
-        padding:   theme.spacing(1),
+        maxWidth: '100%',
+        overflow: 'auto',
+        padding: theme.spacing(1),
     },
     controlItem: {
         width: `calc(100% - ${theme.spacing(2)})`,
@@ -30,20 +31,42 @@ const styles = theme => ({
     },
 });
 
-class BaseSettingsMultihost extends Component {
-    constructor(props) {
+interface MultihostSettings {
+    enabled?: boolean;
+    secure?: boolean;
+    password?: string;
+}
+
+interface BaseSettingsMultihostProps {
+    t: (text: string) => string;
+    onChange: (settings: MultihostSettings) => void;
+    settings: MultihostSettings;
+    socket: Record<string, any>;
+    classes: Record<string, any>;
+}
+
+interface BaseSettingsMultihostState {
+    enabled: boolean;
+    secure: boolean;
+    password?: string;
+}
+
+class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSettingsMultihostState> {
+    private focusRef: React.RefObject<HTMLInputElement>;
+
+    constructor(props: BaseSettingsMultihostProps) {
         super(props);
 
-        const settings = this.props.settings || {};
+        const settings: MultihostSettings = this.props.settings || {};
 
         this.state = {
-            enabled:   settings.enabled  || false,
-            secure:    settings.secure   || true,
-            password:  '',
+            enabled: settings.enabled || false,
+            secure: settings.secure || true,
+            password: '',
         };
 
         settings.password && this.props.socket.decrypt(settings.password)
-            .then(plainPass =>
+            .then((plainPass: string) =>
                 this.setState({ password: plainPass }));
 
         this.focusRef = createRef();
@@ -54,14 +77,14 @@ class BaseSettingsMultihost extends Component {
     }
 
     onChange() {
-        const newState = {
+        const newState: BaseSettingsMultihostState = {
             enabled: this.state.enabled,
             secure:  this.state.secure,
         };
 
         if (this.state.password) {
             this.props.socket.encrypt(this.state.password)
-                .then(encodedPass => {
+                .then((encodedPass: string) => {
                     newState.password = encodedPass;
                     this.props.onChange(newState);
                 });
@@ -122,12 +145,5 @@ class BaseSettingsMultihost extends Component {
         </Paper>;
     }
 }
-
-BaseSettingsMultihost.propTypes = {
-    t: PropTypes.func,
-    onChange: PropTypes.func.isRequired,
-    settings: PropTypes.object.isRequired,
-    socket: PropTypes.object,
-};
 
 export default withWidth()(withStyles(styles)(BaseSettingsMultihost));

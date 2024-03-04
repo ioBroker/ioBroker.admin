@@ -1,36 +1,41 @@
-import { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
-import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Select from '@mui/material/Select';
-import TextField from '@mui/material/TextField';
-import FormHelperText from '@mui/material/FormHelperText';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Toolbar from '@mui/material/Toolbar';
-import FormControl from '@mui/material/FormControl';
-import Paper from '@mui/material/Paper';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
-import Fab from '@mui/material/Fab';
+import React, { createRef, Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
+
+import {
+    Grid,
+    InputLabel,
+    FormControlLabel,
+    Checkbox,
+    Select,
+    TextField,
+    FormHelperText,
+    Button,
+    MenuItem,
+    Toolbar,
+    FormControl,
+    Paper,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Typography,
+    Fab,
+    type Theme,
+} from '@mui/material';
 
 // Icons
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import IconPlus from '@mui/icons-material/Add';
-import IconDelete from '@mui/icons-material/Delete';
-import IconHttp from '@mui/icons-material/Language';
-import IconFile from '@mui/icons-material/InsertDriveFile';
-import IconSyslog from '@mui/icons-material/Computer';
-import IconStream from '@mui/icons-material/Send';
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import {
+    ExpandMore as ExpandMoreIcon,
+    Add as IconPlus,
+    Delete as IconDelete,
+    Language as IconHttp,
+    InsertDriveFile as IconFile,
+    Computer as IconSyslog,
+    Send as IconStream,
+} from '@mui/icons-material';
+import { withWidth } from '@iobroker/adapter-react-v5';
 import IconSeq from '../../assets/seq.png';
 
-const styles = theme => ({
+const styles: Styles<any, any> = (theme: Theme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -66,16 +71,65 @@ const styles = theme => ({
     },
 });
 
-class BaseSettingsLog extends Component {
-    constructor(props) {
+interface TransportSettings {
+    type: string;
+    enabled: boolean;
+    level?: string;
+    host?: string;
+    port?: number | string;
+    protocol?: string;
+    path?: string;
+    facility?: string;
+    localhost?: string;
+    sysLogType?: string;
+    app_name?: string;
+    eol?: string;
+    filename?: string;
+    fileext?: string;
+    maxSize?: number | string;
+    maxFiles?: number | string;
+    stream?: string;
+    silent?: boolean;
+    serverUrl?: string;
+    apiKey?: string;
+    auth?: string;
+    ssl?: boolean;
+}
+
+interface SettingsLog {
+    transport?: Record<string, TransportSettings>;
+    level?: string;
+    maxDays?: number;
+    noStdout?: boolean;
+}
+
+interface BaseSettingsLogProps {
+    t: (text: string) => string;
+    onChange: (settings: SettingsLog) => void;
+    settings: SettingsLog;
+    classes: Record<string, string>;
+}
+
+interface BaseSettingsLogState {
+    level: string;
+    maxDays: number | string;
+    noStdout: boolean;
+    transport: Record<string, any>;
+    expanded: string[];
+}
+
+class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogState> {
+    private focusRef: React.RefObject<HTMLInputElement>;
+
+    constructor(props: BaseSettingsLogProps) {
         super(props);
 
-        const settings = this.props.settings || {};
+        const settings: SettingsLog = this.props.settings || {};
         settings.transport = settings.transport || {};
         Object.keys(settings.transport).forEach(id => {
             if (settings.transport[id].type === 'file') {
-                const multiplier = typeof settings.transport[id].maxSize === 'string' ? (settings.transport[id].maxSize.includes('k') ? 0.1 : (settings.transport[id].maxSize.includes('g') ? 10 : 1)) : 1;
-                settings.transport[id].maxSize = (parseInt(settings.transport[id].maxSize, 10) || 0) * multiplier;
+                const multiplier = typeof settings.transport[id].maxSize === 'string' ? ((settings.transport[id].maxSize as string).includes('k') ? 0.1 : ((settings.transport[id].maxSize as string).includes('g') ? 10 : 1)) : 1;
+                settings.transport[id].maxSize = (parseInt(settings.transport[id].maxSize as string, 10) || 0) * multiplier;
                 settings.transport[id].level = settings.transport[id].level || '';
                 settings.transport[id].maxFiles = settings.transport[id].maxFiles || 0;
             } else if (settings.transport[id].type === 'syslog') {
@@ -123,23 +177,23 @@ class BaseSettingsLog extends Component {
     }
 
     onChange() {
-        const settings = {
+        const settings: SettingsLog = {
             level: this.state.level,
-            maxDays: parseInt(this.state.maxDays, 10),
+            maxDays: parseInt(this.state.maxDays as string, 10),
             noStdout: this.state.noStdout,
             transport: {},
         };
 
         Object.keys(this.state.transport).forEach(id => {
-            settings.transport[id] = JSON.parse(JSON.stringify(this.state.transport[id]));
+            settings.transport[id] = JSON.parse(JSON.stringify(this.state.transport[id])) as TransportSettings;
 
             if (this.state.transport[id].type === 'file') {
-                settings.transport[id].maxSize = parseInt(settings.transport[id].maxSize, 10) || null;
+                settings.transport[id].maxSize = parseInt(settings.transport[id].maxSize as string, 10) || null;
                 if (settings.transport[id].maxSize) {
                     // 'k', 'm', or 'g'
                     settings.transport[id].maxSize = `${settings.transport[id].maxSize.toString()}m`;
                 }
-                settings.transport[id].maxFiles = parseInt(settings.transport[id].maxFiles, 10) || null;
+                settings.transport[id].maxFiles = parseInt(settings.transport[id].maxFiles as string, 10) || null;
             } else if (this.state.transport[id].type === 'syslog') {
                 !settings.transport[id].port && delete settings.transport[id].port;
                 !settings.transport[id].path && delete settings.transport[id].path;
@@ -148,7 +202,7 @@ class BaseSettingsLog extends Component {
                 !settings.transport[id].eol && delete settings.transport[id].eol;
             } else if (this.state.transport[id].type === 'http') {
                 settings.transport[id].host = settings.transport[id].host || '';
-                settings.transport[id].port = parseInt(settings.transport[id].port, 10) || 80;
+                settings.transport[id].port = parseInt(settings.transport[id].port as string, 10) || 80;
                 settings.transport[id].path = settings.transport[id].path || '/';
                 settings.transport[id].auth = settings.transport[id].auth || '';
                 settings.transport[id].ssl = settings.transport[id].ssl || false;
@@ -163,13 +217,13 @@ class BaseSettingsLog extends Component {
         this.props.onChange(settings);
     }
 
-    onDelete(id) {
+    onDelete(id: string) {
         const transport = JSON.parse(JSON.stringify(this.state.transport));
         delete transport[id];
         this.setState({ transport }, () => this.onChange());
     }
 
-    renderEnabled(name) {
+    renderEnabled(name: string) {
         return <Grid item>
             <FormControlLabel
                 className={this.props.classes.controlItem}
@@ -188,7 +242,7 @@ class BaseSettingsLog extends Component {
         </Grid>;
     }
 
-    renderLogLevel(name) {
+    renderLogLevel(name: string) {
         return this.state.transport[name].enabled ? <Grid item>
             <FormControl className={this.props.classes.controlItem} variant="standard">
                 <InputLabel>{this.props.t('Level')}</InputLabel>
@@ -214,7 +268,7 @@ class BaseSettingsLog extends Component {
         </Grid> : null;
     }
 
-    renderSyslog(name) {
+    renderSyslog(name: string) {
         return <Accordion
             key={name}
             expanded={this.state.expanded.includes(name)}
@@ -376,7 +430,7 @@ class BaseSettingsLog extends Component {
         </Accordion>;
     }
 
-    renderFile(name) {
+    renderFile(name: string): React.JSX.Element {
         return <Accordion
             key={name}
             expanded={this.state.expanded.includes(name)}
@@ -464,7 +518,7 @@ class BaseSettingsLog extends Component {
         </Accordion>;
     }
 
-    renderHttp(name) {
+    renderHttp(name: string) {
         return <Accordion
             key={name}
             expanded={this.state.expanded.includes(name)}
@@ -567,7 +621,7 @@ class BaseSettingsLog extends Component {
         </Accordion>;
     }
 
-    renderStream(name) {
+    renderStream(name: string) {
         return <Accordion
             key={name}
             expanded={this.state.expanded.includes(name)}
@@ -640,7 +694,7 @@ class BaseSettingsLog extends Component {
         </Accordion>;
     }
 
-    renderSEQ(name) {
+    renderSEQ(name: string) {
         return <Accordion
             key={name}
             expanded={this.state.expanded.includes(name)}
@@ -698,7 +752,7 @@ class BaseSettingsLog extends Component {
         </Accordion>;
     }
 
-    add(type) {
+    add(type: string) {
         if (type === 'file') {
             let i = 1;
 
@@ -864,23 +918,58 @@ class BaseSettingsLog extends Component {
                 </Grid>
             </Grid>
             <Toolbar>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('file')} startIcon={<IconPlus />}>
+                <Button
+                    // @ts-expect-error grey is a valid color
+                    color="grey"
+                    className={this.props.classes.addButton}
+                    variant="contained"
+                    onClick={() => this.add('file')}
+                    startIcon={<IconPlus />}
+                >
                     <IconFile className={this.props.classes.buttonIcon} />
                     {this.props.t('File log')}
                 </Button>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('syslog')} startIcon={<IconPlus />}>
+                <Button
+                    // @ts-expect-error grey is a valid color
+                    color="grey"
+                    className={this.props.classes.addButton}
+                    variant="contained"
+                    onClick={() => this.add('syslog')}
+                    startIcon={<IconPlus />}
+                >
                     <IconSyslog className={this.props.classes.buttonIcon} />
                     {this.props.t('Syslog')}
                 </Button>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('http')} startIcon={<IconPlus />}>
+                <Button
+                    // @ts-expect-error grey is a valid color
+                    color="grey"
+                    className={this.props.classes.addButton}
+                    variant="contained"
+                    onClick={() => this.add('http')}
+                    startIcon={<IconPlus />}
+                >
                     <IconHttp className={this.props.classes.buttonIcon} />
                     {this.props.t('HTTP log')}
                 </Button>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('stream')} startIcon={<IconPlus />}>
+                <Button
+                    // @ts-expect-error grey is a valid color
+                    color="grey"
+                    className={this.props.classes.addButton}
+                    variant="contained"
+                    onClick={() => this.add('stream')}
+                    startIcon={<IconPlus />}
+                >
                     <IconStream className={this.props.classes.buttonIcon} />
                     {this.props.t('Stream log')}
                 </Button>
-                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('seq')} startIcon={<IconPlus />}>
+                <Button
+                    // @ts-expect-error grey is a valid color
+                    color="grey"
+                    className={this.props.classes.addButton}
+                    variant="contained"
+                    onClick={() => this.add('seq')}
+                    startIcon={<IconPlus />}
+                >
                     <img src={IconSeq} className={this.props.classes.buttonIcon} alt="seq" />
                     {this.props.t('SEQ log')}
                 </Button>
@@ -888,11 +977,5 @@ class BaseSettingsLog extends Component {
         </Paper>;
     }
 }
-
-BaseSettingsLog.propTypes = {
-    t: PropTypes.func,
-    onChange: PropTypes.func.isRequired,
-    settings: PropTypes.object.isRequired,
-};
 
 export default withWidth()(withStyles(styles)(BaseSettingsLog));

@@ -13,7 +13,9 @@ import {
     TableRow,
     Tooltip,
     Typography,
-    Rating, type Theme,
+    Rating,
+    type Theme,
+    Link,
 } from '@mui/material';
 
 import {
@@ -23,24 +25,25 @@ import {
     red,
 } from '@mui/material/colors';
 
-import AddIcon from '@mui/icons-material/Add';
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
-import BuildIcon from '@mui/icons-material/RotateRight';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import CloudIcon from '@mui/icons-material/Cloud';
-import CloudOffIcon from '@mui/icons-material/CloudOff';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import HelpIcon from '@mui/icons-material/Help';
-import PublishIcon from '@mui/icons-material/Publish';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import RemoveIcon from '@mui/icons-material/Remove';
+import {
+    Add as AddIcon,
+    AddToPhotos as AddToPhotosIcon,
+    Build as BuildIcon,
+    ChevronRight as ChevronRightIcon,
+    Cloud as CloudIcon,
+    CloudOff as CloudOffIcon,
+    DeleteForever as DeleteForeverIcon,
+    ExpandMore as ExpandMoreIcon,
+    GitHub as GitHubIcon,
+    Help as HelpIcon,
+    Publish as PublishIcon,
+    Refresh as RefreshIcon,
+    ArrowUpward as ArrowUpwardIcon,
+    ArrowDownward as ArrowDownwardIcon,
+    Remove as RemoveIcon,
+    MonetizationOn,
+} from '@mui/icons-material';
 
-import Link from '@mui/material/Link';
-import MonetizationOn from '@mui/icons-material/MonetizationOn';
 import IsVisible from '../IsVisible';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import sentryIcon from '../../assets/sentry.svg';
