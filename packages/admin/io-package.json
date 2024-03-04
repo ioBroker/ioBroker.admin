@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.15.0",
+    "version": "6.15.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.15.1": {
+        "en": "fixed problem with saving array values in custom config\nfixed issue on deleting objects\nmake UI update of controller and admin more verbose",
+        "de": "festes problem beim speichern von array-werten in benutzerdefinierten config\nproblem beim löschen von objekten\nuI-Update von Controller und Admin mehr Verbose",
+        "ru": "фиксированная проблема с сохранением значений массива в пользовательской конфигурации\nфиксированный вопрос об удалении объектов\nсделать UI обновление контроллера и администратора более глагол",
+        "pt": "problema fixo com salvar valores de array em configuração personalizada\nproblema fixo na exclusão de objetos\nfazer UI atualização de controlador e admin mais verbose",
+        "nl": "vast probleem met het opslaan van arraywaarden in aangepaste configuratie\nvast probleem bij het verwijderen van objecten\nmaak UI update van controller en admin meer verbose",
+        "fr": "problème fixe avec sauvegarde des valeurs du tableau dans la configuration personnalisée\nproblème corrigé lors de la suppression d'objets\nrendre la mise à jour de l'interface utilisateur de contrôleur et administrateur plus verbeux",
+        "it": "problema fisso con il salvataggio dei valori di array in configurazione personalizzata\nproblema fisso sull'eliminazione degli oggetti\nrendere l'aggiornamento UI del controller e amministratore più verbose",
+        "es": "problema fijo con valores de matriz de ahorro en config personalizado\ncuestión fija en la eliminación de objetos\nhacer UI actualización de controlador y admin más verbose",
+        "pl": "stały problem z zapisaniem wartości tablicy w niestandardowym konfiguratorze\nstałe wydanie na usuwaniu obiektów\ndokonać UI aktualizacji kontrolera i admin więcej verbose",
+        "uk": "виправлена проблема з збереженням значень масиву в налаштуванні\nвиправлено проблему видалення об'єктів\nзробіть оновлення UI контролера та адміністратора більш дієслово",
+        "zh-cn": "在自定义配置中保存数组值的固定问题\n删除对象的固定问题\n使控制器的 UI 更新和操作更加动词化"
+      },
       "6.15.0": {
         "en": "harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)\nadded possibility to delete whole adapter from instance tab if only one instance left\nnew dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)\nthe new `licenseInformation` icon now changes color correctly with the theme",
         "de": "die links zu adapterdokumentation (und rückfall auf englisch, wenn kein expliziter punkt für sys-sprache zur verfügung gestellt)\nhinzufügen der möglichkeit, den gesamten adapter von der registerkarte zu löschen, wenn nur eine instanz links\nneuer dialog für meldungen, die für nicht-system-benachrichtigungen eingeführt werden (system-benachrichtigungen sind noch auf hosts-tab)\ndas neue `licenseInformation`-Symbol ändert nun die Farbe korrekt mit dem Thema",
@@ -84,19 +97,6 @@
         "zh-cn": "在通过 npm 标签成功更新后, 执行额外的上传, 因为“ iob url” 命令不会在内部执行 \n在多编辑自定义设置中保存的固定问题"
       },
       "6.13.19": {
-        "en": "generate notification if new adapter updates are available",
-        "de": "benachrichtigung generieren, wenn neue adapter-updates verfügbar sind",
-        "ru": "генерировать уведомление, если доступны новые обновления адаптера",
-        "pt": "gerar notificação se novas atualizações do adaptador estiverem disponíveis",
-        "nl": "melding genereren als er nieuwe updates beschikbaar zijn",
-        "fr": "générer une notification si de nouvelles mises à jour d'adaptateur sont disponibles",
-        "it": "generare notifica se sono disponibili nuovi aggiornamenti dell'adattatore",
-        "es": "generar notificación si nuevas actualizaciones de adaptador están disponibles",
-        "pl": "generować powiadomienie, jeśli dostępne są nowe aktualizacje adaptera",
-        "uk": "генерувати повідомлення, якщо нові оновлення адаптера доступні",
-        "zh-cn": "如果有新的适配器更新,则生成通知"
-      },
-      "6.13.18": {
         "en": "generate notification if new adapter updates are available",
         "de": "benachrichtigung generieren, wenn neue adapter-updates verfügbar sind",
         "ru": "генерировать уведомление, если доступны новые обновления адаптера",

@@ -89,9 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.15.1 (2024-03-04)
 * (foxriver76) fixed problem with saving array values in custom config
-* (foxriver76) fixed issue on deleting admin
+* (foxriver76) fixed issue on deleting objects
 * (foxriver76) make UI update of controller and admin more verbose
 
 ### 6.15.0 (2024-03-01)
@@ -109,10 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.13.21 (2024-02-15)
 * (foxriver76) do not crash when using the dropdown on multi edit custom settings
-
-### 6.13.20 (2024-02-14)
-* (foxriver76) after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally
-* (foxriver76) fixed problem with saving on multi edit custom settings
 
 ## License
 The MIT License (MIT)
