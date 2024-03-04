@@ -25,7 +25,6 @@ import { amber } from '@mui/material/colors';
 import { i18n, Utils } from '@iobroker/adapter-react-v5';
 
 import Link from '@mui/material/Link';
-// @ts-expect-error adapt tsconfig
 import sentryIcon from '../../assets/sentry.svg';
 import IsVisible from '../IsVisible';
 

@@ -1,6 +1,5 @@
-import { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -11,7 +10,7 @@ import {
     Toolbar,
     Stepper,
     Step,
-    StepLabel,
+    StepLabel, type Theme,
 } from '@mui/material';
 
 // Icons
@@ -22,7 +21,7 @@ import {
 
 import {
     withWidth, Utils,
-    Router, ToggleThemeMenu,
+    Router, ToggleThemeMenu, I18n, type AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
 import WizardPasswordTab from '../components/Wizard/WizardPasswordTab';
@@ -37,7 +36,7 @@ import LongLogo from '../assets/longLogo.svg';
 
 const TOOLBAR_HEIGHT = 64;
 
-const styles = theme => ({
+const styles = (theme: Theme) => ({
     dialog: {
         height: '100%',
         maxHeight: '100%',
@@ -106,10 +105,27 @@ const styles = theme => ({
     finalLongLogo: {
         width: 500,
     },
-});
+}) satisfies Styles<any, any>;
 
-class WizardDialog extends Component {
-    constructor(props) {
+interface WizardDialogProps {
+    t: typeof I18n.t;
+    socket: AdminConnection;
+    onClose: (redirect?: string) => void;
+    toggleTheme: () => void;
+    themeName: string;
+    classes: Record<string, any>;
+}
+
+interface WizardDialogState {
+    activeStep: number;
+    auth: boolean;
+    secure: boolean;
+}
+
+class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
+    private adminInstance: null | ioBroker.AdapterObject = null;
+
+    constructor(props: WizardDialogProps) {
         super(props);
 
         this.state = {
@@ -117,12 +133,11 @@ class WizardDialog extends Component {
             auth: false,
             secure: false,
         };
-        this.adminInstance = null;
     }
 
     componentDidMount() {
         this.props.socket.getCurrentInstance()
-            .then(namespace =>
+            .then((namespace: string) =>
                 this.props.socket.getObject(`system.adapter.${namespace}`)
                     .then(obj => {
                         this.adminInstance = obj;
@@ -160,7 +175,7 @@ class WizardDialog extends Component {
             t={this.props.t}
             socket={this.props.socket}
             themeName={this.props.themeName}
-            onDone={settings => {
+            onDone={(settings: any) => {
                 this.props.socket.getSystemConfig(true)
                     .then(obj => {
                         obj.common.licenseConfirmed = true;
@@ -179,7 +194,7 @@ class WizardDialog extends Component {
             t={this.props.t}
             socket={this.props.socket}
             themeName={this.props.themeName}
-            onDone={pass =>
+            onDone={(pass: string) =>
                 this.props.socket.changePassword('admin', pass)
                     .then(() =>
                         this.setState({ activeStep: this.state.activeStep + 1 }))}
@@ -191,7 +206,7 @@ class WizardDialog extends Component {
             t={this.props.t}
             socket={this.props.socket}
             themeName={this.props.themeName}
-            onDone={settings =>
+            onDone={(settings: any) =>
                 this.props.socket.getSystemConfig(true)
                     .then(obj => {
                         Object.assign(obj.common, settings);
@@ -209,7 +224,7 @@ class WizardDialog extends Component {
             secure={this.state.secure}
             socket={this.props.socket}
             themeName={this.props.themeName}
-            onDone={settings =>
+            onDone={(settings: any) =>
                 this.setState(settings, () => this.setState({ activeStep: this.state.activeStep + 1 }))}
         />;
     }
@@ -234,7 +249,7 @@ class WizardDialog extends Component {
             let certPublic;
             let certPrivate;
             if (this.adminInstance.native.secure !== this.state.secure || this.adminInstance.native.auth !== this.state.auth) {
-                if (this.state.secure && (!this.adminInstance.certPublic || !!this.adminInstance.certPrivate)) {
+                if (this.state.secure && (!this.adminInstance.native.certPublic || !!this.adminInstance.native.certPrivate)) {
                     // get certificates
                     try {
                         const certs = await this.props.socket.getCertificates();
@@ -253,6 +268,7 @@ class WizardDialog extends Component {
                         this.adminInstance.native.secure = false;
 
                         await this.props.socket.setObject(this.adminInstance._id, this.adminInstance);
+                        // @ts-expect-error check later
                         setTimeout(() => window.location = `http://${window.location.host}/#tab-adapters${discovery?.val ? '/discovery' : ''}`, 1000);
                         this.props.onClose();
                         return;
@@ -321,7 +337,7 @@ class WizardDialog extends Component {
                 <img src={Logo} className={this.props.classes.logo} alt="logo" />
                 {this.props.t('Initial ioBroker setup')}
                 {' '}
-                <ToggleThemeMenu className={this.props.classes.themeButton} t={this.props.t} toggleTheme={this.props.toggleTheme} themeName={this.props.themeName} size="small" />
+                <ToggleThemeMenu className={this.props.classes.themeButton} t={this.props.t} toggleTheme={this.props.toggleTheme} themeName={this.props.themeName as any} size="small" />
             </DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
@@ -348,13 +364,5 @@ class WizardDialog extends Component {
         </Dialog>;
     }
 }
-
-WizardDialog.propTypes = {
-    t: PropTypes.func,
-    socket: PropTypes.object,
-    onClose: PropTypes.func,
-    toggleTheme: PropTypes.func,
-    themeName: PropTypes.string,
-};
 
 export default withWidth()(withStyles(styles)(WizardDialog));

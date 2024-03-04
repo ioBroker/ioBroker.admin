@@ -29,7 +29,6 @@ import {
 
 import { I18n, Icon } from '@iobroker/adapter-react-v5';
 
-// @ts-expect-error adapt tsconfig
 import npmIcon from '../assets/npm.png';
 
 function a11yProps(index: number): {id: string; 'aria-controls': string} {
