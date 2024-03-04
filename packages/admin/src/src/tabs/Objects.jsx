@@ -15,7 +15,7 @@ import {
 
 // icons
 import {
-    Cloas as IconCancel,
+    Cancel as IconCancel,
     Delete as IconDeleteOne,
 } from '@mui/icons-material';
 

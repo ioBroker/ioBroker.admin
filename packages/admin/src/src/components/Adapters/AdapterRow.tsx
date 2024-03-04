@@ -43,7 +43,6 @@ import Link from '@mui/material/Link';
 import MonetizationOn from '@mui/icons-material/MonetizationOn';
 import IsVisible from '../IsVisible';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
-// @ts-expect-error fix later
 import sentryIcon from '../../assets/sentry.svg';
 
 const styles = (theme: Theme) => ({
