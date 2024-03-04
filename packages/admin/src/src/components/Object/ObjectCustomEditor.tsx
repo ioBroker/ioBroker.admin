@@ -710,15 +710,19 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                                 });
                             }
 
+                            const isMultiEdit = this.props.objectIDs.length > 1;
+
                             obj.common.custom[instance].enabled = true;
 
                             Object.keys(newValues).forEach(attr => {
                                 // if not different
                                 if (!attr.startsWith('_')) {
                                     // if we have an array, it is still the data of multiple different fields (multiEdit) do not override issue#2359
-                                    if (!Array.isArray(newValues[attr])) {
-                                        obj.common.custom[instance][attr] = newValues[attr];
+                                    if (Array.isArray(newValues[attr]) && isMultiEdit) {
+                                        return;
                                     }
+
+                                    obj.common.custom[instance][attr] = newValues[attr];
                                 }
                             });
                         }
