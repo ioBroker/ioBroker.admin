@@ -24,15 +24,16 @@ import {
     Router, ToggleThemeMenu, I18n, type AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
-import WizardPasswordTab from '../components/Wizard/WizardPasswordTab';
-import WizardLicenseTab from '../components/Wizard/WizardLicenseTab';
-import WizardFinishImage from '../assets/wizard-finish.jpg';
-import WizardWelcomeImage from '../assets/wizard-welcome.jpg';
-import WizardSettingsTab from '../components/Wizard/WizardSettingsTab';
-import WizardAuthSSLTab from '../components/Wizard/WizardAuthSSLTab';
-import WizardPortForwarding from '../components/Wizard/WizardPortForwarding';
-import Logo from '../assets/logo.png';
-import LongLogo from '../assets/longLogo.svg';
+import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
+import WizardLicenseTab from '@/components/Wizard/WizardLicenseTab';
+import WizardFinishImage from '@/assets/wizard-finish.jpg';
+import WizardWelcomeImage from '@/assets/wizard-welcome.jpg';
+import WizardSettingsTab from '@/components/Wizard/WizardSettingsTab';
+import WizardAuthSSLTab from '@/components/Wizard/WizardAuthSSLTab';
+import WizardPortForwarding from '@/components/Wizard/WizardPortForwarding';
+import WizardAdaptersTab from '@/components/Wizard/WizardAdaptersTab';
+import Logo from '@/assets/logo.png';
+import LongLogo from '@/assets/longLogo.svg';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -241,6 +242,15 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
         />;
     }
 
+    /**
+     * Render the adapters selection wizard tab
+     */
+    renderAdapters() {
+        return <WizardAdaptersTab
+            onDone={() => this.setState({ activeStep: this.state.activeStep + 1 })}
+        />;
+    }
+
     async onClose() {
         // read if discovery is available
         const discovery = await this.props.socket.getState('system.adapter.discovery.0.alive');
@@ -349,6 +359,7 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                             <Step><StepLabel>{this.props.t('Authentication')}</StepLabel></Step>
                             <Step><StepLabel>{this.props.t('Port forwarding')}</StepLabel></Step>
                             <Step><StepLabel>{this.props.t('Settings')}</StepLabel></Step>
+                            <Step><StepLabel>{this.props.t('Adapters')}</StepLabel></Step>
                             <Step><StepLabel>{this.props.t('Finish')}</StepLabel></Step>
                         </Stepper>
                     </Toolbar>
@@ -359,7 +370,8 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                 {this.state.activeStep === 3 ? <div className={this.props.classes.tabPanel}>{this.renderAuthentication()}</div> : null}
                 {this.state.activeStep === 4 ? <div className={this.props.classes.tabPanel}>{this.renderPortForwarding()}</div> : null}
                 {this.state.activeStep === 5 ? <div className={this.props.classes.tabPanel}>{this.renderSettings()}</div> : null}
-                {this.state.activeStep === 6 ? <div className={this.props.classes.tabPanel}>{this.renderFinish()}</div> : null}
+                {this.state.activeStep === 6 ? <div className={this.props.classes.tabPanel}>{this.renderAdapters()}</div> : null}
+                {this.state.activeStep === 7 ? <div className={this.props.classes.tabPanel}>{this.renderFinish()}</div> : null}
             </DialogContent>
         </Dialog>;
     }
