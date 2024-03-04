@@ -32,7 +32,7 @@ class JsControllerUpdater extends Component {
 
         this.textareaRef = React.createRef();
 
-        this.link = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+        this.link = `${window.location.protocol}//${window.location.host}/`;
     }
 
     setUpdating(updating) {
@@ -134,50 +134,55 @@ class JsControllerUpdater extends Component {
         this.startTimeout = null;
     }
 
-    checkStatus() {
+    async checkStatus() {
         // interface ServerResponse {
         //     running: boolean; // If the update is still running
         //     stderr: string[];
         //     stdout: string[];
         //     success?: boolean; // if installation process succeeded
         // }
+        console.log(`Request update status from: ${this.link}`);
 
-        fetch(this.link)
-            .then(res => res.json())
-            .then(response => {
-                // sometimes stderr has only one empty string in it
-                if (response && response.stderr) {
-                    response.stderr = response.stderr.filter(line => line.trim());
-                }
-                if (response && !response.running && response.success && response.stdout) {
-                    response.stdout.push('');
-                    response.stdout.push('---------------------------------------------------');
-                    response.stdout.push(I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version));
-                } else if (response?.stdout) {
-                    response.stdout.unshift('');
-                    response.stdout.unshift('---------------------------------------------------');
-                    response.stdout.unshift(I18n.t('updating %s to %s...', 'js-controller', this.props.version));
-                }
-                this.setState({ response, error: null }, () => {
-                    if (response && !response.running) {
-                        this.setUpdating(false);
-                        this.intervall && clearInterval(this.intervall);
-                        this.intervall = null;
-                    } else if (response?.running) {
-                        this.setUpdating(true);
-                    }
+        try {
+            const res = await fetch(this.link);
+            const response = await res.json();
 
-                    // scroll down
-                    if (this.textareaRef.current) {
-                        setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
-                    }
-                });
-            })
-            .catch(e => {
-                if (!this.state.starting) {
-                    this.setState({ error: e.toString() }, () => this.setUpdating(false));
+            // Just for logging purposes
+            const plainBody = await res.text();
+            console.log(`Received status: ${plainBody}`);
+
+            // sometimes stderr has only one empty string in it
+            if (response?.stderr) {
+                response.stderr = response.stderr.filter(line => line.trim());
+            }
+            if (response && !response.running && response.success && response.stdout) {
+                response.stdout.push('');
+                response.stdout.push('---------------------------------------------------');
+                response.stdout.push(I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version));
+            } else if (response?.stdout) {
+                response.stdout.unshift('');
+                response.stdout.unshift('---------------------------------------------------');
+                response.stdout.unshift(I18n.t('updating %s to %s...', 'js-controller', this.props.version));
+            }
+            this.setState({ response, error: null }, () => {
+                if (response && !response.running) {
+                    this.setUpdating(false);
+                    this.intervall && clearInterval(this.intervall);
+                    this.intervall = null;
+                } else if (response?.running) {
+                    this.setUpdating(true);
+                }
+
+                // scroll down
+                if (this.textareaRef.current) {
+                    setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
                 }
             });
+        } catch (e) {
+            if (!this.state.starting) {
+                this.setState({ error: e.toString() }, () => this.setUpdating(false));
+            }
+        }
     }
 
     render() {
