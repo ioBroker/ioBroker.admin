@@ -90,6 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (foxriver76) fixed problem with saving array values in custom config
 * (foxriver76) fixed issue on deleting admin
 * (foxriver76) make UI update of controller and admin more verbose
 
