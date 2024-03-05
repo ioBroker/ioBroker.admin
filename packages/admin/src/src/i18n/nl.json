@@ -1433,6 +1433,7 @@
   "normal": "normaal",
   "not ack": "niet bev.",
   "not agree": "Niet akkoord",
+  "notification-manager wizard description": "Met de notificatie-adapter kunt u als gebruiker op de hoogte worden gehouden van systeemmeldingen. Je zult dus b.v. Zodra er een ernstig probleem is in uw systeem, wordt u via Telegram of e-mail op de hoogte gebracht.\n\nEen eenvoudig voorbeeld: Mochten er problemen zijn met de beschikbare opslagruimte, dan hoor je dat nu direct via een bericht, in plaats van je af te vragen waarom delen van je automatisering niet meer werken zoals ze zouden moeten.\n\nDe adapters die worden gebruikt voor meldingen (zoals Telegram) kunt u vrij configureren op basis van de berichtcategorie. En als de berichtenadapter van uw voorkeur crasht, kunt u ook een vervangende berichtenadapter configureren die het in dit geval overneemt.",
   "npm error": "npm fout",
   "npm_warning": "Met behulp van dit dialoogvenster kunt u de bèta/nieuwste adapterversies rechtstreeks vanuit %s installeren. Deze versies zijn mogelijk nog niet volledig getest, dus installeer ze alleen als u fixes of nieuwe functies van deze versies nodig heeft. Wanneer de ontwikkelaar de versie als stabiel beschouwt, zullen het updates zijn in de Stabiele repository.",
   "number": "getal",

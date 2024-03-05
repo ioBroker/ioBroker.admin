@@ -1433,6 +1433,7 @@
   "normal": "normal",
   "not ack": "not ack",
   "not agree": "Don't agree",
+  "notification-manager wizard description": "With the notification adapter you as a user can be informed about system notifications. For example, you will be notified via Telegram or email as soon as there is a serious problem in your system.\n\nA simple example: If there are problems with the available storage space, you will now find out immediately via message instead of wondering why parts of your automation no longer work as they should.\n\nYou can freely configure the adapters used for notifications - such as Telegram - according to message category. And if your preferred messaging adapter crashes, you can also configure a replacement messaging adapter to take over in this case.",
   "npm error": "npm error",
   "npm_warning": "Using this dialog you can install the Beta/Latest adapter versions directly from %s. These versions are potentially not yet fully tested, so install them only if you need fixes or new features from these versions. When the developer consider the version stable it will be updates in the Stable repository.",
   "number": "number",

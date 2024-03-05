@@ -131,7 +131,10 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                         {title}
                     </Box>
                 </AccordionSummary>
-                <AccordionDetails sx={{ backgroundColor: 'background.appbar' }}>
+                <AccordionDetails sx={{
+                    backgroundColor: 'background.appbar', whiteSpace: 'pre-wrap', fontSize: 16, textAlign: 'left',
+                }}
+                >
                     {description}
                 </AccordionDetails>
             </Accordion>
@@ -156,6 +159,9 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                 height: `calc(100% - ${this.TOOLBAR_HEIGHT}px)`,
                 width: '90%',
                 overflow: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
                 '-ms-overflow-style': 'none',
                 'scrollbar-width': 'none',
                 '&::-webkit-scrollbar': {
@@ -174,7 +180,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                 {this.renderAdapterAccordion({ name: 'javascript', description: 'TODO' })}
                 {this.renderAdapterAccordion({ name: 'scenes', description: 'TODO' })}
                 <h2>{I18n.t('Notifications')}</h2>
-                {this.renderAdapterAccordion({ name: 'notification-manager', description: 'TODO' })}
+                {this.renderAdapterAccordion({ name: 'notification-manager', description: I18n.t('notification-manager wizard description') })}
                 {this.renderAdapterAccordion({ name: 'telegram', description: 'TODO' })}
                 {this.renderAdapterAccordion({ name: 'email', description: 'TODO' })}
                 {this.renderAdapterAccordion({ name: 'pushover', description: 'TODO' })}

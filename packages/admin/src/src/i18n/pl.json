@@ -1433,6 +1433,7 @@
   "normal": "normalna",
   "not ack": "nie potwierdzenia",
   "not agree": "nie zgadzam się",
+  "notification-manager wizard description": "Dzięki adapterowi powiadomień Ty jako użytkownik możesz być informowany o powiadomieniach systemowych. Będziesz więc m.in. Na przykład zostaniesz powiadomiony za pośrednictwem telegramu lub e-maila, gdy tylko wystąpi poważny problem w Twoim systemie.\n\nProsty przykład: jeśli wystąpią problemy z dostępną przestrzenią dyskową, teraz dowiesz się o tym natychmiast za pomocą wiadomości, zamiast zastanawiać się, dlaczego części Twojej automatyki nie działają już tak, jak powinny.\n\nMożesz dowolnie konfigurować adaptery używane do powiadomień - np. Telegram - według kategorii wiadomości. A jeśli preferowany adapter do przesyłania wiadomości ulegnie awarii, możesz także skonfigurować zastępczy adapter do przesyłania wiadomości, który przejmie jego funkcję w tym przypadku.",
   "npm error": "błąd npm",
   "npm_warning": "Korzystając z tego okna dialogowego, możesz zainstalować wersje beta/najnowsze adapterów bezpośrednio z %s. Wersje te potencjalnie nie zostały jeszcze w pełni przetestowane, więc instaluj je tylko wtedy, gdy potrzebujesz poprawek lub nowych funkcji z tych wersji. Gdy programista uzna wersję za stabilną, będzie to aktualizacja w repozytorium Stabilny.",
   "number": "numer",
