@@ -108,6 +108,7 @@
   "Are you sure to delete all children of %s?": "Você tem certeza que quer deletar <b> \"%s\" </b> e <span style=\"color: red; font-weight: bold\"> todos </span> os objetos subjacentes?",
   "Are you sure to delete script %s?": "Tem certeza que quer deletar o script ' %s'?",
   "Are you sure you want to delete adapter %s?": "Tem certeza de que deseja excluir o adaptador %s?",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Tem certeza de que deseja excluir a instância \"%s\" ou todo o adaptador \"%s\"?",
   "Are you sure you want to delete the instance %s?": "Tem certeza de que deseja excluir a instância \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Tem certeza de que deseja excluir a instância <b> %s </b>?",
   "Are you sure?": "Você tem certeza?",
@@ -620,6 +621,7 @@
   "Log level will be saved permanently": "O nível de registro será salvo permanentemente",
   "Log name": "Nome de registro",
   "Log size:": "Tamanho do log:",
+  "Logic": "Lógica",
   "Login timeout(sec):": "Tempo limite de login (seg):",
   "Login/Email": "Login/email",
   "Logout": "Logoff",
@@ -1135,6 +1137,7 @@
   "View: %s": "Visualizações %s",
   "Virgin Islands (British)": "Ilhas Virgens (britânicas)",
   "Virgin Islands (U.S.)": "Ilhas Virgens (EUA)",
+  "Visualization": "Visualização",
   "Vote:": "Voto:",
   "Waiting for admin restart...": "Aguardando a reinicialização do administrador...",
   "Waiting for connection of ioBroker...": "Aguardando conexão do ioBroker...",
@@ -1143,6 +1146,7 @@
   "Warning1": "Não instale adaptadores do GitHub, a menos que solicitado por um desenvolvedor ou se você estiver 100% certo do que está fazendo!",
   "Warning2": "Os adaptadores no GitHub podem não funcionar como deveriam (eles ainda estão em desenvolvimento). Instale-os somente se você estiver participando de um teste!",
   "Warning: Free space on disk is low": "Aviso: O espaço livre no disco está baixo!",
+  "Weather": "Clima",
   "Wed": "Qua",
   "Week starts with": "A semana começa com",
   "Welcome": "Receber",
@@ -1563,6 +1567,5 @@
   "write": "escrever",
   "write operation": "escrever",
   "wrongPassword": "nome de usuário ou senha inválidos",
-  "yesterday": "ontem",
-  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Tem certeza de que deseja excluir a instância \"%s\" ou todo o adaptador \"%s\"?"
+  "yesterday": "ontem"
 }

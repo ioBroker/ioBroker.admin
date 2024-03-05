@@ -108,6 +108,7 @@
   "Are you sure to delete all children of %s?": "Sollen wirklich <b>\"%s\"</b> und <span style=\"color: red; font-weight: bold\">alle</span> Unterobjekte gelöscht werden?",
   "Are you sure to delete script %s?": "Soll das Skript '%s' wirklich gelöscht werden?",
   "Are you sure you want to delete adapter %s?": "Soll der Adapter %s wirklich gelöscht werden?",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Sind Sie sicher, dass Sie die Instanz „%s“ oder den gesamten Adapter „%s“ löschen möchten?",
   "Are you sure you want to delete the instance %s?": "Die Instanz \"%s\" wirklich löschen?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Soll die Instanz <b>%s</b> wirklich gelöscht werden?",
   "Are you sure?": "Wirklich sicher?",
@@ -620,6 +621,7 @@
   "Log level will be saved permanently": "Die Protokollebene wird dauerhaft gespeichert",
   "Log name": "Protokollname",
   "Log size:": "Log-Größe:",
+  "Logic": "Logik",
   "Login timeout(sec):": "Login Timeout (Sek)",
   "Login/Email": "Login/E-Mail",
   "Logout": "Abmelden",
@@ -1135,6 +1137,7 @@
   "View: %s": "Ansicht: %s",
   "Virgin Islands (British)": "Britische Jungferninseln",
   "Virgin Islands (U.S.)": "Amerikanische Jungferninseln",
+  "Visualization": "Visualisierung",
   "Vote:": "Abstimmung:",
   "Waiting for admin restart...": "Warten auf Admin-Neustart...",
   "Waiting for connection of ioBroker...": "Warten auf Verbindung von ioBroker...",
@@ -1143,6 +1146,7 @@
   "Warning1": "Installiere keine Adapter von GitHub, außer Du wurdest von einem Entwickler darum gebeten oder Du weißt genau was Du hier tust!",
   "Warning2": "Adapter von GitHub funktionieren eventuell nicht richtig (da sie noch in Entwicklung sind). Installiere nur Adapter von GitHub, wenn Du an einem Test neuer Adapter teilnimmst!",
   "Warning: Free space on disk is low": "Warnung: Der freie Speicherplatz auf der Festplatte ist niedrig!",
+  "Weather": "Wetter",
   "Wed": "Mi",
   "Week starts with": "Die Woche beginnt mit",
   "Welcome": "Herzlich willkommen",
@@ -1563,6 +1567,5 @@
   "write": "schreiben",
   "write operation": "schreiben",
   "wrongPassword": "Benutzername oder Passwort sind falsch",
-  "yesterday": "gestern",
-  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Sind Sie sicher, dass Sie die Instanz „%s“ oder den gesamten Adapter „%s“ löschen möchten?"
+  "yesterday": "gestern"
 }

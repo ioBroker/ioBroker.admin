@@ -108,6 +108,7 @@
   "Are you sure to delete all children of %s?": "Ви впевнені, що хочете видалити <b>\"%s\"</b> і <span style=\"color: red; font-weight: bold\">усі</span> дочірні елементи?",
   "Are you sure to delete script %s?": "Ви впевнені, що хочете видалити сценарій \"%s\"?",
   "Are you sure you want to delete adapter %s?": "Ви впевнені, що хочете видалити адаптер %s?",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Ви впевнені, що хочете видалити примірник \"%s\" або весь адаптер \"%s\"?",
   "Are you sure you want to delete the instance %s?": "Ви впевнені, що бажаєте видалити примірник \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Ви впевнені, що бажаєте видалити примірник <b>%s</b>?",
   "Are you sure?": "Ти впевнений?",
@@ -620,6 +621,7 @@
   "Log level will be saved permanently": "Рівень журналу буде збережено назавжди",
   "Log name": "Назва журналу",
   "Log size:": "Розмір журналу",
+  "Logic": "Логіка",
   "Login timeout(sec):": "Час очікування входу (с)",
   "Login/Email": "Логін/Електронна пошта",
   "Logout": "Вийти",
@@ -1135,6 +1137,7 @@
   "View: %s": "Перегляд: %s",
   "Virgin Islands (British)": "Віргінські острови (Британські)",
   "Virgin Islands (U.S.)": "Віргінські острови (США)",
+  "Visualization": "Візуалізація",
   "Vote:": "голосувати:",
   "Waiting for admin restart...": "Очікування перезапуску адміністратора...",
   "Waiting for connection of ioBroker...": "Очікування підключення ioBroker...",
@@ -1143,6 +1146,7 @@
   "Warning1": "Не встановлюйте адаптери з GitHub, якщо про це не попросить розробник або якщо ви на 100% впевнені, що робите!",
   "Warning2": "Адаптери на GitHub можуть працювати не так, як повинні (вони все ще розробляються). Встановлюйте їх, лише якщо ви берете участь у тестуванні!",
   "Warning: Free space on disk is low": "Попередження: на диску мало вільного місця!",
+  "Weather": "Погода",
   "Wed": "ср",
   "Week starts with": "Тиждень починається з",
   "Welcome": "Ласкаво просимо",
@@ -1563,6 +1567,5 @@
   "write": "писати",
   "write operation": "писати",
   "wrongPassword": "Неправильне ім'я користувача або пароль",
-  "yesterday": "вчора",
-  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Ви впевнені, що хочете видалити примірник \"%s\" або весь адаптер \"%s\"?"
+  "yesterday": "вчора"
 }

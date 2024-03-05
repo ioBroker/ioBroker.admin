@@ -108,6 +108,7 @@
   "Are you sure to delete all children of %s?": "Вы действительно хотите удалить <b>\"%s\"</b> и <span style=\"color: red; font-weight: bold\">все</span> нижележащие объекты?",
   "Are you sure to delete script %s?": "Вы действительно хотите удалить скрипт '%s'?",
   "Are you sure you want to delete adapter %s?": "Вы действительно хотите удалить адаптер %s?",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Вы уверены, что хотите удалить экземпляр «%s» или весь адаптер «%s»?",
   "Are you sure you want to delete the instance %s?": "Вы уверены, что хотите удалить экземпляр \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Вы действительно хотите удалить экземпляр <b> %s </b>?",
   "Are you sure?": "Вы уверены?",
@@ -620,6 +621,7 @@
   "Log level will be saved permanently": "Уровень журнала будет сохранен навсегда",
   "Log name": "Имя журнала",
   "Log size:": "Размер файла протокола:",
+  "Logic": "Логика",
   "Login timeout(sec):": "Логин таймаут(сек):",
   "Login/Email": "Логин/Email",
   "Logout": "Выйти",
@@ -1135,6 +1137,7 @@
   "View: %s": "Просмотр: %s",
   "Virgin Islands (British)": "Виргинские острова (англ.)",
   "Virgin Islands (U.S.)": "Виргинские острова (США)",
+  "Visualization": "Визуализация",
   "Vote:": "Голосование:",
   "Waiting for admin restart...": "Ожидание перезапуска админки...",
   "Waiting for connection of ioBroker...": "Ожидание подключения ioBroker...",
@@ -1143,6 +1146,7 @@
   "Warning1": "Не устанавливайте адаптеры из GitHub, если только об этом не попросит разработчик, или если вы на 100% уверены, что делаете!",
   "Warning2": "Адаптеры на GitHub могут работать не так, как должны (они все еще находятся в стадии разработки). Устанавливайте их только если вы участвуете в тесте!",
   "Warning: Free space on disk is low": "Предупреждение: мало свободного места на диске!",
+  "Weather": "Погода",
   "Wed": "ср",
   "Week starts with": "Неделя начинается с",
   "Welcome": "Добро пожаловать",
@@ -1563,6 +1567,5 @@
   "write": "писать",
   "write operation": "Писать",
   "wrongPassword": "Неверные имя пользователя или пароль",
-  "yesterday": "вчера",
-  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Вы уверены, что хотите удалить экземпляр «%s» или весь адаптер «%s»?"
+  "yesterday": "вчера"
 }

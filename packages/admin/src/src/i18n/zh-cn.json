@@ -108,6 +108,7 @@
   "Are you sure to delete all children of %s?": "您确定要删除<b>\"%s\"</b>的<span style=\"color: red; font-weight: bold\">所有</span>子设备吗？",
   "Are you sure to delete script %s?": "您确定要删除自动化'%s'吗？",
   "Are you sure you want to delete adapter %s?": "您确定要删除插件%s吗？",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "您确定要删除实例“%s”或整个适配器“%s”吗？",
   "Are you sure you want to delete the instance %s?": "您确定要删除实例\"%s\"吗？",
   "Are you sure you want to delete the instance <b>%s</b>?": "您确定要删除程序<b>%s </b>吗？",
   "Are you sure?": "你确定吗？",
@@ -620,6 +621,7 @@
   "Log level will be saved permanently": "日志级别将被永久保存",
   "Log name": "日志名称",
   "Log size:": "日志大小",
+  "Logic": "逻辑",
   "Login timeout(sec):": "登录超时（秒）",
   "Login/Email": "登录/电子邮件",
   "Logout": "登出",
@@ -1135,6 +1137,7 @@
   "View: %s": "查看： %s",
   "Virgin Islands (British)": "维尔京群岛（英属）",
   "Virgin Islands (U.S.)": "维尔京群岛（美国）",
+  "Visualization": "可视化",
   "Vote:": "投票：",
   "Waiting for admin restart...": "等待管理员重启...",
   "Waiting for connection of ioBroker...": "等待连接 ioBroker...",
@@ -1143,6 +1146,7 @@
   "Warning1": "除非开发人员要求，否则不要从GitHub安装适配器，否则您是否100％确信自己在做什么！",
   "Warning2": "GitHub上的适配器可能无法正常工作（它们仍在开发中）。仅在参加测试时才安装它们！",
   "Warning: Free space on disk is low": "警告：磁盘上的可用空间不足！",
+  "Weather": "天气",
   "Wed": "星期三",
   "Week starts with": "周始于",
   "Welcome": "欢迎",
@@ -1563,6 +1567,5 @@
   "write": "写",
   "write operation": "写",
   "wrongPassword": "用户名或密码无效",
-  "yesterday": "昨天",
-  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "您确定要删除实例“%s”或整个适配器“%s”吗？"
+  "yesterday": "昨天"
 }

@@ -108,6 +108,7 @@
   "Are you sure to delete all children of %s?": "Eliminare <b>\"%s\"</b> e <span style=\"color: red; font-weight: bold\">tutti</span> figli?",
   "Are you sure to delete script %s?": "Vuoi eliminare lo script '%s'?",
   "Are you sure you want to delete adapter %s?": "Sei sicuro di voler eliminare l'adattatore %s?",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Vuoi eliminare l'istanza \"%s\" o l'intero adattatore \"%s\"?",
   "Are you sure you want to delete the instance %s?": "Sei sicuro di voler eliminare l'istanza \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Sei sicuro di voler eliminare l'istanza <b> %s </b>?",
   "Are you sure?": "Sei sicuro?",
@@ -620,6 +621,7 @@
   "Log level will be saved permanently": "Il livello di registro verrà salvato in modo permanente",
   "Log name": "Nome registro",
   "Log size:": "Dimensione logging:",
+  "Logic": "Logica",
   "Login timeout(sec):": "Timeout di logging (sec):",
   "Login/Email": "Accedi/E-mail",
   "Logout": "Disconnettersi",
@@ -1135,6 +1137,7 @@
   "View: %s": "Visualizzazioni %s",
   "Virgin Islands (British)": "Isole Vergini (britanniche)",
   "Virgin Islands (U.S.)": "Isole Vergini (stati uniti)",
+  "Visualization": "Visualizzazione",
   "Vote:": "Votazione:",
   "Waiting for admin restart...": "In attesa del riavvio dell'amministratore...",
   "Waiting for connection of ioBroker...": "In attesa della connessione di ioBroker...",
@@ -1143,6 +1146,7 @@
   "Warning1": "Non installare adattatori da GitHub se non richiesto da uno sviluppatore o se sei sicuro al 100% di quello che stai facendo!",
   "Warning2": "Gli adattatori su GitHub potrebbero non funzionare come dovrebbero (sono ancora in fase di sviluppo). Installali solo se stai partecipando a un test!",
   "Warning: Free space on disk is low": "Attenzione: lo spazio libero su disco è insufficiente!",
+  "Weather": "Tempo atmosferico",
   "Wed": "Mer",
   "Week starts with": "La settimana inizia con",
   "Welcome": "benvenuto",
@@ -1563,6 +1567,5 @@
   "write": "Scrivi",
   "write operation": "Scrivi",
   "wrongPassword": "Nome utente o password errati",
-  "yesterday": "Ieri",
-  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Vuoi eliminare l'istanza \"%s\" o l'intero adattatore \"%s\"?"
+  "yesterday": "Ieri"
 }

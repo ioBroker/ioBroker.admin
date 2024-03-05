@@ -108,6 +108,7 @@
   "Are you sure to delete all children of %s?": "Are you sure to delete <b>\"%s\"</b> and <span style=\"color: red; font-weight: bold\">all</span> children?",
   "Are you sure to delete script %s?": "Are you sure to delete script '%s'?",
   "Are you sure you want to delete adapter %s?": "Are you sure you want to delete adapter %s?",
+  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?",
   "Are you sure you want to delete the instance %s?": "Are you sure you want to delete the instance \"%s\"?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Are you sure you want to delete the instance <b>%s</b>?",
   "Are you sure?": "Are you sure?",
@@ -620,6 +621,7 @@
   "Log level will be saved permanently": "Log level will be saved permanently",
   "Log name": "Log name",
   "Log size:": "Log size",
+  "Logic": "Logic",
   "Login timeout(sec):": "Login timeout (sec)",
   "Login/Email": "Login/Email",
   "Logout": "Logout",
@@ -1135,6 +1137,7 @@
   "View: %s": "View: %s",
   "Virgin Islands (British)": "Virgin Islands (British)",
   "Virgin Islands (U.S.)": "Virgin Islands (U.S.)",
+  "Visualization": "Visualization",
   "Vote:": "Vote:",
   "Waiting for admin restart...": "Waiting for admin restart...",
   "Waiting for connection of ioBroker...": "Waiting for connection of ioBroker...",
@@ -1143,6 +1146,7 @@
   "Warning1": "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing!",
   "Warning2": "Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test!",
   "Warning: Free space on disk is low": "Warning: Free space on disk is low!",
+  "Weather": "Weather",
   "Wed": "Wed",
   "Week starts with": "Week starts with",
   "Welcome": "Welcome",
@@ -1563,6 +1567,5 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
-  "yesterday": "yesterday",
-  "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?": "Are you sure you want to delete the instance \"%s\" or whole adapter \"%s\"?"
+  "yesterday": "yesterday"
 }
