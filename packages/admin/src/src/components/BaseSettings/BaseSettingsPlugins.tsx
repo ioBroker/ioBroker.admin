@@ -1,14 +1,13 @@
-import { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 
-import { Paper } from  '@mui/material';
+import { Paper, type Theme } from '@mui/material';
 
 import { Utils, withWidth } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 
-const styles = theme => ({
+const styles: Styles<any, any> = (theme: Theme) => ({
     paper: {
         height:    '100%',
         maxHeight: '100%',
@@ -30,8 +29,24 @@ const styles = theme => ({
     },
 });
 
-class BaseSettingsPlugins extends Component {
-    constructor(props) {
+interface PluginsSettings {
+    [key: string]: any;
+}
+
+interface BaseSettingsPluginsProps {
+    t: (text: string) => string;
+    onChange: (settings: PluginsSettings) => void;
+    settings: PluginsSettings;
+    classes: Record<string, any>;
+    themeType: string;
+}
+interface BaseSettingsPluginsState {
+    settings: string;
+    error?: boolean;
+}
+
+class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettingsPluginsState> {
+    constructor(props: BaseSettingsPluginsProps) {
         super(props);
 
         this.state = {
@@ -40,16 +55,8 @@ class BaseSettingsPlugins extends Component {
         };
     }
 
-    static getDerivedStateFromProps(/* props, state */) {
-        return null;
-    }
-
-    // static editorDidMount(editor /* , monaco */) {
-    //     editor.focus();
-    // }
-
-    onChange(value) {
-        const newState = { settings: value };
+    onChange(value: string) {
+        const newState: BaseSettingsPluginsState = { settings: value };
         try {
             const settings = JSON.parse(value);
 
@@ -66,7 +73,7 @@ class BaseSettingsPlugins extends Component {
 
     render() {
         return <Paper className={this.props.classes.paper}>
-            <div className={this.props.classes.title}>{ this.props.t('For future use') }</div>
+            <div className={this.props.classes.title}>{this.props.t('For future use')}</div>
             <div className={Utils.clsx(this.props.classes.divWithoutTitle, this.state.error && this.props.classes.error)}>
                 <Editor
                     // mode="json"
@@ -78,12 +85,5 @@ class BaseSettingsPlugins extends Component {
         </Paper>;
     }
 }
-
-BaseSettingsPlugins.propTypes = {
-    t: PropTypes.func,
-    onChange: PropTypes.func.isRequired,
-    settings: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-};
 
 export default withWidth()(withStyles(styles)(BaseSettingsPlugins));
