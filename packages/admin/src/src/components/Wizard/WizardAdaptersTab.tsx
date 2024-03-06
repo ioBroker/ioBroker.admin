@@ -94,11 +94,11 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
 
         const lang = this.props.socket.systemLang;
 
-        const title = adapter.titleLang[lang];
+        const title = adapter.titleLang[lang] || adapter.titleLang.en;
 
         return <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
             <Accordion sx={{
-                borderColor: 'background.paper', borderWidth: '1px', borderStyle: 'solid', width: '100%',
+                borderColor: 'rgba(0, 0, 0, 0.2)', borderWidth: '1px', borderStyle: 'solid', width: '100%',
             }}
             >
                 <AccordionSummary
@@ -158,6 +158,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
             <Box sx={{
                 height: `calc(100% - ${this.TOOLBAR_HEIGHT}px)`,
                 width: '90%',
+                maxWidth: '800px',
                 overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column',
@@ -172,26 +173,25 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                 <h2>{I18n.t('Cloud')}</h2>
                 {this.renderAdapterAccordion({
                     name: 'iot',
-                    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse\n' +
-                        '                malesuada lacus ex, sit amet blandit leo lobortis eget.',
+                    description: I18n.t('iot wizard description'),
                 })}
-                {this.renderAdapterAccordion({ name: 'cloud', description: 'TODO' })}
+                {this.renderAdapterAccordion({ name: 'cloud', description: I18n.t('cloud wizard description') })}
                 <h2>{I18n.t('Logic')}</h2>
-                {this.renderAdapterAccordion({ name: 'javascript', description: 'TODO' })}
-                {this.renderAdapterAccordion({ name: 'scenes', description: 'TODO' })}
+                {this.renderAdapterAccordion({ name: 'javascript', description: I18n.t('javascript wizard description') })}
+                {this.renderAdapterAccordion({ name: 'scenes', description: I18n.t('scenes wizard description') })}
                 <h2>{I18n.t('Notifications')}</h2>
                 {this.renderAdapterAccordion({ name: 'notification-manager', description: I18n.t('notification-manager wizard description') })}
-                {this.renderAdapterAccordion({ name: 'telegram', description: 'TODO' })}
-                {this.renderAdapterAccordion({ name: 'email', description: 'TODO' })}
-                {this.renderAdapterAccordion({ name: 'pushover', description: 'TODO' })}
-                {this.renderAdapterAccordion({ name: 'signal-cmb', description: 'TODO' })}
+                {this.renderAdapterAccordion({ name: 'telegram', description: I18n.t('telegram wizard description') })}
+                {this.renderAdapterAccordion({ name: 'email', description: I18n.t('email wizard description') })}
+                {this.renderAdapterAccordion({ name: 'pushover', description: I18n.t('pushover wizard description') })}
+                {this.renderAdapterAccordion({ name: 'signal-cmb', description: I18n.t('signal-cmb wizard description') })}
                 <h2>{I18n.t('History data')}</h2>
-                {this.renderAdapterAccordion({ name: 'history', description: 'TODO' })}
-                {this.renderAdapterAccordion({ name: 'sql', description: 'TODO' })}
+                {this.renderAdapterAccordion({ name: 'history', description: I18n.t('history wizard description') })}
+                {this.renderAdapterAccordion({ name: 'sql', description: I18n.t('sql wizard description') })}
                 <h2>{I18n.t('Weather')}</h2>
-                {this.renderAdapterAccordion({ name: 'weatherunderground', description: 'TODO' })}
+                {this.renderAdapterAccordion({ name: 'weatherunderground', description: I18n.t('weatherunderground wizard description') })}
                 <h2>{I18n.t('Visualization')}</h2>
-                {this.renderAdapterAccordion({ name: 'vis-2', description: 'TODO' })}
+                {this.renderAdapterAccordion({ name: 'vis-2', description: I18n.t('vis-2 wizard description') })}
             </Box>
             <Toolbar sx={{
                 height: this.TOOLBAR_HEIGHT,
