@@ -476,6 +476,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     .replace(/^\*\s?/, '')
                     .replace(/<!--[^>]*->/, '')
                     .replace(/<! -[^>]*->/, '')
+                    .replace(/<!--|--!?>/g, '')
                     .trim())
                 .filter((line: string) => !!line);
 
