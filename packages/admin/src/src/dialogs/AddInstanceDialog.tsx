@@ -174,7 +174,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         return result;
     }
 
-    checkDependencies = (dependencies = this.props.dependencies) => {
+    checkDependencies(dependencies = this.props.dependencies) {
         if (!dependencies) {
             return '';
         }
@@ -187,7 +187,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
             }
         }
         return array.length ? array.map(el => <div key={el}>{el}</div>) : '';
-    };
+    }
 
     getText(text: string | {[lang: string]: string}, noTranslation?: boolean): string {
         if (text && typeof text === 'object') {

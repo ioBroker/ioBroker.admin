@@ -87,7 +87,7 @@ class SlowConnectionWarningDialog extends Component<SlowConnectionWarningDialogP
             </DialogContent>
             <DialogActions>
                 <Button
-                    classname={this.props.classes.buttonLabel}
+                    className={this.props.classes.buttonLabel}
                     variant="contained"
                     onClick={() => {
                         SlowConnectionWarningDialog.saveReadTimeoutMs(60000);
