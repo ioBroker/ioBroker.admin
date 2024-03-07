@@ -135,7 +135,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
     },
 });
 
-interface Rule {
+export interface Rule {
     title: {
         [lang: string]: string;
     };
@@ -155,7 +155,7 @@ interface Rule {
 }
 
 // todo: After update of @types/iobroker, take it from ioBroker.Message
-interface Message {
+export interface Message {
     title: {
         [lang: string]: string;
     };
@@ -238,60 +238,65 @@ export function checkCondition(
                     } else if (rule.includes('newVersion')) {
                         version = newVersion;
                         rule = rule.substring('newVersion'.length);
-                    } else if (rule === 'installed') {
-                        return !!oldVersion;
-                    } if (rule === '!' || rule === 'not-installed') {
-                        return !oldVersion;
-                    } else if (instances) {
-                        // it could be the name of required adapter, like vis-2
-                        const split = rule.match(/([a-z][-a-z_0-9]+)([!=<>]+)([.\d]+)/);
-                        if (split) {
-                            // Check that adapter is installed in desired version
-                            const instId = Object.keys(instances).find(id => instances[id]?.common?.name === split[1]);
-                            if (instId) {
-                                version = instances[instId].common.version;
-                                op = split[2];
-                                ver = split[3];
-                                try {
-                                    if (op === '==') {
-                                        return semver.eq(version, ver);
+                    } else {
+                        if (rule === 'installed') {
+                            return !!oldVersion;
+                        }
+                        if (rule === '!' || rule === 'not-installed') {
+                            return !oldVersion;
+                        }
+
+                        if (instances) {
+                            // it could be the name of required adapter, like vis-2
+                            const split = rule.match(/([a-z][-a-z_0-9]+)([!=<>]+)([.\d]+)/);
+                            if (split) {
+                                // Check that adapter is installed in desired version
+                                const instId = Object.keys(instances).find(id => instances[id]?.common?.name === split[1]);
+                                if (instId) {
+                                    version = instances[instId].common.version;
+                                    op = split[2];
+                                    ver = split[3];
+                                    try {
+                                        if (op === '==') {
+                                            return semver.eq(version, ver);
+                                        }
+                                        if (op === '>') {
+                                            return semver.gt(version, ver);
+                                        }
+                                        if (op === '<') {
+                                            return semver.lt(version, ver);
+                                        }
+                                        if (op === '>=') {
+                                            return semver.gte(version, ver);
+                                        }
+                                        if (op === '<=') {
+                                            return semver.lte(version, ver);
+                                        }
+                                        if (op === '!=') {
+                                            return semver.neq(version, ver);
+                                        }
+                                        console.warn(`Unknown rule ${version}${rule}`);
+                                        return false;
+                                    } catch (e) {
+                                        console.warn(`Cannot compare ${version}${rule}`);
+                                        return false;
                                     }
-                                    if (op === '>') {
-                                        return semver.gt(version, ver);
-                                    }
-                                    if (op === '<') {
-                                        return semver.lt(version, ver);
-                                    }
-                                    if (op === '>=') {
-                                        return semver.gte(version, ver);
-                                    }
-                                    if (op === '<=') {
-                                        return semver.lte(version, ver);
-                                    }
-                                    if (op === '!=') {
-                                        return semver.neq(version, ver);
-                                    }
-                                    console.warn(`Unknown rule ${version}${rule}`);
-                                    return false;
-                                } catch (e) {
-                                    console.warn(`Cannot compare ${version}${rule}`);
-                                    return false;
+                                }
+                            } else if (!rule.match(/^[!=<>]+/)) {
+                                // Check if adapter is installed
+                                if (Object.keys(instances).find(id => instances[id]?.common?.name === rule)) {
+                                    return true;
+                                }
+                            } else if (rule.startsWith('!')) {
+                                // Check if adapter is not installed
+                                const adapter = rule.substring(1);
+                                if (!Object.keys(instances).find(id => instances[id]?.common?.name === adapter)) {
+                                    return true;
                                 }
                             }
-                        } else if (!rule.match(/^[!=<>]+/)) {
-                            // Check if adapter is installed
-                            if (Object.keys(instances).find(id => instances[id]?.common?.name === rule)) {
-                                return true;
-                            }
-                        } else if (rule.startsWith('!')) {
-                            // Check if adapter is not installed
-                            const adapter = rule.substring(1);
-                            if (!Object.keys(instances).find(id => instances[id]?.common?.name === adapter)) {
-                                return true;
-                            }
+                            // unknown rule
+                            return false;
                         }
-                        // unknown rule
-                        return false;
                     }
 
                     // If first character is '>' or '<'
@@ -645,7 +650,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
-                    {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
+                    {this.lang !== 'en' && this.props.toggleTranslation ? <IconButton
                         size="large"
                         className={Utils.clsx(classes.languageButton, this.props.noTranslation && classes.languageButtonActive)}
                         onClick={this.props.toggleTranslation}

@@ -16,13 +16,15 @@ import {
 } from '@mui/icons-material';
 
 import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
-
 import type { SystemConfig } from '@iobroker/socket-client';
-import Utils from '../Utils';
-import IntroCard from '../components/IntroCard';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import EditIntroLinkDialog from '../dialogs/EditIntroLinkDialog';
+
+import type InstancesWorker from '@/Workers/InstancesWorker';
+import type HostsWorker from '@/Workers/HostsWorker';
+import Utils from '@/Utils';
+import IntroCard from '@/components/IntroCard';
+import TabContainer from '@/components/TabContainer';
+import TabContent from '@/components/TabContent';
+import EditIntroLinkDialog from '@/dialogs/EditIntroLinkDialog';
 
 const styles = (theme: any) => ({
     root: {
@@ -94,8 +96,8 @@ interface IntroProps {
     socket: AdminConnection;
     t: typeof i18n.t;
     lang: ioBroker.Languages;
-    instancesWorker: Record<string, any>;
-    hostsWorker: Record<string, any>;
+    instancesWorker: InstancesWorker;
+    hostsWorker: HostsWorker;
     hostname: string;
     protocol: string;
     port: number;
@@ -120,6 +122,12 @@ interface IntroState {
     deactivated: string[] | null;
     instances: null | any[];
     hosts: any;
+}
+
+interface HostEvent {
+    id: string;
+    type: 'changed' | 'delete';
+    obj?: ioBroker.HostObject;
 }
 
 class Intro extends React.Component<IntroProps, IntroState> {
@@ -165,10 +173,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     /**
      * Compares the backend time with the frontend time
-     *
-     * @return {Promise<void>}
      */
-    async checkBackendTime() {
+    async checkBackendTime(): Promise<void> {
         const timeDiffMap = this.state.hostTimeDiffMap;
 
         for (const [hostId, hostData] of Object.entries(this.state.hostsData)) {
@@ -183,9 +189,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     /**
      * React lifecycle hook called when component did mount
-     * @return {Promise<void>}
      */
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         await this.getData();
         this.props.instancesWorker.registerHandler(this.getDataDelayed);
         this.props.hostsWorker.registerHandler(this.updateHosts);
@@ -231,9 +236,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     };
 
-    updateHosts = (events: any[], obj: Record<string, any>) => {
+    updateHosts = (events: string | HostEvent[], obj?: Record<string, any>) => {
         if (!Array.isArray(events)) {
-            events = [{ id: events, obj, type: obj ? 'changed' : 'delete' }];
+            events = [{ id: events, obj, type: obj ? 'changed' : 'delete' }] as HostEvent[];
         }
         let hostsId = [];
 
@@ -505,33 +510,28 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return buttons;
     }
 
-    saveCards() {
-        return this.props.socket.getSystemConfig(true)
-            .then((systemConfig: SystemConfig) => {
-                let changed = false;
-
-                if (JSON.stringify(systemConfig.common.intro) !== JSON.stringify(this.state.deactivated)) {
-                    systemConfig.common.intro = this.state.deactivated;
-                    changed = true;
-                }
-
-                if (!changed && JSON.stringify(systemConfig.native.introLinks) !== JSON.stringify(this.state.introLinks)) {
-                    changed = true;
-                    systemConfig.native.introLinks = this.state.introLinks;
-                }
-
-                if (changed) {
-                    this.props.socket.setSystemConfig(systemConfig)
-                        .then(() => this.props.showAlert('Updated', 'success'))
-                        .catch((error: any) => {
-                            console.log(error);
-                            this.props.showAlert(error, 'error');
-                        })
-                        .then(() => this.setState({ edit: false }));
-                } else {
-                    this.setState({ edit: false });
-                }
-            });
+    async saveCards() {
+        const systemConfig = await this.props.socket.getSystemConfig(true);
+        let changed = false;
+        if (JSON.stringify(systemConfig.common.intro) !== JSON.stringify(this.state.deactivated)) {
+            systemConfig.common.intro = this.state.deactivated;
+            changed = true;
+        }
+        if (!changed && JSON.stringify(systemConfig.native.introLinks) !== JSON.stringify(this.state.introLinks)) {
+            changed = true;
+            systemConfig.native.introLinks = this.state.introLinks;
+        }
+        if (changed) {
+            this.props.socket.setSystemConfig(systemConfig)
+                .then(() => this.props.showAlert('Updated', 'success'))
+                .catch((error: any) => {
+                    console.log(error);
+                    this.props.showAlert(error, 'error');
+                })
+                .then(() => this.setState({ edit: false }));
+        } else {
+            this.setState({ edit: false });
+        }
     }
 
     async getHostData(hostId: string, isAlive?: boolean) {
@@ -645,73 +645,34 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: SystemConfig) {
+    async getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: SystemConfig) {
         hosts = hosts || this.state.hosts;
 
-        return this.props.socket.getAdapterInstances('', update)
-            .then((instances: ioBroker.InstanceObject[]) => {
-                let deactivated: string[] = systemConfig.common.intro || [];
-                if (!Array.isArray(deactivated)) {
-                    deactivated = Object.keys(deactivated);
-                    deactivated.sort();
-                }
-                const introInstances: any[] = [];
-                const objects: Record<string, ioBroker.InstanceObject> = {};
-                instances.forEach(obj => objects[obj._id] = obj);
+        try {
+            const instances = await this.props.socket.getAdapterInstances('', update);
+            let deactivated: string[] = systemConfig.common.intro || [];
+            if (!Array.isArray(deactivated)) {
+                deactivated = Object.keys(deactivated);
+                deactivated.sort();
+            }
+            const introInstances: any[] = [];
+            const objects: Record<string, ioBroker.InstanceObject> = {};
+            instances.forEach(obj => objects[obj._id] = obj);
 
-                instances.sort((_a, _b) => {
-                    const a: Partial<ioBroker.InstanceCommon> = _a?.common ?? {};
-                    const b: Partial<ioBroker.InstanceCommon> = _b?.common ?? {};
+            instances.sort((_a, _b) => {
+                const a: Partial<ioBroker.InstanceCommon> = _a?.common ?? {};
+                const b: Partial<ioBroker.InstanceCommon> = _b?.common ?? {};
 
-                    // @ts-expect-error need to be added to types if this can exist
-                    if (a.order === undefined && b.order === undefined) {
-                        let aName;
-                        let bName;
-                        if (typeof a.name === 'object') {
-                            const commonNameA: ioBroker.Translated = a.name;
-                            aName = commonNameA[this.props.lang] || commonNameA.en;
-                        } else {
-                            aName = a.name as string || '';
-                        }
-                        if (typeof b.name === 'object') {
-                            const commonNameB: ioBroker.Translated = b.name;
-                            bName = commonNameB[this.props.lang] || commonNameB.en;
-                        } else {
-                            bName = b.name as string || '';
-                        }
-                        if (aName.toLowerCase() > bName.toLowerCase()) {
-                            return 1;
-                        }
-                        if (aName.toLowerCase() < bName.toLowerCase()) {
-                            return -1;
-                        }
-                        return 0;
-                    }
-                    // @ts-expect-error need to be added to types if this can exist
-                    if (a.order === undefined) {
-                        return -1;
-                    }
-                    // @ts-expect-error need to be added to types if this can exist
-                    if (b.order === undefined) {
-                        return 1;
-                    }
-                    // @ts-expect-error need to be added to types if this can exist
-                    if (a.order > b.order) {
-                        return 1;
-                    }
-                    // @ts-expect-error need to be added to types if this can exist
-                    if (a.order < b.order) {
-                        return -1;
-                    }
-                    let aName: string;
+                // @ts-expect-error need to be added to types if this can exist
+                if (a.order === undefined && b.order === undefined) {
+                    let aName;
+                    let bName;
                     if (typeof a.name === 'object') {
                         const commonNameA: ioBroker.Translated = a.name;
                         aName = commonNameA[this.props.lang] || commonNameA.en;
                     } else {
                         aName = a.name as string || '';
                     }
-
-                    let bName;
                     if (typeof b.name === 'object') {
                         const commonNameB: ioBroker.Translated = b.name;
                         bName = commonNameB[this.props.lang] || commonNameB.en;
@@ -725,147 +686,185 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         return -1;
                     }
                     return 0;
-                });
+                }
+                // @ts-expect-error need to be added to types if this can exist
+                if (a.order === undefined) {
+                    return -1;
+                }
+                // @ts-expect-error need to be added to types if this can exist
+                if (b.order === undefined) {
+                    return 1;
+                }
+                // @ts-expect-error need to be added to types if this can exist
+                if (a.order > b.order) {
+                    return 1;
+                }
+                // @ts-expect-error need to be added to types if this can exist
+                if (a.order < b.order) {
+                    return -1;
+                }
+                let aName: string;
+                if (typeof a.name === 'object') {
+                    const commonNameA: ioBroker.Translated = a.name;
+                    aName = commonNameA[this.props.lang] || commonNameA.en;
+                } else {
+                    aName = a.name as string || '';
+                }
 
-                instances.forEach(obj => {
-                    if (!obj) {
-                        return;
-                    }
-                    const common     = obj.common || null;
-                    const objId      = obj._id.split('.');
-                    const instanceId = objId.pop() as string;
-                    let name: string;
-                    if (common?.name && typeof common.name === 'object') {
-                        const commonName: ioBroker.Translated = common?.name;
-                        name = commonName[this.props.lang] || commonName.en;
-                    } else {
-                        name = common?.name as string || '';
-                    }
+                let bName;
+                if (typeof b.name === 'object') {
+                    const commonNameB: ioBroker.Translated = b.name;
+                    bName = commonNameB[this.props.lang] || commonNameB.en;
+                } else {
+                    bName = b.name as string || '';
+                }
+                if (aName.toLowerCase() > bName.toLowerCase()) {
+                    return 1;
+                }
+                if (aName.toLowerCase() < bName.toLowerCase()) {
+                    return -1;
+                }
+                return 0;
+            });
 
-                    if (name === 'admin' && common.localLink === (this.props.hostname || '')) {
-                        return;
-                    }
-                    if (name === 'web') {
-                        return;
-                    }
+            instances.forEach(obj => {
+                if (!obj) {
+                    return;
+                }
+                const common = obj.common || null;
+                const objId = obj._id.split('.');
+                const instanceId = objId.pop() as string;
+                let name: string;
+                if (common?.name && typeof common.name === 'object') {
+                    const commonName: ioBroker.Translated = common?.name;
+                    name = commonName[this.props.lang] || commonName.en;
+                } else {
+                    name = common?.name as string || '';
+                }
 
-                    if (name && name !== 'vis-web-admin' && name.match(/^vis-/)) {
-                        return;
-                    }
-                    if (name && name.match(/^icons-/)) {
-                        return;
-                    }
-                    if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-                        const links = common.localLinks || { _default: common.localLink ?? '' };
+                if (name === 'admin' && common.localLink === (this.props.hostname || '')) {
+                    return;
+                }
+                if (name === 'web') {
+                    return;
+                }
 
-                        Object.keys(links).forEach(linkName => {
-                            let link = links[linkName];
-                            const instance: Record<string, any> = {};
-                            if (typeof link === 'string') {
-                                // @ts-expect-error check later on
-                                link = { link };
-                            }
+                if (name && name !== 'vis-web-admin' && name.match(/^vis-/)) {
+                    return;
+                }
+                if (name && name.match(/^icons-/)) {
+                    return;
+                }
+                if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
+                    const links = common.localLinks || { _default: common.localLink ?? '' };
 
-                            instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`);
-                            instance.name        = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ` ${linkName}`);
-                            // @ts-expect-error check later, at first glance makes no sense or types are wrong
-                            instance.color       = link.color || '';
-                            // @ts-expect-error needs to be added to types if InstanceCommon can have desc
-                            instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                            instance.image       = common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png';
-
-                            // @ts-expect-error fix all the constructs here later on
-                            this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
-                        });
-                    }
-                    if (common && (common.enabled || common.onlyWWW) && name !== 'admin' && (common.welcomeScreen || common.welcomeScreenPro)) {
-                        const links = [];
-                        common.welcomeScreen && links.push(common.welcomeScreen);
-                        common.welcomeScreenPro && links.push(common.welcomeScreenPro);
-
-                        links.forEach(link => {
-                            const instance: Record<string, any> = {
-                                // @ts-expect-error fix link
-                                id: `${obj._id.replace('system.adapter.', '')}/${link.link}`,
-                                // @ts-expect-error fix link
-                                name: link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '',
-                                // @ts-expect-error fix link
-                                color: link.color || '',
-                                // @ts-expect-error fix link
-                                description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '',
-                                image: common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png',
-                                // @ts-expect-error fix link
-                                order: link.order,
-                            };
-
-                            // @ts-expect-error fix all the constructs here later on
-                            this.addLinks(`%web_protocol%://%web_bind%:%web_port%/${link.link}`, common, instanceId, instance, objects, hosts, instances, introInstances);
-                        });
-                    }
-                });
-
-                introInstances.forEach(instance => {
-                    if (instance.link) {
-                        instance.linkName = instance.link.replace('https://', '').replace('http://', '').replace(/^[^_]+:/, '');
-                    }
-                });
-
-                introInstances.sort((a, b) => {
-                    if (a.order !== undefined || b.order !== undefined) {
-                        a.order = a.order === undefined ? 1000 : a.order;
-                        b.order = b.order === undefined ? 1000 : b.order;
-                        if (a.order < b.order) {
-                            return -1;
-                        } if (a.order > b.order) {
-                            return 1;
+                    Object.keys(links).forEach(linkName => {
+                        let link = links[linkName];
+                        const instance: Record<string, any> = {};
+                        if (typeof link === 'string') {
+                            // @ts-expect-error check later on
+                            link = { link };
                         }
-                    }
 
-                    if (a.id > b.id) {
-                        return 1;
-                    }
-                    if (a.id < b.id) {
-                        return -1;
-                    }
-                    return 0;
-                });
+                        instance.id = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`);
+                        instance.name = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ` ${linkName}`);
+                        // @ts-expect-error check later, at first glance makes no sense or types are wrong
+                        instance.color = link.color || '';
+                        // @ts-expect-error needs to be added to types if InstanceCommon can have desc
+                        instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
+                        instance.image = common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png';
 
-                Object.keys(hosts as any).forEach(key => {
-                    const obj = hosts?.[key];
-                    const common = obj?.common;
-                    let name = common?.name;
-                    if (name && typeof name === 'object') {
-                        name = name[this.props.lang] || name.en;
-                    }
+                        // @ts-expect-error fix all the constructs here later on
+                        this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
+                    });
+                }
+                if (common && (common.enabled || common.onlyWWW) && name !== 'admin' && (common.welcomeScreen || common.welcomeScreenPro)) {
+                    const links = [];
+                    common.welcomeScreen && links.push(common.welcomeScreen);
+                    common.welcomeScreenPro && links.push(common.welcomeScreenPro);
 
-                    if (common) {
-                        const instance    = {
-                            id       : obj._id,
-                            name     : name || '',
-                            color    : '',
-                            image    : common.icon || 'img/no-image.png',
-                            info     : this.t('Info'),
-                            linkName : '',
+                    links.forEach(link => {
+                        const instance: Record<string, any> = {
+                            // @ts-expect-error fix link
+                            id: `${obj._id.replace('system.adapter.', '')}/${link.link}`,
+                            // @ts-expect-error fix link
+                            name: link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '',
+                            // @ts-expect-error fix link
+                            color: link.color || '',
+                            // @ts-expect-error fix link
+                            description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '',
+                            image: common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png',
+                            // @ts-expect-error fix link
+                            order: link.order,
                         };
 
-                        introInstances.push(instance);
-                    }
-                });
-
-                const _deactivated: string[] = [];
-                deactivated.forEach(id => {
-                    if (introInstances.find(instance => id === `${instance.id}_${instance.linkName}`)) {
-                        _deactivated.push(id);
-                    }
-                });
-                deactivated = _deactivated;
-
-                return { instances: introInstances, deactivated };
-            })
-            .catch((error: any) => {
-                console.log(error);
-                return { instances: [],  deactivated: [] };
+                        // @ts-expect-error fix all the constructs here later on
+                        this.addLinks(`%web_protocol%://%web_bind%:%web_port%/${link.link}`, common, instanceId, instance, objects, hosts, instances, introInstances);
+                    });
+                }
             });
+
+            introInstances.forEach(instance => {
+                if (instance.link) {
+                    instance.linkName = instance.link.replace('https://', '').replace('http://', '').replace(/^[^_]+:/, '');
+                }
+            });
+
+            introInstances.sort((a, b) => {
+                if (a.order !== undefined || b.order !== undefined) {
+                    a.order = a.order === undefined ? 1000 : a.order;
+                    b.order = b.order === undefined ? 1000 : b.order;
+                    if (a.order < b.order) {
+                        return -1;
+                    }
+                    if (a.order > b.order) {
+                        return 1;
+                    }
+                }
+
+                if (a.id > b.id) {
+                    return 1;
+                }
+                if (a.id < b.id) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            Object.keys(hosts as any).forEach(key => {
+                const obj = hosts?.[key];
+                const common = obj?.common;
+                let name = common?.name;
+                if (name && typeof name === 'object') {
+                    name = name[this.props.lang] || name.en;
+                }
+
+                if (common) {
+                    const instance = {
+                        id: obj._id,
+                        name: name || '',
+                        color: '',
+                        image: common.icon || 'img/no-image.png',
+                        info: this.t('Info'),
+                        linkName: '',
+                    };
+
+                    introInstances.push(instance);
+                }
+            });
+
+            const _deactivated: string[] = [];
+            deactivated.forEach(id => {
+                if (introInstances.find(instance => id === `${instance.id}_${instance.linkName}`)) {
+                    _deactivated.push(id);
+                }
+            });
+            deactivated = _deactivated;
+            return { instances: introInstances, deactivated };
+        } catch (error) {
+            console.log(error);
+            return { instances: [], deactivated: [] };
+        }
     }
 
     getHostDescription(id: string): React.JSX.Element {

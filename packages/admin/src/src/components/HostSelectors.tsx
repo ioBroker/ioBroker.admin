@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-import { Tooltip } from '@mui/material';
 import { withStyles } from '@mui/styles';
 import {
     Button,
     Menu,
     MenuItem,
+    Tooltip,
 } from '@mui/material';
 
 import {
@@ -80,7 +80,7 @@ interface HostEvent {
 }
 
 interface HostSelectorsProps {
-    disabled: boolean;
+    disabled?: boolean;
     socket: AdminConnection;
     currentHost: string;
     hostsWorker: InstanceType<typeof HostsWorker>;
@@ -270,7 +270,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                                     : 'none',
                             }}
                             variant={this.props.disabled || this.state.hosts.length < 2 ? 'text' : 'outlined'}
-                            disabled={this.props.disabled || this.state.hosts.length < 2}
+                            disabled={!!this.props.disabled || this.state.hosts.length < 2}
                             aria-haspopup="true"
                             onClick={e => this.setState({ anchorEl: e.currentTarget })}
                         >

@@ -34,12 +34,13 @@ function checkCondition(objMessages, oldVersion, newVersion, instances) {
                     Array.isArray(message.condition.rules) ? message.condition.rules : [message.condition.rules]
                 ).map(rule => {
                     // Possible rules:
-                    // - oldVersion<=1.0.44
-                    // - newVersion>=1.0.45
-                    // - installed - any version, same as 'oldVersion>=0.0.0'
-                    // - vis-2>=1.0.0
-                    // - vis
-                    // - !vis
+                    // - "oldVersion<=1.0.44"
+                    // - "newVersion>=1.0.45"
+                    // - "installed" - any version, same as 'oldVersion>=0.0.0'
+                    // - "not-installed" - if adapter is not installed, same as '!'
+                    // - "vis-2>=1.0.0"
+                    // - "vis"
+                    // - "!vis-2"
                     let version;
                     let op;
                     let ver;
@@ -50,58 +51,65 @@ function checkCondition(objMessages, oldVersion, newVersion, instances) {
                     } else if (rule.includes('newVersion')) {
                         version = newVersion;
                         rule = rule.substring('newVersion'.length);
-                    } else if (rule === 'installed') {
-                        return !!oldVersion;
-                    } else if (instances) {
-                        // it could be the name of required adapter, like vis-2
-                        const split = rule.match(/([a-z][-a-z_0-9]+)([!=<>]+)([.\d]+)/);
-                        if (split) {
-                            // Check that adapter is installed in desired version
-                            const instId = Object.keys(instances).find(id => instances[id]?.common?.name === split[1]);
-                            if (instId) {
-                                version = instances[instId].common.version;
-                                op = split[2];
-                                ver = split[3];
-                                try {
-                                    if (op === '==') {
-                                        return semver.eq(version, ver);
+                    } else {
+                        if (rule === 'installed') {
+                            return !!oldVersion;
+                        }
+                        if (rule === '!' || rule === 'not-installed') {
+                            return !oldVersion;
+                        }
+
+                        if (instances) {
+                            // it could be the name of required adapter, like vis-2
+                            const split = rule.match(/([a-z][-a-z_0-9]+)([!=<>]+)([.\d]+)/);
+                            if (split) {
+                                // Check that adapter is installed in desired version
+                                const instId = Object.keys(instances).find(id => instances[id]?.common?.name === split[1]);
+                                if (instId) {
+                                    version = instances[instId].common.version;
+                                    op = split[2];
+                                    ver = split[3];
+                                    try {
+                                        if (op === '==') {
+                                            return semver.eq(version, ver);
+                                        }
+                                        if (op === '>') {
+                                            return semver.gt(version, ver);
+                                        }
+                                        if (op === '<') {
+                                            return semver.lt(version, ver);
+                                        }
+                                        if (op === '>=') {
+                                            return semver.gte(version, ver);
+                                        }
+                                        if (op === '<=') {
+                                            return semver.lte(version, ver);
+                                        }
+                                        if (op === '!=') {
+                                            return semver.neq(version, ver);
+                                        }
+                                        console.warn(`Unknown rule ${version}${rule}`);
+                                        return false;
+                                    } catch (e) {
+                                        console.warn(`Cannot compare ${version}${rule}`);
+                                        return false;
                                     }
-                                    if (op === '>') {
-                                        return semver.gt(version, ver);
-                                    }
-                                    if (op === '<') {
-                                        return semver.lt(version, ver);
-                                    }
-                                    if (op === '>=') {
-                                        return semver.gte(version, ver);
-                                    }
-                                    if (op === '<=') {
-                                        return semver.lte(version, ver);
-                                    }
-                                    if (op === '!=') {
-                                        return semver.neq(version, ver);
-                                    }
-                                    console.warn(`Unknown rule ${version}${rule}`);
-                                    return false;
-                                } catch (e) {
-                                    console.warn(`Cannot compare ${version}${rule}`);
-                                    return false;
+                                }
+                            } else if (!rule.match(/^[!=<>]+/)) {
+                                // Check if adapter is installed
+                                if (Object.keys(instances).find(id => instances[id]?.common?.name === rule)) {
+                                    return true;
+                                }
+                            } else if (rule.startsWith('!')) {
+                                // Check if adapter is not installed
+                                const adapter = rule.substring(1);
+                                if (!Object.keys(instances).find(id => instances[id]?.common?.name === adapter)) {
+                                    return true;
                                 }
                             }
-                        } else if (!rule.match(/^[!=<>]+/)) {
-                            // Check if adapter is installed
-                            if (Object.keys(instances).find(id => instances[id]?.common?.name === rule)) {
-                                return true;
-                            }
-                        } else if (rule.startsWith('!')) {
-                            // Check if adapter is not installed
-                            const adapter = rule.substring(1);
-                            if (!Object.keys(instances).find(id => instances[id]?.common?.name === adapter)) {
-                                return true;
-                            }
+                            // unknown rule
+                            return false;
                         }
-                        // unknown rule
-                        return false;
                     }
 
                     // If first character is '>' or '<'

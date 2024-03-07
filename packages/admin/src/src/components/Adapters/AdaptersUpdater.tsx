@@ -111,7 +111,6 @@ interface AdaptersUpdaterProps {
 }
 
 interface AdaptersUpdaterState {
-    current: string;
     showNews: null | Record<string, any>;
 }
 
@@ -132,6 +131,8 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
 
     private readonly currentRef: React.RefObject<HTMLLIElement>;
 
+    private current: string;
+
     constructor(props: AdaptersUpdaterProps) {
         super(props);
 
@@ -140,21 +141,13 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         this.updateAvailable.forEach(adapter => this.initialVersions[adapter] = this.props.installed[adapter].version);
 
         this.state = {
-            current: this.props.current,
             showNews: null,
         };
 
         this.currentRef = React.createRef();
+        this.current = props.current;
 
         this.props.onUpdateSelected([...this.updateAvailable], this.updateAvailable);
-    }
-
-    UNSAFE_componentWillReceiveProps(nextProps: AdaptersUpdaterProps) {
-        if (nextProps.current !== this.state.current) {
-            this.setState({ current: nextProps.current });
-            setTimeout(() =>
-                this.currentRef.current?.scrollIntoView(), 200);
-        }
     }
 
     static isUpdateAvailable(options: UpdateAvailableCheckOptions) {
@@ -241,7 +234,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                 key={adapter}
                 dense
                 classes={{ root: Utils.clsx(this.props.classes.listItem, this.props.updated.includes(adapter) && this.props.classes.updateDone) }}
-                ref={this.state.current === adapter ? this.currentRef : null}
+                ref={this.props.current === adapter ? this.currentRef : null}
             >
                 <ListItemIcon className={this.props.classes.minWidth}>
                     <Avatar
@@ -297,7 +290,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                         }}
                     />
                 </ListItemSecondaryAction>}
-                {this.state.current === adapter && !this.props.stopped && !this.props.finished && <ListItemSecondaryAction>
+                {this.props.current === adapter && !this.props.stopped && !this.props.finished && <ListItemSecondaryAction>
                     <CircularProgress />
                 </ListItemSecondaryAction>}
             </ListItem>
@@ -408,6 +401,11 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
     }
 
     render() {
+        if (this.current !== this.props.current) {
+            this.current = this.props.current;
+            setTimeout(() => this.currentRef.current?.scrollIntoView(), 200);
+        }
+
         return <List className={this.props.classes.root}>
             {this.updateAvailable.map(adapter => this.renderOneAdapter(adapter))}
             {this.renderShowNews()}
