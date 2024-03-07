@@ -9,6 +9,17 @@ export interface BasicComponentProps {
     themeType: string;
 }
 
+interface RepositoryEntry {
+    /** Link to external icon */
+    extIcon: string;
+    /** Translated title */
+    titleLang: ioBroker.Translated;
+    [other: string]: unknown;
+}
+
+/** The ioBroker repository */
+export type Repository = Record<string, RepositoryEntry>
+
 /**
  * Specific value or a string in general
  */
