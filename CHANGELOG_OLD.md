@@ -1,6 +1,14 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.13.20 (2024-02-14)
+* (foxriver76) after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally
+* (foxriver76) fixed problem with saving on multi edit custom settings
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.13.19 (2024-02-12)
 * (foxriver76) generate notification if new adapter updates are available
 
