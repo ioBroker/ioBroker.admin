@@ -58,7 +58,7 @@
     "babel": "^6.23.0",
     "babel-plugin-inline-json-import": "^0.3.2",
     "buffer": "^6.0.3",
-    "chai": "^4.3.10",
+    "chai": "^5.1.0",
     "colorette": "^2.0.20",
     "copy-to-clipboard": "^3.3.3",
     "craco-babel-loader": "^1.0.4",
