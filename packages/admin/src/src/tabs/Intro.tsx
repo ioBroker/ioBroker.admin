@@ -26,6 +26,9 @@ import TabContainer from '@/components/TabContainer';
 import TabContent from '@/components/TabContent';
 import EditIntroLinkDialog from '@/dialogs/EditIntroLinkDialog';
 
+import { type InstanceEvent } from '@/Workers/InstancesWorker';
+import { type HostEvent } from '@/Workers/HostsWorker';
+
 const styles = (theme: any) => ({
     root: {
         width: '100%',
@@ -122,12 +125,6 @@ interface IntroState {
     deactivated: string[] | null;
     instances: null | any[];
     hosts: any;
-}
-
-interface HostEvent {
-    id: string;
-    type: 'changed' | 'delete';
-    obj?: ioBroker.HostObject;
 }
 
 class Intro extends React.Component<IntroProps, IntroState> {
@@ -236,10 +233,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     };
 
-    updateHosts = (events: string | HostEvent[], obj?: Record<string, any>) => {
-        if (!Array.isArray(events)) {
-            events = [{ id: events, obj, type: obj ? 'changed' : 'delete' }] as HostEvent[];
-        }
+    updateHosts = (events: HostEvent[]) => {
         let hostsId = [];
 
         // if host deleted
@@ -1021,7 +1015,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
         ];
     }
 
-    getDataDelayed = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getDataDelayed = (_events?: InstanceEvent[]) => {
         this.getDataTimeout && clearTimeout(this.getDataTimeout);
         this.getDataTimeout = setTimeout(() => {
             this.getDataTimeout = undefined;

@@ -14,6 +14,7 @@ import {
 // @ts-expect-error fix socket-client
 import type { CompactHost } from '@iobroker/socket-client';
 import type HostsWorker from '@/Workers/HostsWorker';
+import { type HostEvent, type HostAliveEvent } from '@/Workers/HostsWorker';
 
 const styles = () => ({
     img: {
@@ -71,13 +72,6 @@ const styles = () => ({
         pointerEvents: 'none',
     },
 }) as any;
-
-interface HostEvent {
-    type: string;
-    id: ioBroker.ObjectIDs.Host;
-    alive: boolean;
-    obj: ioBroker.HostObject | null;
-}
 
 interface HostSelectorsProps {
     disabled?: boolean;
@@ -139,11 +133,11 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
         this.props.hostsWorker.unregisterAliveHandler(this.onAliveChanged);
     }
 
-    onAliveChanged = (events: HostEvent[]) => {
+    onAliveChanged = (events: HostAliveEvent[]) => {
         const alive: Record<string, boolean> = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
         events.forEach(event => {
-            if (event.type === 'delete') {
+            if (event.type === 'deleted') {
                 if (alive[event.id] !== undefined) {
                     delete alive[event.id];
                     changed = true;
@@ -183,7 +177,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
             events.map(async event => {
                 const host = hosts.find(it => it._id === event.id);
 
-                if (event.type === 'delete' || !event.obj) {
+                if (event.type === 'deleted' || !event.obj) {
                     if (host) {
                         const pos = hosts.indexOf(host);
                         if (pos !== -1) {
@@ -208,7 +202,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                 } else {
                     changed = true;
                     hosts.push({
-                        _id: event.id,
+                        _id: event.id as ioBroker.ObjectIDs.Host,
                         // @ts-expect-error only a partial host object
                         common: {
                             name: event.obj.common?.name || '',

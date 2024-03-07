@@ -1,7 +1,29 @@
+import { type AdminConnection } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
 
+export type InstanceEventType = 'new' | 'changed' | 'deleted';
+
+export interface InstanceEvent {
+    id: string;
+    obj?: ioBroker.InstanceObject;
+    type: InstanceEventType;
+    oldObj?: ioBroker.InstanceObject;
+}
+
 class InstancesWorker {
-    constructor(socket) {
+    private readonly socket: AdminConnection;
+
+    private readonly handlers: ((events: InstanceEvent[]) => void)[];
+
+    private promise: Promise<void | Record<string, ioBroker.InstanceObject>> | null;
+
+    private forceUpdate: boolean;
+
+    private connected: boolean;
+
+    private objects: Record<string, ioBroker.InstanceObject> | null;
+
+    constructor(socket: AdminConnection) {
         this.socket   = socket;
         this.handlers = [];
         this.promise  = null;
@@ -14,12 +36,12 @@ class InstancesWorker {
         this.objects = null;
     }
 
-    objectChangeHandler = (id, obj) => {
+    objectChangeHandler = (id: string, obj?: ioBroker.InstanceObject) => {
         this.objects = this.objects || {};
         // if instance
         if (id.match(/^system\.adapter\.[^.]+\.\d+$/)) {
-            let type;
-            let oldObj;
+            let type: InstanceEventType;
+            let oldObj: ioBroker.InstanceObject | undefined;
             if (obj) {
                 if (obj.type !== 'instance') {
                     return;
@@ -64,7 +86,7 @@ class InstancesWorker {
     }
 
     // be careful with this object. Do not change them.
-    getInstances(update) {
+    getInstances(update?: boolean) {
         if (!update && this.promise) {
             return this.promise;
         }
@@ -72,7 +94,7 @@ class InstancesWorker {
         update = update || this.forceUpdate;
         this.forceUpdate = false;
 
-        this.promise = this.socket.getAdapterInstances(update)
+        this.promise = this.socket.getAdapterInstances('', update)
             .then(objects => {
                 this.objects = {};
                 objects.forEach(obj => this.objects[obj._id] = obj);
@@ -83,7 +105,7 @@ class InstancesWorker {
         return this.promise;
     }
 
-    connectionHandler = isConnected => {
+    connectionHandler = (isConnected: boolean) => {
         if (isConnected && !this.connected) {
             this.connected = true;
 
@@ -100,7 +122,7 @@ class InstancesWorker {
         }
     };
 
-    registerHandler(cb, doNotRequestAdapters) {
+    registerHandler(cb: (events: InstanceEvent[]) => void, doNotRequestAdapters?: boolean) {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
@@ -112,7 +134,7 @@ class InstancesWorker {
         }
     }
 
-    unregisterHandler(cb) {
+    unregisterHandler(cb: (events: InstanceEvent[]) => void) {
         const pos = this.handlers.indexOf(cb);
         pos !== -1 && this.handlers.splice(pos, 1);
 

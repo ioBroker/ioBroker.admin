@@ -1,7 +1,55 @@
+import { type AdminConnection } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
+import { type Style } from '../Utils';
+
+interface LogLine {
+    severity: string;
+    ts: number;
+    message: string | { original: string; parts: { text: string; style: Style }[] };
+    from: string;
+    _id: number;
+}
+
+interface LogLineSaved extends LogLine {
+    key?: number;
+}
 
 class LogsWorker {
-    constructor(socket, maxLogs) {
+    private readonly socket: AdminConnection;
+
+    private readonly handlers: ((events: LogLineSaved[], messageSize: number) => void)[];
+
+    private promise: Promise<void | { logs: LogLineSaved[]; logSize: number }> | null;
+
+    private connected: boolean;
+
+    private logs: LogLineSaved[] | null;
+
+    private newLogs: LogLineSaved[] | null;
+
+    private errorCountHandlers: ((errors: number) => void)[];
+
+    private warningCountHandlers: ((warnings: number) => void)[];
+
+    private countErrors: boolean;
+
+    private countWarnings: boolean;
+
+    private errors: number;
+
+    private warnings: number;
+
+    private currentHost: string;
+
+    private readonly maxLogs: number;
+
+    private readonly isSafari: boolean;
+
+    private logTimeout: ReturnType<typeof setTimeout> | null;
+
+    private logSize: number;
+
+    constructor(socket: AdminConnection, maxLogs?: number) {
         this.socket               = socket;
         this.handlers             = [];
         this.promise              = null;
@@ -23,25 +71,25 @@ class LogsWorker {
         socket.registerConnectionHandler(this.connectionHandler);
     }
 
-    setCurrentHost(currentHost) {
+    setCurrentHost(currentHost: string) {
         if (currentHost !== this.currentHost) {
             this.currentHost = currentHost;
             this.getLogs(true);
         }
     }
 
-    enableCountErrors(isEnabled) {
+    enableCountErrors(isEnabled: boolean) {
         if (this.countErrors !== isEnabled) {
             this.countErrors = isEnabled;
             if (!this.countErrors) {
                 const errors = this.errors;
-                this.error   = 0;
+                this.errors = 0;
                 errors && this.errorCountHandlers.forEach(handler => handler && handler(errors));
             }
         }
     }
 
-    enableCountWarnings(isEnabled) {
+    enableCountWarnings(isEnabled: boolean) {
         if (this.countWarnings !== isEnabled) {
             this.countWarnings = isEnabled;
             if (!this.countWarnings) {
@@ -68,7 +116,7 @@ class LogsWorker {
         }
     }
 
-    logHandler = line => {
+    logHandler = (line: LogLine | string) => {
         const obj = this._processLine(line);
 
         if (obj) {
@@ -99,7 +147,7 @@ class LogsWorker {
         }
     };
 
-    connectionHandler = isConnected => {
+    connectionHandler = (isConnected: boolean) => {
         if (isConnected && !this.connected) {
             this.connected = true;
             this.getLogs(true);
@@ -108,13 +156,13 @@ class LogsWorker {
         }
     };
 
-    registerHandler(cb) {
+    registerHandler(cb: (events: LogLineSaved[], messageSize: number) => void) {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
         }
     }
 
-    unregisterHandler(cb) {
+    unregisterHandler(cb: (events: LogLineSaved[], messageSize: number) => void) {
         const pos = this.handlers.indexOf(cb);
 
         if (pos !== -1) {
@@ -122,13 +170,13 @@ class LogsWorker {
         }
     }
 
-    registerErrorCountHandler(cb) {
+    registerErrorCountHandler(cb: (errors: number) => void) {
         if (!this.errorCountHandlers.includes(cb)) {
             this.errorCountHandlers.push(cb);
         }
     }
 
-    unregisterErrorCountHandler(cb) {
+    unregisterErrorCountHandler(cb: (errors: number) => void){
         const pos = this.errorCountHandlers.indexOf(cb);
 
         if (pos !== -1) {
@@ -136,13 +184,13 @@ class LogsWorker {
         }
     }
 
-    registerWarningCountHandler(cb) {
+    registerWarningCountHandler(cb: (warnings: number) => void) {
         if (!this.warningCountHandlers.includes(cb)) {
             this.warningCountHandlers.push(cb);
         }
     }
 
-    unregisterWarningCountHandler(cb) {
+    unregisterWarningCountHandler(cb: (warnings: number) => void) {
         const pos = this.warningCountHandlers.indexOf(cb);
 
         if (pos !== -1) {
@@ -150,7 +198,7 @@ class LogsWorker {
         }
     }
 
-    _processLine(line, lastKey) {
+    _processLine(line: LogLine | string, lastKey?: number): LogLineSaved | null {
         // do not update logs before the first logs from host received
         if (!this.logs) {
             return null;
@@ -166,20 +214,20 @@ class LogsWorker {
             "_id": 48358425
         }; */
 
-        let obj;
+        let obj: LogLineSaved;
         let isNew = true;
         const length = this.logs.length;
         lastKey = lastKey || (length && this.logs[this.logs.length - 1].key) || 0;
 
         if (typeof line === 'object') {
-            if (lastKey && lastKey <= line.ts) {
-                line.key = lastKey + 1;
+            obj = line as LogLineSaved;
+            if (lastKey && lastKey <= obj.ts) {
+                obj.key = lastKey + 1;
             } else {
-                line.key = line.ts;
+                obj.key = obj.ts;
             }
-
-            obj = line;
         } else {
+            // parse string
             const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
 
             if (time && time.length > 0) {
@@ -208,7 +256,7 @@ class LogsWorker {
                     message: line.split(/\[\d+m: /)[1],
                     severity: line.match(/\d+m(silly|debug|info|warn|error)/)[0].replace(/[\dm]/g, ''),
                     ts,
-                };
+                } as LogLineSaved;
             } else {
                 isNew = false;
                 // if no time found
@@ -268,7 +316,7 @@ class LogsWorker {
         return obj;
     }
 
-    getLogs(update) {
+    getLogs(update?: boolean) {
         if (!this.currentHost) {
             return Promise.resolve({ logs: [], logSize: 0 });
         }
@@ -282,7 +330,8 @@ class LogsWorker {
 
         this.promise = this.socket.getLogs(this.currentHost, 200)
             .then(lines => {
-                if (lines === 'permissionError' || lines?.error !== undefined) {
+                // @ts-expect-error it can return error string or error object { error: 'permissionError' }
+                if ((lines as string) === 'permissionError' || lines?.error !== undefined) {
                     this.logs = [];
 
                     window.alert('Cannot get logs: no permission');
@@ -290,14 +339,15 @@ class LogsWorker {
                     return { logs: this.logs, logSize: 0 };
                 }
 
-                let logSize = lines ? lines.pop() : null;
+                const logSizeStr: string | null = lines ? lines.pop() : null;
+                let logSize: number = 0;
 
-                if (typeof logSize === 'string') {
-                    logSize = parseInt(logSize);
+                if (typeof logSizeStr === 'string') {
+                    logSize = parseInt(logSizeStr, 10);
                 }
 
                 this.logs = [];
-                let lastKey;
+                let lastKey: number;
 
                 lines.forEach(line => {
                     const obj = this._processLine(line, lastKey);
@@ -306,8 +356,8 @@ class LogsWorker {
                     }
                 });
 
-                if (lines && lines.length && lines[0].ts) {
-                    lines.sort((a, b) => (a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0)));
+                if (this.logs?.length && this.logs[0].ts) {
+                    this.logs.sort((a, b) => (a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0)));
                 }
 
                 this.logSize = logSize;

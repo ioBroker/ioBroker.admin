@@ -1,5 +1,44 @@
+import { type AdminConnection } from '@iobroker/adapter-react-v5';
+
+export type HostEventType = 'new' | 'changed' | 'deleted';
+
+export interface HostEvent {
+    id: string;
+    obj?: ioBroker.HostObject;
+    type: HostEventType;
+    oldObj?: ioBroker.HostObject;
+}
+
+export interface HostAliveEvent {
+    id: string;
+    alive: boolean;
+    type: HostEventType;
+}
+
 class HostsWorker {
-    constructor(socket) {
+    private readonly socket: AdminConnection;
+
+    private readonly handlers: ((events: HostEvent[]) => void)[];
+
+    private readonly aliveHandlers: (((events: HostAliveEvent[]) => void) | false)[];
+
+    private readonly notificationsHandlers: ((notifications: ioBroker.Notification[]) => void)[];
+
+    private promise: Promise<void | Record<string, ioBroker.HostObject>> | null;
+
+    private connected: boolean;
+
+    private objects: Record<string, ioBroker.HostObject> | null;
+
+    private readonly aliveStates: Record<string, boolean>;
+
+    private readonly notificationPromises: Record<string, Promise<ioBroker.Notification[] | null>>;
+
+    private notificationTimer: ReturnType<typeof setTimeout> | null;
+
+    private subscribeTs: number | undefined;
+
+    constructor(socket: AdminConnection) {
         this.socket = socket;
         this.handlers = [];
         this.aliveHandlers = [];
@@ -18,11 +57,11 @@ class HostsWorker {
         }
     }
 
-    objectChangeHandler = (id, obj) => {
+    objectChangeHandler = (id: string, obj: ioBroker.HostObject) => {
         // if host
         if (id.startsWith('system.host.')) {
-            let type;
-            let oldObj;
+            let type: HostEventType;
+            let oldObj: ioBroker.HostObject | undefined;
             if (obj) {
                 if (obj.type !== 'host') {
                     return;
@@ -55,10 +94,10 @@ class HostsWorker {
         }
     };
 
-    aliveChangeHandler = (id, state) => {
+    aliveChangeHandler = (id: string, state: ioBroker.State) => {
         // if instance
         if (id.startsWith('system.host.') && id.endsWith('.alive')) {
-            let type;
+            let type: HostEventType;
             id = id.replace(/\.alive$/, '');
             if (state) {
                 if (this.aliveStates[id] !== undefined) {
@@ -80,11 +119,11 @@ class HostsWorker {
                 // deleted unknown instance
                 return;
             }
-            this.aliveHandlers.forEach(cb => cb([{ id, alive: this.aliveStates[id], type }]));
+            this.aliveHandlers.forEach(cb => cb && cb([{ id, alive: this.aliveStates[id], type }]));
         }
     };
 
-    getHosts(update) {
+    getHosts(update?: boolean) {
         if (!update && this.promise) {
             return this.promise;
         }
@@ -100,7 +139,7 @@ class HostsWorker {
         return this.promise;
     }
 
-    connectionHandler = isConnected => {
+    connectionHandler = (isConnected: boolean) => {
         if (isConnected && !this.connected) {
             this.connected = true;
 
@@ -119,11 +158,11 @@ class HostsWorker {
         } else if (!isConnected && this.connected) {
             this.connected = false;
             Object.keys(this.aliveStates)
-                .forEach(id => this.aliveHandlers[id] = false);
+                .forEach((id: string) => this.aliveStates[id] = false);
         }
     };
 
-    registerHandler(cb) {
+    registerHandler(cb: (events: HostEvent[]) => void) {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
@@ -134,7 +173,7 @@ class HostsWorker {
         }
     }
 
-    unregisterHandler(cb) {
+    unregisterHandler(cb: (events: HostEvent[]) => void) {
         const pos = this.handlers.indexOf(cb);
         if (pos !== -1) {
             this.handlers.splice(pos, 1);
@@ -145,7 +184,7 @@ class HostsWorker {
         }
     }
 
-    registerAliveHandler(cb) {
+    registerAliveHandler(cb: (events: HostAliveEvent[]) => void) {
         if (!this.aliveHandlers.includes(cb)) {
             this.aliveHandlers.push(cb);
 
@@ -155,7 +194,7 @@ class HostsWorker {
         }
     }
 
-    unregisterAliveHandler(cb) {
+    unregisterAliveHandler(cb: (events: HostAliveEvent[]) => void) {
         const pos = this.aliveHandlers.indexOf(cb);
         if (pos !== -1) {
             this.aliveHandlers.splice(pos, 1);
@@ -165,7 +204,7 @@ class HostsWorker {
         }
     }
 
-    onNotificationHandler = (id /* , state */) => {
+    onNotificationHandler = (id: string /* , state */) => {
         const host = id.replace(/\.notifications\..+$/, '');
 
         // ignore subscribe events
@@ -182,7 +221,7 @@ class HostsWorker {
         }
     };
 
-    _getNotificationsFromHosts(hostId, update) {
+    _getNotificationsFromHosts(hostId: string, update?: boolean): Promise<ioBroker.Notification[]> {
         if (!update && this.notificationPromises[hostId]) {
             return this.notificationPromises[hostId];
         }
@@ -190,20 +229,20 @@ class HostsWorker {
         this.notificationPromises[hostId] = this.socket.getState(`${hostId}.alive`)
             .then(state => {
                 if (state?.val) {
-                    return this.socket.getNotifications(hostId)
+                    return this.socket.getNotifications(hostId, '')
                         .then(notifications => ({ [hostId]: notifications }))
                         .catch(e => {
                             console.warn(`Cannot read notifications from "${hostId}": ${e}`);
-                            return { [hostId]: null };
+                            return { [hostId]: Promise.resolve(null) };
                         });
                 }
-                return { [hostId]: null };
+                return Promise.resolve(null);
             });
 
         return this.notificationPromises[hostId];
     }
 
-    getNotifications(hostId, update) {
+    getNotifications(hostId?: string, update?: boolean) {
         if (hostId) {
             return this._getNotificationsFromHosts(hostId, update);
         }
@@ -221,7 +260,7 @@ class HostsWorker {
             });
     }
 
-    registerNotificationHandler(cb) {
+    registerNotificationHandler(cb: (notifications: ioBroker.Notification[]) => void) {
         if (!this.notificationsHandlers.includes(cb)) {
             this.notificationsHandlers.push(cb);
 
@@ -232,7 +271,7 @@ class HostsWorker {
         }
     }
 
-    unregisterNotificationHandler(cb) {
+    unregisterNotificationHandler(cb: (notifications: ioBroker.Notification[]) => void) {
         const pos = this.notificationsHandlers.indexOf(cb);
 
         if (pos !== -1) {

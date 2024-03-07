@@ -1,7 +1,29 @@
+import { type AdminConnection } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
 
+export type ObjectEventType = 'new' | 'changed' | 'deleted';
+
+interface ObjectEvent {
+    id: string;
+    obj?: ioBroker.Object;
+    type: ObjectEventType;
+    oldObj?: ioBroker.Object;
+}
+
 class ObjectsWorker {
-    constructor(socket) {
+    private readonly socket: AdminConnection;
+
+    private readonly handlers: ((events: ObjectEvent[]) => void)[];
+
+    private readonly repositoryHandlers: (() => void)[];
+
+    private promise: Promise<void | Record<string, ioBroker.Object>> | null;
+
+    private connected: boolean;
+
+    private objects: Record<string, ioBroker.Object> | null;
+
+    constructor(socket: AdminConnection) {
         this.socket   = socket;
         this.handlers = [];
         this.promise  = null;
@@ -13,11 +35,11 @@ class ObjectsWorker {
         this.objects = null;
     }
 
-    objectChangeHandler = (id, obj) => {
+    objectChangeHandler = (id: string, obj: ioBroker.Object | null) => {
         this.objects = this.objects || {};
         // if instance
-        let oldObj;
-        let type;
+        let oldObj: ioBroker.Object | undefined;
+        let type: ObjectEventType;
 
         if (obj) {
             if (obj.type === 'instance' || obj.type === 'adapter') {
@@ -52,7 +74,7 @@ class ObjectsWorker {
     };
 
     // be careful with this object. Do not change them.
-    getObjects(update) {
+    getObjects(update?: boolean) {
         if (!update && this.promise) {
             return this.promise;
         }
@@ -67,7 +89,7 @@ class ObjectsWorker {
         return this.promise;
     }
 
-    connectionHandler = isConnected => {
+    connectionHandler = (isConnected: boolean) => {
         if (isConnected && !this.connected) {
             this.connected = true;
 
@@ -76,15 +98,15 @@ class ObjectsWorker {
                     .catch(e => window.alert(`Cannot subscribe on objects: ${e}`));
 
                 this.getObjects(true)
-                    .then(instances => instances && Object.keys(instances)
-                        .forEach(id => this.objectChangeHandler(id, instances[id])));
+                    .then(objects => objects && Object.keys(objects)
+                        .forEach(id => this.objectChangeHandler(id, objects[id])));
             }
         } else if (!isConnected && this.connected) {
             this.connected = false;
         }
     };
 
-    registerHandler(cb) {
+    registerHandler(cb: (events: ObjectEvent[]) => void) {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
@@ -95,7 +117,7 @@ class ObjectsWorker {
         }
     }
 
-    unregisterHandler(cb, doNotUnsubscribe) {
+    unregisterHandler(cb: (events: ObjectEvent[]) => void, doNotUnsubscribe?: boolean) {
         const pos = this.handlers.indexOf(cb);
         pos !== -1 && this.handlers.splice(pos, 1);
 
