@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Paper, Toolbar, Button, Accordion, Box, AccordionSummary, AccordionDetails, Checkbox,
+    Paper, Toolbar, Button, Accordion, Box, AccordionSummary, AccordionDetails, Checkbox, Typography, LinearProgress,
 } from '@mui/material';
 import { Check as IconCheck, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
@@ -71,7 +71,6 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
 
         // after calling onDone we install in background
         for (const adapter of selectedAdapters) {
-            console.log(`install ${adapter}`);
             await new Promise<void>(resolve => {
                 this.props.executeCommand(`add ${adapter}`, this.props.host, resolve);
             });
@@ -105,6 +104,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                     sx={{
                         backgroundColor: 'primary.main',
                         fontWeight: 'bold',
+                        height: 52,
                     }}
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1-content"
@@ -135,9 +135,51 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                     backgroundColor: 'background.appbar', whiteSpace: 'pre-wrap', fontSize: 16, textAlign: 'left',
                 }}
                 >
-                    {description}
+                    <Typography>{description}</Typography>
                 </AccordionDetails>
             </Accordion>
+        </Box>;
+    }
+
+    /**
+     * Render the actual content
+     */
+    renderContent(): React.ReactNode {
+        return <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
+            <Typography sx={{ paddingTop: 2 }}>{I18n.t('wizard adapter general description')}</Typography>
+            <h2>{I18n.t('Cloud')}</h2>
+            <Typography>{I18n.t('cloud wizard category')}</Typography>
+            {this.renderAdapterAccordion({
+                name: 'iot',
+                description: I18n.t('iot wizard description'),
+            })}
+            {this.renderAdapterAccordion({ name: 'cloud', description: I18n.t('cloud wizard description') })}
+
+            <h2>{I18n.t('Logic')}</h2>
+            <Typography>{I18n.t('logic wizard category')}</Typography>
+            {this.renderAdapterAccordion({ name: 'javascript', description: I18n.t('javascript wizard description') })}
+            {this.renderAdapterAccordion({ name: 'scenes', description: I18n.t('scenes wizard description') })}
+
+            <h2>{I18n.t('Notifications')}</h2>
+            <Typography>{I18n.t('notifications wizard category')}</Typography>
+            {this.renderAdapterAccordion({ name: 'notification-manager', description: I18n.t('notification-manager wizard description') })}
+            {this.renderAdapterAccordion({ name: 'telegram', description: I18n.t('telegram wizard description') })}
+            {this.renderAdapterAccordion({ name: 'email', description: I18n.t('email wizard description') })}
+            {this.renderAdapterAccordion({ name: 'pushover', description: I18n.t('pushover wizard description') })}
+            {this.renderAdapterAccordion({ name: 'signal-cmb', description: I18n.t('signal-cmb wizard description') })}
+
+            <h2>{I18n.t('History data')}</h2>
+            <Typography>{I18n.t('history wizard category')}</Typography>
+            {this.renderAdapterAccordion({ name: 'history', description: I18n.t('history wizard description') })}
+            {this.renderAdapterAccordion({ name: 'sql', description: I18n.t('sql wizard description') })}
+
+            <h2>{I18n.t('Weather')}</h2>
+            <Typography>{I18n.t('weather wizard category')}</Typography>
+            {this.renderAdapterAccordion({ name: 'weatherunderground', description: I18n.t('weatherunderground wizard description') })}
+
+            <h2>{I18n.t('Visualization')}</h2>
+            <Typography>{I18n.t('visualization wizard category')}</Typography>
+            {this.renderAdapterAccordion({ name: 'vis-2', description: I18n.t('vis-2 wizard description') })}
         </Box>;
     }
 
@@ -145,6 +187,8 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
      * Render the component
      */
     render(): React.ReactNode {
+        const repositoryReceived = Object.keys(this.state.repository).length > 0;
+
         return <Paper sx={{
             height: '100%',
             maxHeight: '100%',
@@ -160,9 +204,6 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                 width: '90%',
                 maxWidth: '800px',
                 overflow: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1,
                 '-ms-overflow-style': 'none',
                 'scrollbar-width': 'none',
                 '&::-webkit-scrollbar': {
@@ -170,28 +211,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                 },
             }}
             >
-                <h2>{I18n.t('Cloud')}</h2>
-                {this.renderAdapterAccordion({
-                    name: 'iot',
-                    description: I18n.t('iot wizard description'),
-                })}
-                {this.renderAdapterAccordion({ name: 'cloud', description: I18n.t('cloud wizard description') })}
-                <h2>{I18n.t('Logic')}</h2>
-                {this.renderAdapterAccordion({ name: 'javascript', description: I18n.t('javascript wizard description') })}
-                {this.renderAdapterAccordion({ name: 'scenes', description: I18n.t('scenes wizard description') })}
-                <h2>{I18n.t('Notifications')}</h2>
-                {this.renderAdapterAccordion({ name: 'notification-manager', description: I18n.t('notification-manager wizard description') })}
-                {this.renderAdapterAccordion({ name: 'telegram', description: I18n.t('telegram wizard description') })}
-                {this.renderAdapterAccordion({ name: 'email', description: I18n.t('email wizard description') })}
-                {this.renderAdapterAccordion({ name: 'pushover', description: I18n.t('pushover wizard description') })}
-                {this.renderAdapterAccordion({ name: 'signal-cmb', description: I18n.t('signal-cmb wizard description') })}
-                <h2>{I18n.t('History data')}</h2>
-                {this.renderAdapterAccordion({ name: 'history', description: I18n.t('history wizard description') })}
-                {this.renderAdapterAccordion({ name: 'sql', description: I18n.t('sql wizard description') })}
-                <h2>{I18n.t('Weather')}</h2>
-                {this.renderAdapterAccordion({ name: 'weatherunderground', description: I18n.t('weatherunderground wizard description') })}
-                <h2>{I18n.t('Visualization')}</h2>
-                {this.renderAdapterAccordion({ name: 'vis-2', description: I18n.t('vis-2 wizard description') })}
+                {repositoryReceived ? this.renderContent() : <LinearProgress />}
             </Box>
             <Toolbar sx={{
                 height: this.TOOLBAR_HEIGHT,

@@ -156,7 +156,7 @@ class WizardPasswordTab extends Component {
                     color="primary"
                     variant="contained"
                     onClick={() => this.props.onDone(this.state.password)}
-                    disabled={!!this.state.errorPasswordRepeat || this.state.errorPassword}
+                    disabled={!this.state.passwordRepeat || !!this.state.errorPasswordRepeat || this.state.errorPassword}
                     startIcon={<IconCheck />}
                 >
                     {this.props.t('Set administrator password')}
