@@ -2340,6 +2340,7 @@ class Adapters extends Component {
                     });
                 }}
                 onClose={() => this.closeAdapterUpdateDialog()}
+                instances={this.state.instances}
             />}
             {this.state.adapterInstallVersion && <CustomModal
                 title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}

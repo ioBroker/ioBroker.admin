@@ -27,7 +27,7 @@ import {
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
-import AdapterUpdateDialog from '../../dialogs/AdapterUpdateDialog';
+import { checkCondition } from '@/dialogs/AdapterUpdateDialog';
 
 interface GetNewsResultEntry {
     version: string;
@@ -188,7 +188,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                 AdaptersUpdater.isUpdateAvailable({ oldVersion: _installed.version, newVersion: this.props.repository[adapter].version, name: adapter })
             ) {
                 // @ts-expect-error should be ok wait for ts port
-                if (!AdapterUpdateDialog.checkCondition(this.props.repository[adapter].messages, _installed.version, this.props.repository[adapter].version)) {
+                if (!checkCondition(this.props.repository[adapter].messages, _installed.version, this.props.repository[adapter].version)) {
                     updateAvailable.push(adapter);
                 } else {
                     console.log(`Adapter ${adapter} is filtered out from update all functionality, because it has messages which need to be read before update`);
@@ -333,7 +333,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                                 {version}
                             </Typography>
                             {news.map((value, index) => <Typography key={`${version}-${index}`} component="div" variant="body2">
-                                { `• ${value}`}
+                                {`• ${value}`}
                             </Typography>)}
                         </Grid>);
                     }

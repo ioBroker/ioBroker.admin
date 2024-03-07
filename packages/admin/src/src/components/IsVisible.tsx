@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
+import React from 'react';
 
-function getAttr(obj, attr) {
+function getAttr(obj: Record<any, any>, attr: string | string[]): boolean {
     if (!obj) {
         return null;
     }
@@ -11,32 +11,35 @@ function getAttr(obj, attr) {
     const val = obj[att];
     if (!attr.length) {
         return val;
-    } if (typeof val === 'object') {
+    }
+    if (typeof val === 'object') {
         return getAttr(val, attr);
     }
     return null;
 }
 
-function IsVisible(props) {
+interface IsVisibleProps {
+    name?: string;
+    config?: Record<string, any>;
+    value?: boolean;
+    children: React.JSX.Element | React.JSX.Element[] | string;
+}
+
+function IsVisible(props: IsVisibleProps) {
     const {
         config, children, name, value,
     } = props;
 
     if (value !== undefined) {
         return value === false ? null : children;
-    } if (!config) {
+    }
+    if (!config) {
         return children;
-    } if (getAttr(config, name) !== false) {
+    }
+    if (getAttr(config, name) !== false) {
         return children;
     }
     return null;
 }
-
-IsVisible.propTypes = {
-    name: PropTypes.string,
-    config: PropTypes.object,
-    value: PropTypes.bool,
-    children: PropTypes.any,
-};
 
 export default IsVisible;
