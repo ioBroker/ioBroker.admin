@@ -181,4 +181,37 @@ describe('GUI', () => {
 
         done();
     });
+
+    it('check messages with instances', done => {
+        const conditions = [
+            {
+                condition: {
+                    operand: 'and',
+                    rules: ['!vis', '!vis-2'],
+                },
+            },
+        ];
+        const instances = {
+            'system.adapter.vis.0': {
+                common: {
+                    name: 'vis',
+                    version: '1.0.0',
+                },
+            },
+            'system.adapter.vis-2.0': {
+                common: {
+                    name: 'vis-2',
+                    version: '1.0.0',
+                },
+            },
+        };
+
+        let messages = checkCondition(conditions, null, null, {});
+        expect(messages.length).to.be.equal(1);
+
+        messages = checkCondition(conditions, null, null, instances);
+        expect(messages).to.be.equal(null);
+
+        done();
+    });
 });
