@@ -45,10 +45,10 @@ import { green, red } from '@mui/material/colors';
 import {
     Utils,
     I18n,
-    ComplexCron,
     Confirm as ConfirmDialog,
     TextWithIcon,
     SelectWithIcon,
+    ComplexCronDialog as ComplexCron,
 } from '@iobroker/adapter-react-v5';
 
 import sentry from '../../assets/sentry.svg';
