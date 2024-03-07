@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 6.15.2 (2024-03-07)
+* (foxriver76) fixed cron dialog
+
 ### 6.15.1 (2024-03-04)
 * (foxriver76) fixed problem with saving array values in custom config
 * (foxriver76) fixed issue on deleting objects
@@ -106,9 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.14.0 (2024-02-19)
 * (foxriver76) adapters tab is now showing information from `licenseInformation`
 * (foxriver76) show important notifications above changelog, so user reads them on update dialog
-
-### 6.13.21 (2024-02-15)
-* (foxriver76) do not crash when using the dropdown on multi edit custom settings
 
 ## License
 The MIT License (MIT)

@@ -47,10 +47,10 @@ import {
 import {
     Utils,
     I18n,
-    ComplexCron,
     Confirm as ConfirmDialog,
     TextWithIcon,
     SelectWithIcon,
+    ComplexCronDialog as ComplexCron,
 } from '@iobroker/adapter-react-v5';
 
 import noSentry from '../../assets/sentryNo.svg';
