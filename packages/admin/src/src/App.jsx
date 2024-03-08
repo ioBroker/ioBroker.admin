@@ -2013,10 +2013,11 @@ class App extends Router {
     renderWizardDialog() {
         if (this.state.wizard) {
             return <WizardDialog
+                executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                host={this.state.currentHost}
                 socket={this.socket}
                 themeName={this.state.themeName}
                 toggleTheme={this.toggleTheme}
-                t={I18n.t}
                 lang={I18n.getLanguage()}
                 onClose={redirect => {
                     this.setState({ wizard: false, showRedirect: redirect, redirectCountDown: 10 }, () => {
@@ -2027,7 +2028,7 @@ class App extends Router {
                                 } else {
                                     window.location = this.state.showRedirect;
                                 }
-                            }, 1000);
+                            }, 1_000);
                         }
                     });
                 }}
@@ -2389,6 +2390,17 @@ class App extends Router {
                             <Toolbar>
                                 <IconButton
                                     size="large"
+                                    edge="start"
+                                    className={Utils.clsx(
+                                        classes.menuButton,
+                                        !small && this.state.drawerState !== DrawerStates.closed && classes.hide,
+                                    )}
+                                    onClick={() => this.handleDrawerState(DrawerStates.opened)}
+                                >
+                                    <MenuIcon />
+                                </IconButton>
+                                <IconButton
+                                    size="large"
                                     onClick={() => this.setState({ notificationsDialog: true })}
                                 >
                                     <Tooltip title={I18n.t('Notifications')}>
@@ -2399,17 +2411,6 @@ class App extends Router {
                                             <NotificationsIcon />
                                         </Badge>
                                     </Tooltip>
-                                </IconButton>
-                                <IconButton
-                                    size="large"
-                                    edge="start"
-                                    className={Utils.clsx(
-                                        classes.menuButton,
-                                        !small && this.state.drawerState !== DrawerStates.closed && classes.hide,
-                                    )}
-                                    onClick={() => this.handleDrawerState(DrawerStates.opened)}
-                                >
-                                    <MenuIcon />
                                 </IconButton>
                                 <div className={classes.wrapperButtons}>
                                     <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
