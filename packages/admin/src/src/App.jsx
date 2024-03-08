@@ -1797,6 +1797,7 @@ class App extends Router {
                         showAdaptersWarning={this.showAdaptersWarning}
                         adminInstance={this.adminInstance}
                         onUpdating={updating => this.setState({ updating })}
+                        instancesWorker={this.instancesWorker}
                     />
                 </Suspense>;
             }

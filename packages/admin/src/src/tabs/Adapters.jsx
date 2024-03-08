@@ -44,27 +44,25 @@ import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import { blue, green } from '@mui/material/colors';
 
-import Router from '@iobroker/adapter-react-v5/Components/Router';
-
-import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
-import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
-import AddInstanceDialog from '../dialogs/AddInstanceDialog';
-import AdapterRow from '../components/Adapters/AdapterRow';
-import AdapterTile from '../components/Adapters/AdapterTile';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import TabHeader from '../components/TabHeader';
-import CustomSelectButton from '../components/CustomSelectButton';
-import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
-import LicenseDialog from '../dialogs/LicenseDialog';
-import CustomModal from '../components/CustomModal';
-import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
-import RatingDialog from '../dialogs/RatingDialog';
-import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
-import IsVisible from '../components/IsVisible';
-import Utils from '../components/Utils';
-import AdminUpdater from '../dialogs/AdminUpdater';
-import BasicUtils from '../Utils';
+import AdapterDeletionDialog from '@/dialogs/AdapterDeletionDialog';
+import AdapterUpdateDialog, { checkCondition } from '@/dialogs/AdapterUpdateDialog';
+import AddInstanceDialog from '@/dialogs/AddInstanceDialog';
+import AdapterRow from '@/components/Adapters/AdapterRow';
+import AdapterTile from '@/components/Adapters/AdapterTile';
+import TabContainer from '@/components/TabContainer';
+import TabContent from '@/components/TabContent';
+import TabHeader from '@/components/TabHeader';
+import CustomSelectButton from '@/components/CustomSelectButton';
+import GitHubInstallDialog from '@/dialogs/GitHubInstallDialog';
+import LicenseDialog from '@/dialogs/LicenseDialog';
+import CustomModal from '@/components/CustomModal';
+import AdaptersUpdaterDialog from '@/dialogs/AdaptersUpdaterDialog';
+import RatingDialog from '@/dialogs/RatingDialog';
+import SlowConnectionWarningDialog from '@/dialogs/SlowConnectionWarningDialog';
+import IsVisible from '@/components/IsVisible';
+import Utils from '@/components/Utils';
+import AdminUpdater from '@/dialogs/AdminUpdater';
+import BasicUtils from '@/Utils';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -271,8 +269,6 @@ class Adapters extends Component {
             adapterDeletionDialog: false,
             adapterDeletionAdapter: null,
             update: false,
-            dialog: null,
-            dialogProp: null,
             filterConnectionType: false,
             search: (window._localStorage || window.localStorage).getItem('Adapter.search') || '',
             list: false,
@@ -329,19 +325,17 @@ class Adapters extends Component {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
-        return (
-            <SlowConnectionWarningDialog
-                readTimeoutMs={this.state.readTimeoutMs}
-                t={this.t}
-                onClose={readTimeoutMs => {
-                    if (readTimeoutMs) {
-                        this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () => this.updateAll());
-                    } else {
-                        this.setState({ showSlowConnectionWarning: false });
-                    }
-                }}
-            />
-        );
+        return <SlowConnectionWarningDialog
+            readTimeoutMs={this.state.readTimeoutMs}
+            t={this.t}
+            onClose={readTimeoutMs => {
+                if (readTimeoutMs) {
+                    this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () => this.updateAll());
+                } else {
+                    this.setState({ showSlowConnectionWarning: false });
+                }
+            }}
+        />;
     }
 
     componentDidMount() {
@@ -374,15 +368,6 @@ class Adapters extends Component {
         this.updateTimeout = null;
         this.props.adaptersWorker.unregisterHandler(this.onAdaptersChanged);
         this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
-    }
-
-    static getDerivedStateFromProps() {
-        const location = Router.getLocation();
-
-        return {
-            dialog: location.dialog,
-            dialogProp: location.id,
-        };
     }
 
     onAdaptersChanged = events => {
@@ -895,11 +880,21 @@ class Adapters extends Component {
     };
 
     async addInstance(adapter, instance, debug = false, customUrl = false) {
-        if (!instance && this.props.expertMode && !customUrl) {
+        const adapterObject = this.state.repository[adapter];
+
+        const messages = checkCondition(
+            adapterObject.messages,
+            null,
+            adapterObject.version,
+            this.state.instances,
+        );
+
+        if (!instance && (this.props.expertMode || messages) && !customUrl) {
             this.setState({
                 addInstanceDialog: true,
                 addInstanceAdapter: adapter,
                 addInstanceHostName: this.state.currentHost.replace(/^system\.host\./, ''),
+                addInstanceId: instance || 'auto',
             });
             return null;
         }
@@ -2270,7 +2265,6 @@ class Adapters extends Component {
             </>}
 
             {this.state.addInstanceDialog && <AddInstanceDialog
-                themeType={this.props.themeType}
                 adapter={this.state.addInstanceAdapter}
                 socket={this.props.socket}
                 hostsWorker={this.props.hostsWorker}
@@ -2284,6 +2278,11 @@ class Adapters extends Component {
                 onClose={() => this.closeAddInstanceDialog()}
                 onHostChange={hostName => this.handleHostsChange(hostName)}
                 onInstanceChange={event => this.handleInstanceChange(event)}
+                adapterObject={this.state.repository[this.state.addInstanceAdapter]}
+                instances={this.state.instances}
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
+                expertMode={this.props.expertMode}
             />}
             {this.state.adapterDeletionDialog && <AdapterDeletionDialog
                 adapter={this.state.adapterDeletionAdapter}
@@ -2340,6 +2339,7 @@ class Adapters extends Component {
                     });
                 }}
                 onClose={() => this.closeAdapterUpdateDialog()}
+                instances={this.state.instances}
             />}
             {this.state.adapterInstallVersion && <CustomModal
                 title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
@@ -2417,7 +2417,6 @@ Adapters.propTypes = {
     // menuCompact: PropTypes.bool,
     adaptersWorker: PropTypes.object,
     instancesWorker: PropTypes.object,
-    theme: PropTypes.object,
     themeType: PropTypes.string,
     systemConfig: PropTypes.object,
     socket: PropTypes.object,

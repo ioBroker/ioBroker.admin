@@ -6,7 +6,7 @@ const ANSI_RESET_BG_COLOR = 49;
 const ANSI_BOLD = 1;
 const ANSI_RESET_BOLD = 22;
 
-interface Style {
+export interface Style {
     color?: string;
     backgroundColor?: string;
     fontWeight?: string;
@@ -551,7 +551,7 @@ class Utils {
         }
     }
 
-    static parseColorMessage(text: string) {
+    static parseColorMessage(text: string): string | { original: string; parts: { text: string; style: Style }[] } {
         if (text && (text.includes('\u001b[') || text.includes('\u001B['))) {
             // eslint-disable-next-line
             let m = text.match(/\u001b\[\d+m/gi);

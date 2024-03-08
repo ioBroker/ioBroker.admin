@@ -4,10 +4,12 @@ import moment from 'moment';
 
 import { withStyles } from '@mui/styles';
 
-import PropTypes from 'prop-types';
-
 import {
-    Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Typography,
+    Button, Dialog, DialogActions,
+    DialogContent,
+    DialogTitle, Grid, IconButton,
+    Typography,
+    type Theme,
 } from '@mui/material';
 
 import {
@@ -41,7 +43,7 @@ import 'moment/locale/ru';
 import 'moment/locale/uk';
 import 'moment/locale/zh-cn';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     closeButton: {
         position: 'absolute',
         right: theme.spacing(1),
@@ -133,8 +135,262 @@ const styles = theme => ({
     },
 });
 
-class AdapterUpdateDialog extends Component {
-    constructor(props) {
+export interface Rule {
+    title: {
+        [lang: string]: string;
+    };
+    text: {
+        [lang: string]: string;
+    };
+    link?: string;
+    linkText?: {
+        [lang: string]: string;
+    };
+    level: 'warn' | 'error' | 'info';
+    buttons?: ('agree' | 'cancel' | 'ok')[];
+    condition: {
+        operand: 'and' | 'or';
+        rules: string[];
+    };
+}
+
+// todo: After update of @types/iobroker, take it from ioBroker.Message
+export interface Message {
+    title: {
+        [lang: string]: string;
+    };
+    text: {
+        [lang: string]: string;
+    };
+    linkText?: {
+        [lang: string]: string;
+    };
+    link?: string;
+    buttons?: ('agree' | 'cancel' | 'ok')[];
+    level?: 'warn' | 'error' | 'info';
+}
+
+interface News {
+    version: string;
+    news: string;
+}
+
+interface RepoInstanceObject extends ioBroker.InstanceCommon {
+    versionDate: string;
+    messages?: Rule[];
+}
+
+/**
+ * Check if the message should be shown
+ */
+export function checkCondition(
+    objMessages: Rule[] | false | null | undefined,
+    oldVersion: string | null,
+    newVersion: string,
+    instances: Record<string, ioBroker.InstanceObject>,
+): Message[] | null {
+    let messages: Message[] | null = null;
+
+    if (objMessages) {
+        // const messages = {
+        //     "condition": {
+        //         "operand": "and",
+        //         "rules": [
+        //             "oldVersion<=1.0.44",
+        //             "newVersion>=1.0.45"
+        //         ]
+        //     },
+        //     "title": {
+        //         "en": "Important notice",
+        //     },
+        //     "text": {
+        //         "en": "Main text",
+        //     },
+        //     "link": "https://iobroker.net/www/pricing",
+        //     "buttons": ["agree", "cancel", "ok"],
+        //     "linkText" {
+        //          "en": "More info",
+        //     },
+        //     "level": "warn"
+        // };
+
+        objMessages.forEach(message => {
+            let show = !message.condition || !message.condition.rules;
+            if (message.condition && message.condition.rules) {
+                const results = (
+                    Array.isArray(message.condition.rules) ? message.condition.rules : [message.condition.rules]
+                ).map(rule => {
+                    // Possible rules:
+                    // - "oldVersion<=1.0.44"
+                    // - "newVersion>=1.0.45"
+                    // - "installed" - any version, same as 'oldVersion>=0.0.0'
+                    // - "not-installed" - if adapter is not installed, same as '!'
+                    // - "vis-2>=1.0.0"
+                    // - "vis"
+                    // - "!vis-2"
+                    let version;
+                    let op;
+                    let ver;
+
+                    if (rule.includes('oldVersion')) {
+                        version = oldVersion;
+                        rule = rule.substring('newVersion'.length);
+                    } else if (rule.includes('newVersion')) {
+                        version = newVersion;
+                        rule = rule.substring('newVersion'.length);
+                    } else {
+                        if (rule === 'installed') {
+                            return !!oldVersion;
+                        }
+                        if (rule === '!' || rule === 'not-installed') {
+                            return !oldVersion;
+                        }
+
+                        if (instances) {
+                            // it could be the name of required adapter, like vis-2
+                            const split = rule.match(/([a-z][-a-z_0-9]+)([!=<>]+)([.\d]+)/);
+                            if (split) {
+                                // Check that adapter is installed in desired version
+                                const instId = Object.keys(instances).find(id => instances[id]?.common?.name === split[1]);
+                                if (instId) {
+                                    version = instances[instId].common.version;
+                                    op = split[2];
+                                    ver = split[3];
+                                    try {
+                                        if (op === '==') {
+                                            return semver.eq(version, ver);
+                                        }
+                                        if (op === '>') {
+                                            return semver.gt(version, ver);
+                                        }
+                                        if (op === '<') {
+                                            return semver.lt(version, ver);
+                                        }
+                                        if (op === '>=') {
+                                            return semver.gte(version, ver);
+                                        }
+                                        if (op === '<=') {
+                                            return semver.lte(version, ver);
+                                        }
+                                        if (op === '!=') {
+                                            return semver.neq(version, ver);
+                                        }
+                                        console.warn(`Unknown rule ${version}${rule}`);
+                                        return false;
+                                    } catch (e) {
+                                        console.warn(`Cannot compare ${version}${rule}`);
+                                        return false;
+                                    }
+                                }
+                            } else if (!rule.match(/^[!=<>]+/)) {
+                                // Check if adapter is installed
+                                if (Object.keys(instances).find(id => instances[id]?.common?.name === rule)) {
+                                    return true;
+                                }
+                            } else if (rule.startsWith('!')) {
+                                // Check if adapter is not installed
+                                const adapter = rule.substring(1);
+                                if (!Object.keys(instances).find(id => instances[id]?.common?.name === adapter)) {
+                                    return true;
+                                }
+                            }
+                            // unknown rule
+                            return false;
+                        }
+                    }
+
+                    // If first character is '>' or '<'
+                    if (rule[1] >= '0' && rule[1] <= '9') {
+                        op = rule[0];
+                        ver = rule.substring(1);
+                    } else {
+                        // First 2 characters are '>=' or '<=' or '!=' or '=='
+                        op = rule.substring(0, 2);
+                        ver = rule.substring(2);
+                    }
+                    try {
+                        if (op === '==') {
+                            return semver.eq(version, ver);
+                        }
+                        if (op === '>') {
+                            return semver.gt(version, ver);
+                        }
+                        if (op === '<') {
+                            return semver.lt(version, ver);
+                        }
+                        if (op === '>=') {
+                            return semver.gte(version, ver);
+                        }
+                        if (op === '<=') {
+                            return semver.lte(version, ver);
+                        }
+                        if (op === '!=') {
+                            return semver.neq(version, ver);
+                        }
+                        console.warn(`Unknown rule ${version}${rule}`);
+                    } catch (e) {
+                        console.warn(`Cannot compare ${version}${rule}`);
+                    }
+                    return false;
+                });
+
+                if (message.condition.operand === 'or') {
+                    show = results.find(res => res);
+                } else {
+                    show = results.findIndex(res => !res) === -1;
+                }
+            }
+
+            if (show) {
+                messages = messages || [];
+                messages.push({
+                    title: message.title,
+                    text: message.text,
+                    link: message.link,
+                    buttons: message.buttons,
+                    level: message.level,
+                });
+            }
+        });
+    }
+
+    return messages;
+}
+
+interface AdapterUpdateDialogProps {
+    adapter: string;
+    adapterObject: RepoInstanceObject;
+    dependencies: Record<string, any>[];
+    news: News[];
+    noTranslation: boolean;
+    toggleTranslation: () => void;
+    onUpdate: (version: string) => void;
+    onInstruction?: () => void;
+    onIgnore: (version: string) => void;
+    onClose: () => void;
+    rightDependencies: boolean;
+    installedVersion: string;
+    t: (text: string, arg1?: any, arg2?: any) => string;
+    textUpdate: string;
+    textInstruction: string;
+    instances: Record<string, ioBroker.InstanceObject>;
+    classes: Record<string, any>;
+}
+
+interface AdapterUpdateDialogState {
+    showMessageDialog: boolean;
+}
+
+class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpdateDialogState> {
+    private readonly t: (text: string, arg1?: any, arg2?: any) => string;
+
+    private readonly mobile: boolean;
+
+    private readonly messages: Message[] | null;
+
+    private readonly lang: string;
+
+    constructor(props: AdapterUpdateDialogProps) {
         super(props);
 
         this.t = props.t;
@@ -185,17 +441,18 @@ class AdapterUpdateDialog extends Component {
         ]
         */
 
-        this.messages = AdapterUpdateDialog.checkCondition(
-            this.props.adapterObject && (this.props.adapterObject.messages || messages),
+        this.messages = checkCondition(
+            this.props.adapterObject?.messages || messages,
             this.props.installedVersion,
             this.props.adapterObject?.version,
+            this.props.instances,
         );
         this.lang = I18n.getLanguage();
         moment.locale(this.lang);
     }
 
-    getDependencies() {
-        const result = [];
+    getDependencies(): React.JSX.Element[] {
+        const result: React.JSX.Element[] = [];
 
         this.props.dependencies && this.props.dependencies.forEach(dependency => {
             result.push(<State
@@ -209,18 +466,19 @@ class AdapterUpdateDialog extends Component {
         return result;
     }
 
-    getNews() {
-        const result = [];
+    getNews(): React.JSX.Element[] {
+        const result: React.JSX.Element[] = [];
 
-        this.props.news && this.props.news.forEach(entry => {
-            const news = (entry.news ? entry.news.split('\n') : [])
-                .map(line => line
+        this.props.news?.forEach(entry => {
+            const news: string[] = (entry.news ? entry.news.split('\n') : [])
+                .map((line: string) => line
                     .trim()
                     .replace(/^\*\s?/, '')
                     .replace(/<!--[^>]*->/, '')
                     .replace(/<! -[^>]*->/, '')
+                    .replace(/<!--|--!?>/g, '')
                     .trim())
-                .filter(line => !!line);
+                .filter((line: string) => !!line);
 
             if (this.props.adapterObject?.version && entry.version &&
                 semver.gt(entry.version, this.props.adapterObject?.version)) {
@@ -245,114 +503,17 @@ class AdapterUpdateDialog extends Component {
         return result;
     }
 
-    static checkCondition(objMessages, oldVersion, newVersion) {
-        let messages = null;
-
-        if (objMessages) {
-            // const messages = {
-            //     "condition": {
-            //         "operand": "and",
-            //         "rules": [
-            //             "oldVersion<=1.0.44",
-            //             "newVersion>=1.0.45"
-            //         ]
-            //     },
-            //     "title": {
-            //         "en": "Important notice",
-            //     },
-            //     "text": {
-            //         "en": "Main text",
-            //     },
-            //     "link": "https://iobroker.net/www/pricing",
-            //     "buttons": ["agree", "cancel", "ok],
-            //     "linkText" {
-            //          "en": "More info",
-            //     },
-            //     "level": "warn"
-            // };
-
-            objMessages.forEach(message => {
-                let show = !message.condition || !message.condition.rules;
-                if (message.condition && message.condition.rules) {
-                    const results = (Array.isArray(message.condition.rules) ? message.condition.rules : [message.condition.rules])
-                        .map(rule => {
-                            // oldVersion<=1.0.44
-                            let version;
-                            if (rule.includes('oldVersion')) {
-                                version = oldVersion;
-                                rule = rule.substring('newVersion'.length);
-                            } else if (rule.includes('newVersion')) {
-                                version = newVersion;
-                                rule = rule.substring('newVersion'.length);
-                            } else {
-                                // unknown rule
-                                return false;
-                            }
-                            let op;
-                            let ver;
-                            if (rule[1] >= '0' && rule[1] <= '9') {
-                                op = rule[0];
-                                ver = rule.substring(1);
-                            } else {
-                                op = rule.substring(0, 2);
-                                ver = rule.substring(2);
-                            }
-                            try {
-                                if (op === '==') {
-                                    return semver.eq(version, ver);
-                                } if (op === '>') {
-                                    return semver.gt(version, ver);
-                                } if (op === '<') {
-                                    return semver.lt(version, ver);
-                                } if (op === '>=') {
-                                    return semver.gte(version, ver);
-                                } if (op === '<=') {
-                                    return semver.lte(version, ver);
-                                } if (op === '!=') {
-                                    return semver.neq(version, ver);
-                                }
-                                console.warn(`Unknown rule ${version}${rule}`);
-                                return false;
-                            } catch (e) {
-                                console.warn(`Cannot compare ${version}${rule}`);
-                                return false;
-                            }
-                        });
-
-                    if (message.condition.operand === 'or') {
-                        show = results.find(res => res);
-                    } else {
-                        show = results.findIndex(res => !res) === -1;
-                    }
-                }
-
-                if (show) {
-                    messages = messages || [];
-                    messages.push({
-                        title: message.title,
-                        text: message.text,
-                        link: message.link,
-                        buttons: message.buttons,
-                        level: message.level,
-                    });
-                }
-            });
-        }
-
-        return messages;
-    }
-
-    getText(text, noTranslation) {
+    getText(text: string | {[lang: string]: string}, noTranslation?: boolean): string {
         if (text && typeof text === 'object') {
             if (noTranslation) {
                 return text.en;
             }
             return text[this.lang] || text.en;
         }
-        return text;
+        return typeof text === 'object' ? '' : text;
     }
 
-    renderOneMessage(message, index) {
+    renderOneMessage(message: Message, index: number) {
         return <Grid item key={index}>
             <Typography className={this.props.classes[`messageTitle_${message.level || 'warn'}`]}>
                 {this.getText(message.title, this.props.noTranslation) || ''}
@@ -368,6 +529,7 @@ class AdapterUpdateDialog extends Component {
                     }}
                     startIcon={<IconWeb />}
                     variant="contained"
+                    // @ts-expect-error grey is allowed
                     color="grey"
                 >
                     {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
@@ -456,6 +618,7 @@ class AdapterUpdateDialog extends Component {
                             variant="contained"
                             onClick={() => this.setState({ showMessageDialog: false })}
                             startIcon={<CloseIcon />}
+                            // @ts-expect-error grey is allowed
                             color="grey"
                         >
                             {this.t('Cancel')}
@@ -477,7 +640,9 @@ class AdapterUpdateDialog extends Component {
         return <Dialog
             onClose={this.props.onClose}
             open={!0}
-            maxWidth="800px"
+            style={{
+                maxWidth: 880,
+            }}
         >
             {this.renderMessageDialog()}
             <DialogTitle>
@@ -486,7 +651,7 @@ class AdapterUpdateDialog extends Component {
                     <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
-                    {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
+                    {this.lang !== 'en' && this.props.toggleTranslation ? <IconButton
                         size="large"
                         className={Utils.clsx(classes.languageButton, this.props.noTranslation && classes.languageButtonActive)}
                         onClick={this.props.toggleTranslation}
@@ -566,6 +731,7 @@ class AdapterUpdateDialog extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
+                    // @ts-expect-error grey is allowed
                     color="grey"
                     startIcon={<CloseIcon />}
                 >
@@ -575,25 +741,5 @@ class AdapterUpdateDialog extends Component {
         </Dialog>;
     }
 }
-
-AdapterUpdateDialog.propTypes = {
-    adapter: PropTypes.string.isRequired,
-    adapterObject: PropTypes.object.isRequired,
-    dependencies: PropTypes.array,
-    news: PropTypes.array,
-    noTranslation: PropTypes.bool,
-    toggleTranslation: PropTypes.func,
-    onUpdate: PropTypes.func.isRequired,
-    /** if textInstructions is given */
-    onInstruction: PropTypes.func,
-    onIgnore: PropTypes.func,
-    onClose: PropTypes.func.isRequired,
-    rightDependencies: PropTypes.bool,
-    installedVersion: PropTypes.string,
-    t: PropTypes.func.isRequired,
-    textUpdate: PropTypes.string,
-    /** If this is given an additional instruction button is rendered */
-    textInstruction: PropTypes.string,
-};
 
 export default withStyles(styles)(AdapterUpdateDialog);
