@@ -2,22 +2,26 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContentText from '@mui/material/DialogContentText';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Snackbar from '@mui/material/Snackbar';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogContentText,
+    Button,
+    IconButton,
+    Snackbar,
+} from '@mui/material';
 
 // icons
-import IconCancel from '@mui/icons-material/Close';
-import IconDeleteOne from '@mui/icons-material/Delete';
+import {
+    Cancel as IconCancel,
+    Delete as IconDeleteOne,
+} from '@mui/icons-material';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
-
+import { withWidth } from '@iobroker/adapter-react-v5';
 import Router from '@iobroker/adapter-react-v5/Components/Router';
+
 import ObjectBrowser from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
 // eslint-disable-next-line import/no-unresolved

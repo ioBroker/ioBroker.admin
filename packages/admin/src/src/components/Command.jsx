@@ -176,6 +176,10 @@ class Command extends Component {
                 console.log('cmdExit');
                 console.log(id);
                 console.log(exitCode);
+
+                if (typeof this.props.callback === 'function') {
+                    this.props.callback(exitCode);
+                }
             });
         }
     }
@@ -294,7 +298,7 @@ Command.defaultProps = {
 Command.propTypes = {
     noSpacing: PropTypes.bool,
     host: PropTypes.string.isRequired,
-    callback: PropTypes.bool,
+    callback: PropTypes.func.isRequired,
     socket: PropTypes.object.isRequired,
     onFinished: PropTypes.func.isRequired,
     ready: PropTypes.bool.isRequired,

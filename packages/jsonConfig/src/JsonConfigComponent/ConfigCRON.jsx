@@ -9,8 +9,7 @@ import {
     TextField,
 } from '@mui/material';
 
-import { Cron as DialogCron } from '@iobroker/adapter-react-v5';
-import I18n from './wrapper/i18n';
+import { Cron as DialogCron, I18n } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 

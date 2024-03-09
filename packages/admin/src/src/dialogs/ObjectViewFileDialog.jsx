@@ -2,19 +2,23 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Fab from '@mui/material/Fab';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Fab,
+} from '@mui/material';
 
 // Icons
-import CloseIcon from '@mui/icons-material/Close';
-import PlayIcon from '@mui/icons-material/PlayArrow';
-import DownloadIcon from '@mui/icons-material/GetApp';
+import {
+    Close as CloseIcon,
+    PlayArrow as PlayIcon,
+    GetApp as DownloadIcon,
+} from '@mui/icons-material';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 import Utils from '../components/Utils';
 

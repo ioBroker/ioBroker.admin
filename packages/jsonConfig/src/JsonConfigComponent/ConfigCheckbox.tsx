@@ -8,9 +8,8 @@ import {
     FormControl,
 } from '@mui/material';
 
-import type AdminConnection from './wrapper/AdminConnection';
-import ConfigGeneric, { ConfigGenericProps, ConfigGenericState } from './ConfigGeneric';
-import I18n from './wrapper/i18n';
+import  { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles = () => ({
     error: {

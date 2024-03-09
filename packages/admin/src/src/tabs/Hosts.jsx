@@ -26,6 +26,11 @@ import {
 
 import { withWidth, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
 
+import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
+import SlowConnectionWarningDialog from '@/dialogs/SlowConnectionWarningDialog';
+import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
+import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
+
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
@@ -35,10 +40,6 @@ import HostEdit from '../components/Hosts/HostEdit';
 import JsControllerDialog from '../dialogs/JsControllerDialog';
 import Utils from '../Utils';
 import ComponentUtils from '../components/Utils';
-import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
-import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
-import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
-import JsControllerUpdater from '../dialogs/JsControllerUpdater';
 
 const styles = theme => ({
     grow: {
@@ -293,17 +294,22 @@ class Hosts extends Component {
         return arg1 !== undefined && arg2 !== undefined ? wordCache[`${word} ${arg1} ${arg2}`] : (arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word]);
     };
 
-    componentDidMount() {
-        this.readInfo()
+    updateInstances = async instances => this.setState({ instances });
+
+    async componentDidMount() {
+        const instances = await this.props.instancesWorker.getInstances();
+        this.setState({ instances }, () => this.readInfo()
             .then(() => {
                 this.props.hostsWorker.registerHandler(this.updateHosts);
                 this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
-            });
+                this.props.instancesWorker.registerHandler(this.updateInstances);
+            }));
     }
 
     componentWillUnmount() {
         this.props.hostsWorker.unregisterHandler(this.updateHosts);
         this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
+        this.props.instancesWorker.unregisterHandler(this.updateInstances);
     }
 
     getHostsData = (hosts, _alive) => {
@@ -551,7 +557,7 @@ class Hosts extends Component {
         return null;
     }
 
-    hostUpdateDialogCb = () => {
+    renderHostUpdateDialog = () => {
         if (!this.state.hostUpdateDialog) {
             return null;
         }
@@ -578,6 +584,7 @@ class Hosts extends Component {
                     this.setState({ instructionDialog: hostUpdate }));
             }}
             onClose={() => this.closeHostUpdateDialog()}
+            instances={this.state.instances}
         />;
     };
 
@@ -663,7 +670,7 @@ class Hosts extends Component {
             {this.renderEditObjectDialog()}
             {this.baseSettingsSettingsDialog()}
             {this.renderSlowConnectionWarning()}
-            {this.hostUpdateDialogCb()}
+            {this.renderHostUpdateDialog()}
             {this.renderUpdateDialog()}
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>
@@ -756,6 +763,7 @@ Hosts.propTypes = {
     adminInstance: PropTypes.string,
     onUpdating: PropTypes.func,
     themeType: PropTypes.string,
+    instancesWorker: PropTypes.object,
 };
 
 export default withWidth()(withStyles(styles)(Hosts));

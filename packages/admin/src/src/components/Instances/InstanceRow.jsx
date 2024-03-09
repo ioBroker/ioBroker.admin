@@ -20,33 +20,39 @@ import {
     Accordion, AccordionDetails, AccordionSummary, Avatar,
     Button, CardMedia, FormControl, Grid, Hidden, IconButton,
     InputLabel, MenuItem, Select, Tooltip, Typography,
-    FormControlLabel, Checkbox, FormHelperText,
+    FormControlLabel, Checkbox, FormHelperText, Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
 import {
     amber, blue, green, grey, red, orange,
 } from '@mui/material/colors';
 
-import RefreshIcon from '@mui/icons-material/Refresh';
-import BuildIcon from '@mui/icons-material/Build';
-import InputIcon from '@mui/icons-material/Input';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LowPriorityIcon from '@mui/icons-material/LowPriority';
-import HostIcon from '@mui/icons-material/Storage';
-import MemoryIcon from '@mui/icons-material/Memory';
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import ViewCompactIcon from '@mui/icons-material/ViewCompact';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EditIcon from '@mui/icons-material/Edit';
-import ImportExportIcon from '@mui/icons-material/ImportExport';
-import PauseIcon from '@mui/icons-material/Pause';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import {
+    Refresh as RefreshIcon,
+    Build as BuildIcon,
+    Input as InputIcon,
+    Delete as DeleteIcon,
+    LowPriority as LowPriorityIcon,
+    Storage as HostIcon,
+    Memory as MemoryIcon,
+    Schedule as ScheduleIcon,
+    ViewCompact as ViewCompactIcon,
+    ExpandMore as ExpandMoreIcon,
+    Edit as EditIcon,
+    ImportExport as ImportExportIcon,
+    Pause as PauseIcon,
+    PlayArrow as PlayArrowIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import ComplexCron from '@iobroker/adapter-react-v5/Dialogs/ComplexCron';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import TextWithIcon from '@iobroker/adapter-react-v5/Components/TextWithIcon';
-import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import {
+    Utils,
+    I18n,
+    Confirm as ConfirmDialog,
+    TextWithIcon,
+    SelectWithIcon,
+    ComplexCronDialog as ComplexCron,
+} from '@iobroker/adapter-react-v5';
+
 import noSentry from '../../assets/sentryNo.svg';
 import sentry from '../../assets/sentry.svg';
 
@@ -668,6 +674,7 @@ const InstanceRow = ({
     themeType,
     deleting,
     item,
+    socket,
 }) => {
     const [openSelectCompactGroup, setOpenSelectCompactGroup] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -694,176 +701,220 @@ const InstanceRow = ({
     const [visibleEdit, handlerEdit] = useState(false);
     const desktop = window.innerWidth > 1000;
 
-    let showModal = false;
-    let title;
-    let help = '';
-    if (openDialogText) {
-        title = t('Enter title for %s', instance.id);
-        showModal = true;
-    } else if (openDialogLogLevel) {
-        title = t('Edit log level rule for %s', instance.id);
-        showModal = true;
-    } else if (openDialogDelete) {
-        title = t('Please confirm');
-        showModal = true;
-    } else if (openDialogMemoryLimit) {
-        title = t('Edit memory limit rule for %s', instance.id);
-        help = t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)');
-        showModal = true;
-    } else if (openDialogHost) {
-        title = t('Edit host for %s', instance.id);
-        showModal = true;
-    } else if (openDialogCompact) {
-        title = t('Edit compact groups for %s', instance.id);
-        showModal = true;
-    } else if (openDialogTier) {
-        title = t('Set tier for %s', instance.id);
-        help = t('Tiers define the order of adapters when the system starts.');
-        showModal = true;
-    }
-
-    const customModal = showModal ? <CustomModal
-        title={title}
-        help={help}
-        open={!0}
-        applyDisabled={openDialogText || openDialogMemoryLimit}
-        textInput={openDialogText || openDialogMemoryLimit}
-        defaultValue={openDialogText ? item.name : openDialogMemoryLimit ? item.memoryLimitMB : ''}
-        onApply={value => {
-            if (openDialogLogLevel) {
-                setLogLevel(instance, logLevelValue, logOnTheFlyValue);
-                setOpenDialogLogLevel(false);
-            } else if (openDialogText) {
-                setName(instance, value);
-                setOpenDialogText(false);
-            } else if (openDialogDelete) {
-                onDeleteInstance(instance, deleteCustomValue);
-                setDeleteCustom(false);
-            } else if (openDialogMemoryLimit) {
-                setMemoryLimitMB(instance, value);
-                setOpenDialogMemoryLimit(false);
-            } else if (openDialogCompact) {
-                setCompactGroup(instance, compactValue);
-                setOpenDialogCompact(false);
-            } else if (openDialogTier) {
-                setTier(instance, tierValue);
-                setOpenDialogTier(false);
-            } else if (openDialogHost) {
-                setHost(instance, hostValue);
-                setOpenDialogHost(false);
-            }
-        }}
-        onClose={() => {
-            if (openDialogLogLevel) {
-                setLogLevelValue(item.logLevel);
-                setLogOnTheFlyValue(false);
-                setOpenDialogLogLevel(false);
-            } else if (openDialogText) {
-                setOpenDialogText(false);
-            } else if (openDialogDelete) {
-                setOpenDialogDelete(false);
-            } else if (openDialogMemoryLimit) {
-                setOpenDialogMemoryLimit(false);
-            } else if (openDialogCompact) {
-                setCompactValue(item.compactGroup);
-                setCompactGroupCountValue(maxCompactGroupNumber);
-                setOpenDialogCompact(false);
-            } else if (openDialogTier) {
-                setTierValue(item.tier);
-                setOpenDialogTier(false);
-            } else if (openDialogHost) {
-                setHostValue(instance.host);
-                setOpenDialogHost(false);
-            }
-        }}
-    >
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
-            <InputLabel>{t('log level')}</InputLabel>
-            <Select
-                variant="standard"
-                value={logLevelValue}
-                fullWidth
-                onChange={el => setLogLevelValue(el.target.value)}
-            >
-                {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                    {t(el)}
-                </MenuItem>)}
-            </Select>
-        </FormControl>}
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
-            <FormControlLabel
-                control={<Checkbox checked={logOnTheFlyValue} onChange={e => setLogOnTheFlyValue(e.target.checked)} />}
-                label={t('Without restart')}
-            />
-            <FormHelperText>{logOnTheFlyValue ? t('Will be reset to the saved log level after restart of adapter') : t('Log level will be saved permanently')}</FormHelperText>
-        </FormControl>}
-        {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined">
-            <InputLabel>{t('compact groups')}</InputLabel>
-            <Select
-                variant="standard"
-                autoWidth
-                onClose={() => setOpenSelectCompactGroup(false)}
-                onOpen={() => setOpenSelectCompactGroup(true)}
-                open={openSelectCompactGroup}
-                value={compactValue === 1 ? 'default' : compactValue === '0' || compactValue === 0 ? 'controller' : !compactValue ? 'default' : compactValue || 'default'}
-                onChange={el => setCompactValue(el.target.value)}
-            >
-                <div
-                    onClick={e => {
-                        e.preventDefault();
-                        e.stopPropagation();
+    let customModal;
+    if (openDialogDelete) {
+        customModal = <Dialog
+            onClose={() => setOpenDialogDelete(false)}
+            open={!0}
+        >
+            <DialogTitle>{t('Please confirm')}</DialogTitle>
+            <DialogContent>
+                {openDialogDelete === 1 ?
+                    t('Are you sure you want to delete the instance "%s" or whole adapter "%s"?', instance.id, instance.id.split('.')[0]) :
+                    t('Are you sure you want to delete the instance %s?', instance.id)}
+                {deleteCustomSupported && instance.obj.common.supportCustoms && <br />}
+                {deleteCustomSupported && instance.obj.common.supportCustoms && <FormControlLabel
+                    control={<Checkbox checked={deleteCustomValue} onChange={e => setDeleteCustom(e.target.checked)} />}
+                    label={t('Delete all custom object settings of this adapter too')}
+                />}
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    startIcon={<DeleteIcon />}
+                    onClick={() => {
+                        setOpenDialogDelete(false);
+                        onDeleteInstance(instance, deleteCustomValue, true);
+                        setDeleteCustom(false);
                     }}
-                    className={classes.selectStyle}
+                    variant="contained"
+                    style={{ background: 'red', color: 'white' }}
                 >
-                    <Button
-                        color="grey"
-                        onClick={() => {
-                            setOpenSelectCompactGroup(false);
-                            setCompactValue(maxCompactGroupNumberValue + 1);
-                            setCompactGroupCountValue(maxCompactGroupNumberValue + 1);
+                    {I18n.t('Delete adapter')}
+                </Button>
+                <Button
+                    startIcon={<DeleteIcon />}
+                    onClick={() => {
+                        setOpenDialogDelete(false);
+                        onDeleteInstance(instance, deleteCustomValue);
+                        setDeleteCustom(false);
+                    }}
+                    variant="contained"
+                    color="primary"
+                >
+                    {I18n.t('Delete instance')}
+                </Button>
+                <Button
+                    color="grey"
+                    onClick={() => setOpenDialogDelete(false)}
+                    variant="contained"
+                    startIcon={<CloseIcon />}
+                >
+                    {I18n.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
+    } else {
+        let showModal = false;
+        let title;
+        let help = '';
+        if (openDialogText) {
+            title = t('Enter title for %s', instance.id);
+            showModal = true;
+        } else if (openDialogLogLevel) {
+            title = t('Edit log level rule for %s', instance.id);
+            showModal = true;
+        } else if (openDialogMemoryLimit) {
+            title = t('Edit memory limit rule for %s', instance.id);
+            help = t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)');
+            showModal = true;
+        } else if (openDialogHost) {
+            title = t('Edit host for %s', instance.id);
+            showModal = true;
+        } else if (openDialogCompact) {
+            title = t('Edit compact groups for %s', instance.id);
+            showModal = true;
+        } else if (openDialogTier) {
+            title = t('Set tier for %s', instance.id);
+            help = t('Tiers define the order of adapters when the system starts.');
+            showModal = true;
+        }
+
+        customModal = showModal ? <CustomModal
+            title={title}
+            help={help}
+            open={!0}
+            applyDisabled={openDialogText || openDialogMemoryLimit}
+            textInput={openDialogText || openDialogMemoryLimit}
+            defaultValue={openDialogText ? item.name : openDialogMemoryLimit ? item.memoryLimitMB : ''}
+            onApply={value => {
+                if (openDialogLogLevel) {
+                    setLogLevel(instance, logLevelValue, logOnTheFlyValue);
+                    setOpenDialogLogLevel(false);
+                } else if (openDialogText) {
+                    setName(instance, value);
+                    setOpenDialogText(false);
+                } else if (openDialogMemoryLimit) {
+                    setMemoryLimitMB(instance, value);
+                    setOpenDialogMemoryLimit(false);
+                } else if (openDialogCompact) {
+                    setCompactGroup(instance, compactValue);
+                    setOpenDialogCompact(false);
+                } else if (openDialogTier) {
+                    setTier(instance, tierValue);
+                    setOpenDialogTier(false);
+                } else if (openDialogHost) {
+                    setHost(instance, hostValue);
+                    setOpenDialogHost(false);
+                }
+            }}
+            onClose={() => {
+                if (openDialogLogLevel) {
+                    setLogLevelValue(item.logLevel);
+                    setLogOnTheFlyValue(false);
+                    setOpenDialogLogLevel(false);
+                } else if (openDialogText) {
+                    setOpenDialogText(false);
+                } else if (openDialogMemoryLimit) {
+                    setOpenDialogMemoryLimit(false);
+                } else if (openDialogCompact) {
+                    setCompactValue(item.compactGroup);
+                    setCompactGroupCountValue(maxCompactGroupNumber);
+                    setOpenDialogCompact(false);
+                } else if (openDialogTier) {
+                    setTierValue(item.tier);
+                    setOpenDialogTier(false);
+                } else if (openDialogHost) {
+                    setHostValue(instance.host);
+                    setOpenDialogHost(false);
+                }
+            }}
+        >
+            {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
+                <InputLabel>{t('log level')}</InputLabel>
+                <Select
+                    variant="standard"
+                    value={logLevelValue}
+                    fullWidth
+                    onChange={el => setLogLevelValue(el.target.value)}
+                >
+                    {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
+                        {t(el)}
+                    </MenuItem>)}
+                </Select>
+            </FormControl>}
+            {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={logOnTheFlyValue}
+                        onChange={e => setLogOnTheFlyValue(e.target.checked)}
+                    />}
+                    label={t('Without restart')}
+                />
+                <FormHelperText>{logOnTheFlyValue ? t('Will be reset to the saved log level after restart of adapter') : t('Log level will be saved permanently')}</FormHelperText>
+            </FormControl>}
+            {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined">
+                <InputLabel>{t('compact groups')}</InputLabel>
+                <Select
+                    variant="standard"
+                    autoWidth
+                    onClose={() => setOpenSelectCompactGroup(false)}
+                    onOpen={() => setOpenSelectCompactGroup(true)}
+                    open={openSelectCompactGroup}
+                    value={compactValue === 1 ? 'default' : compactValue === '0' || compactValue === 0 ? 'controller' : !compactValue ? 'default' : compactValue || 'default'}
+                    onChange={el => setCompactValue(el.target.value)}
+                >
+                    <div
+                        onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
                         }}
-                        variant="outlined"
-                        stylevariable="outlined"
+                        className={classes.selectStyle}
                     >
-                        {t('Add compact group')}
-                    </Button>
-                </div>
-                <MenuItem value="controller">{t('with controller')}</MenuItem>
-                <MenuItem value="default">{t('default group')}</MenuItem>
-                {Array(maxCompactGroupNumberValue - 1).fill().map((_, idxx) => <MenuItem key={idxx} value={idxx + 2}>
-                    {idxx + 2}
-                </MenuItem>)}
-            </Select>
-        </FormControl>}
-        {openDialogTier && <FormControl className={classes.formControl} variant="outlined">
-            <InputLabel>{t('Tiers')}</InputLabel>
-            <Select
-                variant="standard"
-                value={tierValue}
+                        <Button
+                            color="grey"
+                            onClick={() => {
+                                setOpenSelectCompactGroup(false);
+                                setCompactValue(maxCompactGroupNumberValue + 1);
+                                setCompactGroupCountValue(maxCompactGroupNumberValue + 1);
+                            }}
+                            variant="outlined"
+                            stylevariable="outlined"
+                        >
+                            {t('Add compact group')}
+                        </Button>
+                    </div>
+                    <MenuItem value="controller">{t('with controller')}</MenuItem>
+                    <MenuItem value="default">{t('default group')}</MenuItem>
+                    {Array(maxCompactGroupNumberValue - 1).fill().map((_, idxx) =>
+                        <MenuItem key={idxx} value={idxx + 2}>
+                            {idxx + 2}
+                        </MenuItem>)}
+                </Select>
+            </FormControl>}
+            {openDialogTier && <FormControl className={classes.formControl} variant="outlined">
+                <InputLabel>{t('Tiers')}</InputLabel>
+                <Select
+                    variant="standard"
+                    value={tierValue}
+                    fullWidth
+                    onChange={el => setTierValue(el.target.value)}
+                >
+                    {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
+                        {t(el.desc)}
+                    </MenuItem>)}
+                </Select>
+            </FormControl>}
+            {openDialogHost && <SelectWithIcon
+                themeType={themeType}
+                value={hostValue}
+                list={hosts}
+                removePrefix="system.host."
                 fullWidth
-                onChange={el => setTierValue(el.target.value)}
-            >
-                {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
-                    {t(el.desc)}
-                </MenuItem>)}
-            </Select>
-        </FormControl>}
-        {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-        {openDialogDelete && deleteCustomSupported && instance.obj.common.supportCustoms && <br />}
-        {openDialogDelete && deleteCustomSupported && instance.obj.common.supportCustoms && <FormControlLabel
-            control={<Checkbox checked={deleteCustomValue} onChange={e => setDeleteCustom(e.target.checked)} />}
-            label={t('Delete all custom object settings of this adapter too')}
-        />}
-        {openDialogHost && <SelectWithIcon
-            themeType={themeType}
-            value={hostValue}
-            list={hosts}
-            removePrefix="system.host."
-            fullWidth
-            className={classes.formControl}
-            onChange={el => setHostValue(el)}
-        />}
-    </CustomModal> : null;
+                className={classes.formControl}
+                onChange={el => setHostValue(el)}
+            />}
+        </CustomModal> : null;
+    }
 
     const status = getInstanceStatus(id);
 
@@ -1412,9 +1463,11 @@ CRON:
                             <IconButton
                                 size="small"
                                 className={classes.button}
-                                onClick={event => {
+                                onClick={async event => {
                                     event.stopPropagation();
-                                    setOpenDialogDelete(true);
+                                    // Count the number of instances
+                                    const instances = await socket.getAdapterInstances(instance.id.split('.')[0]);
+                                    setOpenDialogDelete(instances.length || true);
                                 }}
                             >
                                 <DeleteIcon />
@@ -1470,6 +1523,7 @@ InstanceRow.propTypes = {
     onExpandRow: PropTypes.func,
     item: PropTypes.object,
     deleteCustomSupported: PropTypes.bool,
+    socket: PropTypes.object,
 };
 
 export default withStyles(styles)(InstanceRow);

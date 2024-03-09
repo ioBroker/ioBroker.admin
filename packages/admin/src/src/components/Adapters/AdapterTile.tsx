@@ -1,29 +1,32 @@
 import React from 'react';
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Card, CardContent, CardMedia, Fab,
     IconButton, Tooltip, Typography, Rating,
 } from '@mui/material';
 
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import AddIcon from '@mui/icons-material/Add';
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import HelpIcon from '@mui/icons-material/Help';
-import PublishIcon from '@mui/icons-material/Publish';
-import CloudIcon from '@mui/icons-material/Cloud';
-import CloudOffIcon from '@mui/icons-material/CloudOff';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import RemoveIcon from '@mui/icons-material/Remove';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import {
+    MoreVert as MoreVertIcon,
+    Refresh as RefreshIcon,
+    Add as AddIcon,
+    AddToPhotos as AddToPhotosIcon,
+    DeleteForever as DeleteForeverIcon,
+    Help as HelpIcon,
+    Publish as PublishIcon,
+    Cloud as CloudIcon,
+    CloudOff as CloudOffIcon,
+    ArrowUpward as ArrowUpwardIcon,
+    ArrowDownward as ArrowDownwardIcon,
+    Remove as RemoveIcon,
+    GitHub as GitHubIcon,
+    MonetizationOn,
+} from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
 import { i18n, Utils } from '@iobroker/adapter-react-v5';
 
-// @ts-expect-error adapt tsconfig
+import Link from '@mui/material/Link';
 import sentryIcon from '../../assets/sentry.svg';
 import IsVisible from '../IsVisible';
 
@@ -250,6 +253,7 @@ const styles = (theme: Record<string, any>) => ({
 }) satisfies Styles<any, any>;
 
 interface AdapterTileProps {
+    licenseInformation?: ioBroker.LicenseInformation;
     commandRunning: boolean;
     rating: Record<string, any>;
     onSetRating?: () => void;
@@ -477,6 +481,32 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                                         <RemoveIcon className={this.props.classes.classAssumption} />
                                     </Tooltip> : null)}
                     </div>}
+                    <div>
+                        <Link
+                            href={this.props.licenseInformation?.link}
+                            target="_blank"
+                            rel="noopener"
+                            sx={{ color: 'text.primary', '&:hover': { color: 'text.primary' } }}
+                        >
+                            {this.props.licenseInformation?.type === 'paid' ?
+                                <Tooltip title={this.props.t('The adapter requires a paid license.')}>
+                                    <MonetizationOn />
+                                </Tooltip>
+                                : this.props.licenseInformation?.type === 'commercial' ?
+                                    <Tooltip
+                                        title={this.props.t('The adapter requires a paid license for commercial use.')}
+                                    >
+                                        <MonetizationOn opacity={0.5} />
+                                    </Tooltip>
+                                    : this.props.licenseInformation?.type === 'limited' ?
+                                        <Tooltip
+                                            title={this.props.t('The adapter has a limited functionality without a paid license.')}
+                                        >
+                                            <MonetizationOn opacity={0.5} />
+                                        </Tooltip> :
+                                        null}
+                        </Link>
+                    </div>
                     {this.props.sentry && <div className={this.props.classes.marginLeft5}>
                         <Tooltip title="sentry">
                             <CardMedia
@@ -502,7 +532,6 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                                 className={Utils.clsx(this.props.updateAvailable && this.props.classes.greenText, this.props.classes.curdContentFlexCenter)}
                             >
                                 {!this.props.commandRunning && this.props.updateAvailable ?
-
                                     <Tooltip title={this.props.t('Update')}>
                                         <div onClick={this.props.onUpdate} className={this.props.classes.buttonUpdate}>
                                             <IconButton

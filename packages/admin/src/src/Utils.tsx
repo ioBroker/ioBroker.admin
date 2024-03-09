@@ -6,7 +6,7 @@ const ANSI_RESET_BG_COLOR = 49;
 const ANSI_BOLD = 1;
 const ANSI_RESET_BOLD = 22;
 
-interface Style {
+export interface Style {
     color?: string;
     backgroundColor?: string;
     fontWeight?: string;
@@ -551,7 +551,7 @@ class Utils {
         }
     }
 
-    static parseColorMessage(text: string) {
+    static parseColorMessage(text: string): string | { original: string; parts: { text: string; style: Style }[] } {
         if (text && (text.includes('\u001b[') || text.includes('\u001B['))) {
             // eslint-disable-next-line
             let m = text.match(/\u001b\[\d+m/gi);
@@ -599,6 +599,9 @@ class Utils {
 
     static PASSWORD_SET = '***********';
 
+    /** The languages for which docs are generated */
+    static SUPPORTED_DOC_LANGUAGES: ioBroker.Languages[] = ['en', 'de', 'ru', 'zh-cn'];
+
     static checkPassword(password: string, passwordRepeat: string) {
         password = password || '';
         passwordRepeat = passwordRepeat || '';
@@ -623,6 +626,22 @@ class Utils {
             return false;
         }
         return Utils.PASSWORD_ERROR_EMPTY;
+    }
+
+    /**
+     * Get Link to adapter docs in given language
+     *
+     * @param options the adapter name without ioBroker. prefix and the language information
+     */
+    static getDocsLinkForAdapter(options: { lang: ioBroker.Languages; adapterName: string }) {
+        const { adapterName } = options;
+        let { lang } = options;
+
+        if (!Utils.SUPPORTED_DOC_LANGUAGES.includes(lang)) {
+            lang = 'en';
+        }
+
+        return `https://www.iobroker.net/#${lang}/adapters/adapterref/iobroker.${adapterName}/README.md`;
     }
 }
 

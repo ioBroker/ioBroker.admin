@@ -14,8 +14,8 @@ import {
 } from '@mui/icons-material';
 
 import { Utils, Icon, Connection, I18n } from '@iobroker/adapter-react-v5';
-import { DeviceDetails, DeviceInfo } from '@iobroker/dm-utils';
-import { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
+import type { DeviceDetails, DeviceInfo } from '@iobroker/dm-utils';
+import type { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 
 import DeviceActionButton from './DeviceActionButton';
 import DeviceControlComponent from './DeviceControl';

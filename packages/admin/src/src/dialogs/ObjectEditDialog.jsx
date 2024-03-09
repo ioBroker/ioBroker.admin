@@ -3,15 +3,19 @@ import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from '@mui/material';
 
 // Icons
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
+import {
+    Close as CloseIcon,
+    Check as CheckIcon,
+} from '@mui/icons-material';
 
 import { withWidth } from '@iobroker/adapter-react-v5';
 

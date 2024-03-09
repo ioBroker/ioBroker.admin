@@ -20,8 +20,7 @@ import {
 
 import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
-import { Confirm as ConfirmDialog } from '@iobroker/adapter-react-v5';
-import I18n from './wrapper/i18n';
+import { Confirm as ConfirmDialog, I18n } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 

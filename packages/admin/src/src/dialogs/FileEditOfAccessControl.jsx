@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, LinearProgress, Switch } from '@mui/material';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, SelectWithIcon } from '@iobroker/adapter-react-v5';
 
-import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
 import Utils from '../Utils';
 import CustomModal from '../components/CustomModal';
 

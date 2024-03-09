@@ -42,6 +42,7 @@ import {
     CloudSync as SyncIcon,
     SyncDisabled as SyncIconDisabled,
     Close as CancelIcon,
+    Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 
 import { AdminConnection as Connection, PROGRESS } from '@iobroker/socket-client';
@@ -54,6 +55,7 @@ import {
     IconExpert,
     ToggleThemeMenu,
 } from '@iobroker/adapter-react-v5';
+import NotificationsDialog from '@/dialogs/NotificationsDialog';
 import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
 import CommandDialog from './dialogs/CommandDialog';
@@ -498,6 +500,12 @@ class App extends Router {
                 triggerAdapterUpdate: 0,
 
                 updating: false, // js controller updating
+                /** If the notifications dialog should be shown */
+                notificationsDialog: false,
+                /** Notifications, excluding the system ones */
+                notifications: {},
+                /** Number of new notifications */
+                noNotifications: 0,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -921,6 +929,7 @@ class App extends Router {
                             this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
                             this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
                             this.hostsWorker.registerHandler(this.updateHosts);
+                            this.hostsWorker.registerNotificationHandler(notifications => this.handleNewNotifications(notifications));
 
                             this.subscribeOnHostsStatus();
 
@@ -986,16 +995,17 @@ class App extends Router {
                             );
 
                             setTimeout(
-                                () =>
-                                    this.hostsWorker
-                                        .getNotifications(newState.currentHost)
-                                        .then(notifications =>
-                                            this.showAdaptersWarning(
-                                                notifications,
-                                                this.socket,
-                                                newState.currentHost,
-                                            )),
-                                3000,
+                                async () => {
+                                    const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
+                                    this.showAdaptersWarning(
+                                        notifications,
+                                        this.socket,
+                                        newState.currentHost,
+                                    );
+
+                                    this.handleNewNotifications(notifications);
+                                },
+                                3_000,
                             );
                         })
                         .catch(error => {
@@ -1250,6 +1260,25 @@ class App extends Router {
         });
     };
 
+    /**
+     * Render the notifications dialog
+     * @return {React.ReactNode}
+     */
+    renderNotificationsDialog() {
+        if (!this.state.notificationsDialog) {
+            return null;
+        }
+
+        return <NotificationsDialog
+            notifications={this.state.notifications?.notifications || {}}
+            instances={this.state.notifications?.instances || {}}
+            onClose={() => this.setState({ notificationsDialog: false })}
+            ackCallback={(host, name) => this.socket.clearNotifications(host, name)}
+            dateFormat={this.state.systemConfig.common.dateFormat}
+            themeType={this.state.themeType}
+        />;
+    }
+
     renderHostWarningDialog() {
         if (!this.state.showHostWarning) {
             return null;
@@ -1260,10 +1289,37 @@ class App extends Router {
             messages={this.state.showHostWarning.result.system.categories}
             dateFormat={this.state.systemConfig.common.dateFormat}
             themeType={this.state.themeType}
-            themeName={this.state.themeName}
             ackCallback={name => this.socket.clearNotifications(this.state.showHostWarning.host, name)}
             onClose={() => this.setState({ showHostWarning: null })}
         />;
+    }
+
+    /**
+     * Called when notifications detected, updates the notifications indicator
+     *
+     * @param {Record<string, any>} notifications
+     */
+    async handleNewNotifications(notifications) {
+        // console.log(`new notifications: ${JSON.stringify(notifications)}`);
+        let noNotifications = 0;
+
+        for (const hostDetails of Object.values(notifications)) {
+            for (const [scope, scopeDetails] of Object.entries(hostDetails.result)) {
+                if (scope === 'system') {
+                    continue;
+                }
+
+                for (const categoryDetails of Object.values(scopeDetails.categories)) {
+                    for (const instanceDetails of Object.values(categoryDetails.instances)) {
+                        noNotifications += instanceDetails.messages.length;
+                    }
+                }
+            }
+        }
+
+        const instances = await this.instancesWorker.getInstances();
+
+        this.setState({ noNotifications, notifications: { notifications, instances } });
     }
 
     showAdaptersWarning = (notifications, socket, host) => {
@@ -1273,7 +1329,7 @@ class App extends Router {
 
         const result = notifications[host].result;
 
-        if (result && result.system && Object.keys(result.system.categories).length) {
+        if (result?.system && Object.keys(result.system.categories).length) {
             return this.instancesWorker.getInstances()
                 .then(instances => this.setState({ showHostWarning: { host, instances, result } }));
         }
@@ -1741,6 +1797,7 @@ class App extends Router {
                         showAdaptersWarning={this.showAdaptersWarning}
                         adminInstance={this.adminInstance}
                         onUpdating={updating => this.setState({ updating })}
+                        instancesWorker={this.instancesWorker}
                     />
                 </Suspense>;
             }
@@ -1956,10 +2013,11 @@ class App extends Router {
     renderWizardDialog() {
         if (this.state.wizard) {
             return <WizardDialog
+                executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                host={this.state.currentHost}
                 socket={this.socket}
                 themeName={this.state.themeName}
                 toggleTheme={this.toggleTheme}
-                t={I18n.t}
                 lang={I18n.getLanguage()}
                 onClose={redirect => {
                     this.setState({ wizard: false, showRedirect: redirect, redirectCountDown: 10 }, () => {
@@ -1970,7 +2028,7 @@ class App extends Router {
                                 } else {
                                     window.location = this.state.showRedirect;
                                 }
-                            }, 1000);
+                            }, 1_000);
                         }
                     });
                 }}
@@ -2341,6 +2399,19 @@ class App extends Router {
                                 >
                                     <MenuIcon />
                                 </IconButton>
+                                <IconButton
+                                    size="large"
+                                    onClick={() => this.setState({ notificationsDialog: true })}
+                                >
+                                    <Tooltip title={I18n.t('Notifications')}>
+                                        <Badge
+                                            badgeContent={this.state.noNotifications}
+                                            color="secondary"
+                                        >
+                                            <NotificationsIcon />
+                                        </Badge>
+                                    </Tooltip>
+                                </IconButton>
                                 <div className={classes.wrapperButtons}>
                                     <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
                                         {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
@@ -2475,24 +2546,20 @@ class App extends Router {
                                                         currentHostName: hostName,
                                                         currentHost: host,
                                                     },
-                                                    () => {
+                                                    async () => {
                                                         this.logsWorkerChanged(host);
                                                         (window._localStorage || window.localStorage).setItem(
                                                             'App.currentHost',
                                                             host,
                                                         );
 
-                                                        this.readRepoAndInstalledInfo(host, this.state.hosts).then(
-                                                            () =>
-                                                                // read notifications from host
-                                                                this.hostsWorker
-                                                                    .getNotifications(host)
-                                                                    .then(notifications =>
-                                                                        this.showAdaptersWarning(
-                                                                            notifications,
-                                                                            this.socket,
-                                                                            host,
-                                                                        )),
+                                                        await this.readRepoAndInstalledInfo(host, this.state.hosts);
+                                                        // read notifications from host
+                                                        const notifications = await this.hostsWorker.getNotifications(host);
+                                                        this.showAdaptersWarning(
+                                                            notifications,
+                                                            this.socket,
+                                                            host,
                                                         );
                                                     },
                                                 );
@@ -2642,6 +2709,7 @@ class App extends Router {
                     {this.renderSlowConnectionWarning()}
                     {this.renderNewsDialog()}
                     {this.renderHostWarningDialog()}
+                    {this.renderNotificationsDialog()}
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
                         <Connecting />
                     ) : null}

@@ -419,7 +419,7 @@ function DiscoveryDialog({
         async function fetchData() {
             const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
             const listChecked: Record<string, any> = {};
-            let lastSelection = (window._localStorage || window.localStorage).getItem('App.discoveryLastSelection') || null;
+            let lastSelection = ((window as any)._localStorage || window.localStorage).getItem('App.discoveryLastSelection') || null;
             if (lastSelection) {
                 try {
                     lastSelection = JSON.parse(lastSelection);
@@ -430,7 +430,6 @@ function DiscoveryDialog({
 
             Object.keys(resultList).forEach(key => {
                 if (lastSelection) {
-                    // @ts-expect-error fix later
                     listChecked[key] = lastSelection[key];
                 } else {
                     listChecked[key] = key !== 'serial';
@@ -677,7 +676,6 @@ function DiscoveryDialog({
     const licenseDialog = showLicenseDialog ? (
         <LicenseDialog
             url={showLicenseDialog.obj.common.licenseUrl}
-            // @ts-expect-error wait until component is typed
             onClose={result => {
                 const { cb } = showLicenseDialog;
                 const { obj } = showLicenseDialog;
@@ -763,7 +761,7 @@ function DiscoveryDialog({
                                                     JSON.stringify(checkboxChecked),
                                                 );
                                                 newCheckboxChecked[key] = value;
-                                                (window._localStorage || window.localStorage).setItem(
+                                                ((window as any)._localStorage || window.localStorage).setItem(
                                                     'App.discoveryLastSelection',
                                                     JSON.stringify(newCheckboxChecked),
                                                 );

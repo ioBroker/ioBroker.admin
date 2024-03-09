@@ -2,21 +2,26 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import Checkbox from '@mui/material/Checkbox';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import Grid from '@mui/material/Grid';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Toolbar from '@mui/material/Toolbar';
-import { IconButton, Tooltip } from '@mui/material';
+import {
+    DialogActions,
+    Checkbox,
+    DialogTitle,
+    Button,
+    Dialog,
+    Grid,
+    FormControlLabel,
+    Toolbar,
+    IconButton,
+    Tooltip,
+    DialogContent,
+} from '@mui/material';
 
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import CancelIcon from '@mui/icons-material/Cancel';
-import LanguageIcon from '@mui/icons-material/Language';
+import {
+    Check as CheckIcon,
+    Close as CloseIcon,
+    Cancel as CancelIcon,
+    Language as LanguageIcon,
+} from '@mui/icons-material';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 

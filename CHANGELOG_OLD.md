@@ -1,6 +1,100 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.13.21 (2024-02-15)
+* (foxriver76) do not crash when using the dropdown on multi edit custom settings
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.13.20 (2024-02-14)
+* (foxriver76) after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally
+* (foxriver76) fixed problem with saving on multi edit custom settings
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.13.19 (2024-02-12)
+* (foxriver76) generate notification if new adapter updates are available
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.13.17 (2024-02-09)
+* (foxriver76) fix date and time picker json config components showing current time even though the value is undefined
+* (foxriver76) added new options for time picker json config component
+* (foxriver76) fixed issue when exporting jsonConfig
+* (klein0r) Allow to install specific version of adapter
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.13.16 (2024-01-30)
+* (foxriver76) allow to display and modify `ics` files
+* (foxriver76) redirect correctly when exiting json config with unsaved changes
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.13.15 (2024-01-01)
+* (foxriver76) fixed scrolling of Select ID dialogs
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.13.14 (2023-12-30)
+* (foxriver76) internal optimizations
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.13.5 (2023-12-22)
+* (foxriver76) bring back missing `crypto-js`
+* (foxriver76) fix crash case due to global dependency check
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.13.3 (2023-12-21)
+* (foxriver76) fixed problem with default value of underscore attributes in Json Config
+* (foxriver76) prevent strict schema validation being logged to syslog
+* (foxriver76) fixed problems with ObjectCustomEditor
+* (klein0r) fixed markdown links (if default branch main)
+* (foxriver76) fixed global dependencies check
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.12.9 (2023-12-12)
+* (foxriver76) prevented the strict schema validation being logged to syslog
+* (bluefox) corrected the displaying of news with the new lines
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
+## 6.12.8 (2023-12-06)
+* (bluefox) corrected ACL for files
+* (bluefox) allowed changing color of the menu item
+* (bluefox) corrected the user/group icon selector
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.

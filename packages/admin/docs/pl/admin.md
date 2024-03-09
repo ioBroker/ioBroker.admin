@@ -7,7 +7,7 @@ w przeglądarce internetowej. Ten adapter jest automatycznie instalowany razem z
 ## Konfiguracja:
 
 Okno konfiguracji adaptera "admin" zawiera następujące ustawienia:
-![img_002](img/admin_img_002.png)
+![img_002](img/admin_img_002.jpg)
 
 **IP:** tutaj można wybrać adres IP serwera "admin".
 Można wybrać różne adresy IPv4 i IPv6. Domyślna wartość to 0.0.0.0\.
@@ -25,7 +25,7 @@ Zwykle tylko programista chce, aby ta opcja była niezaznaczona.
 
 Strona główna administratora składa się z kilku zakładek. **Adapter:** Tutaj występują instancje
 Adaptery można instalować lub usuwać. Za pomocą przycisku aktualizacji
-![img_005](img/admin_img_005.png)
+![img_005](img/admin_img_005.jpg)
 w lewym górnym rogu możemy uzyskać dostęp do nowych wersji kart.
 ![img_001](img/admin_img_001.jpg)
 
@@ -38,11 +38,11 @@ Dostępny adapter sortuje się w kolejności alfabetycznej. Już zainstalowana i
 **Instancja:** Zainstalowana już instancja jest tutaj wymieniona i może być odpowiednio skonfigurowana. Jeśli tytuł
 instancja jest podkreślona, ​​możesz ją kliknąć, a odpowiednia strona internetowa zostanie otwarta.
 
-![img_003](img/admin_img_003.png)
+![img_003](img/admin_img_003.jpg)
 
 **Obiekty:** zarządzane obiekty (na przykład ustawienia / zmienne / programy podłączonego sprzętu)
 
-![img_004](img/admin_img_004.png)
+![img_004](img/admin_img_004.jpg)
 
 **Stany:** bieżące stany (wartości obiektów)
 Jeśli historia adaptera jest zainstalowana, możesz rejestrować wybrane punkty danych.
@@ -65,3 +65,17 @@ ikona w lewym dolnym rogu.
 **Zdarzenie:** Lista bieżących aktualizacji warunków. **Log:** tutaj log jest wyświetlany W instancji tab logowany poziom logowania
 pojedynczej instancji można ustawić. W menu wyboru jest wybrany wyświetlany minimalny poziom rejestrowania. Jeśli wystąpi błąd
 litera logu pojawia się na czerwono.
+
+**Hosty:**.
+Informacje o komputerze, na którym zainstalowany jest ioBroker. W tym miejscu można zaktualizować bieżącą wersję kontrolera js. Jeśli dostępna jest nowa wersja, etykieta zakładki jest wyświetlana na zielono.
+
+**Log:** tutaj wyświetlany jest dziennik W zakładce instancji można ustawić poziom logowania dziennika pojedynczej instancji. 
+pojedynczej instancji. W menu wyboru wybiera się wyświetlany minimalny poziom dziennika. Jeśli wystąpi błąd 
+napis dziennika pojawia się na czerwono.
+
+**Ustawienia systemowe:**.
+Ustawienia takie jak język, format czasu i daty oraz inne ustawienia systemowe są wprowadzane w menu, które otwiera się tutaj.
+
+![img_006](img/admin_img_006.jpg)
+
+Można tu również ustawić repozytoria i ustawienia bezpieczeństwa.

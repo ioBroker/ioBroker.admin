@@ -89,30 +89,31 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 6.13.14 (2023-12-30)
-* (foxriver76) internal optimizations
+### **WORK IN PROGRESS**
+* (foxriver76) added a new tab to the installation wizard which recommends common adapters
 
-### 6.13.5 (2023-12-22)
-* (foxriver76) bring back missing `crypto-js`
-* (foxriver76) fix crash case due to global dependency check
+### 6.15.2 (2024-03-07)
+* (foxriver76) fixed cron dialog
 
-### 6.13.3 (2023-12-21)
-* (foxriver76) fixed problem with default value of underscore attributes in Json Config
-* (foxriver76) prevent strict schema validation being logged to syslog
-* (foxriver76) fixed problems with ObjectCustomEditor
-* (klein0r) fixed markdown links (if default branch main)
-* (foxriver76) fixed global dependencies check
+### 6.15.1 (2024-03-04)
+* (foxriver76) fixed problem with saving array values in custom config
+* (foxriver76) fixed issue on deleting objects
+* (foxriver76) make UI update of controller and admin more verbose
 
-### 6.12.9 (2023-12-12)
-* (foxriver76) prevented the strict schema validation being logged to syslog
-* (bluefox) corrected the displaying of news with the new lines
+### 6.15.0 (2024-03-01)
+* (foxriver76) harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)
+* (bluefox) added possibility to delete whole adapter from instance tab if only one instance left
+* (foxriver76) new dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)
+* (foxriver76) the new `licenseInformation` icon now changes color correctly with the theme
 
-### 6.12.8 (2023-12-06)
-* (bluefox) corrected ACL for files
-* (bluefox) allowed changing color of the menu item
-* (bluefox) corrected the user/group icon selector
+### 6.14.1 (2024-02-20)
+* (foxriver76) align items better when adapter tab is used in row mode
+
+### 6.14.0 (2024-02-19)
+* (foxriver76) adapters tab is now showing information from `licenseInformation`
+* (foxriver76) show important notifications above changelog, so user reads them on update dialog
 
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2023 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>
