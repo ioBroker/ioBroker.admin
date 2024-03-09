@@ -10,8 +10,7 @@ import {
     Select,
 } from '@mui/material';
 
-import { TextWithIcon } from '@iobroker/adapter-react-v5';
-import I18n from './wrapper/i18n';
+import { TextWithIcon, I18n } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 

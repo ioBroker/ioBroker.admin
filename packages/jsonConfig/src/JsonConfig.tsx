@@ -1,5 +1,5 @@
 import React from 'react';
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 import MD5 from 'crypto-js/md5';
 
@@ -16,9 +16,9 @@ import {
     Confirm as ConfirmDialog, AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
-import { Theme } from '@iobroker/adapter-react-v5/types';
+import type { Theme } from '@iobroker/adapter-react-v5/types';
 import type { SystemConfig } from '@iobroker/socket-client';
-import Utils from '@/Utils';
+import Utils from '#JC/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 
@@ -391,7 +391,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             ok={I18n.t('ra_Discard')}
             cancel={I18n.t('ra_Cancel')}
             onClose={isYes =>
-                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate())}
+                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
         />;
     }
 

@@ -6,27 +6,29 @@ import { withStyles } from '@mui/styles';
 import MarkdownView from 'react-showdown';
 import semver from 'semver';
 
-import Paper from '@mui/material/Paper';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionActions from '@mui/material/AccordionDetails';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Snackbar from '@mui/material/Snackbar';
+import {
+    Paper,
+    Accordion,
+    AccordionSummary,
+    AccordionActions,
+    List,
+    ListItem,
+    IconButton,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Snackbar,
+} from '@mui/material';
 
 import {
     MdEdit as IconEdit, MdClose as IconClose, MdMenu as IconMenu, MdExpandMore as IconExpandMore,
 } from 'react-icons/md';
 
 import { FaGithub as IconGithub } from 'react-icons/fa';
-import Loader from '@iobroker/adapter-react-v5/Components/Loader';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { Loader, I18n } from '@iobroker/adapter-react-v5';
+
 import IconGlobe from '../assets/globe.svg';
 import IconLink from '../assets/link.svg';
 

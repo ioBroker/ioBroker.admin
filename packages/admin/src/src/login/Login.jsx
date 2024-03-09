@@ -2,19 +2,21 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
+import {
+    Avatar,
+    Box,
+    Button,
+    Checkbox,
+    CircularProgress,
+    FormControlLabel,
+    Grid,
+    Link,
+    Paper,
+    TextField,
+    Typography,
+} from '@mui/material';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 

@@ -15,10 +15,9 @@ import {
     UploadFile as IconUploadFile,
 } from '@mui/icons-material';
 
-import { Confirm as ConfirmDialog, Icon, Utils } from '@iobroker/adapter-react-v5';
-import type AdminConnection from './wrapper/AdminConnection';
-
-import I18n from './wrapper/i18n';
+import {
+    Confirm as ConfirmDialog, Icon, Utils, type AdminConnection, I18n,
+} from '@iobroker/adapter-react-v5';
 
 // because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
 export function isObject(it: any): it is Record<string, any> {
@@ -58,6 +57,8 @@ export interface ConfigGenericProps {
     classes: Record<string, any>;
     /* this item is in the table. Maybe some layouts must be changed */
     table?: boolean;
+    /** If true, this field edits multiple datapoints at once and thus contains an array, should not be saved if not changed */
+    multiEdit?: boolean;
 }
 
 export interface ConfigGenericState {

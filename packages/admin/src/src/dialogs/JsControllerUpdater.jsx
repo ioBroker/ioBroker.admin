@@ -2,16 +2,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ipaddr from 'ipaddr.js';
 
-import { LinearProgress } from '@mui/material';
+import {
+    LinearProgress,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from '@mui/material';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-
-import CloseIcon from '@mui/icons-material/Close';
-import ReloadIcon from '@mui/icons-material/Refresh';
+import {
+    Close as CloseIcon,
+    Refresh as ReloadIcon,
+} from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -29,7 +32,7 @@ class JsControllerUpdater extends Component {
 
         this.textareaRef = React.createRef();
 
-        this.link = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+        this.link = `${window.location.protocol}//${window.location.host}/`;
     }
 
     setUpdating(updating) {
@@ -131,50 +134,55 @@ class JsControllerUpdater extends Component {
         this.startTimeout = null;
     }
 
-    checkStatus() {
+    async checkStatus() {
         // interface ServerResponse {
         //     running: boolean; // If the update is still running
         //     stderr: string[];
         //     stdout: string[];
         //     success?: boolean; // if installation process succeeded
         // }
+        console.log(`Request update status from: ${this.link}`);
 
-        fetch(this.link)
-            .then(res => res.json())
-            .then(response => {
-                // sometimes stderr has only one empty string in it
-                if (response && response.stderr) {
-                    response.stderr = response.stderr.filter(line => line.trim());
-                }
-                if (response && !response.running && response.success && response.stdout) {
-                    response.stdout.push('');
-                    response.stdout.push('---------------------------------------------------');
-                    response.stdout.push(I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version));
-                } else if (response?.stdout) {
-                    response.stdout.unshift('');
-                    response.stdout.unshift('---------------------------------------------------');
-                    response.stdout.unshift(I18n.t('updating %s to %s...', 'js-controller', this.props.version));
-                }
-                this.setState({ response, error: null }, () => {
-                    if (response && !response.running) {
-                        this.setUpdating(false);
-                        this.intervall && clearInterval(this.intervall);
-                        this.intervall = null;
-                    } else if (response?.running) {
-                        this.setUpdating(true);
-                    }
+        try {
+            const res = await fetch(this.link);
+            const response = await res.json();
 
-                    // scroll down
-                    if (this.textareaRef.current) {
-                        setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
-                    }
-                });
-            })
-            .catch(e => {
-                if (!this.state.starting) {
-                    this.setState({ error: e.toString() }, () => this.setUpdating(false));
+            // Just for logging purposes
+            const plainBody = await res.text();
+            console.log(`Received status: ${plainBody}`);
+
+            // sometimes stderr has only one empty string in it
+            if (response?.stderr) {
+                response.stderr = response.stderr.filter(line => line.trim());
+            }
+            if (response && !response.running && response.success && response.stdout) {
+                response.stdout.push('');
+                response.stdout.push('---------------------------------------------------');
+                response.stdout.push(I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version));
+            } else if (response?.stdout) {
+                response.stdout.unshift('');
+                response.stdout.unshift('---------------------------------------------------');
+                response.stdout.unshift(I18n.t('updating %s to %s...', 'js-controller', this.props.version));
+            }
+            this.setState({ response, error: null }, () => {
+                if (response && !response.running) {
+                    this.setUpdating(false);
+                    this.intervall && clearInterval(this.intervall);
+                    this.intervall = null;
+                } else if (response?.running) {
+                    this.setUpdating(true);
+                }
+
+                // scroll down
+                if (this.textareaRef.current) {
+                    setTimeout(() => (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight), 100);
                 }
             });
+        } catch (e) {
+            if (!this.state.starting) {
+                this.setState({ error: e.toString() }, () => this.setUpdating(false));
+            }
+        }
     }
 
     render() {

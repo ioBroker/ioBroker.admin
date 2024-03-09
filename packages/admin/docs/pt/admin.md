@@ -7,7 +7,7 @@ no navegador da web. Este adaptador é instalado automaticamente junto com o ioB
 ## Configuração:
 
 A caixa de diálogo de configuração do adaptador "admin" fornece as seguintes configurações:
-![img_002](img/admin_img_002.png)
+![img_002](img/admin_img_002.jpg)
 
 **IP:** o endereço IP do servidor web "admin" pode ser escolhido aqui.
 Diferentes endereços IPv4 e IPv6 podem ser selecionados. O valor padrão é 0.0.0.0\.
@@ -25,7 +25,7 @@ Normalmente, apenas o desenvolvedor deseja ter essa opção desmarcada.
 
 A página principal do admin consiste em várias abas. **Adaptador:** Aqui as ocorrências de
 um adaptadores podem ser instalados ou excluídos. Com o botão de atualização
-![img_005](img/admin_img_005.png)
+![img_005](img/admin_img_005.jpg)
 no canto superior esquerdo podemos obter se as novas versões dos adaptadores estiverem disponíveis.
 ![img_001](img/admin_img_001.jpg)
 
@@ -38,11 +38,11 @@ O adaptador disponível é classificado em ordem alfabética. A instância já i
 **Instância:** A instância já instalada é listada aqui e pode ser configurada de acordo. Se o título do
 exemplo são sublinhados, você pode clicar nele e o site correspondente será aberto.
 
-![img_003](img/admin_img_003.png)
+![img_003](img/admin_img_003.jpg)
 
 **Objetos:** os objetos gerenciados (por exemplo, setup / variables / programs do hardware conectado)
 
-![img_004](img/admin_img_004.png)
+![img_004](img/admin_img_004.jpg)
 
 **Estados:** os estados atuais (valores dos objetos)
 Se o histórico do adaptador estiver instalado, você poderá registrar os pontos de dados escolhidos.
@@ -65,3 +65,16 @@ Se houver uma nova versão, as letras da guia serão verdes. Para procurar uma n
 **Evento:** Uma lista das atualizações em andamento das condições. **Log:** aqui o log é exibido Na instância da guia, o nível do log logado
 da instância única pode ser definida. No menu de seleção, o nível de registro mínimo exibido é selecionado. Se ocorrer um erro
 letras do log aparecem em vermelho.
+**Hosts:**
+Informações sobre o computador no qual o ioBroker está instalado. A versão atual do controlador js pode ser actualizada aqui. Se estiver disponível uma nova versão, a etiqueta do separador aparece a verde.
+
+**Log:** aqui o log é exibido No separador instância, o nível de log registado 
+da instância individual pode ser definido. No menu de seleção, é selecionado o nível mínimo de registo apresentado. Se ocorrer um erro, a 
+erro, o texto do registo aparece a vermelho.
+
+**Definições do sistema:**
+Definições como o idioma, o formato da hora e da data e outras definições de todo o sistema são efectuadas no menu que se abre aqui.
+
+![img_006](img/admin_img_006.jpg)
+
+Os repositórios e as definições de segurança também podem ser definidos aqui.

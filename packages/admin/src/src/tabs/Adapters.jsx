@@ -21,52 +21,53 @@ import {
     InputAdornment,
     ListItemText,
     Hidden,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog,
 } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 
 // import CloudOffIcon from '@mui/icons-material/CloudOff';
-import FolderIcon from '@mui/icons-material/Folder';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import ListIcon from '@mui/icons-material/List';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import UpdateIcon from '@mui/icons-material/Update';
-import StarIcon from '@mui/icons-material/Star';
-import CloseIcon from '@mui/icons-material/Close';
+import {
+    Folder as FolderIcon,
+    FolderOpen as FolderOpenIcon,
+    Refresh as RefreshIcon,
+    List as ListIcon,
+    ViewList as ViewListIcon,
+    ViewModule as ViewModuleIcon,
+    Update as UpdateIcon,
+    Star as StarIcon,
+    Close as CloseIcon,
+    Link as LinkIcon,
+} from '@mui/icons-material';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import { blue, green } from '@mui/material/colors';
 
-import Router from '@iobroker/adapter-react-v5/Components/Router';
-
-import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
-import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
-import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
-import AddInstanceDialog from '../dialogs/AddInstanceDialog';
-import AdapterRow from '../components/Adapters/AdapterRow';
-import AdapterTile from '../components/Adapters/AdapterTile';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import TabHeader from '../components/TabHeader';
-import CustomSelectButton from '../components/CustomSelectButton';
-import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
-import LicenseDialog from '../dialogs/LicenseDialog';
-import CustomModal from '../components/CustomModal';
-import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
-import RatingDialog from '../dialogs/RatingDialog';
-import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
-import IsVisible from '../components/IsVisible';
-import Utils from '../components/Utils';
-import AdminUpdater from '../dialogs/AdminUpdater';
+import AdapterDeletionDialog from '@/dialogs/AdapterDeletionDialog';
+import AdapterUpdateDialog, { checkCondition } from '@/dialogs/AdapterUpdateDialog';
+import AddInstanceDialog from '@/dialogs/AddInstanceDialog';
+import AdapterRow from '@/components/Adapters/AdapterRow';
+import AdapterTile from '@/components/Adapters/AdapterTile';
+import TabContainer from '@/components/TabContainer';
+import TabContent from '@/components/TabContent';
+import TabHeader from '@/components/TabHeader';
+import CustomSelectButton from '@/components/CustomSelectButton';
+import GitHubInstallDialog from '@/dialogs/GitHubInstallDialog';
+import LicenseDialog from '@/dialogs/LicenseDialog';
+import CustomModal from '@/components/CustomModal';
+import AdaptersUpdaterDialog from '@/dialogs/AdaptersUpdaterDialog';
+import RatingDialog from '@/dialogs/RatingDialog';
+import SlowConnectionWarningDialog from '@/dialogs/SlowConnectionWarningDialog';
+import IsVisible from '@/components/IsVisible';
+import Utils from '@/components/Utils';
+import AdminUpdater from '@/dialogs/AdminUpdater';
+import BasicUtils from '@/Utils';
 
 const WIDTHS = {
     emptyBlock: 50,
     name: 300,
-    connectionType: 85,
+    connectionType: 120,
     installed: 120,
     available: 120,
     update: 40,
@@ -170,6 +171,10 @@ const styles = theme => ({
     containerVersion: {
         borderBottom: 0,
     },
+    containerSpecificVersion: {
+        display: 'flex',
+        marginTop: 20,
+    },
     currentVersion: {
         display: 'flex',
         padding: 20,
@@ -264,8 +269,6 @@ class Adapters extends Component {
             adapterDeletionDialog: false,
             adapterDeletionAdapter: null,
             update: false,
-            dialog: null,
-            dialogProp: null,
             filterConnectionType: false,
             search: (window._localStorage || window.localStorage).getItem('Adapter.search') || '',
             list: false,
@@ -285,6 +288,7 @@ class Adapters extends Component {
             showSlowConnectionWarning: false,
             adapterToUpdate: '',
             adapterInstallVersion: '',
+            adapterInstallSpecificVersion: '',
             currentHost: this.props.currentHost,
             forceUpdateAdapters: this.props.forceUpdateAdapters,
             triggerUpdate: props.triggerUpdate,
@@ -321,19 +325,17 @@ class Adapters extends Component {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
-        return (
-            <SlowConnectionWarningDialog
-                readTimeoutMs={this.state.readTimeoutMs}
-                t={this.t}
-                onClose={readTimeoutMs => {
-                    if (readTimeoutMs) {
-                        this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () => this.updateAll());
-                    } else {
-                        this.setState({ showSlowConnectionWarning: false });
-                    }
-                }}
-            />
-        );
+        return <SlowConnectionWarningDialog
+            readTimeoutMs={this.state.readTimeoutMs}
+            t={this.t}
+            onClose={readTimeoutMs => {
+                if (readTimeoutMs) {
+                    this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () => this.updateAll());
+                } else {
+                    this.setState({ showSlowConnectionWarning: false });
+                }
+            }}
+        />;
     }
 
     componentDidMount() {
@@ -366,15 +368,6 @@ class Adapters extends Component {
         this.updateTimeout = null;
         this.props.adaptersWorker.unregisterHandler(this.onAdaptersChanged);
         this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
-    }
-
-    static getDerivedStateFromProps() {
-        const location = Router.getLocation();
-
-        return {
-            dialog: location.dialog,
-            dialogProp: location.id,
-        };
     }
 
     onAdaptersChanged = events => {
@@ -489,7 +482,7 @@ class Adapters extends Component {
      * @param {boolean} update
      */
     async getInstalled(update) {
-        /** Installed adapters on same host */
+        /** Installed adapters on the same host */
         let installedLocal;
         /** Installed adapters on any hosts */
         let installedGlobal = {};
@@ -887,30 +880,43 @@ class Adapters extends Component {
     };
 
     async addInstance(adapter, instance, debug = false, customUrl = false) {
-        if (!instance && this.props.expertMode && !customUrl) {
+        const adapterObject = this.state.repository[adapter];
+
+        const messages = checkCondition(
+            adapterObject.messages,
+            null,
+            adapterObject.version,
+            this.state.instances,
+        );
+
+        if (!instance && (this.props.expertMode || messages) && !customUrl) {
             this.setState({
                 addInstanceDialog: true,
                 addInstanceAdapter: adapter,
                 addInstanceHostName: this.state.currentHost.replace(/^system\.host\./, ''),
+                addInstanceId: instance || 'auto',
             });
-        } else {
-            if (instance && !customUrl) {
-                const instances = this.props.instancesWorker.getInstances();
-                // if the instance already exists
-                if (instances[`system.adapter.${adapter}.${instance}`]) {
-                    window.alert(this.props.t('Instance %s already exists', `${adapter}.${instance}`));
-                    return;
-                }
+            return null;
+        }
+        if (instance && !customUrl) {
+            const instances = this.props.instancesWorker.getInstances();
+            // if the instance already exists
+            if (instances[`system.adapter.${adapter}.${instance}`]) {
+                window.alert(this.props.t('Instance %s already exists', `${adapter}.${instance}`));
+                return null;
             }
-            const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
+        }
+        const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
+
+        return new Promise((resolve, reject) => {
             this.props.executeCommand(
                 `${customUrl ? 'url' : 'add'} ${adapter} ${instance ? `${instance} ` : ''}--host ${host} ${
                     debug || this.props.expertMode ? '--debug' : ''
                 }`,
                 host,
-                true,
+                exitCode => (!exitCode ? resolve(null) : reject(new Error(`The process returned an exit code of ${exitCode}`))),
             );
-        }
+        });
     }
 
     upload(adapter) {
@@ -1191,8 +1197,14 @@ class Adapters extends Component {
         return true;
     }
 
-    static openInfoDialog(adapter) {
-        Router.doNavigate('tab-adapters', 'readme', adapter);
+    /**
+     * Open adapter readme or docs
+     *
+     * @param {{ adapter: string, lang: ioBroker.Languages}} options the adapter name and prefered language
+     */
+    openInfoDialog(options) {
+        const { lang, adapter: adapterName } = options;
+        window.open(BasicUtils.getDocsLinkForAdapter({ lang, adapterName }), 'help');
     }
 
     openUpdateDialog(adapterToUpdate) {
@@ -1236,7 +1248,7 @@ class Adapters extends Component {
         const installed = this.state.installed[value];
         const news = [];
 
-        if (installed && adapter && adapter.news) {
+        if (installed && adapter?.news) {
             Object.keys(adapter.news).forEach(version => {
                 try {
                     if (semver.gt(version, installed.version) || all) {
@@ -1249,7 +1261,7 @@ class Adapters extends Component {
                     }
                 } catch (e) {
                     // ignore it
-                    console.warn(`[ADAPTERS] Cannot compare "${version}" and "${installed.version}"`);
+                    console.warn(`[ADAPTERS] Cannot compare "${version}" and "${installed.version}" (${value})`);
                 }
             });
         }
@@ -1441,7 +1453,8 @@ class Adapters extends Component {
                 installedVersion={installed?.version}
                 keywords={adapter.keywords}
                 name={cached.title}
-                license={adapter.license}
+                license={adapter.licenseInformation?.license || adapter.license}
+                licenseInformation={adapter.licenseInformation}
                 updateAvailable={cached.updateAvailable}
                 version={adapter.version}
                 hidden={false}
@@ -1465,14 +1478,20 @@ class Adapters extends Component {
                     } else {
                         url = `${url.split('/master')[0]}/master/LICENSE`;
                     }
-                    if (adapter.license === 'MIT') {
+
+                    const license = adapter.licenseInformation?.license || adapter.license;
+
+                    if (license === 'MIT') {
                         this.addInstance(value);
                     } else {
                         this.setState({ showLicenseDialog: { url, instance: value } });
                     }
                 }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
-                onInfo={() => Adapters.openInfoDialog(value)}
+                onInfo={() => {
+                    const lang = adapter.docs?.[this.props.lang] ? this.props.lang : 'en';
+                    this.openInfoDialog({ adapter: value, lang });
+                }}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
@@ -1754,7 +1773,8 @@ class Adapters extends Component {
                 installedFrom={installed?.installedFrom}
                 installedVersion={installed?.version}
                 keywords={adapter.keywords}
-                license={adapter.license}
+                license={adapter.licenseInformation?.license || adapter.license}
+                licenseInformation={adapter.licenseInformation}
                 updateAvailable={cached.updateAvailable}
                 version={adapter.version}
                 hidden={false}
@@ -1778,14 +1798,19 @@ class Adapters extends Component {
                         url = `${url.split('/master')[0]}/master/LICENSE`;
                     }
 
-                    if (adapter.license === 'MIT') {
+                    const license = adapter.licenseInformation?.license || adapter.license;
+
+                    if (license === 'MIT') {
                         this.addInstance(value);
                     } else {
                         this.setState({ showLicenseDialog: { url, instance: value } });
                     }
                 }}
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
-                onInfo={() => Adapters.openInfoDialog(value)}
+                onInfo={() => {
+                    const lang = adapter.docs?.[this.props.lang] ? this.props.lang : 'en';
+                    this.openInfoDialog({ adapter: value, lang });
+                }}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
@@ -1796,7 +1821,9 @@ class Adapters extends Component {
                         url = `${url.split('/master')[0]}/master/LICENSE`;
                     }
 
-                    if (adapter.license !== 'MIT') {
+                    const license = adapter.licenseInformation?.license || adapter.license;
+
+                    if (license !== 'MIT') {
                         this.setState({ showLicenseDialog: { url, instance: value, upload: true } });
                     } else {
                         this.upload(value);
@@ -1903,23 +1930,6 @@ class Adapters extends Component {
             setTimeout(() => {
                 this.setState({ triggerUpdate: this.props.triggerUpdate }, () => this.updateAll(true));
             }, 100);
-        }
-
-        if (this.state.dialog === 'readme' && this.state.dialogProp) {
-            const adapter = this.state.repository[this.state.dialogProp] || null;
-
-            if (adapter) {
-                return <TabContainer className={this.props.classes.tabContainer}>
-                    <AdapterInfoDialog
-                        theme={this.props.theme}
-                        themeType={this.props.themeType}
-                        adapter={this.state.dialogProp}
-                        link={adapter.readme || ''}
-                        socket={this.props.socket}
-                        t={this.t}
-                    />
-                </TabContainer>;
-            }
         }
 
         const { classes } = this.props;
@@ -2255,7 +2265,6 @@ class Adapters extends Component {
             </>}
 
             {this.state.addInstanceDialog && <AddInstanceDialog
-                themeType={this.props.themeType}
                 adapter={this.state.addInstanceAdapter}
                 socket={this.props.socket}
                 hostsWorker={this.props.hostsWorker}
@@ -2269,6 +2278,11 @@ class Adapters extends Component {
                 onClose={() => this.closeAddInstanceDialog()}
                 onHostChange={hostName => this.handleHostsChange(hostName)}
                 onInstanceChange={event => this.handleInstanceChange(event)}
+                adapterObject={this.state.repository[this.state.addInstanceAdapter]}
+                instances={this.state.instances}
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
+                expertMode={this.props.expertMode}
             />}
             {this.state.adapterDeletionDialog && <AdapterDeletionDialog
                 adapter={this.state.adapterDeletionAdapter}
@@ -2280,8 +2294,8 @@ class Adapters extends Component {
             {this.state.gitHubInstallDialog && <GitHubInstallDialog
                 t={this.t}
                 categories={this.state.categories}
-                installFromUrl={(value, debug, customUrl) =>
-                    this.addInstance(value, undefined, debug, customUrl)}
+                upload={adapter => this.upload(adapter)}
+                installFromUrl={(value, debug, customUrl) => this.addInstance(value, undefined, debug, customUrl)}
                 repository={this.state.repository}
                 onClose={() => {
                     this.setState({ gitHubInstallDialog: false });
@@ -2325,11 +2339,12 @@ class Adapters extends Component {
                     });
                 }}
                 onClose={() => this.closeAdapterUpdateDialog()}
+                instances={this.state.instances}
             />}
             {this.state.adapterInstallVersion && <CustomModal
                 title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
                 applyButton={false}
-                onClose={() => this.setState({ adapterInstallVersion: '' })}
+                onClose={() => this.setState({ adapterInstallVersion: '', adapterInstallSpecificVersion: '' })}
                 toggleTranslation={this.props.toggleTranslation}
                 noTranslation={this.props.noTranslation}
             >
@@ -2345,6 +2360,50 @@ class Adapters extends Component {
                         <ListItemText primary={version} secondary={formatNews(news)} />
                     </div>)}
                 </div>
+                <div className={classes.containerSpecificVersion}>
+                    <TextField
+                        variant="standard"
+                        fullWidth
+                        label={this.props.t('Version')}
+                        value={this.state.adapterInstallSpecificVersion}
+                        onChange={event => {
+                            this.setState({ adapterInstallSpecificVersion: event.target.value });
+                        }}
+                        InputProps={{
+                            endAdornment: this.state.url ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ url: '' })}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        }}
+                    />
+                    <Tooltip title={this.props.t('npmjs.com')}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                window.open(`https://www.npmjs.com/package/iobroker.${this.state.adapterInstallVersion}?activeTab=versions`, this.state.adapterInstallVersion).focus();
+                            }}
+                        >
+                            <LinkIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        size="small"
+                        onClick={() => {
+                            if (this.state.adapterInstallSpecificVersion !== '') {
+                                this.update(this.state.adapterInstallVersion, this.state.adapterInstallSpecificVersion);
+                                this.setState({ adapterInstallVersion: '', adapterInstallSpecificVersion: '' });
+                            }
+                        }}
+                    >
+                        {this.props.t('Install')}
+                    </Button>
+                </div>
             </CustomModal>}
         </TabContainer>;
     }
@@ -2358,7 +2417,6 @@ Adapters.propTypes = {
     // menuCompact: PropTypes.bool,
     adaptersWorker: PropTypes.object,
     instancesWorker: PropTypes.object,
-    theme: PropTypes.object,
     themeType: PropTypes.string,
     systemConfig: PropTypes.object,
     socket: PropTypes.object,

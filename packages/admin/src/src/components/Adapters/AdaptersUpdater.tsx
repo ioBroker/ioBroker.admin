@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 import semver from 'semver';
 
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
 import {
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemSecondaryAction,
+    ListItemText,
+    Checkbox,
     Avatar, Button,
     CircularProgress,
     Dialog, DialogActions,
@@ -19,13 +19,15 @@ import {
     Typography,
 } from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import LanguageIcon from '@mui/icons-material/Language';
-import InfoIcon from '@mui/icons-material/Info';
+import {
+    Close as CloseIcon,
+    Language as LanguageIcon,
+    Info as InfoIcon,
+} from '@mui/icons-material';
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
-import AdapterUpdateDialog from '../../dialogs/AdapterUpdateDialog';
+import { checkCondition } from '@/dialogs/AdapterUpdateDialog';
 
 interface GetNewsResultEntry {
     version: string;
@@ -109,8 +111,16 @@ interface AdaptersUpdaterProps {
 }
 
 interface AdaptersUpdaterState {
-    current: string;
     showNews: null | Record<string, any>;
+}
+
+interface UpdateAvailableCheckOptions {
+    /** The installed version */
+    oldVersion: string;
+    /** The repo version or new version */
+    newVersion: string;
+    /** Adapter name */
+    name: string;
 }
 
 class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterState> {
@@ -121,6 +131,8 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
 
     private readonly currentRef: React.RefObject<HTMLLIElement>;
 
+    private current: string;
+
     constructor(props: AdaptersUpdaterProps) {
         super(props);
 
@@ -129,32 +141,31 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         this.updateAvailable.forEach(adapter => this.initialVersions[adapter] = this.props.installed[adapter].version);
 
         this.state = {
-            current: this.props.current,
             showNews: null,
         };
 
         this.currentRef = React.createRef();
+        this.current = props.current;
 
         this.props.onUpdateSelected([...this.updateAvailable], this.updateAvailable);
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps: AdaptersUpdaterProps) {
-        if (nextProps.current !== this.state.current) {
-            this.setState({ current: nextProps.current });
-            setTimeout(() =>
-                this.currentRef.current?.scrollIntoView(), 200);
-        }
-    }
+    static isUpdateAvailable(options: UpdateAvailableCheckOptions) {
+        const { oldVersion, newVersion, name } = options;
 
-    static isUpdateAvailable(oldVersion: string, newVersion: string) {
         try {
             return semver.gt(newVersion, oldVersion);
         } catch (e) {
-            console.warn(`Cannot compare "${newVersion}" and "${oldVersion}"`);
+            console.warn(`Cannot compare "${newVersion}" and "${oldVersion}" of adapter ${name}`);
             return false;
         }
     }
 
+    /**
+     * Get list of available adapter updates
+     * Admin and controller is filtered out
+     * and all adapters which have messages for this update are filtered out too
+     */
     detectUpdates(): string[] {
         const updateAvailable: string[] = [];
 
@@ -165,12 +176,15 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                 return;
             }
             if (_installed &&
+                this.props.repository[adapter].version &&
                 _installed.ignoreVersion !== this.props.repository[adapter].version &&
-                AdaptersUpdater.isUpdateAvailable(_installed.version, this.props.repository[adapter].version)
+                AdaptersUpdater.isUpdateAvailable({ oldVersion: _installed.version, newVersion: this.props.repository[adapter].version, name: adapter })
             ) {
                 // @ts-expect-error should be ok wait for ts port
-                if (!AdapterUpdateDialog.checkCondition(this.props.repository[adapter].messages, _installed.version, this.props.repository[adapter].version)) {
+                if (!checkCondition(this.props.repository[adapter].messages, _installed.version, this.props.repository[adapter].version)) {
                     updateAvailable.push(adapter);
+                } else {
+                    console.log(`Adapter ${adapter} is filtered out from update all functionality, because it has messages which need to be read before update`);
                 }
             }
         });
@@ -220,7 +234,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                 key={adapter}
                 dense
                 classes={{ root: Utils.clsx(this.props.classes.listItem, this.props.updated.includes(adapter) && this.props.classes.updateDone) }}
-                ref={this.state.current === adapter ? this.currentRef : null}
+                ref={this.props.current === adapter ? this.currentRef : null}
             >
                 <ListItemIcon className={this.props.classes.minWidth}>
                     <Avatar
@@ -276,7 +290,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                         }}
                     />
                 </ListItemSecondaryAction>}
-                {this.state.current === adapter && !this.props.stopped && !this.props.finished && <ListItemSecondaryAction>
+                {this.props.current === adapter && !this.props.stopped && !this.props.finished && <ListItemSecondaryAction>
                     <CircularProgress />
                 </ListItemSecondaryAction>}
             </ListItem>
@@ -312,7 +326,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                                 {version}
                             </Typography>
                             {news.map((value, index) => <Typography key={`${version}-${index}`} component="div" variant="body2">
-                                { `• ${value}`}
+                                {`• ${value}`}
                             </Typography>)}
                         </Grid>);
                     }
@@ -387,6 +401,11 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
     }
 
     render() {
+        if (this.current !== this.props.current) {
+            this.current = this.props.current;
+            setTimeout(() => this.currentRef.current?.scrollIntoView(), 200);
+        }
+
         return <List className={this.props.classes.root}>
             {this.updateAvailable.map(adapter => this.renderOneAdapter(adapter))}
             {this.renderShowNews()}

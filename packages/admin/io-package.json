@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.13.14",
+    "version": "6.15.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,96 +18,96 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "6.13.14": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
+      "6.15.2": {
+        "en": "fixed cron dialog",
+        "de": "fester schritt dialog",
+        "ru": "диалог фиксированного кроны",
+        "pt": "diálogo cron fixo",
+        "nl": "vast cron-dialoogvenster",
+        "fr": "boîte de dialogue cron fixe",
+        "it": "dialogo fisso cron",
+        "es": "diálogo de cron fijo",
+        "pl": "stałe okno dialogowe cron",
+        "uk": "фіксований cron діалог",
+        "zh-cn": "固定的括号对话框"
       },
-      "6.13.13": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
+      "6.15.1": {
+        "en": "fixed problem with saving array values in custom config\nfixed issue on deleting objects\nmake UI update of controller and admin more verbose",
+        "de": "festes problem beim speichern von array-werten in benutzerdefinierten config\nproblem beim löschen von objekten\nuI-Update von Controller und Admin mehr Verbose",
+        "ru": "фиксированная проблема с сохранением значений массива в пользовательской конфигурации\nфиксированный вопрос об удалении объектов\nсделать UI обновление контроллера и администратора более глагол",
+        "pt": "problema fixo com salvar valores de array em configuração personalizada\nproblema fixo na exclusão de objetos\nfazer UI atualização de controlador e admin mais verbose",
+        "nl": "vast probleem met het opslaan van arraywaarden in aangepaste configuratie\nvast probleem bij het verwijderen van objecten\nmaak UI update van controller en admin meer verbose",
+        "fr": "problème fixe avec sauvegarde des valeurs du tableau dans la configuration personnalisée\nproblème corrigé lors de la suppression d'objets\nrendre la mise à jour de l'interface utilisateur de contrôleur et administrateur plus verbeux",
+        "it": "problema fisso con il salvataggio dei valori di array in configurazione personalizzata\nproblema fisso sull'eliminazione degli oggetti\nrendere l'aggiornamento UI del controller e amministratore più verbose",
+        "es": "problema fijo con valores de matriz de ahorro en config personalizado\ncuestión fija en la eliminación de objetos\nhacer UI actualización de controlador y admin más verbose",
+        "pl": "stały problem z zapisaniem wartości tablicy w niestandardowym konfiguratorze\nstałe wydanie na usuwaniu obiektów\ndokonać UI aktualizacji kontrolera i admin więcej verbose",
+        "uk": "виправлена проблема з збереженням значень масиву в налаштуванні\nвиправлено проблему видалення об'єктів\nзробіть оновлення UI контролера та адміністратора більш дієслово",
+        "zh-cn": "在自定义配置中保存数组值的固定问题\n删除对象的固定问题\n使控制器的 UI 更新和操作更加动词化"
       },
-      "6.13.12": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
+      "6.15.0": {
+        "en": "harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)\nadded possibility to delete whole adapter from instance tab if only one instance left\nnew dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)\nthe new `licenseInformation` icon now changes color correctly with the theme",
+        "de": "die links zu adapterdokumentation (und rückfall auf englisch, wenn kein expliziter punkt für sys-sprache zur verfügung gestellt)\nhinzufügen der möglichkeit, den gesamten adapter von der registerkarte zu löschen, wenn nur eine instanz links\nneuer dialog für meldungen, die für nicht-system-benachrichtigungen eingeführt werden (system-benachrichtigungen sind noch auf hosts-tab)\ndas neue `licenseInformation`-Symbol ändert nun die Farbe korrekt mit dem Thema",
+        "ru": "гармонизирует ссылки на документацию адаптера (и возвращается на английский, если отсутствует явный док для языка sys)\nвозможность удаления всего адаптера из вкладки примера, если только один экземпляр остался\nновый диалог для уведомлений, введенных для несистемных уведомлений (системные уведомления все еще на вкладке хостов)\nновый значок «LicenseInformation» теперь правильно меняет цвет с темой",
+        "pt": "harmonizou os links para a documentação do adaptador (e a recaída ao inglês se nenhum documento explícito para a linguagem do sys fornecido)\npossibilidade adicionada de excluir o adaptador inteiro da aba da instância se apenas uma instância deixada\nnova caixa de diálogo para notificações introduzidas para notificações não-sistema (as notificações do sistema ainda estão na guia hosts)\no novo ícone `licenseInformation` agora muda a cor corretamente com o tema",
+        "nl": "geharmoniseerde links naar de documentatie van de adapter (en terugval naar het engels als er geen expliciete doc voor de gegeven sys taal)\ntoegevoegd mogelijkheid om hele adapter uit instantie tabblad te verwijderen als er nog maar één instantie over is\nnieuw dialoogvenster voor meldingen ingevoerd voor notificaties buiten het systeem (systeemmeldingen zijn nog steeds op het tabblad hosts)\nhet nieuwe ",
+        "fr": "harmonisation des liens vers la documentation de l'adaptateur (et retour à l'anglais si aucun doc explicite pour la langue de sys fourni)\npossibilité ajoutée de supprimer l'adaptateur entier de l'onglet instance si une seule instance reste\nnouvelle boîte de dialogue pour les notifications introduites pour les notifications non système (les notifications système sont toujours sur l'onglet hôte)\nla nouvelle icône `licenseInformation` change maintenant la couleur correctement avec le thème",
+        "it": "armonizzato i collegamenti alla documentazione dell'adattatore (e il ripiegamento all'inglese, se non un documento esplicito per la lingua sys fornito)\npossibilità aggiunta di eliminare l'intero adattatore dalla scheda di istanza se rimane solo un'istanza\nnuova finestra di dialogo per le notifiche introdotte per le notifiche non-sistema (le notifiche di sistema sono ancora sulla scheda host)\nla nuova icona `licenseInformation` ora cambia colore correttamente con il tema",
+        "es": "armoniza los enlaces a la documentación del adaptador (y retroceder al inglés si no hay un doc explícito para el lenguaje de sís)\nadicional posibilidad de eliminar el adaptador entero de la pestaña de instancia si sólo una instancia izquierda\nnuevo diálogo para las notificaciones introducidas para notificaciones no sistema (las notificaciones del sistema siguen en la pestaña hosts)\nel nuevo icono 'licenseInformation' ahora cambia de color correctamente con el tema",
+        "pl": "harmonizacja linków do dokumentacji adaptera (i powrót do angielskiego, jeśli nie ma wyraźnego doc dla języka sys)\ndodana możliwość usunięcia całego adaptera z zakładki instance, jeśli została tylko jedna instancja\nnowe okno dialogowe dla powiadomień wprowadzonych dla powiadomień niesystemowych (powiadomienia systemowe są nadal w zakładce hosts)\nnowa ikona 'licenseInformation' zmienia kolor poprawnie z motywem",
+        "uk": "гармонізовані посилання на документацію адаптера (і впадок в англійську, якщо немає явного довідка для наданої мови)\nдодано можливість видалити весь адаптер з вкладки екземпляра, якщо тільки один екземпляр залишив\nновий діалог для повідомлень, введених для сповіщення про несистему (системні сповіщення все ще на вкладці hosts)\n`licenseInformation````````````````````````````````________=================================================================================================================================================================================================================",
+        "zh-cn": "协调适配文件的链接(如果未为sys语言提供明确的文件,则回落到英文)\n如果仅剩一个实例, 则添加从实例标签中删除整个适配符的可能性\n为非系统通知引入的通知新对话框(系统通知仍在主机标签上)\n新的“ 许可证信息” 图标现在按照主题正确改变颜色"
       },
-      "6.13.11": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
+      "6.14.1": {
+        "en": "align items better when adapters tab is used in row mode",
+        "de": "die elemente besser ausrichten, wenn die registerkarte adapter im zeilenmodus verwendet wird",
+        "ru": "выравнивать элементы лучше, когда вкладка адаптеров используется в режиме строки",
+        "pt": "alinhar itens melhor quando a aba de adaptadores é usada no modo de linha",
+        "nl": "items beter uitlijnen wanneer het tabblad adapters wordt gebruikt in rijmodus",
+        "fr": "aligner les éléments mieux lorsque l'onglet adaptateurs est utilisé en mode ligne",
+        "it": "allineare gli elementi meglio quando la scheda adattatori viene utilizzata in modalità riga",
+        "es": "alinear los elementos mejor cuando la pestaña adaptadores se utiliza en modo de fila",
+        "pl": "wyrównać elementy lepiej, gdy karta adapterów jest używana w trybie wiersza",
+        "uk": "вирівняти елементи краще, коли вкладки адаптерів використовується в режимі рядка",
+        "zh-cn": "在行模式下使用适配器标签时更好地对齐项目"
       },
-      "6.13.10": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
+      "6.14.0": {
+        "en": "adapters tab is now showing information from `licenseInformation`\nshow important notifications above changelog, so user reads them on update dialog",
+        "de": "adapter Tab zeigt jetzt Informationen von `license Informationen `\nwichtige benachrichtigungen über changelog anzeigen, so dass der benutzer sie im update-dialog liest",
+        "ru": "вкладка адаптеров теперь показывает информацию из `license Информация \"\nпоказать важные уведомления выше менлога, поэтому пользователь читает их в диалоге обновления",
+        "pt": "aba adaptadores agora está mostrando informações de `license Informação \"\nmostrar notificações importantes acima changelog, então o usuário lê-los na caixa de diálogo de atualização",
+        "nl": "het tabblad adapters toont nu informatie van de licentie Informatie Wat\ntoon belangrijke meldingen boven changelog, dus gebruiker leest ze op update dialoog",
+        "fr": "adaptateurs onglet affiche maintenant des informations de `license Informations \"\nafficher les notifications importantes au-dessus du changelog, de sorte que l'utilisateur les lit sur la boîte de dialogue de mise à jour",
+        "it": "scheda adattatori ora mostra le informazioni da `license Informazioni #\nmostrare le notifiche importanti sopra changelog, quindi l'utente le legge sulla finestra di dialogo di aggiornamento",
+        "es": "la pestaña de adaptadores ahora muestra información de 'license Información `\nmostrar notificaciones importantes por encima del cambio, por lo que el usuario los lee en el diálogo de actualización",
+        "pl": "karta adapterów pokazuje teraz informacje z 'licence Informacje'\nwyświetla ważne powiadomienia powyżej changelog, więc użytkownik czyta je w oknie aktualizacji",
+        "uk": "вкладка адаптерів тепер показує інформацію від `license Інформація й\nпоказати важливі повідомлення над зміною",
+        "zh-cn": "适配器标签现在显示来自“ 许可证” 的信息 资料 `\n在更改日志上方显示重要通知, 因此用户在更新对话框中读取"
       },
-      "6.13.9": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
+      "6.13.21": {
+        "en": "do not crash when using the dropdown on multi edit custom settings",
+        "de": "nicht abstürzen, wenn sie den dropdown auf multi edit benutzerdefinierte einstellungen verwenden",
+        "ru": "не сбои при использовании отключения на многообразных пользовательских условиях",
+        "pt": "não falhar ao usar o dropdown em multi editar configurações personalizadas",
+        "nl": "niet crashen bij het gebruik van de dropdown op aangepaste instellingen voor meerdere bewerkingen",
+        "fr": "ne pas planter lors de l'utilisation du menu déroulant sur les paramètres personnalisés de multi-édition",
+        "it": "non crash quando si utilizza il menu a tendina su più impostazioni personalizzate",
+        "es": "no se bloquea cuando se utiliza el desplegable en la configuración personalizada multi editar",
+        "pl": "nie awarii podczas korzystania z rozwijanego ustawienia wielu edycji",
+        "uk": "не збій при використанні випадання на багато редагування користувацьких налаштувань",
+        "zh-cn": "在多编辑自定义设置中使用下拉时不要崩溃"
       },
-      "6.13.8": {
-        "en": "internal optimizations",
-        "de": "interne optimierungen",
-        "ru": "внутренние оптимизации",
-        "pt": "otimizações internas",
-        "nl": "inwendige optimisatie",
-        "fr": "optimisation interne",
-        "it": "ottimizzazioni interne",
-        "es": "optimizaciones internas",
-        "pl": "optymalizacja wewnętrznych",
-        "uk": "внутрішня оптимізація",
-        "zh-cn": "b. 优化内部环境"
+      "6.13.20": {
+        "en": "after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally\nfixed problem with saving on multi edit custom settings",
+        "de": "nach erfolgreichem update über npm tab, führen sie einen zusätzlichen upload als `iob url` befehle nicht intern tun\nbehobenes problem mit dem speichern von benutzerdefinierten multi edit-einstellungen",
+        "ru": "после успешного обновления через вкладку npm выполните дополнительную загрузку, так как команды `iob url' не делают это внутри\nфиксированная проблема с сохранением многообразных пользовательских настроек",
+        "pt": "após a atualização bem sucedida via aba npm, execute um upload adicional como comandos `iob url` não fazê-lo internamente\nproblema fixo com a economia em multi editar configurações personalizadas",
+        "nl": "na succesvolle update via npm tabblad, voer een extra upload als \nvast probleem met opslaan op aangepaste instellingen voor meerdere bewerkingen",
+        "fr": "après une mise à jour réussie via l`onglet npm, effectuer un téléchargement supplémentaire car les commandes `iob url` ne le font pas en interne\nproblème corrigé avec l'enregistrement sur les paramètres personnalisés multi-édition",
+        "it": "dopo l'aggiornamento di successo tramite la scheda npm, eseguire un upload aggiuntivo come comandi `iob url` non farlo internamente\nproblema fisso con il salvataggio su più impostazioni personalizzate",
+        "es": "después de la actualización exitosa a través de la pestaña npm, realizar una carga adicional como comandos `iob url` no lo hacen internamente\nproblema fijo con el ahorro en ajustes personalizados multi edición",
+        "pl": "po udanej aktualizacji za pomocą zakładki npm, wykonaj dodatkową transmisję jako komendy 'iob url' nie robią tego wewnętrznie\nnaprawiony problem z zapisaniem na niestandardowych ustawieniach wielu edycji",
+        "uk": "після успішного оновлення за допомогою вкладки npm виконайте додатковий завантажень як команди `iob url` не робити це внутрішньо\nвиправлена проблема з збереженням на багато редагування користувацьких налаштувань",
+        "zh-cn": "在通过 npm 标签成功更新后, 执行额外的上传, 因为“ iob url” 命令不会在内部执行 \n在多编辑自定义设置中保存的固定问题"
       }
     },
     "desc": {
@@ -176,7 +176,10 @@
       }
     ],
     "type": "general",
-    "license": "MIT",
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
     "logTransporter": true,
     "stopBeforeUpdate": true,
     "wwwDontUpload": true,
@@ -242,19 +245,19 @@
   },
   "notifications": [
     {
-      "scope": "news",
+      "scope": "admin",
       "name": {
-        "en": "News",
-        "de": "Nachrichten",
-        "ru": "Новости",
-        "pt": "Notícias",
-        "nl": "Nieuws",
-        "fr": "Actualités",
-        "it": "Notizie",
-        "es": "Noticias",
-        "pl": "News",
-        "uk": "Новини",
-        "zh-cn": "新闻"
+        "en": "Administration",
+        "de": "Administration",
+        "ru": "Администрация",
+        "pt": "Administração",
+        "nl": "Administratie",
+        "fr": "Administration",
+        "it": "Amministrazione",
+        "es": "Administración",
+        "pl": "Administracja",
+        "uk": "Адміністрація",
+        "zh-cn": "行政部门"
       },
       "description": {
         "en": "These notifications represent news regarding installed adapters or general ioBroker information.",
@@ -271,7 +274,39 @@
       },
       "categories": [
         {
-          "category": "info",
+          "category": "adapterUpdates",
+          "name": {
+            "en": "Adapter updates",
+            "de": "Adapter-Updates",
+            "ru": "Обновления адаптера",
+            "pt": "Actualizações do adaptador",
+            "nl": "Adapter updates",
+            "fr": "Mises à jour de l'adaptateur",
+            "it": "Aggiornamenti dell'adattatore",
+            "es": "Actualizaciones de adaptadores",
+            "pl": "Aktualizacje adapterów",
+            "uk": "Оновлення адаптерів",
+            "zh-cn": "适配器更新"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "New adapter updates are available for your ioBroker.",
+            "de": "Es sind neue Adapter Updates für deinen ioBroker verfügbar.",
+            "ru": "Для вашего ioBroker доступны новые обновления адаптера.",
+            "pt": "Estão disponíveis novas actualizações de adaptadores para o seu ioBroker.",
+            "nl": "Nieuwe adapterupdates zijn beschikbaar voor uw ioBroker.",
+            "fr": "De nouvelles mises à jour de l'adaptateur sont disponibles pour ton ioBroker.",
+            "it": "Sono disponibili nuovi aggiornamenti dell'adattatore per il vostro ioBroker.",
+            "es": "Hay nuevas actualizaciones de adaptadores disponibles para su ioBroker.",
+            "pl": "Dostępne są nowe aktualizacje adaptera dla ioBroker.",
+            "uk": "Для вашого ioBroker доступні нові оновлення адаптерів.",
+            "zh-cn": "您的 ioBroker 可以使用新的适配器更新。"
+          },
+          "regex": [],
+          "limit": 1
+        },
+        {
+          "category": "infoNews",
           "name": {
             "en": "General news",
             "de": "Allgemeine Nachrichten",
@@ -303,7 +338,7 @@
           "limit": 10
         },
         {
-          "category": "warning",
+          "category": "warningNews",
           "name": {
             "en": "Important news",
             "de": "Wichtige Nachrichten",
@@ -335,7 +370,7 @@
           "limit": 10
         },
         {
-          "category": "danger",
+          "category": "dangerNews",
           "name": {
             "en": "Very important news",
             "de": "Sehr wichtige Nachrichten",

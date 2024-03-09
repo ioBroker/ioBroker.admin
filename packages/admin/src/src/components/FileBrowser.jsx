@@ -62,17 +62,16 @@ import {
     FolderSpecial as RestrictedIcon,
 } from '@mui/icons-material';
 
-import ErrorDialog from '@iobroker/adapter-react-v5/Dialogs/Error';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import TextInputDialog from '@iobroker/adapter-react-v5/Dialogs/TextInput';
-
-// Custom Icons
-import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
-import IconClosed from '@iobroker/adapter-react-v5/icons/IconClosed';
-import IconOpen from '@iobroker/adapter-react-v5/icons/IconOpen';
-import IconNoIcon from '@iobroker/adapter-react-v5/icons/IconNoIcon';
-
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import {
+    Error as ErrorDialog,
+    Utils,
+    TextInput as TextInputDialog,
+    IconExpert,
+    IconClosed,
+    IconOpen,
+    IconNoIcon,
+    withWidth,
+} from '@iobroker/adapter-react-v5';
 
 import FileViewer, { EXTENSIONS } from './FileViewer';
 

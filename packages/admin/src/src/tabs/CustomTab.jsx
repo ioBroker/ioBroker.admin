@@ -3,7 +3,7 @@ import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
 
-import LinearProgress from '@mui/material/LinearProgress';
+import { LinearProgress } from '@mui/material';
 
 import { withWidth } from '@iobroker/adapter-react-v5';
 

@@ -11,7 +11,9 @@ import {
     MenuItem,
     MenuList,
     ListItemIcon,
-    ListItemText, TextField, Checkbox, FormControlLabel, InputAdornment, IconButton, InputLabel, Select, FormControl,
+    ListItemText, TextField, Checkbox, FormControlLabel,
+    InputAdornment, IconButton, InputLabel,
+    Select, FormControl,
 } from '@mui/material';
 
 // Icons

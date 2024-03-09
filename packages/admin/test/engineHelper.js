@@ -89,13 +89,13 @@ async function stopIoBroker() {
 function checkIsAdminStarted(states, cb, counter) {
     counter = counter === undefined ? 20 : counter;
     if (counter === 0) {
-        return cb && cb(`Cannot check value Of State system.adapter.admin.0.alive`);
+        return cb && cb(`Cannot check value of State system.adapter.admin.0.alive`);
     }
 
     states.getState('system.adapter.admin.0.alive', (err, state) => {
         console.log(`[${counter}]Check if admin is started "system.adapter.admin.0.alive" = ${JSON.stringify(state)}`);
         err && console.error(err);
-        if (state && state.val) {
+        if (state?.val) {
             cb && cb();
         } else {
             setTimeout(() => checkIsAdminStarted(states, cb, counter - 1), 500);

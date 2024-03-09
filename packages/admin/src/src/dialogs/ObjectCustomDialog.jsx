@@ -2,22 +2,25 @@ import React from 'react';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import AppBar from '@mui/material/AppBar';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    AppBar,
+    Tabs,
+    Tab,
+} from '@mui/material';
 
 import Router from '@iobroker/adapter-react-v5/Components/Router';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, Confirm as ConfirmDialog } from '@iobroker/adapter-react-v5';
 
 // Icons
-import CloseIcon from '@mui/icons-material/Close';
-import SaveIcon from '@mui/icons-material/Save';
+import {
+    Close as CloseIcon,
+    Save as SaveIcon,
+} from '@mui/icons-material';
 
 import ObjectCustomEditor from '../components/Object/ObjectCustomEditor';
 import ObjectHistoryData from '../components/Object/ObjectHistoryData';

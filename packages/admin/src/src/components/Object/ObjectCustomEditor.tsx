@@ -1,5 +1,5 @@
 import React, { createRef, Component } from 'react';
-import { Styles, withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 
 import {
@@ -152,7 +152,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
         let expanded: string[] = [];
         try {
-            expanded = JSON.parse((window._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]');
+            expanded = JSON.parse(((window as any)._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]');
         } catch (e) {
             expanded = [];
         }
@@ -487,8 +487,8 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 } else {
                     expanded.splice(pos, 1);
                 }
-                (window._localStorage || window.localStorage).setItem('App.customsExpanded', JSON.stringify(expanded));
-                pos === -1 && (window._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
+                ((window as any)._localStorage || window.localStorage).setItem('App.customsExpanded', JSON.stringify(expanded));
+                pos === -1 && ((window as any)._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
                 this.setState({ expanded });
             }}
         >
@@ -559,7 +559,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             onValueChange={(attr, value) => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                 console.log(`${attr} => ${value}`);
-                                const newValues = JSON.parse(JSON.stringify(this.cachedNewValues));
+                                const newValues = deepClone(this.cachedNewValues);
                                 newValues[instance] = newValues[instance] || {};
                                 if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig?.[instance], attr)) === JSON.stringify(value)) {
                                     ConfigGeneric.setValue(newValues[instance], attr, null);
@@ -647,6 +647,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             }
         } else {
             const maxOids = this.state.maxOids || ids.length;
+
             if (this.state.maxOids === null) {
                 this.setState({ maxOids: ids.length }, () =>
                     this.props.onProgress(true));
@@ -664,7 +665,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     }
 
                     // remove all disabled commons
-                    if (obj.common && obj.common.custom) {
+                    if (obj.common?.custom) {
                         Object.keys(obj.common.custom).forEach(ins => {
                             if (!obj.common.custom[ins] || !obj.common.custom[ins].enabled) {
                                 obj.common.custom[ins] = null;
@@ -680,7 +681,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                         const newValues = this.combineNewAndOld(instance, true);
 
                         if (newValues.enabled === false) {
-                            if (obj.common && obj.common.custom && obj.common.custom[instance]) {
+                            if (obj.common?.custom?.[instance]) {
                                 obj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
                             }
                         } else if (newValues.enabled) {
@@ -709,14 +710,19 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                                 });
                             }
 
+                            const isMultiEdit = this.props.objectIDs.length > 1;
+
                             obj.common.custom[instance].enabled = true;
 
                             Object.keys(newValues).forEach(attr => {
                                 // if not different
                                 if (!attr.startsWith('_')) {
-                                    // if (!Array.isArray(newValues[attr]) || (newValues[attr][0] && typeof newValues[attr][0] === 'object')) {
+                                    // if we have an array, it is still the data of multiple different fields (multiEdit) do not override issue#2359
+                                    if (Array.isArray(newValues[attr]) && isMultiEdit) {
+                                        return;
+                                    }
+
                                     obj.common.custom[instance][attr] = newValues[attr];
-                                    // }
                                 }
                             });
                         }

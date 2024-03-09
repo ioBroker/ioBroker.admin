@@ -6,7 +6,7 @@ import {
     AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar,
 } from '@mui/material';
 
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 
 import { Utils, ToggleThemeMenu } from '@iobroker/adapter-react-v5';
 

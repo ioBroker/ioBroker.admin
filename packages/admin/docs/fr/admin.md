@@ -7,7 +7,7 @@ dans le navigateur web. Cet adaptateur est automatiquement installé avec ioBrok
 ## Configuration:
 
 La boîte de dialogue de configuration de l'adaptateur "admin" fournit les paramètres suivants:
-![img_002](img/admin_img_002.png)
+![img_002](img/admin_img_002.jpg)
 
 **IP:** L'adresse IP du serveur Web "admin" peut être choisie ici.
 Différentes adresses IPv4 et IPv6 peuvent être sélectionnées. La valeur par défaut est 0.0.0.0\.
@@ -25,7 +25,7 @@ Normalement, seul le développeur souhaite que cette option soit décochée.
 
 La page principale de l'administrateur se compose de plusieurs onglets. **Adaptateur:** Voici les instances de
 un adaptateurs peuvent être installés ou supprimés. Avec le bouton de mise à jour
-![img_005](img/admin_img_005.png)
+![img_005](img/admin_img_005.jpg)
 en haut à gauche, nous pouvons voir si les nouvelles versions des adaptateurs sont disponibles.
 ![img_001](img/admin_img_001.jpg)
 
@@ -38,11 +38,11 @@ Les adaptateurs disponibles sont triés par ordre alphabétique. Les instances d
 **Instance:** Les instances déjà installées sont répertoriées ici et peuvent être configurées en conséquence. Si le titre de la
 exemple, vous pouvez cliquer dessus et le site Web correspondant s’ouvrira.
 
-![img_003](img/admin_img_003.png)
+![img_003](img/admin_img_003.jpg)
 
 **Objects:** les objets gérés (par exemple, setup / variables / programmes du matériel connecté)
 
-![img_004](img/admin_img_004.png)
+![img_004](img/admin_img_004.jpg)
 
 **Etats:** les états actuels (valeurs des objets)
 Si l'historique de l'adaptateur est installé, vous pouvez enregistrer les points de données choisis.
@@ -65,3 +65,17 @@ icône dans le coin inférieur gauche.
 **Event:** Une liste des mises à jour en cours des conditions. **Journal:** ici, le journal est affiché. Dans l’instance de tabulation, le niveau de journalisation enregistré.
 de l'instance unique peut être défini. Dans le menu de sélection, le niveau de journal minimum affiché est sélectionné. Si une erreur survient, le
 le lettrage du journal apparaît en rouge.
+
+**Hôtes:**
+Informations sur l'ordinateur sur lequel ioBroker est installé. La version actuelle du contrôleur js peut être mise à jour ici. Si une nouvelle version est disponible, l'étiquette de l'onglet apparaît en vert.
+
+**Dans l'onglet instance, le niveau de journalisation de l'instance unique peut être défini. 
+de l'instance unique peut être défini. Dans le menu de sélection, le niveau minimum de journalisation affiché est sélectionné. En cas d'erreur, le texte du journal apparaît en rouge. 
+Si une erreur se produit, le texte du journal apparaît en rouge.
+
+**Paramètres du système:**
+Les réglages tels que la langue, le format de l'heure et de la date et d'autres réglages du système sont effectués dans le menu qui s'ouvre ici.
+
+![img_006](img/admin_img_006.jpg)
+
+Les dépôts et les paramètres de sécurité peuvent également être définis ici.

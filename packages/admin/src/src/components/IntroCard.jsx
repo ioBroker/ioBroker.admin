@@ -3,20 +3,22 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
-    Button, Card, CardActions, CardContent, CardMedia, Collapse, Divider, Grid, IconButton, Link, Typography, Skeleton,
+    Button, Card, CardActions, CardContent,
+    CardMedia, Collapse, Divider,
+    Grid, IconButton, Link, Typography, Skeleton,
+    Tooltip,
 } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
 
-import CheckIcon from '@mui/icons-material/Check';
-import EditIcon from '@mui/icons-material/Create';
-import ErrorIcon from '@mui/icons-material/Error';
-import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
-import WarningIcon from '@mui/icons-material/Warning';
+import {
+    Check as CheckIcon,
+    Create as EditIcon,
+    Error as ErrorIcon,
+    Close as CloseIcon,
+    Delete as DeleteIcon,
+    Warning as WarningIcon,
+} from '@mui/icons-material';
 
-import blue from '@mui/material/colors/blue';
-import grey from '@mui/material/colors/grey';
-import { red } from '@mui/material/colors';
+import { blue, grey, red } from '@mui/material/colors';
 
 import { Utils, IconCopy as SaveIcon } from '@iobroker/adapter-react-v5';
 
@@ -175,7 +177,6 @@ const styles = theme => ({
         '&:focus': {
             backgroundColor: red[500],
         },
-
     },
     cameraImg: {
         width: '100%',

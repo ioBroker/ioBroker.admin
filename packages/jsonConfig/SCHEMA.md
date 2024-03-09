@@ -226,7 +226,7 @@ Possible types:
 - `jsonEditor` - json editor
 
 - `language` - select language
-    - `system` - allow the usage of the system language from `system.config` as default
+    - `system` - allow the usage of the system language from `system.config` as default (will have an empty string value if selected)
 
 - `certificate`
     - `certType` - on of: `public`, `private`, `chained`. But from 6.4.0 you can use `certificates` type.
@@ -253,6 +253,15 @@ Possible types:
         - `https://URL/myComponent`: direct from URL
         - `./adapter/ADAPTER_NAME/custom/customComponent.js`: in this case the files will be loaded from `/adapter/ADAPTER_NAME/custom/customComponents.js`
     - `i18n` - true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}`
+
+- `datePicker` - allow the user to select a date input the UI format comes from the configured `dateFormat` in the users' installation. The
+component returns a parseable date string.
+
+- `timePicker` - allow the user to select a date input the returned string is a parseable date string or of format `HH:mm:ss`
+    - `format` - format passed to the date picker defaults to `HH:mm:ss`
+    - `views`  - Configure which views should be shown to the users. Defaults to `['hours', 'minutes', 'seconds']`
+    - `timeSteps` - Represent the available time steps for each view. Defaults to `{ hours: 1, minutes: 5, seconds: 5 }`
+    - `returnFormat` - `fullDate` or `HH:mm:ss`. Defaults to full date for backward compatibility reasons.
 
 - `divider` - horizontal line
     - `height` - optional height
@@ -668,7 +677,7 @@ or
 }
 ```
 
-We suggest using variant 2, as it will be possible to process the texts with Weblate.
+We suggest using variant 1 whenever possible, as it will be possible to process the texts with Weblate.
 
 ## JS Functions
 ### Configuration dialog
