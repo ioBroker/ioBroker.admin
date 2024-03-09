@@ -47,13 +47,14 @@ export function IOTextField(props) {
 const IOColorPicker = props => {
     const IconCustom = props.icon;
     return <div style={{ width: '100%' }}>
-        {IconCustom ? <IconCustom className={props.classes.formIcon} /> : null}
+        {IconCustom ? <IconCustom className={props.previewClassName || props.classes.formIcon} /> : null}
         <ColorPicker
             style={{ width: IconCustom ? 'calc(100% - 45px)' : '100%', display: 'inline-block', verticalAlign: 'top' }}
             name={props.t(props.label)}
             onChange={props.onChange}
             openAbove
             color={props.value || ''}
+            className={props.className}
         />
     </div>;
 };
@@ -61,5 +62,10 @@ const IOColorPicker = props => {
 IOColorPicker.propTypes = {
     label: PropTypes.string,
     value: PropTypes.any,
+    classes: PropTypes.object,
+    previewClassName: PropTypes.string,
+    onChange: PropTypes.func,
+    icon: PropTypes.object,
+    className: PropTypes.string,
 };
 export { IOColorPicker };
