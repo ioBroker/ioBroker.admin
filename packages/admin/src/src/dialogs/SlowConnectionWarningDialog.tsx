@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -20,35 +19,48 @@ import {
 
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     buttonLabel: {
         whiteSpace: 'nowrap',
     },
     input: {
         minWidth: 150,
     },
-});
+};
 
-class SlowConnectionWarningDialog extends Component {
-    constructor(props) {
+interface SlowConnectionWarningDialogProps {
+    t: (text: string) => string;
+    readTimeoutMs: number;
+    onClose: (readTimeoutMs?: number) => void;
+    classes: Record<string, string>;
+}
+
+interface SlowConnectionWarningDialogState {
+    readTimeoutSec: number | string;
+}
+
+class SlowConnectionWarningDialog extends Component<SlowConnectionWarningDialogProps, SlowConnectionWarningDialogState> {
+    private readonly mobile: boolean;
+
+    constructor(props: SlowConnectionWarningDialogProps) {
         super(props);
 
         this.state = {
-            readTimeoutSec: Math.round((this.props.readTimeoutMs || SlowConnectionWarningDialog.getReadTimeoutMs()) / 1000),
+            readTimeoutSec: Math.round((props.readTimeoutMs || SlowConnectionWarningDialog.getReadTimeoutMs()) / 1000),
         };
 
         this.mobile = window.innerWidth < MOBILE_WIDTH;
     }
 
     static getReadTimeoutMs() {
-        return parseInt((window._localStorage || window.localStorage).getItem('App.readTimeoutMs'), 10) || 15000;
+        return parseInt(((window as any)._localStorage || window.localStorage).getItem('App.readTimeoutMs'), 10) || 15000;
     }
 
-    static saveReadTimeoutMs(readTimeoutMs) {
+    static saveReadTimeoutMs(readTimeoutMs: number) {
         if (readTimeoutMs) {
-            return (window._localStorage || window.localStorage).setItem('App.readTimeoutMs', readTimeoutMs.toString());
+            return ((window as any)._localStorage || window.localStorage).setItem('App.readTimeoutMs', readTimeoutMs.toString());
         }
-        return (window._localStorage || window.localStorage).removeItem('App.readTimeoutMs');
+        return ((window as any)._localStorage || window.localStorage).removeItem('App.readTimeoutMs');
     }
 
     render() {
@@ -75,13 +87,14 @@ class SlowConnectionWarningDialog extends Component {
             </DialogContent>
             <DialogActions>
                 <Button
-                    classes={{ label: this.props.classes.buttonLabel }}
+                    className={this.props.classes.buttonLabel}
                     variant="contained"
                     onClick={() => {
                         SlowConnectionWarningDialog.saveReadTimeoutMs(60000);
                         this.props.onClose(60000);
                     }}
                     startIcon={<TimeIcon />}
+                    // @ts-expect-error grey is a valid color
                     color="grey"
                 >
                     {this.mobile ? this.props.t('1 minute') : this.props.t('Set timeout to 1 minute')}
@@ -90,9 +103,9 @@ class SlowConnectionWarningDialog extends Component {
                     variant="contained"
                     autoFocus
                     color="primary"
-                    disabled={!parseInt(this.state.readTimeoutSec, 10)}
+                    disabled={!parseInt(this.state.readTimeoutSec as string, 10)}
                     onClick={() => {
-                        const readTimeoutMs = parseInt(this.state.readTimeoutSec, 10) * 1000;
+                        const readTimeoutMs = parseInt(this.state.readTimeoutSec as string, 10) * 1000;
                         SlowConnectionWarningDialog.saveReadTimeoutMs(readTimeoutMs);
                         this.props.onClose(readTimeoutMs);
                     }}
@@ -103,6 +116,7 @@ class SlowConnectionWarningDialog extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
+                    // @ts-expect-error grey is a valid color
                     color="grey"
                     startIcon={<CloseIcon />}
                 >
@@ -112,11 +126,5 @@ class SlowConnectionWarningDialog extends Component {
         </Dialog>;
     }
 }
-
-SlowConnectionWarningDialog.propTypes = {
-    t: PropTypes.func.isRequired,
-    readTimeoutMs: PropTypes.number,
-    onClose: PropTypes.func.isRequired,
-};
 
 export default withStyles(styles)(SlowConnectionWarningDialog);

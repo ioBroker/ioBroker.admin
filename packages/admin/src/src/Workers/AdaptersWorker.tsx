@@ -1,7 +1,33 @@
+import { type AdminConnection } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
 
+export type AdapterEventType = 'new' | 'changed' | 'deleted';
+
+interface AdapterEvent {
+    id: string;
+    obj?: ioBroker.AdapterObject;
+    type: AdapterEventType;
+    oldObj?: ioBroker.AdapterObject;
+}
+
 class AdaptersWorker {
-    constructor(socket) {
+    private readonly socket: AdminConnection;
+
+    private readonly handlers: ((events: AdapterEvent[]) => void)[];
+
+    private readonly repositoryHandlers: (() => void)[];
+
+    private promise: Promise<void | Record<string, ioBroker.AdapterObject>> | null;
+
+    private forceUpdate: boolean;
+
+    private connected: boolean;
+
+    private objects: Record<string, ioBroker.AdapterObject> | null;
+
+    private repoTimer: ReturnType<typeof setTimeout> | null;
+
+    constructor(socket: AdminConnection) {
         this.socket   = socket;
         this.handlers = [];
         this.repositoryHandlers = [];
@@ -14,12 +40,12 @@ class AdaptersWorker {
         this.objects = null;
     }
 
-    objectChangeHandler = (id, obj) => {
+    objectChangeHandler = (id: string, obj: ioBroker.AdapterObject) => {
         this.objects = this.objects || {};
         // if instance
         if (id.match(/^system\.adapter\.[^.]+$/)) {
-            let type;
-            let oldObj;
+            let type: AdapterEventType;
+            let oldObj: ioBroker.AdapterObject | undefined;
 
             if (obj) {
                 if (obj.type !== 'adapter') {
@@ -51,7 +77,7 @@ class AdaptersWorker {
             }
 
             this.socket.getAdaptersResetCache();
-            this.socket.getInstalledResetCache();
+            this.socket.getInstalledResetCache('');
             this.forceUpdate = true;
             this.promise = null;
 
@@ -66,7 +92,7 @@ class AdaptersWorker {
     }
 
     // be careful with this object. Do not change them.
-    getAdapters(update) {
+    getAdapters(update?: boolean) {
         if (!update && this.promise) {
             return this.promise;
         }
@@ -74,7 +100,7 @@ class AdaptersWorker {
         update = update || this.forceUpdate;
         this.forceUpdate = false;
 
-        this.promise = this.socket.getAdapters(update)
+        this.promise = this.socket.getAdapters(null, update)
             .then(objects => {
                 this.objects = {};
                 objects.forEach(obj => this.objects[obj._id] = obj);
@@ -85,7 +111,7 @@ class AdaptersWorker {
         return this.promise;
     }
 
-    connectionHandler = isConnected => {
+    connectionHandler = (isConnected: boolean) => {
         if (isConnected && !this.connected) {
             this.connected = true;
 
@@ -102,7 +128,7 @@ class AdaptersWorker {
         }
     };
 
-    registerHandler(cb) {
+    registerHandler(cb: (events: AdapterEvent[]) => void) {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
@@ -113,7 +139,7 @@ class AdaptersWorker {
         }
     }
 
-    unregisterHandler(cb) {
+    unregisterHandler(cb: (events: AdapterEvent[]) => void) {
         const pos = this.handlers.indexOf(cb);
         pos !== -1 && this.handlers.splice(pos, 1);
 
@@ -131,7 +157,7 @@ class AdaptersWorker {
         }, 500);
     };
 
-    registerRepositoryHandler(cb) {
+    registerRepositoryHandler(cb: () => void) {
         if (!this.repositoryHandlers.includes(cb)) {
             this.repositoryHandlers.push(cb);
 
@@ -142,7 +168,7 @@ class AdaptersWorker {
         }
     }
 
-    unregisterRepositoryHandler(cb) {
+    unregisterRepositoryHandler(cb: () => void) {
         const pos = this.repositoryHandlers.indexOf(cb);
         pos !== -1 && this.repositoryHandlers.splice(pos, 1);
 
