@@ -78,7 +78,6 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
 
         if (!DeviceList.i18nInitialized) {
             DeviceList.i18nInitialized = true;
-            // @ts-expect-error
             I18n.extendTranslations({
                 en,
                 de,

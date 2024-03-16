@@ -16,7 +16,7 @@ import {
     Confirm as ConfirmDialog, AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
-import type { Theme } from '@iobroker/adapter-react-v5/types';
+import type { Theme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 import type { SystemConfig } from '@iobroker/socket-client';
 import Utils from '#JC/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
@@ -189,8 +189,8 @@ interface JsonConfigProps {
     secret: string;
     socket: AdminConnection;
     theme: Record<string, any>;
-    themeName: string;
-    themeType: string;
+    themeName: ThemeName;
+    themeType: ThemeType;
     /** CSS classes */
     classes: Record<string, any>;
     /** Translate method */

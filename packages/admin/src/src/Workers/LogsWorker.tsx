@@ -339,7 +339,7 @@ class LogsWorker {
                     return { logs: this.logs, logSize: 0 };
                 }
 
-                const logSizeStr: string | null = lines ? lines.pop() : null;
+                const logSizeStr: string | null = lines ? (lines as string[]).pop() : null;
                 let logSize: number = 0;
 
                 if (typeof logSizeStr === 'string') {
@@ -349,7 +349,7 @@ class LogsWorker {
                 this.logs = [];
                 let lastKey: number;
 
-                lines.forEach(line => {
+                (lines as string[]).forEach(line => {
                     const obj = this._processLine(line, lastKey);
                     if (obj) {
                         lastKey = obj.key;

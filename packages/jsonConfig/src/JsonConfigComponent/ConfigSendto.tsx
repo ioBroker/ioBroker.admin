@@ -12,6 +12,7 @@ import {
 import {
     Confirm as DialogConfirm, Error  as DialogError, Message  as DialogMessage, type AdminConnection, I18n,
 } from '@iobroker/adapter-react-v5';
+import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
@@ -132,8 +133,8 @@ interface ConfigSendToSchema {
 
 interface ConfigSendToProps extends ConfigGenericProps {
     socket: AdminConnection;
-    themeType: string;
-    themeName: string;
+    themeType: ThemeType;
+    themeName: ThemeName;
     style: Record<string, any>;
     className: string;
     data: Record<string, any>;

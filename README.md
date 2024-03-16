@@ -91,6 +91,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) added a new tab to the installation wizard which recommends common adapters
+* (bluefox) applied newest adapter-react-v5 changes and types
 
 ### 6.15.2 (2024-03-07)
 * (foxriver76) fixed cron dialog

@@ -48,6 +48,7 @@ import {
 import { AdminConnection as Connection, PROGRESS } from '@iobroker/socket-client';
 import {
     LoaderPT,
+    LoaderMV,
     LoaderVendor,
     Loader,
     I18n, Router, Confirm as ConfirmDialog,
@@ -2323,8 +2324,9 @@ class App extends Router {
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
                         {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType} /> : null}
+                        {window.vendorPrefix === 'MV' ? <LoaderMV theme={this.state.themeType} /> : null}
                         {window.vendorPrefix &&
-                        window.vendorPrefix !== 'PT' &&
+                        window.vendorPrefix !== 'PT' && window.vendorPrefix !== 'MV' &&
                         window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor theme={this.state.themeType} /> : null}
                         {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
                         {this.renderAlertSnackbar()}

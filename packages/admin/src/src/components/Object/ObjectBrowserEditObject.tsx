@@ -1067,9 +1067,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         maxSize={10 * 1024}
                         icon={iconPath}
                         removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
-                        // @ts-expect-error adapter-react-v5 type improvements needed
                         onChange={base64 => this.setCommonItem(json, 'icon', base64)}
-                        t={t}
                     />
                     {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
                 </div> :
