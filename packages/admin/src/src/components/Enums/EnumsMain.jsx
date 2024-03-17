@@ -504,24 +504,21 @@ class EnumsList extends Component {
 
         return <div style={{ paddingLeft: level ? 32 : 0 }} key={container.id || key}>
             <EnumBlock
-                updating={this.state.updating.includes(container.id)}
-                id={container.id}
-                name={name}
-                idText={idText}
-                enum={container.data}
-                members={this.state.members}
-                moveEnum={this.moveEnum}
-                removeMemberFromEnum={this.removeMemberFromEnum}
-                showEnumEditDialog={this.showEnumEditDialog}
-                showEnumDeleteDialog={this.showEnumDeleteDialog}
-                showEnumTemplateDialog={this.showEnumTemplateDialog}
-                currentCategory={this.state.currentCategory}
-                getEnumTemplate={this.getEnumTemplate}
-                copyEnum={this.copyEnum}
-                getName={this.getName}
+                cachedIcons={this.cachedIcons}
+                classesParent={this.props.classes}
                 closed={this.state.enumsClosed[container.id]}
                 collapsed={this.state.enumsCollapsed.includes(container.id)}
-                toggleEnum={this.toggleEnum}
+                copyEnum={this.copyEnum}
+                currentCategory={this.state.currentCategory}
+                enum={container.data}
+                getEnumTemplate={this.getEnumTemplate}
+                getName={this.getName}
+                id={container.id}
+                idText={idText}
+                lang={this.props.lang}
+                members={this.state.members}
+                moveEnum={this.moveEnum}
+                name={name}
                 onCollapse={() => {
                     const enumsCollapsed = [...this.state.enumsCollapsed];
                     const pos = enumsCollapsed.indexOf(container.id);
@@ -533,12 +530,15 @@ class EnumsList extends Component {
                     this.setState({ enumsCollapsed });
                     (window._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
                 }}
-                t={this.props.t}
+                removeMemberFromEnum={this.removeMemberFromEnum}
+                showEnumDeleteDialog={this.showEnumDeleteDialog}
+                showEnumEditDialog={this.showEnumEditDialog}
+                showEnumTemplateDialog={this.showEnumTemplateDialog}
                 socket={this.props.socket}
-                lang={this.props.lang}
-                classesParent={this.props.classes}
+                t={this.props.t}
                 themeType={this.props.themeType}
-                cachedIcons={this.cachedIcons}
+                toggleEnum={this.toggleEnum}
+                updating={this.state.updating.includes(container.id)}
             >
                 {container.children ? Object.keys(container.children).length : 0}
             </EnumBlock>
@@ -883,16 +883,16 @@ class EnumsList extends Component {
                 changed={this.state.enumEditDialog.changed}
                 onChange={this.changeEnumFormData}
                 saveData={this.saveEnum}
+                innerWidth={this.state.innerWidth}
             /> : null}
-            <EnumDeleteDialog
-                open={!!this.state.enumDeleteDialog}
+            {this.state.enumDeleteDialog ? <EnumDeleteDialog
                 onClose={() => this.setState({ enumDeleteDialog: null })}
                 enum={this.state.enumDeleteDialog}
                 getName={this.getName}
                 t={this.props.t}
                 classes={this.props.classes}
                 deleteEnum={this.deleteEnum}
-            />
+            /> : null}
             {!!this.state.enumTemplateDialog && <EnumTemplateDialog
                 prefix={this.state.enumTemplateDialog}
                 onClose={() => this.setState({ enumTemplateDialog: null })}

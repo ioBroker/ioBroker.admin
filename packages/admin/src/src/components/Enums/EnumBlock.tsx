@@ -1,15 +1,15 @@
-import { useEffect, useRef, Component } from 'react';
-import PropTypes from 'prop-types';
-import { useDrag, useDrop } from 'react-dnd';
+import React, { useEffect, useRef, Component } from 'react';
+import {type ConnectDragSource, type DragSourceMonitor, useDrag, useDrop} from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { withStyles } from '@mui/styles';
+import type { DropTargetMonitor } from 'react-dnd/src/types';
 
 import {
     IconButton,
     Typography,
     Card,
     CardContent,
-    Tooltip,
+    Tooltip, type Theme,
 } from '@mui/material';
 
 import {
@@ -29,12 +29,14 @@ import {
     Icon,
     IconChannel,
     IconDevice,
-    IconState,
+    IconState, type AdminConnection,
 } from '@iobroker/adapter-react-v5';
+
+import { type DragItem } from './DragObjectBrowser';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     enumGroupCard: {
         border: '1px solid #FFF',
         borderColor: theme.palette.divider,
@@ -115,7 +117,7 @@ const styles = theme => ({
         padding: 4,
         backgroundColor: '#00000010',
         border: '1px solid #FFF',
-        borderColor: theme.palette.text.hint,
+        borderColor: theme.palette.text.primary, // it was hint...
         color: theme.palette.text.primary,
         alignItems: 'center',
         position: 'relative',
@@ -172,16 +174,54 @@ const styles = theme => ({
 function isTouchDevice() {
     return (('ontouchstart' in window) ||
         (navigator.maxTouchPoints > 0) ||
+        // @ts-ignore
         (navigator.msMaxTouchPoints > 0));
 }
 
-class EnumBlock extends Component {
-    constructor(props) {
+interface EnumBlockProps {
+    enum: ioBroker.EnumObject | null;
+    members: Record<string, ioBroker.Object>;
+    removeMemberFromEnum: (id: string, parentId: string) => void;
+    showEnumEditDialog: (category: ioBroker.EnumObject, isNew: boolean) => void;
+    showEnumDeleteDialog: (category: ioBroker.EnumObject) => void;
+    copyEnum: (id: string) => void;
+    getName: (name: ioBroker.StringOrTranslated) => string;
+    closed: boolean;
+    collapsed: boolean;
+    toggleEnum: (id: string) => void;
+    onCollapse: (id: string) => void;
+    showEnumTemplateDialog: (id: string) => void;
+    currentCategory: string;
+    t: (text: string, arg1?: any, arg2?: any) => string;
+    socket: AdminConnection;
+    updating: boolean;
+    id: string;
+    children: number;
+    themeType: string;
+    cachedIcons: Record<string, string>;
+    classes?: Record<string, string>;
+    iconDragRef?: ConnectDragSource;
+    isDragging?: boolean;
+    name?: string;
+    idText?: string;
+    getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
+}
+
+interface EnumBlockState {
+    icons: string[];
+}
+
+export interface EnumCommon extends ioBroker.EnumCommon {
+    desc?: ioBroker.StringOrTranslated;
+}
+
+class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
+    constructor(props: EnumBlockProps) {
         super(props);
 
         this.state = {
             icons: props.enum?.common?.members ?
-                props.enum.common.members.map(memberId => props.members[memberId]?.common?.icon || '') : [],
+                props.enum.common.members.map((memberId: string) => props.members[memberId]?.common?.icon || '') : [],
         };
     }
 
@@ -281,15 +321,16 @@ class EnumBlock extends Component {
     render() {
         const classes = this.props.classes;
         const props = this.props;
-        const textColor = Utils.getInvertedColor(props.enum?.common?.color, props.themeType, true);
+        const common: EnumCommon | null = props.enum?.common as EnumCommon;
+        const textColor = Utils.getInvertedColor(common?.color, props.themeType, true);
 
-        const style = { opacity: this.props.isDragging ? 0 : 1, color: textColor };
+        const style: React.CSSProperties = { opacity: this.props.isDragging ? 0 : 1, color: textColor };
 
-        if (props.enum?.common?.color) {
+        if (common?.color) {
             style.backgroundColor = props.enum.common.color;
         }
 
-        let icon = props.enum?.common?.icon ?
+        let icon = common?.icon ?
             <Icon
                 className={Utils.clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded)}
                 src={props.enum.common.icon}
@@ -332,10 +373,10 @@ class EnumBlock extends Component {
                     <IconButton
                         size="small"
                         onClick={() => props.showEnumDeleteDialog(props.enum)}
-                        disabled={props.enum?.common?.dontDelete}
+                        disabled={common?.dontDelete}
                     >
                         <Tooltip title={props.t('Delete')} placement="top">
-                            <DeleteIcon style={props.enum?.common?.dontDelete ? null : { color: textColor }} />
+                            <DeleteIcon style={common?.dontDelete ? null : { color: textColor }} />
                         </Tooltip>
                     </IconButton>
                 </div>
@@ -348,19 +389,19 @@ class EnumBlock extends Component {
                         {icon}
                         <div className={classes.enumGroupName}>
                             <span className={classes.enumGroupEnumName}>
-                                {props.name || props.getName(props.enum?.common?.name) || props.id.split('.').pop()}
+                                {props.name || props.getName(common?.name) || props.id.split('.').pop()}
                             </span>
                             <span className={classes.enumGroupEnumID}>
                                 {props.idText || props.id}
                             </span>
-                            {props.enum?.common?.desc ?
+                            {common.desc ?
                                 <div className={classes.enumName}>
-                                    {props.getName(props.enum.common.desc)}
+                                    {props.getName(common.desc)}
                                 </div> : null}
                         </div>
                     </Typography>
                     <div>
-                        {!props.collapsed && props.enum?.common?.members ? props.enum.common.members.map((memberId, i) => {
+                        {!props.collapsed && common?.members ? props.enum.common.members.map((memberId, i) => {
                             const member = props.members[memberId];
                             if (!member) {
                                 return null;
@@ -401,7 +442,7 @@ class EnumBlock extends Component {
                                     </Tooltip>
                                 </IconButton>
                             </Card>;
-                        }) : (props.enum?.common?.members?.length ? <div className={Utils.clsx(classes.membersNumber, props.children && classes.memberNumberFolder)}>{props.enum?.common?.members?.length}</div> : '')}
+                        }) : (common?.members?.length ? <div className={Utils.clsx(classes.membersNumber, props.children && classes.memberNumberFolder)}>{common?.members?.length}</div> : '')}
                     </div>
                 </CardContent>
             </div>
@@ -432,20 +473,49 @@ class EnumBlock extends Component {
 
 const StyledEnumBlock = withStyles(styles)(EnumBlock);
 
-function canMeDrop(monitor, props) {
-    if (!monitor.getItem() || !monitor.getItem().data) {
-        return true;
-    } if (!props.enum) {
-        return false;
-    }
-    return props.enum.common?.members ? !props.enum.common.members.includes(monitor.getItem().data.id) : true;
+interface EnumBlockDragProps {
+    id: string;
+    enum: ioBroker.EnumObject;
+    moveEnum: (id: string, moveTo: string) => void;
+    cachedIcons: Record<string, string>;
+    classesParent: Record<string, string>;
+    closed: boolean;
+    collapsed: boolean;
+    copyEnum: (enumId: string) => void;
+    currentCategory: string;
+    getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
+    getName: (name: ioBroker.StringOrTranslated) => string;
+    idText?: string;
+    members: Record<string, ioBroker.Object>;
+    name?: string;
+    onCollapse: () => void;
+    removeMemberFromEnum: (memberId: string, enumId: string) => void;
+    showEnumDeleteDialog: (enumItem: ioBroker.EnumObject) => void;
+    showEnumEditDialog: (enumItem: ioBroker.EnumObject, isNew?: boolean) => void;
+    showEnumTemplateDialog: (prefix: string) => void;
+    socket: AdminConnection;
+    t: (text: string, arg1?: any, arg2?: any) => string;
+    themeType: 'dark' | 'light';
+    toggleEnum: (enumId: string) => void;
+    updating: boolean;
+    children: number;
 }
 
-const EnumBlockDrag = props => {
+function canMeDrop(monitor: DropTargetMonitor<DragItem, { enumId: string }>, enumItem: ioBroker.EnumObject) {
+    if (!monitor.getItem() || !monitor.getItem().data) {
+        return true;
+    }
+    if (!enumItem) {
+        return false;
+    }
+    return enumItem.common?.members ? !enumItem.common.members.includes(monitor.getItem().data.id) : true;
+}
+
+const EnumBlockDrag = (props: EnumBlockDragProps) => {
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: ['object', 'enum'],
         drop: () => ({ enumId: props.id }),
-        canDrop: (item, monitor) => canMeDrop(monitor, props),
+        canDrop: (_item, monitor: DropTargetMonitor<DragItem, { enumId: string }>) => canMeDrop(monitor, props.enum),
         collect: monitor => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
@@ -459,16 +529,23 @@ const EnumBlockDrag = props => {
             type: 'enum',
             item: () => ({
                 enumId: props.id,
-                preview: <div style={{ width: widthRef.current.offsetWidth }}><StyledEnumBlock {...props} /></div>,
+                preview: <div
+                    style={{
+                        // @ts-expect-error I do not understand, why this error here
+                        width: widthRef.current === undefined ? 50 : widthRef.current.offsetWidth,
+                    }}
+                >
+                    <StyledEnumBlock {...props} />
+                </div>,
             }),
-            end: (item, monitor) => {
+            end: (draggeditem: { enumId: string; preview: React.JSX.Element }, monitor: DragSourceMonitor<DragItem, { enumId: string }>) => {
                 const dropResult = monitor.getDropResult();
                 if (!dropResult) {
                     // root
-                    const parts = item.enumId.split('.');
-                    props.moveEnum(item.enumId, `${parts[0]}.${parts[1]}`);
+                    const parts = draggeditem.enumId.split('.');
+                    props.moveEnum(draggeditem.enumId, `${parts[0]}.${parts[1]}`);
                 } else {
-                    props.moveEnum(item.enumId, dropResult.enumId);
+                    props.moveEnum(draggeditem.enumId, dropResult.enumId);
                 }
             },
             collect: monitor => ({
@@ -483,47 +560,22 @@ const EnumBlockDrag = props => {
     }, []);
 
     if (!props.enum) {
-        return <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} {...props} />;
+        return <StyledEnumBlock isDragging={isDragging} {...props} />;
     }
 
     return isTouchDevice()
         ? <div ref={drop} style={{ opacity: canDrop && isOver ? 0.5 : 1 }}>
             <div ref={widthRef}>
-                <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} iconDragRef={dragRef} {...props} />
+                <StyledEnumBlock isDragging={isDragging} iconDragRef={dragRef} {...props} />
             </div>
         </div>
         : <div ref={drop} style={{ opacity: canDrop && isOver ? 0.5 : 1 }}>
             <div ref={dragRef}>
                 <div ref={widthRef}>
-                    <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} {...props} />
+                    <StyledEnumBlock isDragging={isDragging} {...props} />
                 </div>
             </div>
         </div>;
-};
-
-EnumBlockDrag.propTypes = {
-    enum: PropTypes.object,
-    members: PropTypes.object,
-    moveEnum: PropTypes.func,
-    removeMemberFromEnum: PropTypes.func,
-    showEnumEditDialog: PropTypes.func,
-    showEnumDeleteDialog: PropTypes.func,
-    copyEnum: PropTypes.func,
-    getName: PropTypes.func,
-    closed: PropTypes.bool,
-    collapsed: PropTypes.bool,
-    toggleEnum: PropTypes.func,
-    onCollapse: PropTypes.func,
-    showEnumTemplateDialog: PropTypes.func,
-    currentCategory: PropTypes.string,
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    socket: PropTypes.object,
-    updating: PropTypes.bool,
-    id: PropTypes.string,
-    children: PropTypes.number,
-    themeType: PropTypes.string,
-    cachedIcons: PropTypes.object.isRequired,
 };
 
 export default EnumBlockDrag;

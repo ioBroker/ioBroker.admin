@@ -53,12 +53,14 @@ const CategoryLabel = (props: CategoryLabelProps) => {
         {props.categoryData.common.dontDelete ? null : <IconButton
             size="small"
             style={{ color: textColor }}
-            onClick={() => { props.showEnumDeleteDialog(props.categoryData); }}
+            onClick={() => {
+                props.showEnumDeleteDialog(props.categoryData);
+            }}
         >
             <Tooltip title={props.t('Delete')} placement="top">
                 <DeleteIcon />
             </Tooltip>
-        </IconButton> }
+        </IconButton>}
     </span>;
 };
 
