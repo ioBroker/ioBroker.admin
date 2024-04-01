@@ -33,7 +33,7 @@
     "@iobroker/dm-utils": "^0.1.9",
     "@iobroker/legacy-testing": "^1.0.9",
     "@iobroker/socket-client": "^2.3.13",
-    "@iobroker/testing": "^4.1.0",
+    "@iobroker/testing": "^4.1.1",
     "@iobroker/types": "^5.0.19",
     "@mui/icons-material": "^5.15.10",
     "@mui/lab": "5.0.0-alpha.165",
