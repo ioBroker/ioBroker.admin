@@ -1349,7 +1349,7 @@ class FileBrowser extends Component {
                 onClick={() => this.setState({ expertMode: !this.state.expertMode })}
                 size="small"
             >
-                <ExpertIcon fontSize="small" />
+                <IconExpert fontSize="small" />
             </IconButton> : null}
             {this.props.showViewTypeButton ? <IconButton
                 edge="start"

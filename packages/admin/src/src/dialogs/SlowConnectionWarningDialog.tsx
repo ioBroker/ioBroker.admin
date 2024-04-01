@@ -17,6 +17,7 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
+import { AdminConnection } from '@iobroker/adapter-react-v5';
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 
 const styles: Record<string, any> = {
@@ -53,7 +54,8 @@ class SlowConnectionWarningDialog extends Component<SlowConnectionWarningDialogP
     }
 
     static getReadTimeoutMs() {
-        return parseInt(((window as any)._localStorage || window.localStorage).getItem('App.readTimeoutMs'), 10) || 15000;
+        return parseInt(((window as any)._localStorage || window.localStorage).getItem('App.readTimeoutMs'), 10) ||
+            (AdminConnection.isCloud() ? 40_000 : 15_000);
     }
 
     static saveReadTimeoutMs(readTimeoutMs: number) {

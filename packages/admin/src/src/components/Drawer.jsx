@@ -32,11 +32,11 @@ import {
     Utils, I18n, Icon, withWidth, IconLogout as LogoutIcon,
 } from '@iobroker/adapter-react-v5';
 
+import { getHref } from '@/tabs/CustomTab';
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
-import { getHref } from '@/tabs/CustomTab';
 import DrawerItem from './DrawerItem';
 import Adapters from '../tabs/Adapters';
 

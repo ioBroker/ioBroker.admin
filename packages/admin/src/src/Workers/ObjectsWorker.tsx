@@ -15,8 +15,6 @@ class ObjectsWorker {
 
     private readonly handlers: ((events: ObjectEvent[]) => void)[];
 
-    private readonly repositoryHandlers: (() => void)[];
-
     private promise: Promise<void | Record<string, ioBroker.Object>> | null;
 
     private connected: boolean;

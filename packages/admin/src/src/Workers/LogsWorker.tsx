@@ -176,7 +176,7 @@ class LogsWorker {
         }
     }
 
-    unregisterErrorCountHandler(cb: (errors: number) => void){
+    unregisterErrorCountHandler(cb: (errors: number) => void) {
         const pos = this.errorCountHandlers.indexOf(cb);
 
         if (pos !== -1) {

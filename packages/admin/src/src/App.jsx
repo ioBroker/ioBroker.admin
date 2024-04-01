@@ -930,7 +930,7 @@ class App extends Router {
                             this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
                             this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
                             this.hostsWorker.registerHandler(this.updateHosts);
-                            this.hostsWorker.registerNotificationHandler(notifications => this.handleNewNotifications(notifications));
+                            this.hostsWorker.registerNotificationHandler(this.handleNewNotifications);
 
                             this.subscribeOnHostsStatus();
 
@@ -1300,11 +1300,20 @@ class App extends Router {
      *
      * @param {Record<string, any>} notifications
      */
-    async handleNewNotifications(notifications) {
+    handleNewNotifications = async notifications => {
         // console.log(`new notifications: ${JSON.stringify(notifications)}`);
         let noNotifications = 0;
 
+        // if host is offline it returns null
+        if (!notifications) {
+            this.setState({ noNotifications, notifications: { } });
+            return;
+        }
+
         for (const hostDetails of Object.values(notifications)) {
+            if (!hostDetails?.result) {
+                continue;
+            }
             for (const [scope, scopeDetails] of Object.entries(hostDetails.result)) {
                 if (scope === 'system') {
                     continue;
@@ -1321,7 +1330,7 @@ class App extends Router {
         const instances = await this.instancesWorker.getInstances();
 
         this.setState({ noNotifications, notifications: { notifications, instances } });
-    }
+    };
 
     showAdaptersWarning = (notifications, socket, host) => {
         if (!notifications || !notifications[host] || !notifications[host].result) {

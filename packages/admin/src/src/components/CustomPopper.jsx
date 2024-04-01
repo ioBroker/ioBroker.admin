@@ -6,7 +6,7 @@ import {
     Typography,
     Fade,
     Paper,
-    IconButton
+    IconButton,
 } from '@mui/material';
 
 import { Edit as EditIcon } from '@mui/icons-material';
