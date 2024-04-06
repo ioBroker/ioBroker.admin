@@ -398,23 +398,24 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         />;
     }
 
-    async scanForInclude(json: Record<string, any>, filePaths: string[]): Promise<void> {
+    async scanForInclude(json: Record<string, any>, filePaths: string[]): Promise<Record<string, any>> {
         if (typeof json['#include'] === 'string') {
             // load file
             const data = await this._getConfigFile(json['#include'], [...filePaths]);
+            delete json['#include'];
             if (data) {
                 // merge data
                 json = { ...json, ...data };
             }
-            delete json['#include'];
-        } else {
-            const keys = Object.keys(json);
-            for (let k = 0; k < keys.length; k++) {
-                if (typeof json[keys[k]] === 'object') {
-                    await this.scanForInclude(json[keys[k]], filePaths);
-                }
+            return json;
+        }
+        const keys = Object.keys(json);
+        for (let k = 0; k < keys.length; k++) {
+            if (typeof json[keys[k]] === 'object') {
+                json[keys[k]] = await this.scanForInclude(json[keys[k]], filePaths);
             }
         }
+        return json;
     }
 
     async getConfigFile(fileName?: string): Promise<Schema> {
@@ -468,17 +469,14 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             }
 
             try {
-                const json = JSON5.parse(content);
                 // detect #include attr
-                await this.scanForInclude(json, _filePaths);
-
-                return json;
+                return (await this.scanForInclude(JSON5.parse(content), _filePaths)) as Schema;
             } catch (e) {
                 window.alert('[JsonConfig] Cannot parse json5 config!');
                 console.log(e);
             }
         } catch (e1) {
-            !this.state.schema && window.alert(`[JsonConfig] Cannot read file: ${e1}`);
+            !this.state.schema && window.alert(`[JsonConfig] Cannot read file "${fileName}: ${e1}`);
         }
         return null;
     }

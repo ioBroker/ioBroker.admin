@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 6.17.0 (2024-04-06)
+### **WORK IN PROGRESS**
 * (bluefox) support of includes in JSONConfig files
 
 ### 6.16.0 (2024-03-26)
