@@ -3,17 +3,20 @@ import { type Styles, withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 import MD5 from 'crypto-js/md5';
 
-import LinearProgress from '@mui/material/LinearProgress';
-import Tooltip from '@mui/material/Tooltip';
-import Fab from '@mui/material/Fab';
-import PublishIcon from '@mui/icons-material/Publish';
+import {
+    Fab,
+    Tooltip,
+    LinearProgress,
+} from '@mui/material';
+import { Publish as PublishIcon } from '@mui/icons-material';
 
 import {
     I18n,
     Router,
     SaveCloseButtons,
     Theme as theme,
-    Confirm as ConfirmDialog, AdminConnection,
+    Confirm as ConfirmDialog,
+    AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
 import type { Theme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
