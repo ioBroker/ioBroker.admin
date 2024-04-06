@@ -9,11 +9,13 @@ You can define the settings in JSON or in JSON5 format. JSON5 is more human-read
 
 Additionally, to the JSON file, you must define in the `io-package.json` in `common` part:
 ```json
-...
-"adminUI": {
-  "config": "json"
+{
+  "common": {
+    "adminUI": {
+      "config": "json"
+    }
+  }
 }
-...
 ```
 to say that the adapter supports JSON configuration.
 
