@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.16.0",
+    "version": "6.17.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.0": {
+        "en": "support of includes in JSONConfig files",
+        "de": "unterstützung von Dateien in JSONConfig",
+        "ru": "поддержка включает в файлы JSONConfig",
+        "pt": "suporte de inclui em arquivos JSONConfig",
+        "nl": "ondersteuning van opnames in JSONConfig-bestanden",
+        "fr": "prise en charge d'inclusions dans les fichiers JSONConfig",
+        "it": "il supporto di include nei file JSONConfig",
+        "es": "soporte de incluye en archivos JSONConfig",
+        "pl": "obsługa zawiera w plikach JSONConfig",
+        "uk": "підтримка включає в себе файли JSONConfig",
+        "zh-cn": "支持包含在 JSONConfig 文件"
+      },
       "6.16.0": {
         "en": "added a new tab to the installation wizard which recommends common adapters\napplied newest adapter-react-v5 changes and types",
         "de": "einen neuen tab zum installationsassistenten hinzugefügt, der häufige adapter empfiehlt\nangewendet neueste adapter-react-v5 änderungen und typen",
@@ -95,19 +108,6 @@
         "pl": "karta adapterów pokazuje teraz informacje z 'licence Informacje'\nwyświetla ważne powiadomienia powyżej changelog, więc użytkownik czyta je w oknie aktualizacji",
         "uk": "вкладка адаптерів тепер показує інформацію від `license Інформація й\nпоказати важливі повідомлення над зміною",
         "zh-cn": "适配器标签现在显示来自“ 许可证” 的信息 资料 `\n在更改日志上方显示重要通知, 因此用户在更新对话框中读取"
-      },
-      "6.13.21": {
-        "en": "do not crash when using the dropdown on multi edit custom settings",
-        "de": "nicht abstürzen, wenn sie den dropdown auf multi edit benutzerdefinierte einstellungen verwenden",
-        "ru": "не сбои при использовании отключения на многообразных пользовательских условиях",
-        "pt": "não falhar ao usar o dropdown em multi editar configurações personalizadas",
-        "nl": "niet crashen bij het gebruik van de dropdown op aangepaste instellingen voor meerdere bewerkingen",
-        "fr": "ne pas planter lors de l'utilisation du menu déroulant sur les paramètres personnalisés de multi-édition",
-        "it": "non crash quando si utilizza il menu a tendina su più impostazioni personalizzate",
-        "es": "no se bloquea cuando se utiliza el desplegable en la configuración personalizada multi editar",
-        "pl": "nie awarii podczas korzystania z rozwijanego ustawienia wielu edycji",
-        "uk": "не збій при використанні випадання на багато редагування користувацьких налаштувань",
-        "zh-cn": "在多编辑自定义设置中使用下拉时不要崩溃"
       }
     },
     "desc": {
