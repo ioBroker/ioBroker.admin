@@ -1061,7 +1061,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             </div>
                     ) : null}
                 </div>
-                {typeof json.common.icon !== 'undefined' ? <div className={classes.flex} style={{ flexGrow: 1 }}>
+                {typeof json.common.icon !== 'undefined' ? <div className={classes.flex} style={{ flexGrow: 1, minWidth: 158 }}>
                     <UploadImage
                         disabled={disabled}
                         maxSize={10 * 1024}
@@ -1288,48 +1288,46 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         if (!this.state.showCopyDialog) {
             return null;
         }
-        return (
-            <Dialog open={!0} maxWidth="md" fullWidth onClose={() => this.setState({ showCopyDialog: '' })}>
-                <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        variant="standard"
-                        autoFocus
-                        fullWidth
-                        label={this.props.t('New object ID')}
-                        value={this.state.newId}
-                        onKeyDown={e => {
-                            if (e.key === 'Enter' && !this.props.objects[this.state.newId]) {
-                                this.setState({ showCopyDialog: '' });
-                                this.onClone(this.state.showCopyDialog, this.state.newId);
-                            }
-                        }}
-                        onChange={e => this.setState({ newId: e.target.value })}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        disabled={!!this.props.objects[this.state.newId]}
-                        onClick={() => {
+        return <Dialog open={!0} maxWidth="md" fullWidth onClose={() => this.setState({ showCopyDialog: '' })}>
+            <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
+            <DialogContent>
+                <TextField
+                    variant="standard"
+                    autoFocus
+                    fullWidth
+                    label={this.props.t('New object ID')}
+                    value={this.state.newId}
+                    onKeyDown={e => {
+                        if (e.key === 'Enter' && !this.props.objects[this.state.newId]) {
                             this.setState({ showCopyDialog: '' });
                             this.onClone(this.state.showCopyDialog, this.state.newId);
-                        }}
-                        color="primary"
-                        startIcon={<IconCopy />}
-                    >
-                        {this.props.t('Clone')}
-                    </Button>
-                    <Button
-                        // @ts-expect-error this works
-                        color="grey"
-                        onClick={() => this.setState({ showCopyDialog: '' })}
-                        startIcon={<IconClose />}
-                    >
-                        {this.props.t('Cancel')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+                        }
+                    }}
+                    onChange={e => this.setState({ newId: e.target.value })}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    disabled={!!this.props.objects[this.state.newId]}
+                    onClick={() => {
+                        this.setState({ showCopyDialog: '' });
+                        this.onClone(this.state.showCopyDialog, this.state.newId);
+                    }}
+                    color="primary"
+                    startIcon={<IconCopy />}
+                >
+                    {this.props.t('Clone')}
+                </Button>
+                <Button
+                    // @ts-expect-error this works
+                    color="grey"
+                    onClick={() => this.setState({ showCopyDialog: '' })}
+                    startIcon={<IconClose />}
+                >
+                    {this.props.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 
     render() {
@@ -1338,107 +1336,98 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         const withAlias = obj._id.startsWith('alias.0') && obj.type === 'state';
         const fullWidth = obj.type !== 'state' || (obj.common.type !== 'number' && obj.common.type !== 'boolean');
 
-        return (
-            <Dialog
-                classes={{ paper: this.props.classes.dialog }}
-                open={!0}
-                maxWidth="lg"
-                fullWidth={fullWidth}
-                fullScreen={false}
-                onClose={() => this.props.onClose()}
-                aria-labelledby="edit-value-dialog-title"
-                aria-describedby="edit-value-dialog-description"
-            >
-                <DialogTitle id="edit-value-dialog-title">
-                    {this.props.t('Edit object:')}
-                    {' '}
-                    <span className={this.props.classes.id}>{this.props.obj._id}</span>
-                </DialogTitle>
+        return <Dialog
+            classes={{ paper: this.props.classes.dialog }}
+            open={!0}
+            maxWidth="lg"
+            fullWidth={fullWidth}
+            fullScreen={false}
+            onClose={() => this.props.onClose()}
+            aria-labelledby="edit-value-dialog-title"
+            aria-describedby="edit-value-dialog-description"
+        >
+            <DialogTitle id="edit-value-dialog-title">
+                {this.props.t('Edit object:')}
+                {' '}
+                <span className={this.props.classes.id}>{this.props.obj._id}</span>
+            </DialogTitle>
 
-                {this.renderTabs()}
-                {this.renderCopyDialog()}
+            {this.renderTabs()}
+            {this.renderCopyDialog()}
 
-                <DialogContent>
-                    {this.state.tab === 'object' ? (
-                        <div
-                            className={Utils.clsx(
-                                this.props.classes.divWithoutTitle,
-                                withAlias && this.props.classes.divWithoutTitleAndTab,
-                                this.state.error && this.props.classes.error,
-                            )}
-                            onKeyDown={e => {
-                                if (e.ctrlKey && e.key === 'Enter') {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    this.onUpdate();
-                                }
-                            }}
-                        >
-                            <Editor
-                                value={this.state.text}
-                                onChange={newValue => this.onChange(newValue)}
-                                name="UNIQUE_ID_OF_DIV"
-                                themeType={this.props.themeType}
-                            />
-                            {this.state.showCommonDeleteMessage ? (
-                                <div className={this.props.classes.commonDeleteTip}>{I18n.t('common_delete_tip')}</div>
-                            ) : null}
-                        </div>
-                    ) : null}
-                    {this.state.tab === 'alias' &&
-                    this.props.obj._id.startsWith('alias.0') &&
-                    this.props.obj.type === 'state'
-                        ? this.renderAliasEdit()
-                        : null}
-                    {this.state.tab === 'common' ? this.renderCommonEdit() : null}
-                    {this.renderSelectDialog()}
-                </DialogContent>
-                <DialogActions
-                    className={this.props.classes.wrapperButton}
-                >
-                    <Button
-                        // @ts-expect-error this works
-                        color="grey"
-                        onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
-                        disabled={this.state.error || this.state.changed}
-                        title={this.props.t('Create a copy of this object')}
-                    >
-                        <IconCopy />
-                    </Button>
-                    <div style={{ flexGrow: 1 }} />
-                    {this.state.tab === 'object' && (
-                        <Button
-                            // @ts-expect-error this works
-                            color="grey"
-                            onClick={e => this.onCopy(e)}
-                            disabled={this.state.error}
-                            title={this.isMobile ? this.props.t('Copy into clipboard') : ''}
-                            startIcon={<IconCopyClipboard />}
-                        >
-                            {this.isMobile ? null : this.props.t('Copy into clipboard')}
-                        </Button>
+            <DialogContent>
+                {this.state.tab === 'object' ? <div
+                    className={Utils.clsx(
+                        this.props.classes.divWithoutTitle,
+                        withAlias && this.props.classes.divWithoutTitleAndTab,
+                        this.state.error && this.props.classes.error,
                     )}
-                    <Button
-                        variant="contained"
-                        disabled={this.state.error || !this.state.changed}
-                        onClick={() => this.onUpdate()}
-                        startIcon={<IconCheck />}
-                        color="primary"
-                    >
-                        {this.props.t('Write')}
-                    </Button>
-                    <Button
-                        // @ts-expect-error this works
-                        color="grey"
-                        variant="contained"
-                        onClick={() => this.props.onClose()}
-                        startIcon={<IconClose />}
-                    >
-                        {this.props.t('Cancel')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+                    onKeyDown={e => {
+                        if (e.ctrlKey && e.key === 'Enter') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            this.onUpdate();
+                        }
+                    }}
+                >
+                    <Editor
+                        value={this.state.text}
+                        onChange={newValue => this.onChange(newValue)}
+                        name="UNIQUE_ID_OF_DIV"
+                        themeType={this.props.themeType}
+                    />
+                    {this.state.showCommonDeleteMessage ?
+                        <div className={this.props.classes.commonDeleteTip}>{I18n.t('common_delete_tip')}</div> : null}
+                </div> : null}
+                {this.state.tab === 'alias' &&
+                this.props.obj._id.startsWith('alias.0') &&
+                this.props.obj.type === 'state'
+                    ? this.renderAliasEdit()
+                    : null}
+                {this.state.tab === 'common' ? this.renderCommonEdit() : null}
+                {this.renderSelectDialog()}
+            </DialogContent>
+            <DialogActions className={this.props.classes.wrapperButton}>
+                <Button
+                    // @ts-expect-error this works
+                    color="grey"
+                    onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
+                    disabled={this.state.error || this.state.changed}
+                    title={this.props.t('Create a copy of this object')}
+                >
+                    <IconCopy />
+                </Button>
+                <div style={{ flexGrow: 1 }} />
+                {this.state.tab === 'object' && <Button
+                    // @ts-expect-error this works
+                    color="grey"
+                    onClick={e => this.onCopy(e)}
+                    disabled={this.state.error}
+                    title={this.isMobile ? this.props.t('Copy into clipboard') : ''}
+                    startIcon={<IconCopyClipboard />}
+                >
+                    {this.isMobile ? null : this.props.t('Copy into clipboard')}
+                </Button>}
+                <Button
+                    variant="contained"
+                    disabled={this.state.error || !this.state.changed}
+                    onClick={() => this.onUpdate()}
+                    startIcon={<IconCheck />}
+                    color="primary"
+                >
+                    {this.props.t('Write')}
+                </Button>
+                <Button
+                    // @ts-expect-error this works
+                    color="grey"
+                    variant="contained"
+                    onClick={() => this.props.onClose()}
+                    startIcon={<IconClose />}
+                >
+                    {this.props.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

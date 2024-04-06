@@ -139,10 +139,10 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
             const name = parts.splice(1).join('/');
 
             this.props.socket.readFile(adapter, name)
-                .then((data: { data: Buffer; type: string } | { file: string; mimeType: string; }) => {
+                .then((data: { data: Buffer; type: string } | { file: string; mimeType: string }) => {
                     let fileData: string = '';
-                    if ((data as { file: string; mimeType: string; }).file !== undefined) {
-                        fileData = (data as { file: string; mimeType: string; }).file;
+                    if ((data as { file: string; mimeType: string }).file !== undefined) {
+                        fileData = (data as { file: string; mimeType: string }).file;
                     }
 
                     const newState: Partial<FileViewerState> = { copyPossible: this.state.copyPossible, ext: this.state.ext };
@@ -256,7 +256,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
             }
             return <Icon
                 onError={e => {
-                    // @ts-ignore-error to check
+                    // @ts-expect-error to check
                     e.target.onerror = null;
                     this.setState({ imgError: true });
                 }}
