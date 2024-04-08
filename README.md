@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (foxriver76) avoid crash case if user has no permission to write objects
+
 ### 6.17.1 (2024-04-06)
 * (bluefox) support of includes in JSONConfig files
 
