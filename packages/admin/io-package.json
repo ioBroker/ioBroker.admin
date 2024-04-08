@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.1",
+    "version": "6.17.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.2": {
+        "en": "avoid crash case if user has no permission to write objects",
+        "de": "vermeidung von crash-fall, wenn der benutzer keine erlaubnis zum schreiben von objekten hat",
+        "ru": "избегайте случайного сбоя, если пользователь не имеет разрешения писать объекты",
+        "pt": "evitar caso de acidente se o usuário não tem permissão para escrever objetos",
+        "nl": "crash case vermijden als de gebruiker geen rechten heeft om objecten te schrijven",
+        "fr": "éviter le cas de crash si l'utilisateur n'a pas la permission d'écrire des objets",
+        "it": "evitare caso crash se l'utente non ha il permesso di scrivere oggetti",
+        "es": "evitar caso de accidente si el usuario no tiene permiso para escribir objetos",
+        "pl": "uniknąć awarii, jeśli użytkownik nie ma prawa do zapisu obiektów",
+        "uk": "якщо користувач не має дозволу на написання об’єктів",
+        "zh-cn": "如果用户无权写入对象, 请避免崩溃大小写"
+      },
       "6.17.1": {
         "en": "support of includes in JSONConfig files",
         "de": "unterstützung von Dateien in JSONConfig",
@@ -95,19 +108,6 @@
         "pl": "wyrównać elementy lepiej, gdy karta adapterów jest używana w trybie wiersza",
         "uk": "вирівняти елементи краще, коли вкладки адаптерів використовується в режимі рядка",
         "zh-cn": "在行模式下使用适配器标签时更好地对齐项目"
-      },
-      "6.14.0": {
-        "en": "adapters tab is now showing information from `licenseInformation`\nshow important notifications above changelog, so user reads them on update dialog",
-        "de": "adapter Tab zeigt jetzt Informationen von `license Informationen `\nwichtige benachrichtigungen über changelog anzeigen, so dass der benutzer sie im update-dialog liest",
-        "ru": "вкладка адаптеров теперь показывает информацию из `license Информация \"\nпоказать важные уведомления выше менлога, поэтому пользователь читает их в диалоге обновления",
-        "pt": "aba adaptadores agora está mostrando informações de `license Informação \"\nmostrar notificações importantes acima changelog, então o usuário lê-los na caixa de diálogo de atualização",
-        "nl": "het tabblad adapters toont nu informatie van de licentie Informatie Wat\ntoon belangrijke meldingen boven changelog, dus gebruiker leest ze op update dialoog",
-        "fr": "adaptateurs onglet affiche maintenant des informations de `license Informations \"\nafficher les notifications importantes au-dessus du changelog, de sorte que l'utilisateur les lit sur la boîte de dialogue de mise à jour",
-        "it": "scheda adattatori ora mostra le informazioni da `license Informazioni #\nmostrare le notifiche importanti sopra changelog, quindi l'utente le legge sulla finestra di dialogo di aggiornamento",
-        "es": "la pestaña de adaptadores ahora muestra información de 'license Información `\nmostrar notificaciones importantes por encima del cambio, por lo que el usuario los lee en el diálogo de actualización",
-        "pl": "karta adapterów pokazuje teraz informacje z 'licence Informacje'\nwyświetla ważne powiadomienia powyżej changelog, więc użytkownik czyta je w oknie aktualizacji",
-        "uk": "вкладка адаптерів тепер показує інформацію від `license Інформація й\nпоказати важливі повідомлення над зміною",
-        "zh-cn": "适配器标签现在显示来自“ 许可证” 的信息 资料 `\n在更改日志上方显示重要通知, 因此用户在更新对话框中读取"
       }
     },
     "desc": {
