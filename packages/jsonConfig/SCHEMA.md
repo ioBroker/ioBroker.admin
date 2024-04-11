@@ -28,6 +28,8 @@ All labels, texts, help texts can be multi-language or just strings.
 *If the attribute name starts with "_" it will not be saved in the object.*
 
 ## Includes
+Requires admin 6.17.1 or newer.
+
 To write complex json files, you can include other json files.
 The included file must be in the same directory as the main file.
 
