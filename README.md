@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.3 (2024-04-11)
 * (foxriver76) fixed npm adapter installation
 
 ### 6.17.2 (2024-04-08)
@@ -104,11 +104,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.15.2 (2024-03-07)
 * (foxriver76) fixed cron dialog
-
-### 6.15.1 (2024-03-04)
-* (foxriver76) fixed problem with saving array values in custom config
-* (foxriver76) fixed issue on deleting objects
-* (foxriver76) make UI update of controller and admin more verbose
 
 ## License
 The MIT License (MIT)

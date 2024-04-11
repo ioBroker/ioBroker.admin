@@ -1,6 +1,15 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.15.1 (2024-03-04)
+* (foxriver76) fixed problem with saving array values in custom config
+* (foxriver76) fixed issue on deleting objects
+* (foxriver76) make UI update of controller and admin more verbose
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.15.0 (2024-03-01)
 * (foxriver76) harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)
 * (bluefox) added possibility to delete whole adapter from instance tab if only one instance left

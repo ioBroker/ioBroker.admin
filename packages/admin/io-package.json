@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.2",
+    "version": "6.17.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.3": {
+        "en": "fixed npm adapter installation",
+        "de": "installation von npm adapter",
+        "ru": "стационарная установка адаптера npm",
+        "pt": "instalação do adaptador fixo npm",
+        "nl": "vaste npm-adapterinstallatie",
+        "fr": "installation d'adaptateur npm fixe",
+        "it": "installazione adattatore npm fisso",
+        "es": "instalación de adaptador fijo npm",
+        "pl": "zainstalowana instalacja adaptera npm",
+        "uk": "установка адаптера npm",
+        "zh-cn": "固定 npm 适配器安装"
+      },
       "6.17.2": {
         "en": "avoid crash case if user has no permission to write objects",
         "de": "vermeidung von crash-fall, wenn der benutzer keine erlaubnis zum schreiben von objekten hat",
@@ -95,19 +108,6 @@
         "pl": "harmonizacja linków do dokumentacji adaptera (i powrót do angielskiego, jeśli nie ma wyraźnego doc dla języka sys)\ndodana możliwość usunięcia całego adaptera z zakładki instance, jeśli została tylko jedna instancja\nnowe okno dialogowe dla powiadomień wprowadzonych dla powiadomień niesystemowych (powiadomienia systemowe są nadal w zakładce hosts)\nnowa ikona 'licenseInformation' zmienia kolor poprawnie z motywem",
         "uk": "гармонізовані посилання на документацію адаптера (і впадок в англійську, якщо немає явного довідка для наданої мови)\nдодано можливість видалити весь адаптер з вкладки екземпляра, якщо тільки один екземпляр залишив\nновий діалог для повідомлень, введених для сповіщення про несистему (системні сповіщення все ще на вкладці hosts)\n`licenseInformation````````````````````````````````________=================================================================================================================================================================================================================",
         "zh-cn": "协调适配文件的链接(如果未为sys语言提供明确的文件,则回落到英文)\n如果仅剩一个实例, 则添加从实例标签中删除整个适配符的可能性\n为非系统通知引入的通知新对话框(系统通知仍在主机标签上)\n新的“ 许可证信息” 图标现在按照主题正确改变颜色"
-      },
-      "6.14.1": {
-        "en": "align items better when adapters tab is used in row mode",
-        "de": "die elemente besser ausrichten, wenn die registerkarte adapter im zeilenmodus verwendet wird",
-        "ru": "выравнивать элементы лучше, когда вкладка адаптеров используется в режиме строки",
-        "pt": "alinhar itens melhor quando a aba de adaptadores é usada no modo de linha",
-        "nl": "items beter uitlijnen wanneer het tabblad adapters wordt gebruikt in rijmodus",
-        "fr": "aligner les éléments mieux lorsque l'onglet adaptateurs est utilisé en mode ligne",
-        "it": "allineare gli elementi meglio quando la scheda adattatori viene utilizzata in modalità riga",
-        "es": "alinear los elementos mejor cuando la pestaña adaptadores se utiliza en modo de fila",
-        "pl": "wyrównać elementy lepiej, gdy karta adapterów jest używana w trybie wiersza",
-        "uk": "вирівняти елементи краще, коли вкладки адаптерів використовується в режимі рядка",
-        "zh-cn": "在行模式下使用适配器标签时更好地对齐项目"
       }
     },
     "desc": {
