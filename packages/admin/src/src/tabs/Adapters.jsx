@@ -879,33 +879,45 @@ class Adapters extends Component {
         return Promise.resolve();
     };
 
+    /**
+     *
+     * @param adapter name like admin or if customUrl is true packetName or iobroker.admin@latest or url
+     * @param instance
+     * @param debug
+     * @param customUrl
+     * @return {Promise<unknown>}
+     */
     async addInstance(adapter, instance, debug = false, customUrl = false) {
-        const adapterObject = this.state.repository[adapter];
+        if (!customUrl) {
+            const adapterObject = this.state.repository[adapter];
 
-        const messages = checkCondition(
-            adapterObject.messages,
-            null,
-            adapterObject.version,
-            this.state.instances,
-        );
+            const messages = checkCondition(
+                adapterObject.messages,
+                null,
+                adapterObject.version,
+                this.state.instances,
+            );
 
-        if (!instance && (this.props.expertMode || messages) && !customUrl) {
-            this.setState({
-                addInstanceDialog: true,
-                addInstanceAdapter: adapter,
-                addInstanceHostName: this.state.currentHost.replace(/^system\.host\./, ''),
-                addInstanceId: instance || 'auto',
-            });
-            return null;
-        }
-        if (instance && !customUrl) {
-            const instances = this.props.instancesWorker.getInstances();
-            // if the instance already exists
-            if (instances[`system.adapter.${adapter}.${instance}`]) {
-                window.alert(this.props.t('Instance %s already exists', `${adapter}.${instance}`));
+            if (!instance && (this.props.expertMode || messages)) {
+                this.setState({
+                    addInstanceDialog: true,
+                    addInstanceAdapter: adapter,
+                    addInstanceHostName: this.state.currentHost.replace(/^system\.host\./, ''),
+                    addInstanceId: instance || 'auto',
+                });
                 return null;
             }
+
+            if (instance) {
+                const instances = this.props.instancesWorker.getInstances();
+                // if the instance already exists
+                if (instances[`system.adapter.${adapter}.${instance}`]) {
+                    window.alert(this.props.t('Instance %s already exists', `${adapter}.${instance}`));
+                    return null;
+                }
+            }
         }
+
         const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
 
         return new Promise((resolve, reject) => {

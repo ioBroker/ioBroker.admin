@@ -1263,8 +1263,8 @@ class App extends Router {
                         break;
                     }
                 } catch (error) {
-                    console.error(error);
-                    this.showAlert(error, 'error');
+                    console.error(`Cannot find news instance: ${error}`);
+                    this.showAlert(`Cannot find news instance: ${error}`, 'error');
                 }
             }
             resolve(0);
