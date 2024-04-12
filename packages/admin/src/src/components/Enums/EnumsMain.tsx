@@ -960,7 +960,6 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                 onClose={() => this.setState({ enumTemplateDialog: null })}
                 t={this.props.t}
                 lang={this.props.lang}
-                classesParent={this.props.classes}
                 createEnumTemplate={this.createEnumTemplate}
                 showEnumEditDialog={this.showEnumEditDialog}
                 enums={this.state.enums}

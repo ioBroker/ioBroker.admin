@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
 
 import {
     Dialog,
@@ -10,7 +9,7 @@ import {
     DialogTitle,
     TextField,
     LinearProgress,
-    IconButton,
+    IconButton, type Theme,
 } from '@mui/material';
 
 import {
@@ -26,7 +25,13 @@ import rooms from '../../assets/rooms/list.json';
 
 import Utils from '../Utils';
 
-const styles = theme => ({
+interface EnumIcon {
+    _id: string;
+    name: ioBroker.StringOrTranslated;
+    icon: string;
+}
+
+const styles: Record<string, any> = (theme: Theme) => ({
     icon: {
         width: 32,
         height: 32,
@@ -68,8 +73,26 @@ const styles = theme => ({
     },
 });
 
-class EnumTemplateDialog extends Component {
-    constructor(props) {
+interface EnumTemplateDialogProps {
+    prefix: string;
+    t: (text: string) => string;
+    lang: ioBroker.Languages;
+    enums: Record<string, ioBroker.EnumObject>;
+    onClose: () => void;
+    createEnumTemplate: (prefix: string, template: ioBroker.EnumObject) => void;
+    showEnumEditDialog: (template: ioBroker.EnumObject, isNew: boolean) => void;
+    getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
+    classes: Record<string, string>;
+}
+
+interface EnumTemplateDialogState {
+    icons: string[];
+    loading: boolean;
+    filter: string;
+}
+
+class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplateDialogState> {
+    constructor(props: EnumTemplateDialogProps) {
         super(props);
 
         this.state = {
@@ -81,20 +104,20 @@ class EnumTemplateDialog extends Component {
 
     componentDidMount() {
         this.setState({ loading: true }, () => {
-            const templates = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
-            const icons = [];
+            const templates: EnumIcon[] = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
+            const icons: string[] = [];
 
-            const promises = templates.map((template, i) => {
-                let image;
+            const promises = templates.map(async (template, i) => {
                 try {
-                    image = import(`../../assets/${this.props.prefix.startsWith('enum.functions') ? 'devices' : 'rooms'}/${template.icon}.svg`);
+                    const image: Promise<{ default: string }> = import(
+                        `../../assets/${this.props.prefix.startsWith('enum.functions') ? 'devices' : 'rooms'}/${template.icon}.svg`
+                    );
+                    const im = await image;
+                    const icon = await Utils.getSvg(im.default);
+                    return (icons[i] = icon);
                 } catch (e) {
-                    return Promise.resolve(null);
+                    return null;
                 }
-
-                return image.then(im => Utils.getSvg(im.default))
-                    .then(icon =>
-                        icons[i] = icon);
             });
 
             Promise.all(promises)
@@ -103,11 +126,11 @@ class EnumTemplateDialog extends Component {
         });
     }
 
-    getName(item) {
-        if (typeof item.name === 'object' && item.name) {
+    getName(item: EnumIcon): string {
+        if (item.name && typeof item.name === 'object') {
             return item.name[this.props.lang] || item.name.en || item._id || '';
         }
-        return item.name || item._id || '';
+        return (item.name as string) || item._id || '';
     }
 
     render() {
@@ -149,6 +172,7 @@ class EnumTemplateDialog extends Component {
                             return null;
                         } if (!this.state.filter || name.toLowerCase().includes(this.state.filter)) {
                             return <Button
+                                // @ts-expect-error grey is valid color
                                 color="grey"
                                 key={i}
                                 variant="outlined"
@@ -156,10 +180,12 @@ class EnumTemplateDialog extends Component {
                                     this.props.onClose();
                                     this.props.createEnumTemplate(this.props.prefix, {
                                         _id: `${this.props.prefix}.${template._id}`,
+                                        type: 'enum',
                                         common: {
                                             name: template.name,
                                             icon: this.state.icons[i],
                                         },
+                                        native: {},
                                     });
                                 }}
                                 // startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
@@ -186,18 +212,18 @@ class EnumTemplateDialog extends Component {
                 >
                     {this.props.prefix === 'enum.rooms' ? this.props.t('Custom room') : (this.props.prefix === 'enum.functions' ? this.props.t('Custom function') : this.props.t('Custom enumeration'))}
                 </Button>
-                <Button color="grey" variant="contained" onClick={this.props.onClose} startIcon={<CloseIcon />}>{this.props.t('Cancel')}</Button>
+                <Button
+                    // @ts-expect-error grey is valid color
+                    color="grey"
+                    variant="contained"
+                    onClick={this.props.onClose}
+                    startIcon={<CloseIcon />}
+                >
+                    {this.props.t('Cancel')}
+                </Button>
             </DialogActions>
         </Dialog>;
     }
 }
-
-EnumTemplateDialog.propTypes = {
-    prefix: PropTypes.string,
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    getEnumTemplate: PropTypes.func,
-    onClose: PropTypes.func,
-};
 
 export default withStyles(styles)(EnumTemplateDialog);
