@@ -24,13 +24,25 @@
     "@iobroker/json-config": "file:../../jsonConfig"
   },
   "proxy": "http://127.0.0.1:8081",
+  "dependencies": {
+      "@iobroker/json-config": "file:../../jsonConfig"
+  },
+  "proxy": "http://127.0.0.1:8081",
   "plugins": [
-    [
-      "@babel/plugin-proposal-decorators",
-      {
-        "legacy": true
-      }
+        [
+            "@babel/plugin-proposal-decorators",
+            {
+                "legacy": true
+            }
+        ],
+        [
+            "@babel/plugin-proposal-class-properties",
+            {
+                "loose": true
+            }
+        ]
     ],
+    "version": "6.15.2"
     [
       "@babel/plugin-proposal-class-properties",
       {

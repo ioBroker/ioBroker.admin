@@ -34,7 +34,7 @@
     "@iobroker/legacy-testing": "^1.0.9",
     "@iobroker/socket-client": "^2.4.3",
     "@iobroker/testing": "^4.1.1",
-    "@iobroker/types": "^5.0.19",
+    "@iobroker/types": "^5.0.20-alpha.0-20240308-3bbff415",
     "@mui/icons-material": "^5.15.14",
     "@mui/lab": "5.0.0-alpha.169",
     "@mui/material": "5.14.14",
