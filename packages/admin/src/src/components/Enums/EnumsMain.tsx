@@ -5,35 +5,38 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 import { withStyles } from '@mui/styles';
 
-import Tooltip from '@mui/material/Tooltip';
-import LinearProgress from '@mui/material/LinearProgress';
-import PropTypes from 'prop-types';
-import Grid from '@mui/material/Grid';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import TextField from '@mui/material/TextField';
-import Popover from '@mui/material/Popover';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
-import IconButton from '@mui/material/IconButton';
+import {
+    Tooltip,
+    LinearProgress,
+    Grid,
+    Tabs,
+    Tab,
+    TextField,
+    Popover,
+    MenuItem,
+    MenuList,
+    IconButton,
+    type Theme,
+} from '@mui/material';
 
-import AddIcon from '@mui/icons-material/Add';
+import {
+    Add as AddIcon,
+    KeyboardArrowDown as DownIcon,
+    KeyboardArrowUp as UpIcon,
+    Clear as ClearIcon,
+} from '@mui/icons-material';
 import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 
-import DownIcon from '@mui/icons-material/KeyboardArrowDown';
-import UpIcon from '@mui/icons-material/KeyboardArrowUp';
-import ClearIcon from '@mui/icons-material/Clear';
+import { type AdminConnection, Utils } from '@iobroker/adapter-react-v5';
 
-import { Utils } from '@iobroker/adapter-react-v5';
-
-import EnumBlock from './EnumBlock';
+import EnumBlock, { isTouchDevice } from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
 import EnumEditDialog from './EnumEditDialog';
 import EnumTemplateDialog from './EnumTemplateDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
 import DragObjectBrowser from './DragObjectBrowser';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     mainGridCont: {
         height: '100%',
         overflowY:'auto',
@@ -102,15 +105,16 @@ const styles = theme => ({
 });
 
 const DndPreview = () => {
-    const { display/* , itemType */, item, style } = usePreview();
-    const divStyle = { ...style };
-    divStyle.zIndex = 10000;
+    const preview = usePreview<React.JSX.Element>();
+    const display = preview.display;
 
+    // TODO: How to fix this?
+    const { item, style } = (preview as unknown as { item: { preview: React.JSX.Element }; style: React.CSSProperties });
     if (!display) {
         return null;
     }
 
-    return <div style={divStyle}>{item.preview}</div>;
+    return <div style={{ ...style, zIndex: 1000 }}>{item.preview}</div>;
 };
 
 /* function mobileCheck() {
@@ -119,18 +123,10 @@ const DndPreview = () => {
     return check;
 } */
 
-function isTouchDevice() {
-    /* if (!mobileCheck()) {
-        return false;
-    } */
-    return (('ontouchstart' in window)
-        || (navigator.maxTouchPoints > 0)
-        || (navigator.msMaxTouchPoints > 0));
-}
-
-const enumTemplates = {
+const enumTemplates: Record<string, ioBroker.EnumObject> = {
     favorites: {
         _id: 'enum.favorites',
+        type: 'enum',
         common: {
             name: {
                 en: 'Favorites',
@@ -142,14 +138,19 @@ const enumTemplates = {
                 it: 'Preferiti',
                 es: 'Favoritos',
                 pl: 'Ulubione',
+                uk: 'Обране',
                 'zh-cn': '收藏夹',
             },
         },
+        native: {},
     },
 };
 
-function sort(enums, getName) {
-    return (a, b) => {
+function sort(
+    enums: Record<string, ioBroker.EnumObject>,
+    getName: (name: ioBroker.StringOrTranslated) => string | undefined,
+): (a: string, b: string) => number {
+    return (a: string, b: string): number => {
         let aName = getName(enums[a]?.common?.name || '') || a.split('.').pop();
         let bName = getName(enums[b]?.common?.name || '') || b.split('.').pop();
         aName = aName.toLowerCase();
@@ -164,30 +165,84 @@ function sort(enums, getName) {
     };
 }
 
-const ENUM_TEMPLATE = {
+const ENUM_TEMPLATE: ioBroker.EnumObject = {
     type: 'enum',
     common: {
         name: '',
         color: '',
+        // @ts-expect-error fixed in later js-controller
         desc: '',
         members: [],
     },
     native: {},
 };
 
-class EnumsList extends Component {
-    constructor(props) {
+interface TreeItem {
+    data: ioBroker.EnumObject | null;
+    children: Record<string, TreeItem>;
+    id: string;
+}
+
+interface EnumsListProps {
+    socket: AdminConnection;
+    t: (word: string) => string;
+    lang: ioBroker.Languages;
+    themeType: 'dark' | 'light';
+    classes: Record<string, string>;
+}
+
+interface EnumEditDialog {
+    changed: boolean;
+    originalItem?: ioBroker.EnumObject;
+    newItem?: ioBroker.EnumObject;
+    isNew?: boolean;
+}
+
+interface EnumsListState {
+    enums: Record<string, ioBroker.EnumObject> | null;
+    enumsTree: TreeItem | null;
+    currentCategory: string;
+    search: string;
+    enumEditDialog: EnumEditDialog | null;
+    enumTemplateDialog: string | null;
+    enumDeleteDialog: ioBroker.EnumObject | null;
+    members: Record<string, ioBroker.Object>;
+    categoryPopoverOpen: boolean;
+    enumsClosed: Record<string, boolean>;
+    updating: string[];
+    enumsCollapsed: string[];
+    innerWidth: number;
+}
+
+class EnumsList extends Component<EnumsListProps, EnumsListState> {
+    private cachedIcons: Record<string, string>;
+
+    private fastUpdate: boolean;
+
+    private refFilter: React.RefObject<HTMLInputElement>;
+
+    private refClearButton: React.RefObject<HTMLButtonElement>;
+
+    private updateTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    private changeEnums: Record<string, any>;
+
+    private scrollToItem: string | null;
+
+    private searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+    constructor(props: EnumsListProps) {
         super(props);
 
         let enumsClosed = {};
         try {
-            enumsClosed = (window._localStorage || window.localStorage).getItem('enumsClosed') ? JSON.parse((window._localStorage || window.localStorage).getItem('enumsClosed')) : {};
+            enumsClosed = ((window as any)._localStorage || window.localStorage).getItem('enumsClosed') ? JSON.parse(((window as any)._localStorage || window.localStorage).getItem('enumsClosed')) : {};
         } catch (e) {
             // ignore
         }
         let enumsCollapsed = [];
         try {
-            enumsCollapsed = (window._localStorage || window.localStorage).getItem('enumsCollapsed') ? JSON.parse((window._localStorage || window.localStorage).getItem('enumsCollapsed')) : [];
+            enumsCollapsed = ((window as any)._localStorage || window.localStorage).getItem('enumsCollapsed') ? JSON.parse(((window as any)._localStorage || window.localStorage).getItem('enumsCollapsed')) : [];
         } catch (e) {
             // ignore
         }
@@ -195,7 +250,7 @@ class EnumsList extends Component {
         this.state = {
             enums: null,
             enumsTree: null,
-            currentCategory: (window._localStorage || window.localStorage).getItem('enumCurrentCategory') || '',
+            currentCategory: ((window as any)._localStorage || window.localStorage).getItem('enumCurrentCategory') || '',
             search: '',
             enumEditDialog: null,
             enumTemplateDialog: null,
@@ -205,6 +260,7 @@ class EnumsList extends Component {
             enumsClosed,
             updating: [],
             enumsCollapsed,
+            innerWidth: 0,
         };
 
         this.cachedIcons = {};
@@ -215,15 +271,15 @@ class EnumsList extends Component {
         this.refClearButton = React.createRef();
     }
 
-    getEnumTemplate = prefix => {
-        const enumTemplate = JSON.parse(JSON.stringify(ENUM_TEMPLATE));
+    getEnumTemplate = (prefix: string): ioBroker.EnumObject => {
+        const enumTemplate: ioBroker.EnumObject = JSON.parse(JSON.stringify(ENUM_TEMPLATE));
         const { _id, name } = EnumsList.findNewUniqueName(prefix, Object.values(this.state.enums), this.props.t('Enum'));
         enumTemplate._id = _id;
         enumTemplate.common.name = name;
         return enumTemplate;
     };
 
-    scrollToEnum(enumId) {
+    scrollToEnum(enumId: string): void {
         // check that parent is opened
         let parts = enumId.split('.');
         parts.pop();
@@ -255,7 +311,7 @@ class EnumsList extends Component {
         }
     }
 
-    addUpdating(id) {
+    addUpdating(id: string): Promise<void> {
         if (!this.state.updating.includes(id)) {
             const updating = [...this.state.updating];
             updating.push(id);
@@ -266,7 +322,7 @@ class EnumsList extends Component {
         return Promise.resolve();
     }
 
-    createEnumTemplate = (prefix, templateValues) => {
+    createEnumTemplate = (prefix: string, templateValues: ioBroker.EnumObject) => {
         const enumTemplate = this.getEnumTemplate(prefix);
         enumTemplate._id = templateValues._id;
         enumTemplate.common = { ...enumTemplate.common, ...templateValues.common };
@@ -289,7 +345,7 @@ class EnumsList extends Component {
         this.updateTimeout = null;
     }
 
-    onObjectChange = (id, obj) => {
+    onObjectChange = (id: string, obj: ioBroker.EnumObject) => {
         let changed;
 
         if (this.state.enums && id.startsWith('enum.')) {
@@ -329,9 +385,9 @@ class EnumsList extends Component {
         }
     };
 
-    updateData = async enums => {
+    updateData = async (enums?: Record<string, ioBroker.EnumObject>) => {
         enums = enums || (await this.props.socket.getForeignObjects('enum.*', 'enum'));
-        const members = {};
+        const members: Record<string, ioBroker.Object> = {};
 
         const ids = Object.keys(enums);
 
@@ -356,14 +412,15 @@ class EnumsList extends Component {
             this.buildTree(enums));
     };
 
-    buildTree(enums) {
-        const enumsTree = {
+    buildTree(enums: Record<string, ioBroker.EnumObject>) {
+        const enumsTree: TreeItem = {
             data: null,
             children: {},
             id: '',
         };
 
-        const ids = Object.keys(enums).sort(sort(enums, this.getName));
+        const ids = Object.keys(enums)
+            .sort(sort(enums, this.getName));
 
         for (let i = 0; i < ids.length; i++) {
             const id = ids[i];
@@ -396,16 +453,16 @@ class EnumsList extends Component {
         );
     }
 
-    setCurrentCategory = (currentCategory, cb) => {
+    setCurrentCategory = (currentCategory: string, cb?: () => void) => {
         if (currentCategory !== this.state.currentCategory) {
             this.setState({ currentCategory }, () => cb && cb());
-            (window._localStorage || window.localStorage).setItem('enumCurrentCategory', currentCategory);
+            ((window as any)._localStorage || window.localStorage).setItem('enumCurrentCategory', currentCategory);
         } else {
             cb && cb();
         }
     };
 
-    addItemToEnum = (itemId, enumId) => {
+    addItemToEnum = (itemId: string, enumId: string) => {
         const enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
         if (!enumItem.common?.members) {
             enumItem.common = enumItem.common || {};
@@ -421,7 +478,7 @@ class EnumsList extends Component {
         }
     };
 
-    removeMemberFromEnum = (memberId, enumId) => {
+    removeMemberFromEnum = (memberId: string, enumId: string) => {
         const enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
         const members = enumItem.common.members;
         const pos = members.indexOf(memberId);
@@ -430,17 +487,17 @@ class EnumsList extends Component {
 
             this.fastUpdate = true;
             this.props.socket.setObject(enumItem._id, enumItem)
-                .catch(e => window.alert(`Cannot update enum: ${e}`));
+                .catch((e: string) => window.alert(`Cannot update enum: ${e}`));
         }
     };
 
-    moveEnum = async (fromId, toId) => {
+    moveEnum = async (fromId: string, toId: string) => {
         if (toId.startsWith(fromId)) {
             return;
         }
-        let fromPrefix = fromId.split('.');
-        fromPrefix.pop();
-        fromPrefix = fromPrefix.join('.');
+        const fromPrefixParts: string[] = fromId.split('.');
+        fromPrefixParts.pop();
+        const fromPrefix: string = fromPrefixParts.join('.');
         const toPrefix = toId;
 
         if (fromPrefix === toPrefix) {
@@ -470,15 +527,22 @@ class EnumsList extends Component {
         this.setState({ updating });
     };
 
-    renderTree(container, key, level) {
+    renderTree(container: TreeItem, key: number, level: number) {
         let ids = null;
         if (!this.state.enumsClosed[container.id]) {
             ids = Object.keys(container.children);
-            ids.sort(sort(container.children, this.getName));
+            const enums: Record<string, ioBroker.EnumObject> = {};
+            for (let i = 0; i < ids.length; i++) {
+                const id = ids[i];
+                enums[id] = container.children[id].data;
+            }
+            ids.sort(sort(enums, this.getName));
         }
 
-        let name = this.getName(container.data?.common?.name);
-        let idText = container.id;
+        const name: string = this.getName(container.data?.common?.name);
+        const idText: string = container.id;
+        let nameRx: React.JSX.Element[] | null;
+        let idRx: React.JSX.Element[] | null;
         if (this.state.search) {
             const search = this.state.search;
             const pos = name.toLowerCase().indexOf(search);
@@ -487,18 +551,18 @@ class EnumsList extends Component {
                 return null;
             }
             if (pos !== -1) {
-                name = name ? [
+                nameRx = name ? [
                     <span key="0">{name.substring(0, pos)}</span>,
                     <span key="1" className={this.props.classes.searchText}>{name.substring(pos, pos + this.state.search.length)}</span>,
                     <span key="2">{name.substring(pos + this.state.search.length)}</span>,
-                ] : '';
+                ] : null;
             }
             if (posId !== -1) {
-                idText = name ? [
+                idRx = name ? [
                     <span key="0">{idText.substring(0, posId)}</span>,
                     <span key="1" className={this.props.classes.searchText}>{idText.substring(posId, posId + this.state.search.length)}</span>,
                     <span key="2">{idText.substring(posId + this.state.search.length)}</span>,
-                ] : '';
+                ] : null;
             }
         }
 
@@ -514,11 +578,10 @@ class EnumsList extends Component {
                 getEnumTemplate={this.getEnumTemplate}
                 getName={this.getName}
                 id={container.id}
-                idText={idText}
-                lang={this.props.lang}
+                idText={idRx}
                 members={this.state.members}
                 moveEnum={this.moveEnum}
-                name={name}
+                name={nameRx}
                 onCollapse={() => {
                     const enumsCollapsed = [...this.state.enumsCollapsed];
                     const pos = enumsCollapsed.indexOf(container.id);
@@ -528,7 +591,7 @@ class EnumsList extends Component {
                         enumsCollapsed.splice(pos, 1);
                     }
                     this.setState({ enumsCollapsed });
-                    (window._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                    ((window as any)._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
                 }}
                 removeMemberFromEnum={this.removeMemberFromEnum}
                 showEnumDeleteDialog={this.showEnumDeleteDialog}
@@ -548,18 +611,18 @@ class EnumsList extends Component {
         </div>;
     }
 
-    showEnumEditDialog = (enumItem, isNew) => {
-        const enumEditDialog = { changed: false };
+    showEnumEditDialog = (enumItem: ioBroker.EnumObject, isNew: boolean) => {
+        const enumEditDialog: EnumEditDialog = { changed: false };
         enumEditDialog.newItem = JSON.parse(JSON.stringify(enumItem));
         enumEditDialog.originalItem = JSON.parse(JSON.stringify(enumItem));
         enumEditDialog.isNew = isNew;
         this.setState({ enumEditDialog });
     };
 
-    showEnumTemplateDialog = prefix =>
+    showEnumTemplateDialog = (prefix: string) =>
         this.setState({ enumTemplateDialog: prefix });
 
-    showEnumDeleteDialog = enumItem =>
+    showEnumDeleteDialog = (enumItem: ioBroker.EnumObject) =>
         this.setState({ enumDeleteDialog: enumItem });
 
     saveEnum = async () => {
@@ -600,7 +663,7 @@ class EnumsList extends Component {
         this.setState({ enumEditDialog: null, updating });
     };
 
-    deleteEnum = async enumId => {
+    deleteEnum = async (enumId: string) => {
         const updating = [...this.state.updating];
         try {
             !updating.includes(enumId) && updating.push(enumId);
@@ -621,7 +684,7 @@ class EnumsList extends Component {
         this.setState({ enumDeleteDialog: null, updating });
     };
 
-    copyEnum = enumId => {
+    copyEnum = (enumId: string) => {
         const enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
         let newId;
         let index = 1;
@@ -636,14 +699,14 @@ class EnumsList extends Component {
             .catch(e => window.alert(`Cannot delete enum: ${e}`));
     };
 
-    toggleEnum = enumId => {
+    toggleEnum = (enumId: string) => {
         const enumsClosed = JSON.parse(JSON.stringify(this.state.enumsClosed));
         enumsClosed[enumId] = !enumsClosed[enumId];
         this.setState({ enumsClosed });
-        (window._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
+        ((window as any)._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
     };
 
-    changeEnumFormData = newItem => {
+    changeEnumFormData = (newItem: ioBroker.EnumObject) => {
         const enumEditDialog = JSON.parse(JSON.stringify(this.state.enumEditDialog));
         enumEditDialog.newItem = JSON.parse(JSON.stringify(newItem));
         enumEditDialog.changed =
@@ -651,15 +714,15 @@ class EnumsList extends Component {
         this.setState({ enumEditDialog });
     };
 
-    getName = name =>
-        ((name && typeof name === 'object') ? (name[this.props.lang] || name.en || '') : (name || ''));
+    getName = (name: ioBroker.StringOrTranslated): string =>
+        ((name && typeof name === 'object') ? (name[this.props.lang] || name.en || '') : (name as string || ''));
 
-    static _isUniqueName(prefix, list, word, i) {
+    static _isUniqueName(prefix: string, list: ioBroker.EnumObject[], word: string, i: number) {
         return !list.find(item =>
             item._id === (`${prefix}.${word.toLowerCase()}_${i}`));
     }
 
-    static findNewUniqueName(prefix, list, word) {
+    static findNewUniqueName(prefix: string, list: ioBroker.EnumObject[], word: string) {
         let i = 1;
         while (!EnumsList._isUniqueName(prefix, list,  word, i)) {
             i++;
@@ -667,7 +730,7 @@ class EnumsList extends Component {
         return { _id: `${prefix}.${word.toLowerCase()}_${i}`, name: `${word} ${i}` };
     }
 
-    onFilterChanged(filter, isClear) {
+    onFilterChanged(filter: string, isClear?: boolean): void {
         if (this.refClearButton.current) {
             if (filter) {
                 this.refClearButton.current.style.display = 'block';
@@ -743,6 +806,8 @@ class EnumsList extends Component {
                                         common: {
                                             name: this.state.enumsTree.children.enum.children[category].id.split('.').pop(),
                                         },
+                                        type: 'enum',
+                                        native: {},
                                     };
                                     return <Tab
                                         key={index}
@@ -788,7 +853,7 @@ class EnumsList extends Component {
                                     onClick={() => {
                                         const enumsCollapsed = Object.keys(this.state.enums);
                                         this.setState({ enumsCollapsed });
-                                        (window._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                                        ((window as any)._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
                                     }}
                                 >
                                     <UpIcon />
@@ -800,9 +865,8 @@ class EnumsList extends Component {
                                     // size="small"
                                     className={this.props.classes.toolbarButton}
                                     onClick={() => {
-                                        const enumsCollapsed = [];
-                                        this.setState({ enumsCollapsed });
-                                        (window._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                                        this.setState({ enumsCollapsed: [] });
+                                        ((window as any)._localStorage || window.localStorage).setItem('enumsCollapsed', '[]');
                                     }}
                                 >
                                     <DownIcon />
@@ -814,10 +878,10 @@ class EnumsList extends Component {
                                     // size="small"
                                     className={this.props.classes.toolbarButton}
                                     onClick={() => {
-                                        const enumsClosed = {};
+                                        const enumsClosed: Record<string, boolean> = {};
                                         Object.keys(this.state.enums).forEach(id => enumsClosed[id] = true);
                                         this.setState({ enumsClosed });
-                                        (window._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
+                                        ((window as any)._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
                                     }}
                                 >
                                     <IconCollapsed />
@@ -831,7 +895,7 @@ class EnumsList extends Component {
                                     onClick={() => {
                                         const enumsClosed = {};
                                         this.setState({ enumsClosed });
-                                        (window._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
+                                        ((window as any)._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
                                     }}
                                 >
                                     <IconExpanded />
@@ -879,7 +943,6 @@ class EnumsList extends Component {
                 isNew={this.state.enumEditDialog.isNew}
                 t={this.props.t}
                 lang={this.props.lang}
-                classesParent={this.props.classes}
                 changed={this.state.enumEditDialog.changed}
                 onChange={this.changeEnumFormData}
                 saveData={this.saveEnum}
@@ -890,7 +953,6 @@ class EnumsList extends Component {
                 enum={this.state.enumDeleteDialog}
                 getName={this.getName}
                 t={this.props.t}
-                classes={this.props.classes}
                 deleteEnum={this.deleteEnum}
             /> : null}
             {!!this.state.enumTemplateDialog && <EnumTemplateDialog
@@ -907,14 +969,5 @@ class EnumsList extends Component {
         </>;
     }
 }
-
-EnumsList.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    socket: PropTypes.object,
-    ready: PropTypes.bool,
-    expertMode: PropTypes.bool,
-    themeType: PropTypes.string,
-};
 
 export default withStyles(styles)(EnumsList);

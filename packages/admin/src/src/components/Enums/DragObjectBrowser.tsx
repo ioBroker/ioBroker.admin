@@ -70,7 +70,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
 
     useEffect(() => {
         // eslint-disable-next-line react/no-unstable-nested-components
-        const DragWrapper = (dragProps: { item: DragItem; className: string; key?: string, children: React.JSX.Element | null}) => {
+        const DragWrapper = (dragProps: { item: DragItem; className: string; key?: string; children: React.JSX.Element | null }) => {
             const onDragEnd = (
                 item: ObjectTreeItem,
                 monitor: DragSourceMonitor<DragItem, { enumId: string }>,

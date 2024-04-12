@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, Component } from 'react';
-import {type ConnectDragSource, type DragSourceMonitor, useDrag, useDrop} from 'react-dnd';
+import {
+    type ConnectDragSource, type DragSourceMonitor,
+    useDrag, useDrop,
+} from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { withStyles } from '@mui/styles';
 import type { DropTargetMonitor } from 'react-dnd/src/types';
@@ -171,10 +174,10 @@ const styles: Record<string, any> = (theme: Theme) => ({
     },
 });
 
-function isTouchDevice() {
+export function isTouchDevice(): boolean {
     return (('ontouchstart' in window) ||
         (navigator.maxTouchPoints > 0) ||
-        // @ts-ignore
+        // @ts-expect-error deprecated attribute
         (navigator.msMaxTouchPoints > 0));
 }
 
@@ -202,8 +205,8 @@ interface EnumBlockProps {
     classes?: Record<string, string>;
     iconDragRef?: ConnectDragSource;
     isDragging?: boolean;
-    name?: string;
-    idText?: string;
+    name?: React.JSX.Element[];
+    idText?: React.JSX.Element[];
     getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
 }
 
@@ -485,9 +488,9 @@ interface EnumBlockDragProps {
     currentCategory: string;
     getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
     getName: (name: ioBroker.StringOrTranslated) => string;
-    idText?: string;
+    idText?: React.JSX.Element[];
     members: Record<string, ioBroker.Object>;
-    name?: string;
+    name?: React.JSX.Element[];
     onCollapse: () => void;
     removeMemberFromEnum: (memberId: string, enumId: string) => void;
     showEnumDeleteDialog: (enumItem: ioBroker.EnumObject) => void;
