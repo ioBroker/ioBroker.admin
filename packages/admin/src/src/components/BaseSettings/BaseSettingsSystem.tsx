@@ -75,9 +75,9 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
         this.state = {
             memoryLimitMB:         settings.memoryLimitMB         || 0,
             hostname:              settings.hostname              || '',
-            statisticsInterval:    settings.statisticsInterval    || 15000,
-            checkDiskInterval:     settings.checkDiskInterval     || 300000,
-            instanceStartInterval: settings.instanceStartInterval || 2000,
+            statisticsInterval:    settings.statisticsInterval    || 15_000,
+            checkDiskInterval:     settings.checkDiskInterval     || 300_000,
+            instanceStartInterval: settings.instanceStartInterval || 2_000,
             compact:               settings.compact               || false,
             allowShellCommands:    settings.allowShellCommands    || false,
             memLimitWarn:          settings.memLimitWarn          || 100,

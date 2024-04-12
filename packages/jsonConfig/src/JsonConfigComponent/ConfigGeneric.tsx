@@ -392,7 +392,9 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
      * @param newValue new value of the attribute
      */
     onChangeAsync(attr: string, newValue: unknown): Promise<void> {
-        return new Promise(resolve => this.onChange(attr, newValue, resolve));
+        return new Promise(resolve => {
+            this.onChange(attr, newValue, resolve);
+        });
     }
 
     /**

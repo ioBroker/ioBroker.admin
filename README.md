@@ -89,29 +89,21 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.3 (2024-04-11)
+* (foxriver76) fixed npm adapter installation
+
+### 6.17.2 (2024-04-08)
+* (foxriver76) avoid crash case if user has no permission to write objects
+
+### 6.17.1 (2024-04-06)
+* (bluefox) support of includes in JSONConfig files
+
+### 6.16.0 (2024-03-26)
 * (foxriver76) added a new tab to the installation wizard which recommends common adapters
+* (bluefox) applied newest adapter-react-v5 changes and types
 
 ### 6.15.2 (2024-03-07)
 * (foxriver76) fixed cron dialog
-
-### 6.15.1 (2024-03-04)
-* (foxriver76) fixed problem with saving array values in custom config
-* (foxriver76) fixed issue on deleting objects
-* (foxriver76) make UI update of controller and admin more verbose
-
-### 6.15.0 (2024-03-01)
-* (foxriver76) harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)
-* (bluefox) added possibility to delete whole adapter from instance tab if only one instance left
-* (foxriver76) new dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)
-* (foxriver76) the new `licenseInformation` icon now changes color correctly with the theme
-
-### 6.14.1 (2024-02-20)
-* (foxriver76) align items better when adapter tab is used in row mode
-
-### 6.14.0 (2024-02-19)
-* (foxriver76) adapters tab is now showing information from `licenseInformation`
-* (foxriver76) show important notifications above changelog, so user reads them on update dialog
 
 ## License
 The MIT License (MIT)

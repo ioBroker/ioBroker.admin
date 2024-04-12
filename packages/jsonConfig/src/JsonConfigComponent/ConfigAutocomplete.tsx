@@ -4,6 +4,7 @@ import { withStyles } from '@mui/styles';
 import { Autocomplete, TextField } from '@mui/material';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
 
@@ -33,8 +34,8 @@ export interface ConfigAutocompleteSchema {
 
 export interface ConfigAutocompleteProps extends ConfigGenericProps {
     socket: AdminConnection;
-    themeType: string;
-    themeName: string;
+    themeType: ThemeType;
+    themeName: ThemeName;
     style: Record<string, any>;
     className: string;
     data: Record<string, any>;

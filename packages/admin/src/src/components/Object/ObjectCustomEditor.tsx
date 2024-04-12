@@ -127,7 +127,7 @@ interface ObjectCustomEditorState {
     maxOids: number;
     confirmed: boolean;
     showConfirmation: boolean;
-    error?: unknown;
+    error?: string;
 }
 
 class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustomEditorState> {
@@ -547,16 +547,14 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             adapterName={adapter}
                             instance={parseInt(instance?.split('.').pop() ?? '0', 10) || 0}
                             socket={this.props.socket}
-                            /** @ts-expect-error types needed */
-                            theme={this.props.theme}
                             themeName={this.props.themeName}
                             themeType={this.props.themeType}
                             multiEdit={this.props.objectIDs.length > 1}
                             schema={this.jsonConfigs[adapter].json}
                             data={data}
-                            onError={error =>
+                            onError={(error: string) =>
                                 this.setState({ error }, () => this.props.onError && this.props.onError(error))}
-                            onValueChange={(attr, value) => {
+                            onValueChange={(attr: string, value: any) => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                 console.log(`${attr} => ${value}`);
                                 const newValues = deepClone(this.cachedNewValues);
@@ -589,7 +587,6 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     }
 
     renderErrorMessage() {
-        // @ts-expect-error types needed
         return !!this.state.error && <DialogError
             classes={{ }}
             title={this.props.t('Error')}

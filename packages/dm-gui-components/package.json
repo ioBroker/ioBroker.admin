@@ -1,6 +1,6 @@
 {
   "name": "@iobroker/dm-gui-components",
-  "version": "6.15.2",
+  "version": "6.17.3",
   "description": "ReactJS components to develop admin interface for ioBroker device manager.",
   "author": {
     "name": "Jey Cee",
@@ -44,6 +44,6 @@
   },
   "homepage": "https://github.com/ioBroker/dm-gui-components#readme",
   "dependencies": {
-    "@iobroker/adapter-react-v5": "^4.9.10"
+    "@iobroker/adapter-react-v5": "^4.13.4"
   }
 }

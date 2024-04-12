@@ -1,5 +1,5 @@
 /**
- * Copyright 2020-2023, Denis Haev <dogafox@gmail.com>
+ * Copyright 2020-2024, Denis Haev <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -1212,7 +1212,7 @@ function getVisibleItems(item, type, objects, _result) {
 function getSystemIcon(objects, id, k, imagePrefix) {
     let icon;
 
-    // system or design has special icons
+    // system or design have special icons
     if (id.startsWith('_design/') || id === 'system') {
         icon = <IconSystem className="iconOwn" />;
     } else if (id === '0_userdata' || id === '0_userdata.0') {
@@ -2081,6 +2081,7 @@ class ObjectBrowser extends Component {
             columnsEditCustomDialog: null,
             customColumnDialogValueChanged: false,
             showExportDialog: false,
+            showAllExportOptions: false,
             linesEnabled:
                 (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.lines`) === 'true',
             showDescription:
@@ -2223,6 +2224,20 @@ class ObjectBrowser extends Component {
                     try {
                         if (props.filterFunc(objects[id])) {
                             this.objects[id] = objects[id];
+                        } else {
+                            const type = objects[id] && objects[id].type;
+                            // include "folder" types too for icons and names of nodes
+                            if (type &&
+                                (
+                                    type === 'channel' ||
+                                    type === 'device' ||
+                                    type === 'folder' ||
+                                    type === 'adapter' ||
+                                    type === 'instance'
+                                )
+                            ) {
+                                this.objects[id] = objects[id];
+                            }
                         }
                     } catch (e) {
                         console.log(`Error by filtering of "${id}": ${e}`);
@@ -3048,17 +3063,26 @@ class ObjectBrowser extends Component {
     };
 
     /**
-     * Processes a single element in regards to certain filters, columns for admin and updates object dict
+     * Processes a single element in regard to certain filters, columns for admin and updates object dict
      * @param id The id of the object
      * @param obj The object itself
-     * @returns {{filtered: boolean, newState: null}} Returns an object containing the new state (if any) and whether the object was filtered.
+     * @returns {{filtered: boolean, newInnerState: null}} Returns an object containing the new state (if any) and whether the object was filtered.
      */
     processOnObjectChangeElement(id, obj) {
         console.log(`> objectChange ${id}`);
-        let newState = null;
+        let newInnerState = null;
+        const type = obj && obj.type;
 
-        if (obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(obj)) {
-            return { newState, filtered: true };
+        if (obj &&
+            typeof this.props.filterFunc === 'function' &&
+            !this.props.filterFunc(obj) &&
+            type !== 'channel' &&
+            type !== 'device' &&
+            type !== 'folder' &&
+            type !== 'adapter' &&
+            type !== 'instance'
+        ) {
+            return { newInnerState, filtered: true };
         }
 
         if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
@@ -3067,7 +3091,7 @@ class ObjectBrowser extends Component {
             this.parseObjectForAdmins(columnsForAdmin, obj);
 
             if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
-                newState = { columnsForAdmin };
+                newInnerState = { columnsForAdmin };
             }
         }
         this.objects = this.objects || [];
@@ -3076,7 +3100,7 @@ class ObjectBrowser extends Component {
         } else if (this.objects[id]) {
             delete this.objects[id];
         }
-        return { newState, filtered: false };
+        return { newInnerState, filtered: false };
     }
 
     /**
@@ -3701,53 +3725,59 @@ class ObjectBrowser extends Component {
         if (this.state.showExportDialog === false) {
             return null;
         }
-        return <Dialog open={!0}>
+        return <Dialog
+            open={!0}
+            maxWidth="lg"
+        >
             <DialogTitle>{this.props.t('ra_Select type of export')}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    {this.props.t('ra_You can export all objects or just the selected branch.')}
-                    <br />
-                    {this.props.t('ra_Selected %s object(s)', this.state.showExportDialog)}
-                    <br />
-                    <FormControlLabel
-                        control={<Checkbox
-                            checked={this.state.noStatesByExportImport}
-                            onChange={e => this.setState({ noStatesByExportImport: e.target.checked })}
-                        />}
-                        label={this.props.t('ra_Do not export values of states')}
-                    />
-                    <br />
-                    {this.props.t('These options can reduce the size of the export file:')}
-                    <FormControlLabel
-                        control={<Checkbox
-                            checked={this.state.beautifyJsonExport}
-                            onChange={e => this.setState({ beautifyJsonExport: e.target.checked })}
-                        />}
-                        label={this.props.t('Beautify JSON output')}
-                    />
-                    <br />
-                    <FormControlLabel
-                        control={<Checkbox
-                            checked={this.state.excludeSystemRepositoriesFromExport}
-                            onChange={e => this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })}
-                        />}
-                        label={this.props.t('Exclude system repositories from export JSON')}
-                    />
-                    <FormControlLabel
-                        control={<Checkbox
-                            checked={this.state.excludeTranslations}
-                            onChange={e => this.setState({ excludeTranslations: e.target.checked })}
-                        />}
-                        label={this.props.t('Exclude translations (except english) from export JSON')}
-                    />
+                    {this.state.filter.expertMode || this.state.showAllExportOptions ?
+                        <>
+                            {this.props.t('ra_You can export all objects or just the selected branch.')}
+                            <br />
+                            {this.props.t('ra_Selected %s object(s)', this.state.showExportDialog)}
+                            <br />
+                            <FormControlLabel
+                                control={<Checkbox
+                                    checked={this.state.noStatesByExportImport}
+                                    onChange={e => this.setState({ noStatesByExportImport: e.target.checked })}
+                                />}
+                                label={this.props.t('ra_Do not export values of states')}
+                            />
+                            <br />
+                            {this.props.t('These options can reduce the size of the export file:')}
+                            <FormControlLabel
+                                control={<Checkbox
+                                    checked={this.state.beautifyJsonExport}
+                                    onChange={e => this.setState({ beautifyJsonExport: e.target.checked })}
+                                />}
+                                label={this.props.t('Beautify JSON output')}
+                            />
+                            <br />
+                            <FormControlLabel
+                                control={<Checkbox
+                                    checked={this.state.excludeSystemRepositoriesFromExport}
+                                    onChange={e => this.setState({ excludeSystemRepositoriesFromExport: e.target.checked })}
+                                />}
+                                label={this.props.t('Exclude system repositories from export JSON')}
+                            />
+                            <FormControlLabel
+                                control={<Checkbox
+                                    checked={this.state.excludeTranslations}
+                                    onChange={e => this.setState({ excludeTranslations: e.target.checked })}
+                                />}
+                                label={this.props.t('Exclude translations (except english) from export JSON')}
+                            />
+                        </> : null}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button
+                {this.state.filter.expertMode || this.state.showAllExportOptions ? <Button
                     color="grey"
                     variant="outlined"
                     onClick={() => this.setState(
-                        { showExportDialog: false },
+                        { showExportDialog: false, showAllExportOptions: false },
                         () => this._exportObjects({
                             isAll: true,
                             noStatesByExportImport: this.state.noStatesByExportImport,
@@ -3759,16 +3789,23 @@ class ObjectBrowser extends Component {
                 >
                     {this.props.t('ra_All objects')}
                     {' '}
-(
+                    (
                     {Object.keys(this.objects).length}
-)
-                </Button>
+                    )
+                </Button> : <Button
+                    color="grey"
+                    variant="outlined"
+                    startIcon={<IconExpert />}
+                    onClick={() => this.setState({ showAllExportOptions: true })}
+                >
+                    {this.props.t('ra_Advanced options')}
+                </Button>}
                 <Button
                     color="primary"
                     variant="contained"
                     autoFocus
                     onClick={() => this.setState(
-                        { showExportDialog: false },
+                        { showExportDialog: false, showAllExportOptions: false },
                         () => this._exportObjects({
                             isAll: false,
                             noStatesByExportImport: this.state.noStatesByExportImport,
@@ -3780,14 +3817,14 @@ class ObjectBrowser extends Component {
                 >
                     {this.props.t('ra_Only selected')}
                     {' '}
-(
+                    (
                     {this.state.showExportDialog}
-)
+                    )
                 </Button>
                 <Button
                     color="grey"
                     variant="contained"
-                    onClick={() => this.setState({ showExportDialog: false })}
+                    onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false })}
                     startIcon={<IconClose />}
                 >
                     {this.props.t('ra_Cancel')}
@@ -4310,7 +4347,7 @@ class ObjectBrowser extends Component {
                     arrayTooltipText.push(
                         <span key={value + i}>
                             {this.texts[`acl${el.group}_${el.title}_${value}`]}
-,
+                            ,
                             <span
                                 className={
                                     value === 'object'
@@ -4671,7 +4708,7 @@ class ObjectBrowser extends Component {
                 >
                     (
                     {info.valText.s}
-)
+                    )
                 </span> : null,
                 <IconCopy
                     className={Utils.clsx(
@@ -5211,7 +5248,7 @@ class ObjectBrowser extends Component {
                 if (item.data.icon.length < 3) {
                     iconItem = <span className={Utils.clsx(classes.cellIdIconOwn, 'iconOwn')}>{item.data.icon}</span>; // utf-8 char
                 } else {
-                    iconItem = <img className={Utils.clsx(classes.cellIdIconOwn, 'iconOwn')} src={item.data.icon} alt="" />;
+                    iconItem = <Icon className={Utils.clsx(classes.cellIdIconOwn, 'iconOwn')} src={item.data.icon} alt="" />;
                 }
             } else {
                 iconItem = item.data.icon;

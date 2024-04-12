@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.15.2",
+    "version": "6.17.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,58 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.3": {
+        "en": "fixed npm adapter installation",
+        "de": "installation von npm adapter",
+        "ru": "стационарная установка адаптера npm",
+        "pt": "instalação do adaptador fixo npm",
+        "nl": "vaste npm-adapterinstallatie",
+        "fr": "installation d'adaptateur npm fixe",
+        "it": "installazione adattatore npm fisso",
+        "es": "instalación de adaptador fijo npm",
+        "pl": "zainstalowana instalacja adaptera npm",
+        "uk": "установка адаптера npm",
+        "zh-cn": "固定 npm 适配器安装"
+      },
+      "6.17.2": {
+        "en": "avoid crash case if user has no permission to write objects",
+        "de": "vermeidung von crash-fall, wenn der benutzer keine erlaubnis zum schreiben von objekten hat",
+        "ru": "избегайте случайного сбоя, если пользователь не имеет разрешения писать объекты",
+        "pt": "evitar caso de acidente se o usuário não tem permissão para escrever objetos",
+        "nl": "crash case vermijden als de gebruiker geen rechten heeft om objecten te schrijven",
+        "fr": "éviter le cas de crash si l'utilisateur n'a pas la permission d'écrire des objets",
+        "it": "evitare caso crash se l'utente non ha il permesso di scrivere oggetti",
+        "es": "evitar caso de accidente si el usuario no tiene permiso para escribir objetos",
+        "pl": "uniknąć awarii, jeśli użytkownik nie ma prawa do zapisu obiektów",
+        "uk": "якщо користувач не має дозволу на написання об’єктів",
+        "zh-cn": "如果用户无权写入对象, 请避免崩溃大小写"
+      },
+      "6.17.1": {
+        "en": "support of includes in JSONConfig files",
+        "de": "unterstützung von Dateien in JSONConfig",
+        "ru": "поддержка включает в файлы JSONConfig",
+        "pt": "suporte de inclui em arquivos JSONConfig",
+        "nl": "ondersteuning van opnames in JSONConfig-bestanden",
+        "fr": "prise en charge d'inclusions dans les fichiers JSONConfig",
+        "it": "il supporto di include nei file JSONConfig",
+        "es": "soporte de incluye en archivos JSONConfig",
+        "pl": "obsługa zawiera w plikach JSONConfig",
+        "uk": "підтримка включає в себе файли JSONConfig",
+        "zh-cn": "支持包含在 JSONConfig 文件"
+      },
+      "6.16.0": {
+        "en": "added a new tab to the installation wizard which recommends common adapters\napplied newest adapter-react-v5 changes and types",
+        "de": "einen neuen tab zum installationsassistenten hinzugefügt, der häufige adapter empfiehlt\nangewendet neueste adapter-react-v5 änderungen und typen",
+        "ru": "добавлена новая вкладка к мастеру установки, который рекомендует общие адаптеры\nприкладные новейшие изменения адаптера-реакта v5 и типы",
+        "pt": "adicionou uma nova guia ao assistente de instalação que recomenda adaptadores comuns\nmudanças e tipos mais novos do adaptador-react-v5 aplicados",
+        "nl": "toegevoegd een nieuw tabblad aan de installatie wizard die algemene adapters adviseert\ntoegepast nieuwste adapter-reactie-v5 wijzigingen en types",
+        "fr": "ajouté un nouvel onglet à l'assistant d'installation qui recommande des adaptateurs communs\nles derniers changements et types d'adaptateur-réaction-v5 appliqués",
+        "it": "aggiunto una nuova scheda alla procedura guidata di installazione che consiglia adattatori comuni\nnuovo adattatore-react-v5 modifiche e tipi",
+        "es": "agregó una nueva pestaña al asistente de instalación que recomienda adaptadores comunes\nnuevos cambios y tipos aplicados",
+        "pl": "dodano nową zakładkę do asystenta instalacji, który zaleca wspólne adaptery\nzastosowany najnowszy adapter- react- v5 zmiany i typy",
+        "uk": "додано нову вкладку в монтажний майстер, який рекомендує загальні адаптери\nзастосування новітніх змін і типів адаптерів-реакт-v5",
+        "zh-cn": "在安装向导中添加新标签, 它推荐通用适配器\n应用的最新适配器-反应-v5变化和类型"
+      },
       "6.15.2": {
         "en": "fixed cron dialog",
         "de": "fester schritt dialog",
@@ -56,58 +108,6 @@
         "pl": "harmonizacja linków do dokumentacji adaptera (i powrót do angielskiego, jeśli nie ma wyraźnego doc dla języka sys)\ndodana możliwość usunięcia całego adaptera z zakładki instance, jeśli została tylko jedna instancja\nnowe okno dialogowe dla powiadomień wprowadzonych dla powiadomień niesystemowych (powiadomienia systemowe są nadal w zakładce hosts)\nnowa ikona 'licenseInformation' zmienia kolor poprawnie z motywem",
         "uk": "гармонізовані посилання на документацію адаптера (і впадок в англійську, якщо немає явного довідка для наданої мови)\nдодано можливість видалити весь адаптер з вкладки екземпляра, якщо тільки один екземпляр залишив\nновий діалог для повідомлень, введених для сповіщення про несистему (системні сповіщення все ще на вкладці hosts)\n`licenseInformation````````````````````````````````________=================================================================================================================================================================================================================",
         "zh-cn": "协调适配文件的链接(如果未为sys语言提供明确的文件,则回落到英文)\n如果仅剩一个实例, 则添加从实例标签中删除整个适配符的可能性\n为非系统通知引入的通知新对话框(系统通知仍在主机标签上)\n新的“ 许可证信息” 图标现在按照主题正确改变颜色"
-      },
-      "6.14.1": {
-        "en": "align items better when adapters tab is used in row mode",
-        "de": "die elemente besser ausrichten, wenn die registerkarte adapter im zeilenmodus verwendet wird",
-        "ru": "выравнивать элементы лучше, когда вкладка адаптеров используется в режиме строки",
-        "pt": "alinhar itens melhor quando a aba de adaptadores é usada no modo de linha",
-        "nl": "items beter uitlijnen wanneer het tabblad adapters wordt gebruikt in rijmodus",
-        "fr": "aligner les éléments mieux lorsque l'onglet adaptateurs est utilisé en mode ligne",
-        "it": "allineare gli elementi meglio quando la scheda adattatori viene utilizzata in modalità riga",
-        "es": "alinear los elementos mejor cuando la pestaña adaptadores se utiliza en modo de fila",
-        "pl": "wyrównać elementy lepiej, gdy karta adapterów jest używana w trybie wiersza",
-        "uk": "вирівняти елементи краще, коли вкладки адаптерів використовується в режимі рядка",
-        "zh-cn": "在行模式下使用适配器标签时更好地对齐项目"
-      },
-      "6.14.0": {
-        "en": "adapters tab is now showing information from `licenseInformation`\nshow important notifications above changelog, so user reads them on update dialog",
-        "de": "adapter Tab zeigt jetzt Informationen von `license Informationen `\nwichtige benachrichtigungen über changelog anzeigen, so dass der benutzer sie im update-dialog liest",
-        "ru": "вкладка адаптеров теперь показывает информацию из `license Информация \"\nпоказать важные уведомления выше менлога, поэтому пользователь читает их в диалоге обновления",
-        "pt": "aba adaptadores agora está mostrando informações de `license Informação \"\nmostrar notificações importantes acima changelog, então o usuário lê-los na caixa de diálogo de atualização",
-        "nl": "het tabblad adapters toont nu informatie van de licentie Informatie Wat\ntoon belangrijke meldingen boven changelog, dus gebruiker leest ze op update dialoog",
-        "fr": "adaptateurs onglet affiche maintenant des informations de `license Informations \"\nafficher les notifications importantes au-dessus du changelog, de sorte que l'utilisateur les lit sur la boîte de dialogue de mise à jour",
-        "it": "scheda adattatori ora mostra le informazioni da `license Informazioni #\nmostrare le notifiche importanti sopra changelog, quindi l'utente le legge sulla finestra di dialogo di aggiornamento",
-        "es": "la pestaña de adaptadores ahora muestra información de 'license Información `\nmostrar notificaciones importantes por encima del cambio, por lo que el usuario los lee en el diálogo de actualización",
-        "pl": "karta adapterów pokazuje teraz informacje z 'licence Informacje'\nwyświetla ważne powiadomienia powyżej changelog, więc użytkownik czyta je w oknie aktualizacji",
-        "uk": "вкладка адаптерів тепер показує інформацію від `license Інформація й\nпоказати важливі повідомлення над зміною",
-        "zh-cn": "适配器标签现在显示来自“ 许可证” 的信息 资料 `\n在更改日志上方显示重要通知, 因此用户在更新对话框中读取"
-      },
-      "6.13.21": {
-        "en": "do not crash when using the dropdown on multi edit custom settings",
-        "de": "nicht abstürzen, wenn sie den dropdown auf multi edit benutzerdefinierte einstellungen verwenden",
-        "ru": "не сбои при использовании отключения на многообразных пользовательских условиях",
-        "pt": "não falhar ao usar o dropdown em multi editar configurações personalizadas",
-        "nl": "niet crashen bij het gebruik van de dropdown op aangepaste instellingen voor meerdere bewerkingen",
-        "fr": "ne pas planter lors de l'utilisation du menu déroulant sur les paramètres personnalisés de multi-édition",
-        "it": "non crash quando si utilizza il menu a tendina su più impostazioni personalizzate",
-        "es": "no se bloquea cuando se utiliza el desplegable en la configuración personalizada multi editar",
-        "pl": "nie awarii podczas korzystania z rozwijanego ustawienia wielu edycji",
-        "uk": "не збій при використанні випадання на багато редагування користувацьких налаштувань",
-        "zh-cn": "在多编辑自定义设置中使用下拉时不要崩溃"
-      },
-      "6.13.20": {
-        "en": "after successful update via npm tab, perform an additional upload as `iob url` commands do not do it internally\nfixed problem with saving on multi edit custom settings",
-        "de": "nach erfolgreichem update über npm tab, führen sie einen zusätzlichen upload als `iob url` befehle nicht intern tun\nbehobenes problem mit dem speichern von benutzerdefinierten multi edit-einstellungen",
-        "ru": "после успешного обновления через вкладку npm выполните дополнительную загрузку, так как команды `iob url' не делают это внутри\nфиксированная проблема с сохранением многообразных пользовательских настроек",
-        "pt": "após a atualização bem sucedida via aba npm, execute um upload adicional como comandos `iob url` não fazê-lo internamente\nproblema fixo com a economia em multi editar configurações personalizadas",
-        "nl": "na succesvolle update via npm tabblad, voer een extra upload als \nvast probleem met opslaan op aangepaste instellingen voor meerdere bewerkingen",
-        "fr": "après une mise à jour réussie via l`onglet npm, effectuer un téléchargement supplémentaire car les commandes `iob url` ne le font pas en interne\nproblème corrigé avec l'enregistrement sur les paramètres personnalisés multi-édition",
-        "it": "dopo l'aggiornamento di successo tramite la scheda npm, eseguire un upload aggiuntivo come comandi `iob url` non farlo internamente\nproblema fisso con il salvataggio su più impostazioni personalizzate",
-        "es": "después de la actualización exitosa a través de la pestaña npm, realizar una carga adicional como comandos `iob url` no lo hacen internamente\nproblema fijo con el ahorro en ajustes personalizados multi edición",
-        "pl": "po udanej aktualizacji za pomocą zakładki npm, wykonaj dodatkową transmisję jako komendy 'iob url' nie robią tego wewnętrznie\nnaprawiony problem z zapisaniem na niestandardowych ustawieniach wielu edycji",
-        "uk": "після успішного оновлення за допомогою вкладки npm виконайте додатковий завантажень як команди `iob url` не робити це внутрішньо\nвиправлена проблема з збереженням на багато редагування користувацьких налаштувань",
-        "zh-cn": "在通过 npm 标签成功更新后, 执行额外的上传, 因为“ iob url” 命令不会在内部执行 \n在多编辑自定义设置中保存的固定问题"
       }
     },
     "desc": {

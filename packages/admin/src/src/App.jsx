@@ -48,6 +48,7 @@ import {
 import { AdminConnection as Connection, PROGRESS } from '@iobroker/socket-client';
 import {
     LoaderPT,
+    LoaderMV,
     LoaderVendor,
     Loader,
     I18n, Router, Confirm as ConfirmDialog,
@@ -605,59 +606,69 @@ class App extends Router {
         this.setState({ noTranslation: !this.state.noTranslation });
     };
 
-    getGUISettings() {
-        return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`).then(async obj => {
-            if (!obj) {
-                obj = JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
-                await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, obj);
-            }
+    async getGUISettings() {
+        let obj;
 
-            let state;
+        try {
+            obj = await this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`);
+        } catch (e) {
+            console.warn(`Could not get "system.adapter.${this.adminInstance}.guiSettings": ${e.message}`);
+        }
+
+        if (!obj) {
+            obj = JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
             try {
-                state = await this.socket.getState(`system.adapter.${this.adminInstance}.guiSettings`);
+                await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, obj);
             } catch (e) {
-                state = { val: false };
+                console.warn(`Could not update "system.adapter.${this.adminInstance}.guiSettings": ${e}`);
             }
-            if (state && state.val) {
-                this.guiSettings = obj;
-                this.guiSettings.native = this.guiSettings.native || { localStorage: {}, sessionStorage: {} };
-                if (!this.guiSettings.native.localStorage) {
-                    this.guiSettings.native = { localStorage: this.guiSettings.native, sessionStorage: {} };
-                }
+        }
 
-                window._localStorage = {
-                    getItem: this.localStorageGetItem,
-                    setItem: this.localStorageSetItem,
-                    removeItem: this.localStorageRemoveItem,
-                };
-                window._sessionStorage = {
-                    getItem: this.sessionStorageGetItem,
-                    setItem: this.sessionStorageSetItem,
-                    removeItem: this.sessionStorageRemoveItem,
-                };
+        let state;
+        try {
+            state = await this.socket.getState(`system.adapter.${this.adminInstance}.guiSettings`);
+        } catch (e) {
+            state = { val: false };
+        }
+        if (state?.val) {
+            this.guiSettings = obj;
+            this.guiSettings.native = this.guiSettings.native || { localStorage: {}, sessionStorage: {} };
+            if (!this.guiSettings.native.localStorage) {
+                this.guiSettings.native = { localStorage: this.guiSettings.native, sessionStorage: {} };
+            }
 
-                // this is only settings that initialized before connection was established
-                let drawerState = this.guiSettings.native['App.drawerState'];
-                if (drawerState) {
-                    drawerState = parseInt(drawerState, 10);
-                } else {
-                    drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
-                }
-                const noTranslation =
+            window._localStorage = {
+                getItem: this.localStorageGetItem,
+                setItem: this.localStorageSetItem,
+                removeItem: this.localStorageRemoveItem,
+            };
+            window._sessionStorage = {
+                getItem: this.sessionStorageGetItem,
+                setItem: this.sessionStorageSetItem,
+                removeItem: this.sessionStorageRemoveItem,
+            };
+
+            // this is only settings that initialized before connection was established
+            let drawerState = this.guiSettings.native['App.drawerState'];
+            if (drawerState) {
+                drawerState = parseInt(drawerState, 10);
+            } else {
+                drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
+            }
+            const noTranslation =
                     (window._localStorage || window.localStorage).getItem('App.noTranslation') !== 'false';
 
-                this.setState({ guiSettings: true, drawerState, noTranslation }, () => {
-                    if (Utils.getThemeName() !== this.state.theme.name) {
-                        this.toggleTheme(Utils.getThemeName());
-                    }
-                });
-            } else if (this.state.guiSettings) {
-                window._localStorage = null;
-                window._sessionStorage = null;
+            this.setState({ guiSettings: true, drawerState, noTranslation }, () => {
+                if (Utils.getThemeName() !== this.state.theme.name) {
+                    this.toggleTheme(Utils.getThemeName());
+                }
+            });
+        } else if (this.state.guiSettings) {
+            window._localStorage = null;
+            window._sessionStorage = null;
 
-                this.setState({ guiSettings: false });
-            }
-        });
+            this.setState({ guiSettings: false });
+        }
     }
 
     enableGuiSettings(enabled, ownSettings) {
@@ -929,7 +940,7 @@ class App extends Router {
                             this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
                             this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
                             this.hostsWorker.registerHandler(this.updateHosts);
-                            this.hostsWorker.registerNotificationHandler(notifications => this.handleNewNotifications(notifications));
+                            this.hostsWorker.registerNotificationHandler(this.handleNewNotifications);
 
                             this.subscribeOnHostsStatus();
 
@@ -942,39 +953,39 @@ class App extends Router {
 
                             // Read user and show him
                             if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
-                                this.socket
-                                    .getCurrentUser()
-                                    .then(user => {
-                                        this.socket.getObject(`system.user.${user}`).then(userObj => {
-                                            if (userObj.native?.vendor) {
-                                                Object.assign(this.adminGuiConfig, userObj.native.vendor);
-                                            }
+                                try {
+                                    const user = await this.socket
+                                        .getCurrentUser();
 
-                                            if (this.socket.isSecure) {
-                                                this.setState({
-                                                    user: {
-                                                        id: userObj._id,
-                                                        name: Utils.getObjectNameFromObj(
-                                                            userObj,
-                                                            this.socket.systemLang,
-                                                        ),
-                                                        color: userObj.common.color,
-                                                        icon: userObj.common.icon,
-                                                        invertBackground: this.mustInvertBackground(
-                                                            userObj.common.color,
-                                                        ),
-                                                    },
-                                                });
+                                    const userObj = await this.socket.getObject(`system.user.${user}`);
 
-                                                // start ping interval
-                                                this.makePingAuth();
-                                            }
+                                    if (userObj.native?.vendor) {
+                                        Object.assign(this.adminGuiConfig, userObj.native.vendor);
+                                    }
+
+                                    if (this.socket.isSecure) {
+                                        this.setState({
+                                            user: {
+                                                id: userObj._id,
+                                                name: Utils.getObjectNameFromObj(
+                                                    userObj,
+                                                    this.socket.systemLang,
+                                                ),
+                                                color: userObj.common.color,
+                                                icon: userObj.common.icon,
+                                                invertBackground: this.mustInvertBackground(
+                                                    userObj.common.color,
+                                                ),
+                                            },
                                         });
-                                    })
-                                    .catch(error => {
-                                        console.error(error);
-                                        this.showAlert(error, 'error');
-                                    });
+
+                                        // start ping interval
+                                        this.makePingAuth();
+                                    }
+                                } catch (e)  {
+                                    console.error(`Could not determine user to show: ${e}`);
+                                    this.showAlert(e, 'error');
+                                }
                             }
 
                             this.setState(newState, () => this.setCurrentTabTitle());
@@ -1252,8 +1263,8 @@ class App extends Router {
                         break;
                     }
                 } catch (error) {
-                    console.error(error);
-                    this.showAlert(error, 'error');
+                    console.error(`Cannot find news instance: ${error}`);
+                    this.showAlert(`Cannot find news instance: ${error}`, 'error');
                 }
             }
             resolve(0);
@@ -1299,11 +1310,20 @@ class App extends Router {
      *
      * @param {Record<string, any>} notifications
      */
-    async handleNewNotifications(notifications) {
+    handleNewNotifications = async notifications => {
         // console.log(`new notifications: ${JSON.stringify(notifications)}`);
         let noNotifications = 0;
 
+        // if host is offline it returns null
+        if (!notifications) {
+            this.setState({ noNotifications, notifications: { } });
+            return;
+        }
+
         for (const hostDetails of Object.values(notifications)) {
+            if (!hostDetails?.result) {
+                continue;
+            }
             for (const [scope, scopeDetails] of Object.entries(hostDetails.result)) {
                 if (scope === 'system') {
                     continue;
@@ -1320,7 +1340,7 @@ class App extends Router {
         const instances = await this.instancesWorker.getInstances();
 
         this.setState({ noNotifications, notifications: { notifications, instances } });
-    }
+    };
 
     showAdaptersWarning = (notifications, socket, host) => {
         if (!notifications || !notifications[host] || !notifications[host].result) {
@@ -2323,8 +2343,9 @@ class App extends Router {
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
                         {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType} /> : null}
+                        {window.vendorPrefix === 'MV' ? <LoaderMV theme={this.state.themeType} /> : null}
                         {window.vendorPrefix &&
-                        window.vendorPrefix !== 'PT' &&
+                        window.vendorPrefix !== 'PT' && window.vendorPrefix !== 'MV' &&
                         window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor theme={this.state.themeType} /> : null}
                         {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
                         {this.renderAlertSnackbar()}

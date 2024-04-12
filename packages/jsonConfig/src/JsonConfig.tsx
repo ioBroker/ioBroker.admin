@@ -3,20 +3,23 @@ import { type Styles, withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 import MD5 from 'crypto-js/md5';
 
-import LinearProgress from '@mui/material/LinearProgress';
-import Tooltip from '@mui/material/Tooltip';
-import Fab from '@mui/material/Fab';
-import PublishIcon from '@mui/icons-material/Publish';
+import {
+    Fab,
+    Tooltip,
+    LinearProgress,
+} from '@mui/material';
+import { Publish as PublishIcon } from '@mui/icons-material';
 
 import {
     I18n,
     Router,
     SaveCloseButtons,
     Theme as theme,
-    Confirm as ConfirmDialog, AdminConnection,
+    Confirm as ConfirmDialog,
+    AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
-import type { Theme } from '@iobroker/adapter-react-v5/types';
+import type { Theme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 import type { SystemConfig } from '@iobroker/socket-client';
 import Utils from '#JC/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
@@ -189,8 +192,8 @@ interface JsonConfigProps {
     secret: string;
     socket: AdminConnection;
     theme: Record<string, any>;
-    themeName: string;
-    themeType: string;
+    themeName: ThemeName;
+    themeType: ThemeType;
     /** CSS classes */
     classes: Record<string, any>;
     /** Translate method */
@@ -214,7 +217,7 @@ interface JsonConfigState {
 }
 
 class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
-    private fileSubscribed = '';
+    private fileSubscribed: string[] = [];
 
     private fileLangSubscribed = '';
 
@@ -261,11 +264,11 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                         })));
     }
 
-    componentWillUnmount(): void {
+    async componentWillUnmount(): Promise<void> {
         super.componentWillUnmount();
-        if (this.fileSubscribed) {
+        if (this.fileSubscribed.length) {
             this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
-            this.fileSubscribed = '';
+            this.fileSubscribed = [];
         }
         if (this.fileLangSubscribed) {
             this.props.socket.unsubscribeFiles(`${this.props.adapterName}.admin`, this.fileLangSubscribed, this.onFileChange);
@@ -347,9 +350,9 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 } catch {
                     // ignore errors
                 }
-            } else if (fileName === this.fileSubscribed) {
+            } else if (this.fileSubscribed.includes(fileName)) {
                 try {
-                    const schema = await this.getConfigFile(this.fileSubscribed);
+                    const schema = await this.getConfigFile(this.fileSubscribed[0]);
                     // @ts-expect-error really no string?
                     this.setState({ schema, hash: MD5(JSON.stringify(schema)) });
                 } catch {
@@ -395,53 +398,87 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         />;
     }
 
-    getConfigFile(fileName?: string): Promise<Schema> {
+    async scanForInclude(json: Record<string, any>, filePaths: string[]): Promise<Record<string, any>> {
+        if (typeof json['#include'] === 'string') {
+            // load file
+            const data = await this._getConfigFile(json['#include'], [...filePaths]);
+            delete json['#include'];
+            if (data) {
+                // merge data
+                json = { ...json, ...data };
+            }
+            return json;
+        }
+        const keys = Object.keys(json);
+        for (let k = 0; k < keys.length; k++) {
+            if (typeof json[keys[k]] === 'object') {
+                json[keys[k]] = await this.scanForInclude(json[keys[k]], filePaths);
+            }
+        }
+        return json;
+    }
+
+    async getConfigFile(fileName?: string): Promise<Schema> {
+        return this._getConfigFile(fileName);
+    }
+
+    async _getConfigFile(fileName?: string, _filePaths?: string[]): Promise<Schema> {
         fileName = fileName || 'jsonConfig.json5';
+        _filePaths = _filePaths || [];
 
-        return this.props.socket.fileExists(`${this.props.adapterName}.admin`, fileName)
-            .then((exist: boolean) => {
-                if (!exist) {
-                    fileName = 'jsonConfig.json';
-                }
-                return this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
-            })
-            .then(data => {
-                let content = '';
-                let file: string | BufferObject = '';
+        if (_filePaths.includes(fileName)) {
+            window.alert(`[JsonConfig] Circular reference in file: ${fileName} => ${_filePaths.join(' => ')}`);
+            return null;
+        }
+        _filePaths.push(fileName);
 
-                if (data.file !== undefined) {
-                    file = data.file;
-                }
+        try {
+            const exist = await this.props.socket.fileExists(`${this.props.adapterName}.admin`, fileName);
+            if (!exist) {
+                fileName = 'jsonConfig.json';
+            }
+            const data: {
+                file: string;
+                mimeType: string;
+            } = await this.props.socket.readFile(`${this.props.adapterName}.admin`, fileName);
+            let content = '';
+            let file: string | BufferObject = '';
 
-                if (typeof file === 'string') {
-                    content = file;
-                    // @ts-expect-error revisit
-                } else if (file.type === 'Buffer') {
-                    let binary = '';
-                    // @ts-expect-error revisit
-                    const bytes = new Uint8Array(file.data);
-                    const len = bytes.byteLength;
-                    for (let i = 0; i < len; i++) {
-                        binary += String.fromCharCode(bytes[i]);
-                    }
-                    content = binary;
-                }
+            if (data.file !== undefined) {
+                file = data.file;
+            }
 
-                // subscribe on changes
-                if (!this.fileSubscribed) {
-                    this.fileSubscribed = fileName ?? '';
-                    this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, this.fileSubscribed, this.onFileChange);
+            if (typeof file === 'string') {
+                content = file;
+                // @ts-expect-error revisit
+            } else if (file.type === 'Buffer') {
+                let binary = '';
+                // @ts-expect-error revisit
+                const bytes = new Uint8Array(file.data);
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
                 }
+                content = binary;
+            }
 
-                try {
-                    return JSON5.parse(content);
-                } catch (e) {
-                    window.alert('[JsonConfig] Cannot parse json5 config!');
-                    console.log(e);
-                    return null;
-                }
-            })
-            .catch((e: any) => !this.state.schema && window.alert(`[JsonConfig] Cannot read file: ${e}`));
+            // subscribe on changes
+            if (!this.fileSubscribed.includes(fileName)) {
+                this.fileSubscribed.push(fileName);
+                await this.props.socket.subscribeFiles(`${this.props.adapterName}.admin`, fileName, this.onFileChange);
+            }
+
+            try {
+                // detect #include attr
+                return (await this.scanForInclude(JSON5.parse(content), _filePaths)) as Schema;
+            } catch (e) {
+                window.alert('[JsonConfig] Cannot parse json5 config!');
+                console.log(e);
+            }
+        } catch (e1) {
+            !this.state.schema && window.alert(`[JsonConfig] Cannot read file "${fileName}: ${e1}`);
+        }
+        return null;
     }
 
     renderSaveConfigDialog(): React.JSX.Element | null {

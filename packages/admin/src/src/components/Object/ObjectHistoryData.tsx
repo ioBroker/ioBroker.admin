@@ -872,7 +872,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         if (this.state.values) {
             const { classes } = this.props;
 
-            const initialWidths = [200, 'auto'];
+            const initialWidths: (number | 'auto')[] = [200, 'auto'];
             const minWidths = [190, 100];
             if (this.state.ackVisible) {
                 initialWidths.push(50);
@@ -888,8 +888,6 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             }
 
             return <TableContainer className={classes.container}>
-                {/*
-                // @ts-expect-error needs further checking */}
                 <TableResize
                     stickyHeader
                     className={classes.table}
