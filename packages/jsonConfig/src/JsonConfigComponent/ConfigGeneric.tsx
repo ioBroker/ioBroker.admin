@@ -32,19 +32,20 @@ export function isObject(it: any): it is Record<string, any> {
 export interface ConfigGenericProps {
     /** Provided props by the specific component */
     schema: Record<string, any>;
-    registerOnForceUpdate: any;
+    registerOnForceUpdate?: (attr: string, onUpdate?: (data: Record<string, any>) => void) => void;
     attr: string;
     data: Record<string, any>;
     onChange: (attrOrData: string | Record<string, any>, val?: any, cb?: () => void) => void;
-    custom: boolean;
+    custom?: boolean;
+    customs?: Record<string, React.Component>;
     forceUpdate: (attrs: string[], data: Record<string, any>) => void;
     alive: boolean;
     originalData: Record<string, any>;
-    arrayIndex: any;
-    globalData: any;
+    arrayIndex?: number;
+    globalData: Record<string, any>;
     systemConfig?: Record<string, any>;
-    instanceObj: ioBroker.InstanceObject;
-    customObj: Record<string, any>;
+    instanceObj?: ioBroker.InstanceObject;
+    customObj?: Record<string, any>;
     socket: AdminConnection;
     changed: boolean;
     adapterName: string;
@@ -52,12 +53,12 @@ export interface ConfigGenericProps {
     common: Record<string, any>;
     onError: (attr: string, error?: unknown) => void;
     themeType: string;
-    commandRunning: any;
+    commandRunning?: boolean;
     disabled?: boolean;
     classes: Record<string, any>;
     /* this item is in the table. Maybe some layouts must be changed */
     table?: boolean;
-    /** If true, this field edits multiple datapoints at once and thus contains an array, should not be saved if not changed */
+    /** If true, this field edits multiple data points at once and thus contains an array, should not be saved if not changed */
     multiEdit?: boolean;
 }
 

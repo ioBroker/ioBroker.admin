@@ -1,5 +1,4 @@
-import React, { createRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { createRef, type RefObject } from 'react';
 import { /* lighten, */ withStyles } from '@mui/styles';
 import Dropzone from 'react-dropzone';
 
@@ -11,6 +10,7 @@ import {
     TextField, Toolbar, Tooltip,
     Typography,
     FormHelperText,
+    type Theme,
 } from '@mui/material';
 
 import {
@@ -28,7 +28,7 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { Utils, I18n, type AdminConnection } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric from './ConfigGeneric';
 // eslint-disable-next-line import/no-cycle
@@ -36,7 +36,7 @@ import ConfigPanel from './ConfigPanel';
 
 const MAX_SIZE = 1024 * 1024; // 1MB
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     fullWidth: {
         width: '100%',
     },
@@ -175,12 +175,12 @@ const styles = theme => ({
     },
 });
 
-function objectToArray(object, nameOfFirstAttr, nameOfSecondAttr) {
+function objectToArray(object: Record<string, any>, nameOfFirstAttr: string, nameOfSecondAttr?: string) {
     nameOfFirstAttr  = nameOfFirstAttr || 'key';
 
-    const array = [];
+    const array: Record<string, any>[] = [];
     Object.keys(object).forEach(key => {
-        const item = {};
+        const item: Record<string, any> = {};
         item[nameOfFirstAttr] = key;
 
         if (nameOfSecondAttr) {
@@ -194,12 +194,12 @@ function objectToArray(object, nameOfFirstAttr, nameOfSecondAttr) {
     return array;
 }
 
-function arrayToObject(array, nameOfFirstAttr, nameOfSecondAttr) {
+function arrayToObject(array: Record<string, any>[], nameOfFirstAttr: string, nameOfSecondAttr?: string) {
     nameOfFirstAttr  = nameOfFirstAttr  || 'key';
 
-    const object = {};
+    const object: Record<string, any> = {};
 
-    array.forEach(row => {
+    array.forEach((row: Record<string, any>) => {
         let key = row[nameOfFirstAttr];
         if (key === null || key === undefined) {
             key = '';
@@ -216,12 +216,92 @@ function arrayToObject(array, nameOfFirstAttr, nameOfSecondAttr) {
     return object;
 }
 
-class ConfigTable extends ConfigGeneric {
-    constructor(props) {
+interface ConfigTableProps {
+    socket: AdminConnection;
+    adapterName: string;
+    instance: number;
+    common: Record<string, any>;
+    systemConfig: Record<string, any>;
+    changed: boolean;
+    themeType: string;
+    themeName: string;
+    style: Record<string, any>;
+    className: string;
+    data: Record<string, any>;
+    schema: Record<string, any>;
+    onError: (attr: string, error?: unknown) => void;
+    onChange: (attr: string, value: unknown) => void;
+    attr: string;
+    custom?: boolean;
+    customs?: Record<string, React.Component>;
+    forceUpdate: (attrs: string[], data: Record<string, any>) => void;
+    alive: boolean;
+    originalData: Record<string, any>;
+    globalData: Record<string, any>;
+    classes: Record<string, string>;
+    instanceObj?: ioBroker.InstanceObject;
+}
+
+interface ConfigTableState {
+    value: Record<string, any>[];
+    visibleValue: number[] | null;
+    orderBy: string;
+    order: 'asc' | 'desc';
+    iteration: number;
+    filterOn: string[];
+    errorMessage: string;
+    showImportDialog: boolean;
+    showTypeOfImportDialog: Record<string, any>[] | false;
+    instanceObj: ioBroker.InstanceObject;
+    customObj: Record<string, any>;
+    confirmDialog: boolean;
+    confirmNewValue: any;
+    confirmAttr: any;
+    confirmData: any;
+    confirmDepAttr?: any;
+    confirmDepNewValue?: any;
+    uploadFile: boolean | 'dragging';
+    icon: boolean;
+}
+
+interface TableItemProps {
+    attr: string;
+    type: string;
+    width?: string | number;
+    title?: string;
+    filter?: boolean;
+    sort?: boolean;
+    default?: string | number | boolean;
+    defaultFunc?: string;
+}
+
+function encrypt(secret: string, value: string): string {
+    let result = '';
+    for (let i = 0; i < value.length; i++) {
+        result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+function decrypt(secret: string, value: string): string {
+    let result = '';
+    for (let i = 0; i < value.length; i++) {
+        result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
+class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
+    private readonly filterRefs: Record<string, RefObject<HTMLInputElement>>;
+
+    private typingTimer: ReturnType<typeof setTimeout> | null = null;
+
+    private secret: string = 'Zgfr56gFe87jJOM';
+
+    constructor(props: ConfigTableProps) {
         super(props);
         this.filterRefs = {};
         this.props.schema.items = this.props.schema.items || [];
-        this.props.schema.items.forEach(el => {
+        this.props.schema.items.forEach((el: TableItemProps) => {
             if (el.filter) {
                 this.filterRefs[el.attr] = createRef();
             }
@@ -229,20 +309,34 @@ class ConfigTable extends ConfigGeneric {
     }
 
     /**
-     * React lifecycle hook, called once component is mounted
-     * @return {Promise<void>}
+     * React lifecycle hook, called once as component is mounted
      */
-    async componentDidMount() {
+    async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        let value = ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
+        const _value: Record<string, any>[] | Record<string, any> = ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
+        let value: Record<string, any>[];
 
         // if the list is given as an object
         if (this.props.schema.objKeyName) {
-            value = objectToArray(value, this.props.schema.objKeyName, this.props.schema.objValueName);
+            value = objectToArray(_value as Record<string, any>, this.props.schema.objKeyName, this.props.schema.objValueName);
+        } else {
+            value = _value as Record<string, any>[];
         }
 
-        if (!Array.isArray(value)) {
+        if (!Array.isArray(_value)) {
             value = [];
+        }
+
+        if (this.props.schema.encryptedAttributes) {
+            this.secret = this.props.systemConfig?.native?.secret || this.secret;
+
+            _value.forEach((el: Record<string, any>) => {
+                this.props.schema.encryptedAttributes.forEach((attr: string) => {
+                    if (el[attr]) {
+                        el[attr] = decrypt(this.secret, el[attr]);
+                    }
+                });
+            });
         }
 
         this.setState({
@@ -261,10 +355,10 @@ class ConfigTable extends ConfigGeneric {
         super.componentWillUnmount();
     }
 
-    itemTable(attrItem, data, idx) {
+    itemTable(attrItem: string, data: Record<string, any>, idx: number) {
         const { value } = this.state;
         const { schema } = this.props;
-        const schemaForAttribute = schema.items && schema.items.find(el => el.attr === attrItem);
+        const schemaForAttribute = schema.items && schema.items.find((el: TableItemProps) => el.attr === attrItem);
 
         if (!schemaForAttribute) {
             return null;
@@ -295,7 +389,7 @@ class ConfigTable extends ConfigGeneric {
             systemConfig={this.props.systemConfig}
             originalData={this.props.originalData}
             customs={this.props.customs}
-            onChange={(attr, valueChange) => {
+            onChange={(attr: string, valueChange: any) => {
                 const newObj = JSON.parse(JSON.stringify(value));
                 newObj[idx][attr] = valueChange;
                 this.setState({ value: newObj }, () => {
@@ -303,7 +397,7 @@ class ConfigTable extends ConfigGeneric {
                     this.onChangeWrapper(newObj, true);
                 });
             }}
-            onError={(error, attr) => this.onError(error, attr)}
+            onError={(error: string, attr?: string) => this.onError(error, attr)}
         />;
     }
 
@@ -317,7 +411,7 @@ class ConfigTable extends ConfigGeneric {
 
         for (const uniqueCol of this.props.schema.uniqueColumns) {
             /** @type {string[]} */
-            const allVals = [];
+            const allVals: (string | number)[] = [];
             const found = this.state.value.find(entry => {
                 const val = entry[uniqueCol];
                 if (allVals.includes(val)) {
@@ -336,7 +430,7 @@ class ConfigTable extends ConfigGeneric {
         }
     }
 
-    static descendingComparator(a, b, orderBy) {
+    static descendingComparator(a: Record<string, any>, b: Record<string, any>, orderBy: string): number {
         if (b[orderBy] < a[orderBy]) {
             return -1;
         }
@@ -346,13 +440,21 @@ class ConfigTable extends ConfigGeneric {
         return 0;
     }
 
-    static getComparator(order, orderBy) {
+    static getComparator(order: 'desc' | 'asc', orderBy: string) {
         return order === 'desc'
-            ? (a, b) =>  ConfigTable.descendingComparator(a, b, orderBy)
-            : (a, b) => -ConfigTable.descendingComparator(a, b, orderBy);
+            ? (a: Record<string, any>, b: Record<string, any>) =>  ConfigTable.descendingComparator(a, b, orderBy)
+            : (a: Record<string, any>, b: Record<string, any>) => -ConfigTable.descendingComparator(a, b, orderBy);
     }
 
-    handleRequestSort = (property, orderCheck = false) => {
+    static getFilterValue(el: React.RefObject<HTMLInputElement>) {
+        return (el?.current?.children[0]?.children[0] as HTMLInputElement)?.value;
+    }
+
+    static setFilterValue(el: React.RefObject<HTMLInputElement>, filterValue: string) {
+        return (el.current.children[0].children[0] as HTMLInputElement).value = filterValue;
+    }
+
+    handleRequestSort = (property: string, orderCheck: boolean = false) => {
         const { order, orderBy } = this.state;
         if (orderBy) {
             const isAsc = orderBy === property && order === 'asc';
@@ -363,28 +465,28 @@ class ConfigTable extends ConfigGeneric {
         }
     };
 
-    stableSort = (order, orderBy) => {
+    stableSort = (order: 'desc' | 'asc', orderBy: string) => {
         const { value } = this.state;
         const comparator = ConfigTable.getComparator(order, orderBy);
-        const stabilizedThis = value.map((el, index) => [el, index]);
+        const stabilizedThis = value.map((el, index) => ({ el, index }));
 
         stabilizedThis.sort((a, b) => {
-            const order_ = comparator(a[0], b[0]);
+            const order_ = comparator(a.el, b.el);
             if (order_ !== 0) {
                 return order_;
             }
-            return a[1] - b[1];
+            return a.index - b.index;
         });
 
-        return stabilizedThis.map(el => el[0]);
+        return stabilizedThis.map(el => el.el);
     };
 
-    enhancedTableHead(buttonsWidth, doAnyFilterSet) {
+    enhancedTableHead(buttonsWidth: number, doAnyFilterSet: boolean) {
         const { schema, classes } = this.props;
         const { order, orderBy } = this.state;
         return <TableHead>
             <TableRow>
-                {schema.items && schema.items.map((headCell, i) =>
+                {schema.items && schema.items.map((headCell: TableItemProps, i: number) =>
                     <TableCell
                         style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? headCell.width : headCell.width }}
                         key={`${headCell.attr}_${i}`}
@@ -412,11 +514,11 @@ class ConfigTable extends ConfigGeneric {
                                     onChange={() => this.applyFilter()}
                                     title={I18n.t('ra_You can filter entries by entering here some text')}
                                     InputProps={{
-                                        endAdornment: this.filterRefs[headCell.attr]?.current?.children[0]?.children[0]?.value && <InputAdornment position="end">
+                                        endAdornment: ConfigTable.getFilterValue(this.filterRefs[headCell.attr]) && <InputAdornment position="end">
                                             <IconButton
                                                 size="small"
                                                 onClick={() => {
-                                                    this.filterRefs[headCell.attr].current.children[0].children[0].value = '';
+                                                    ConfigTable.setFilterValue(this.filterRefs[headCell.attr], '');
                                                     this.applyFilter();
                                                 }}
                                             >
@@ -440,8 +542,8 @@ class ConfigTable extends ConfigGeneric {
                                         filterOn.splice(pos, 1);
                                     }
                                     this.setState({ filterOn }, () => {
-                                        if (pos && this.filterRefs[headCell.attr].current.children[0].children[0].value) {
-                                            this.filterRefs[headCell.attr].current.children[0].children[0].value = '';
+                                        if (pos && ConfigTable.getFilterValue(this.filterRefs[headCell.attr])) {
+                                            ConfigTable.setFilterValue(this.filterRefs[headCell.attr], '');
                                             this.applyFilter();
                                         }
                                     });
@@ -481,7 +583,7 @@ class ConfigTable extends ConfigGeneric {
         </TableHead>;
     }
 
-    onDelete = index => () => {
+    onDelete = (index: number) => () => {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
         newValue.splice(index, 1);
 
@@ -493,11 +595,11 @@ class ConfigTable extends ConfigGeneric {
     onExport() {
         const { schema } = this.props;
         const { value } = this.state;
-        const cols = schema.items.map(it => it.attr);
+        const cols = schema.items.map((it: TableItemProps) => it.attr);
         const lines = [cols.join(';')];
         value.forEach(row => {
-            const line = [];
-            schema.items.forEach(it => {
+            const line: string[] = [];
+            schema.items.forEach((it: TableItemProps) => {
                 if (row[it.attr].includes(';')) {
                     line.push(`"${row[it.attr]}"`);
                 } else {
@@ -522,15 +624,19 @@ class ConfigTable extends ConfigGeneric {
         document.body.removeChild(el);
     }
 
-    onImport(text) {
-        const lines = text.split('\n').map(line => line.replace('\r', '').trim());
+    onImport(text: string): void {
+        const lines = text.split('\n').map((line: string) => line.replace('\r', '').trim());
         // the first line is header
         const { schema } = this.props;
-        const header = lines.shift().split(';').filter(it => it && schema.items.find(it2 => it2.attr === it));
-        const values = [];
-        lines.forEach(line => {
-            const parts = line.split(';');
-            const obj = {};
+
+        const header = lines.shift()
+            .split(';')
+            .filter(it => it && schema.items.find((it2: TableItemProps) => it2.attr === it));
+
+        const values: Record<string, any>[] = [];
+        lines.forEach((line: string) => {
+            const parts: string[] = line.split(';');
+            const obj: Record<string, string | number | boolean> = {};
             for (let p = 0; p < parts.length; p++) {
                 let value = parts[p];
                 if (value.startsWith('"')) {
@@ -540,19 +646,27 @@ class ConfigTable extends ConfigGeneric {
                     }
                     value = value.substring(0, value.length - 1);
                 }
-                if (parts[p] === 'true') {
-                    parts[p] = true;
-                } else if (parts[p] === 'false') {
-                    parts[p] = false;
+
+                let val: string | number | boolean = value;
+
+                if (value === 'true') {
+                    val = true;
+                } else if (value === 'false') {
+                    val = false;
                     // eslint-disable-next-line no-restricted-properties
-                } else if (window.isFinite(parts[p])) {
-                    const attr = this.props.schema.items.find(it => it.attr === header[p]);
+                } else if (window.isFinite(value as any as number)) {
+                    const attr = this.props.schema.items.find((it: TableItemProps) => it.attr === header[p]);
                     if (attr && attr.type === 'number') {
                         // if a type of attribute is a "number"
-                        parts[p] = parseFloat(parts[p]);
+                        val = parseFloat(value);
+                    } else {
+                        val = value;
                     }
+                } else {
+                    val = value;
                 }
-                obj[header[p]] = parts[p];
+
+                obj[header[p]] = val;
             }
             values.push(obj);
         });
@@ -568,7 +682,7 @@ class ConfigTable extends ConfigGeneric {
         }
     }
 
-    onClone = index => () => {
+    onClone = (index: number) => () => {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
         const cloned = JSON.parse(JSON.stringify(newValue[index]));
         if (typeof this.props.schema.clone === 'string' && typeof cloned[this.props.schema.clone] === 'string') {
@@ -582,7 +696,7 @@ class ConfigTable extends ConfigGeneric {
                 text += '_';
             }
             // eslint-disable-next-line no-loop-func
-            while (newValue.find(it => it[this.props.schema.clone] === text + i.toString())) {
+            while (newValue.find((it: Record<string, any>) => it[this.props.schema.clone] === text + i.toString())) {
                 i++;
             }
             cloned[this.props.schema.clone] = `${cloned[this.props.schema.clone]}_${i}`;
@@ -595,13 +709,29 @@ class ConfigTable extends ConfigGeneric {
                 this.onChangeWrapper(newValue)));
     };
 
-    onChangeWrapper = (newValue, updateVisible = false) => {
+    onChangeWrapper = (newValue: Record<string, any>[], updateVisible?: boolean) => {
         this.typingTimer && clearTimeout(this.typingTimer);
 
         this.typingTimer = setTimeout((value, _updateVisible) => {
             this.typingTimer = null;
 
-            if (this.props.schema.objKeyName) {
+            if (this.props.schema.encryptedAttributes) {
+                const _value = JSON.parse(JSON.stringify(value));
+                _value.forEach((el: Record<string, any>) => {
+                    this.props.schema.encryptedAttributes.forEach((attr: string) => {
+                        if (el[attr]) {
+                            el[attr] = encrypt(this.secret, el[attr]);
+                        }
+                    });
+                });
+
+                if (this.props.schema.objKeyName) {
+                    const objValue = arrayToObject(_value, this.props.schema.objKeyName, this.props.schema.objValueName);
+                    this.onChange(this.props.attr, objValue);
+                } else {
+                    this.onChange(this.props.attr, value);
+                }
+            } else if (this.props.schema.objKeyName) {
                 const objValue = arrayToObject(JSON.parse(JSON.stringify(value)), this.props.schema.objKeyName, this.props.schema.objValueName);
                 this.onChange(this.props.attr, objValue);
             } else {
@@ -618,11 +748,18 @@ class ConfigTable extends ConfigGeneric {
     onAdd = () => {
         const { schema } = this.props;
         const newValue = JSON.parse(JSON.stringify(this.state.value));
-        const newItem = schema.items && schema.items.reduce((accumulator, currentValue) => {
+        const newItem = schema.items?.reduce((accumulator: Record<string, any>, currentValue: TableItemProps) => {
             let defaultValue;
             if (currentValue.defaultFunc) {
                 if (this.props.custom) {
-                    defaultValue = currentValue.defaultFunc ? this.executeCustom(currentValue.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj, newValue.length, this.props.data) : this.props.schema.default;
+                    defaultValue = currentValue.defaultFunc ? this.executeCustom(
+                        currentValue.defaultFunc,
+                        this.props.schema.default,
+                        this.props.data,
+                        this.props.instanceObj,
+                        newValue.length,
+                        this.props.data,
+                    ) : this.props.schema.default;
                 } else {
                     defaultValue = currentValue.defaultFunc ? this.execute(currentValue.defaultFunc, this.props.schema.default, this.props.data, newValue.length, this.props.data) : this.props.schema.default;
                 }
@@ -641,20 +778,20 @@ class ConfigTable extends ConfigGeneric {
                 this.onChangeWrapper(newValue)));
     };
 
-    isAnyFilterSet() {
-        return Object.keys(this.filterRefs).find(attr => this.filterRefs[attr].current?.children[0].children[0].value);
+    isAnyFilterSet(): boolean {
+        return !!Object.keys(this.filterRefs).find(attr => ConfigTable.getFilterValue(this.filterRefs[attr]));
     }
 
-    applyFilter = (clear, value, cb) => {
+    applyFilter = (clear?: boolean, value?: Record<string, any>[], cb?: () => void): void => {
         value = value || this.state.value;
         let visibleValue = value.map((_, i) => i);
         Object.keys(this.filterRefs).forEach(attr => {
-            let valueInputRef = this.filterRefs[attr].current?.children[0].children[0].value;
+            let valueInputRef = ConfigTable.getFilterValue(this.filterRefs[attr]);
             if (!clear && valueInputRef) {
                 valueInputRef = valueInputRef.toLowerCase();
                 visibleValue = visibleValue.filter(idx => value[idx] && value[idx][attr] && value[idx][attr].toLowerCase().includes(valueInputRef));
             } else if (this.filterRefs[attr].current) {
-                this.filterRefs[attr].current.children[0].children[0].value = '';
+                ConfigTable.setFilterValue(this.filterRefs[attr], '');
             }
         });
 
@@ -674,7 +811,7 @@ class ConfigTable extends ConfigGeneric {
         }
     };
 
-    onMoveUp(idx) {
+    onMoveUp(idx: number) {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
         const item = newValue[idx];
         newValue.splice(idx, 1);
@@ -684,7 +821,7 @@ class ConfigTable extends ConfigGeneric {
                 this.onChangeWrapper(newValue)));
     }
 
-    onMoveDown(idx) {
+    onMoveDown(idx: number) {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
         const item = newValue[idx];
         newValue.splice(idx, 1);
@@ -694,7 +831,7 @@ class ConfigTable extends ConfigGeneric {
                 this.onChangeWrapper(newValue)));
     }
 
-    onDrop(acceptedFiles) {
+    onDrop(acceptedFiles: File[]) {
         const file = acceptedFiles[0];
         const reader = new FileReader();
 
@@ -705,7 +842,7 @@ class ConfigTable extends ConfigGeneric {
                 window.alert(I18n.t('ra_File is too big. Max %sk allowed. Try use SVG.', Math.round(MAX_SIZE / 1024)));
                 return;
             }
-            const text = new Uint8Array(reader.result)
+            const text = new Uint8Array(reader.result as ArrayBufferLike)
                 .reduce((data, byte) => data + String.fromCharCode(byte), '');
 
             this.onImport(text);
@@ -733,7 +870,10 @@ class ConfigTable extends ConfigGeneric {
                     autoFocus
                     onClick={() => {
                         const value = JSON.parse(JSON.stringify(this.state.value));
-                        this.state.showTypeOfImportDialog.forEach(obj => value.push(obj));
+
+                        (this.state.showTypeOfImportDialog as Record<string, any>[])
+                            .forEach((obj: Record<string, any>) => value.push(obj));
+
                         this.setState({
                             value,
                             iteration: this.state.iteration + 10000,
@@ -750,7 +890,7 @@ class ConfigTable extends ConfigGeneric {
                     color="secondary"
                     autoFocus
                     onClick={() => {
-                        const value = this.state.showTypeOfImportDialog;
+                        const value: Record<string, any>[] = this.state.showTypeOfImportDialog as Record<string, any>[];
                         this.setState({
                             value,
                             iteration: this.state.iteration + 10000,
@@ -864,7 +1004,7 @@ class ConfigTable extends ConfigGeneric {
                                 hover
                                 key={`${idx}_${i}`}
                             >
-                                {schema.items && schema.items.map(headCell =>
+                                {schema.items && schema.items.map((headCell: TableItemProps) =>
                                     <TableCell key={`${headCell.attr}_${idx}`} align="left">
                                         {this.itemTable(headCell.attr, this.state.value[idx], idx)}
                                     </TableCell>)}
@@ -928,18 +1068,5 @@ class ConfigTable extends ConfigGeneric {
         </Paper>;
     }
 }
-
-ConfigTable.propTypes = {
-    socket: PropTypes.object.isRequired,
-    changed: PropTypes.bool,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigTable);
