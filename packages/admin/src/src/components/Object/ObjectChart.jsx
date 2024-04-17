@@ -206,6 +206,7 @@ class ObjectChart extends Component {
         this.readTimeout  = null;
         this.chartValues  = null;
         this.rangeValues  = null;
+        this.subscribes   = [];
 
         this.unit         = this.props.obj.common && this.props.obj.common.unit ? ` ${this.props.obj.common.unit}` : '';
 
@@ -233,6 +234,11 @@ class ObjectChart extends Component {
         this.maxYLenTimeout && clearTimeout(this.maxYLenTimeout);
         this.maxYLenTimeout = null;
 
+        for (let i = 0; i < this.subscribes.length; i++) {
+            this.props.socket.unsubscribeState(this.subscribes[i], this.onChange);
+        }
+        this.subscribes = [];
+
         this.props.socket.unsubscribeState(this.props.obj._id, this.onChange);
         window.removeEventListener('resize', this.onResize);
     }
@@ -249,14 +255,32 @@ class ObjectChart extends Component {
         if (id === this.props.obj._id &&
             state &&
             this.rangeValues &&
-            (!this.rangeValues.length || this.rangeValues[this.rangeValues.length - 1].ts < state.ts)) {
+            (!this.rangeValues.length || this.rangeValues[this.rangeValues.length - 1].ts < state.ts)
+        ) {
             if (!this.state.max || state.ts - this.state.max < 120_000) {
                 this.chartValues && this.chartValues.push({ val: state.val, ts: state.ts });
                 this.rangeValues.push({ val: state.val, ts: state.ts });
 
-                // update only if end is near to now
+                // update only if an end is near to now
                 if (state.ts >= this.chart.min && state.ts <= this.chart.max + 300_000) {
                     this.updateChart();
+                }
+            }
+        } else if (id.startsWith('system.adapter.') && id.endsWith('.alive')) {
+            const instance = id.substring('system.adapter.'.length, id.length - '.alive'.length);
+            const list = this.state.historyInstances;
+            const itemIndex = list.findIndex(it => it.id === instance);
+            if (itemIndex !== -1) {
+                if (list[itemIndex].alive !== !!state?.val) {
+                    const historyInstances = JSON.parse(JSON.stringify(list));
+                    historyInstances[itemIndex].alive = !!state?.val;
+                    this.setState({ historyInstances }, () => {
+                        // read data if the instance becomes alive
+                        if (historyInstances[itemIndex].alive && this.state.historyInstance === instance) {
+                            this.readHistoryRange()
+                                .then(() => this.updateChart());
+                        }
+                    });
                 }
             }
         }
@@ -300,7 +324,7 @@ class ObjectChart extends Component {
                         historyInstance = defaultHistory;
                     }
                     if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                        // find first alive history
+                        // find first the alive history
                         historyInstance = list.find(it => it.alive);
                         if (historyInstance) {
                             historyInstance = historyInstance.id;
@@ -342,16 +366,22 @@ class ObjectChart extends Component {
 
         if (ids.length) {
             return this.props.socket.getForeignStates(ids)
-                .then(alives => {
+                .then(async alives => {
                     Object.keys(alives).forEach(id => {
                         const item = list.find(it => id.endsWith(`${it.id}.alive`));
                         if (item) {
                             item.alive = alives[id] && alives[id].val;
                         }
                     });
+                    this.subscribes = ids;
+                    for (let i = 0; i < ids.length; i++) {
+                        await this.props.socket.subscribeState(ids[i], this.onChange);
+                    }
+
                     return list;
                 });
         }
+
         return Promise.resolve(list);
     }
 
@@ -359,25 +389,29 @@ class ObjectChart extends Component {
         const now = new Date();
         const oldest = new Date(2000, 0, 1);
 
-        return this.props.socket.getHistory(this.props.obj._id, {
-            instance:  this.state.historyInstance,
-            start:     oldest.getTime(),
-            end:       now.getTime(),
-            // step:      3600000, // hourly
-            limit:     1,
-            from:      false,
-            ack:       false,
-            q:         false,
-            addID:     false,
-            aggregate: 'none',
-        })
-            .then(values => {
-                // remove interpolated first value
-                if (values && values[0]?.val === null) {
-                    values.shift();
-                }
-                this.rangeValues = values;
-            });
+        if (this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
+            return this.props.socket.getHistory(this.props.obj._id, {
+                instance:  this.state.historyInstance,
+                start:     oldest.getTime(),
+                end:       now.getTime(),
+                // step:      3600000, // hourly
+                limit:     1,
+                from:      false,
+                ack:       false,
+                q:         false,
+                addID:     false,
+                aggregate: 'none',
+            })
+                .then(values => {
+                    // remove interpolated first value
+                    if (values && values[0]?.val === null) {
+                        values.shift();
+                    }
+                    this.rangeValues = values;
+                });
+        }
+
+        return Promise.resolve();
     }
 
     readHistory(start, end) {
@@ -396,6 +430,10 @@ class ObjectChart extends Component {
             sessionId?: any;
             aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
         } */
+        if (!this.state.historyInstance || !this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
+            return Promise.resolve([]);
+        }
+
         const options = {
             instance:  this.state.historyInstance,
             start,
@@ -1022,6 +1060,12 @@ class ObjectChart extends Component {
     }
 
     renderChart() {
+        if (!this.state.historyInstance) {
+            return <div>{this.props.t('History instance not selected')}</div>;
+        }
+        if (!this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
+            return <div>{this.props.t('History instance not alive')}</div>;
+        }
         if (this.chartValues) {
             return <ReactEchartsCore
                 ref={e => this.echartsReact = e}

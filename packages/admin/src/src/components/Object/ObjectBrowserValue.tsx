@@ -340,26 +340,23 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     renderTimePicker(): React.JSX.Element {
         return <LocalizationProvider adapterLocale={localeMap[this.props.lang]} dateAdapter={AdapterDateFns}>
             <DatePicker
-                value={Number(this.state.targetValue)}
+                value={Number(this.state.targetValue) as any as Date}
                 onChange={value => {
                     if (!value) {
                         return;
                     }
-
-                    // @ts-expect-error we are getting type Date here but TS thinks number
                     this.setState({ targetValue: Math.round(value.getTime()) });
                 }}
             />
 
             <TimePicker
-                value={Number(this.state.targetValue)}
+                value={Number(this.state.targetValue) as any as Date}
                 views={['hours', 'minutes', 'seconds']}
                 onChange={value => {
                     if (!value) {
                         return;
                     }
 
-                    // @ts-expect-error we are getting type Date here but TS thinks number
                     this.setState({ targetValue: Math.round(value.getTime()) });
                 }}
             />

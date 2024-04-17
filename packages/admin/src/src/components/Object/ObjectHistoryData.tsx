@@ -255,6 +255,8 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
     private rangeRef?: React.RefObject<any>;
 
+    private subscribes: string[];
+
     constructor(props: ObjectHistoryDataProps) {
         super(props);
 
@@ -307,6 +309,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         this.unit = this.props.obj.common && this.props.obj.common.unit ? ` ${this.props.obj.common.unit}` : '';
 
         this.timeTimer = undefined;
+        this.subscribes = [];
 
         this.prepareData()
             .then(() => this.readHistoryRange())
@@ -348,13 +351,18 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         return this.supportedFeaturesPromises[historyInstance];
     }
 
-    componentDidMount() {
-        this.props.socket.subscribeState(this.props.obj._id, this.onChange);
+    async componentDidMount() {
+        await this.props.socket.subscribeState(this.props.obj._id, this.onChange);
     }
 
     componentWillUnmount() {
         this.timeTimer && clearTimeout(this.timeTimer);
         this.timeTimer = undefined;
+
+        for (let i = 0; i < this.subscribes.length; i++) {
+            this.props.socket.unsubscribeState(this.subscribes[i], this.onChange);
+        }
+        this.subscribes = [];
 
         this.props.socket.unsubscribeState(this.props.obj._id, this.onChange);
     }
@@ -366,6 +374,23 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             (!this.state.values.length || this.state.values[this.state.values.length - 1].ts < state.ts)) {
             const values = [...this.state.values, state];
             this.setState({ values });
+        } else if (id.startsWith('system.adapter.') && id.endsWith('.alive')) {
+            const instance = id.substring('system.adapter.'.length, id.length - '.alive'.length);
+            const list = this.state.historyInstances;
+            const itemIndex = list.findIndex(it => it.id === instance);
+            if (itemIndex !== -1) {
+                if (list[itemIndex].alive !== !!state?.val) {
+                    const historyInstances = JSON.parse(JSON.stringify(list));
+                    historyInstances[itemIndex].alive = !!state?.val;
+                    this.setState({ historyInstances }, () => {
+                        // read data if the instance becomes alive
+                        if (historyInstances[itemIndex].alive && this.state.historyInstance === instance) {
+                            this.readHistoryRange()
+                                .then(() => this.readHistory());
+                        }
+                    });
+                }
+            }
         }
     };
 
@@ -427,13 +452,18 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         if (ids.length) {
             return this.props.socket.getForeignStates(ids)
-                .then((alives: Record<string, any>) => {
+                .then(async (alives: Record<string, any>) => {
                     Object.keys(alives).forEach(id => {
                         const item = list.find(it => id.endsWith(`${it.id}.alive`));
                         if (item) {
                             item.alive = alives[id] && alives[id].val;
                         }
                     });
+                    this.subscribes = ids;
+                    for (let i = 0; i < ids.length; i++) {
+                        await this.props.socket.subscribeState(ids[i], this.onChange);
+                    }
+
                     return list;
                 });
         }
@@ -444,7 +474,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         start = start || this.state.start;
         end   = end   || this.state.end;
 
-        if (!this.state.historyInstance) {
+        if (!this.state.historyInstance || !this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
             return null;
         }
 
@@ -546,6 +576,12 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     readHistoryRange() {
         const now = new Date();
         const oldest = new Date(2_000, 0, 1);
+
+        if (!this.state.historyInstance ||
+            !this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)
+        ) {
+            return Promise.resolve();
+        }
 
         this.setState({ loading: true });
         // this is a code that makes problems. It is no good idea doing this!
@@ -869,6 +905,13 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     }
 
     renderTable() {
+        if (!this.state.historyInstance) {
+            return <div>{this.props.t('History instance not selected')}</div>;
+        }
+        if (!this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
+            return <div>{this.props.t('History instance not alive')}</div>;
+        }
+
         if (this.state.values) {
             const { classes } = this.props;
 

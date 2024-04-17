@@ -2,9 +2,9 @@ import React from 'react';
 
 import { DatePicker } from '@mui/x-date-pickers';
 
-import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
+import ConfigGeneric from './ConfigGeneric';
 
-export default class ConfigDatePicker extends ConfigGeneric<ConfigGenericProps, ConfigGenericState> {
+export default class ConfigDatePicker extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -13,13 +13,13 @@ export default class ConfigDatePicker extends ConfigGeneric<ConfigGenericProps, 
 
     renderItem(error: unknown, disabled: boolean /* , defaultValue */): React.JSX.Element {
         return <DatePicker
-            /** @ts-expect-error check this later on */
+            // @ts-expect-error fullWidth does exist on DatePicker
             fullWidth
             margin="normal"
             format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
             error={!!error}
             disabled={!!disabled}
-            value={this.state.value}
+            value={this.state.value as never}
             KeyboardButtonProps={{
                 'aria-label': 'change date',
             }}

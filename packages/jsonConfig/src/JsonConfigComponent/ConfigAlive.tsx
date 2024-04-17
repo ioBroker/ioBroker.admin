@@ -3,18 +3,23 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric from './ConfigGeneric';
+import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     root: {
         width: '100%',
     },
     notAlive: {
         color: '#a30000',
     },
-});
+};
 
-class ConfigAlive extends ConfigGeneric {
+interface ConfigAliveState extends ConfigGenericState {
+    alive?: boolean | null;
+    instance?: string;
+}
+
+class ConfigAlive extends ConfigGeneric<ConfigGenericProps, ConfigAliveState> {
     componentDidMount() {
         super.componentDidMount();
 
@@ -61,13 +66,5 @@ class ConfigAlive extends ConfigGeneric {
         </div>;
     }
 }
-
-ConfigAlive.propTypes = {
-    socket: PropTypes.object.isRequired,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-};
 
 export default withStyles(styles)(ConfigAlive);

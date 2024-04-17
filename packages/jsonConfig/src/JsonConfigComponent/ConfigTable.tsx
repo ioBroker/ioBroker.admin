@@ -268,7 +268,10 @@ interface TableItemProps {
     attr: string;
     type: string;
     width?: string | number;
+    /** Title in header */
     title?: string;
+    /** Title in every input item and not in header */
+    label?: string;
     filter?: boolean;
     sort?: boolean;
     default?: string | number | boolean;
@@ -729,7 +732,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     const objValue = arrayToObject(_value, this.props.schema.objKeyName, this.props.schema.objValueName);
                     this.onChange(this.props.attr, objValue);
                 } else {
-                    this.onChange(this.props.attr, value);
+                    this.onChange(this.props.attr, _value);
                 }
             } else if (this.props.schema.objKeyName) {
                 const objValue = arrayToObject(JSON.parse(JSON.stringify(value)), this.props.schema.objKeyName, this.props.schema.objValueName);

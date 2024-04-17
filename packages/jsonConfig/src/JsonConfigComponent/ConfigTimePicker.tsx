@@ -14,8 +14,12 @@ export default class ConfigTimePicker extends ConfigGeneric {
     renderItem(error: unknown, disabled: boolean) {
         const legacyReturnFormat = this.props.schema.returnFormat !== 'HH:mm:ss';
 
+        const value: never = this.state.value && !legacyReturnFormat ?
+            new Date(Date.parse(`Thu, 01 Jan 1970 ${this.state.value}`)) as never :
+            this.state.value as never;
+
         return <TimePicker
-            /** @ts-expect-error check this later on */
+            // @ts-expect-error fullWidth does exist on DatePicker
             fullWidth
             ampm={false}
             timeSteps={this.props.schema.timesteps || { hours: 1, minutes: 5, seconds: 5 }}
@@ -23,14 +27,15 @@ export default class ConfigTimePicker extends ConfigGeneric {
             format={this.props.schema.format || 'HH:mm:ss'}
             error={!!error}
             disabled={!!disabled}
-            value={this.state.value && !legacyReturnFormat ? new Date(Date.parse(`Thu, 01 Jan 1970 ${this.state.value}`)) : this.state.value}
-            onChange={value => {
+            value={value}
+            onChange={(newValue: never) => {
+                let strValue = newValue as string;
                 if (!legacyReturnFormat) {
-                    value = value instanceof Date ? value.toTimeString().split(' ')[0] : value;
+                    strValue = (newValue as any) instanceof Date ? (value as Date).toTimeString().split(' ')[0] : value;
                 }
 
-                this.setState({ value }, () =>
-                    this.onChange(this.props.attr, value));
+                this.setState({ value: strValue }, () =>
+                    this.onChange(this.props.attr, strValue));
             }}
             views={this.props.schema.views || ['hours', 'minutes', 'seconds']}
             InputLabelProps={{
