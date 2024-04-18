@@ -1587,5 +1587,7 @@
   "write": "schreiben",
   "write operation": "schreiben",
   "wrongPassword": "Benutzername oder Passwort sind falsch",
-  "yesterday": "gestern"
+  "yesterday": "gestern",
+  "History instance not alive": "Verlaufsinstanz nicht aktiv",
+  "History instance not selected": "Keine Verlaufsinstanz ausgewählt"
 }

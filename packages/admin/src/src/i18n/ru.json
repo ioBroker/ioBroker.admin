@@ -1587,5 +1587,7 @@
   "write": "писать",
   "write operation": "Писать",
   "wrongPassword": "Неверные имя пользователя или пароль",
-  "yesterday": "вчера"
+  "yesterday": "вчера",
+  "History instance not alive": "Экземпляр истории не жив",
+  "History instance not selected": "Экземпляр истории не выбран"
 }

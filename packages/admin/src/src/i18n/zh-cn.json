@@ -1587,5 +1587,7 @@
   "write": "写",
   "write operation": "写",
   "wrongPassword": "用户名或密码无效",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "History instance not alive": "历史实例不存在",
+  "History instance not selected": "未选择历史实例"
 }

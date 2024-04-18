@@ -45,15 +45,6 @@ import {
 import type { SystemConfig } from '@iobroker/socket-client';
 import { localeMap } from './utils';
 
-function padding3(ms: number) {
-    if (ms < 10) {
-        return `00${ms}`;
-    } if (ms < 100) {
-        return `0${ms}`;
-    }
-    return ms;
-}
-
 const styles = (theme: Record<string, any>) => ({
     paper: {
         height: '100%',
@@ -157,7 +148,7 @@ const styles = (theme: Record<string, any>) => ({
         color: '#FF6666',
     },
     toolbarTime: {
-        width: 100,
+        width: 105,
         marginTop: 9,
         marginLeft: theme.spacing(1),
     },
@@ -474,7 +465,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         start = start || this.state.start;
         end   = end   || this.state.end;
 
-        if (!this.state.historyInstance || !this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
+        if (!this.state.historyInstance || !this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)) {
             return null;
         }
 
@@ -578,7 +569,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         const oldest = new Date(2_000, 0, 1);
 
         if (!this.state.historyInstance ||
-            !this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)
+            !this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)
         ) {
             return Promise.resolve();
         }
@@ -731,7 +722,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                             {selected && this.state.lastSelectedColumn === 'from' ? <div className={classes.rowFocused} /> : ''}
                         </TableCell> : null}
                         {this.state.lcVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
-                            {state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${padding3(state.ts % 1000)}` : ''}
+                            {state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${(state.ts % 1000).toString().padStart(3, '0')}` : ''}
                             {selected && this.state.lastSelectedColumn === 'lc' ? <div className={classes.rowFocused} /> : ''}
                         </TableCell> : null}
                     </TableRow>);
@@ -906,10 +897,10 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
     renderTable() {
         if (!this.state.historyInstance) {
-            return <div>{this.props.t('History instance not selected')}</div>;
+            return <div style={{ marginTop: 20, fontSize: 24 }}>{this.props.t('History instance not selected')}</div>;
         }
-        if (!this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
-            return <div>{this.props.t('History instance not alive')}</div>;
+        if (!this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)) {
+            return <div style={{ marginTop: 20, fontSize: 24 }}>{this.props.t('History instance not alive')}</div>;
         }
 
         if (this.state.values) {
@@ -1425,7 +1416,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
      * @param ts the timestamp
      */
     formatTimestamp(ts: number): string {
-        return `${new Date(ts).toLocaleDateString()} ${new Date(ts).toLocaleTimeString()}.${padding3(ts % 1_000)}`;
+        return `${new Date(ts).toLocaleDateString()} ${new Date(ts).toLocaleTimeString()}.${(ts % 1_000).toString().padStart(3, '0')}`;
     }
 }
 
