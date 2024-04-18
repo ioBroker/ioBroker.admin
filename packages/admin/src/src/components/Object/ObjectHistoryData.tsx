@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
+import { withStyles } from '@mui/styles';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
@@ -21,13 +21,13 @@ import {
     Button,
     FormControlLabel,
     Checkbox,
-    Grid,
     TableHead,
     TableRow,
     TableCell,
     TextField,
     TableBody,
     TableContainer,
+    type Theme,
 } from '@mui/material';
 
 import {
@@ -45,7 +45,7 @@ import {
 import type { SystemConfig } from '@iobroker/socket-client';
 import { localeMap } from './utils';
 
-const styles = (theme: Record<string, any>) => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -53,7 +53,7 @@ const styles = (theme: Record<string, any>) => ({
         overflow: 'hidden',
     },
     tableDiv: {
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight + parseInt(theme.spacing(1), 10)}px)`,
+        height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + parseInt(theme.spacing(1), 10)}px)`,
         overflow: 'hidden',
         width: '100%',
     },
@@ -135,7 +135,7 @@ const styles = (theme: Record<string, any>) => ({
     },
     msInput: {
         width: 50,
-        paddingTop: 16,
+        paddingTop: 10,
         marginLeft: 5,
         '& label': {
             marginTop: 15,
@@ -147,16 +147,37 @@ const styles = (theme: Record<string, any>) => ({
     cellAckFalse: {
         color: '#FF6666',
     },
-    toolbarTime: {
-        width: 105,
-        marginTop: 9,
-        marginLeft: theme.spacing(1),
-    },
     toolbarDate: {
-        width: 160,
+        width: 124,
         marginTop: 9,
+        '& fieldset': {
+            display: 'none',
+        },
+        '& input': {
+            padding: `${theme.spacing(1)} 0 0 0`,
+        },
+        '& .MuiInputAdornment-root': {
+            marginLeft: 0,
+            marginTop: 7,
+        },
+    },
+    toolbarTime: {
+        width: 84,
+        marginTop: 9,
+        // marginLeft: theme.spacing(1),
+        '& fieldset': {
+            display: 'none',
+        },
+        '& input': {
+            padding: `${theme.spacing(1)} 0 0 0`,
+        },
+        '& .MuiInputAdornment-root': {
+            marginLeft: 0,
+            marginTop: 7,
+        },
     },
     toolbarTimeGrid: {
+        position: 'relative',
         marginLeft: theme.spacing(1),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
@@ -164,6 +185,14 @@ const styles = (theme: Record<string, any>) => ({
         paddingBottom: theme.spacing(0.5),
         border: '1px dotted #AAAAAA',
         borderRadius: theme.spacing(1),
+        display: 'flex',
+    },
+    toolbarTimeLabel: {
+        position: 'absolute',
+        padding: theme.spacing(1),
+        fontSize: '0.8rem',
+        left: 2,
+        top: -9,
     },
     noLoadingProgress: {
         width: '100%',
@@ -192,41 +221,61 @@ const styles = (theme: Record<string, any>) => ({
     timeInput: {
         width: 100,
     },
-}) satisfies Styles<any, any>;
+});
+
+type SupportedFeatures = ('insert' | 'update' | 'delete')[];
 
 interface ObjectHistoryDataProps {
     t: (...text: string[]) => string;
     lang: ioBroker.Languages;
     expertMode: boolean;
     socket: AdminConnection;
-    obj: Record<string, any>;
-    customsInstances: any[];
-    themeName: string;
-    objects: Record<string, any>;
+    obj: ioBroker.StateObject;
+    customsInstances: string[];
+    objects: Record<string, ioBroker.Object>;
     isFloatComma: boolean;
-    classes: Record<string, any>;
+    classes: Record<string, string>;
+}
+
+interface HistoryItem {
+    ts: number;
+    e?: boolean;
+    ack?: boolean;
+    val?: string | number | boolean | null;
+    noData?: boolean;
+    noDataForPeriod?: boolean;
+    i?: boolean;
+    from?: string;
+    lc?: number;
 }
 
 interface ObjectHistoryDataState {
     areYouSure?: boolean;
     historyInstance: string;
-    relativeRange: any;
+    relativeRange: string | number;
     start: number;
     end: number;
-    values: any;
+    values: HistoryItem[] | null;
     selected: number[];
-    lastSelected: any;
-    lastSelectedColumn: any;
+    lastSelected: number | null;
+    lastSelectedColumn: string | null;
     updateOpened: boolean;
     insertOpened: boolean;
-    historyInstances: null | Record<string, any>[];
+    historyInstances: null | { id: string; alive: boolean }[];
+    ampm: boolean;
     lcVisible: boolean;
     ackVisible: boolean;
     fromVisible: boolean;
     /** 'insert', 'update', 'delete' */
-    supportedFeatures: string[];
-    dateFormat: string;
-    edit: Record<string, any>;
+    supportedFeatures: SupportedFeatures;
+    edit: {
+        val?: number | string | boolean;
+        ack?: boolean;
+        q?: number;
+        date?: Date;
+        time?: Date;
+        ms?: number;
+    };
     loading?: boolean;
     suppressMessage?: number | boolean;
 }
@@ -234,7 +283,7 @@ interface ObjectHistoryDataState {
 class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryDataState> {
     private readonly adminInstance: number;
 
-    private readonly supportedFeaturesPromises: Record<string, any>;
+    private readonly supportedFeaturesPromises: Record<string, Promise<SupportedFeatures>>;
 
     private readonly unit: string;
 
@@ -248,15 +297,19 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
     private subscribes: string[];
 
+    private readonly localStorage: Storage;
+
     constructor(props: ObjectHistoryDataProps) {
         super(props);
 
-        let relativeRange      = (((window as any)._localStorage) || window.localStorage).getItem('App.relativeRange') || 'absolute';
-        const start              = parseInt((((window as any)._localStorage) || window.localStorage).getItem('App.absoluteStart'), 10) || 0;
-        const end                = parseInt((((window as any)._localStorage) || window.localStorage).getItem('App.absoluteEnd'), 10)   || 0;
-        let selected           = (((window as any)._localStorage) || window.localStorage).getItem('App.historySelected') || '';
-        const lastSelected       = parseInt((((window as any)._localStorage) || window.localStorage).getItem('App.historyLastSelected'), 10) || null;
-        const lastSelectedColumn = (((window as any)._localStorage) || window.localStorage).getItem('App.historyLastSelectedColumn') || null;
+        this.localStorage = (window as any)._localStorage || window.localStorage;
+
+        let relativeRange = this.localStorage.getItem('App.relativeRange') || 'absolute';
+        const start = parseInt(this.localStorage.getItem('App.absoluteStart'), 10) || 0;
+        const end = parseInt(this.localStorage.getItem('App.absoluteEnd'), 10) || 0;
+        const selectedStr = this.localStorage.getItem('App.historySelected') || '';
+        const lastSelected = parseInt(this.localStorage.getItem('App.historyLastSelected'), 10) || null;
+        const lastSelectedColumn = this.localStorage.getItem('App.historyLastSelectedColumn') || null;
 
         if ((!start || !end) && (!relativeRange || relativeRange === 'absolute')) {
             relativeRange = '30';
@@ -266,8 +319,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             relativeRange = 'absolute';
         }
 
+        let selected: number[];
         try {
-            selected = JSON.parse(selected);
+            selected = JSON.parse(selectedStr);
         } catch (e) {
             selected = [];
         }
@@ -290,7 +344,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             ackVisible: true,
             fromVisible: true,
             supportedFeatures: [],
-            dateFormat: 'dd.MM.yyyy',
+            ampm: false,
             edit: {},
         };
         this.adminInstance = parseInt(window.location.search.slice(1), 10) || 0;
@@ -313,11 +367,12 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             });
     }
 
-    readSupportedFeatures(historyInstance: string) {
+    readSupportedFeatures(historyInstance: string): Promise<SupportedFeatures> {
         historyInstance = historyInstance || this.state.historyInstance;
         if (!historyInstance) {
-            return Promise.resolve([]);
-        } if (this.supportedFeaturesPromises[historyInstance]) {
+            return Promise.resolve([] as SupportedFeatures);
+        }
+        if (this.supportedFeaturesPromises[historyInstance]) {
             return this.supportedFeaturesPromises[historyInstance];
         }
 
@@ -329,7 +384,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             }, 2_000);
 
             this.props.socket.sendTo(historyInstance, 'features', null)
-                .then((result: any) => {
+                .then((result: { supportedFeatures: SupportedFeatures}) => {
                     if (this.readSupportedFeaturesTimeout) {
                         this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
                         this.readSupportedFeaturesTimeout = undefined;
@@ -385,52 +440,46 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         }
     };
 
-    prepareData() {
-        let list: Record<string, any>[];
-        return this.getHistoryInstances()
-            .then((_list: Record<string, any>[]) => {
-                list = _list;
-                // read default history
-                return this.props.socket.getCompactSystemConfig();
-            })
-            .then((config: SystemConfig) => {
-                const defaultHistory = config?.common?.defaultHistory;
+    async prepareData(): Promise<void> {
+        const list: { id: string; alive: boolean }[] = await this.getHistoryInstances();
+        // read default history
+        const config: SystemConfig = await this.props.socket.getCompactSystemConfig();
+        const defaultHistory = config?.common?.defaultHistory;
 
-                // find current history
-                // first read from localstorage
-                let historyInstance = ((window as any)._localStorage || window.localStorage).getItem('App.historyInstance') || '';
-                if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                    // try default history
-                    historyInstance = defaultHistory;
-                }
-                if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                    // find first alive history
-                    historyInstance = list.find(it => it.alive);
-                    if (historyInstance) {
-                        historyInstance = historyInstance.id;
-                    }
-                }
-                // get first entry
-                if (!historyInstance && list.length) {
-                    historyInstance = defaultHistory;
-                }
-                return this.readSupportedFeatures(historyInstance)
-                    .then((supportedFeatures: string[]) => new Promise<void>(resolve => {
-                        // supportedFeatures = ['insert', 'update', 'delete'];
+        // find current history
+        // first read from localstorage
+        let historyInstance = this.localStorage.getItem('App.historyInstance') || '';
+        if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+            // try default history
+            historyInstance = defaultHistory;
+        }
+        if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+            // find first the alive history
+            const historyInstanceItem = list.find(it => it.alive);
+            if (historyInstanceItem) {
+                historyInstance = historyInstanceItem.id;
+            }
+        }
+        // get first entry
+        if (!historyInstance && list.length) {
+            historyInstance = defaultHistory;
+        }
+        const supportedFeatures: SupportedFeatures = await this.readSupportedFeatures(historyInstance);
+        await new Promise<void>(resolve => {
+            // supportedFeatures = ['insert', 'update', 'delete'];
 
-                        this.setState({
-                            historyInstances: list,
-                            // defaultHistory,
-                            historyInstance,
-                            supportedFeatures,
-                            dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
-                        }, () => resolve());
-                    }));
-            });
+            this.setState({
+                ampm: (config.common.dateFormat || '').includes('/'),
+                historyInstances: list,
+                // defaultHistory,
+                historyInstance,
+                supportedFeatures,
+            }, () => resolve());
+        });
     }
 
     getHistoryInstances() {
-        const list: Record<string, any>[] = [];
+        const list: { id: string; alive: boolean }[] = [];
         const ids: string[] = [];
         this.props.customsInstances.forEach(instance => {
             const instObj = this.props.objects[`system.adapter.${instance}`];
@@ -443,11 +492,11 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         if (ids.length) {
             return this.props.socket.getForeignStates(ids)
-                .then(async (alives: Record<string, any>) => {
+                .then(async (alives: Record<string, ioBroker.State>) => {
                     Object.keys(alives).forEach(id => {
                         const item = list.find(it => id.endsWith(`${it.id}.alive`));
                         if (item) {
-                            item.alive = alives[id] && alives[id].val;
+                            item.alive = !!alives[id]?.val;
                         }
                     });
                     this.subscribes = ids;
@@ -645,13 +694,13 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 selected = [ts];
             }
 
-        ((window as any)._localStorage || window.localStorage).setItem('App.historyLastSelected', ts.toString());
-        ((window as any)._localStorage || window.localStorage).setItem('App.historyLastSelectedColumn', column);
-        ((window as any)._localStorage || window.localStorage).setItem('App.historySelected', JSON.stringify(selected));
+        this.localStorage.setItem('App.historyLastSelected', ts.toString());
+        this.localStorage.setItem('App.historyLastSelectedColumn', column);
+        this.localStorage.setItem('App.historySelected', JSON.stringify(selected));
         this.setState({ selected, lastSelected: ts, lastSelectedColumn: column });
     }
 
-    getTableRows(classes: Record<string, any>) {
+    getTableRows(classes: Record<string, string>) {
         const rows = [];
         for (let r = this.state.values.length - 1; r >= 0; r--) {
             const state = this.state.values[r];
@@ -703,7 +752,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                             interpolated && classes.rowInterpolated,
                             selectedClass && classes.rowSelected,
                         )}
-                        key={ts + (state.val || '')}
+                        key={ts.toString() + (state.val || '').toString()}
                     >
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
                             {`${this.formatTimestamp(state.ts)}`}
@@ -745,7 +794,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         const end = now.getTime();
         let start;
-        let mins = this.state.relativeRange;
+        const mins = this.state.relativeRange;
 
         if (mins === 'day') {
             now.setHours(0);
@@ -794,8 +843,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             now.setFullYear(now.getFullYear() - 1);
             start = now.getTime();
         } else {
-            mins = parseInt(mins, 10);
-            start = end - mins * 60000;
+            start = end - parseInt(mins as string, 10) * 60000;
         }
 
         this.setState({ start, end }, () => this.readHistory());
@@ -808,7 +856,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
     setRelativeInterval(mins: string | number, dontSave?: boolean): void {
         if (!dontSave) {
-            ((window as any)._localStorage || window.localStorage).setItem('App.relativeRange', mins);
+            this.localStorage.setItem('App.relativeRange', mins.toString());
             this.setState({ relativeRange: mins });
         }
         if (mins === 'absolute') {
@@ -816,8 +864,8 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             this.timeTimer = undefined;
             return;
         }
-        ((window as any)._localStorage || window.localStorage).removeItem('App.absoluteStart');
-        ((window as any)._localStorage || window.localStorage).removeItem('App.absolute');
+        this.localStorage.removeItem('App.absoluteStart');
+        this.localStorage.removeItem('App.absolute');
 
         const now = new Date();
 
@@ -1001,7 +1049,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         if (this.props.obj.common) {
             if (this.props.obj.common.type === 'number') {
                 if (typeof val !== 'number') {
-                    val = parseFloat(val.replace(',', '.'));
+                    val = parseFloat(val.toString().replace(',', '.'));
                 }
             } else if (this.props.obj.common.type === 'boolean') {
                 val = val === 'true' || val === 'TRUE' || val === true || val === '1' || val === 1;
@@ -1036,7 +1084,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         if (this.props.obj.common) {
             if (this.props.obj.common.type === 'number') {
-                val = parseFloat(val.replace(',', '.'));
+                val = parseFloat(val.toString().replace(',', '.'));
             } else if (this.props.obj.common.type === 'boolean') {
                 val = val === 'true' || val === 'TRUE' || val === true || val === '1' || val === 1;
             }
@@ -1046,7 +1094,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         ts.setHours(this.state.edit.time.getHours());
         ts.setMinutes(this.state.edit.time.getMinutes());
         ts.setSeconds(this.state.edit.time.getSeconds());
-        ts.setMilliseconds(parseInt(this.state.edit.ms, 10));
+        ts.setMilliseconds(parseInt(this.state.edit.ms as any as string, 10));
 
         const state: ioBroker.SettableState = {
             ts:   ts.getTime(),
@@ -1072,7 +1120,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 this.readHistory());
     }
 
-    updateEdit(name: string, value: any): void {
+    updateEdit(name: string, value: string | number | boolean | Date): void {
         const edit = JSON.parse(JSON.stringify(this.state.edit));
         edit.time = new Date(edit.time);
         edit.date = new Date(edit.date);
@@ -1082,6 +1130,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     }
 
     renderEditDialog(): React.JSX.Element {
+        const classes = this.props.classes;
         return <Dialog
             open={this.state.updateOpened || this.state.insertOpened}
             onClose={() => this.setState({ updateOpened: false, insertOpened: false })}
@@ -1090,7 +1139,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         >
             <DialogTitle id="edit-dialog-title">{ this.state.updateOpened ? this.props.t('Update entry') : this.props.t('Insert entry') }</DialogTitle>
             <DialogContent>
-                <form className={this.props.classes.dialogForm} noValidate autoComplete="off">
+                <form className={classes.dialogForm} noValidate autoComplete="off">
                     {typeof this.state.edit.val === 'boolean' ?
                         <FormControlLabel
                             control={<Checkbox
@@ -1117,48 +1166,39 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
                     {this.state.insertOpened ?
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                            <Grid container justifyContent="space-around">
+                            <div className={classes.toolbarTimeGrid}>
+                                <div className={classes.toolbarTimeLabel}>
+                                    {this.props.t('Time')}
+                                </div>
                                 <DatePicker
-                                    className={this.props.classes.editorDatePicker}
-                                    // @ts-expect-error does this really have an effect?
-                                    margin="normal"
-                                    label={this.props.t('Date')}
-                                    // format="fullDate"
-                                    inputFormat={this.state.dateFormat}
+                                    className={classes.toolbarDate}
                                     value={this.state.edit.date}
-                                    onChange={date =>
-                                        this.updateEdit('date', date)}
-                                    renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
+                                    onChange={date => this.updateEdit('date', date)}
                                 />
                                 <TimePicker
-                                    // @ts-expect-error does this really have an effect?
-                                    margin="normal"
+                                    className={classes.toolbarTime}
+                                    ampm={this.state.ampm}
                                     views={['hours', 'minutes', 'seconds']}
-                                    label={this.props.t('Time')}
-                                    ampm={false}
-                                    format="HH:mm:ss"
-                                    className={this.props.classes.editorTimePicker}
                                     value={this.state.edit.time}
-                                    onChange={time =>
-                                        this.updateEdit('time', time)}
-                                    renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
+                                    onChange={time => this.updateEdit('time', time)}
                                 />
                                 <TextField
                                     variant="standard"
-                                    classes={{ root: this.props.classes.msInput }}
-                                    label={this.props.t('ms')}
+                                    classes={{ root: classes.msInput }}
+                                    helperText={this.props.t('ms')}
                                     type="number"
                                     inputProps={{ max: 999, min: 0 }}
                                     value={this.state.edit.ms}
                                     onChange={e => this.updateEdit('ms', e.target.value)}
                                 />
-                            </Grid>
+                            </div>
                         </LocalizationProvider> : null}
                 </form>
             </DialogContent>
             <DialogActions>
                 <Button
                     variant="contained"
+                    disabled={this.state.edit.val === ''}
                     onClick={() => {
                         const isUpdate = this.state.updateOpened;
                         this.setState({ updateOpened: false, insertOpened: false }, () =>
@@ -1182,17 +1222,17 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             clearTimeout(this.timeTimer);
             this.timeTimer = undefined;
         }
-        ((window as any)._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
-        ((window as any)._localStorage || window.localStorage).setItem('App.absoluteStart', start);
-        ((window as any)._localStorage || window.localStorage).setItem('App.absoluteEnd', this.state.end);
+        this.localStorage.setItem('App.relativeRange', 'absolute');
+        this.localStorage.setItem('App.absoluteStart', start.toString());
+        this.localStorage.setItem('App.absoluteEnd', this.state.end.toString());
         this.setState({ start, relativeRange: 'absolute' }, () => this.readHistory());
     }
 
     setEndDate(endDate: Date): void {
         const end = endDate.getTime();
-        ((window as any)._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
-        ((window as any)._localStorage || window.localStorage).setItem('App.absoluteStart', this.state.start);
-        ((window as any)._localStorage || window.localStorage).setItem('App.absoluteEnd', end);
+        this.localStorage.setItem('App.relativeRange', 'absolute');
+        this.localStorage.setItem('App.absoluteStart', this.state.start.toString());
+        this.localStorage.setItem('App.absoluteEnd', end.toString());
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
             this.timeTimer = undefined;
@@ -1210,97 +1250,119 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     value={this.state.historyInstance || ''}
                     onChange={e => {
                         const historyInstance = e.target.value;
-                        ((window as any)._localStorage || window.localStorage).setItem('App.historyInstance', historyInstance);
+                        this.localStorage.setItem(
+                            'App.historyInstance',
+                            historyInstance,
+                        );
                         this.readSupportedFeatures(historyInstance)
-                            .then((supportedFeatures: string[]) =>
+                            .then((supportedFeatures: SupportedFeatures) =>
                                 this.setState({ historyInstance, supportedFeatures }, () =>
                                     this.readHistory()));
                     }}
                 >
-                    {this.state.historyInstances?.map(it => <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{ it.id }</MenuItem>)}
+                    {this.state.historyInstances?.map(it => <MenuItem
+                        key={it.id}
+                        value={it.id}
+                        className={Utils.clsx(!it.alive && classes.notAliveInstance)}
+                    >
+                        {it.id}
+                    </MenuItem>)}
                 </Select>
             </FormControl>
             <FormControl variant="standard" className={classes.selectRelativeTime}>
-                <InputLabel>{ this.props.t('Relative') }</InputLabel>
+                <InputLabel>{this.props.t('Relative')}</InputLabel>
                 <Select
                     variant="standard"
                     ref={this.rangeRef}
                     value={this.state.relativeRange}
                     onChange={e => this.setRelativeInterval(e.target.value)}
                 >
-                    <MenuItem key="custom" value="absolute" className={classes.customRange}>{ this.props.t('custom range') }</MenuItem>
-                    <MenuItem key="1" value={10}>{ this.props.t('last 10 minutes') }</MenuItem>
-                    <MenuItem key="2" value={30}>{ this.props.t('last 30 minutes') }</MenuItem>
-                    <MenuItem key="3" value={60}>{ this.props.t('last hour') }</MenuItem>
-                    <MenuItem key="4" value="day">{ this.props.t('this day') }</MenuItem>
-                    <MenuItem key="5" value={24 * 60}>{ this.props.t('last 24 hours') }</MenuItem>
-                    <MenuItem key="6" value="week">{ this.props.t('this week') }</MenuItem>
-                    <MenuItem key="7" value={24 * 60 * 7}>{ this.props.t('last week') }</MenuItem>
-                    <MenuItem key="8" value="2weeks">{ this.props.t('this 2 weeks') }</MenuItem>
-                    <MenuItem key="9" value={24 * 60 * 14}>{ this.props.t('last 2 weeks') }</MenuItem>
-                    <MenuItem key="10" value="month">{ this.props.t('this month') }</MenuItem>
-                    <MenuItem key="11" value={30 * 24 * 60}>{ this.props.t('last 30 days') }</MenuItem>
-                    <MenuItem key="12" value="year">{ this.props.t('this year') }</MenuItem>
-                    <MenuItem key="13" value="12months">{ this.props.t('last 12 months') }</MenuItem>
+                    <MenuItem key="custom" value="absolute" className={classes.customRange}>
+                        {this.props.t('custom range')}
+                    </MenuItem>
+                    <MenuItem key="1" value={10}>
+                        {this.props.t('last 10 minutes')}
+                    </MenuItem>
+                    <MenuItem key="2" value={30}>
+                        {this.props.t('last 30 minutes')}
+                    </MenuItem>
+                    <MenuItem key="3" value={60}>
+                        {this.props.t('last hour')}
+                    </MenuItem>
+                    <MenuItem key="4" value="day">
+                        {this.props.t('this day')}
+                    </MenuItem>
+                    <MenuItem key="5" value={24 * 60}>
+                        {this.props.t('last 24 hours')}
+                    </MenuItem>
+                    <MenuItem key="6" value="week">
+                        {this.props.t('this week')}
+                    </MenuItem>
+                    <MenuItem key="7" value={24 * 60 * 7}>
+                        {this.props.t('last week')}
+                    </MenuItem>
+                    <MenuItem key="8" value="2weeks">
+                        {this.props.t('this 2 weeks')}
+                    </MenuItem>
+                    <MenuItem key="9" value={24 * 60 * 14}>
+                        {this.props.t('last 2 weeks')}
+                    </MenuItem>
+                    <MenuItem key="10" value="month">
+                        {this.props.t('this month')}
+                    </MenuItem>
+                    <MenuItem key="11" value={30 * 24 * 60}>
+                        {this.props.t('last 30 days')}
+                    </MenuItem>
+                    <MenuItem key="12" value="year">
+                        {this.props.t('this year')}
+                    </MenuItem>
+                    <MenuItem key="13" value="12months">
+                        {this.props.t('last 12 months')}
+                    </MenuItem>
                 </Select>
             </FormControl>
 
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
                 <div className={classes.toolbarTimeGrid}>
+                    <div
+                        className={classes.toolbarTimeLabel}
+                        style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
+                    >
+                        {this.props.t('Start time')}
+                    </div>
                     <DatePicker
                         className={classes.toolbarDate}
                         disabled={this.state.relativeRange !== 'absolute'}
-                        /*
-                        // @ts-expect-error needs further checking */
-                        disableToolbar
-                        variant="inline"
-                        margin="normal"
-                        inputFormat={this.state.dateFormat}
-                        label={this.props.t('Start date')}
                         value={new Date(this.state.start)}
-                        onChange={date => this.setStartDate(date as Date)}
-                        renderInput={(params: any) => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
+                        onChange={date => this.setStartDate(date)}
                     />
                     <TimePicker
                         disabled={this.state.relativeRange !== 'absolute'}
                         className={classes.toolbarTime}
-                        /*
-                        // @ts-expect-error needs further checking */
-                        margin="normal"
-                        ampm={false}
-                        label={this.props.t('Start time')}
+                        ampm={this.state.ampm}
                         value={new Date(this.state.start)}
-                        onChange={date => this.setStartDate(date as Date)}
-                        renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
+                        onChange={date => this.setStartDate(date)}
                     />
                 </div>
                 <div className={classes.toolbarTimeGrid}>
-
+                    <div
+                        className={classes.toolbarTimeLabel}
+                        style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
+                    >
+                        {this.props.t('End time')}
+                    </div>
                     <DatePicker
                         disabled={this.state.relativeRange !== 'absolute'}
                         className={classes.toolbarDate}
-                        /*
-                        // @ts-expect-error needs further checking */
-                        disableToolbar
-                        inputFormat={this.state.dateFormat}
-                        variant="inline"
-                        margin="normal"
-                        label={this.props.t('End date')}
                         value={new Date(this.state.end)}
-                        onChange={date => this.setEndDate(date as Date)}
-                        renderInput={(params: any) => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
+                        onChange={date => this.setEndDate(date)}
                     />
                     <TimePicker
                         disabled={this.state.relativeRange !== 'absolute'}
                         className={classes.toolbarTime}
-                        /*
-                        // @ts-expect-error needs further checking */
-                        margin="normal"
-                        ampm={false}
-                        label={this.props.t('End time')}
+                        ampm={this.state.ampm}
                         value={new Date(this.state.end)}
-                        onChange={date => this.setEndDate(date as Date)}
-                        renderInput={(params: any) => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
+                        onChange={date => this.setEndDate(date)}
                     />
                 </div>
             </LocalizationProvider>
@@ -1337,7 +1399,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 size="large"
                 disabled={this.state.selected.length !== 1}
                 onClick={() => {
-                    const state = JSON.parse(JSON.stringify(this.state.values.find((it: any) => it.ts === this.state.lastSelected)));
+                    const state = JSON.parse(JSON.stringify(this.state.values.find((it: HistoryItem) => it.ts === this.state.lastSelected)));
                     const time = new Date(state.ts);
                     state.date = new Date(time);
                     state.time = new Date(time);
@@ -1354,7 +1416,10 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 size="large"
                 disabled={!this.state.selected.length}
                 onClick={() => {
-                    if (typeof this.state.suppressMessage === 'number' && Date.now() - this.state.suppressMessage < 300_000) {
+                    if (
+                        typeof this.state.suppressMessage === 'number' &&
+                        Date.now() - this.state.suppressMessage < 300_000
+                    ) {
                         this.onDelete();
                     } else {
                         this.setState({ areYouSure: true });
@@ -1377,7 +1442,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
         const lines = ['timestamp;value;acknowledged;from;'];
 
-        this.state.values.forEach((state: any) => !state.i && !state.e &&
+        this.state.values.forEach((state: HistoryItem) => !state.i && !state.e &&
             lines.push([
                 this.formatTimestamp(state.ts),
                 state.val === null || state.val === undefined ? 'null' : state.val.toString(),
@@ -1386,7 +1451,6 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             ].join(';')));
 
         element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(lines.join('\n'))}`);
-        // @ts-expect-error check it
         element.setAttribute('download', `${Utils.getObjectName({ [this.props.obj._id]: this.props.obj }, this.props.obj._id, { language: this.props.lang })}.csv`);
 
         element.click();
