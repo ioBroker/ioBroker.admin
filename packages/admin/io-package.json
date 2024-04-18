@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.3",
+    "version": "6.17.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.4": {
+        "en": "Extend the table JSON Config with the encryption possibility\nDo not read historical data if instance is not active",
+        "de": "Erweitern Sie die Tabelle JSON Config mit der Verschlüsselungsmöglichkeit\nLesen Sie historische Daten nicht, wenn Instanz nicht aktiv ist",
+        "ru": "Расширение таблицы JSON Config с возможностью шифрования\nНе читайте исторические данные, если экземпляр не активен",
+        "pt": "Estenda a tabela JSON Config com a possibilidade de criptografia\nNão leia dados históricos se a instância não estiver ativa",
+        "nl": "De tabel JSON instellen uitbreiden met de versleutelingsmogelijkheid\nNiet lezen van historische gegevens als instantie niet actief is",
+        "fr": "Étendre la table JSON Config avec la possibilité de chiffrement\nNe pas lire les données historiques si l'instance n'est pas active",
+        "it": "Estendere il tavolo JSON Config con la possibilità di crittografia\nNon leggere i dati storici se l'istanza non è attiva",
+        "es": "Extender la tabla JSON Config con la posibilidad de cifrado\nNo lea datos históricos si la instancia no es activa",
+        "pl": "Rozszerzenie tabeli JSON Config z możliwością szyfrowania\nNie należy odczytywać danych historycznych, jeśli instancja nie jest aktywna",
+        "uk": "Розширення таблиці JSON Config з можливістю шифрування\nНе прочитайте історичні дані, якщо не активна",
+        "zh-cn": "扩展表 JSON 配置到加密可能性\n如果实例不活动, 不读取历史数据"
+      },
       "6.17.3": {
         "en": "fixed npm adapter installation",
         "de": "installation von npm adapter",
@@ -95,19 +108,6 @@
         "pl": "stały problem z zapisaniem wartości tablicy w niestandardowym konfiguratorze\nstałe wydanie na usuwaniu obiektów\ndokonać UI aktualizacji kontrolera i admin więcej verbose",
         "uk": "виправлена проблема з збереженням значень масиву в налаштуванні\nвиправлено проблему видалення об'єктів\nзробіть оновлення UI контролера та адміністратора більш дієслово",
         "zh-cn": "在自定义配置中保存数组值的固定问题\n删除对象的固定问题\n使控制器的 UI 更新和操作更加动词化"
-      },
-      "6.15.0": {
-        "en": "harmonized the links to adapter documentation (and fallback to english if no explicit doc for sys language provided)\nadded possibility to delete whole adapter from instance tab if only one instance left\nnew dialog for notifications introduced for non-system notifications (system notifications are still on hosts tab)\nthe new `licenseInformation` icon now changes color correctly with the theme",
-        "de": "die links zu adapterdokumentation (und rückfall auf englisch, wenn kein expliziter punkt für sys-sprache zur verfügung gestellt)\nhinzufügen der möglichkeit, den gesamten adapter von der registerkarte zu löschen, wenn nur eine instanz links\nneuer dialog für meldungen, die für nicht-system-benachrichtigungen eingeführt werden (system-benachrichtigungen sind noch auf hosts-tab)\ndas neue `licenseInformation`-Symbol ändert nun die Farbe korrekt mit dem Thema",
-        "ru": "гармонизирует ссылки на документацию адаптера (и возвращается на английский, если отсутствует явный док для языка sys)\nвозможность удаления всего адаптера из вкладки примера, если только один экземпляр остался\nновый диалог для уведомлений, введенных для несистемных уведомлений (системные уведомления все еще на вкладке хостов)\nновый значок «LicenseInformation» теперь правильно меняет цвет с темой",
-        "pt": "harmonizou os links para a documentação do adaptador (e a recaída ao inglês se nenhum documento explícito para a linguagem do sys fornecido)\npossibilidade adicionada de excluir o adaptador inteiro da aba da instância se apenas uma instância deixada\nnova caixa de diálogo para notificações introduzidas para notificações não-sistema (as notificações do sistema ainda estão na guia hosts)\no novo ícone `licenseInformation` agora muda a cor corretamente com o tema",
-        "nl": "geharmoniseerde links naar de documentatie van de adapter (en terugval naar het engels als er geen expliciete doc voor de gegeven sys taal)\ntoegevoegd mogelijkheid om hele adapter uit instantie tabblad te verwijderen als er nog maar één instantie over is\nnieuw dialoogvenster voor meldingen ingevoerd voor notificaties buiten het systeem (systeemmeldingen zijn nog steeds op het tabblad hosts)\nhet nieuwe ",
-        "fr": "harmonisation des liens vers la documentation de l'adaptateur (et retour à l'anglais si aucun doc explicite pour la langue de sys fourni)\npossibilité ajoutée de supprimer l'adaptateur entier de l'onglet instance si une seule instance reste\nnouvelle boîte de dialogue pour les notifications introduites pour les notifications non système (les notifications système sont toujours sur l'onglet hôte)\nla nouvelle icône `licenseInformation` change maintenant la couleur correctement avec le thème",
-        "it": "armonizzato i collegamenti alla documentazione dell'adattatore (e il ripiegamento all'inglese, se non un documento esplicito per la lingua sys fornito)\npossibilità aggiunta di eliminare l'intero adattatore dalla scheda di istanza se rimane solo un'istanza\nnuova finestra di dialogo per le notifiche introdotte per le notifiche non-sistema (le notifiche di sistema sono ancora sulla scheda host)\nla nuova icona `licenseInformation` ora cambia colore correttamente con il tema",
-        "es": "armoniza los enlaces a la documentación del adaptador (y retroceder al inglés si no hay un doc explícito para el lenguaje de sís)\nadicional posibilidad de eliminar el adaptador entero de la pestaña de instancia si sólo una instancia izquierda\nnuevo diálogo para las notificaciones introducidas para notificaciones no sistema (las notificaciones del sistema siguen en la pestaña hosts)\nel nuevo icono 'licenseInformation' ahora cambia de color correctamente con el tema",
-        "pl": "harmonizacja linków do dokumentacji adaptera (i powrót do angielskiego, jeśli nie ma wyraźnego doc dla języka sys)\ndodana możliwość usunięcia całego adaptera z zakładki instance, jeśli została tylko jedna instancja\nnowe okno dialogowe dla powiadomień wprowadzonych dla powiadomień niesystemowych (powiadomienia systemowe są nadal w zakładce hosts)\nnowa ikona 'licenseInformation' zmienia kolor poprawnie z motywem",
-        "uk": "гармонізовані посилання на документацію адаптера (і впадок в англійську, якщо немає явного довідка для наданої мови)\nдодано можливість видалити весь адаптер з вкладки екземпляра, якщо тільки один екземпляр залишив\nновий діалог для повідомлень, введених для сповіщення про несистему (системні сповіщення все ще на вкладці hosts)\n`licenseInformation````````````````````````````````________=================================================================================================================================================================================================================",
-        "zh-cn": "协调适配文件的链接(如果未为sys语言提供明确的文件,则回落到英文)\n如果仅剩一个实例, 则添加从实例标签中删除整个适配符的可能性\n为非系统通知引入的通知新对话框(系统通知仍在主机标签上)\n新的“ 许可证信息” 图标现在按照主题正确改变颜色"
       }
     },
     "desc": {
