@@ -205,6 +205,7 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         icon={ColorLensIcon}
                         className={props.classes.colorPicker}
                         classes={props.classes}
+                        t={props.t}
                     />
                 </Grid>
             </Grid>

@@ -215,13 +215,13 @@ interface EnumsListState {
 }
 
 class EnumsList extends Component<EnumsListProps, EnumsListState> {
-    private cachedIcons: Record<string, string>;
+    private readonly cachedIcons: Record<string, string>;
 
     private fastUpdate: boolean;
 
-    private refFilter: React.RefObject<HTMLInputElement>;
+    private readonly refFilter: React.RefObject<HTMLInputElement>;
 
-    private refClearButton: React.RefObject<HTMLButtonElement>;
+    private readonly refClearButton: React.RefObject<HTMLButtonElement>;
 
     private updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -336,7 +336,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
     async componentDidMount() {
         await this.updateData();
-        this.props.socket.subscribeObject('enum.*', this.onObjectChange);
+        await this.props.socket.subscribeObject('enum.*', this.onObjectChange);
     }
 
     componentWillUnmount() {
@@ -345,7 +345,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         this.updateTimeout = null;
     }
 
-    onObjectChange = (id: string, obj: ioBroker.EnumObject) => {
+    onObjectChange  = (id: string, obj: ioBroker.EnumObject) => {
         let changed;
 
         if (this.state.enums && id.startsWith('enum.')) {
