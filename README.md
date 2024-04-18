@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.5 (2024-04-18)
 * (bluefox) Extend the table JSON Config with the encryption possibility
 * (bluefox) Do not read historical data if instance is not active
 

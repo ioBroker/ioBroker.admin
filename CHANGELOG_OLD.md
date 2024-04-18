@@ -1,6 +1,10 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.15.2 (2024-03-07)
 * (foxriver76) fixed cron dialog
 
