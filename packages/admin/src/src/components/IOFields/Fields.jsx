@@ -49,6 +49,7 @@ const IOColorPicker = props => {
     return <div style={{ width: '100%' }}>
         {IconCustom ? <IconCustom className={props.previewClassName || props.classes.formIcon} /> : null}
         <ColorPicker
+            t={props.t}
             style={{ width: IconCustom ? 'calc(100% - 45px)' : '100%', display: 'inline-block', verticalAlign: 'top' }}
             name={props.t(props.label)}
             onChange={props.onChange}
@@ -67,5 +68,6 @@ IOColorPicker.propTypes = {
     onChange: PropTypes.func,
     icon: PropTypes.object,
     className: PropTypes.string,
+    t: PropTypes.func.isRequired,
 };
 export { IOColorPicker };

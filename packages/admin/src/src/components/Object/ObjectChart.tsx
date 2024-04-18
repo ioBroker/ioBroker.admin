@@ -1,31 +1,33 @@
-import { createRef, Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, createRef } from 'react';
 import { withStyles } from '@mui/styles';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
+import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import {
-    Paper,
-    LinearProgress,
-    InputLabel,
-    MenuItem,
-    FormControl,
-    Select,
-    Toolbar,
+    Button,
     Fab,
-    Button, Menu,
+    FormControl,
+    InputLabel,
+    LinearProgress,
+    Menu,
+    MenuItem,
+    Paper,
+    Select,
+    type Theme,
+    Toolbar,
 } from '@mui/material';
 
 import ReactEchartsCore from 'echarts-for-react/lib/core';
+import type { EChartsOption, YAXisComponentOption } from 'echarts/types/dist/echarts';
 
 import * as echarts from 'echarts/core';
 import { LineChart } from 'echarts/charts';
 import {
     GridComponent,
+    TimelineComponent,
+    TitleComponent,
     ToolboxComponent,
     TooltipComponent,
-    TitleComponent,
-    TimelineComponent,
 } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 
@@ -38,23 +40,7 @@ import { localeMap } from './utils';
 
 echarts.use([TimelineComponent, ToolboxComponent, TitleComponent, TooltipComponent, GridComponent, LineChart, SVGRenderer]);
 
-function padding3(ms) {
-    if (ms < 10) {
-        return `00${ms}`;
-    } if (ms < 100) {
-        return `0${ms}`;
-    }
-    return ms;
-}
-
-function padding2(num) {
-    if (num < 10) {
-        return `0${num}`;
-    }
-    return num;
-}
-
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -67,7 +53,7 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     chartWithToolbar: {
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight + parseInt(theme.spacing(1), 10)}px)`,
+        height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + parseInt(theme.spacing(1), 10)}px)`,
     },
     chartWithoutToolbar: {
         height: '100%',
@@ -159,9 +145,89 @@ const styles = theme => ({
 const GRID_PADDING_LEFT = 80;
 const GRID_PADDING_RIGHT = 25;
 
-class ObjectChart extends Component {
-    constructor(props) {
+interface ObjectChartProps {
+    obj: ioBroker.StateObject;
+    customsInstances: string[];
+    objects: Record<string, any>;
+    socket: any;
+    lang: ioBroker.Languages;
+    themeType: string;
+    // dateFormat: string;
+    isFloatComma: boolean;
+    noToolbar: boolean;
+    showJumpToEchart: boolean;
+    defaultHistory: string;
+    historyInstance: string;
+    from: number;
+    end: number;
+    t: (text: string) => string;
+    classes: Record<string, string>;
+}
+
+interface ObjectChartState {
+    historyInstance: string;
+    historyInstances: { id: string; alive: boolean }[];
+    defaultHistory: string;
+    chartHeight: number;
+    chartWidth: number;
+    ampm: boolean;
+    relativeRange: string;
+    splitLine: boolean;
+    min: number;
+    max: number;
+    maxYLen: number;
+    stepType: string;
+    echartsJump: boolean;
+    showStepMenu?: null | HTMLElement;
+}
+
+interface HistoryItem {
+    val: number;
+    ts: number;
+    i?: boolean;
+}
+
+class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
+    private echartsReact: ReactEchartsCore;
+
+    private readonly rangeRef: React.RefObject<HTMLDivElement>;
+
+    private readTimeout: any;
+
+    private chartValues: any;
+
+    private rangeValues: any;
+
+    private subscribes: any[];
+
+    private readonly unit: string;
+
+    private readonly divRef: React.RefObject<HTMLDivElement>;
+
+    private chart: any;
+
+    private timerResize: any;
+
+    private minY: number;
+
+    private maxY: number;
+
+    private timeTimer: any;
+
+    private maxYLenTimeout: any;
+
+    private mouseDown: boolean;
+
+    private start: number;
+
+    private end: number;
+
+    private readonly localStorage: Storage;
+
+    constructor(props: ObjectChartProps) {
         super(props);
+        this.localStorage = (window as any)._localStorage || window.localStorage;
+
         if (!this.props.from) {
             const from = new Date();
             from.setHours(from.getHours() - 24 * 7);
@@ -174,9 +240,9 @@ class ObjectChart extends Component {
         } else {
             this.end = this.props.end;
         }
-        let relativeRange = (window._localStorage || window.localStorage).getItem('App.relativeRange') || '30';
-        const min           = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteStart'), 10) || 0;
-        const max           = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteEnd'), 10)   || 0;
+        let relativeRange = this.localStorage.getItem('App.relativeRange') || '30';
+        const min = parseInt(this.localStorage.getItem('App.absoluteStart'), 10) || 0;
+        const max = parseInt(this.localStorage.getItem('App.absoluteEnd'), 10) || 0;
 
         if ((!min || !max) && (!relativeRange || relativeRange === 'absolute')) {
             relativeRange = '30';
@@ -194,25 +260,26 @@ class ObjectChart extends Component {
             chartWidth: 500,
             ampm: false,
             relativeRange,
-            splitLine: (window._localStorage || window.localStorage).getItem('App.splitLine') === 'true',
+            splitLine: this.localStorage.getItem('App.splitLine') === 'true',
             min,
             max,
             maxYLen: 0,
             stepType: '',
+            echartsJump: false,
         };
 
-        this.echartsReact = createRef();
-        this.rangeRef     = createRef();
-        this.readTimeout  = null;
-        this.chartValues  = null;
-        this.rangeValues  = null;
-        this.subscribes   = [];
+        this.echartsReact = null;
+        this.rangeRef = createRef();
+        this.readTimeout = null;
+        this.chartValues = null;
+        this.rangeValues = null;
+        this.subscribes = [];
 
-        this.unit         = this.props.obj.common && this.props.obj.common.unit ? ` ${this.props.obj.common.unit}` : '';
+        this.unit = this.props.obj.common && this.props.obj.common.unit ? ` ${this.props.obj.common.unit}` : '';
 
-        this.divRef       = createRef();
+        this.divRef = createRef();
 
-        this.chart        = {};
+        this.chart = {};
     }
 
     componentDidMount() {
@@ -220,8 +287,7 @@ class ObjectChart extends Component {
         window.addEventListener('resize', this.onResize);
         this.prepareData()
             .then(() => !this.props.noToolbar && this.readHistoryRange())
-            .then(() => this.setRelativeInterval(this.state.relativeRange, true, () =>
-                this.forceUpdate()));
+            .then(() => this.setRelativeInterval(this.state.relativeRange, true, () => this.forceUpdate()));
     }
 
     componentWillUnmount() {
@@ -251,8 +317,9 @@ class ObjectChart extends Component {
         });
     };
 
-    onChange = (id, state) => {
-        if (id === this.props.obj._id &&
+    onChange = (id: string, state: ioBroker.State) => {
+        if (
+            id === this.props.obj._id &&
             state &&
             this.rangeValues &&
             (!this.rangeValues.length || this.rangeValues[this.rangeValues.length - 1].ts < state.ts)
@@ -277,8 +344,7 @@ class ObjectChart extends Component {
                     this.setState({ historyInstances }, () => {
                         // read data if the instance becomes alive
                         if (historyInstances[itemIndex].alive && this.state.historyInstance === instance) {
-                            this.readHistoryRange()
-                                .then(() => this.updateChart());
+                            this.readHistoryRange().then(() => this.updateChart());
                         }
                     });
                 }
@@ -286,78 +352,78 @@ class ObjectChart extends Component {
         }
     };
 
-    prepareData() {
-        let list;
-
+    async prepareData(): Promise<void> {
         if (this.props.noToolbar) {
-            return new Promise(resolve => {
-                this.setState({
-                    // dateFormat: this.props.dateFormat.replace(/D/g, 'd').replace(/Y/g, 'y'),
-                    defaultHistory: this.props.defaultHistory,
-                    historyInstance: this.props.defaultHistory,
-                }, () => resolve());
+            await new Promise(resolve => {
+                this.setState(
+                    {
+                        // dateFormat: this.props.dateFormat.replace(/D/g, 'd').replace(/Y/g, 'y'),
+                        defaultHistory: this.props.defaultHistory,
+                        historyInstance: this.props.defaultHistory,
+                    },
+                    () => resolve(null),
+                );
             });
+            return;
         }
 
-        return this.getHistoryInstances()
-            .then(_list => {
-                list = _list;
-                // read default history
-                return this.props.socket.getCompactSystemConfig();
-            })
-            .then(config => (!this.props.showJumpToEchart ? Promise.resolve([]) : this.props.socket.getAdapterInstances('echarts', true)
-                .then(instances => {
-                    // collect all echarts instances
-                    const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
+        let list: { id: string; alive: boolean }[] = await this.getHistoryInstances();
+        const config: any = await this.props.socket.getCompactSystemConfig();
+        let instances: ioBroker.InstanceObject[] = [];
+        if (this.props.showJumpToEchart) {
+            instances = await this.props.socket.getAdapterInstances('echarts', true);
+        }
+        // collect all echarts instances
+        const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
 
-                    const defaultHistory = config && config.common && config.common.defaultHistory;
-                    // filter out history instances, that does not have data for this object
-                    if (this.props.obj.common.custom) {
-                        list = list.filter(it => this.props.obj.common.custom[it.id]);
-                    }
+        const defaultHistory = config && config.common && config.common.defaultHistory;
+        // filter out history instances, that does not have data for this object
+        if (this.props.obj.common.custom) {
+            list = list.filter(it => this.props.obj.common.custom[it.id]);
+        }
 
-                    // find current history
-                    // first read from localstorage
-                    let historyInstance = (window._localStorage || window.localStorage).getItem('App.historyInstance') || '';
-                    if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                        // try default history
-                        historyInstance = defaultHistory;
-                    }
-                    if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                        // find first the alive history
-                        historyInstance = list.find(it => it.alive);
-                        if (historyInstance) {
-                            historyInstance = historyInstance.id;
-                        }
-                    }
-                    // get first entry
-                    if (!historyInstance && list.length) {
-                        historyInstance = defaultHistory;
-                    }
+        // find current history
+        // first read from localstorage
+        let historyInstance = this.localStorage.getItem('App.historyInstance') || '';
+        if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+            // try default history
+            historyInstance = defaultHistory;
+        }
+        if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+            // find first the alive history
+            const historyInstanceItem = list.find(it => it.alive);
+            if (historyInstanceItem) {
+                historyInstance = historyInstanceItem.id;
+            }
+        }
+        // get first entry
+        if (!historyInstance && list.length) {
+            historyInstance = defaultHistory;
+        }
 
-                    this.setState({
-                        ampm: config.common.dateFormat.includes('/'),
-                        // dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
-                        historyInstances: list,
-                        defaultHistory,
-                        historyInstance,
-                        echartsJump,
-                        stepType: this.props.obj.common.custom ? this.props.obj.common.custom[historyInstance]?.chartStep || '' : '',
-                    });
-                })));
+        this.setState({
+            ampm: config.common.dateFormat.includes('/'),
+            // dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
+            historyInstances: list,
+            defaultHistory,
+            historyInstance,
+            echartsJump,
+            stepType: this.props.obj.common.custom
+                ? this.props.obj.common.custom[historyInstance]?.chartStep || ''
+                : '',
+        });
     }
 
     getHistoryInstances() {
-        const list = [];
-        const ids  = [];
-
         if (this.props.historyInstance) {
-            return Promise.resolve(list);
+            return Promise.resolve([]);
         }
+        const list: { id: string; alive: boolean }[] = [];
+        const ids: string[] = [];
 
         this.props.customsInstances.forEach(instance => {
             const instObj = this.props.objects[`system.adapter.${instance}`];
-            if (instObj && instObj.common && instObj.common.getHistory) {
+            if (instObj?.common?.getHistory) {
                 const listObj = { id: instance, alive: false };
                 list.push(listObj);
                 ids.push(`system.adapter.${instance}.alive`);
@@ -365,21 +431,20 @@ class ObjectChart extends Component {
         });
 
         if (ids.length) {
-            return this.props.socket.getForeignStates(ids)
-                .then(async alives => {
-                    Object.keys(alives).forEach(id => {
-                        const item = list.find(it => id.endsWith(`${it.id}.alive`));
-                        if (item) {
-                            item.alive = alives[id] && alives[id].val;
-                        }
-                    });
-                    this.subscribes = ids;
-                    for (let i = 0; i < ids.length; i++) {
-                        await this.props.socket.subscribeState(ids[i], this.onChange);
+            return this.props.socket.getForeignStates(ids).then(async (alives: Record<string, ioBroker.State>) => {
+                Object.keys(alives).forEach(id => {
+                    const item = list.find(it => id.endsWith(`${it.id}.alive`));
+                    if (item) {
+                        item.alive = !!alives[id]?.val;
                     }
-
-                    return list;
                 });
+                this.subscribes = ids;
+                for (let i = 0; i < ids.length; i++) {
+                    await this.props.socket.subscribeState(ids[i], this.onChange);
+                }
+
+                return list;
+            });
         }
 
         return Promise.resolve(list);
@@ -389,20 +454,21 @@ class ObjectChart extends Component {
         const now = new Date();
         const oldest = new Date(2000, 0, 1);
 
-        if (this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
-            return this.props.socket.getHistory(this.props.obj._id, {
-                instance:  this.state.historyInstance,
-                start:     oldest.getTime(),
-                end:       now.getTime(),
-                // step:      3600000, // hourly
-                limit:     1,
-                from:      false,
-                ack:       false,
-                q:         false,
-                addID:     false,
-                aggregate: 'none',
-            })
-                .then(values => {
+        if (this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)) {
+            return this.props.socket
+                .getHistory(this.props.obj._id, {
+                    instance: this.state.historyInstance,
+                    start: oldest.getTime(),
+                    end: now.getTime(),
+                    // step:      3600000, // hourly
+                    limit: 1,
+                    from: false,
+                    ack: false,
+                    q: false,
+                    addID: false,
+                    aggregate: 'none',
+                })
+                .then((values: { val: number; ts: number }[]) => {
                     // remove interpolated first value
                     if (values && values[0]?.val === null) {
                         values.shift();
@@ -414,7 +480,7 @@ class ObjectChart extends Component {
         return Promise.resolve();
     }
 
-    readHistory(start, end) {
+    readHistory(start?: number, end?: number) {
         /* interface GetHistoryOptions {
             instance?: string;
             start?: number;
@@ -430,37 +496,46 @@ class ObjectChart extends Component {
             sessionId?: any;
             aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
         } */
-        if (!this.state.historyInstance || !this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
+        if (
+            !this.state.historyInstance ||
+            !this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)
+        ) {
             return Promise.resolve([]);
         }
 
         const options = {
-            instance:  this.state.historyInstance,
+            instance: this.state.historyInstance,
             start,
             end,
-            from:      false,
-            ack:       false,
-            q:         false,
-            addID:     false,
+            from: false,
+            ack: false,
+            q: false,
+            addID: false,
             aggregate: 'none',
             returnNewestEntries: true,
         };
 
         // if more than 24 hours => aggregate
-        if (end - start > 60000 * 24 &&
-            !(this.props.obj.common.type === 'boolean' || (this.props.obj.common.type === 'number' && this.props.obj.common.states))) {
+        if (
+            end - start > 60000 * 24 &&
+            !(
+                this.props.obj.common.type === 'boolean' ||
+                (this.props.obj.common.type === 'number' && this.props.obj.common.states)
+            )
+        ) {
             options.aggregate = 'minmax';
             // options.step = 60000;
         }
 
-        return this.props.socket.getHistory(this.props.obj._id, options)
-            .then(values => {
+        return this.props.socket
+            .getHistory(this.props.obj._id, options)
+            .then((values: { val: number; ts: number }[]) => {
                 // merge range and chart
                 const chart = [];
-                let r     = 0;
+                let r = 0;
                 const range = this.rangeValues;
-                let minY  = null;
-                let maxY  = null;
+                let minY = null;
+                let maxY = null;
 
                 for (let t = 0; t < values.length; t++) {
                     if (range) {
@@ -474,7 +549,10 @@ class ObjectChart extends Component {
                     if (!chart.length || chart[chart.length - 1].ts < values[t].ts) {
                         chart.push(values[t]);
                         // console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`)
-                    } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
+                    } else if (
+                        chart[chart.length - 1].ts === values[t].ts &&
+                        chart[chart.length - 1].val !== values[t].ts
+                    ) {
                         console.error('Strange data!');
                     }
                     if (minY === null || values[t].val < minY) {
@@ -494,7 +572,7 @@ class ObjectChart extends Component {
                 }
 
                 // sort
-                chart.sort((a, b) => (a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0)));
+                chart.sort((a, b) => (a.ts > b.ts ? 1 : a.ts < b.ts ? -1 : 0));
 
                 this.chartValues = chart;
                 this.minY = minY;
@@ -515,14 +593,14 @@ class ObjectChart extends Component {
             });
     }
 
-    convertData(values) {
+    convertData(values?: HistoryItem[]): { value: number[]; exact?: boolean }[] {
         values = values || this.chartValues;
-        const data = [];
+        const data: { value: number[]; exact?: boolean }[] = [];
         if (!values.length) {
-            return data;
+            return [];
         }
         for (let i = 0; i < values.length; i++) {
-            const dp = { value: [values[i].ts, values[i].val] };
+            const dp: { value: number[]; exact?: boolean } = { value: [values[i].ts, values[i].val] };
             if (values[i].i) {
                 dp.exact = false;
             }
@@ -536,7 +614,7 @@ class ObjectChart extends Component {
         return data;
     }
 
-    getOption() {
+    getOption(): EChartsOption {
         let widthAxis;
         if (this.minY !== null && this.minY !== undefined) {
             widthAxis = (this.minY.toString() + this.unit).length * 9 + 12;
@@ -558,7 +636,13 @@ class ObjectChart extends Component {
         const serie = {
             xAxisIndex: 0,
             type: 'line',
-            step: this.state.stepType === 'stepStart' ? 'start' : (this.state.stepType === 'stepMiddle' ? 'middle' : (this.state.stepType === 'stepEnd' ? 'end' : undefined)),
+            step: this.state.stepType === 'stepStart'
+                ? 'start'
+                : this.state.stepType === 'stepMiddle'
+                    ? 'middle'
+                    : this.state.stepType === 'stepEnd'
+                        ? 'end'
+                        : undefined,
             showSymbol: false,
             hoverAnimation: true,
             animation: false,
@@ -569,7 +653,7 @@ class ObjectChart extends Component {
             areaStyle: {},
         };
 
-        const yAxis = {
+        const yAxis: YAXisComponentOption = {
             type: 'value',
             boundaryGap: [0, '100%'],
             splitLine: {
@@ -577,7 +661,7 @@ class ObjectChart extends Component {
             },
             splitNumber: Math.round(this.state.chartHeight / 50),
             axisLabel: {
-                formatter: value => {
+                formatter: (value: number) => {
                     let text;
                     if (this.props.isFloatComma) {
                         text = value.toString().replace(',', '.') + this.unit;
@@ -595,6 +679,7 @@ class ObjectChart extends Component {
                 showMinLabel: true,
             },
             axisTick: {
+                // @ts-expect-error fix later
                 alignWithLabel: true,
             },
         };
@@ -602,33 +687,35 @@ class ObjectChart extends Component {
         if (this.props.obj.common.type === 'boolean') {
             serie.step = 'end';
             yAxis.axisLabel.showMaxLabel = false;
-            yAxis.axisLabel.formatter = value => (value === 1 ? 'TRUE' : 'FALSE');
+            // @ts-expect-error fix later
+            yAxis.axisLabel.formatter = (value: number) => (value === 1 ? 'TRUE' : 'FALSE');
             yAxis.max = 1.5;
+            // @ts-expect-error fix later
             yAxis.interval = 1;
             widthAxis = 50;
-        } else
-            if (this.props.obj.common.type === 'number' &&
-            this.props.obj.common.states) {
-                serie.step = 'end';
-                yAxis.axisLabel.showMaxLabel = false;
-                yAxis.axisLabel.formatter = value => (this.props.obj.common.states[value] !== undefined ? this.props.obj.common.states[value] : value);
-                const keys = Object.keys(this.props.obj.common.states);
-                keys.sort();
-                yAxis.max = parseFloat(keys[keys.length - 1]) + 0.5;
-                yAxis.interval = 1;
-                let max = '';
-                for (let i = 0; i < keys.length; i++) {
-                    if (typeof this.props.obj.common.states[keys[i]] === 'string' && this.props.obj.common.states[keys[i]].length > max.length) {
-                        max = this.props.obj.common.states[keys[i]];
-                    }
+        } else if (this.props.obj.common.type === 'number' && this.props.obj.common.states) {
+            serie.step = 'end';
+            yAxis.axisLabel.showMaxLabel = false;
+            const states = this.props.obj.common.states as Record<string, string>;
+            // @ts-expect-error fix later
+            yAxis.axisLabel.formatter = (value: number) => (states[value] !== undefined ? states[value] : value);
+            const keys = Object.keys(this.props.obj.common.states);
+            keys.sort();
+            yAxis.max = parseFloat(keys[keys.length - 1]) + 0.5;
+            // @ts-expect-error fix later
+            yAxis.interval = 1;
+            let max = '';
+            for (let i = 0; i < keys.length; i++) {
+                if (typeof states[keys[i]] === 'string' && states[keys[i]].length > max.length) {
+                    max = states[keys[i]];
                 }
-                widthAxis = ((max.length * 9) || 50) + 12;
             }
+            widthAxis = (max.length * 9 || 50) + 12;
+        }
 
-        const splitNumber = this.chart.withSeconds ?
-            Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 100)
-            :
-            Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 60);
+        const splitNumber = this.chart.withSeconds
+            ? Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 100)
+            : Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 60);
 
         return {
             backgroundColor: 'transparent',
@@ -636,8 +723,8 @@ class ObjectChart extends Component {
                 text: this.props.noToolbar ? '' : Utils.getObjectNameFromObj(this.props.obj, this.props.lang),
                 padding: [
                     10, // up
-                    0,  // right
-                    0,  // down
+                    0, // right
+                    0, // down
                     widthAxis ? widthAxis + 10 : GRID_PADDING_LEFT + 10, // left
                 ],
             },
@@ -650,13 +737,14 @@ class ObjectChart extends Component {
             tooltip: {
                 trigger: 'axis',
                 formatter: params => {
-                    params = params[0];
-                    const date = new Date(params.value[0]);
-                    let value = params.value[1];
+                    // @ts-expect-error fix later
+                    const param = params[0];
+                    const date = new Date(param.value[0]);
+                    let value: number | string = param.value[1];
                     if (value !== null && this.props.isFloatComma) {
                         value = value.toString().replace('.', ',');
                     }
-                    return `${params.exact === false ? 'i' : ''}${date.toLocaleString()}.${padding3(date.getMilliseconds())}: ${value}${this.unit}`;
+                    return `${param.exact === false ? 'i' : ''}${date.toLocaleString()}.${date.getMilliseconds().toString().padStart(3, '0')}: ${value}${this.unit}`;
                 },
                 axisPointer: {
                     animation: true,
@@ -670,16 +758,20 @@ class ObjectChart extends Component {
                 splitNumber,
                 min: this.chart.min,
                 max: this.chart.max,
-                axisTick: { alignWithLabel: true },
+                axisTick: {
+                    // @ts-expect-error fix later
+                    alignWithLabel: true,
+                },
                 axisLabel: {
-                    formatter: value => {
+                    formatter: (value: number) => {
                         const date = new Date(value);
                         if (this.chart.withSeconds) {
-                            return `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}`;
-                        } if (this.chart.withTime) {
-                            return `${padding2(date.getHours())}:${padding2(date.getMinutes())}\n${padding2(date.getDate())}.${padding2(date.getMonth() + 1)}`;
+                            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
                         }
-                        return `${padding2(date.getDate())}.${padding2(date.getMonth() + 1)}\n${date.getFullYear()}`;
+                        if (this.chart.withTime) {
+                            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}\n${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                        }
+                        return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}\n${date.getFullYear()}`;
                     },
                 },
             },
@@ -693,15 +785,17 @@ class ObjectChart extends Component {
                     },
                 },
             },
+            // @ts-expect-error fix later
             series: [serie],
         };
     }
 
-    static getDerivedStateFromProps(/* props, state */) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    static getDerivedStateFromProps(_props: ObjectChartProps, _state: ObjectChartState): void {
         return null;
     }
 
-    updateChart(start, end, withReadData, cb) {
+    updateChart(start?: number, end?: number, withReadData?: boolean, cb?: () => void) {
         if (start) {
             this.start = start;
         }
@@ -709,7 +803,7 @@ class ObjectChart extends Component {
             this.end = end;
         }
         start = start || this.start;
-        end   = end   || this.end;
+        end = end || this.end;
 
         this.readTimeout && clearTimeout(this.readTimeout);
 
@@ -718,45 +812,46 @@ class ObjectChart extends Component {
 
             const diff = this.chart.max - this.chart.min;
             if (diff !== this.chart.diff) {
-                this.chart.diff        = diff;
-                this.chart.withTime    = this.chart.diff < 3600000 * 24 * 7;
+                this.chart.diff = diff;
+                this.chart.withTime = this.chart.diff < 3600000 * 24 * 7;
                 this.chart.withSeconds = this.chart.diff < 60000 * 30;
             }
 
             if (withReadData) {
-                this.readHistory(start, end)
-                    .then(values => {
-                        this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
+                this.readHistory(start, end).then((values: HistoryItem[]) => {
+                    typeof this.echartsReact?.getEchartsInstance === 'function' &&
+                        this.echartsReact.getEchartsInstance().setOption({
                             series: [{ data: this.convertData(values) }],
                             xAxis: {
                                 min: this.chart.min,
                                 max: this.chart.max,
                             },
                         });
-                        cb && cb();
-                    });
-            } else {
-                this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
-                    series: [{ data: this.convertData() }],
-                    xAxis: {
-                        min: this.chart.min,
-                        max: this.chart.max,
-                    },
+                    cb && cb();
                 });
+            } else {
+                typeof this.echartsReact?.getEchartsInstance === 'function' &&
+                    this.echartsReact.getEchartsInstance().setOption({
+                        series: [{ data: this.convertData() }],
+                        xAxis: {
+                            min: this.chart.min,
+                            max: this.chart.max,
+                        },
+                    });
                 cb && cb();
             }
         }, 400);
     }
 
-    setNewRange(readData) {
+    setNewRange(readData?: boolean) {
         /* if (this.rangeRef.current &&
             this.rangeRef.current.childNodes[1] &&
             this.rangeRef.current.childNodes[1].value) {
             this.rangeRef.current.childNodes[0].innerHTML = '';
             this.rangeRef.current.childNodes[1].value = '';
         } */
-        this.chart.diff        = this.chart.max - this.chart.min;
-        this.chart.withTime    = this.chart.diff < 3600000 * 24 * 7;
+        this.chart.diff = this.chart.max - this.chart.min;
+        this.chart.withTime = this.chart.diff < 3600000 * 24 * 7;
         this.chart.withSeconds = this.chart.diff < 60000 * 30;
 
         if (this.state.relativeRange !== 'absolute') {
@@ -764,7 +859,7 @@ class ObjectChart extends Component {
             // stop shift timer
             this.timeTimer && clearTimeout(this.timeTimer);
             this.timeTimer = null;
-        } else if (this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function') {
+        } else if (typeof this.echartsReact?.getEchartsInstance === 'function') {
             this.echartsReact.getEchartsInstance().setOption({
                 xAxis: {
                     min: this.chart.min,
@@ -789,7 +884,7 @@ class ObjectChart extends Component {
 
         const max = now.getTime();
         let min;
-        let mins = this.state.relativeRange;
+        const mins = this.state.relativeRange;
 
         if (mins === 'day') {
             now.setHours(0);
@@ -839,15 +934,13 @@ class ObjectChart extends Component {
             now.setFullYear(now.getFullYear() - 1);
             min = now.getTime();
         } else {
-            mins = parseInt(mins, 10);
-            min = max - mins * 60000;
+            min = max - parseInt(mins, 10) * 60000;
         }
 
         this.chart.min = min;
         this.chart.max = max;
 
-        this.setState({ min, max }, () =>
-            this.updateChart(this.chart.min, this.chart.max, true));
+        this.setState({ min, max }, () => this.updateChart(this.chart.min, this.chart.max, true));
 
         this.timeTimer = setTimeout(() => {
             this.timeTimer = null;
@@ -855,9 +948,9 @@ class ObjectChart extends Component {
         }, delay || 60000);
     }
 
-    setRelativeInterval(mins, dontSave, cb) {
+    setRelativeInterval(mins: string, dontSave?: boolean, cb?: () => void) {
         if (!dontSave) {
-            (window._localStorage || window.localStorage).setItem('App.relativeRange', mins);
+            this.localStorage.setItem('App.relativeRange', mins);
             this.setState({ relativeRange: mins });
         }
         if (mins === 'absolute') {
@@ -866,8 +959,8 @@ class ObjectChart extends Component {
             this.updateChart(this.chart.min, this.chart.max, true, cb);
             return;
         }
-        (window._localStorage || window.localStorage).removeItem('App.absoluteStart');
-        (window._localStorage || window.localStorage).removeItem('App.absoluteEnd');
+        this.localStorage.removeItem('App.absoluteStart');
+        this.localStorage.removeItem('App.absoluteEnd');
 
         const now = new Date();
 
@@ -936,8 +1029,7 @@ class ObjectChart extends Component {
             now.setFullYear(now.getFullYear() - 1);
             this.chart.min = now.getTime();
         } else {
-            mins = parseInt(mins, 10);
-            this.chart.min = this.chart.max - mins * 60000;
+            this.chart.min = this.chart.max - parseInt(mins, 10) * 60000;
         }
 
         this.setState({ min: this.chart.min, max: this.chart.max }, () =>
@@ -950,9 +1042,9 @@ class ObjectChart extends Component {
         }
 
         const zr = this.echartsReact.getEchartsInstance().getZr();
-        if (!zr._iobInstalled) {
-            zr._iobInstalled = true;
-            zr.on('mousedown', e => {
+        if (!(zr as any)._iobInstalled) {
+            (zr as any)._iobInstalled = true;
+            zr.on('mousedown', (e: MouseEvent) => {
                 console.log('mouse down');
                 this.mouseDown = true;
                 this.chart.lastX = e.offsetX;
@@ -977,7 +1069,7 @@ class ObjectChart extends Component {
 
                 this.setNewRange();
             });
-            zr.on('mousemove', e => {
+            zr.on('mousemove', (e: MouseEvent) => {
                 if (this.mouseDown) {
                     const moved = this.chart.lastX - (e.offsetX - GRID_PADDING_LEFT);
                     this.chart.lastX = e.offsetX - GRID_PADDING_LEFT;
@@ -991,9 +1083,10 @@ class ObjectChart extends Component {
                 }
             });
 
-            zr.on('touchstart', e => {
+            zr.on('touchstart', (e: React.TouchEvent) => {
                 e.preventDefault();
                 this.mouseDown = true;
+                // @ts-expect-error fix later
                 const touches = e.touches || e.originalEvent.touches;
                 if (touches) {
                     this.chart.lastX = touches[touches.length - 1].pageX;
@@ -1024,10 +1117,11 @@ class ObjectChart extends Component {
                             let diff = this.chart.max - this.chart.min;
                             const chartWidth = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
 
-                            const amount     = fingerWidth > this.chart.lastWidth ? 1.1 : 0.9;
-                            const positionX  = touches[0].pageX > touches[1].pageX ?
-                                touches[1].pageX - GRID_PADDING_LEFT + fingerWidth / 2 :
-                                touches[0].pageX - GRID_PADDING_LEFT + fingerWidth / 2;
+                            const amount = fingerWidth > this.chart.lastWidth ? 1.1 : 0.9;
+                            const positionX =
+                                touches[0].pageX > touches[1].pageX
+                                    ? touches[1].pageX - GRID_PADDING_LEFT + fingerWidth / 2
+                                    : touches[0].pageX - GRID_PADDING_LEFT + fingerWidth / 2;
 
                             const pos = positionX / chartWidth;
 
@@ -1044,7 +1138,7 @@ class ObjectChart extends Component {
                     } else {
                         // swipe
                         const moved = this.chart.lastX - pageX;
-                        const diff  = this.chart.max - this.chart.min;
+                        const diff = this.chart.max - this.chart.min;
                         const chartWidth = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
 
                         const shift = Math.round((moved * diff) / chartWidth);
@@ -1061,14 +1155,14 @@ class ObjectChart extends Component {
 
     renderChart() {
         if (!this.state.historyInstance) {
-            return <div>{this.props.t('History instance not selected')}</div>;
+            return <div style={{ marginTop: 20, fontSize: 24 }}>{this.props.t('History instance not selected')}</div>;
         }
         if (!this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
-            return <div>{this.props.t('History instance not alive')}</div>;
+            return <div style={{ marginTop: 20, fontSize: 24 }}>{this.props.t('History instance not alive')}</div>;
         }
         if (this.chartValues) {
             return <ReactEchartsCore
-                ref={e => this.echartsReact = e}
+                ref={e => (this.echartsReact = e)}
                 echarts={echarts}
                 option={this.getOption()}
                 notMerge
@@ -1086,39 +1180,40 @@ class ObjectChart extends Component {
         if (this.divRef.current) {
             const width = this.divRef.current.offsetWidth;
             const height = this.divRef.current.offsetHeight;
-            if (this.state.chartHeight !== height) { // || this.state.chartHeight !== height) {
+            if (this.state.chartHeight !== height) {
+                // || this.state.chartHeight !== height) {
                 setTimeout(() => this.setState({ chartHeight: height, chartWidth: width }), 100);
             }
         }
     }
 
-    setStartDate(min) {
-        min = min.getTime();
+    setStartDate(min: Date) {
+        const minNumber: number = min.getTime();
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
             this.timeTimer = null;
         }
-        (window._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
-        (window._localStorage || window.localStorage).setItem('App.absoluteStart', min);
-        (window._localStorage || window.localStorage).setItem('App.absoluteEnd', this.state.max);
+        this.localStorage.setItem('App.relativeRange', 'absolute');
+        this.localStorage.setItem('App.absoluteStart', minNumber.toString());
+        this.localStorage.setItem('App.absoluteEnd', this.state.max.toString());
 
-        this.chart.min = min;
+        this.chart.min = minNumber;
 
-        this.setState({ min, relativeRange: 'absolute' }, () =>
+        this.setState({ min: minNumber, relativeRange: 'absolute' }, () =>
             this.updateChart(this.chart.min, this.chart.max, true));
     }
 
-    setEndDate(max) {
-        max = max.getTime();
-        (window._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
-        (window._localStorage || window.localStorage).setItem('App.absoluteStart', this.state.min);
-        (window._localStorage || window.localStorage).setItem('App.absoluteEnd', max);
+    setEndDate(max: Date) {
+        const maxNumber: number = max.getTime();
+        this.localStorage.setItem('App.relativeRange', 'absolute');
+        this.localStorage.setItem('App.absoluteStart', this.state.min.toString());
+        this.localStorage.setItem('App.absoluteEnd', maxNumber.toString());
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
             this.timeTimer = null;
         }
-        this.chart.max = max;
-        this.setState({ max, relativeRange: 'absolute'  }, () =>
+        this.chart.max = maxNumber;
+        this.setState({ max: maxNumber, relativeRange: 'absolute' }, () =>
             this.updateChart(this.chart.min, this.chart.max, true));
     }
 
@@ -1136,13 +1231,20 @@ class ObjectChart extends Component {
             args.push(`range=${this.state.relativeRange}`);
         }
 
-        window.open(`${window.location.protocol}//${window.location.host}/adapter/echarts/tab.html#${args.join('&')}`, 'echarts');
+        window.open(
+            `${window.location.protocol}//${window.location.host}/adapter/echarts/tab.html#${args.join('&')}`,
+            'echarts',
+        );
     }
 
-    async onStepChanged(stepType) {
-        // save in object
+    async onStepChanged(stepType: string) {
+        // save in an object
         const obj = await this.props.socket.getObject(this.props.obj._id);
-        if (obj.common.custom && obj.common.custom[this.state.historyInstance] && obj.common.custom[this.state.historyInstance].chartStep !== stepType) {
+        if (
+            obj.common.custom &&
+            obj.common.custom[this.state.historyInstance] &&
+            obj.common.custom[this.state.historyInstance].chartStep !== stepType
+        ) {
             obj.common.custom[this.state.historyInstance].chartStep = stepType;
             await this.props.socket.setObject(obj._id, obj);
         }
@@ -1163,12 +1265,22 @@ class ObjectChart extends Component {
                     variant="standard"
                     value={this.state.historyInstance}
                     onChange={async e => {
-                        (window._localStorage || window.localStorage).setItem('App.historyInstance', e.target.value);
+                        this.localStorage.setItem(
+                            'App.historyInstance',
+                            e.target.value,
+                        );
                         this.setState({ historyInstance: e.target.value });
                     }}
                 >
-                    {this.state.historyInstances.map(it =>
-                        <MenuItem key={it.id} value={it.id} className={Utils.clsx(!it.alive && classes.notAliveInstance)}>{it.id}</MenuItem>)}
+                    {this.state.historyInstances.map(it => (
+                        <MenuItem
+                            key={it.id}
+                            value={it.id}
+                            className={Utils.clsx(!it.alive && classes.notAliveInstance)}
+                        >
+                            {it.id}
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>}
             <FormControl variant="standard" className={classes.selectRelativeTime}>
@@ -1179,20 +1291,48 @@ class ObjectChart extends Component {
                     value={this.state.relativeRange}
                     onChange={e => this.setRelativeInterval(e.target.value)}
                 >
-                    <MenuItem key="custom" value="absolute" className={classes.customRange}>{this.props.t('custom range')}</MenuItem>
-                    <MenuItem key="1" value={10}>{this.props.t('last 10 minutes')}</MenuItem>
-                    <MenuItem key="2" value={30}>{this.props.t('last 30 minutes')}</MenuItem>
-                    <MenuItem key="3" value={60}>{this.props.t('last hour')}</MenuItem>
-                    <MenuItem key="4" value="day">{this.props.t('this day')}</MenuItem>
-                    <MenuItem key="5" value={24 * 60}>{this.props.t('last 24 hours')}</MenuItem>
-                    <MenuItem key="6" value="week">{this.props.t('this week')}</MenuItem>
-                    <MenuItem key="7" value={24 * 60 * 7}>{this.props.t('last week')}</MenuItem>
-                    <MenuItem key="8" value="2weeks">{this.props.t('this 2 weeks')}</MenuItem>
-                    <MenuItem key="9" value={24 * 60 * 14}>{this.props.t('last 2 weeks')}</MenuItem>
-                    <MenuItem key="10" value="month">{this.props.t('this month')}</MenuItem>
-                    <MenuItem key="11" value={30 * 24 * 60}>{this.props.t('last 30 days')}</MenuItem>
-                    <MenuItem key="12" value="year">{this.props.t('this year')}</MenuItem>
-                    <MenuItem key="13" value="12months">{this.props.t('last 12 months')}</MenuItem>
+                    <MenuItem key="custom" value="absolute" className={classes.customRange}>
+                        {this.props.t('custom range')}
+                    </MenuItem>
+                    <MenuItem key="1" value={10}>
+                        {this.props.t('last 10 minutes')}
+                    </MenuItem>
+                    <MenuItem key="2" value={30}>
+                        {this.props.t('last 30 minutes')}
+                    </MenuItem>
+                    <MenuItem key="3" value={60}>
+                        {this.props.t('last hour')}
+                    </MenuItem>
+                    <MenuItem key="4" value="day">
+                        {this.props.t('this day')}
+                    </MenuItem>
+                    <MenuItem key="5" value={24 * 60}>
+                        {this.props.t('last 24 hours')}
+                    </MenuItem>
+                    <MenuItem key="6" value="week">
+                        {this.props.t('this week')}
+                    </MenuItem>
+                    <MenuItem key="7" value={24 * 60 * 7}>
+                        {this.props.t('last week')}
+                    </MenuItem>
+                    <MenuItem key="8" value="2weeks">
+                        {this.props.t('this 2 weeks')}
+                    </MenuItem>
+                    <MenuItem key="9" value={24 * 60 * 14}>
+                        {this.props.t('last 2 weeks')}
+                    </MenuItem>
+                    <MenuItem key="10" value="month">
+                        {this.props.t('this month')}
+                    </MenuItem>
+                    <MenuItem key="11" value={30 * 24 * 60}>
+                        {this.props.t('last 30 days')}
+                    </MenuItem>
+                    <MenuItem key="12" value="year">
+                        {this.props.t('this year')}
+                    </MenuItem>
+                    <MenuItem key="13" value="12months">
+                        {this.props.t('last 12 months')}
+                    </MenuItem>
                 </Select>
             </FormControl>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
@@ -1243,7 +1383,7 @@ class ObjectChart extends Component {
             <Button
                 style={{ marginRight: 10 }}
                 variant="outlined"
-                onClick={e => this.setState({ showStepMenu: e.target })}
+                onClick={e => this.setState({ showStepMenu: e.target as HTMLElement })}
             >
                 {this.state.stepType ? this.props.t(this.state.stepType) : this.props.t('Step type')}
             </Button>
@@ -1252,8 +1392,15 @@ class ObjectChart extends Component {
                 anchorEl={this.state.showStepMenu}
                 onClose={() => this.setState({ showStepMenu: null })}
             >
-                <MenuItem selected={this.state.stepType === ''} onClick={() => this.onStepChanged('')}>{this.props.t('None')}</MenuItem>
-                <MenuItem selected={this.state.stepType === 'stepStart'} onClick={() => this.onStepChanged('stepStart')}>{this.props.t('stepStart')}</MenuItem>
+                <MenuItem selected={this.state.stepType === ''} onClick={() => this.onStepChanged('')}>
+                    {this.props.t('None')}
+                </MenuItem>
+                <MenuItem
+                    selected={this.state.stepType === 'stepStart'}
+                    onClick={() => this.onStepChanged('stepStart')}
+                >
+                    {this.props.t('stepStart')}
+                </MenuItem>
             </Menu> : null}
             {this.props.showJumpToEchart && this.state.echartsJump && <Fab
                 className={classes.echartsButton}
@@ -1269,7 +1416,10 @@ class ObjectChart extends Component {
                 color={this.state.splitLine ? 'primary' : 'default'}
                 aria-label="show lines"
                 onClick={() => {
-                    (window._localStorage || window.localStorage).setItem('App.splitLine', this.state.splitLine ? 'false' : 'true');
+                    this.localStorage.setItem(
+                        'App.splitLine',
+                        this.state.splitLine ? 'false' : 'true',
+                    );
                     this.setState({ splitLine: !this.state.splitLine });
                 }}
             >
@@ -1288,30 +1438,17 @@ class ObjectChart extends Component {
             {this.renderToolbar()}
             <div
                 ref={this.divRef}
-                className={Utils.clsx(this.props.classes.chart, this.props.noToolbar ? this.props.classes.chartWithoutToolbar : this.props.classes.chartWithToolbar)}
+                className={Utils.clsx(
+                    this.props.classes.chart,
+                    this.props.noToolbar
+                        ? this.props.classes.chartWithoutToolbar
+                        : this.props.classes.chartWithToolbar,
+                )}
             >
                 {this.renderChart()}
             </div>
         </Paper>;
     }
 }
-
-ObjectChart.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    // expertMode: PropTypes.bool,
-    socket: PropTypes.object,
-    obj: PropTypes.object,
-    customsInstances: PropTypes.array,
-    themeType: PropTypes.string,
-    objects: PropTypes.object,
-    from: PropTypes.number,
-    end: PropTypes.number,
-    noToolbar: PropTypes.bool,
-    defaultHistory: PropTypes.string,
-    historyInstance: PropTypes.string,
-    showJumpToEchart: PropTypes.bool,
-    isFloatComma: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(ObjectChart));

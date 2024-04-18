@@ -1587,5 +1587,7 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
-  "yesterday": "yesterday"
+  "yesterday": "yesterday",
+  "History instance not alive": "History instance not alive",
+  "History instance not selected": "History instance not selected"
 }

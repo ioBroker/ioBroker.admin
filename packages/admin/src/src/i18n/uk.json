@@ -1587,5 +1587,7 @@
   "write": "писати",
   "write operation": "писати",
   "wrongPassword": "Неправильне ім'я користувача або пароль",
-  "yesterday": "вчора"
+  "yesterday": "вчора",
+  "History instance not alive": "Примірник історії не живий",
+  "History instance not selected": "Екземпляр історії не вибрано"
 }

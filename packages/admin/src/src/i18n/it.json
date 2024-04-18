@@ -1587,5 +1587,7 @@
   "write": "Scrivi",
   "write operation": "Scrivi",
   "wrongPassword": "Nome utente o password errati",
-  "yesterday": "Ieri"
+  "yesterday": "Ieri",
+  "History instance not alive": "Istanza della storia non viva",
+  "History instance not selected": "Istanza della cronologia non selezionata"
 }

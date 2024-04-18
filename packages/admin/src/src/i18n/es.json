@@ -1587,5 +1587,7 @@
   "write": "escribir",
   "write operation": "escribir",
   "wrongPassword": "usuario o contraseña invalido",
-  "yesterday": "ayer"
+  "yesterday": "ayer",
+  "History instance not alive": "Instancia de historia no viva",
+  "History instance not selected": "Instancia de historial no seleccionada"
 }

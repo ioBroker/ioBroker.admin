@@ -89,8 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.5 (2024-04-18)
 * (bluefox) Extend the table JSON Config with the encryption possibility
+* (bluefox) Do not read historical data if instance is not active
 
 ### 6.17.3 (2024-04-11)
 * (foxriver76) fixed npm adapter installation
@@ -104,9 +105,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.16.0 (2024-03-26)
 * (foxriver76) added a new tab to the installation wizard which recommends common adapters
 * (bluefox) applied newest adapter-react-v5 changes and types
-
-### 6.15.2 (2024-03-07)
-* (foxriver76) fixed cron dialog
 
 ## License
 The MIT License (MIT)
