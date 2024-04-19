@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.5",
+    "version": "6.17.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.6": {
+        "en": "Extend the table JSON Config with the encryption possibility\nDo not read historical data if instance is not active",
+        "de": "Erweitern Sie die Tabelle JSON Config mit der Verschlüsselungsmöglichkeit\nLesen Sie historische Daten nicht, wenn Instanz nicht aktiv ist",
+        "ru": "Расширение таблицы JSON Config с возможностью шифрования\nНе читайте исторические данные, если экземпляр не активен",
+        "pt": "Estenda a tabela JSON Config com a possibilidade de criptografia\nNão leia dados históricos se a instância não estiver ativa",
+        "nl": "De tabel JSON instellen uitbreiden met de versleutelingsmogelijkheid\nNiet lezen van historische gegevens als instantie niet actief is",
+        "fr": "Étendre la table JSON Config avec la possibilité de chiffrement\nNe pas lire les données historiques si l'instance n'est pas active",
+        "it": "Estendere il tavolo JSON Config con la possibilità di crittografia\nNon leggere i dati storici se l'istanza non è attiva",
+        "es": "Extender la tabla JSON Config con la posibilidad de cifrado\nNo lea datos históricos si la instancia no es activa",
+        "pl": "Rozszerzenie tabeli JSON Config z możliwością szyfrowania\nNie należy odczytywać danych historycznych, jeśli instancja nie jest aktywna",
+        "uk": "Розширення таблиці JSON Config з можливістю шифрування\nНе прочитайте історичні дані, якщо не активна",
+        "zh-cn": "扩展表 JSON 配置到加密可能性\n如果实例不活动, 不读取历史数据"
+      },
       "6.17.3": {
         "en": "fixed npm adapter installation",
         "de": "installation von npm adapter",
