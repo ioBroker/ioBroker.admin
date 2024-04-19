@@ -1,12 +1,12 @@
-const fs = require('fs');
-const cp = require('child_process');
+const fs = require('node:fs');
+const cp = require('node:child_process');
 const gulp = require('gulp');
 const replace = require('gulp-replace');
 const sourcemaps = require('gulp-sourcemaps');
 const less = require('gulp-less');
 const concat = require('gulp-concat');
 const cleanCSS = require('gulp-clean-css');
-const path = require('path');
+const path = require('node:path');
 
 const srcRx = 'src/';
 const src = `${__dirname}/${srcRx}`;

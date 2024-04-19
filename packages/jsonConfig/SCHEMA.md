@@ -178,8 +178,8 @@ Possible types:
     - `textAlive` - default text is `Instance %s is alive`, where %s will be replaced by `ADAPTER.0`.
     - `textNotAlive` - default text is `Instance %s is not alive`, where %s will be replaced by `ADAPTER.0`.
 
-- `pattern` - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)
-  Text input with the read only flag, that shows a pattern.
+- `pattern` - read-only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)
+  Text input with the read-only flag, that shows a pattern.
     - `copyToClipboard` - if true - show button
     - `pattern` - my pattern
 

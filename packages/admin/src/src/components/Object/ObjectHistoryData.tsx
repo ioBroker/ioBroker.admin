@@ -1137,7 +1137,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             aria-labelledby="edit-dialog-title"
             aria-describedby="edit-dialog-description"
         >
-            <DialogTitle id="edit-dialog-title">{ this.state.updateOpened ? this.props.t('Update entry') : this.props.t('Insert entry') }</DialogTitle>
+            <DialogTitle id="edit-dialog-title">{this.state.updateOpened ? this.props.t('Update entry') : this.props.t('Insert entry')}</DialogTitle>
             <DialogContent>
                 <form className={classes.dialogForm} noValidate autoComplete="off">
                     {typeof this.state.edit.val === 'boolean' ?
