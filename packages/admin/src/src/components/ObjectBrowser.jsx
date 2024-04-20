@@ -1668,9 +1668,11 @@ function formatValue(options) {
         }
     } else {
         if (type === 'number') {
-            v = Math.round(v * 100_000_000) / 100_000_000; // remove 4.00000000000000001
-            if (isFloatComma) {
-                v = v.toString().replace('.', ',');
+            if (!Number.isInteger(v)) {
+                v = Math.round(v * 100_000_000) / 100_000_000; // remove 4.00000000000000001
+                if (isFloatComma) {
+                    v = v.toString().replace('.', ',');
+                }
             }
         } else if (type === 'object') {
             v = JSON.stringify(v);
