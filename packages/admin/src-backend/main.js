@@ -3,7 +3,7 @@
  *
  *      Controls Adapter-Processes
  *
- *      Copyright 2014-2023 Denis Haev <dogafox@gmail.com>,
+ *      Copyright 2014-2024 Denis Haev <dogafox@gmail.com>,
  *      MIT License
  *
  */
@@ -515,7 +515,12 @@ class Admin extends utils.Adapter {
         this.getState('info.updatesJson', (err, state) => {
             let oldUpdates;
             if (typeof state?.val === 'string') {
-                oldUpdates = JSON.parse(state.val) || {};
+                try {
+                    oldUpdates = JSON.parse(state.val) || {};
+                } catch (e) {
+                    oldUpdates = {};
+                    this.log.warn(`Cannot parse info.updatesJson: ${e}`);
+                }
             } else {
                 oldUpdates = {};
             }
