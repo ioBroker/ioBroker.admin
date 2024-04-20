@@ -4,7 +4,7 @@ import React, {
     useState,
 } from 'react';
 
-import Adapters from '../tabs/Adapters';
+import BasicUtils from '@/Utils';
 
 export const ContextWrapper = createContext();
 
@@ -31,7 +31,7 @@ export const ContextWrapperProvider = ({ children }) => {
             const jsControllerVersion = stateContext.repository['js-controller'].version;
             let count = 0;
             stateContext.hosts.forEach(element => {
-                if (Adapters.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
+                if (BasicUtils.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
                     count++;
                 }
             });
@@ -48,7 +48,7 @@ export const ContextWrapperProvider = ({ children }) => {
                     _installed?.version &&
                     adapter?.version &&
                     _installed.ignoreVersion !== adapter.version &&
-                    Adapters.updateAvailable(_installed.version, adapter.version)
+                    BasicUtils.updateAvailable(_installed.version, adapter.version)
                 ) {
                     count++;
                 }

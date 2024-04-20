@@ -454,7 +454,7 @@ class Adapters extends Component {
                 if (
                     repositoryValue &&
                     repositoryValue.version !== version &&
-                    Adapters.updateAvailable(version, repositoryValue.version) &&
+                    BasicUtils.updateAvailable(version, repositoryValue.version) &&
                     !updateAvailable.includes(value)
                 ) {
                     updateAvailable.push(value);
@@ -1015,15 +1015,6 @@ class Adapters extends Component {
 
     handleInstanceChange(event) {
         this.setState({ addInstanceId: event.target.value });
-    }
-
-    static updateAvailable(oldVersion, newVersion) {
-        try {
-            return semver.gt(newVersion, oldVersion) === true;
-        } catch (e) {
-            console.warn(`[ADAPTERS] Cannot compare "${newVersion}" and "${oldVersion}"`);
-            return false;
-        }
     }
 
     getDependencies = value => {

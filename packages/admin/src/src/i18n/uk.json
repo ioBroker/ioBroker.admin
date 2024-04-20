@@ -274,7 +274,6 @@
   "Custom settings": "Спеціальні налаштування",
   "Cyprus": "Кіпр",
   "Czech Republic": "Чеська Республіка",
-  "D$ecember": "D$грудень",
   "DB number": "номер БД",
   "DD.MM.YY": "ДД.ММ.РР",
   "DD.MM.YYYY": "ДД.ММ.РРРР",
@@ -1589,5 +1588,6 @@
   "wrongPassword": "Неправильне ім'я користувача або пароль",
   "yesterday": "вчора",
   "History instance not alive": "Примірник історії не живий",
-  "History instance not selected": "Екземпляр історії не вибрано"
+  "History instance not selected": "Екземпляр історії не вибрано",
+  "Click for more": "Натисніть, щоб дізнатися більше"
 }

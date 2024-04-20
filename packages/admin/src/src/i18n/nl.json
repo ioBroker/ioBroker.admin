@@ -274,7 +274,6 @@
   "Custom settings": "Aangepaste instellingen",
   "Cyprus": "Cyprus",
   "Czech Republic": "Tsjechische Republiek",
-  "D$ecember": "december",
   "DB number": "DB-nummer",
   "DD.MM.YY": "DD.MM.YY",
   "DD.MM.YYYY": "DD.MM.JJJJ",
@@ -1589,5 +1588,6 @@
   "wrongPassword": "ongeldige gebruikersnaam of wachtwoord",
   "yesterday": "gisteren",
   "History instance not alive": "Geschiedenisinstantie leeft niet",
-  "History instance not selected": "Geschiedenisexemplaar niet geselecteerd"
+  "History instance not selected": "Geschiedenisexemplaar niet geselecteerd",
+  "Click for more": "Klik voor meer"
 }

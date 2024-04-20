@@ -237,7 +237,7 @@ const ObjectAddNewObject = ({
                     autoFocus
                     value={name}
                     onKeyDown={e => {
-                        if (e.keyCode === 13) {
+                        if (e.key === 'Enter') {
                             e.preventDefault();
                             name && onLocalApply();
                         }

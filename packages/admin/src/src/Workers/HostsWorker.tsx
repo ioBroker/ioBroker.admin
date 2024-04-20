@@ -1,6 +1,9 @@
-import { type AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { FilteredNotificationInformation } from '@iobroker/socket-client';
 
 export type HostEventType = 'new' | 'changed' | 'deleted';
+
+export type NotificationAnswer = { result: FilteredNotificationInformation } | null;
 
 export interface HostEvent {
     id: string;
@@ -22,7 +25,7 @@ class HostsWorker {
 
     private readonly aliveHandlers: (((events: HostAliveEvent[]) => void) | false)[];
 
-    private readonly notificationsHandlers: ((notifications: ioBroker.Notification[]) => void)[];
+    private readonly notificationsHandlers: ((notifications: Record<string, NotificationAnswer>) => void)[];
 
     private promise: Promise<void | Record<string, ioBroker.HostObject>> | null;
 
@@ -32,7 +35,7 @@ class HostsWorker {
 
     private readonly aliveStates: Record<string, boolean>;
 
-    private readonly notificationPromises: Record<string, Promise<ioBroker.Notification[] | null>>;
+    private readonly notificationPromises: Record<string, Promise<Record<string, NotificationAnswer | null>>>;
 
     private notificationTimer: ReturnType<typeof setTimeout> | null;
 
@@ -215,13 +218,14 @@ class HostsWorker {
                 this.notificationTimer = null;
                 this.notificationPromises[host_] = this._getNotificationsFromHosts(host_, true);
 
-                this.notificationPromises[host_].then(notifications =>
-                    this.notificationsHandlers.forEach(cb => cb(notifications)));
+                this.notificationPromises[host_]
+                    .then(notifications =>
+                        notifications && this.notificationsHandlers.forEach(cb => cb(notifications)));
             }, 300, host);
         }
     };
 
-    _getNotificationsFromHosts(hostId: string, update?: boolean): Promise<ioBroker.Notification[]> {
+    _getNotificationsFromHosts(hostId: string, update?: boolean): Promise<Record<string, NotificationAnswer | null>> {
         if (!update && this.notificationPromises[hostId]) {
             return this.notificationPromises[hostId];
         }
@@ -230,37 +234,35 @@ class HostsWorker {
             .then(state => {
                 if (state?.val) {
                     return this.socket.getNotifications(hostId, '')
-                        .then(notifications => ({ [hostId]: notifications }))
+                        .then((notifications: NotificationAnswer) =>
+                            ({ [hostId]: notifications || null }))
                         .catch(e => {
                             console.warn(`Cannot read notifications from "${hostId}": ${e}`);
-                            return { [hostId]: Promise.resolve(null) };
+                            return { [hostId]: null };
                         });
                 }
-                return Promise.resolve(null);
+                return { [hostId]: null };
             });
 
         return this.notificationPromises[hostId];
     }
 
-    getNotifications(hostId?: string, update?: boolean) {
+    async getNotifications(hostId?: string, update?: boolean): Promise<Record<string, NotificationAnswer | null >> {
         if (hostId) {
             return this._getNotificationsFromHosts(hostId, update);
         }
-        return this.socket.getCompactHosts(update)
-            .then(hosts => {
-                const promises = hosts
-                    .map(host => this._getNotificationsFromHosts(host._id, update));
 
-                return Promise.all(promises)
-                    .then(pResults => {
-                        const result = {};
-                        pResults.forEach(r => Object.assign(result, r));
-                        return result;
-                    });
-            });
+        // get from all hosts
+        const hosts = await this.socket.getCompactHosts(update);
+        const promises = hosts
+            .map(host => this._getNotificationsFromHosts(host._id, update));
+        const pResults = await Promise.all(promises);
+        const result: Record<string, NotificationAnswer | null> = {};
+        pResults.forEach(r => Object.assign(result, r));
+        return result;
     }
 
-    registerNotificationHandler(cb: (notifications: ioBroker.Notification[]) => void) {
+    registerNotificationHandler(cb: (notifications: Record<string, NotificationAnswer>) => void) {
         if (!this.notificationsHandlers.includes(cb)) {
             this.notificationsHandlers.push(cb);
 
@@ -271,7 +273,7 @@ class HostsWorker {
         }
     }
 
-    unregisterNotificationHandler(cb: (notifications: ioBroker.Notification[]) => void) {
+    unregisterNotificationHandler(cb: (notifications: Record<string, NotificationAnswer>) => void) {
         const pos = this.notificationsHandlers.indexOf(cb);
 
         if (pos !== -1) {

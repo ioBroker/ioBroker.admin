@@ -435,7 +435,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                     option.label || (option !== undefined && option !== null ? option.toString() : '')}
                 onChange={(e, value) => this.setState({ targetValue: value })}
                 onInputChange={(e, value) => this.setState({ targetValue: value })}
-                onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
+                onKeyUp={e => e.key === 'Enter' && this.onUpdate(e)}
                 renderInput={params => (
                     <TextField {...params} label={this.props.t('Value')} variant="standard" />
                 )}
@@ -597,7 +597,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                             ? false
                                                             : !!this.propsValue
                                                     }
-                                                    onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
+                                                    onKeyUp={e => e.key === 'Enter' && this.onUpdate(e)}
                                                     onChange={e => this.setState({ targetValue: e.target.checked })}
                                                 />
                                             </Grid>

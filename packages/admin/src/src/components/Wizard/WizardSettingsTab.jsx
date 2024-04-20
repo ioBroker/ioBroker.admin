@@ -596,7 +596,7 @@ class WizardSettingsTab extends Component {
                                     label={this.props.t('Address')}
                                     className={this.props.classes.controlItemAddress}
                                     value={this.state.address}
-                                    onKeyUp={e => e.keyCode === 13 && this.getPositionForAddress()}
+                                    onKeyUp={e => e.key === 'Enter' && this.getPositionForAddress()}
                                     onChange={e => this.setState({ address: e.target.value })}
                                     helperText={this.props.t('Used only to calculate position.')}
                                     InputProps={{

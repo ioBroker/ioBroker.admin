@@ -406,7 +406,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     this.setState({ url: event.target.value });
                                 }}
                                 onKeyUp={event => {
-                                    if (event.keyCode === 13 && this.state.url) {
+                                    if (event.key === 'Enter' && this.state.url) {
                                         if (!this.state.url.includes('.')) {
                                             this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
                                         } else {

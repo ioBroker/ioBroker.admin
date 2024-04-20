@@ -33,12 +33,12 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { getHref } from '@/tabs/CustomTab';
+import BasicUtils from '@/Utils';
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
 import DrawerItem from './DrawerItem';
-import Adapters from '../tabs/Adapters';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -210,7 +210,7 @@ class Drawer extends Component {
             const jsControllerVersion = repository['js-controller']?.version || '';
             let count = 0;
             hosts.forEach(element => {
-                if (Adapters.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
+                if (BasicUtils.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
                     count++;
                 }
             });
@@ -231,7 +231,7 @@ class Drawer extends Component {
                     _installed?.version &&
                     adapter?.version &&
                     _installed.ignoreVersion !== adapter.version &&
-                    Adapters.updateAvailable(_installed.version, adapter.version)
+                    BasicUtils.updateAvailable(_installed.version, adapter.version)
                 ) {
                     count++;
                 }

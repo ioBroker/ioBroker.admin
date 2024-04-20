@@ -93,7 +93,7 @@ class WizardPasswordTab extends Component {
                                 },
                             }}
                             onKeyDown={e => {
-                                if (e.keyCode === 13 && this.state.password && !this.state.errorPassword) {
+                                if (e.key === 'Enter' && this.state.password && !this.state.errorPassword) {
                                     const el = window.document.getElementById('admin_password');
                                     if (el) {
                                         el.focus();
@@ -128,7 +128,7 @@ class WizardPasswordTab extends Component {
                                 id: 'admin_password',
                             }}
                             onKeyDown={e => {
-                                if (e.keyCode === 13 && this.state.password && !this.state.errorPassword && !this.state.errorPasswordRepeat) {
+                                if (e.key === 'Enter' && this.state.password && !this.state.errorPassword && !this.state.errorPasswordRepeat) {
                                     this.props.onDone(this.state.password);
                                 }
                             }}

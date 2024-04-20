@@ -1,4 +1,5 @@
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n } from '@iobroker/adapter-react-v5';
+import semver from 'semver';
 
 const ANSI_RESET = 0;
 const ANSI_RESET_COLOR = 39;
@@ -642,6 +643,15 @@ class Utils {
         }
 
         return `https://www.iobroker.net/#${lang}/adapters/adapterref/iobroker.${adapterName}/README.md`;
+    }
+
+    static updateAvailable(oldVersion: string, newVersion: string) {
+        try {
+            return semver.gt(newVersion, oldVersion) === true;
+        } catch (e) {
+            console.warn(`[ADAPTERS] Cannot compare "${newVersion}" and "${oldVersion}"`);
+            return false;
+        }
     }
 }
 

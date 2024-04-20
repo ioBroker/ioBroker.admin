@@ -274,7 +274,6 @@
   "Custom settings": "Impostazioni personalizzate",
   "Cyprus": "Cipro",
   "Czech Republic": "Repubblica Ceca",
-  "D$ecember": "dicembre",
   "DB number": "Numero DB",
   "DD.MM.YY": "GG.MM.AA",
   "DD.MM.YYYY": "GG.MM.AAAA",
@@ -1589,5 +1588,6 @@
   "wrongPassword": "Nome utente o password errati",
   "yesterday": "Ieri",
   "History instance not alive": "Istanza della storia non viva",
-  "History instance not selected": "Istanza della cronologia non selezionata"
+  "History instance not selected": "Istanza della cronologia non selezionata",
+  "Click for more": "Fare clic per ulteriori informazioni"
 }

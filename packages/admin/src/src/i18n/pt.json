@@ -274,7 +274,6 @@
   "Custom settings": "Opções customizadas",
   "Cyprus": "Chipre",
   "Czech Republic": "República Checa",
-  "D$ecember": "dezembro",
   "DB number": "Número do banco de dados",
   "DD.MM.YY": "DD.MM.YY",
   "DD.MM.YYYY": "DD.MM.YYYY",
@@ -1589,5 +1588,6 @@
   "wrongPassword": "nome de usuário ou senha inválidos",
   "yesterday": "ontem",
   "History instance not alive": "Instância do histórico não ativa",
-  "History instance not selected": "Instância do histórico não selecionada"
+  "History instance not selected": "Instância do histórico não selecionada",
+  "Click for more": "Clique para mais"
 }
