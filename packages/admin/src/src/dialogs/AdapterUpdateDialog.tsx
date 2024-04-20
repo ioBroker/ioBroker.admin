@@ -133,6 +133,9 @@ const styles: Record<string, any> = (theme: Theme) => ({
         opacity: 0.5,
         marginLeft: 4,
     },
+    dialogPaper: {
+        maxWidth: 880,
+    },
 });
 
 export interface Rule {
@@ -640,9 +643,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
         return <Dialog
             onClose={this.props.onClose}
             open={!0}
-            style={{
-                maxWidth: 880,
-            }}
+            classes={{ paper: classes.dialogPaper }}
         >
             {this.renderMessageDialog()}
             <DialogTitle>
