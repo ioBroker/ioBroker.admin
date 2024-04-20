@@ -1661,6 +1661,8 @@ class Utils {
                     result.false = states[0];
                     result.true = states[1];
                 }
+            } else if (typeof states === 'object') {
+                result = states as Record<string, string>;
             }
         }
 
