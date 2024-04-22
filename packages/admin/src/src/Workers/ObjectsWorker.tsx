@@ -3,12 +3,18 @@ import Utils from '../Utils';
 
 export type ObjectEventType = 'new' | 'changed' | 'deleted';
 
-interface ObjectEvent {
+export interface ObjectEvent {
     id: string;
     obj?: ioBroker.Object;
     type: ObjectEventType;
     oldObj?: ioBroker.Object;
 }
+
+// export interface ObjectsWorker {
+//     getObjects(update?: boolean): Promise<void | Record<string, ioBroker.Object>>;
+//     registerHandler(cb: (events: ObjectEvent[]) => void): void;
+//     unregisterHandler(cb: (events: ObjectEvent[]) => void, doNotUnsubscribe?: boolean): void;
+// }
 
 class ObjectsWorker {
     private readonly socket: AdminConnection;
@@ -72,7 +78,7 @@ class ObjectsWorker {
     };
 
     // be careful with this object. Do not change them.
-    getObjects(update?: boolean) {
+    getObjects(update?: boolean): Promise<void | Record<string, ioBroker.Object>> {
         if (!update && this.promise) {
             return this.promise;
         }
@@ -104,7 +110,7 @@ class ObjectsWorker {
         }
     };
 
-    registerHandler(cb: (events: ObjectEvent[]) => void) {
+    registerHandler(cb: (events: ObjectEvent[]) => void): void {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
@@ -115,7 +121,7 @@ class ObjectsWorker {
         }
     }
 
-    unregisterHandler(cb: (events: ObjectEvent[]) => void, doNotUnsubscribe?: boolean) {
+    unregisterHandler(cb: (events: ObjectEvent[]) => void, doNotUnsubscribe?: boolean): void {
         const pos = this.handlers.indexOf(cb);
         pos !== -1 && this.handlers.splice(pos, 1);
 
