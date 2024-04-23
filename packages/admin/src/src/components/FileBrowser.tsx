@@ -1225,7 +1225,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                     this.props.classes[`itemFolderIcon${this.state.viewType}`],
                     isSpecialData && this.props.classes.specialFolder,
                 )}
-                onClick={this.state.viewType === TABLE ? e => this.toggleFolder(item, e) : undefined}
+                onClick={this.state.viewType === TABLE ? (e: React.MouseEvent<HTMLDivElement>) => this.toggleFolder(item, e) : undefined}
             />
 
             <div
