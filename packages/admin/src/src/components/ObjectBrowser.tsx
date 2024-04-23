@@ -2931,11 +2931,11 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
     /**
      * Check if it is a non-expert id
-     *
-     * @param id id to test
-     * @return {boolean}
      */
-    static isNonExpertId(id: string): boolean {
+    static isNonExpertId(
+        /** id to test */
+        id: string
+    ): boolean {
         return !!ObjectBrowser.#NON_EXPERT_NAMESPACES.find(saveNamespace => id.startsWith(saveNamespace));
     }
 
@@ -2988,12 +2988,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
     }
 
-    /**
-     * @private
-     * @param {import('./types').ObjectBrowserProps} props
-     * @param {any} state
-     */
-    static getDerivedStateFromProps(props: ObjectBrowserProps, state: ObjectBrowserState) {
+    private static getDerivedStateFromProps(props: ObjectBrowserProps, state: ObjectBrowserState) {
         const newState: Partial<ObjectBrowserState> = {};
         let changed = false;
         if (props.expertMode !== undefined && props.expertMode !== state.filter.expertMode) {
@@ -3098,35 +3093,32 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
     /**
      * Renders the error dialog.
-     * @returns {JSX.Element | null}
      */
-    renderErrorDialog() {
-        return this.state.error ? (
-            <Dialog
-                open={!0}
-                maxWidth="sm"
-                fullWidth
-                onClose={() => this.setState({ error: '' })}
-                aria-labelledby="error-dialog-title"
-                aria-describedby="error-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">{this.props.t('ra_Error')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">{this.state.error}</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        onClick={() => this.setState({ error: '' })}
-                        color="primary"
-                        autoFocus
-                        startIcon={<IconCheck />}
-                    >
-                        {this.props.t('ra_Ok')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        ) : null;
+    renderErrorDialog(): React.JSX.Element | null {
+        return this.state.error ? <Dialog
+            open={!0}
+            maxWidth="sm"
+            fullWidth
+            onClose={() => this.setState({ error: '' })}
+            aria-labelledby="error-dialog-title"
+            aria-describedby="error-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">{this.props.t('ra_Error')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">{this.state.error}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    onClick={() => this.setState({ error: '' })}
+                    color="primary"
+                    autoFocus
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('ra_Ok')}
+                </Button>
+            </DialogActions>
+        </Dialog> : null;
     }
 
     /**
@@ -3267,9 +3259,8 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
     /**
      * Renders the columns' selector.
-     * @returns {JSX.Element | null}
      */
-    renderColumnsSelectorDialog() {
+    renderColumnsSelectorDialog(): React.JSX.Element | null {
         if (!this.state.columnsSelectorShow) {
             return null;
         }
@@ -3430,10 +3421,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         </Dialog>;
     }
 
-    /**
-     * @private
-     */
-    getAdditionalColumns(): Promise<Record<string, CustomAdminColumnStored[]> | null> {
+    private getAdditionalColumns(): Promise<Record<string, CustomAdminColumnStored[]> | null> {
         return this.props.socket
             .getAdapters()
             .then(instances => {
@@ -3448,10 +3436,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             .catch(() => null);
     }
 
-    /**
-     * @private
-     */
-    checkUnsubscribes() {
+    private checkUnsubscribes() {
         // Remove unused subscriptions
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
             !this.recordStates.includes(this.subscribes[i]) && this.unsubscribe(this.subscribes[i]);
@@ -3495,8 +3480,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
     /**
      * Called when a state changes.
-     * @param {string} id
-     * @param {ioBroker.State} state
      */
     onStateChange = (id: string, state: ioBroker.State) => {
         console.log(`> stateChange ${id}`);
@@ -3631,12 +3614,12 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
     /**
      * Processes a single element in regard to certain filters, columns for admin and updates object dict
-     * @param id The id of the object
-     * @param obj The object itself
      * @returns Returns an object containing the new state (if any) and whether the object was filtered.
      */
     processOnObjectChangeElement(
+        /** The id of the object */
         id: string,
+        /** The object itself */
         obj?: ioBroker.Object,
     ): {
         filtered: boolean;
@@ -3773,10 +3756,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         return !someNotEmpty;
     }
 
-    /**
-     * @private
-     */
-    getFilterInput(filterName: string) {
+    private getFilterInput(filterName: string) {
         return <FormControl
             className={Utils.clsx(this.props.classes.headerCellInput, this.props.classes.filterInput)}
             key={`${filterName}_${this.state.filterKey}`}
@@ -3814,12 +3794,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         </FormControl>;
     }
 
-    /**
-     * @private
-     * @param {string} name
-     * @param {any[]} values
-     */
-    getFilterSelect(
+    private getFilterSelect(
         name: string,
         values?: (string | InputSelectItem)[],
     ) {
@@ -3886,17 +3861,11 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         </div>;
     }
 
-    /**
-     * @private
-     */
-    getFilterSelectRole() {
+    private getFilterSelectRole() {
         return this.getFilterSelect('role', this.info.roles);
     }
 
-    /**
-     * @private
-     */
-    getFilterSelectRoom() {
+    private getFilterSelectRoom() {
         const rooms = this.info.roomEnums.map(id => ({
             name: getName(this.objects[id]?.common?.name, this.props.lang) || id.split('.').pop(),
             value: id,
@@ -3906,10 +3875,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         return this.getFilterSelect('room', rooms);
     }
 
-    /**
-     * @private
-     */
-    getFilterSelectFunction() {
+    private getFilterSelectFunction() {
         const func = this.info.funcEnums.map(id => ({
             name: getName(this.objects[id]?.common?.name, this.props.lang) || id.split('.').pop(),
             value: id,
@@ -3919,10 +3885,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         return this.getFilterSelect('func', func);
     }
 
-    /**
-     * @private
-     */
-    getFilterSelectType() {
+    private getFilterSelectType() {
         const types = this.info.types.map(type => ({
             name: type,
             value: type,
@@ -3932,10 +3895,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         return this.getFilterSelect('type', types);
     }
 
-    /**
-     * @private
-     */
-    getFilterSelectCustoms() {
+    private getFilterSelectCustoms() {
         if (this.info.customs.length > 1) {
             const customs = this.info.customs.map(id => ({
                 name: id === '_' ? this.texts.filterCustomsWithout : id,
@@ -3950,12 +3910,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         return null;
     }
 
-    /**
-     * @private
-     * @param {any} [root]
-     * @param {any[]} [expanded]
-     */
-    onExpandAll(root?: TreeItem, expanded?: string[]) {
+    private onExpandAll(root?: TreeItem, expanded?: string[]) {
         root = root || this.root;
         expanded = expanded || [];
 
@@ -3974,22 +3929,13 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
     }
 
-    /**
-     * @private
-     */
-    onCollapseAll() {
+    private onCollapseAll() {
         this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectExpanded`, JSON.stringify([]));
         this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, '[]');
         this.setState({ expanded: [], depth: 0, selected: [] }, () => this.onAfterSelect());
     }
 
-    /**
-     * @private
-     * @param {any} root
-     * @param {number} depth
-     * @param {any[]} expanded
-     */
-    expandDepth(
+    private expandDepth(
         root: TreeItem,
         depth: number,
         expanded: string[],
@@ -4010,19 +3956,11 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
     }
 
-    /**
-     * @private
-     * @param {number} depth
-     * @param {any[]} expanded
-     */
-    static collapseDepth(depth: number, expanded: string[]) {
+    private static collapseDepth(depth: number, expanded: string[]) {
         return expanded.filter(id => id.split('.').length <= depth);
     }
 
-    /**
-     * @private
-     */
-    onExpandVisible() {
+    private onExpandVisible() {
         if (this.state.depth < 9) {
             const depth = this.state.depth + 1;
             const expanded = [...this.state.expanded];
@@ -4032,19 +3970,13 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
     }
 
-    /**
-     * @private
-     */
-    onStatesViewVisible() {
+    private onStatesViewVisible() {
         const statesView = !this.state.statesView;
         this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectStatesView`, JSON.stringify(statesView));
         this.setState({ statesView });
     }
 
-    /**
-     * @private
-     */
-    onCollapseVisible() {
+    private onCollapseVisible() {
         if (this.state.depth > 0) {
             const depth = this.state.depth - 1;
             const expanded = ObjectBrowser.collapseDepth(depth, this.state.expanded);
@@ -4053,11 +3985,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
     }
 
-    /**
-     * @private
-     * @param {string} id
-     */
-    getEnumsForId = (id: string): ioBroker.EnumObject[] | undefined => {
+    private getEnumsForId = (id: string): ioBroker.EnumObject[] | undefined => {
         const result: ioBroker.EnumObject[] = [];
         this.info.enums.forEach(_id => {
             if (this.objects[_id]?.common?.members?.includes(id)) {
@@ -4080,12 +4008,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         return result.length ? result : undefined;
     };
 
-    /**
-     * @private
-     * @param {array} enums
-     * @param {string} objId
-     */
-    _createAllEnums = async (enums: (string | ioBroker.EnumObject)[], objId: string) => {
+    private _createAllEnums = async (enums: (string | ioBroker.EnumObject)[], objId: string) => {
         for (let e = 0; e < enums.length; e++) {
             const item: string | ioBroker.EnumObject = enums[e];
             let id: string;
@@ -4130,11 +4053,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
     };
 
-    /**
-     * @private
-     * @param {any} objs
-     */
-    async loadObjects(objs: Record<string, ioBrokerObjectForExport>) {
+    private async loadObjects(objs: Record<string, ioBrokerObjectForExport>) {
         if (objs) {
             for (const id in objs) {
                 if (!Object.prototype.hasOwnProperty.call(objs, id) || !objs[id]) {
@@ -4385,11 +4304,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         </Dialog>;
     }
 
-    /**
-     * @private
-     * @param {object} evt
-     */
-    handleJsonUpload(evt: Event) {
+    private handleJsonUpload(evt: Event) {
         const target = evt.target as HTMLInputElement;
         const f = target.files[0];
         if (f) {
@@ -5468,10 +5383,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
     }
 
-    /**
-     * @private
-     */
-    renderColumnsEditCustomDialog() {
+    private renderColumnsEditCustomDialog() {
         if (!this.state.columnsEditCustomDialog) {
             return null;
         }
@@ -5603,13 +5515,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         return null;
     }
 
-    /**
-     * @private
-     * @param {any} obj
-     * @param {any} it
-     * @param {any} value
-     */
-    static setCustomValue(
+    private static setCustomValue(
         obj: ioBroker.Object,
         it: AdapterColumn,
         value: string | number | boolean,
@@ -6885,11 +6791,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         this.selectedFound = true;
     }
 
-    /**
-     * @private
-     * @returns {JSX.Element | null}
-     */
-    renderCustomDialog() {
+    private renderCustomDialog(): React.JSX.Element | null {
         if (this.state.customDialog && this.props.objectCustomDialog) {
             const ObjectCustomDialog = this.props.objectCustomDialog;
 
