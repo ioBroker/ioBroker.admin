@@ -19,18 +19,36 @@ function UserDeleteDialog(props) {
         return null;
     }
 
-    return <Dialog open={props.open} onClose={props.onClose}>
-        <DialogTitle>{props.t('Please confirm')}</DialogTitle>
-        <DialogContent>
-            <DialogContentText>
-                {props.t('Do you want to delete user %s?', props.user.common.name)}
-            </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-            <Button variant="contained" color="primary" onClick={() => props.deleteUser(props.user._id)} startIcon={<IconDelete />}>{props.t('Delete')}</Button>
-            <Button variant="contained" color="grey" autoFocus onClick={props.onClose} startIcon={<IconCancel />}>{props.t('Cancel')}</Button>
-        </DialogActions>
-    </Dialog>;
+    return (
+        <Dialog open={props.open} onClose={props.onClose}>
+            <DialogTitle>{props.t('Please confirm')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    {props.t('Do you want to delete user %s?', props.user.common.name)}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => props.deleteUser(props.user._id)}
+                    startIcon={<IconDelete />}
+                >
+                    {props.t('Delete')}
+                </Button>
+                <Button
+                    variant="contained"
+                    // @ts-expect-error grey is valid color
+                    color="grey"
+                    autoFocus
+                    onClick={props.onClose}
+                    startIcon={<IconCancel />}
+                >
+                    {props.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 }
 
 UserDeleteDialog.propTypes = {

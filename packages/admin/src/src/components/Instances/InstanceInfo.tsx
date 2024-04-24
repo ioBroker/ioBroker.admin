@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import React from 'react';
 import { withStyles } from '@mui/styles';
 import {
     Grid,
@@ -7,17 +7,24 @@ import {
 } from '@mui/material';
 
 const styles = () => ({
-    nowrap:{
+    nowrap: {
         flexFlow: 'nowrap',
         overflow: 'hidden',
     },
-    width:{
+    width: {
         width:'100%',
         overflow: 'hidden',
-
     },
 });
-const InstanceInfo = props => <Grid
+
+interface InstanceInfoProps {
+    children: (React.JSX.Element | string)[] | React.JSX.Element | string;
+    icon?: React.JSX.Element;
+    tooltip?: string;
+    classes: Record<string, string>;
+}
+
+const InstanceInfo = (props: InstanceInfoProps) => <Grid
     item
     container
     title={props.icon ? '' : props.tooltip || ''}
@@ -27,10 +34,10 @@ const InstanceInfo = props => <Grid
     className={props.classes.nowrap}
 >
     <Grid item>
-        { props.icon &&
-                <Tooltip title={props.tooltip || ''}>
-                    { props.icon }
-                </Tooltip>}
+        {props.icon &&
+            <Tooltip title={props.tooltip || ''}>
+                {props.icon}
+            </Tooltip>}
     </Grid>
     <Grid
         className={props.classes.width}
@@ -38,16 +45,10 @@ const InstanceInfo = props => <Grid
     >
         <Tooltip title={props.tooltip || ''}>
             <Typography component="div">
-                { props.children }
+                {props.children}
             </Typography>
         </Tooltip>
     </Grid>
 </Grid>;
-
-InstanceInfo.propTypes = {
-    children: PropTypes.node,
-    icon: PropTypes.node,
-    tooltip: PropTypes.string,
-};
 
 export default withStyles(styles)(InstanceInfo);

@@ -66,13 +66,13 @@ import {
     ListAlt as IconEnum,
     LooksOne as LooksOneIcon,
     PersonOutlined as IconUser,
-    Photo as IconPhoto,
     Publish as PublishIcon,
     Refresh as RefreshIcon,
     RoomService as PressButtonIcon,
     Router as IconHost,
     Settings as IconConfig,
     SettingsApplications as IconSystem,
+    DataObject as IconData,
     ShowChart as IconChart,
     SupervisedUserCircle as IconGroup,
     TextFields as TextFieldsIcon,
@@ -84,7 +84,6 @@ import {
 import {
     Icon,
     IconAdapter,
-    IconAlias,
     IconChannel,
     IconClearFilter,
     IconClosed,
@@ -107,12 +106,23 @@ import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
 
+declare global {
+    interface Window {
+        sparkline: {
+            sparkline: (el: HTMLDivElement, data: number[]) => React.JSX.Element;
+        };
+    }
+}
+
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = 16;
 const SMALL_BUTTON_SIZE = 20;
-const COLOR_NAME_SYSTEM = '#ff6d69';
-const COLOR_NAME_SYSTEM_ADAPTER = '#5773ff';
+const COLOR_NAME_USERDATA = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#62ff25' : '#37c400');
+const COLOR_NAME_ALIAS = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#ee56ff' : '#a204b4');
+const COLOR_NAME_JAVASCRIPT = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#fff46e' : '#b89101');
+const COLOR_NAME_SYSTEM = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#ff6d69' : '#ff6d69');
+const COLOR_NAME_SYSTEM_ADAPTER = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#5773ff' : '#5773ff');
 const COLOR_NAME_ERROR_DARK = '#ff413c';
 const COLOR_NAME_ERROR_LIGHT = '#86211f';
 const COLOR_NAME_CONNECTED_DARK = '#57ff45';
@@ -974,18 +984,6 @@ const styles: Record<string, any> = (theme: Theme) => ({
             borderRightStyle: 'solid',
         },
     },
-    resizeHandleLeft: {
-        left: -4,
-        borderLeft: '2px dotted #888',
-        '&:hover': {
-            borderColor: '#ccc',
-            borderLeftStyle: 'solid',
-        },
-        '&.active': {
-            borderColor: '#517ea5',
-            borderLeftStyle: 'solid',
-        },
-    },
     invertedBackground: {
         backgroundColor: theme.palette.mode === 'dark' ? '#9a9a9a' : '#565656',
         padding: '0 3px',
@@ -1390,7 +1388,7 @@ function applyFilter(
                 data.id.startsWith('enum.') ||
                 data.id.startsWith('_design/') ||
                 data.id.endsWith('.admin') ||
-                (common && common.expert);
+                common?.expert;
         }
         if (!filteredOut && context.id) {
             if (data.fID === undefined) {
@@ -1498,19 +1496,20 @@ function getSystemIcon(
     objects: Record<string, ioBroker.Object>,
     id: string,
     level: number,
+    themeType: 'dark' | 'light',
     imagePrefix?: string,
 ): string | React.JSX.Element | null {
     let icon;
 
     // system or design has special icons
-    if (id.startsWith('_design/') || id === 'system') {
-        icon = <IconSystem className="iconOwn" />;
+    if (id === 'alias' || id === 'alias.0') {
+        icon = <IconLink className="iconOwn" style={{ color: COLOR_NAME_ALIAS(themeType) }} />;
     } else if (id === '0_userdata' || id === '0_userdata.0') {
-        icon = <IconPhoto className="iconOwn" />;
-    } else if (id === 'alias' || id === 'alias.0') {
-        icon = <IconAlias className="iconOwn" />;
+        icon = <IconData className="iconOwn" style={{ color: COLOR_NAME_USERDATA(themeType) }} />;
+    } else if (id.startsWith('_design/') || id === 'system') {
+        icon = <IconSystem className="iconOwn" style={{ color: COLOR_NAME_SYSTEM(themeType) }} />;
     } else if (id === 'system.adapter') {
-        icon = <IconSystem className="iconOwn" />;
+        icon = <IconSystem className="iconOwn" style={{ color: COLOR_NAME_SYSTEM_ADAPTER(themeType) }} />;
     } else if (id === 'system.group') {
         icon = <IconGroup className="iconOwn" />;
     } else if (id === 'system.user') {
@@ -1569,6 +1568,7 @@ function buildTree(
         imagePrefix?: string;
         root?: string;
         lang: ioBroker.Languages;
+        themeType: 'dark' | 'light';
     },
 ): { root: TreeItem; info: TreeInfo } {
     const imagePrefix = options.imagePrefix || '.';
@@ -1673,7 +1673,7 @@ function buildTree(
                                     id:        curPath,
                                     obj:       objects[curPath],
                                     level:     k,
-                                    icon:      getSystemIcon(objects, curPath, k, imagePrefix),
+                                    icon:      getSystemIcon(objects, curPath, k, options.themeType, imagePrefix),
                                     generated: true,
                                 },
                             };
@@ -1688,13 +1688,14 @@ function buildTree(
                     }
                 }
 
-                const _croot: TreeItem = {
+                const _cRoot: TreeItem = {
                     data: {
                         name:       parts[parts.length - 1],
                         title:      getName(obj?.common?.name, options.lang),
                         obj,
                         parent:     cRoot,
-                        icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
+                        icon:       getSelectIdIcon(objects, id, imagePrefix) ||
+                            getSystemIcon(objects, id, 0, options.themeType, imagePrefix),
                         id,
                         hasCustoms: !!(obj.common?.custom && Object.keys(obj.common.custom).length),
                         level:      parts.length - 1,
@@ -1708,8 +1709,8 @@ function buildTree(
                 };
 
                 cRoot.children = cRoot.children || [];
-                cRoot.children.push(_croot);
-                cRoot = _croot;
+                cRoot.children.push(_cRoot);
+                cRoot = _cRoot;
 
                 currentPathLen = parts.length;
                 currentPathArr = parts;
@@ -2379,6 +2380,7 @@ interface ObjectBrowserState {
     toast: string;
     scrollBarWidth: number;
     customDialog: null | string[];
+    customDialogAll?: boolean;
     editObjectDialog: string;
     editObjectAlias: boolean; // open the edit object dialog on alias tab
     viewFileDialog: string;
@@ -2424,7 +2426,7 @@ interface ObjectBrowserState {
 class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
     private info: TreeInfo;
 
-    private localStorage: Storage = ((window as any)._localStorage as Storage) || window.localStorage;
+    private localStorage: Storage = (window as any)._localStorage as Storage || window.localStorage;
 
     private lastSelectedItems: string[];
 
@@ -2480,8 +2482,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
     private resizerActiveName: string | null = null;
 
     private resizerCurrentWidths: Record<string, number> = {};
-
-    private resizerActiveIndex: number = 0;
 
     private resizeLeft: boolean = false;
 
@@ -2581,7 +2581,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         filter.expertMode =
             props.expertMode !== undefined
                 ? props.expertMode
-                : ((window as any)._sessionStorage || window.sessionStorage).getItem('App.expertMode') === 'true';
+                : ((window as any)._sessionStorage as Storage || window.sessionStorage).getItem('App.expertMode') === 'true';
         this.tableRef = createRef();
         this.filterRefs = {};
 
@@ -2891,6 +2891,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                 imagePrefix: this.props.imagePrefix,
                 root: this.props.root,
                 lang: this.props.lang,
+                themeType: this.props.themeType,
             });
             this.root = root;
             this.info = info;
@@ -2934,7 +2935,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
      */
     static isNonExpertId(
         /** id to test */
-        id: string
+        id: string,
     ): boolean {
         return !!ObjectBrowser.#NON_EXPERT_NAMESPACES.find(saveNamespace => id.startsWith(saveNamespace));
     }
@@ -3599,7 +3600,12 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         if (!this.objectsUpdateTimer && this.objects) {
             this.objectsUpdateTimer = setTimeout(() => {
                 this.objectsUpdateTimer = null;
-                const { info, root } = buildTree(this.objects, this.props);
+                const { info, root } = buildTree(this.objects, {
+                    imagePrefix: this.props.imagePrefix,
+                    root: this.props.root,
+                    lang: this.props.lang,
+                    themeType: this.props.themeType,
+                });
                 this.root = root;
                 this.info = info;
                 this.lastAppliedFilter = null; // apply filter anew
@@ -3712,7 +3718,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         if (name) {
             (filter as Record<string, string | boolean>)[name] = value;
             if (name === 'expertMode') {
-                ((window as any)._sessionStorage || window.sessionStorage).setItem(
+                ((window as any)._sessionStorage as Storage || window.sessionStorage).setItem(
                     'App.expertMode',
                     value ? 'true' : 'false',
                 );
@@ -4707,7 +4713,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                                 // @ts-expect-error should work
                                 this.props.router?.doNavigate(null, 'custom', this.state.selected[0]);
                             }
-                            this.setState({ customDialog: ids });
+                            this.setState({ customDialog: ids, customDialogAll: true });
                         } else {
                             this.setState({ toast: this.props.t('ra_please select object') });
                         }
@@ -4973,7 +4979,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                         this.pauseSubscribe(true);
                         // @ts-expect-error should work anyway
                         this.props.router?.doNavigate(null, 'customs', id);
-                        this.setState({ customDialog: [id] });
+                        this.setState({ customDialog: [id], customDialogAll: false });
                     }}
                 >
                     <IconConfig className={classes.cellButtonsButtonIcon} />
@@ -4998,7 +5004,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
         } */
         if (
-            (window as any).sparkline &&
+            window.sparkline &&
             this.defaultHistory &&
             this.objects[id] &&
             this.objects[id].common &&
@@ -5032,7 +5038,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                         if (sparks[s].dataset.id === id) {
                             const v = prepareSparkData(values, nowMs);
 
-                            (window as any).sparkline.sparkline(sparks[s], v);
+                            window.sparkline.sparkline(sparks[s], v);
                             break;
                         }
                     }
@@ -5793,10 +5799,21 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                 invertBackground = this.props.themeType === 'dark' ? '#9a9a9a' : '#565656';
             }
         }
-        if (id === 'system') {
-            checkColor = COLOR_NAME_SYSTEM;
+        let bold = false;
+        if (id === '0_userdata') {
+            checkColor = COLOR_NAME_USERDATA(this.props.themeType);
+            bold = true;
+        } else if (id === 'alias') {
+            checkColor = COLOR_NAME_ALIAS(this.props.themeType);
+            bold = true;
+        } else if (id === 'javascript') {
+            checkColor = COLOR_NAME_JAVASCRIPT(this.props.themeType);
+            bold = true;
+        } else if (id === 'system') {
+            checkColor = COLOR_NAME_SYSTEM(this.props.themeType);
+            bold = true;
         } else if (id === 'system.adapter') {
-            checkColor = COLOR_NAME_SYSTEM_ADAPTER;
+            checkColor = COLOR_NAME_SYSTEM_ADAPTER(this.props.themeType);
         } else if (!checkColor || this.state.selected.includes(id)) {
             checkColor = 'inherit';
         }
@@ -5985,7 +6002,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                 </Grid>
                 <Grid
                     item
-                    style={{ color: checkColor }}
+                    style={{ color: checkColor, fontWeight: bold ? 'bold' : undefined }}
                     className={Utils.clsx(classes.cellIdSpan, invertBackground && classes.invertedBackground)}
                 >
                     <Tooltip
@@ -6474,50 +6491,48 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
     };
 
     resizerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (this.resizerActiveIndex === null || this.resizerActiveIndex === undefined) {
-            this.storedWidths = this.storedWidths || JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width])) as ScreenWidthOne;
+        this.storedWidths = this.storedWidths || JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width])) as ScreenWidthOne;
 
-            this.resizerCurrentWidths = this.resizerCurrentWidths || {};
-            this.resizerActiveDiv = (e.target as HTMLDivElement).parentNode as HTMLDivElement;
-            this.resizerActiveName = this.resizerActiveDiv.dataset.name;
+        this.resizerCurrentWidths = this.resizerCurrentWidths || {};
+        this.resizerActiveDiv = (e.target as HTMLDivElement).parentNode as HTMLDivElement;
+        this.resizerActiveName = this.resizerActiveDiv.dataset.name;
 
-            let i = 0;
-            if ((e.target as HTMLDivElement).dataset.left === 'true') {
-                this.resizeLeft = true;
-                this.resizerNextDiv = this.resizerActiveDiv.previousElementSibling as HTMLDivElement;
-                let handle: HTMLDivElement = this.resizerNextDiv.querySelector(`.${this.props.classes.resizeHandle}`) as HTMLDivElement;
-                while (this.resizerNextDiv && !handle && i < 10) {
-                    this.resizerNextDiv = this.resizerNextDiv.previousElementSibling as HTMLDivElement;
-                    handle = this.resizerNextDiv.querySelector(`.${this.props.classes.resizeHandle}`);
-                    i++;
-                }
-                if (handle && handle.dataset.left !== 'true') {
-                    this.resizerNextDiv = this.resizerNextDiv.nextElementSibling as HTMLDivElement;
-                }
-            } else {
-                this.resizeLeft = false;
-                this.resizerNextDiv = this.resizerActiveDiv.nextElementSibling as HTMLDivElement;
-                /* while (this.resizerNextDiv && !this.resizerNextDiv.querySelector('.' + this.props.classes.resizeHandle) && i < 10) {
-                    this.resizerNextDiv = this.resizerNextDiv.nextElementSibling;
-                    i++;
-                } */
+        let i = 0;
+        if ((e.target as HTMLDivElement).dataset.left === 'true') {
+            this.resizeLeft = true;
+            this.resizerNextDiv = this.resizerActiveDiv.previousElementSibling as HTMLDivElement;
+            let handle: HTMLDivElement = this.resizerNextDiv.querySelector(`.${this.props.classes.resizeHandle}`) as HTMLDivElement;
+            while (this.resizerNextDiv && !handle && i < 10) {
+                this.resizerNextDiv = this.resizerNextDiv.previousElementSibling as HTMLDivElement;
+                handle = this.resizerNextDiv.querySelector(`.${this.props.classes.resizeHandle}`);
+                i++;
             }
-            this.resizerNextName = this.resizerNextDiv.dataset.name;
-
-            this.resizerMin = parseInt(this.resizerActiveDiv.dataset.min, 10) || 0;
-            this.resizerNextMin = parseInt(this.resizerNextDiv.dataset.min, 10) || 0;
-
-            this.resizerPosition = e.clientX;
-
-            this.resizerCurrentWidths[this.resizerActiveName] = this.resizerActiveDiv.offsetWidth;
-            this.resizerCurrentWidths[this.resizerNextName] = this.resizerNextDiv.offsetWidth;
-
-            this.resizerOldWidth = this.resizerCurrentWidths[this.resizerActiveName];
-            this.resizerOldWidthNext = this.resizerCurrentWidths[this.resizerNextName];
-
-            window.addEventListener('mousemove', this.resizerMouseMove);
-            window.addEventListener('mouseup', this.resizerMouseUp);
+            if (handle && handle.dataset.left !== 'true') {
+                this.resizerNextDiv = this.resizerNextDiv.nextElementSibling as HTMLDivElement;
+            }
+        } else {
+            this.resizeLeft = false;
+            this.resizerNextDiv = this.resizerActiveDiv.nextElementSibling as HTMLDivElement;
+            /* while (this.resizerNextDiv && !this.resizerNextDiv.querySelector('.' + this.props.classes.resizeHandle) && i < 10) {
+                this.resizerNextDiv = this.resizerNextDiv.nextElementSibling;
+                i++;
+            } */
         }
+        this.resizerNextName = this.resizerNextDiv.dataset.name;
+
+        this.resizerMin = parseInt(this.resizerActiveDiv.dataset.min, 10) || 0;
+        this.resizerNextMin = parseInt(this.resizerNextDiv.dataset.min, 10) || 0;
+
+        this.resizerPosition = e.clientX;
+
+        this.resizerCurrentWidths[this.resizerActiveName] = this.resizerActiveDiv.offsetWidth;
+        this.resizerCurrentWidths[this.resizerNextName] = this.resizerNextDiv.offsetWidth;
+
+        this.resizerOldWidth = this.resizerCurrentWidths[this.resizerActiveName];
+        this.resizerOldWidthNext = this.resizerCurrentWidths[this.resizerNextName];
+
+        window.addEventListener('mousemove', this.resizerMouseMove);
+        window.addEventListener('mouseup', this.resizerMouseUp);
     };
 
     /**
@@ -6723,18 +6738,12 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                 data-min={120}
                 data-name="val"
             >
-                <div
-                    className={`${this.props.classes.resizeHandle} ${this.props.classes.resizeHandleLeft}`}
-                    data-left="true"
-                    onMouseDown={this.resizerMouseDown}
-                    onDoubleClick={this.resizerReset}
-                    title={this.props.t('ra_Double click to reset table layout')}
-                />
                 {this.props.t('ra_Value')}
                 {filterClearInValue}
             </div> : null}
             {this.columnsVisibility.buttons ? <div
                 className={classes.headerCell}
+                title={this.texts.filter_custom}
                 style={{ width: this.columnsVisibility.buttons }}
             >
                 {' '}
@@ -6799,6 +6808,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             return <ObjectCustomDialog
                 reportChangedIds={(changedIds: string[]) => (this.changedIds = [...changedIds])}
                 objectIDs={this.state.customDialog}
+                allVisibleObjects={this.state.customDialogAll}
                 expertMode={this.state.filter.expertMode}
                 isFloatComma={this.props.isFloatComma}
                 t={this.props.t}

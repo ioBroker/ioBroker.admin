@@ -633,19 +633,14 @@ class Instances extends Component {
     static getSchedule = obj => (obj?.common?.schedule ? obj.common.schedule : '');
 
     getName = obj => {
-        if (!obj || !obj.common) {
+        if (!obj?.common) {
             return '';
         }
         if (obj.common.titleLang) {
-            if (typeof obj.common.titleLang === 'string') {
-                return obj.common.titleLang;
-            }
-            return obj.common.titleLang[this.props.lang] || obj.common.titleLang.en || '';
+            return Utils.getText(obj.common.titleLang, this.props.lang);
         }
-        if (obj.common.title && typeof obj.common.title === 'object') {
-            return obj.common.title[this.props.lang] || obj.common.title.en || '';
-        }
-        return obj.common.title || '';
+
+        return Utils.getText(obj.common.title, this.props.lang);
     };
 
     static isModeSchedule = obj => (obj?.common?.mode && obj?.common?.mode === 'schedule') || false;

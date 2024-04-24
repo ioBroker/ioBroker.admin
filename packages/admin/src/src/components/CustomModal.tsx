@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, useEffect, useState } from 'react';
 import { withStyles } from '@mui/styles';
 
 import {
     Dialog, DialogActions, DialogContent,
-    DialogTitle, IconButton, TextField, Button, InputAdornment,
+    DialogTitle, IconButton, TextField, Button, InputAdornment, type Theme, type Breakpoint,
 } from '@mui/material';
 
 import {
@@ -15,7 +14,7 @@ import {
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     modalDialog: {
         minWidth: 400,
         maxWidth: 800,
@@ -40,12 +39,34 @@ const styles = theme => ({
     },
 });
 
+interface CustomModalProps {
+    icon?: Component;
+    onClose: () => void;
+    children: React.JSX.Element | React.JSX.Element [];
+    title?: string;
+    titleButtonClose?: string;
+    titleButtonApply?: string;
+    onApply: (value: string | number) => void;
+    fullWidth?: boolean;
+    maxWidth?: Breakpoint;
+    applyButton?: boolean;
+    applyDisabled?: boolean;
+    overflowHidden?: boolean;
+    help?: string;
+    noTranslation?: boolean;
+    toggleTranslation?: () => void;
+    classes: Record<string, string>;
+    textInput?: boolean;
+    defaultValue?: string | number;
+    progress?: boolean;
+}
+
 const CustomModal = ({
     toggleTranslation, noTranslation, title, fullWidth,
     help, maxWidth, progress, icon, applyDisabled, applyButton,
     classes, onClose, children, titleButtonApply, titleButtonClose,
     onApply, textInput, defaultValue, overflowHidden,
-}) => {
+}: CustomModalProps) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
@@ -66,7 +87,10 @@ const CustomModal = ({
         classes={{ paper: classes.modalDialog /* paper: classes.background */ }}
     >
         {title && <DialogTitle>
-            {icon ? <Icon className={classes.titleIcon} /> : null}
+            {icon ?
+                // @ts-expect-error How to solve it?
+                <Icon className={classes.titleIcon} />
+                : null}
             {title}
             {I18n.getLanguage() !== 'en' && toggleTranslation ? <IconButton
                 size="large"
@@ -77,13 +101,16 @@ const CustomModal = ({
                 <LanguageIcon />
             </IconButton> : null}
         </DialogTitle>}
-        <DialogContent className={Utils.clsx(overflowHidden ? classes.overflowHidden : null, classes.content)} style={{ paddingTop: 8 }}>
+        <DialogContent
+            className={Utils.clsx(overflowHidden ? classes.overflowHidden : null, classes.content)}
+            style={{ paddingTop: 8 }}
+        >
             {textInput && <TextField
                 // className={className}
                 autoComplete="off"
                 fullWidth
                 autoFocus
-                variant="outlined"
+                variant="standard"
                 size="medium"
                 // rows={10}
                 multiline
@@ -105,54 +132,27 @@ const CustomModal = ({
             {help ? <div>{help}</div> : null}
         </DialogContent>
         <DialogActions>
-            {applyButton && <Button
+            {(applyButton === undefined || applyButton) && <Button
                 startIcon={<CheckIcon />}
                 disabled={progress || (applyDisabled && defaultValue === value)}
-                onClick={() => onApply(textInput ? value : '')}
+                onClick={() => onApply && onApply(textInput ? value : '')}
                 variant="contained"
                 color="primary"
             >
-                {I18n.t(titleButtonApply)}
+                {I18n.t(titleButtonApply || 'Ok')}
             </Button>}
             <Button
+                // @ts-expect-error grey is valid color
                 color="grey"
                 onClick={onClose}
                 disabled={progress}
                 variant="contained"
                 startIcon={<CloseIcon />}
             >
-                {I18n.t(titleButtonClose)}
+                {I18n.t(titleButtonClose || 'Cancel')}
             </Button>
         </DialogActions>
     </Dialog>;
-};
-
-CustomModal.defaultProps = {
-    onApply: () => undefined,
-    onClose: () => undefined,
-    applyButton: true,
-    applyDisabled: false,
-    titleButtonClose: 'Cancel',
-    titleButtonApply: 'Ok',
-    overflowHidden: false,
-    help: '',
-};
-
-CustomModal.propTypes = {
-    icon: PropTypes.object,
-    onClose: PropTypes.func,
-    children: PropTypes.any,
-    titleButtonClose: PropTypes.string,
-    titleButtonApply: PropTypes.string,
-    onApply: PropTypes.func,
-    fullWidth: PropTypes.bool,
-    maxWidth: PropTypes.string,
-    applyButton: PropTypes.bool,
-    applyDisabled: PropTypes.bool,
-    overflowHidden: PropTypes.bool,
-    help: PropTypes.string,
-    noTranslation: PropTypes.bool,
-    toggleTranslation: PropTypes.func,
 };
 
 export default withStyles(styles)(CustomModal);

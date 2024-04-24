@@ -1589,5 +1589,6 @@
   "yesterday": "вчора",
   "History instance not alive": "Примірник історії не живий",
   "History instance not selected": "Екземпляр історії не вибрано",
-  "Click for more": "Натисніть, щоб дізнатися більше"
+  "Click for more": "Натисніть, щоб дізнатися більше",
+  "Your are intend to edit ALL objects. Are you sure?": "Ви маєте намір редагувати ВСІ об’єкти. Ти впевнений?"
 }

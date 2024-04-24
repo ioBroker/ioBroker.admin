@@ -788,10 +788,22 @@ class Logs extends Component {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" autoFocus onClick={() => this.handleLogDelete()} color="primary" startIcon={<CheckIcon />}>
+                <Button
+                    variant="contained"
+                    autoFocus
+                    onClick={() => this.handleLogDelete()}
+                    color="primary"
+                    startIcon={<CheckIcon />}
+                >
                     {this.t('Ok')}
                 </Button>
-                <Button variant="contained" onClick={() => this.closeLogDelete()} color="grey" startIcon={<CloseIcon />}>
+                <Button
+                    variant="contained"
+                    onClick={() => this.closeLogDelete()}
+                    // @ts-expect-error grey is valid color
+                    color="grey"
+                    startIcon={<CloseIcon />}
+                >
                     {this.t('Cancel')}
                 </Button>
             </DialogActions>

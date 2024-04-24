@@ -1589,5 +1589,6 @@
   "yesterday": "ontem",
   "History instance not alive": "Instância do histórico não ativa",
   "History instance not selected": "Instância do histórico não selecionada",
-  "Click for more": "Clique para mais"
+  "Click for more": "Clique para mais",
+  "Your are intend to edit ALL objects. Are you sure?": "Você pretende editar TODOS os objetos. Tem certeza?"
 }

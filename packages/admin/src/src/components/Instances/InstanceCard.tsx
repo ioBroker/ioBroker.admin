@@ -1,5 +1,4 @@
 import React, { memo, useState } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -20,6 +19,7 @@ import {
     Select,
     Tooltip,
     Typography,
+    type Theme,
 } from '@mui/material';
 
 import {
@@ -44,11 +44,11 @@ import { green, red } from '@mui/material/colors';
 
 import {
     Utils,
-    I18n,
     Confirm as ConfirmDialog,
     TextWithIcon,
     SelectWithIcon,
     ComplexCronDialog as ComplexCron,
+    type AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
 import sentry from '../../assets/sentry.svg';
@@ -58,11 +58,12 @@ import State from '../State';
 import CustomModal from '../CustomModal';
 import LinksDialog from './LinksDialog';
 import IsVisible from '../IsVisible';
+import BasicUtils from '../../Utils';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     root: {
         position: 'relative',
         margin: 10,
@@ -331,44 +332,127 @@ const styles = theme => ({
         backgroundColor: 'rgb(0 255 0 / 14%)'
     } */
 });
-
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
-const arrayTier = [{ value: 1, desc: '1: Logic adapters' }, { value: 2, desc: '2: Data provider adapters' }, { value: 3, desc: '3: Other adapters' }];
+const arrayTier = [
+    { value: 1, desc: '1: Logic adapters' },
+    { value: 2, desc: '2: Data provider adapters' },
+    { value: 3, desc: '3: Other adapters' },
+];
 
-const InstanceCard = memo(({
-    adminInstance,
-    classes,
-    maxCompactGroupNumber,
-    onDeleteInstance,
-    deleteCustomSupported,
-    expertMode,
-    extendObject,
-    getMemory,
-    getRestartSchedule,
-    getSchedule,
-    hidden,
-    hosts,
-    id,
-    instance,
-    key,
-    lang,
-    openConfig,
-    setCompact,
-    setCompactGroup,
-    setHost,
-    setLogLevel,
-    setMemoryLimitMB,
-    setName,
-    setRestartSchedule,
-    setSchedule,
-    setSentry,
-    setTier,
-    t,
-    themeType,
-    deleting,
-    item,
-    socket,
-}) => {
+interface InstanceEntry {
+    id: string;
+    obj: ioBroker.InstanceObject;
+    host: string;
+    version: string;
+    mode: string;
+    image: string;
+    canStart: boolean;
+    adapter: string;
+    config: boolean;
+    links: {
+        name: ioBroker.StringOrTranslated;
+        link: string;
+        port: number;
+        color: string;
+    }[];
+}
+
+interface InstanceItem {
+    logLevel: ioBroker.LogLevel;
+    compactGroup: number;
+    tier: number;
+    memoryLimitMB: number;
+    name: ioBroker.StringOrTranslated;
+    stoppedWhenWebExtension: boolean;
+    running: boolean;
+    connected: boolean;
+    connectedToHost: boolean;
+    alive: boolean;
+    inputOutput: {
+        stateInput: number;
+        stateOutput: number;
+    };
+    loglevelIcon: React.JSX.Element;
+    logLevelObject: ioBroker.LogLevel;
+    modeSchedule: string;
+    checkCompact: boolean;
+    compact: number;
+    supportCompact: boolean;
+    checkSentry: boolean;
+    sentry: boolean;
+}
+
+interface InstanceCardProps {
+    adminInstance: string;
+    classes: Record<string, string>;
+    maxCompactGroupNumber: number;
+    onDeleteInstance: (instance: InstanceEntry, deleteCustom: boolean, deleteAdapter?: boolean) => void;
+    deleteCustomSupported: boolean;
+    expertMode: boolean;
+    extendObject: (id: string, obj: Record<string, any>) => void;
+    getMemory: (id: string) => number;
+    getRestartSchedule: (id: string) => string;
+    getSchedule: (id: string) => string;
+    hidden: boolean;
+    hosts: ioBroker.HostObject[];
+    id: string;
+    instance: InstanceEntry;
+    key: string;
+    lang: ioBroker.Languages;
+    openConfig: (id: string) => void;
+    setCompact: (instance: InstanceEntry) => void;
+    setCompactGroup: (instance: InstanceEntry, compactGroup: number) => void;
+    setHost: (instance: InstanceEntry, host: string) => void;
+    setLogLevel: (instance: InstanceEntry, logLevel: string, onTheFly: boolean) => void;
+    setMemoryLimitMB: (instance: InstanceEntry, memoryLimitMB: number) => void;
+    setName: (instance: InstanceEntry, name: string) => void;
+    setRestartSchedule: (instance: InstanceEntry, cron: string | false) => void;
+    setSchedule: (instance: InstanceEntry, cron: string | false) => void;
+    setSentry: (instance: InstanceEntry) => void;
+    setTier: (instance: InstanceEntry, tier: number) => void;
+    t: (text: string, ...args: any[]) => string;
+    themeType: 'dark' | 'light';
+    deleting: boolean;
+    item: InstanceItem;
+    socket: AdminConnection;
+}
+
+const InstanceCard = memo((props: InstanceCardProps) => {
+    const {
+        adminInstance,
+        classes,
+        maxCompactGroupNumber,
+        onDeleteInstance,
+        deleteCustomSupported,
+        expertMode,
+        extendObject,
+        getMemory,
+        getRestartSchedule,
+        getSchedule,
+        hidden,
+        hosts,
+        id,
+        instance,
+        key,
+        lang,
+        openConfig,
+        setCompact,
+        setCompactGroup,
+        setHost,
+        setLogLevel,
+        setMemoryLimitMB,
+        setName,
+        setRestartSchedule,
+        setSchedule,
+        setSentry,
+        setTier,
+        t,
+        themeType,
+        deleting,
+        item,
+        socket,
+    } = props;
+
     const [mouseOver, setMouseOver] = useState(false);
 
     const [openCollapse, setCollapse] = useState(false);
@@ -377,14 +461,14 @@ const InstanceCard = memo(({
     const [openDialogSchedule, setOpenDialogSchedule] = useState(false);
     const [openDialogText, setOpenDialogText] = useState(false);
     const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
-    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const [openDialogDelete, setOpenDialogDelete] = useState<number | boolean>(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
     const [openDialogHost, setOpenDialogHost] = useState(false);
     const [openDialogCompact, setOpenDialogCompact] = useState(false);
     const [openDialogTier, setOpenDialogTier] = useState(false);
 
     const [showLinks, setShowLinks] = useState(false);
-    const [showStopAdminDialog, setShowStopAdminDialog] = useState(false);
+    const [showStopAdminDialog, setShowStopAdminDialog] = useState<string | false>(false);
 
     const [logLevelValue, setLogLevelValue] = useState(item.logLevel);
     const [logOnTheFlyValue, setLogOnTheFlyValue] = useState(false);
@@ -424,7 +508,7 @@ const InstanceCard = memo(({
                     variant="contained"
                     style={{ background: 'red', color: 'white' }}
                 >
-                    {I18n.t('Delete adapter')}
+                    {t('Delete adapter')}
                 </Button> : null}
                 <Button
                     startIcon={<DeleteIcon />}
@@ -436,15 +520,16 @@ const InstanceCard = memo(({
                     variant="contained"
                     color="primary"
                 >
-                    {I18n.t('Delete instance')}
+                    {t('Delete instance')}
                 </Button>
                 <Button
+                    // @ts-expect-error grey is valid color
                     color="grey"
                     onClick={() => setOpenDialogDelete(false)}
                     variant="contained"
                     startIcon={<CloseIcon />}
                 >
-                    {I18n.t('Cancel')}
+                    {t('Cancel')}
                 </Button>
             </DialogActions>
         </Dialog>;
@@ -477,22 +562,21 @@ const InstanceCard = memo(({
         customModal = showModal ? <CustomModal
             title={title}
             help={help}
-            open={!0}
             applyDisabled={openDialogText || openDialogMemoryLimit}
             textInput={openDialogText || openDialogMemoryLimit}
-            defaultValue={openDialogText ? item.name : openDialogMemoryLimit ? item.memoryLimitMB : ''}
+            defaultValue={openDialogText ? BasicUtils.getText(item.name, props.lang) : openDialogMemoryLimit ? item.memoryLimitMB : ''}
             onApply={value => {
                 if (openDialogLogLevel) {
                     setLogLevel(instance, logLevelValue, logOnTheFlyValue);
                     setOpenDialogLogLevel(false);
                 } else if (openDialogText) {
-                    setName(instance, value);
+                    setName(instance, value.toString());
                     setOpenDialogText(false);
                 } else if (openDialogMemoryLimit) {
-                    setMemoryLimitMB(instance, value);
+                    setMemoryLimitMB(instance, parseFloat(value.toString()) || 0);
                     setOpenDialogMemoryLimit(false);
                 } else if (openDialogCompact) {
-                    setCompactGroup(instance, compactValue);
+                    setCompactGroup(instance, parseInt(compactValue.toString(), 10) || 0);
                     setOpenDialogCompact(false);
                 } else if (openDialogTier) {
                     setTier(instance, tierValue);
@@ -524,27 +608,27 @@ const InstanceCard = memo(({
                 }
             }}
         >
-            {openDialogLogLevel && <FormControl className={classes.logLevel} variant="outlined">
+            {openDialogLogLevel && <FormControl className={classes.logLevel} variant="standard">
                 <InputLabel>{t('log level')}</InputLabel>
                 <Select
                     variant="standard"
                     value={logLevelValue}
                     fullWidth
-                    onChange={el => setLogLevelValue(el.target.value)}
+                    onChange={el => setLogLevelValue(el.target.value as ioBroker.LogLevel)}
                 >
                     {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
                         {t(el)}
                     </MenuItem>)}
                 </Select>
             </FormControl>}
-            {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
+            {openDialogLogLevel && <FormControl className={classes.formControl} variant="standard">
                 <FormControlLabel
                     control={<Checkbox checked={logOnTheFlyValue} onChange={e => setLogOnTheFlyValue(e.target.checked)} />}
                     label={t('Without restart')}
                 />
                 <FormHelperText>{logOnTheFlyValue ? t('Will be reset to the saved log level after restart of adapter') : t('Log level will be saved permanently')}</FormHelperText>
             </FormControl>}
-            {openDialogCompact && <FormControl className={classes.addCompact} variant="outlined">
+            {openDialogCompact && <FormControl className={classes.addCompact} variant="standard">
                 <InputLabel>{t('compact groups')}</InputLabel>
                 <Select
                     variant="standard"
@@ -552,8 +636,8 @@ const InstanceCard = memo(({
                     onClose={() => setOpenSelectCompactGroup(false)}
                     onOpen={() => setOpenSelectCompactGroup(true)}
                     open={openSelectCompactGroup}
-                    value={compactValue === 1 ? 'default' : compactValue === '0' ? 'controller' : !compactValue ? 'default' : compactValue || 'default'}
-                    onChange={el => setCompactValue(el.target.value)}
+                    value={(compactValue === 1 ? 'default' : ((compactValue || '').toString() === '0' ? 'controller' : (!compactValue ? 'default' : compactValue))) || 'default'}
+                    onChange={el => setCompactValue(parseInt(el.target.value as string, 10))}
                 >
                     <div
                         onClick={e => {
@@ -563,6 +647,7 @@ const InstanceCard = memo(({
                         className={classes.selectStyle}
                     >
                         <Button
+                            // @ts-expect-error grey is valid color
                             color="grey"
                             onClick={() => {
                                 setOpenSelectCompactGroup(false);
@@ -581,18 +666,20 @@ const InstanceCard = memo(({
                     <MenuItem value="default">
                         {t('default group')}
                     </MenuItem>
-                    {Array(maxCompactGroupNumberValue - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
-                        {idx + 2}
-                    </MenuItem>)}
+                    {Array(maxCompactGroupNumberValue - 1)
+                        .fill(0)
+                        .map((_, idx) => <MenuItem key={idx} value={(idx + 2).toString()}>
+                            {idx + 2}
+                        </MenuItem>)}
                 </Select>
             </FormControl>}
-            {openDialogTier && <FormControl className={classes.logLevel} variant="outlined">
+            {openDialogTier && <FormControl className={classes.logLevel} variant="standard">
                 <InputLabel>{t('Tiers')}</InputLabel>
                 <Select
                     variant="standard"
                     value={tierValue}
                     fullWidth
-                    onChange={el => setTierValue(el.target.value)}
+                    onChange={el => setTierValue(parseInt(el.target.value as string, 10))}
                 >
                     {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
                         {t(el.desc)}
@@ -607,6 +694,8 @@ const InstanceCard = memo(({
                 fullWidth
                 className={classes.hostInfo}
                 onChange={el => setHostValue(el)}
+                lang={lang}
+                t={t}
             />}
         </CustomModal> : null;
     }
@@ -737,7 +826,9 @@ const InstanceCard = memo(({
                     {expertMode && item.checkCompact && item.compact && item.supportCompact &&
                         <div className={classes.displayFlex}>
                             <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
-                                {item.compactGroup === 1 ? 'default' : item.compactGroup === '0' ? 'controller' : !item.compactGroup ? 'default' : item.compactGroup || 'default'}
+                                {(item.compactGroup === 1 ?
+                                    'default' :
+                                    ((item.compactGroup || '').toString() === '0' ? 'controller' : (!item.compactGroup ? 'default' : item.compactGroup))).toString() || 'default'}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton
@@ -755,7 +846,7 @@ const InstanceCard = memo(({
 
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
-                            {instance.adapter === 'admin' ? t('Always first') : t(arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
+                            {instance.adapter === 'admin' ? t('Always first') : t(arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2].desc)}
                         </InstanceInfo>
                         {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
                             <IconButton
@@ -773,7 +864,7 @@ const InstanceCard = memo(({
 
                     {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                         <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                            <TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang} />
+                            <TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} lang={lang} />
                         </InstanceInfo>
                         <Tooltip title={t('Edit')}>
                             <IconButton
@@ -870,7 +961,6 @@ const InstanceCard = memo(({
             }
             clearButton
             cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
-            language={I18n.getLanguage()}
             onOk={cron => {
                 if (openDialogCron) {
                     setRestartSchedule(instance, cron);
@@ -928,7 +1018,7 @@ const InstanceCard = memo(({
                     onMouseLeave={() => handlerEdit(false)}
                     className={classes.displayFlex}
                 >
-                    {item.name}
+                    {BasicUtils.getText(item.name, lang)}
                     <Tooltip title={t('Edit')}>
                         <IconButton
                             size="small"
@@ -1020,18 +1110,5 @@ const InstanceCard = memo(({
         </CardContent>
     </Card>;
 });
-
-InstanceCard.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    themeType: PropTypes.string,
-    adminInstance: PropTypes.string,
-    hosts: PropTypes.array,
-    setHost: PropTypes.func,
-    deleting: PropTypes.bool,
-    item: PropTypes.object,
-    deleteCustomSupported: PropTypes.bool,
-    socket: PropTypes.object,
-};
 
 export default withStyles(styles)(InstanceCard);

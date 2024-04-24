@@ -1589,5 +1589,6 @@
   "yesterday": "yesterday",
   "History instance not alive": "History instance not alive",
   "History instance not selected": "History instance not selected",
-  "Click for more": "Click for more"
+  "Click for more": "Click for more",
+  "Your are intend to edit ALL objects. Are you sure?": "Your are intend to edit ALL objects. Are you sure?"
 }

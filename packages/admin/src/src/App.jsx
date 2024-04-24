@@ -383,9 +383,15 @@ class App extends Router {
         this.expireText = I18n.t('Session expire in %s', '%s');
         this.adminGuiConfig = {
             admin: {
-                menu: {}, settings: {}, adapters: {}, login: {},
+                menu: {},
+                settings: {},
+                adapters: {},
+                login: {},
             },
         };
+
+        const vendorPrefix = window.vendorPrefix;
+        this.toggleThemePossible = !vendorPrefix || vendorPrefix === '@@vendorPrefix@@' || vendorPrefix === 'MV';
 
         if (!query.login) {
             let drawerState = (window._localStorage || window.localStorage).getItem('App.drawerState');
@@ -2454,14 +2460,14 @@ class App extends Router {
                                             </IconButton>
                                         </Tooltip>
                                     </IsVisible>
-                                    <IsVisible name="admin.appBar.toggleTheme" config={this.adminGuiConfig}>
+                                    {this.toggleThemePossible ? <IsVisible name="admin.appBar.toggleTheme" config={this.adminGuiConfig}>
                                         <ToggleThemeMenu
                                             size="large"
                                             toggleTheme={this.toggleTheme}
                                             themeName={this.state.themeName}
                                             t={I18n.t}
                                         />
-                                    </IsVisible>
+                                    </IsVisible> : null}
                                     <IsVisible name="admin.appBar.expertMode" config={this.adminGuiConfig}>
                                         <Tooltip
                                             title={`${I18n.t('Toggle expert mode')} ${

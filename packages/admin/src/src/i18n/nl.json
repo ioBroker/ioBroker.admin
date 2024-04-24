@@ -1589,5 +1589,6 @@
   "yesterday": "gisteren",
   "History instance not alive": "Geschiedenisinstantie leeft niet",
   "History instance not selected": "Geschiedenisexemplaar niet geselecteerd",
-  "Click for more": "Klik voor meer"
+  "Click for more": "Klik voor meer",
+  "Your are intend to edit ALL objects. Are you sure?": "Het is de bedoeling dat u ALLE objecten bewerkt. Weet je het zeker?"
 }

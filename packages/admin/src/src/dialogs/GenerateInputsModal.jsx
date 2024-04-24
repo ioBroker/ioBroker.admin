@@ -343,6 +343,7 @@ const GenerateInputsModal = ({
             <Button
                 variant="contained"
                 onClick={() => onClose()}
+                // @ts-expect-error grey is valid color
                 color="grey"
                 startIcon={<CloseIcon />}
             >

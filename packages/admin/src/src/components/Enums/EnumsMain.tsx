@@ -35,6 +35,7 @@ import EnumEditDialog from './EnumEditDialog';
 import EnumTemplateDialog from './EnumTemplateDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
 import DragObjectBrowser from './DragObjectBrowser';
+import BasicUtils from '../../Utils';
 
 const styles: Record<string, any> = (theme: Theme) => ({
     mainGridCont: {
@@ -714,8 +715,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         this.setState({ enumEditDialog });
     };
 
-    getName = (name: ioBroker.StringOrTranslated): string =>
-        ((name && typeof name === 'object') ? (name[this.props.lang] || name.en || '') : (name as string || ''));
+    getName = (name: ioBroker.StringOrTranslated): string => BasicUtils.getText(name, this.props.lang);
 
     static _isUniqueName(prefix: string, list: ioBroker.EnumObject[], word: string, i: number) {
         return !list.find(item =>

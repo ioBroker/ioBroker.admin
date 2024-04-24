@@ -24,6 +24,7 @@ import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
 
 import Utils from '../Utils';
+import BasicUtils from '../../Utils';
 
 interface EnumIcon {
     _id: string;
@@ -126,13 +127,6 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
         });
     }
 
-    getName(item: EnumIcon): string {
-        if (item.name && typeof item.name === 'object') {
-            return item.name[this.props.lang] || item.name.en || item._id || '';
-        }
-        return (item.name as string) || item._id || '';
-    }
-
     render() {
         const templates = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
 
@@ -166,7 +160,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                 {this.state.loading && <LinearProgress />}
                 <div className={this.props.classes.content}>
                     {templates.map((template, i) => {
-                        const name = this.getName(template);
+                        const name = BasicUtils.getText(template.name, this.props.lang) || template._id;
 
                         if (this.props.enums[`${this.props.prefix}.${template._id}`]) {
                             return null;
@@ -192,7 +186,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                                 className={this.props.classes.enumTemplateButton}
                                 startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon} />}
                             >
-                                <span className={this.props.classes.enumTemplateLabel}>{this.getName(template)}</span>
+                                <span className={this.props.classes.enumTemplateLabel}>{BasicUtils.getText(template.name, this.props.lang) || template._id}</span>
                             </Button>;
                         }
                         return null;

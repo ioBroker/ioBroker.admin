@@ -744,6 +744,7 @@ const InstanceRow = ({
                     {I18n.t('Delete instance')}
                 </Button>
                 <Button
+                    // @ts-expect-error grey is valid color
                     color="grey"
                     onClick={() => setOpenDialogDelete(false)}
                     variant="contained"
@@ -871,6 +872,7 @@ const InstanceRow = ({
                         className={classes.selectStyle}
                     >
                         <Button
+                            // @ts-expect-error grey is valid color
                             color="grey"
                             onClick={() => {
                                 setOpenSelectCompactGroup(false);

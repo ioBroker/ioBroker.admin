@@ -281,33 +281,55 @@ function GroupEditDialog(props) {
 
     const selectedTab = [mainTab, PermissionsTab(props)][tab];
 
-    return <Dialog
-        open={props.open}
-        onClose={(event, reason) => {
-            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
-                props.onClose();
-            }
-        }}
-        fullWidth={props.innerWidth < 500}
-    >
-        <DialogTitle className={props.classes.dialogTitle}>
-            <Tabs
-                variant="fullWidth"
-                value={tab}
-                onChange={(e, newTab) => setTab(newTab)}
+    return (
+        <Dialog
+            open={props.open}
+            onClose={(event, reason) => {
+                if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                    props.onClose();
+                }
+            }}
+            fullWidth={props.innerWidth < 500}
+        >
+            <DialogTitle className={props.classes.dialogTitle}>
+                <Tabs variant="fullWidth" value={tab} onChange={(e, newTab) => setTab(newTab)}>
+                    <Tab label={props.t('Main')} value={0} />
+                    <Tab label={props.t('Permissions')} value={1} />
+                </Tabs>
+            </DialogTitle>
+            <DialogContent
+                classes={{
+                    root: Utils.clsx(
+                        props.innerWidth < 500 ? props.classes.narrowContent : '',
+                        props.classes.contentRoot,
+                    ),
+                }}
             >
-                <Tab label={props.t('Main')} value={0} />
-                <Tab label={props.t('Permissions')} value={1} />
-            </Tabs>
-        </DialogTitle>
-        <DialogContent classes={{ root: Utils.clsx(props.innerWidth < 500 ? props.classes.narrowContent : '', props.classes.contentRoot) }}>
-            { selectedTab }
-        </DialogContent>
-        <DialogActions className={props.classes.dialogActions}>
-            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave} startIcon={<IconCheck />}>{props.t('Save')}</Button>
-            <Button variant="contained" color="grey" onClick={props.onClose} startIcon={<IconCancel />}>{props.t('Cancel')}</Button>
-        </DialogActions>
-    </Dialog>;
+                {selectedTab}
+            </DialogContent>
+            <DialogActions className={props.classes.dialogActions}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    autoFocus
+                    onClick={() => props.saveData(props.isNew ? null : originalId)}
+                    disabled={!canSave}
+                    startIcon={<IconCheck />}
+                >
+                    {props.t('Save')}
+                </Button>
+                <Button
+                    variant="contained"
+                    // @ts-expect-error grey is valid color
+                    color="grey"
+                    onClick={props.onClose}
+                    startIcon={<IconCancel />}
+                >
+                    {props.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 }
 
 GroupEditDialog.propTypes = {

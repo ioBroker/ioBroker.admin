@@ -91,8 +91,24 @@ class ObjectBrowserEditRole extends Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button disabled={this.state.initRole === this.state.roleInput} variant="contained" onClick={() => this.onUpdate()} color="primary" startIcon={<IconCheck />}>{this.props.t('Apply')}</Button>
-                <Button variant="contained" onClick={() => this.props.onClose()} color="grey" startIcon={<IconCancel />}>{this.props.t('Cancel')}</Button>
+                <Button
+                    disabled={this.state.initRole === this.state.roleInput}
+                    variant="contained"
+                    onClick={() => this.onUpdate()}
+                    color="primary"
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('Apply')}
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={() => this.props.onClose()}
+                    // @ts-expect-error grey is valid color
+                    color="grey"
+                    startIcon={<IconCancel />}
+                >
+                    {this.props.t('Cancel')}
+                </Button>
             </DialogActions>
         </Dialog>;
     }

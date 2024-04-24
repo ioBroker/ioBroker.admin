@@ -1,6 +1,5 @@
 import React from 'react';
 import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
 
 import {
     Button,
@@ -11,10 +10,15 @@ import {
     AppBar,
     Tabs,
     Tab,
+    type Theme,
 } from '@mui/material';
 
-import Router from '@iobroker/adapter-react-v5/Components/Router';
-import { I18n, Confirm as ConfirmDialog } from '@iobroker/adapter-react-v5';
+import {
+    I18n,
+    Confirm as ConfirmDialog,
+    Router,
+    type AdminConnection,
+} from '@iobroker/adapter-react-v5';
 
 // Icons
 import {
@@ -27,7 +31,7 @@ import ObjectHistoryData from '../components/Object/ObjectHistoryData';
 import ObjectChart from '../components/Object/ObjectChart';
 import MobileDialog from '../helpers/MobileDialog';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     dialog: {
         height: '100%',
     },
@@ -51,17 +55,44 @@ const styles = theme => ({
     },
 });
 
-export const EXTENSIONS = {
-    images: ['png', 'jpg', 'svg', 'jpeg'],
-    code: ['js', 'json'],
-    txt: ['log', 'txt', 'html', 'css', 'xml'],
-};
+interface ObjectCustomDialogProps {
+    t: (word: string, ...args: any[]) => string;
+    lang: ioBroker.Languages;
+    expertMode?: boolean;
+    objects: Record<string, ioBroker.Object>;
+    socket: AdminConnection;
+    theme: Theme;
+    themeName: string;
+    themeType: string;
+    customsInstances: string[];
+    objectIDs: string[];
+    onClose: () => void;
+    reportChangedIds: (ids: string[]) => void;
+    isFloatComma: boolean;
+    classes: Record<string, string>;
+    allVisibleObjects: boolean;
+}
 
-class ObjectCustomDialog extends MobileDialog {
-    constructor(props) {
+interface ObjectCustomDialogState {
+    hasChanges: boolean;
+    currentTab: number;
+    confirmDialog: boolean;
+    mobile: boolean;
+    progressRunning: boolean;
+    showWarning: boolean;
+}
+
+class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCustomDialogState> {
+    private chartAvailable: boolean;
+
+    private saveFunc: ((cb?: (error?: boolean) => void) => void) | null = null;
+
+    constructor(props: ObjectCustomDialogProps) {
         super(props);
 
-        let currentTab = parseInt((window._localStorage || window.localStorage).getItem('App.objectCustomTab') || 0, 10);
+        let currentTab = parseInt(((window as any)._localStorage as Storage || window.localStorage)
+            .getItem('App.objectCustomTab') || '0', 10);
+
         this.chartAvailable = this.isChartAvailable();
 
         if (this.chartAvailable) {
@@ -81,9 +112,8 @@ class ObjectCustomDialog extends MobileDialog {
             confirmDialog: false,
             mobile: MobileDialog.isMobile(),
             progressRunning: false,
+            showWarning: this.props.allVisibleObjects,
         };
-
-        this.saveFunc = null;
     }
 
     isChartAvailable() {
@@ -91,7 +121,7 @@ class ObjectCustomDialog extends MobileDialog {
         if (chartAvailable) {
             const id = this.props.objectIDs[0];
             if (this.props.objects[id] && this.props.objects[id].common && this.props.objects[id].common.custom && this.props.objects[id].common.custom) {
-                chartAvailable = Object.keys(this.props.objects[id].common.custom).find(inst => {
+                chartAvailable = !!Object.keys(this.props.objects[id].common.custom).find(inst => {
                     const obj = this.props.objects[`system.adapter.${inst}`];
                     return obj && obj.common && obj.common.getHistory;
                 });
@@ -136,17 +166,18 @@ class ObjectCustomDialog extends MobileDialog {
     renderCustomEditor() {
         return <ObjectCustomEditor
             id="custom-settings-tabpanel"
-            registerSaveFunc={func => this.saveFunc = func}
+            registerSaveFunc={(func: (cb?: (error?: boolean) => void) => void) => this.saveFunc = func}
             t={this.props.t}
+            allVisibleObjects={this.props.allVisibleObjects}
             lang={this.props.lang}
             expertMode={this.props.expertMode}
             socket={this.props.socket}
             objectIDs={this.props.objectIDs}
             customsInstances={this.props.customsInstances}
             objects={this.props.objects}
-            onProgress={progressRunning => this.setState({ progressRunning })}
+            onProgress={(progressRunning: boolean) => this.setState({ progressRunning })}
             reportChangedIds={this.props.reportChangedIds}
-            onChange={(hasChanges, update) => {
+            onChange={(hasChanges: boolean, update: boolean) => {
                 this.setState({ hasChanges }, () => {
                     if (update) {
                         const chartAvailable = this.isChartAvailable();
@@ -185,6 +216,24 @@ class ObjectCustomDialog extends MobileDialog {
         }
     }
 
+    renderWarningDialog() {
+        if (!this.state.showWarning) {
+            return false;
+        }
+        return <ConfirmDialog
+            text={<div style={{ color: '#F00' }}>
+                {this.props.t('Your are intend to edit ALL objects. Are you sure?')}
+            </div>}
+            ok={this.props.t('Yes')}
+            onClose={result => {
+                this.setState({ showWarning: false });
+                if (!result) {
+                    this.onClose();
+                }
+            }}
+        />;
+    }
+
     render() {
         const varType = this.props.objects[this.props.objectIDs[0]]?.common?.type;
 
@@ -198,6 +247,7 @@ class ObjectCustomDialog extends MobileDialog {
             aria-labelledby="form-dialog-title"
         >
             {this.renderConfirmDialog()}
+            {this.renderWarningDialog()}
             <DialogTitle>
                 {
                     this.props.objectIDs.length > 1 ?
@@ -212,7 +262,7 @@ class ObjectCustomDialog extends MobileDialog {
                         onChange={(event, newTab) => {
                             Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
                             this.setState({ currentTab: newTab });
-                            (window._localStorage || window.localStorage).setItem('App.objectCustomTab', newTab);
+                            ((window as any)._localStorage as Storage || window.localStorage).setItem('App.objectCustomTab', newTab);
                         }}
                         classes={{ indicator: this.props.classes.tabsIndicator }}
                         indicatorColor="secondary"
@@ -271,6 +321,7 @@ class ObjectCustomDialog extends MobileDialog {
                     disabled={this.state.progressRunning}
                     variant="contained"
                     onClick={() => this.onClose()}
+                    // @ts-expect-error grey is valid color
                     color="grey"
                 >
                     {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}
@@ -279,21 +330,5 @@ class ObjectCustomDialog extends MobileDialog {
         </Dialog>;
     }
 }
-
-ObjectCustomDialog.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    expertMode: PropTypes.bool,
-    objects: PropTypes.object,
-    socket: PropTypes.object,
-    theme: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
-    customsInstances: PropTypes.array,
-    objectIDs: PropTypes.array,
-    onClose: PropTypes.func,
-    reportChangedIds: PropTypes.func,
-    isFloatComma: PropTypes.bool,
-};
 
 export default withStyles(styles)(ObjectCustomDialog);

@@ -1589,5 +1589,6 @@
   "yesterday": "gestern",
   "History instance not alive": "Verlaufsinstanz nicht aktiv",
   "History instance not selected": "Keine Verlaufsinstanz ausgewählt",
-  "Click for more": "Für mehr klicken "
+  "Click for more": "Für mehr klicken ",
+  "Your are intend to edit ALL objects. Are you sure?": "Sie möchten ALLE Objekte bearbeiten. Sind Sie sicher?"
 }

@@ -361,6 +361,7 @@ class RatingDialog extends Component {
                     autoFocus={!this.props.version}
                     variant="contained"
                     onClick={() => this.props.onClose()}
+                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

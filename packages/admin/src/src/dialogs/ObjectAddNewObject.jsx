@@ -270,6 +270,7 @@ const ObjectAddNewObject = ({
                 {I18n.t('add')}
             </Button>
             <Button
+                // @ts-expect-error grey is valid color
                 color="grey"
                 onClick={onClose}
                 variant="contained"

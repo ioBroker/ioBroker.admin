@@ -189,6 +189,7 @@ class WizardLicenseTab extends Component {
                 <div className={this.props.classes.grow} />
                 <Button
                     variant="contained"
+                    // @ts-expect-error grey is valid color
                     color="grey"
                     onClick={() => this.setState({ notAgree: true })}
                     startIcon={<IconCancel />}

@@ -294,8 +294,24 @@ class HostEdit extends Component {
                 {this.renderCommonEdit()}
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary" startIcon={<IconCheck />}>{this.props.t('Write')}</Button>
-                <Button variant="contained" onClick={() => this.props.onClose()} color="grey" startIcon={<IconClose />}>{this.props.t('Cancel')}</Button>
+                <Button
+                    variant="contained"
+                    disabled={this.state.error || !this.state.changed}
+                    onClick={() => this.onUpdate()}
+                    color="primary"
+                    startIcon={<IconCheck />}
+                >
+                    {this.props.t('Write')}
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={() => this.props.onClose()}
+                    // @ts-expect-error grey is valid color
+                    color="grey"
+                    startIcon={<IconClose />}
+                >
+                    {this.props.t('Cancel')}
+                </Button>
             </DialogActions>
         </Dialog>;
     }

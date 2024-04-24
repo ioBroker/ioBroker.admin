@@ -300,6 +300,7 @@ class BaseSettingsDialog extends Component {
                 </Button>
                 <Button
                     variant="contained"
+                    // @ts-expect-error grey is valid color
                     color="grey"
                     disabled={this.state.saving}
                     onClick={() => (this.state.hasChanges.length ? this.setState({ confirmExit: true }) : this.props.onClose())}

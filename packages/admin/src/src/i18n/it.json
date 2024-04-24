@@ -1589,5 +1589,6 @@
   "yesterday": "Ieri",
   "History instance not alive": "Istanza della storia non viva",
   "History instance not selected": "Istanza della cronologia non selezionata",
-  "Click for more": "Fare clic per ulteriori informazioni"
+  "Click for more": "Fare clic per ulteriori informazioni",
+  "Your are intend to edit ALL objects. Are you sure?": "Hai intenzione di modificare TUTTI gli oggetti. Sei sicuro?"
 }

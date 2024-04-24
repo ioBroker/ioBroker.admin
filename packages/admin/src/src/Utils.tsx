@@ -653,6 +653,14 @@ class Utils {
             return false;
         }
     }
+
+    static getText(word: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
+        if (word && typeof word === 'object') {
+            return (word[lang] || word.en || '').toString();
+        }
+
+        return (word || '').toString();
+    }
 }
 
 export default Utils;

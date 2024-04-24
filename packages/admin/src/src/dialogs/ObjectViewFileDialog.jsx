@@ -147,6 +147,7 @@ class ObjectViewFileDialog extends Component {
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     startIcon={<CloseIcon />}
+                    // @ts-expect-error grey is valid color
                     color="grey"
                 >
                     {this.props.t('Close')}

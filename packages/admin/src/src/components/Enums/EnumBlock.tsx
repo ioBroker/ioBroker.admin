@@ -84,6 +84,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
     enumGroupTitle: {
         display: 'inline-flex',
         alignItems: 'center',
+        cursor: 'pointer',
     },
     icon: {
         height: 32,
@@ -388,6 +389,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         gutterBottom={!props.collapsed}
                         component="div"
                         className={classes.enumGroupTitle}
+                        onClick={() => props.onCollapse(props.id)}
                     >
                         {icon}
                         <div className={classes.enumGroupName}>
@@ -527,36 +529,36 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
 
     const widthRef = useRef();
 
-    const [{ isDragging }, dragRef, preview] = useDrag(
-        {
-            type: 'enum',
-            item: () => ({
-                enumId: props.id,
-                preview: <div
-                    style={{
-                        // @ts-expect-error I do not understand, why this error here
-                        width: widthRef.current === undefined ? 50 : widthRef.current.offsetWidth,
-                    }}
-                >
-                    <StyledEnumBlock {...props} />
-                </div>,
-            }),
-            end: (draggeditem: { enumId: string; preview: React.JSX.Element }, monitor: DragSourceMonitor<DragItem, { enumId: string }>) => {
-                const dropResult = monitor.getDropResult();
-                if (!dropResult) {
-                    // root
-                    const parts = draggeditem.enumId.split('.');
-                    props.moveEnum(draggeditem.enumId, `${parts[0]}.${parts[1]}`);
-                } else {
-                    props.moveEnum(draggeditem.enumId, dropResult.enumId);
-                }
-            },
-            collect: monitor => ({
-                isDragging: monitor.isDragging(),
-                handlerId: monitor.getHandlerId(),
-            }),
+    const [{ isDragging }, dragRef, preview] = useDrag({
+        type: 'enum',
+        item: () => ({
+            enumId: props.id,
+            preview: <div
+                style={{
+                    // @ts-expect-error I do not understand, why this error here
+                    width: widthRef.current === undefined ? 50 : widthRef.current.offsetWidth,
+                }}
+            >
+                <StyledEnumBlock {...props} />
+            </div>,
+        }),
+
+        end: (draggeditem: { enumId: string; preview: React.JSX.Element }, monitor: DragSourceMonitor<DragItem, { enumId: string }>) => {
+            const dropResult = monitor.getDropResult();
+            if (!dropResult) {
+                // root
+                const parts = draggeditem.enumId.split('.');
+                props.moveEnum(draggeditem.enumId, `${parts[0]}.${parts[1]}`);
+            } else {
+                props.moveEnum(draggeditem.enumId, dropResult.enumId);
+            }
         },
-    );
+
+        collect: monitor => ({
+            isDragging: monitor.isDragging(),
+            handlerId: monitor.getHandlerId(),
+        }),
+    });
 
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });

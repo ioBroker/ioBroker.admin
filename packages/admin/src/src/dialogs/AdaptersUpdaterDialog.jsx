@@ -276,6 +276,7 @@ class AdaptersUpdaterDialog extends Component {
                 <Button
                     variant="contained"
                     disabled={!this.state.inProcess}
+                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<CancelIcon />}
                     onClick={() => {

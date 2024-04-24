@@ -105,6 +105,7 @@ class AdapterDeletionDialog extends Component {
                     variant="contained"
                     autoFocus
                     onClick={() => this.props.onClose()}
+                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

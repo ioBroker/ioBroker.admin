@@ -452,6 +452,7 @@ cd
                     window.open('https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md', '_blank');
                     onClose();
                 }}
+                // @ts-expect-error grey is valid color
                 color="grey"
                 startIcon={<DescriptionIcon />}
             >

@@ -150,7 +150,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     constructor(props: ObjectCustomEditorProps) {
         super(props);
 
-        let expanded: string[] = [];
+        let expanded: string[];
         try {
             expanded = JSON.parse(((window as any)._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]');
         } catch (e) {
@@ -194,7 +194,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         this.props.registerSaveFunc && this.props.registerSaveFunc();
     }
 
-    loadAllCustoms(): Promise<void> {
+    async loadAllCustoms(): Promise<void> {
         const promises: Promise<void>[] = [];
         for (const id of this.props.customsInstances) {
             if (id === '_') {
@@ -208,23 +208,22 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             }
         }
 
-        return Promise.all(promises)
-            .then(() => {
-                this.props.customsInstances.forEach(id => {
-                    const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.', '');
-                    if (this.jsonConfigs[adapter]) {
-                        this.jsonConfigs[adapter].instanceObjs = this.jsonConfigs[adapter].instanceObjs || {};
-                        this.jsonConfigs[adapter].instanceObjs[id] = {
-                            _id: id,
-                            common: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.common)),
-                            native: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.native)),
-                        };
-                    }
-                });
-            });
+        await Promise.all(promises);
+
+        this.props.customsInstances.forEach(id => {
+            const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.', '');
+            if (this.jsonConfigs[adapter]) {
+                this.jsonConfigs[adapter].instanceObjs = this.jsonConfigs[adapter].instanceObjs || {};
+                this.jsonConfigs[adapter].instanceObjs[id] = {
+                    _id: id,
+                    common: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.common)),
+                    native: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.native)),
+                };
+            }
+        });
     }
 
-    getCustomTemplate(adapter: string) {
+    async getCustomTemplate(adapter: string) {
         const ad = this.props.objects[`system.adapter.${adapter}`] ? deepClone(this.props.objects[`system.adapter.${adapter}`]) : null;
 
         if (!ad) {
@@ -234,33 +233,38 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         Utils.fixAdminUI(ad);
 
         if (ad.common?.adminUI.custom === 'json') {
-            return this.props.socket.fileExists(`${adapter}.admin`, 'jsonCustom.json5')
-                .then((exist: boolean) => {
-                    if (exist) {
-                        return this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json5');
-                    }
-                    return this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json');
-                })
-                .then((json: any) => {
-                    if (json.file !== undefined) {
-                        json = json.file;
-                    }
-                    try {
-                        json = JSON5.parse(json);
-                        this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
-                        this.jsonConfigs[adapter].json = json;
-                    } catch (e) {
-                        console.error(`Cannot parse jsonConfig of ${adapter}: ${e}`);
-                        window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
-                    }
+            try {
+                const exist = await this.props.socket.fileExists(`${adapter}.admin`, 'jsonCustom.json5');
+                if (exist) {
+                    await this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json5');
+                }
+                let jsonText: string;
+                let json: {
+                    file: string;
+                    mimeType: string;
+                } = await this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json');
 
-                    // @ts-expect-error wait for types
-                    return JsonConfigComponent.loadI18n(this.props.socket, json.i18n, adapter);
-                })
-                .catch((e: any) => {
-                    console.error(`Cannot load jsonConfig of ${adapter}: ${e}`);
-                    window.alert(`Cannot load jsonConfig of ${adapter}: ${e}`);
-                });
+                if (json.file !== undefined) {
+                    jsonText = json.file;
+                } else {
+                    // @ts-expect-error deprecated, but still possible
+                    jsonText = json;
+                }
+                try {
+                    json = JSON5.parse(jsonText);
+                    this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
+                    this.jsonConfigs[adapter].json = jsonText;
+                } catch (e) {
+                    console.error(`Cannot parse jsonConfig of ${adapter}: ${e}`);
+                    window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
+                }
+
+                // @ts-expect-error wait for types
+                return JsonConfigComponent.loadI18n(this.props.socket, json.i18n, adapter);
+            } catch (e1) {
+                console.error(`Cannot load jsonConfig of ${adapter}: ${e1}`);
+                window.alert(`Cannot load jsonConfig of ${adapter}: ${e1}`);
+            }
         }
         console.error(`Adapter ${adapter} is not yet supported by this version of admin`);
         window.alert(`Adapter ${adapter} is not yet supported by this version of admin`);
