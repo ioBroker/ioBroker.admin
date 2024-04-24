@@ -531,7 +531,8 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     checkFunction(func: string, isWrite: boolean): string {
         if (!func) {
             return '';
-        } if (func.includes('JSON.parse(')) {
+        }
+        if (func.includes('JSON.parse(')) {
             // Unable to validate (a result is unknown)
             return '';
         }
@@ -550,28 +551,31 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             return this.props.t('Cannot parse code!');
         }
 
-        if (json?.common?.type && this.props.objects[json.common?.alias?.id]?.common?.type) {
-            const initialType = isWrite ? json.common.type : this.props.objects[json.common.alias.id].common.type;
-            const finalType = isWrite ? this.props.objects[json.common.alias.id].common.type : json.common.type;
-            if (initialType && finalType) {
-                let arg = null;
-                if (initialType === 'boolean') {
-                    arg = true;
-                } else if (initialType === 'number') {
-                    arg = 1;
-                } else if (initialType === 'string') {
-                    arg = 'string';
-                }
-                if (arg !== null) {
-                    try {
-                        const result = jsFunc(arg);
-                        // eslint-disable-next-line valid-typeof
-                        return result !== null && typeof result !== finalType
-                            ? this.props.t('Type of result is not as expected: %s', finalType)
-                            : '';
-                    } catch (e) {
-                        return `${this.props.t('Cannot execute function')}: ${e.toString()}`;
+        const initialType: ioBroker.CommonType = isWrite ? json?.common?.type : this.props.objects[json.common.alias.id]?.common?.type;
+        const finalType: ioBroker.CommonType = isWrite ? this.props.objects[json.common.alias.id]?.common?.type : json?.common?.type;
+
+        if (initialType && finalType) {
+            let arg = null;
+            if (initialType === 'boolean') {
+                arg = true;
+            } else if (initialType === 'number') {
+                arg = 1;
+            } else if (initialType === 'string' || initialType === 'mixed') {
+                arg = 'string';
+            }
+            if (arg !== null) {
+                try {
+                    const result = jsFunc(arg);
+                    if (finalType === 'mixed') {
+                        // we cannot check the value with type mixed
+                        return '';
                     }
+                    // eslint-disable-next-line valid-typeof
+                    return result !== null && typeof result !== finalType
+                        ? this.props.t('Type of result is not as expected: %s', finalType)
+                        : '';
+                } catch (e) {
+                    return `${this.props.t('Cannot execute function')}: ${e.toString()}`;
                 }
             }
         }
