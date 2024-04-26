@@ -99,7 +99,10 @@ import {
     Connection,
     type Router,
 } from '@iobroker/adapter-react-v5';
-
+import type {
+    ThemeType,
+    ThemeName,
+} from '@iobroker/adapter-react-v5/types';
 // own
 import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
@@ -118,11 +121,11 @@ const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = 16;
 const SMALL_BUTTON_SIZE = 20;
-const COLOR_NAME_USERDATA = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#62ff25' : '#37c400');
-const COLOR_NAME_ALIAS = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#ee56ff' : '#a204b4');
-const COLOR_NAME_JAVASCRIPT = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#fff46e' : '#b89101');
-const COLOR_NAME_SYSTEM = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#ff6d69' : '#ff6d69');
-const COLOR_NAME_SYSTEM_ADAPTER = (themeType: 'dark' | 'light') => (themeType === 'dark' ? '#5773ff' : '#5773ff');
+const COLOR_NAME_USERDATA = (themeType: ThemeType) => (themeType === 'dark' ? '#62ff25' : '#37c400');
+const COLOR_NAME_ALIAS = (themeType: ThemeType) => (themeType === 'dark' ? '#ee56ff' : '#a204b4');
+const COLOR_NAME_JAVASCRIPT = (themeType: ThemeType) => (themeType === 'dark' ? '#fff46e' : '#b89101');
+const COLOR_NAME_SYSTEM = (themeType: ThemeType) => (themeType === 'dark' ? '#ff6d69' : '#ff6d69');
+const COLOR_NAME_SYSTEM_ADAPTER = (themeType: ThemeType) => (themeType === 'dark' ? '#5773ff' : '#5773ff');
 const COLOR_NAME_ERROR_DARK = '#ff413c';
 const COLOR_NAME_ERROR_LIGHT = '#86211f';
 const COLOR_NAME_CONNECTED_DARK = '#57ff45';
@@ -235,7 +238,7 @@ interface ContextMenuItem {
     iconStyle?: React.CSSProperties;
 }
 
-interface TreeItemData {
+export interface TreeItemData {
     id: string;
     name: string;
     obj?: ioBroker.Object;
@@ -328,7 +331,7 @@ interface FormatValueOptions {
     isFloatComma: boolean;
 }
 
-interface TreeItem {
+export interface TreeItem {
     id?: string;
     data: TreeItemData;
     children?: TreeItem[];
@@ -1164,24 +1167,6 @@ function binarySearch(list: string[], find: string, _start?: number, _end?: numb
     return false;
 }
 
-/**
- * Check if the browser is running on iOS
- *
- * @return {boolean}
- */
-// function isIOS() {
-//     return [
-//         'iPad Simulator',
-//         'iPhone Simulator',
-//         'iPod Simulator',
-//         'iPad',
-//         'iPhone',
-//         'iPod',
-//     ].includes(navigator.platform)
-//     // iPad on iOS 13 detection
-//     || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
-// }
-
 function getName(name: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
     if (name && typeof name === 'object') {
         return (name[lang] || name.en || '').toString();
@@ -1190,11 +1175,12 @@ function getName(name: ioBroker.StringOrTranslated, lang: ioBroker.Languages): s
     return (name || '').toString();
 }
 
-function getSelectIdIcon(
+export function getSelectIdIcon(
     objects: Record<string, ioBroker.Object>,
     id: string,
     imagePrefix?: string,
 ): string | React.JSX.Element | null {
+    // `admin` has prefix '.' and `web` has '../..'
     imagePrefix = imagePrefix || '.'; // http://localhost:8081';
     let src: string | React.JSX.Element = '';
     const _id_ = `system.adapter.${id}`;
@@ -1496,7 +1482,7 @@ function getSystemIcon(
     objects: Record<string, ioBroker.Object>,
     id: string,
     level: number,
-    themeType: 'dark' | 'light',
+    themeType: ThemeType,
     imagePrefix?: string,
 ): string | React.JSX.Element | null {
     let icon;
@@ -1568,7 +1554,7 @@ function buildTree(
         imagePrefix?: string;
         root?: string;
         lang: ioBroker.Languages;
-        themeType: 'dark' | 'light';
+        themeType: ThemeType;
     },
 ): { root: TreeItem; info: TreeInfo } {
     const imagePrefix = options.imagePrefix || '.';
@@ -1948,7 +1934,8 @@ function formatValue(
     const isCommon = obj.common;
 
     let v: any =
-        isCommon && isCommon.type === 'file'
+        // @ts-expect-error deprecated from js-controller 6
+        isCommon?.type === 'file'
             ? '[file]'
             : !state || state.val === null
                 ? '(null)'
@@ -2119,7 +2106,7 @@ function prepareSparkData(
     return v;
 }
 
-const ITEM_IMAGES: Record<string, React.JSX.Element> = {
+export const ITEM_IMAGES: Record<string, React.JSX.Element> = {
     state: <IconState className="itemIcon" />,
     channel: <IconChannel className="itemIcon" />,
     device: <IconDevice className="itemIcon" />,
@@ -2301,8 +2288,8 @@ interface ObjectBrowserProps {
     showExpertButton?: boolean;
     expertMode?: boolean;
     imagePrefix?: string;
-    themeName: 'light' | 'dark' | 'blue' | 'colored';
-    themeType: 'light' | 'dark';
+    themeName: ThemeName;
+    themeType: ThemeType;
     width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     theme: Theme;
     t: (word: string, ...args: any[]) => string;
@@ -2363,7 +2350,10 @@ interface ObjectBrowserProps {
      * Example for function: `obj => obj.common?.type === 'boolean'` to show only boolean states
      * */
     filterFunc?: (obj: ioBroker.Object) => boolean;
+    /** Used for enums dragging */
     DragWrapper?: Component;
+    /** let DragWrapper know about objects to get the icons */
+    setObjectsReference?: (objects: Record<string, ioBroker.Object>) => void;
     dragEnabled?: boolean;
 }
 
@@ -2870,6 +2860,8 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             } else {
                 this.objects = objects;
             }
+
+            props.setObjectsReference && props.setObjectsReference(this.objects);
 
             // read default history
             this.defaultHistory = this.systemConfig.common.defaultHistory;
@@ -4962,6 +4954,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             this.props.objectCustomDialog &&
                 this.info.hasSomeCustoms &&
                 item.data.obj.type === 'state' &&
+                // @ts-expect-error deprecated from js-controller 6
                 item.data.obj.common?.type !== 'file' ? <IconButton
                     className={Utils.clsx(
                         classes.cellButtonsButton,
@@ -5674,7 +5667,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
         const common = obj?.common;
 
-        const typeImg = (obj && obj.type && ITEM_IMAGES[obj.type]) || <div className="itemIcon" />;
+        const typeImg = (obj?.type && ITEM_IMAGES[obj.type]) || <div className="itemIcon" />;
 
         const paddingLeft = this.levelPadding * item.data.level;
 
@@ -7042,6 +7035,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     !this.props.notEditable &&
                     obj &&
                     obj.type === 'state' &&
+                    // @ts-expect-error deprecated from js-controller 6
                     obj.common?.type !== 'file' &&
                     (this.state.filter.expertMode || obj.common.write !== false),
                 icon: <IconValueEdit fontSize="small" className={this.props.classes.contextMenuEditValue} />,
@@ -7058,7 +7052,9 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             },
             VIEW: {
                 visibility:
-                    this.props.objectBrowserViewFile && obj && obj.type === 'state' && obj.common?.type === 'file',
+                    this.props.objectBrowserViewFile && obj && obj.type === 'state' &&
+                    // @ts-expect-error deprecated from js-controller 6
+                    obj.common?.type === 'file',
                 icon: <FindInPage fontSize="small" className={this.props.classes.contextMenuView} />,
                 className: '',
                 label: this.props.t('ra_View file'),
@@ -7071,6 +7067,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     this.info.hasSomeCustoms &&
                     obj &&
                     obj.type === 'state' &&
+                    // @ts-expect-error deprecated from js-controller 6
                     obj.common?.type !== 'file',
                 icon: <IconConfig
                     fontSize="small"
@@ -7159,6 +7156,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     this.state.filter.expertMode &&
                     obj &&
                     obj.type === 'state' &&
+                    // @ts-expect-error deprecated from js-controller 6
                     obj.common?.type !== 'file',
                 icon: <IconLink
                     className={

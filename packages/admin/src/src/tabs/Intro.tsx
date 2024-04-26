@@ -507,7 +507,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
     async saveCards() {
         const systemConfig = await this.props.socket.getSystemConfig(true);
         let changed = false;
+        // @ts-expect-error remove when js-controller extended
         if (JSON.stringify(systemConfig.common.intro) !== JSON.stringify(this.state.deactivated)) {
+            // @ts-expect-error remove when js-controller extended
             systemConfig.common.intro = this.state.deactivated;
             changed = true;
         }
@@ -644,6 +646,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         try {
             const instances = await this.props.socket.getAdapterInstances('', update);
+            // @ts-expect-error declare js-controller
             let deactivated: string[] = systemConfig.common.intro || [];
             if (!Array.isArray(deactivated)) {
                 deactivated = Object.keys(deactivated);
@@ -764,7 +767,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         instance.name = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ` ${linkName}`);
                         // @ts-expect-error check later, at first glance makes no sense or types are wrong
                         instance.color = link.color || '';
-                        // @ts-expect-error needs to be added to types if InstanceCommon can have desc
                         instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                         instance.image = common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png';
 
@@ -785,7 +787,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             name: link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '',
                             // @ts-expect-error fix link
                             color: link.color || '',
-                            // @ts-expect-error fix link
                             description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '',
                             image: common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png',
                             // @ts-expect-error fix link

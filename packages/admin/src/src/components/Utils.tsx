@@ -6,6 +6,9 @@
  * */
 import React from 'react';
 import { Utils as _Utils, I18n } from '@iobroker/adapter-react-v5';
+import type {
+    ThemeType,
+} from '@iobroker/adapter-react-v5/types';
 
 const NAMESPACE    = 'material';
 const days         = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -177,9 +180,7 @@ class Utils {
             } else {
                 text = name;
             }
-            // @ts-expect-error fixed in js-controller
         } else if (isDesc && item?.common?.desc) {
-            // @ts-expect-error fixed in js-controller
             const desc: ioBroker.StringOrTranslated = item.common.desc;
             if (typeof desc === 'object') {
                 text = desc[options.language] || desc.en;
@@ -193,9 +194,7 @@ class Utils {
             }
         } else if (!isDesc && item?.common?.name) {
             let name = item.common.name;
-            // @ts-expect-error fixed in js-controller
             if (!name && item.common.desc) {
-                // @ts-expect-error fixed in js-controller
                 name = item.common.desc;
             }
             if (typeof name === 'object') {
@@ -332,9 +331,7 @@ class Utils {
         }
 
         if (common) {
-            // @ts-expect-error fixed in js-controller
             if (!settings.color && common.color) {
-                // @ts-expect-error fixed in js-controller
                 settings.color = common.color;
             }
             if (!settings.icon && common.icon) {
@@ -1058,7 +1055,7 @@ class Utils {
     static getInvertedColor(
         /** Color in the format '#rrggbb' or '#rgb' (or without a hash) */
         color: string,
-        themeType: 'dark' | 'light',
+        themeType: ThemeType,
         /** dark theme has light color in control, or light theme has light color in control */
         invert?: boolean,
     ): string | undefined {
@@ -1321,7 +1318,7 @@ class Utils {
     /**
      * Get the type of theme.
      */
-    static getThemeType(themeName?: string): 'dark' | 'light' {
+    static getThemeType(themeName?: string): ThemeType {
         if ((window as any).vendorPrefix && (window as any).vendorPrefix !== '@@vendorPrefix@@') {
             return 'light';
         }

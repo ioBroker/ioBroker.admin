@@ -3,53 +3,27 @@ import React, { useEffect, useState } from 'react';
 import { useDrag, type DragSourceMonitor } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
-import { Card, Icon } from '@mui/material';
+import { Card } from '@mui/material';
 
 import { List as ListIcon } from '@mui/icons-material';
 
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, Icon } from '@iobroker/adapter-react-v5';
 
-import ObjectBrowser from '../ObjectBrowser';
-
-// TODO: Move it to ObjectBrowser.tsx
-export interface ObjectTreeItemData {
-    obj?: ioBroker.Object;
-    id: string;
-    name: string;
-    hasVisibleChildren: boolean;
-    visible: boolean;
-    /** visible || hasVisibleChildren */
-    sumVisibility: boolean;
-    /** List of rooms, divided by comma */
-    rooms: string;
-    /** is if the room enums are from parent */
-    per: boolean;
-    /** List of functions, divided by comma */
-    funcs: string;
-    /** is if the function enums are from parent */
-    pef: boolean;
-    lang: ioBroker.Languages;
-    generated?: boolean;
-    icon?: string;
-    level?: number;
-    parent?: ObjectTreeItemData;
-}
-
-// TODO: Move it to ObjectBrowser.tsx
-export interface ObjectTreeItem {
-    data: ObjectTreeItemData;
-    children: ObjectTreeItem[];
-}
+import ObjectBrowser, {
+    type TreeItemData, type TreeItem,
+    getSelectIdIcon, ITEM_IMAGES,
+} from '../ObjectBrowser';
 
 export interface DragItem {
-    data: ObjectTreeItemData;
+    data: TreeItemData;
     children: DragItem[];
     preview: React.JSX.Element | null;
 }
+
 interface DragSettings {
     type: string;
-    end: (item: ObjectTreeItem, monitor: any) => void;
-    item: { data: ObjectTreeItemData; preview: React.JSX.Element | null };
+    end: (item: TreeItem, monitor: any) => void;
+    item: { data: TreeItemData; preview: React.JSX.Element | null };
     collect: (monitor: DragSourceMonitor) => ({
         isDragging?: boolean;
         canDrag?: boolean;
@@ -67,12 +41,13 @@ interface DragObjectBrowserProps {
 
 const DragObjectBrowser = (props: DragObjectBrowserProps) => {
     const [wrapperState, setWrapperState] = useState({ DragWrapper: null });
+    const objectRef = React.useRef<Record<string, ioBroker.Object> | null>(null);
 
     useEffect(() => {
         // eslint-disable-next-line react/no-unstable-nested-components
         const DragWrapper = (dragProps: { item: DragItem; className: string; key?: string; children: React.JSX.Element | null }) => {
             const onDragEnd = (
-                item: ObjectTreeItem,
+                item: TreeItem,
                 monitor: DragSourceMonitor<DragItem, { enumId: string }>,
             ) => {
                 const dropResult = monitor.getDropResult();
@@ -96,18 +71,21 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
                         variant="outlined"
                         className={props.classesParent.enumGroupMember}
                     >
-                        {
-                            dragProps.item.data.obj.common?.icon
-                                ?
-                                <Icon
-                                    className={props.classesParent.icon}
-                                    src={dragProps.item.data.obj.common.icon}
-                                    component="img"
-                                />
-                                :
-                                <ListIcon className={props.classesParent.icon} />
-                        }
-                        {dragProps.item.data.obj.common?.name ? props.getName(dragProps.item.data.obj.common?.name) : dragProps.item.data.obj._id}
+                        {dragProps.item.data.obj.common?.icon ?
+                            <Icon
+                                className={props.classesParent.icon}
+                                src={objectRef.current ? getSelectIdIcon(objectRef.current, dragProps.item.data.obj._id) : dragProps.item.data.obj.common.icon}
+                            />
+                            :
+                            (ITEM_IMAGES[dragProps.item.data.obj.type] || <ListIcon className={props.classesParent.icon} />)}
+                        <div>
+                            <div>{dragProps.item.data.obj.common?.name ? props.getName(dragProps.item.data.obj.common?.name) : dragProps.item.data.obj._id}</div>
+                            {dragProps.item.data.obj.common?.name ? <div
+                                style={{ fontStyle: 'italic', fontSize: 'smaller', opacity: 0.7 }}
+                            >
+                                {dragProps.item.data.obj._id}
+                            </div> : null}
+                        </div>
                     </Card> : null),
                 },
                 collect: monitor => ({
@@ -132,7 +110,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
         };
         setWrapperState({ DragWrapper });
     // eslint-disable-next-line
-    }, []); // react-hooks/exhaustive-deps
+    }, [props.classesParent, props.addItemToEnum, props.getName]); // react-hooks/exhaustive-deps
 
     return wrapperState ? <ObjectBrowser
         t={props.t}
@@ -142,6 +120,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
         lang={props.lang}
         dragEnabled
         DragWrapper={wrapperState.DragWrapper}
+        setObjectsReference={(objects: Record<string, ioBroker.Object>) => objectRef.current = objects}
         levelPadding={10}
     /> : null;
 };

@@ -27,7 +27,7 @@ import { type AdminConnection, I18n, Utils } from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';
-import { checkCondition, type Message, type Rule } from '@/dialogs/AdapterUpdateDialog';
+import { checkCondition, type Message } from '@/dialogs/AdapterUpdateDialog';
 import HostSelectors from '@/components/HostSelectors';
 
 const styles: Record<string, any> = (theme: Theme) => ({
@@ -143,7 +143,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         this.lang = I18n.getLanguage();
 
         this.messages = checkCondition(
-            (props.adapterObject as any).messages as Rule[], // TODO: remove any
+            props.adapterObject.messages,
             null,
             props.adapterObject.version,
             props.instances,

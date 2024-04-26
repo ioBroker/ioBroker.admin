@@ -34,6 +34,9 @@ import {
     IconDevice,
     IconState, type AdminConnection,
 } from '@iobroker/adapter-react-v5';
+import type {
+    ThemeType,
+} from '@iobroker/adapter-react-v5/types';
 
 import { type DragItem } from './DragObjectBrowser';
 
@@ -500,7 +503,7 @@ interface EnumBlockDragProps {
     showEnumTemplateDialog: (prefix: string) => void;
     socket: AdminConnection;
     t: (text: string, arg1?: any, arg2?: any) => string;
-    themeType: 'dark' | 'light';
+    themeType: ThemeType;
     toggleEnum: (enumId: string) => void;
     updating: boolean;
     children: number;

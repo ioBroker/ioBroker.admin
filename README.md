@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Improved category tab
+
 ### 6.17.6 (2024-04-19)
 * (bluefox) Extend the table JSON Config with the encryption possibility
 * (bluefox) Do not read historical data if instance is not active

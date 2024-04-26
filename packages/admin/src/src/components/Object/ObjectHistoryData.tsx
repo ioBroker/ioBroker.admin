@@ -249,6 +249,15 @@ interface HistoryItem {
     lc?: number;
 }
 
+interface ObjectHistoryDataEdit {
+    val?: number | string | boolean;
+    ack?: boolean;
+    q?: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY];
+    date?: Date;
+    time?: Date;
+    ms?: number;
+}
+
 interface ObjectHistoryDataState {
     areYouSure?: boolean;
     historyInstance: string;
@@ -268,14 +277,7 @@ interface ObjectHistoryDataState {
     fromVisible: boolean;
     /** 'insert', 'update', 'delete' */
     supportedFeatures: SupportedFeatures;
-    edit: {
-        val?: number | string | boolean;
-        ack?: boolean;
-        q?: number;
-        date?: Date;
-        time?: Date;
-        ms?: number;
-    };
+    edit: ObjectHistoryDataEdit;
     loading?: boolean;
     suppressMessage?: number | boolean;
 }
@@ -1377,10 +1379,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 onClick={() => {
                     const time = new Date();
 
-                    const edit = {
+                    const edit: ObjectHistoryDataEdit = {
                         ack:  this.state.values[this.state.values.length - 1].ack,
                         val:  this.state.values[this.state.values.length - 1].val,
-                        ts:   time,
                         date: new Date(time),
                         ms:   0,
                         time: new Date(time),

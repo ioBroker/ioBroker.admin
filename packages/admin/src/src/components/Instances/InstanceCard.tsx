@@ -50,7 +50,9 @@ import {
     ComplexCronDialog as ComplexCron,
     type AdminConnection,
 } from '@iobroker/adapter-react-v5';
-
+import type {
+    ThemeType,
+} from '@iobroker/adapter-react-v5/types';
 import sentry from '../../assets/sentry.svg';
 import noSentry from '../../assets/sentryNo.svg';
 import InstanceInfo from './InstanceInfo';
@@ -411,7 +413,7 @@ interface InstanceCardProps {
     setSentry: (instance: InstanceEntry) => void;
     setTier: (instance: InstanceEntry, tier: number) => void;
     t: (text: string, ...args: any[]) => string;
-    themeType: 'dark' | 'light';
+    themeType: ThemeType;
     deleting: boolean;
     item: InstanceItem;
     socket: AdminConnection;

@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@iobroker/types": "5.0.20-alpha.0-20240419-d343afbb",
-    "@iobroker/adapter-core": "^3.1.0",
+    "@iobroker/adapter-core": "^3.1.4",
     "@iobroker/socket-classes": "^1.5.0",
     "@iobroker/webserver": "^1.0.3",
     "@iobroker/ws-server": "^2.1.2",

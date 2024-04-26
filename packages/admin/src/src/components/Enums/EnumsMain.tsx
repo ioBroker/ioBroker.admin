@@ -4,11 +4,11 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 import { withStyles } from '@mui/styles';
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
 import {
     Tooltip,
     LinearProgress,
-    Grid,
     Tabs,
     Tab,
     TextField,
@@ -28,6 +28,9 @@ import {
 import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 
 import { type AdminConnection, Utils } from '@iobroker/adapter-react-v5';
+import type {
+    ThemeType,
+} from '@iobroker/adapter-react-v5/types';
 
 import EnumBlock, { isTouchDevice } from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
@@ -47,6 +50,12 @@ const styles: Record<string, any> = (theme: Theme) => ({
         flexDirection: 'column',
         height: '100%',
     },
+    enumGroupMember: {
+        display: 'flex',
+        gap: 8,
+        alignItems: 'center',
+        padding: '8px 16px',
+    },
     childGridContWide: {
         height: '100%',
     },
@@ -54,7 +63,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
         overflowY: 'auto',
         overflowX: 'hidden',
     },
-    canDrop:{
+    canDrop: {
         backgroundColor: theme.palette.background.default,
     },
     icon: {
@@ -167,11 +176,11 @@ function sort(
 }
 
 const ENUM_TEMPLATE: ioBroker.EnumObject = {
+    _id: '',
     type: 'enum',
     common: {
         name: '',
         color: '',
-        // @ts-expect-error fixed in later js-controller
         desc: '',
         members: [],
     },
@@ -188,7 +197,7 @@ interface EnumsListProps {
     socket: AdminConnection;
     t: (word: string) => string;
     lang: ioBroker.Languages;
-    themeType: 'dark' | 'light';
+    themeType: ThemeType;
     classes: Record<string, string>;
 }
 
@@ -213,6 +222,7 @@ interface EnumsListState {
     updating: string[];
     enumsCollapsed: string[];
     innerWidth: number;
+    splitSizes: [number, number];
 }
 
 class EnumsList extends Component<EnumsListProps, EnumsListState> {
@@ -247,6 +257,18 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         } catch (e) {
             // ignore
         }
+        const splitSizesStr = ((window as any)._localStorage || window.localStorage).getItem('enumsSplitSizes');
+        let splitSizes: [number, number] = [50, 50];
+        if (splitSizesStr) {
+            try {
+                splitSizes = JSON.parse(splitSizesStr) as [number, number];
+            } catch (e) {
+                // ignore
+            }
+            if (!Array.isArray(splitSizes) || splitSizes.length !== 2) {
+                splitSizes = [50, 50];
+            }
+        }
 
         this.state = {
             enums: null,
@@ -262,6 +284,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             updating: [],
             enumsCollapsed,
             innerWidth: 0,
+            splitSizes,
         };
 
         this.cachedIcons = {};
@@ -753,6 +776,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         if (!this.state.enumsTree) {
             return <LinearProgress />;
         }
+        const classes = this.props.classes;
 
         const enumItems = Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children);
         const showFolderIcons = !!enumItems.find(item => item.children && Object.keys(item.children).length);
@@ -760,14 +784,24 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         return <>
             <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
                 <DndPreview />
-                <Grid container spacing={2} className={this.props.classes.mainGridCont}>
-                    <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
-                        <div className={this.props.classes.topPanel}>
+                <ReactSplit
+                    direction={SplitDirection.Horizontal}
+                    initialSizes={this.state.splitSizes}
+                    minWidths={[450, 450]}
+                    onResizeFinished={(gutterIdx: number, splitSizes: [number, number]) => {
+                        this.setState({ splitSizes: splitSizes as [number, number] });
+                        ((window as any)._localStorage || window.localStorage).setItem('enumsSplitSizes', JSON.stringify(splitSizes));
+                    }}
+                    // theme={this.props.themeType === 'dark' ? GutterTheme.Dark : GutterTheme.Light}
+                    gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                >
+                    <div className={Utils.clsx(classes.childGridCont, this.state.innerWidth > 600 && classes.childGridContWide)}>
+                        <div className={classes.topPanel}>
                             <Tooltip title={this.props.t('Add enum')} placement="top">
                                 <IconButton
                                     id="categoryPopoverButton"
                                     size="small"
-                                    className={this.props.classes.toolbarButton}
+                                    className={classes.toolbarButton}
                                     onClick={() =>
                                         (this.state.enumsTree.children.enum.children.favorites ?
                                             this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
@@ -825,13 +859,13 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 })}
                             </Tabs>
                         </div>
-                        <div className={this.props.classes.topPanel2}>
+                        <div className={classes.topPanel2}>
                             <TextField
                                 variant="standard"
                                 inputRef={this.refFilter}
                                 placeholder={this.props.t('Filter')}
                                 InputLabelProps={{ shrink: true }}
-                                className={this.props.classes.filter}
+                                className={classes.filter}
                                 InputProps={{
                                     endAdornment: <IconButton
                                         ref={this.refClearButton}
@@ -849,7 +883,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 <IconButton
                                     size="large"
                                     // size="small"
-                                    className={this.props.classes.toolbarButton}
+                                    className={classes.toolbarButton}
                                     onClick={() => {
                                         const enumsCollapsed = Object.keys(this.state.enums);
                                         this.setState({ enumsCollapsed });
@@ -863,7 +897,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 <IconButton
                                     size="large"
                                     // size="small"
-                                    className={this.props.classes.toolbarButton}
+                                    className={classes.toolbarButton}
                                     onClick={() => {
                                         this.setState({ enumsCollapsed: [] });
                                         ((window as any)._localStorage || window.localStorage).setItem('enumsCollapsed', '[]');
@@ -876,7 +910,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 <IconButton
                                     size="large"
                                     // size="small"
-                                    className={this.props.classes.toolbarButton}
+                                    className={classes.toolbarButton}
                                     onClick={() => {
                                         const enumsClosed: Record<string, boolean> = {};
                                         Object.keys(this.state.enums).forEach(id => enumsClosed[id] = true);
@@ -891,7 +925,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 <IconButton
                                     size="large"
                                     // size="small"
-                                    className={this.props.classes.toolbarButton}
+                                    className={classes.toolbarButton}
                                     onClick={() => {
                                         const enumsClosed = {};
                                         this.setState({ enumsClosed });
@@ -917,23 +951,23 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 </IconButton>
                             </Tooltip>
                         </div>
-                        <div className={this.props.classes.blocksContainer}>
+                        <div className={classes.blocksContainer}>
                             {enumItems.map((enumItem, index) => this.renderTree(enumItem, index, 0))}
                         </div>
-                    </Grid>
-                    <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
-                        <div className={this.props.classes.blocksContainer}>
+                    </div>
+                    <div className={Utils.clsx(classes.childGridCont, this.state.innerWidth > 600 && classes.childGridContWide)}>
+                        <div className={classes.blocksContainer}>
                             <DragObjectBrowser
                                 addItemToEnum={this.addItemToEnum}
                                 getName={this.getName}
-                                classesParent={this.props.classes}
+                                classesParent={classes}
                                 t={this.props.t}
                                 socket={this.props.socket}
                                 lang={this.props.lang}
                             />
                         </div>
-                    </Grid>
-                </Grid>
+                    </div>
+                </ReactSplit>
             </DndProvider>
             {this.state.enumEditDialog ? <EnumEditDialog
                 onClose={() => this.setState({ enumEditDialog: null })}

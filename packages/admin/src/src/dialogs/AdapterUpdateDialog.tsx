@@ -138,36 +138,10 @@ const styles: Record<string, any> = (theme: Theme) => ({
     },
 });
 
-export interface Rule {
-    title: {
-        [lang: string]: string;
-    };
-    text: {
-        [lang: string]: string;
-    };
-    link?: string;
-    linkText?: {
-        [lang: string]: string;
-    };
-    level: 'warn' | 'error' | 'info';
-    buttons?: ('agree' | 'cancel' | 'ok')[];
-    condition: {
-        operand: 'and' | 'or';
-        rules: string[];
-    };
-}
-
-// todo: After update of @types/iobroker, take it from ioBroker.Message
 export interface Message {
-    title: {
-        [lang: string]: string;
-    };
-    text: {
-        [lang: string]: string;
-    };
-    linkText?: {
-        [lang: string]: string;
-    };
+    title: ioBroker.Translated;
+    text: ioBroker.Translated;
+    linkText?: ioBroker.Translated;
     link?: string;
     buttons?: ('agree' | 'cancel' | 'ok')[];
     level?: 'warn' | 'error' | 'info';
@@ -180,14 +154,13 @@ interface News {
 
 interface RepoInstanceObject extends ioBroker.InstanceCommon {
     versionDate: string;
-    messages?: Rule[];
 }
 
 /**
  * Check if the message should be shown
  */
 export function checkCondition(
-    objMessages: Rule[] | false | null | undefined,
+    objMessages: ioBroker.MessageRule[] | false | null | undefined,
     oldVersion: string | null,
     newVersion: string,
     instances: Record<string, ioBroker.InstanceObject>,
@@ -302,12 +275,12 @@ export function checkCondition(
                         }
                     }
 
-                    // If first character is '>' or '<'
+                    // If the first character is '>' or '<'
                     if (rule[1] >= '0' && rule[1] <= '9') {
                         op = rule[0];
                         ver = rule.substring(1);
                     } else {
-                        // First 2 characters are '>=' or '<=' or '!=' or '=='
+                        // The first 2 characters are '>=' or '<=' or '!=' or '=='
                         op = rule.substring(0, 2);
                         ver = rule.substring(2);
                     }
