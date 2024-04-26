@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "6.17.6",
+  "version": "6.17.7",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -23,9 +23,9 @@
     "setup"
   ],
   "dependencies": {
-    "@iobroker/types": "5.0.20-alpha.0-20240419-d343afbb",
     "@iobroker/adapter-core": "^3.1.4",
     "@iobroker/socket-classes": "^1.5.0",
+    "@iobroker/types": "5.0.20-alpha.0-20240419-d343afbb",
     "@iobroker/webserver": "^1.0.3",
     "@iobroker/ws-server": "^2.1.2",
     "ajv": "^8.12.0",

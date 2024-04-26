@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.7 (2024-04-26)
 * (bluefox) Improved category tab
 
 ### 6.17.6 (2024-04-19)
@@ -104,10 +104,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.17.1 (2024-04-06)
 * (bluefox) support of includes in JSONConfig files
-
-### 6.16.0 (2024-03-26)
-* (foxriver76) added a new tab to the installation wizard which recommends common adapters
-* (bluefox) applied newest adapter-react-v5 changes and types
 
 ## License
 The MIT License (MIT)
