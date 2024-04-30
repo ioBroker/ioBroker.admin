@@ -719,7 +719,7 @@ const InstanceRow = ({
                 />}
             </DialogContent>
             <DialogActions>
-                <Button
+                {openDialogDelete === 1 ? <Button
                     startIcon={<DeleteIcon />}
                     onClick={() => {
                         setOpenDialogDelete(false);
@@ -730,7 +730,7 @@ const InstanceRow = ({
                     style={{ background: 'red', color: 'white' }}
                 >
                     {I18n.t('Delete adapter')}
-                </Button>
+                </Button> : null}
                 <Button
                     startIcon={<DeleteIcon />}
                     onClick={() => {
