@@ -11,9 +11,11 @@ import {
     Avatar,
 } from '@mui/material';
 
+import { I18n } from '@iobroker/adapter-react-v5';
 import type { ThemeType } from '@iobroker/adapter-react-v5/types';
 
 import Utils from '../Utils';
+import BasicUtils from '../../Utils';
 
 const styles: Record<string, any> = {
     img: {
@@ -23,7 +25,7 @@ const styles: Record<string, any> = {
 };
 
 interface LinksDialogProps {
-    links: { name: string; link: string; port: number; color: string }[];
+    links: { name: ioBroker.StringOrTranslated; link: string; port: number; color: string }[];
     onClose: () => void;
     t: (text: string, ...args: any[]) => string;
     instanceId: string;
@@ -56,14 +58,14 @@ class LinksDialog extends Component<LinksDialogProps> {
                         window.open(url, this.props.instanceId);
                         this.props.onClose();
                     }}
-                    key={link.name}
+                    key={BasicUtils.getText(link.name, I18n.getLanguage())}
                 >
                     <ListItemAvatar>
                         <Avatar variant="rounded">
                             <img className={this.props.classes.img} src={this.props.image} alt={this.props.instanceId} />
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={link.name + (showPort ? ` [:${link.port}]` : '')} />
+                    <ListItemText primary={BasicUtils.getText(link.name, I18n.getLanguage()) + (showPort ? ` [:${link.port}]` : '')} />
                 </ListItemButton>)}
             </List>
         </Dialog>;

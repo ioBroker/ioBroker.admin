@@ -277,24 +277,6 @@ export interface TreeItemData {
     // language in what the rooms and functions where translated
     lang?: ioBroker.Languages;
     state?: {
-        /** value for copy as text */
-        val?: string;
-        valText: {
-            /** value as string */
-            v: string;
-            /** value unit */
-            u?: string;
-            /** value not replaced by `common.states` */
-            s?: string;
-        };
-        valFull: {
-            /** label */
-            t: string;
-            /** value */
-            v: string;
-            /** no break */
-            nbr?: boolean;
-        }[] | null;
         valFullRx?: React.JSX.Element[] | null;
         valTextRx?: React.JSX.Element[] | null;
         style?: React.CSSProperties;
@@ -2606,7 +2588,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
 
         const columnsStr = this.localStorage.getItem(`${props.dialogName || 'App'}.columns`);
-        let columns: string[] | null = null;
+        let columns: string[] | null;
         try {
             columns = columnsStr ? JSON.parse(columnsStr) : null;
         } catch (e) {
@@ -3414,19 +3396,22 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         </Dialog>;
     }
 
-    private getAdditionalColumns(): Promise<Record<string, CustomAdminColumnStored[]> | null> {
-        return this.props.socket
-            .getAdapters()
-            .then(instances => {
-                let columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null = null;
-                // find all additional columns
-                instances.forEach(obj => (columnsForAdmin = this.parseObjectForAdmins(columnsForAdmin, obj)));
+    private async getAdditionalColumns(): Promise<Record<string, CustomAdminColumnStored[]> | null> {
+        try {
+            const instances = await this.props.socket
+                .getAdapters();
 
-                return columnsForAdmin;
-            })
+            let columnsForAdmin: Record<string, CustomAdminColumnStored[]> | null = null;
+            // find all additional columns
+            instances.forEach(obj => (columnsForAdmin = this.parseObjectForAdmins(columnsForAdmin, obj)));
+
+            return columnsForAdmin;
+        } catch (err) {
             // window.alert('Cannot get adapters: ' + e);
             // Object browser in Web has no additional columns
-            .catch(() => null);
+            console.error(`Cannot get adapters: ${err}`);
+            return null;
+        }
     }
 
     private checkUnsubscribes() {
@@ -5068,17 +5053,18 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
         let info = item.data.state;
         if (!info) {
-            item.data.state = formatValue({
+            const { valFull, valText } = formatValue({
                 state,
                 obj: obj as ioBroker.StateObject,
                 texts: this.texts,
                 dateFormat: this.props.dateFormat,
                 isFloatComma: this.props.isFloatComma,
             });
+            item.data.state = { valFullRx: [], valTextRx: [] };
+
             info = item.data.state;
 
-            info.valFullRx = [];
-            info.valFull.forEach(_item => {
+            valFull.forEach(_item => {
                 if (_item.t === this.texts.quality && state.q) {
                     info.valFullRx.push(<div className={classes.cellValueTooltipBoth} key={_item.t}>
                         {_item.t}
@@ -5117,24 +5103,23 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                 />);
             }
 
-            const copyText = info.valText.v || '';
-            info.val = copyText;
+            const copyText = valText.v || '';
             info.valTextRx = [];
-            info.valTextRx.push(<span className={classes.newValue} key={`${info.valText.v.toString()}valText`}>
-                {info.valText.v.toString()}
+            info.valTextRx.push(<span className={classes.newValue} key={`${valText.v.toString()}valText`}>
+                {valText.v.toString()}
             </span>);
-            info.valText.u && info.valTextRx.push(<span
+            valText.u && info.valTextRx.push(<span
                 className={Utils.clsx(classes.cellValueTextUnit, classes.newValue)}
-                key={`${info.valText.v.toString()}unit`}
+                key={`${valText.v.toString()}unit`}
             >
-                {info.valText.u}
+                {valText.u}
             </span>);
-            info.valText.s !== undefined && info.valTextRx.push(<span
+            valText.s !== undefined && info.valTextRx.push(<span
                 className={Utils.clsx(classes.cellValueTextState, classes.newValue)}
-                key={`${info.valText.v.toString()}states`}
+                key={`${valText.v.toString()}states`}
             >
                 (
-                {info.valText.s}
+                {valText.s}
                 )
             </span>);
             info.valTextRx.push(<IconCopy
@@ -6566,13 +6551,13 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
     /**
      * Find the id from the root
-     *
-     * @param {Record<string, any>} root The current root
-     * @param {string} id the object id
-     *
-     * @returns {any}
      */
-    getItemFromRoot(root: TreeItem, id: string) {
+    private getItemFromRoot(
+        /** The current root */
+        root: TreeItem,
+        /** the object id to find */
+        id: string,
+    ): TreeItem | null {
         const idArr = id.split('.');
         let currId = '';
 
