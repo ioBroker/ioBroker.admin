@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -10,6 +9,7 @@ import {
     Button,
     TextField,
     Tooltip, InputAdornment, IconButton,
+    type Theme,
 } from '@mui/material';
 
 import {
@@ -21,7 +21,7 @@ import {
 
 import { Utils, UploadImage } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     error: {
         border: '2px solid #FF0000',
     },
@@ -117,8 +117,23 @@ const styles = theme => ({
     },
 });
 
-class HostEdit extends Component {
-    constructor(props) {
+interface HostEditProps {
+    classes: Record<string, string>;
+    obj: ioBroker.HostObject;
+    onClose: (newObj?: ioBroker.HostObject) => void;
+    t: (text: string, ...args: any[]) => string;
+}
+
+interface HostEditState {
+    text: string;
+    error: boolean;
+    changed: boolean;
+}
+
+class HostEdit extends Component<HostEditProps, HostEditState> {
+    private readonly originalObj: string;
+
+    constructor(props: HostEditProps) {
         super(props);
 
         this.state = {
@@ -130,10 +145,10 @@ class HostEdit extends Component {
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
 
-    prepareObject(value) {
+    prepareObject(value: string): ioBroker.HostObject | null {
         value = value || this.state.text;
         try {
-            const obj = JSON.parse(value);
+            const obj: ioBroker.HostObject = JSON.parse(value) as ioBroker.HostObject;
             obj._id = this.props.obj._id; // do not allow change of id
             return obj;
         } catch (e) {
@@ -141,8 +156,8 @@ class HostEdit extends Component {
         }
     }
 
-    onChange(value) {
-        const newState = { text: value };
+    onChange(value: string) {
+        const newState: Partial<HostEditState> = { text: value };
         const json = this.prepareObject(value);
         if (json) {
             newState.changed = this.originalObj !== JSON.stringify(json, null, 2);
@@ -152,12 +167,12 @@ class HostEdit extends Component {
         } else {
             newState.error = true;
         }
-        this.setState(newState);
+        this.setState(newState as HostEditState);
     }
 
     onUpdate() {
         try {
-            const obj = JSON.parse(this.state.text);
+            const obj = JSON.parse(this.state.text) as ioBroker.HostObject;
             obj._id = this.props.obj._id; // do not allow change of id
             this.props.onClose(obj);
         } catch (error) {
@@ -165,17 +180,17 @@ class HostEdit extends Component {
         }
     }
 
-    setCommonItem(json, name, value) {
-        json.common[name] = value;
+    setCommonItem(json: ioBroker.HostObject, name: string, value: any) {
+        (json.common as Record<string, any>)[name] = value;
         this.onChange(JSON.stringify(json, null, 2));
     }
 
-    removeCommonItem(json, name) {
-        delete json.common[name];
+    removeCommonItem(json: ioBroker.HostObject, name: string) {
+        delete (json.common as Record<string, any>).common[name];
         this.onChange(JSON.stringify(json, null, 2));
     }
 
-    buttonAddKey(nameKey, cb) {
+    buttonAddKey(nameKey: string, cb: () => void) {
         const { t, classes } = this.props;
         return <div
             className={classes.marginBlock}
@@ -192,7 +207,7 @@ class HostEdit extends Component {
         </div>;
     }
 
-    buttonRemoveKey(nameKey, cb) {
+    buttonRemoveKey(nameKey: string, cb: () => void) {
         const { t, classes } = this.props;
         return <Tooltip title={t(`Remove ${nameKey}`)}><div className={classes.close} onClick={cb} /></Tooltip>;
     }
@@ -259,7 +274,6 @@ class HostEdit extends Component {
                             icon={json.common.icon}
                             removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
                             onChange={base64 => this.setCommonItem(json, 'icon', base64)}
-                            t={t}
                         />
                         {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
                     </div> :
@@ -279,7 +293,7 @@ class HostEdit extends Component {
             classes={{ paper: this.props.classes.dialog }}
             open={!0}
             maxWidth="lg"
-            fullWidth={this.state.type !== 'number' && this.state.type !== 'boolean'}
+            fullWidth
             fullScreen={false}
             onClose={() => this.props.onClose()}
             aria-labelledby="edit-value-dialog-title"
@@ -316,13 +330,5 @@ class HostEdit extends Component {
         </Dialog>;
     }
 }
-
-HostEdit.propTypes = {
-    classes: PropTypes.object,
-    obj: PropTypes.object,
-    onClose: PropTypes.func.isRequired,
-
-    t: PropTypes.func,
-};
 
 export default withStyles(styles)(HostEdit);

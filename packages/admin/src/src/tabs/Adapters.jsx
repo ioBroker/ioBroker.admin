@@ -1475,7 +1475,7 @@ class Adapters extends Component {
                         },
                     })}
                 onAddInstance={() => {
-                    let url = adapter.extIcon || adapter.icon || '';
+                    let url = adapter.licenseUrl || adapter.licenseInformation?.link || adapter.extIcon || '';
                     if (url.includes('/main')) {
                         url = `${url.split('/main')[0]}/main/LICENSE`;
                     } else {
@@ -1498,7 +1498,7 @@ class Adapters extends Component {
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
-                    let url = adapter.extIcon || adapter.icon || '';
+                    let url = adapter.licenseUrl || adapter.licenseInformation?.link || adapter.extIcon || '';
                     if (url.includes('/main')) {
                         url = `${url.split('/main')[0]}/main/LICENSE`;
                     } else {
@@ -1794,7 +1794,8 @@ class Adapters extends Component {
                         },
                     })}
                 onAddInstance={() => {
-                    let url = adapter.extIcon || adapter.icon || '';
+                    let url = adapter.licenseUrl || adapter.licenseInformation?.link || adapter.extIcon || '';
+
                     if (url.includes('/main')) {
                         url = `${url.split('/main')[0]}/main/LICENSE`;
                     } else {
@@ -1817,7 +1818,7 @@ class Adapters extends Component {
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => {
-                    let url = adapter.extIcon || adapter.icon || '';
+                    let url = adapter.licenseUrl || adapter.licenseInformation?.link || adapter.extIcon || '';
                     if (url.includes('/main')) {
                         url = `${url.split('/main')[0]}/main/LICENSE`;
                     } else {

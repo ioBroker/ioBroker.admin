@@ -1,25 +1,38 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
+import {
+    List,
+    ListItemButton,
+    ListItemText,
+    DialogTitle,
+    Dialog,
+    ListItemAvatar,
+    Avatar,
+} from '@mui/material';
+
+import type { ThemeType } from '@iobroker/adapter-react-v5/types';
 
 import Utils from '../Utils';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     img: {
         width: '100%',
         height: '100%',
     },
-});
+};
 
-class LinksDialog extends Component {
+interface LinksDialogProps {
+    links: { name: string; link: string; port: number; color: string }[];
+    onClose: () => void;
+    t: (text: string, ...args: any[]) => string;
+    instanceId: string;
+    image: string;
+    themeType: ThemeType;
+    classes: Record<string, string>;
+}
+
+class LinksDialog extends Component<LinksDialogProps> {
     render() {
         if (!this.props.links || !this.props.links.length) {
             return null;
@@ -56,14 +69,5 @@ class LinksDialog extends Component {
         </Dialog>;
     }
 }
-
-LinksDialog.propTypes = {
-    links: PropTypes.array.isRequired,
-    onClose: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-    instanceId: PropTypes.string.isRequired,
-    image: PropTypes.string,
-    themeType: PropTypes.string,
-};
 
 export default withStyles(styles)(LinksDialog);
