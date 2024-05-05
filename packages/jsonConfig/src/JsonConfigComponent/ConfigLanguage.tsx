@@ -9,7 +9,6 @@ import {
     Select,
 } from '@mui/material';
 
-import type { SystemConfig } from '@iobroker/socket-client';
 import { I18n } from '@iobroker/adapter-react-v5';
 
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -128,7 +127,7 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
                                 this.props.changeLanguage && this.props.changeLanguage();
                             } else {
                                 this.props.socket.getSystemConfig()
-                                    .then((systemConfig: SystemConfig) => {
+                                    .then(systemConfig => {
                                         if (systemConfig.common.language === I18n.getLanguage()) {
                                             return;
                                         }

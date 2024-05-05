@@ -20,7 +20,6 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { Theme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
-import type { SystemConfig } from '@iobroker/socket-client';
 import Utils from '#JC/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
@@ -368,7 +367,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 // decode all native attributes listed in obj.encryptedNative
                 if (Array.isArray(obj.encryptedNative)) {
                     return this.props.socket.getSystemConfig()
-                        .then(async (systemConfig: SystemConfig) => {
+                        .then(async systemConfig => {
                             await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
                             this.secret = systemConfig.native.secret;
                             obj.encryptedNative?.forEach(attr => {

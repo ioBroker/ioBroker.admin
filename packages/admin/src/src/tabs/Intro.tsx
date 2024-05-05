@@ -16,7 +16,6 @@ import {
 } from '@mui/icons-material';
 
 import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
-import type { SystemConfig } from '@iobroker/socket-client';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
@@ -255,9 +254,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
     };
 
     activateEditMode() {
-        let systemConfig: SystemConfig;
+        let systemConfig: Awaited<ReturnType<typeof this.props.socket.getSystemConfig>>;
         this.props.socket.getSystemConfig(true)
-            .then((_systemConfig: SystemConfig) => {
+            .then(_systemConfig => {
                 systemConfig = _systemConfig;
                 return this.getInstances(true, null, systemConfig);
             })
@@ -641,7 +640,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    async getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: SystemConfig) {
+    async getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: Awaited<ReturnType<typeof this.props.socket.getSystemConfig>>) {
         hosts = hosts || this.state.hosts;
 
         try {
@@ -1027,10 +1026,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     getData(update?: boolean) {
         let hosts: any;
-        let systemConfig: SystemConfig;
+        let systemConfig: Awaited<ReturnType<typeof this.props.socket.getSystemConfig>>;
 
         return this.props.socket.getSystemConfig(update)
-            .then((_systemConfig: SystemConfig) => {
+            .then(_systemConfig => {
                 systemConfig = _systemConfig;
                 return this.props.socket.getCompactHosts(update);
             })
