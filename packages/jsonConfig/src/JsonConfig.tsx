@@ -20,11 +20,10 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { Theme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
-import type {ConfigItemAny, ConfigItemPanel, ConfigItemTabs} from '#JC/types';
+import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
 import Utils from '#JC/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
-
 
 const styles = {
     root: {
@@ -353,26 +352,26 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         }
     };
 
-    getInstanceObject(): Promise<ioBroker.InstanceObject | void> {
-        return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
-            .then((obj: ioBroker.InstanceObject) => {
-                // decode all native attributes listed in obj.encryptedNative
-                if (Array.isArray(obj.encryptedNative)) {
-                    return this.props.socket.getSystemConfig()
-                        .then(async (systemConfig: ioBroker.SystemConfigObject) => {
-                            await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
-                            this.secret = systemConfig.native.secret;
-                            obj.encryptedNative?.forEach(attr => {
-                                if (obj.native[attr]) {
-                                    obj.native[attr] = decrypt(this.secret, obj.native[attr]);
-                                }
-                            });
-                            return obj;
-                        });
-                }
+    async getInstanceObject(): Promise<ioBroker.InstanceObject | null> {
+        try {
+            const obj = await this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`);
+            // decode all native attributes listed in obj.encryptedNative
+            if (Array.isArray(obj.encryptedNative)) {
+                const systemConfig = await this.props.socket.getSystemConfig();
+                await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
+                this.secret = systemConfig.native.secret;
+                obj.encryptedNative?.forEach(attr => {
+                    if (obj.native[attr]) {
+                        obj.native[attr] = decrypt(this.secret, obj.native[attr]);
+                    }
+                });
                 return obj;
-            })
-            .catch((e: any) => window.alert(`[JsonConfig] Cannot read instance object: ${e}`));
+            }
+            return obj;
+        } catch (e) {
+            window.alert(`[JsonConfig] Cannot read instance object: ${e}`);
+        }
+        return null;
     }
 
     renderConfirmDialog(): React.JSX.Element | null {
@@ -486,14 +485,14 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         />;
     }
 
-    findAttr(attr: string, schema?: Schema): Schema | null {
+    findAttr(attr: string, schema?: ConfigItemPanel | ConfigItemTabs): ConfigItemAny | null {
         schema = schema || this.state.schema;
         if (schema?.items) {
             if (attr in schema.items) {
-                return schema.items[attr as any];
+                return schema.items[attr] as ConfigItemAny;
             }
             for (const _item of Object.values(schema.items)) {
-                const item = this.findAttr(attr, _item);
+                const item = this.findAttr(attr, _item as ConfigItemPanel | ConfigItemTabs);
                 if (item) {
                     return item;
                 }
