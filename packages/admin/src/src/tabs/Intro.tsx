@@ -254,7 +254,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     };
 
     activateEditMode() {
-        let systemConfig: Awaited<ReturnType<typeof this.props.socket.getSystemConfig>>;
+        let systemConfig: ioBroker.SystemConfigObject;
         this.props.socket.getSystemConfig(true)
             .then(_systemConfig => {
                 systemConfig = _systemConfig;
@@ -640,7 +640,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    async getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: Awaited<ReturnType<typeof this.props.socket.getSystemConfig>>) {
+    async getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: ioBroker.SystemConfigObject) {
         hosts = hosts || this.state.hosts;
 
         try {
@@ -1026,7 +1026,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     getData(update?: boolean) {
         let hosts: any;
-        let systemConfig: Awaited<ReturnType<typeof this.props.socket.getSystemConfig>>;
+        let systemConfig: ioBroker.SystemConfigObject;
 
         return this.props.socket.getSystemConfig(update)
             .then(_systemConfig => {
