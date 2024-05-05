@@ -10,13 +10,13 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Confirm as DialogConfirm, Error  as DialogError, Message  as DialogMessage, type AdminConnection, I18n,
+    Confirm as DialogConfirm, Error  as DialogError, Message  as DialogMessage, I18n,
 } from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
+import type { ConfigItemSendTo } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
@@ -25,7 +25,7 @@ const styles = () => ({
         height: 24,
         marginRight: 4,
     },
-});
+};
 
 function ip2int(ip: string) {
     // eslint-disable-next-line no-bitwise
@@ -125,25 +125,8 @@ function findNetworkAddressOfHost(obj: Record<string, any>, localIp: string) {
     return hostIp;
 }
 
-interface ConfigSendToSchema {
-    /** If the component should execute the sendTo command once initially too */
-    onLoaded?: boolean;
-    [other: string]: any;
-}
-
 interface ConfigSendToProps extends ConfigGenericProps {
-    socket: AdminConnection;
-    themeType: ThemeType;
-    themeName: ThemeName;
-    style: Record<string, any>;
-    className: string;
-    data: Record<string, any>;
-    schema: ConfigSendToSchema;
-    adapterName: string;
-    instance:number;
-    commandRunning: boolean;
-    onCommandRunning: (running: boolean) => void;
-    classes: Record<string, any>;
+    schema: ConfigItemSendTo;
 }
 
 interface ConfigSendToState extends ConfigGenericState {
@@ -205,19 +188,18 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         const _origin = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace(/\/index\.html$/, '')}`;
         const _originIp = `${window.location.protocol}//${this.state.hostname.split(':').length > 3 ? `[${this.state.hostname}]` : this.state.hostname}${window.location.pathname.replace(/\/index\.html$/, '')}`;
 
-        let data = this.props.schema.data;
+        let data: Record<string, any> = this.props.schema.data;
         if (data === undefined && this.props.schema.jsonData) {
-            data = this.getPattern(this.props.schema.jsonData, {
+            const dataStr = this.getPattern(this.props.schema.jsonData, {
                 _origin,
                 _originIp,
                 ...this.props.data,
             });
 
-            console.log(this.props.schema.jsonData);
             try {
-                data = JSON.parse(data);
+                data = JSON.parse(dataStr);
             } catch (e) {
-                console.error(`Cannot parse json data: ${data}`);
+                console.error(`Cannot parse json data: ${dataStr}`);
             }
         }
         if (data === undefined) {
@@ -234,7 +216,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
             timeout = setTimeout(() => {
                 this.props.onCommandRunning(false);
                 this.setState({ _error: I18n.t('ra_Request timed out'), running: false });
-            }, parseInt(this.props.schema.timeout, 10) || 10000);
+            }, parseInt(this.props.schema.timeout as any as string, 10) || 10000);
         }
 
         this.props.socket.sendTo(
@@ -283,7 +265,6 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                     }
 
                     if (response?.saveConfig) {
-                        // @ts-expect-error 4 values intended?
                         this.props.onChange(null, null, null, true);
                     }
                 }
@@ -333,6 +314,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         return <div className={this.props.classes.fullWidth}>
             <Button
                 variant={this.props.schema.variant || undefined}
+                // @ts-expect-error grey is valid color
                 color={this.props.schema.color || 'grey'}
                 className={this.props.classes.fullWidth}
                 disabled={disabled || !this.props.alive}

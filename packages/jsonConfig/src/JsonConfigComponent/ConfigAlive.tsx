@@ -1,9 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
+import type { ConfigItemAlive } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, any> = {
     root: {
@@ -14,12 +14,16 @@ const styles: Record<string, any> = {
     },
 };
 
+interface ConfigAliveProps extends ConfigGenericProps {
+    schema: ConfigItemAlive;
+}
+
 interface ConfigAliveState extends ConfigGenericState {
     alive?: boolean | null;
     instance?: string;
 }
 
-class ConfigAlive extends ConfigGeneric<ConfigGenericProps, ConfigAliveState> {
+class ConfigAlive extends ConfigGeneric<ConfigAliveProps, ConfigAliveState> {
     componentDidMount() {
         super.componentDidMount();
 

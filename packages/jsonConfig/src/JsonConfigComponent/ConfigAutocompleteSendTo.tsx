@@ -5,33 +5,23 @@ import { Autocomplete, TextField } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
-import type { ConfigAutocompleteProps, ConfigAutocompleteSchema, ConfigAutocompleteState } from './ConfigAutocomplete';
+import type { ConfigItemAutocompleteSendTo } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps } from './ConfigGeneric';
+import type { ConfigAutocompleteState } from './ConfigAutocomplete';
+
+interface ConfigAutocompleteSendToProps extends ConfigGenericProps {
+    schema: ConfigItemAutocompleteSendTo;
+}
 
 interface ConfigAutocompleteSendToState extends ConfigAutocompleteState {
     context: string;
 }
 
-interface ConfigAutocompleteSendToSchema extends ConfigAutocompleteSchema {
-    /** Data to send to adapter as json */
-    jsonData: Record<string, any>;
-    /** Command to send to adapter */
-    command: string;
-    /** String data to send to instance */
-    data?: string | null;
-    /** Resend command if one of the listed attributes change */
-    alsoDependsOn: boolean;
-}
-
-interface ConfigAutocompleteSendToProps extends ConfigAutocompleteProps {
-    schema: ConfigAutocompleteSendToSchema;
-}
-
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-});
+};
 
 class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToProps, ConfigAutocompleteSendToState> {
     componentDidMount() {

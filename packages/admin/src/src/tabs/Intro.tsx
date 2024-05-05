@@ -16,7 +16,6 @@ import {
 } from '@mui/icons-material';
 
 import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
-import type { SystemConfig } from '@iobroker/socket-client';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
@@ -255,9 +254,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
     };
 
     activateEditMode() {
-        let systemConfig: SystemConfig;
+        let systemConfig: ioBroker.SystemConfigObject;
         this.props.socket.getSystemConfig(true)
-            .then((_systemConfig: SystemConfig) => {
+            .then(_systemConfig => {
                 systemConfig = _systemConfig;
                 return this.getInstances(true, null, systemConfig);
             })
@@ -641,12 +640,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    async getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: SystemConfig) {
+    async getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: ioBroker.SystemConfigObject) {
         hosts = hosts || this.state.hosts;
 
         try {
             const instances = await this.props.socket.getAdapterInstances('', update);
-            // @ts-expect-error declare js-controller
+            // @ts-expect-error check later on
             let deactivated: string[] = systemConfig.common.intro || [];
             if (!Array.isArray(deactivated)) {
                 deactivated = Object.keys(deactivated);
@@ -1027,10 +1026,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     getData(update?: boolean) {
         let hosts: any;
-        let systemConfig: SystemConfig;
+        let systemConfig: ioBroker.SystemConfigObject;
 
         return this.props.socket.getSystemConfig(update)
-            .then((_systemConfig: SystemConfig) => {
+            .then((_systemConfig: ioBroker.SystemConfigObject) => {
                 systemConfig = _systemConfig;
                 return this.props.socket.getCompactHosts(update);
             })

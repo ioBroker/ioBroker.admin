@@ -12,22 +12,16 @@ import  { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
+import type {ConfigItemCheckbox} from "#JC/types";
 
-const styles = () => ({
+const styles: Record<string, any> = {
     error: {
         color: 'red',
     },
-});
+};
 
-interface ConfigCheckboxProps extends ConfigGenericProps{
-    socket: AdminConnection;
-    themeType: ThemeType;
-    themeName: ThemeName;
-    style: Record<string, any>;
-    className: string;
-    data: Record<string, any>;
-    schema: Record<string, any>;
-    classes: Record<string, any>;
+interface ConfigCheckboxProps extends ConfigGenericProps {
+    schema: ConfigItemCheckbox;
 }
 
 class ConfigCheckbox extends ConfigGeneric<ConfigCheckboxProps, ConfigGenericState> {

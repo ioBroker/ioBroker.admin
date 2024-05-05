@@ -5,9 +5,10 @@ import { TextField } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
+import type { ConfigItemPort } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     indeterminate: {
         opacity: 0.5,
     },
@@ -20,7 +21,7 @@ const styles = () => ({
             color: 'orange',
         },
     },
-});
+};
 
 interface Port {
     name: string;
@@ -31,12 +32,7 @@ interface Port {
 }
 
 interface ConfigPortProps extends ConfigGenericProps {
-    /** The current config */
-    data: Record<string, any>;
-    /** Attribute in the config, which represents the port */
-    attr: string;
-    /** CSS classes */
-    classes: Record<string, any>;
+    schema: ConfigItemPort;
 }
 
 interface ConfigPortState extends ConfigGenericState {
@@ -233,5 +229,4 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
     }
 }
 
-// @ts-expect-error check later on
 export default withStyles(styles)(ConfigPort);

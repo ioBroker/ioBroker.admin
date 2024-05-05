@@ -2,16 +2,22 @@ import React from 'react';
 
 import { TimePicker } from '@mui/x-date-pickers';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemTimePicker } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps } from './ConfigGeneric';
 
-export default class ConfigTimePicker extends ConfigGeneric {
+interface ConfigTimePickerProps extends ConfigGenericProps {
+    schema: ConfigItemTimePicker;
+    dialogName?: string;
+}
+
+export default class ConfigTimePicker extends ConfigGeneric<ConfigTimePickerProps> {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         this.setState({ value });
     }
 
-    renderItem(error: unknown, disabled: boolean) {
+    renderItem(_error: unknown, disabled: boolean) {
         const legacyReturnFormat = this.props.schema.returnFormat !== 'HH:mm:ss';
 
         const value: never = this.state.value && !legacyReturnFormat ?
@@ -19,13 +25,22 @@ export default class ConfigTimePicker extends ConfigGeneric {
             this.state.value as never;
 
         return <TimePicker
-            // @ts-expect-error fullWidth does exist on DatePicker
-            fullWidth
-            ampm={false}
-            timeSteps={this.props.schema.timesteps || { hours: 1, minutes: 5, seconds: 5 }}
-            margin="normal"
+            sx={theme => ({
+                width: '100%',
+                '& fieldset': {
+                    display: 'none',
+                },
+                '& input': {
+                    padding: `${theme.spacing(1)} 0 0 0`,
+                },
+                '& .MuiInputAdornment-root': {
+                    marginLeft: 0,
+                    marginTop: 7,
+                },
+            })}
+            ampm={this.props.systemConfig.dateFormat.includes('/')}
+            timeSteps={this.props.schema.timeSteps || this.props.schema.timesteps || { hours: 1, minutes: 5, seconds: 5 }}
             format={this.props.schema.format || 'HH:mm:ss'}
-            error={!!error}
             disabled={!!disabled}
             value={value}
             onChange={(newValue: never) => {
@@ -38,12 +53,7 @@ export default class ConfigTimePicker extends ConfigGeneric {
                     this.onChange(this.props.attr, strValue));
             }}
             views={this.props.schema.views || ['hours', 'minutes', 'seconds']}
-            InputLabelProps={{
-                shrink: true,
-            }}
-            placeholder={this.getText(this.props.schema.placeholder)}
             label={this.getText(this.props.schema.label)}
-            helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
         />;
     }
 }

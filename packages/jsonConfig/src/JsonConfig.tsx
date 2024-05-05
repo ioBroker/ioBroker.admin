@@ -20,10 +20,11 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { Theme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
-import type { SystemConfig } from '@iobroker/socket-client';
+import type {ConfigItemAny, ConfigItemPanel, ConfigItemTabs} from '#JC/types';
 import Utils from '#JC/Utils';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
+
 
 const styles = {
     root: {
@@ -173,16 +174,6 @@ interface BufferObject {
     data: Buffer;
 }
 
-interface Schema {
-    type: string;
-    items: Schema[];
-    max?: number;
-    min?: number;
-    trim?: boolean;
-    attr?: string;
-    doNotSave?: boolean;
-}
-
 interface JsonConfigProps {
     menuPadding: number;
     adapterName: string;
@@ -203,7 +194,7 @@ interface JsonConfigProps {
 }
 
 interface JsonConfigState {
-    schema?: Schema;
+    schema?: ConfigItemPanel | ConfigItemTabs;
     data?: Record<string, unknown>;
     originalData?: Record<string, unknown>;
     updateData: number;
@@ -213,7 +204,7 @@ interface JsonConfigState {
     theme: Theme;
     saveConfigDialog: boolean;
     hash: string;
-    error?: string;
+    error?: boolean;
 }
 
 class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
@@ -368,7 +359,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 // decode all native attributes listed in obj.encryptedNative
                 if (Array.isArray(obj.encryptedNative)) {
                     return this.props.socket.getSystemConfig()
-                        .then(async (systemConfig: SystemConfig) => {
+                        .then(async (systemConfig: ioBroker.SystemConfigObject) => {
                             await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
                             this.secret = systemConfig.native.secret;
                             obj.encryptedNative?.forEach(attr => {
@@ -418,11 +409,11 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         return json;
     }
 
-    async getConfigFile(fileName?: string): Promise<Schema> {
+    async getConfigFile(fileName?: string): Promise<ConfigItemPanel | ConfigItemTabs> {
         return this._getConfigFile(fileName);
     }
 
-    async _getConfigFile(fileName?: string, _filePaths?: string[]): Promise<Schema> {
+    async _getConfigFile(fileName?: string, _filePaths?: string[]): Promise<ConfigItemPanel | ConfigItemTabs> {
         fileName = fileName || 'jsonConfig.json5';
         _filePaths = _filePaths || [];
 
@@ -470,7 +461,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
             try {
                 // detect #include attr
-                return (await this.scanForInclude(JSON5.parse(content), _filePaths)) as Schema;
+                return (await this.scanForInclude(JSON5.parse(content), _filePaths)) as (ConfigItemPanel | ConfigItemTabs);
             } catch (e) {
                 window.alert('[JsonConfig] Cannot parse json5 config!');
                 console.log(e);
@@ -513,7 +504,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
     }
 
     // this function is called recursively and trims all text fields, that must be trimmed
-    postProcessing(data: Record<string, unknown>, attr: string, schema: Schema): void {
+    postProcessing(data: Record<string, unknown>, attr: string, schema: ConfigItemAny): void {
         schema = schema || this.state.schema;
         if (!data) {
             // should not happen
@@ -523,7 +514,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
         const dataAttr = data[attr];
 
-        if (schema.items) {
+        if ((schema as ConfigItemTabs).items) {
             if (schema.type === 'table') {
                 const table = dataAttr;
 
@@ -533,12 +524,12 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
                 for (const entry of table) {
                     for (const tItem of schema.items) {
-                        this.postProcessing(entry, tItem.attr as string, tItem);
+                        this.postProcessing(entry, tItem.attr as string, tItem as ConfigItemAny);
                     }
                 }
             } else {
-                for (const [_attr, item] of Object.entries(schema.items)) {
-                    if (item.type === 'panel' || item.type === 'tabs' || item.type === 'accordion') {
+                for (const [_attr, item] of Object.entries((schema as ConfigItemTabs).items)) {
+                    if ((item as any).type === 'panel' || (item as any).type === 'tabs' || (item as any).type === 'accordion') {
                         return;
                     }
                     this.postProcessing(data, _attr, item);
@@ -673,10 +664,8 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             {this.renderSaveConfigDialog()}
             <JsonConfigComponent
                 key={this.state.hash as string}
-                // @ts-expect-error types not correct yet
                 className={classes.scroll}
                 socket={this.props.socket}
-                theme={this.props.theme}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
                 adapterName={this.props.adapterName}

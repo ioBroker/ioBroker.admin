@@ -42,7 +42,6 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
-import type { SystemConfig } from '@iobroker/socket-client';
 import { localeMap } from './utils';
 
 const styles: Record<string, any> = (theme: Theme) => ({
@@ -445,7 +444,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     async prepareData(): Promise<void> {
         const list: { id: string; alive: boolean }[] = await this.getHistoryInstances();
         // read default history
-        const config: SystemConfig = await this.props.socket.getCompactSystemConfig();
+        const config: ioBroker.SystemConfigObject = await this.props.socket.getCompactSystemConfig();
         const defaultHistory = config?.common?.defaultHistory;
 
         // find current history

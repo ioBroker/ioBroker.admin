@@ -1,14 +1,14 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
+import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField, FormControl } from '@mui/material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
+import { I18n } from '@iobroker/adapter-react-v5';
 
+import type { ConfigItemNumber } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     indeterminate: {
         opacity: 0.5,
     },
@@ -16,19 +16,10 @@ const styles = () => ({
         flexDirection: 'row',
         width: '100%',
     },
-}) satisfies Styles<any, any>;
+};
 
 interface ConfigNumberProps extends ConfigGenericProps {
-    socket: AdminConnection;
-    themeType: ThemeType;
-    themeName: ThemeName;
-    style: Record<string, any>;
-    className: string;
-    data: Record<string, any>;
-    schema: Record<string, any>;
-    onError: () => void;
-    onChange: () => void;
-    classes: Record<string, any>;
+    schema: ConfigItemNumber;
 }
 
 interface ConfigNumberState extends ConfigGenericState {

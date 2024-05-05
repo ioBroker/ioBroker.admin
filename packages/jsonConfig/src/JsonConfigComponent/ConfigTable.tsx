@@ -28,9 +28,10 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
-import { Utils, I18n, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type {ConfigItemTableIndexed, ConfigItemPanel, ConfigItemTable} from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 // eslint-disable-next-line import/no-cycle
 import ConfigPanel from './ConfigPanel';
 
@@ -216,33 +217,11 @@ function arrayToObject(array: Record<string, any>[], nameOfFirstAttr: string, na
     return object;
 }
 
-interface ConfigTableProps {
-    socket: AdminConnection;
-    adapterName: string;
-    instance: number;
-    common: Record<string, any>;
-    systemConfig: Record<string, any>;
-    changed: boolean;
-    themeType: string;
-    themeName: string;
-    style: Record<string, any>;
-    className: string;
-    data: Record<string, any>;
-    schema: Record<string, any>;
-    onError: (attr: string, error?: unknown) => void;
-    onChange: (attr: string, value: unknown) => void;
-    attr: string;
-    custom?: boolean;
-    customs?: Record<string, React.Component>;
-    forceUpdate: (attrs: string[], data: Record<string, any>) => void;
-    alive: boolean;
-    originalData: Record<string, any>;
-    globalData: Record<string, any>;
-    classes: Record<string, string>;
-    instanceObj?: ioBroker.InstanceObject;
+interface ConfigTableProps extends ConfigGenericProps {
+    schema: ConfigItemTable;
 }
 
-interface ConfigTableState {
+interface ConfigTableState extends ConfigGenericState {
     value: Record<string, any>[];
     visibleValue: number[] | null;
     orderBy: string;
@@ -254,28 +233,8 @@ interface ConfigTableState {
     showTypeOfImportDialog: Record<string, any>[] | false;
     instanceObj: ioBroker.InstanceObject;
     customObj: Record<string, any>;
-    confirmDialog: boolean;
-    confirmNewValue: any;
-    confirmAttr: any;
-    confirmData: any;
-    confirmDepAttr?: any;
-    confirmDepNewValue?: any;
     uploadFile: boolean | 'dragging';
     icon: boolean;
-}
-
-interface TableItemProps {
-    attr: string;
-    type: string;
-    width?: string | number;
-    /** Title in header */
-    title?: string;
-    /** Title in every input item and not in header */
-    label?: string;
-    filter?: boolean;
-    sort?: boolean;
-    default?: string | number | boolean;
-    defaultFunc?: string;
 }
 
 function encrypt(secret: string, value: string): string {
@@ -304,7 +263,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         super(props);
         this.filterRefs = {};
         this.props.schema.items = this.props.schema.items || [];
-        this.props.schema.items.forEach((el: TableItemProps) => {
+        this.props.schema.items.forEach((el: ConfigItemTableIndexed) => {
             if (el.filter) {
                 this.filterRefs[el.attr] = createRef();
             }
@@ -331,7 +290,8 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         }
 
         if (this.props.schema.encryptedAttributes) {
-            this.secret = this.props.systemConfig?.native?.secret || this.secret;
+            const systemConfig = await this.props.socket.getCompactSystemConfig();
+            this.secret = systemConfig?.native.secret || this.secret;
 
             _value.forEach((el: Record<string, any>) => {
                 this.props.schema.encryptedAttributes.forEach((attr: string) => {
@@ -361,7 +321,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     itemTable(attrItem: string, data: Record<string, any>, idx: number) {
         const { value } = this.state;
         const { schema } = this.props;
-        const schemaForAttribute = schema.items && schema.items.find((el: TableItemProps) => el.attr === attrItem);
+        const schemaForAttribute = schema.items && schema.items.find((el: ConfigItemTableIndexed) => el.attr === attrItem);
 
         if (!schemaForAttribute) {
             return null;
@@ -388,8 +348,13 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             data={data}
             table
             custom
-            schema={schemaItem}
+            schema={schemaItem as ConfigItemPanel}
             systemConfig={this.props.systemConfig}
+            dateFormat={this.props.dateFormat}
+            isFloatComma={this.props.isFloatComma}
+            imagePrefix={this.props.imagePrefix}
+            onCommandRunning={this.props.onCommandRunning}
+            forceUpdate={this.props.forceUpdate}
             originalData={this.props.originalData}
             customs={this.props.customs}
             onChange={(attr: string, valueChange: any) => {
@@ -489,7 +454,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         const { order, orderBy } = this.state;
         return <TableHead>
             <TableRow>
-                {schema.items && schema.items.map((headCell: TableItemProps, i: number) =>
+                {schema.items && schema.items.map((headCell: ConfigItemTableIndexed, i: number) =>
                     <TableCell
                         style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? headCell.width : headCell.width }}
                         key={`${headCell.attr}_${i}`}
@@ -598,11 +563,11 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     onExport() {
         const { schema } = this.props;
         const { value } = this.state;
-        const cols = schema.items.map((it: TableItemProps) => it.attr);
+        const cols = schema.items.map((it: ConfigItemTableIndexed) => it.attr);
         const lines = [cols.join(';')];
         value.forEach(row => {
             const line: string[] = [];
-            schema.items.forEach((it: TableItemProps) => {
+            schema.items.forEach((it: ConfigItemTableIndexed) => {
                 if (row[it.attr].includes(';')) {
                     line.push(`"${row[it.attr]}"`);
                 } else {
@@ -634,7 +599,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
         const header = lines.shift()
             .split(';')
-            .filter(it => it && schema.items.find((it2: TableItemProps) => it2.attr === it));
+            .filter(it => it && schema.items.find((it2: ConfigItemTableIndexed) => it2.attr === it));
 
         const values: Record<string, any>[] = [];
         lines.forEach((line: string) => {
@@ -658,7 +623,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     val = false;
                     // eslint-disable-next-line no-restricted-properties
                 } else if (window.isFinite(value as any as number)) {
-                    const attr = this.props.schema.items.find((it: TableItemProps) => it.attr === header[p]);
+                    const attr = this.props.schema.items.find((it: ConfigItemTableIndexed) => it.attr === header[p]);
                     if (attr && attr.type === 'number') {
                         // if a type of attribute is a "number"
                         val = parseFloat(value);
@@ -699,7 +664,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 text += '_';
             }
             // eslint-disable-next-line no-loop-func
-            while (newValue.find((it: Record<string, any>) => it[this.props.schema.clone] === text + i.toString())) {
+            while (newValue.find((it: Record<string, any>) => it[this.props.schema.clone as string] === text + i.toString())) {
                 i++;
             }
             cloned[this.props.schema.clone] = `${cloned[this.props.schema.clone]}_${i}`;
@@ -751,14 +716,14 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     onAdd = () => {
         const { schema } = this.props;
         const newValue = JSON.parse(JSON.stringify(this.state.value));
-        const newItem = schema.items?.reduce((accumulator: Record<string, any>, currentValue: TableItemProps) => {
+        const newItem = schema.items?.reduce((accumulator: Record<string, any>, currentValue: ConfigItemTableIndexed) => {
             let defaultValue;
             if (currentValue.defaultFunc) {
                 if (this.props.custom) {
                     defaultValue = currentValue.defaultFunc ? this.executeCustom(
                         currentValue.defaultFunc,
-                        this.props.schema.default,
                         this.props.data,
+                        this.props.customObj,
                         this.props.instanceObj,
                         newValue.length,
                         this.props.data,
@@ -1007,7 +972,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                 hover
                                 key={`${idx}_${i}`}
                             >
-                                {schema.items && schema.items.map((headCell: TableItemProps) =>
+                                {schema.items && schema.items.map((headCell: ConfigItemTableIndexed) =>
                                     <TableCell key={`${headCell.attr}_${idx}`} align="left">
                                         {this.itemTable(headCell.attr, this.state.value[idx], idx)}
                                     </TableCell>)}

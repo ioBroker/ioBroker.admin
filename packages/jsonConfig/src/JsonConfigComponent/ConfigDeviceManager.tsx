@@ -1,9 +1,15 @@
 import React from 'react';
 
 import DeviceManager from '@iobroker/dm-gui-components';
+
+import type { ConfigItemDeviceManager } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-class ConfigDeviceManager extends ConfigGeneric<ConfigGenericProps, ConfigGenericState> {
+interface ConfigDeviceManagerProps extends ConfigGenericProps {
+    schema: ConfigItemDeviceManager;
+}
+
+class ConfigDeviceManager extends ConfigGeneric<ConfigDeviceManagerProps, ConfigGenericState> {
     renderItem(): React.JSX.Element | null {
         const schema = this.props.schema;
 
@@ -13,7 +19,7 @@ class ConfigDeviceManager extends ConfigGeneric<ConfigGenericProps, ConfigGeneri
 
         return <DeviceManager
             uploadImagesToInstance={`${this.props.adapterName}.${this.props.instance}`}
-            title={this.props.schema.label}
+            title={this.getText(this.props.schema.label)}
             socket={this.props.socket}
             selectedInstance={`${this.props.adapterName}.${this.props.instance}`}
         />;

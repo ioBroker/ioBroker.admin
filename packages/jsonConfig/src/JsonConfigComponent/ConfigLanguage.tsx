@@ -9,16 +9,16 @@ import {
     Select,
 } from '@mui/material';
 
-import type { SystemConfig } from '@iobroker/socket-client';
 import { I18n } from '@iobroker/adapter-react-v5';
 
+import type { ConfigItemLanguage } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-});
+};
 
 const LANGUAGES = [
     {
@@ -75,7 +75,7 @@ interface LanguageSelectOption {
 }
 
 interface ConfigLanguageProps extends ConfigGenericProps {
-    changeLanguage: () => void;
+    schema: ConfigItemLanguage;
 }
 
 interface ConfigLanguageState extends ConfigGenericState {
@@ -128,7 +128,7 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
                                 this.props.changeLanguage && this.props.changeLanguage();
                             } else {
                                 this.props.socket.getSystemConfig()
-                                    .then((systemConfig: SystemConfig) => {
+                                    .then((systemConfig: ioBroker.SystemConfigObject) => {
                                         if (systemConfig.common.language === I18n.getLanguage()) {
                                             return;
                                         }

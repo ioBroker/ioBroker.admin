@@ -16,8 +16,11 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Confirm as ConfirmDialog, Icon, Utils, type AdminConnection, I18n,
+    Confirm as ConfirmDialog, Icon,
+    Utils, type AdminConnection, I18n,
 } from '@iobroker/adapter-react-v5';
+import type { ThemeType, ThemeName } from '@iobroker/adapter-react-v5/types';
+import type { ConfigItemAny, ConfigItemConfirmData } from '#JC/types';
 
 // because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
 export function isObject(it: any): it is Record<string, any> {
@@ -30,43 +33,54 @@ export function isObject(it: any): it is Record<string, any> {
 }
 
 export interface ConfigGenericProps {
-    /** Provided props by the specific component */
-    schema: Record<string, any>;
-    registerOnForceUpdate?: (attr: string, onUpdate?: (data: Record<string, any>) => void) => void;
-    attr: string;
-    data: Record<string, any>;
-    onChange: (attrOrData: string | Record<string, any>, val?: any, cb?: () => void) => void;
-    custom?: boolean;
-    customs?: Record<string, React.Component>;
-    forceUpdate: (attrs: string[], data: Record<string, any>) => void;
-    alive: boolean;
-    originalData: Record<string, any>;
-    arrayIndex?: number;
-    globalData: Record<string, any>;
-    systemConfig?: Record<string, any>;
-    instanceObj?: ioBroker.InstanceObject;
-    customObj?: Record<string, any>;
-    socket: AdminConnection;
-    changed: boolean;
     adapterName: string;
-    instance: number;
-    common: Record<string, any>;
-    onError: (attr: string, error?: unknown) => void;
-    themeType: string;
-    commandRunning?: boolean;
-    disabled?: boolean;
+    alive: boolean;
+    arrayIndex?: number;
+    attr?: string;
+    changeLanguage?: () => void;
+    changed: boolean;
+    className?: string;
     classes: Record<string, any>;
-    /* this item is in the table. Maybe some layouts must be changed */
-    table?: boolean;
+    commandRunning?: boolean;
+    common: Record<string, any>;
+    custom?: boolean;
+    customObj?: Record<string, any>;
+    customs?: Record<string, React.Component>;
+    data: Record<string, any>;
+    dateFormat: string;
+    disabled?: boolean;
+    forceUpdate: (attrs: string[], data: Record<string, any>) => void;
+    // filled only by table and represents the obj.native or obj.common.custom['adapter.X'] object
+    globalData?: Record<string, any>;
+    imagePrefix?: string;
+    // filled only by table
+    index?: number;
+    instance: number;
+    instanceObj?: ioBroker.InstanceObject;
+    isFloatComma: boolean;
+    isParentTab?: boolean;
     /** If true, this field edits multiple data points at once and thus contains an array, should not be saved if not changed */
     multiEdit?: boolean;
+    onChange: (attrOrData: string | Record<string, any>, val?: any, cb?: () => void, saveConfig?: boolean) => void;
+    onCommandRunning: (running: boolean) => void;
+    onError: (attr: string, error?: string) => void;
+    originalData: Record<string, any>;
+    registerOnForceUpdate?: (attr: string, onUpdate?: (data: Record<string, any>) => void) => void;
+    /** Provided props by the specific component */
+    schema: ConfigItemAny;
+    socket: AdminConnection;
+    systemConfig?: ioBroker.SystemConfigCommon;
+    /** This item is in the table. Maybe some layouts must be changed */
+    table?: boolean;
+    themeName: ThemeName;
+    themeType: ThemeType;
 }
 
 export interface ConfigGenericState {
     confirmDialog: boolean;
     confirmNewValue: any;
     confirmAttr: any;
-    confirmData: any;
+    confirmData: ConfigItemConfirmData | null;
     value?: any;
     confirmDepAttr?: any;
     confirmDepNewValue?: any;
@@ -111,8 +125,8 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 this.defaultValue = props.schema.defaultFunc
                     ? this.executeCustom(
                         props.schema.defaultFunc,
-                        props.schema.default,
                         props.data,
+                        props.customObj,
                         props.instanceObj,
                         props.arrayIndex,
                         props.globalData,
@@ -163,13 +177,13 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
     sendTo() {
         if (this.props.alive) {
             this.defaultSendToDone = true;
-            let data = this.props.schema.data;
+            let data: any = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                data = this.getPattern(this.props.schema.jsonData);
+                const dataStr = this.getPattern(this.props.schema.jsonData);
                 try {
-                    data = JSON.parse(data);
+                    data = JSON.parse(dataStr);
                 } catch (e) {
-                    console.error(`Cannot parse json data: ${data}`);
+                    console.error(`Cannot parse json data: ${dataStr}`);
                 }
             } else {
                 data = {
@@ -266,7 +280,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
     }
 
-    getText(text: unknown, noTranslation?: boolean): string {
+    getText(text: ioBroker.StringOrTranslated, noTranslation?: boolean): string {
         if (!text) {
             return '';
         }
@@ -280,12 +294,13 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
 
         if (isObject(text)) {
-            if (text.func) {
+            // todo
+            if ((text as any).func) {
                 // calculate pattern
-                if (typeof text.func === 'object') {
-                    return this.getPattern(text.func[this.lang] || text.func.en || '');
+                if (typeof (text as any).func === 'object') {
+                    return this.getPattern((text as any).func[this.lang] || (text as any).func.en || '');
                 }
-                return this.getPattern(text.func);
+                return this.getPattern((text as any).func);
             }
 
             return text[this.lang] || text.en || '';
@@ -570,7 +585,13 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         return Promise.resolve();
     }
 
-    execute(func: string | Record<string, string>, defaultValue: any, data: Record<string, any>, arrayIndex: number, globalData: Record<string, any>) {
+    execute(
+        func: string | Record<string, string>,
+        defaultValue: any,
+        data: Record<string, any>,
+        arrayIndex: number,
+        globalData: Record<string, any>,
+    ) {
         let fun: string;
 
         if (isObject(func)) {
@@ -615,7 +636,14 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
     }
 
-    executeCustom(func: string | Record<string, string>, data: Record<string, any>, customObj: Record<string, any>, instanceObj: ioBroker.InstanceObject, arrayIndex: number, globalData: Record<string, any>) {
+    executeCustom(
+        func: string | Record<string, string>,
+        data: Record<string, any>,
+        customObj: Record<string, any>,
+        instanceObj: ioBroker.InstanceObject,
+        arrayIndex: number,
+        globalData: Record<string, any>,
+    ) {
         let fun: string;
 
         if (isObject(func)) {
@@ -731,7 +759,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         };
     }
 
-    onError(attr: string, error?: unknown) {
+    onError(attr: string, error?: string) {
         if (!error) {
             delete this.isError[attr];
         } else {
@@ -747,7 +775,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderHelp(text: string, link: string, noTranslation: boolean) {
+    renderHelp(text: ioBroker.StringOrTranslated, link: string, noTranslation: boolean) {
         if (!link) {
             text = this.getText(text, noTranslation) || '';
             if (

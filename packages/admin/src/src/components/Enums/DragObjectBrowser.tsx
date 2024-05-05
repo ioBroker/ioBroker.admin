@@ -11,7 +11,7 @@ import { type AdminConnection, Icon } from '@iobroker/adapter-react-v5';
 
 import ObjectBrowser, {
     type TreeItemData, type TreeItem,
-    getSelectIdIcon, ITEM_IMAGES,
+    getSelectIdIconFromObjects, ITEM_IMAGES,
 } from '../ObjectBrowser';
 
 export interface DragItem {
@@ -74,7 +74,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
                         {dragProps.item.data.obj.common?.icon ?
                             <Icon
                                 className={props.classesParent.icon}
-                                src={objectRef.current ? getSelectIdIcon(objectRef.current, dragProps.item.data.obj._id) : dragProps.item.data.obj.common.icon}
+                                src={objectRef.current ? getSelectIdIconFromObjects(objectRef.current, dragProps.item.data.obj._id) : dragProps.item.data.obj.common.icon}
                             />
                             :
                             (ITEM_IMAGES[dragProps.item.data.obj.type] || <ListIcon className={props.classesParent.icon} />)}

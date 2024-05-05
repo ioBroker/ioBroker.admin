@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Grid, LinearProgress } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
+import type { ConfigItemCustom } from '#JC/types';
+import type { ConfigGenericProps, ConfigGenericState } from '#JC/JsonConfigComponent/ConfigGeneric';
 
 const getOrLoadRemote = (
     remote: string,
@@ -83,62 +85,11 @@ function loadComponent(
     };
 }
 
-interface ConfigCustomSchema {
-    /** location of Widget, like "custom/customComponents.js" */
-    url: string;
-    /** Component name, like "ConfigCustomBackItUpSet/Components/AdapterExist" */
-    name: string;
-    /** i18n */
-    i18n: boolean | Record<string, string>;
+interface ConfigCustomProps extends ConfigGenericProps {
+    schema: ConfigItemCustom;
 }
 
-interface Schema extends ConfigCustomSchema {
-    /** xs */
-    xs?: number;
-    /** lg */
-    lg?: number;
-    /** md */
-    md?: number;
-    /** sm */
-    sm?: number;
-    /** style */
-    style?: Record<string, any>;
-    /** darkStyle */
-    darkStyle?: Record<string, any>;
-    /** type */
-    type?: string;
-    /** width */
-    width?: string;
-    /** newLine */
-    newLine?: boolean;
-    /** custom properties */
-    [prop: string]: any;
-}
-
-interface ConfigCustomProps {
-    socket?: any;
-    themeType?: string;
-    themeName?: string;
-    style?: Record<string, any>;
-    className?: string;
-    attr?: string;
-    data?: Record<string, any>;
-    schema: Schema;
-    onError?: (error: string) => void;
-    onChange?: (
-        /** new data complete with all settings */
-        data: Record<string, any>,
-        /** used only for custom settings (settings in object browser) */
-        value?: any,
-        /** indicates the end of updating */
-        cb?: () => void,
-        /** if true, the data will be saved in the background. `data` could be null to trigger saving */
-        saveConfig?: boolean,
-    ) => void;
-    adapterName: string;
-}
-
-interface ConfigCustomState {
+interface ConfigCustomState extends ConfigGenericState {
     Component: Component | null;
     error: string;
 }
@@ -152,10 +103,10 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
         // schema.name - Component name
         // schema.i18n - i18n
 
-        this.state = {
+        Object.assign(this.state, {
             Component: null,
             error: '',
-        };
+        });
     }
 
     // load component dynamically
@@ -261,7 +212,7 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
             if (this.state.error) {
                 return null;
             }
-            const schema = this.props.schema || {} as Schema;
+            const schema = this.props.schema || {} as ConfigItemCustom;
 
             const item = <Grid
                 item
@@ -273,7 +224,6 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
                     marginBottom: 0,
                     // marginRight: 8,
                     textAlign: 'left',
-                    width: schema.type === 'divider' || schema.type === 'header' ? schema.width || '100%' : undefined,
                     ...schema.style,
                     ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
                 })}

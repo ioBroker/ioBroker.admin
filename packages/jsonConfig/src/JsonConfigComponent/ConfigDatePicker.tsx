@@ -2,9 +2,14 @@ import React from 'react';
 
 import { DatePicker } from '@mui/x-date-pickers';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemDatePicker } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps } from './ConfigGeneric';
 
-export default class ConfigDatePicker extends ConfigGeneric {
+interface ConfigDatePickerProps extends ConfigGenericProps {
+    schema: ConfigItemDatePicker;
+}
+
+export default class ConfigDatePicker extends ConfigGeneric<ConfigDatePickerProps> {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);

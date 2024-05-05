@@ -3,45 +3,23 @@ import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField } from '@mui/material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
+import { I18n } from '@iobroker/adapter-react-v5';
 
+import type { ConfigItemAutocomplete, ConfigItemSelectOption } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-});
+};
+
+export interface ConfigAutocompleteProps extends ConfigGenericProps {
+    schema: ConfigItemAutocomplete;
+}
 
 export interface ConfigAutocompleteState extends ConfigGenericState {
     selectOptions: { value: string; label: string }[];
-}
-
-type SchemaOptions = { label: string; value: unknown }[]
-
-export interface ConfigAutocompleteSchema {
-    freeSolo?: boolean;
-    options: SchemaOptions;
-    placeholder?: string;
-    label: string;
-    help: string;
-    helpLink: string;
-    noTranslation: boolean;
-    maxLength: number;
-    max: number;
-}
-
-export interface ConfigAutocompleteProps extends ConfigGenericProps {
-    socket: AdminConnection;
-    themeType: ThemeType;
-    themeName: ThemeName;
-    style: Record<string, any>;
-    className: string;
-    data: Record<string, any>;
-    onError: () => void;
-    onChange: () => void;
-    schema: ConfigAutocompleteSchema;
 }
 
 class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAutocompleteState> {
@@ -66,19 +44,22 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
         }
 
         let item;
-        const options: SchemaOptions = JSON.parse(JSON.stringify(this.state.selectOptions));
+        const options: (string | ConfigItemSelectOption)[] = JSON.parse(JSON.stringify(this.state.selectOptions));
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (isIndeterminate) {
             [...this.state.value]
-                .filter(val => !options.find(it => it.value === val))
+                .filter(val => !options.find(it => (typeof it === 'object' ? (it as ConfigItemSelectOption).value === val : (it as string) === val)))
                 .forEach(it => options.push({ label: it.toString(), value: it }));
 
             item = { label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE };
             options.unshift(item);
         } else {
-            // eslint-disable-next-line
-            item = this.state.value !== null && this.state.value !== undefined && options.find(item => item.value == this.state.value); // let "==" be and not ===
+            item = this.state.value !== null &&
+                this.state.value !== undefined &&
+                // eslint-disable-next-line eqeqeq
+                options.find(_item => (typeof _item === 'object' ? _item.value == this.state.value : _item == this.state.value)); // let "==" be and not ===
+
             if (this.state.value !== null && this.state.value !== undefined && !item && this.props.schema.freeSolo) {
                 item = { value: this.state.value, label: this.state.value };
                 options.push(item);

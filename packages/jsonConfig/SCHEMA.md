@@ -192,7 +192,7 @@ Possible types:
     - `variant` - `contained`, `outlined` or nothing
     - `openUrl` - if true - open URL in new tab, if response contains attribute `openUrl`, like `{"openUrl": "http://1.2.3.4:80/aaa", "window": "_blank", "saveConfig": true}`. If `saveConfig` is true, the user will be requested to save the configuration.
     - `reloadBrowser` - if true - reload the current browser window, if response contains attribute `reloadBrowser`, like `{"reloadBrowser": true}`.
-    - `window` - if `openUrl` is true, this is name of the new window. Could be overwritten if response consist `window` attribute.
+    - `window` - if `openUrl` is true, this is a name of the new window. Could be overwritten if response consist `window` attribute.
       `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
     - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`. You can use `base64` icons (like `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`). (Request via issue if you need more icons)
     - `useNative` - if adapter returns a result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration.
@@ -475,8 +475,6 @@ adapter.on('message', obj => {
   }
 }
 ```
-
-**Note: attributes or controls marked with "!", are not yet implemented.**
 
 ## Common attributes of controls
 All types could have:
