@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "clean": "rimraf build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "build:ts": "tsc -p tsconfig.json"
   },
   "publishConfig": {
     "access": "public"
