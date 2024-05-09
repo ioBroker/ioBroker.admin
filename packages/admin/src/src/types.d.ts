@@ -1,12 +1,16 @@
-import type { I18n, Connection } from '@iobroker/adapter-react-v5';
+import type { I18n, AdminConnection } from '@iobroker/adapter-react-v5';
+import type {
+    ThemeType,
+    ThemeName,
+} from '@iobroker/adapter-react-v5/types';
 
 export interface BasicComponentProps {
     t: typeof I18n.t;
     lang:  ioBroker.Languages;
-    socket: Connection;
-    themeName: string;
+    socket: AdminConnection;
+    themeName: ThemeName;
     theme: Record<string, any>;
-    themeType: string;
+    themeType: ThemeType;
 }
 
 interface RepositoryEntry {

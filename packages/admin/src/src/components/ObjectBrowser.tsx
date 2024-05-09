@@ -6847,6 +6847,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
                     this.props.router?.doNavigate('tab-objects');
                 }}
+                systemConfig={this.systemConfig}
             />;
         }
         return null;

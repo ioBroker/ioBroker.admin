@@ -79,11 +79,11 @@ function build() {
     );
 
     const version = JSON.parse(fs.readFileSync(`${__dirname}/package.json`).toString('utf8')).version;
-    const data = JSON.parse(fs.readFileSync(`${src}package.json`).toString('utf8'));
+    const data = JSON.parse(fs.readFileSync(`${src}src/version.json`).toString('utf8'));
 
     data.version = version;
 
-    fs.writeFileSync(`${src}package.json`, JSON.stringify(data, null, 4));
+    fs.writeFileSync(`${src}src/version.json`, JSON.stringify(data, null, 4));
 
     return new Promise((resolve, reject) => {
         const options = {

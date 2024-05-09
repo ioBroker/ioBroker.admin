@@ -10,9 +10,9 @@ import type {
     ThemeType,
 } from '@iobroker/adapter-react-v5/types';
 
-const NAMESPACE    = 'material';
-const days         = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const months       = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const NAMESPACE = 'material';
+const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const QUALITY_BITS: Record<number, string> = {
     0x00: '0x00 - good',
 
@@ -874,7 +874,7 @@ class Utils {
         // convert the old settings
         if (obj.native && obj.native.byON) {
             delete obj.native.byON;
-            let _smartName: { [lang in ioBroker.Languages]?: string } = obj.common.smartName;
+            let _smartName: false | { [lang in ioBroker.Languages]?: string } = obj.common.smartName;
 
             if (!_smartName || typeof _smartName !== 'object') {
                 _smartName = {
@@ -912,7 +912,6 @@ class Utils {
                 obj.common.custom[instanceId].smartName.byON = byON;
             } else {
                 obj.common.smartName = obj.common.smartName || {};
-                // @ts-expect-error fixed in js-controller
                 obj.common.smartName.byON = byON;
             }
         }
@@ -966,17 +965,18 @@ class Utils {
                         }
                         // @ts-expect-error fixed in js-controller
                     } else if (obj.common.smartName.byON !== undefined) {
-                        delete obj.common.smartName.en;
-                        delete obj.common.smartName.de;
-                        delete obj.common.smartName.ru;
-                        delete obj.common.smartName.nl;
-                        delete obj.common.smartName.pl;
-                        delete obj.common.smartName.it;
-                        delete obj.common.smartName.fr;
-                        delete obj.common.smartName.pt;
-                        delete obj.common.smartName.es;
-                        delete obj.common.smartName.uk;
-                        delete obj.common.smartName['zh-cn'];
+                        const _smartName: { [lang in ioBroker.Languages]?: string } = obj.common.smartName as { [lang in ioBroker.Languages]?: string };
+                        delete _smartName.en;
+                        delete _smartName.de;
+                        delete _smartName.ru;
+                        delete _smartName.nl;
+                        delete _smartName.pl;
+                        delete _smartName.it;
+                        delete _smartName.fr;
+                        delete _smartName.pt;
+                        delete _smartName.es;
+                        delete _smartName.uk;
+                        delete _smartName['zh-cn'];
                     } else {
                         obj.common.smartName = null;
                     }
@@ -997,7 +997,6 @@ class Utils {
             obj.common.custom[instanceId] = obj.common.custom[instanceId] || {};
             obj.common.custom[instanceId].smartName = false;
         } else {
-            // @ts-expect-error fixed in js-controller
             obj.common.smartName = false;
         }
     }

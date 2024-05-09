@@ -2,10 +2,12 @@ import React from 'react';
 
 import semver from 'semver';
 
-import { type Styles, withStyles } from '@mui/styles';
+import { withStyles } from '@mui/styles';
 
 import {
-    Fab, Snackbar, Tooltip, Grid, LinearProgress, Skeleton,
+    Fab, Snackbar, Tooltip, Grid, LinearProgress,
+    Skeleton,
+    type Theme,
 } from '@mui/material';
 
 import {
@@ -28,7 +30,7 @@ import EditIntroLinkDialog from '@/dialogs/EditIntroLinkDialog';
 import { type InstanceEvent } from '@/Workers/InstancesWorker';
 import { type HostEvent } from '@/Workers/HostsWorker';
 
-const styles = (theme: any) => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     root: {
         width: '100%',
         height: '100%',
@@ -82,7 +84,7 @@ const styles = (theme: any) => ({
         opacity: 0.7,
         fontSize: 16,
     },
-} satisfies Styles<any, any>);
+});
 
 const formatInfo  = {
     Uptime:        Utils.formatSeconds,
@@ -506,9 +508,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     async saveCards() {
         const systemConfig = await this.props.socket.getSystemConfig(true);
         let changed = false;
-        // @ts-expect-error remove when js-controller extended
         if (JSON.stringify(systemConfig.common.intro) !== JSON.stringify(this.state.deactivated)) {
-            // @ts-expect-error remove when js-controller extended
             systemConfig.common.intro = this.state.deactivated;
             changed = true;
         }
@@ -645,7 +645,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         try {
             const instances = await this.props.socket.getAdapterInstances('', update);
-            // @ts-expect-error check later on
             let deactivated: string[] = systemConfig.common.intro || [];
             if (!Array.isArray(deactivated)) {
                 deactivated = Object.keys(deactivated);

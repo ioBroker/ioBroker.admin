@@ -44,6 +44,6 @@
   },
   "homepage": "https://github.com/ioBroker/dm-gui-components#readme",
   "dependencies": {
-    "@iobroker/adapter-react-v5": "^4.13.11"
+    "@iobroker/adapter-react-v5": "^4.13.13"
   }
 }

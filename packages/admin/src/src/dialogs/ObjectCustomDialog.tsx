@@ -71,6 +71,7 @@ interface ObjectCustomDialogProps {
     isFloatComma: boolean;
     classes: Record<string, string>;
     allVisibleObjects: boolean;
+    systemConfig: ioBroker.SystemConfigObject;
 }
 
 interface ObjectCustomDialogState {
@@ -191,6 +192,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
             theme={this.props.theme}
             themeName={this.props.themeName}
             themeType={this.props.themeType}
+            systemConfig={this.props.systemConfig}
         />;
     }
 

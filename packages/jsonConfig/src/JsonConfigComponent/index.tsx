@@ -27,13 +27,13 @@ interface JsonConfigComponentProps {
     dateFormat: string;
     imagePrefix?: string;
     schema: ConfigItemTabs | ConfigItemPanel;
-    common: Record<string, any>;
+    common?: Record<string, any>;
     data: Record<string, any>;
-    updateData: number;
+    updateData?: number;
     onError: (error: boolean) => void;
-    onChange: (data: Record<string, any>, changed: boolean, saveConfig: boolean) => void;
+    onChange?: (data: Record<string, any>, changed: boolean, saveConfig: boolean) => void;
     custom?: boolean;
-    onValueChange?: (data: Record<string, any>, value: any, saveConfig: boolean) => void;
+    onValueChange?: (attr: string, value: any, saveConfig: boolean) => void;
     embedded?: boolean;
     multiEdit?: boolean;
     instanceObj?: ioBroker.InstanceObject;
@@ -48,7 +48,7 @@ interface JsonConfigComponentState {
     changed: boolean;
     errors: Record<string, string>;
     systemConfig: ioBroker.SystemConfigCommon | null;
-    updateData: number;
+    updateData?: number;
     alive: boolean;
     commandRunning: boolean;
     schema: ConfigItemTabs | ConfigItemPanel;
@@ -70,7 +70,7 @@ class JsonConfigComponent extends Component<JsonConfigComponentProps, JsonConfig
             // eslint-disable-next-line react/no-unused-state
             changed: false,
             errors: {},
-            updateData: this.props.updateData,
+            updateData: this.props.updateData || 0,
             systemConfig: null,
             alive: false,
             commandRunning: false,
@@ -183,17 +183,17 @@ class JsonConfigComponent extends Component<JsonConfigComponentProps, JsonConfig
         }
     };
 
-    onChange = (data: Record<string, any>, value: any, cb?: () => void, saveConfig?: boolean) => {
+    onChange = (attrOrData: string | Record<string, any>, value: any, cb?: () => void, saveConfig?: boolean) => {
         if (this.props.onValueChange) {
-            this.props.onValueChange(data, value, saveConfig);
+            this.props.onValueChange(attrOrData as string, value, saveConfig);
             cb && cb();
-        } else if (data) {
-            const newState: Partial<JsonConfigComponentState> = { data };
+        } else if (attrOrData && this.props.onChange) {
+            const newState: Partial<JsonConfigComponentState> = { data: attrOrData as Record<string, any> };
 
-            newState.changed = JSON.stringify(data) !== this.state.originalData;
+            newState.changed = JSON.stringify(attrOrData) !== this.state.originalData;
 
             this.setState(newState as JsonConfigComponentState, () => {
-                this.props.onChange(data, newState.changed, saveConfig);
+                this.props.onChange(attrOrData as Record<string, any>, newState.changed, saveConfig);
                 cb && cb();
             });
         } else if (saveConfig) {

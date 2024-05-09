@@ -3,20 +3,19 @@ import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
 
-import theme from '@iobroker/adapter-react-v5/Theme';
-import { Utils } from '@iobroker/adapter-react-v5';
+import { Utils, Theme } from '@iobroker/adapter-react-v5';
 
 import './index.css';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 
-import pack from '../package.json';
+import version from './version.json';
 import { ContextWrapperProvider } from './components/ContextWrapper';
 import App from './App';
 
 window.adapterName = 'admin';
 
-console.log(`iobroker.${window.adapterName}@${pack.version}`);
+console.log(`iobroker.${window.adapterName}@${version.version}`);
 let themeName = Utils.getThemeName();
 
 function build() {
@@ -25,13 +24,14 @@ function build() {
 
     return root.render(
         <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme(themeName)}>
+            <ThemeProvider theme={Theme(themeName)}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <ContextWrapperProvider>
-                        <App onThemeChange={_themeName => {
-                            themeName = _themeName;
-                            build();
-                        }}
+                        <App
+                            onThemeChange={_themeName => {
+                                themeName = _themeName;
+                                build();
+                            }}
                         />
                     </ContextWrapperProvider>
                 </LocalizationProvider>

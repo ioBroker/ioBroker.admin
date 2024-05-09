@@ -103,16 +103,17 @@ const styles = () => ({
 const URL_PREFIX = '.'; // or './' or 'http://localhost:8081' for debug
 
 interface ObjectCustomEditorProps extends BasicComponentProps {
+    id?: string;
     objects: Record<string, any>;
     /** All adapter instances which support custom attribute */
     customsInstances: string[];
     objectIDs: string[];
     registerSaveFunc: (cb?: () => void) => void;
     onProgress: (progress: boolean) => void;
-    onError: (err?: unknown) => void;
+    onError: (err?: boolean) => void;
     data: Record<string, any>;
     originalData: Record<string, any>;
-    systemConfig: Record<string, any>;
+    systemConfig?: ioBroker.SystemConfigObject;
     classes: Record<ValueOrString<keyof ReturnType<typeof styles>>, any>;
     onChange: (hasChanges?: boolean, update?: boolean) => void;
     reportChangedIds: (changedIds: string[]) => void;
@@ -127,7 +128,8 @@ interface ObjectCustomEditorState {
     maxOids: number;
     confirmed: boolean;
     showConfirmation: boolean;
-    error?: string;
+    error?: boolean;
+    systemConfig?: ioBroker.SystemConfigObject;
 }
 
 class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustomEditorState> {
@@ -166,6 +168,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             confirmed: false,
             showConfirmation: false,
             maxOids: 0,
+            systemConfig: this.props.systemConfig,
         };
 
         this.scrollDivRef = createRef();
@@ -186,7 +189,11 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         }
     }
 
-    componentDidMount(): void {
+    async componentDidMount(): Promise<void> {
+        if (!this.state.systemConfig) {
+            this.setState({ systemConfig: await this.props.socket.getCompactSystemConfig() });
+        }
+
         this.props.registerSaveFunc && this.props.registerSaveFunc(this.onSave);
     }
 
@@ -543,10 +550,10 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     />
                 </div>
                 <div className={this.props.classes.customControls}>
-                    {!disabled && (enabled || isIndeterminate) ?
+                    {!disabled && (enabled || isIndeterminate) && this.state.systemConfig ?
                         <JsonConfigComponent
                             instanceObj={instanceObj}
-                            customObj={customObj}
+                            customObj={customObj as ioBroker.Object}
                             custom
                             adapterName={adapter}
                             instance={parseInt(instance?.split('.').pop() ?? '0', 10) || 0}
@@ -556,7 +563,10 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             multiEdit={this.props.objectIDs.length > 1}
                             schema={this.jsonConfigs[adapter].json}
                             data={data}
-                            onError={(error: string) =>
+                            classes={{}}
+                            isFloatComma={this.props.systemConfig.common.isFloatComma}
+                            dateFormat={this.props.systemConfig.common.dateFormat}
+                            onError={(error: boolean) =>
                                 this.setState({ error }, () => this.props.onError && this.props.onError(error))}
                             onValueChange={(attr: string, value: any) => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
@@ -594,8 +604,8 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         return !!this.state.error && <DialogError
             classes={{ }}
             title={this.props.t('Error')}
-            text={this.state.error}
-            onClose={() => this.setState({ error: '' })}
+            text={this.state.error ? 'Error' : ''}
+            onClose={() => this.setState({ error: false })}
         />;
     }
 
@@ -629,15 +639,11 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     !this.changedIds.includes(id) && this.changedIds.push(id);
 
                     this.props.socket.setObject(id, _objects[id])
-                        .then(() => {
+                        .then(async () => {
                             delete _objects[id];
                             delete _oldObjects[id];
-                            return this.props.socket.getObject(id)
-                                .then((obj: ioBroker.AnyObject) => {
-                                    this.props.objects[id] = obj;
-                                    setTimeout(() =>
-                                        this.saveOneState(ids, cb, _objects, _oldObjects), 0);
-                                });
+                            this.props.objects[id] = await this.props.socket.getObject(id);
+                            setTimeout(() => this.saveOneState(ids, cb, _objects, _oldObjects), 0);
                         });
                     return;
                 }
