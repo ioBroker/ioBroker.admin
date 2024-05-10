@@ -103,9 +103,8 @@ const styles = () => ({
 const URL_PREFIX = '.'; // or './' or 'http://localhost:8081' for debug
 
 interface ObjectCustomEditorProps extends BasicComponentProps {
-    id?: string;
     objects: Record<string, any>;
-    /** All adapter instances which support custom attribute */
+    /** All adapter instances that support custom attribute */
     customsInstances: string[];
     objectIDs: string[];
     registerSaveFunc: (cb?: () => void) => void;

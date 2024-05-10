@@ -3,7 +3,7 @@ import { Grid, LinearProgress } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCustom } from '#JC/types';
-import type { ConfigGenericProps, ConfigGenericState } from '#JC/JsonConfigComponent/ConfigGeneric';
+import type { ConfigGenericProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 
 const getOrLoadRemote = (
     remote: string,
@@ -89,7 +89,7 @@ interface ConfigCustomProps extends ConfigGenericProps {
     schema: ConfigItemCustom;
 }
 
-interface ConfigCustomState extends ConfigGenericState {
+interface ConfigCustomState {
     Component: Component | null;
     error: string;
 }
@@ -103,10 +103,10 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
         // schema.name - Component name
         // schema.i18n - i18n
 
-        Object.assign(this.state, {
+        this.state = {
             Component: null,
             error: '',
-        });
+        };
     }
 
     // load component dynamically

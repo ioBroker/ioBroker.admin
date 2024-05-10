@@ -148,50 +148,6 @@ interface ObjectsWorker {
     unregisterHandler(cb: (events: ObjectEvent[]) => void, doNotUnsubscribe?: boolean): void;
 }
 
-// TODO: remove and replace it with ioBroker.SystemConfigCommon
-interface SystemConfigCommon extends ioBroker.ObjectCommon {
-    /** Name of all active repositories */
-    activeRepo: string[];
-    /** Current configured language */
-    language: ioBroker.Languages;
-    /** If floating comma is used instead of dot */
-    isFloatComma: boolean;
-    /** Configured longitude */
-    longitude: string;
-    /** Configured latitude */
-    latitude: string;
-    /** Default history instance */
-    defaultHistory: string;
-    /** Which diag data is allowed to be sent */
-    diag: 'none' | 'extended' | 'no-city';
-    /** If license has already been confirmed */
-    licenseConfirmed: boolean;
-    /** System wide default log level */
-    defaultLogLevel?: ioBroker.LogLevel;
-    /** Used date format for formatting */
-    dateFormat: string;
-    /** Default acl for new objects */
-    defaultNewAcl: {
-        object: number;
-        state: number;
-        file: number;
-        owner: ioBroker.ObjectIDs.User;
-        ownerGroup: ioBroker.ObjectIDs.Group;
-    };
-    /** Configured auto upgrade policy */
-    adapterAutoUpgrade?: {
-        /** Configuration for each repository */
-        repositories: {
-            [repoName: string]: boolean;
-        };
-        /** Default policy, if none has been set explicit for the adapter */
-        defaultPolicy: ioBroker.AutoUpgradePolicy;
-    };
-
-    // Make it possible to narrow the object type using the custom property
-    custom?: undefined;
-}
-
 interface CustomAdminColumnStored {
     path: string;
     name: string;
@@ -2431,7 +2387,12 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         q: number;
         ack: boolean;
         id: string;
-    } = { id: '', val: '', q: 0, ack: false };
+    } = {
+        id: '',
+        val: '',
+        q: 0,
+        ack: false,
+    };
 
     private readonly levelPadding: number;
 
@@ -2777,7 +2738,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                 state: 0,
                 file: 0,
                 owner: 'system.user.admin',
-                ownerGroup: 'system.group.administrator'
+                ownerGroup: 'system.group.administrator',
             };
             this.systemConfig.common.defaultNewAcl.owner =
                 this.systemConfig.common.defaultNewAcl.owner || 'system.user.admin';
@@ -6561,7 +6522,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             event.preventDefault();
             const ids: string[] = [];
             this.tableRef.current?.childNodes
-                .forEach((node: ChildNode) => ids.push((node as HTMLDivElement).id));
+                .forEach((node: any) => ids.push((node as HTMLDivElement).id));
             const idx = ids.indexOf(selectedId);
             const newIdx = event.code === 'ArrowDown' ? idx + 1 : idx - 1;
             const newId = ids[newIdx] || selectedId;
