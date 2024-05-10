@@ -69,7 +69,7 @@ const ignoreErrors = [
 if (!window.disableDataReporting && window.location.port !== '3000') {
     Sentry.init({
         dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
-        release: `iobroker.${window.adapterName}@${pack.version}`,
+        release: `iobroker.${window.adapterName}@${version.version}`,
         integrations: [
             new SentryIntegrations.Dedupe(),
         ],
