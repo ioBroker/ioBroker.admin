@@ -33,7 +33,7 @@ To activate scheduled restart, just define CRON condition when to restart adapte
 It is suggested to restart in the night, when no one use the adapter, e.g. `0 3 * * *` - at 3:00 every day.
 
 ## Let's Encrypt Certificates
-To manage and update let's encrypt certificates you need to use [`iobroker.acme`](https://github.com/iobroker-community-adapters/ioBroker.acme) adapter.
+To manage and update, let's encrypt certificates you need to use [`iobroker.acme`](https://github.com/iobroker-community-adapters/ioBroker.acme) adapter.
 
 You will have so-called "collections" of certificates. Each collection has its own domains.
 You can select in configuration of admin adapter if and which collection to use.
