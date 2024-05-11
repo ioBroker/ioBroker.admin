@@ -41,7 +41,7 @@
     "@mui/material": "5.14.14",
     "@mui/styles": "5.14.14",
     "@mui/x-data-grid": "^7.3.0",
-    "@mui/x-date-pickers": "^7.2.0",
+    "@mui/x-date-pickers": "^7.4.0",
     "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@react-leaflet/core": "^2.1.0",
     "@sentry/browser": "^7.112.2",
