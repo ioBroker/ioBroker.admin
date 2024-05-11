@@ -28,7 +28,7 @@
     "@iobroker/types": "5.0.20-alpha.0-20240508-d36cddc8d",
     "@iobroker/webserver": "^1.0.3",
     "@iobroker/ws-server": "^2.1.2",
-    "ajv": "^8.12.0",
+    "ajv": "^8.13.0",
     "archiver": "^7.0.1",
     "axios": "^1.6.8",
     "body-parser": "^1.20.2",
