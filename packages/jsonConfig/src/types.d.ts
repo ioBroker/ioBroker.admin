@@ -106,6 +106,7 @@ export interface ConfigItemTabs extends ConfigItem {
     type: 'tabs';
     items: Record<string, ConfigItemPanel>;
     iconPosition?: 'bottom' | 'end' | 'start' | 'top';
+    tabsStyle?: React.CSSProperties;
 }
 
 export interface ConfigItemText extends ConfigItem {

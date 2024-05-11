@@ -2388,11 +2388,11 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         ack: boolean;
         id: string;
     } = {
-        id: '',
-        val: '',
-        q: 0,
-        ack: false,
-    };
+            id: '',
+            val: '',
+            q: 0,
+            ack: false,
+        };
 
     private readonly levelPadding: number;
 

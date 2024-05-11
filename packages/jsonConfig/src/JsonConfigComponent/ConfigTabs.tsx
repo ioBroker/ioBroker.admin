@@ -44,6 +44,9 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
 
         return <div className={this.props.classes.tabs}>
             <Tabs
+                variant="scrollable"
+                scrollButtons="auto"
+                style={this.props.schema.tabsStyle}
                 value={this.state.tab}
                 onChange={(e, tab) => {
                     ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`, tab);

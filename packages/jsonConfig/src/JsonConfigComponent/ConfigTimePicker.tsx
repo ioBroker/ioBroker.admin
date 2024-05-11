@@ -18,24 +18,27 @@ export default class ConfigTimePicker extends ConfigGeneric<ConfigTimePickerProp
     }
 
     renderItem(_error: unknown, disabled: boolean) {
-        const legacyReturnFormat = this.props.schema.returnFormat !== 'HH:mm:ss';
+        // the format could be 'HH:mm:ss' or 'HH:mm'
+        const shortFormat = this.props.schema.returnFormat !== 'HH:mm:ss';
 
-        const value: never = this.state.value && !legacyReturnFormat ?
-            new Date(Date.parse(`Thu, 01 Jan 1970 ${this.state.value}`)) as never :
-            this.state.value as never;
+        const value: never = new Date(Date.parse(`Thu, 01 Jan 1970 ${this.state.value || '00:00:00'}`)) as never;
 
         return <TimePicker
             sx={theme => ({
                 width: '100%',
+                borderBottom: `1px solid ${theme.palette.text.primary}`,
                 '& fieldset': {
                     display: 'none',
                 },
                 '& input': {
-                    padding: `${theme.spacing(1)} 0 0 0`,
+                    padding: `${theme.spacing(1.5)} 0 4px 0`,
                 },
                 '& .MuiInputAdornment-root': {
                     marginLeft: 0,
-                    marginTop: 7,
+                    marginTop: 1, // it is already in spaces
+                },
+                '& label': {
+                    transform: 'translate(0px, -9px) scale(0.75)',
                 },
             })}
             ampm={this.props.systemConfig.dateFormat.includes('/')}
@@ -43,14 +46,15 @@ export default class ConfigTimePicker extends ConfigGeneric<ConfigTimePickerProp
             format={this.props.schema.format || 'HH:mm:ss'}
             disabled={!!disabled}
             value={value}
-            onChange={(newValue: never) => {
-                let strValue = newValue as string;
-                if (!legacyReturnFormat) {
-                    strValue = (newValue as any) instanceof Date ? (value as Date).toTimeString().split(' ')[0] : value;
+            onChange={(newValue: Date) => {
+                let strValue = newValue.toTimeString();
+                strValue = (newValue as any) instanceof Date ? (newValue as Date).toTimeString().split(' ')[0] : newValue.toTimeString();
+                if (shortFormat) {
+                    strValue = strValue.split(':').slice(0, 2).join(':');
                 }
 
                 this.setState({ value: strValue }, () =>
-                    this.onChange(this.props.attr, strValue));
+                    this.onChange(this.props.attr, this.state.value));
             }}
             views={this.props.schema.views || ['hours', 'minutes', 'seconds']}
             label={this.getText(this.props.schema.label)}

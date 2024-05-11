@@ -16,29 +16,33 @@ export default class ConfigDatePicker extends ConfigGeneric<ConfigDatePickerProp
         this.setState({ value });
     }
 
-    renderItem(error: unknown, disabled: boolean /* , defaultValue */): React.JSX.Element {
+    renderItem(_error: unknown, disabled: boolean /* , defaultValue */): React.JSX.Element {
         return <DatePicker
-            // @ts-expect-error fullWidth does exist on DatePicker
-            fullWidth
-            margin="normal"
+            sx={theme => ({
+                width: '100%',
+                borderBottom: `1px solid ${theme.palette.text.primary}`,
+                '& fieldset': {
+                    display: 'none',
+                },
+                '& input': {
+                    padding: `${theme.spacing(1.5)} 0 4px 0`,
+                },
+                '& .MuiInputAdornment-root': {
+                    marginLeft: 0,
+                    marginTop: 1, // it is already in spaces
+                },
+                '& label': {
+                    transform: 'translate(0px, -9px) scale(0.75)',
+                },
+            })}
             format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm', 'MM')}
-            error={!!error}
             disabled={!!disabled}
             value={this.state.value as never}
-            KeyboardButtonProps={{
-                'aria-label': 'change date',
-            }}
-            inputProps={{ maxLength: this.props.schema.maxLength || this.props.schema.max || undefined }}
             onChange={value => {
                 this.setState({ value }, () =>
-                    this.onChange(this.props.attr, value));
+                    this.onChange(this.props.attr, this.state.value));
             }}
-            InputLabelProps={{
-                shrink: true,
-            }}
-            placeholder={this.getText(this.props.schema.placeholder)}
             label={this.getText(this.props.schema.label)}
-            helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
         />;
     }
 }

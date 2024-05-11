@@ -33,7 +33,7 @@ const styles = {
         position: 'relative',
     },
     scroll: {
-        height: 'calc(100% - 48px - 48px)',
+        height: 'calc(100% - 48px)',
         overflowY: 'auto',
     },
     exportImportButtons: {
