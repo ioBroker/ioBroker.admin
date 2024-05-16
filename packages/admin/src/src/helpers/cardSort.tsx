@@ -5,7 +5,7 @@ const funcSet = _.throttle(
     200,
 );
 
-const findCard = (id, cards) => {
+const findCard = (id: string, cards: { name: string }[]) => {
     const card = cards.find(c => c.name === id);
     return {
         card,
@@ -13,7 +13,14 @@ const findCard = (id, cards) => {
     };
 };
 
-const moveCard = (id, atIndex, tabs, setTabs, hoverClientY, hoverMiddleY) => {
+const moveCard = (
+    id: string,
+    atIndex: number, // index of the card being dragged
+    tabs: { name: string }[],
+    setTabs: (newTabs: { name: string }[]) => void,
+    hoverClientY: number,
+    hoverMiddleY: number,
+) => {
     const { card, index } = findCard(id, tabs);
     if (index === atIndex) {
         return;

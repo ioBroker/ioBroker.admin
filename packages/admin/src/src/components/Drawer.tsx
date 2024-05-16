@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component, type RefObject } from 'react';
 import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
 
 import {
     Avatar,
@@ -9,6 +8,7 @@ import {
     List,
     Typography,
     SwipeableDrawer,
+    type Theme,
 } from '@mui/material';
 
 import {
@@ -29,11 +29,16 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Utils, I18n, Icon, withWidth, IconLogout as LogoutIcon,
+    Utils, I18n, Icon, withWidth, IconLogout as LogoutIcon, type AdminConnection,
 } from '@iobroker/adapter-react-v5';
+import type { ThemeType } from '@iobroker/adapter-react-v5/types';
 
 import { getHref } from '@/tabs/CustomTab';
 import BasicUtils from '@/Utils';
+import type InstancesWorker from '@/Workers/InstancesWorker';
+import type HostsWorker from '@/Workers/HostsWorker';
+import { type NotificationAnswer } from '@/Workers/HostsWorker';
+import type LogsWorker from '@/Workers/LogsWorker';
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
@@ -44,11 +49,11 @@ export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
 export const DRAWER_EDIT_WIDTH = 250;
 
-function ucFirst(str) {
+function ucFirst(str: string): string {
     return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
 }
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     root: {
         flexShrink: 0,
         transition: theme.transitions.create('width', {
@@ -148,7 +153,7 @@ export const STATES = {
     compact: 2,
 };
 
-const tabsInfo = {
+const tabsInfo: Record<string, { order: number; icon?: React.JSX.Element; host?: boolean; instance?: number }> = {
     'tab-intro':            { order: 1,    icon: <AppsIcon /> },
     'tab-info':             { order: 5,    icon: <InfoIcon />,               host: true },
     'tab-adapters':         { order: 10,   icon: <StoreIcon />,              host: true },
@@ -178,8 +183,61 @@ const tabsInfo = {
     'tab-files':            { order: 110,  icon: <FilesIcon /> },
 };
 
-class Drawer extends Component {
-    constructor(props) {
+interface AdminTab {
+    name: string;
+    order: number;
+    icon?: string | React.JSX.Element;
+    title?: string;
+    visible?: boolean;
+    color?: string;
+}
+
+interface DrawerProps {
+    t: (text: string, ...args: any[]) => string;
+    lang: ioBroker.Languages;
+    state: number;
+    adminGuiConfig: Record<string, any>;
+    onStateChange: (state: number) => void;
+    onLogout: () => void;
+    isSecure: boolean;
+    currentTab: string;
+    themeType: ThemeType;
+    socket: AdminConnection;
+    versionAdmin: string;
+    handleNavigation: (tab: string) => void;
+    editMenuList: boolean;
+    setEditMenuList: (editMenuList: boolean) => void;
+
+    instancesWorker: InstancesWorker;
+    hostsWorker: HostsWorker;
+    logsWorker: LogsWorker;
+
+    hostname: string;
+    protocol: string;
+    port: number;
+    adminInstance: string;
+    installed: Record<string, { version: string; ignoreVersion?: string  }>;
+    hosts: ioBroker.HostObject[];
+    repository: Record<string, { icon: string; version: string }>;
+    classes: Record<string, string>;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}
+
+interface DrawerState {
+    tabs: AdminTab[];
+    logErrors: number;
+    logWarnings: number;
+    hostError: number;
+    hostsUpdate: number;
+    adaptersUpdate: number;
+}
+
+class Drawer extends Component<DrawerProps, DrawerState> {
+    private logsHandlerRegistered: boolean;
+
+    private readonly refEditButton: RefObject<HTMLDivElement>;
+
+    constructor(props: DrawerProps) {
         super(props);
 
         this.state = {
@@ -196,7 +254,7 @@ class Drawer extends Component {
         this.getTabs();
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: DrawerProps, state: DrawerState) {
         const hostsUpdate = Drawer.calculateHostUpdates(props.hosts, props.repository);
         const adaptersUpdate = Drawer.calculateAdapterUpdates(props.installed, props.repository);
         if (hostsUpdate !== state.hostsUpdate || adaptersUpdate !== state.adaptersUpdate) {
@@ -205,7 +263,10 @@ class Drawer extends Component {
         return null;
     }
 
-    static calculateHostUpdates(hosts, repository) {
+    static calculateHostUpdates(
+        hosts: ioBroker.HostObject[],
+        repository: Record<string, { icon: string; version: string }>,
+    ) {
         if (hosts && repository) {
             const jsControllerVersion = repository['js-controller']?.version || '';
             let count = 0;
@@ -219,23 +280,28 @@ class Drawer extends Component {
         return 0;
     }
 
-    static calculateAdapterUpdates(installed, repository) {
+    static calculateAdapterUpdates(
+        installed: Record<string, { version: string; ignoreVersion?: string }>,
+        repository: Record<string, { icon: string; version: string }>,
+    ) {
         if (installed) {
             let count = 0;
 
-            Object.keys(installed).sort().forEach(element => {
-                const _installed = installed[element];
-                const adapter = repository && repository[element];
-                if (element !== 'js-controller' &&
-                    element !== 'hosts' &&
-                    _installed?.version &&
-                    adapter?.version &&
-                    _installed.ignoreVersion !== adapter.version &&
-                    BasicUtils.updateAvailable(_installed.version, adapter.version)
-                ) {
-                    count++;
-                }
-            });
+            Object.keys(installed)
+                .sort()
+                .forEach(element => {
+                    const _installed = installed[element];
+                    const adapter = repository && repository[element];
+                    if (element !== 'js-controller' &&
+                        element !== 'hosts' &&
+                        _installed?.version &&
+                        adapter?.version &&
+                        _installed.ignoreVersion !== adapter.version &&
+                        BasicUtils.updateAvailable(_installed.version, adapter.version)
+                    ) {
+                        count++;
+                    }
+                });
 
             return count;
         }
@@ -263,19 +329,19 @@ class Drawer extends Component {
         .then(notifications => this.calculateWarning(notifications))
         .catch(error => window.alert(`Cannot get notifications: ${error}`));
 
-    onErrorsUpdates = logErrors => {
+    onErrorsUpdates = (logErrors: number): void => {
         if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logErrors)) {
             this.setState({ logErrors });
         }
     };
 
-    onWarningsUpdates = logWarnings => {
+    onWarningsUpdates = (logWarnings: number): void => {
         if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logWarnings)) {
             this.setState({ logWarnings });
         }
     };
 
-    calculateWarning = notifications => {
+    calculateWarning = (notifications: Record<string, NotificationAnswer | null >) => {
         if (!notifications) {
             return;
         }
@@ -315,164 +381,182 @@ class Drawer extends Component {
         }
     }
 
-    getTabs(update) {
-        return this.props.socket.getCompactInstances(update)
-            .then(instances => {
-                const dynamicTabs = [];
-                if (instances) {
-                    Object.keys(instances).forEach(id => {
-                        const instance = instances[id];
+    async getTabs(update?: boolean) {
+        try {
+            const _instances = await this.props.socket.getCompactInstances(update);
+            const instances = _instances as any as Record<string, ioBroker.InstanceCommon>;
+            const dynamicTabs: AdminTab[] = [];
+            if (instances) {
+                Object.keys(instances).forEach(id => {
+                    const instance = instances[id];
 
-                        if (!instance || !instance.adminTab) {
-                            return;
-                        }
-
-                        let tab = `tab-${id.replace('system.adapter.', '').replace(/\.\d+$/, '')}`;
-
-                        const singleton = instance.adminTab.singleton;
-                        let instNum;
-                        if (!singleton) {
-                            const m = id.match(/\.(\d+)$/);
-                            if (m) {
-                                instNum = parseInt(m[1], 10);
-                                tab += `-${instNum}`;
-                            }
-                        }
-
-                        if (dynamicTabs.find(item => item.name === tab)) {
-                            return;
-                        }
-
-                        let title;
-
-                        if (instance.adminTab.name) {
-                            if (typeof instance.adminTab.name === 'object') {
-                                if (instance.adminTab.name[this.props.lang]) {
-                                    title = instance.adminTab.name[this.props.lang];
-                                } else if (instance.adminTab.name.en) {
-                                    title = this.props.t(instance.adminTab.name.en);
-                                } else {
-                                    title = this.props.t(instance.name);
-                                }
-                            } else {
-                                title = this.props.t(instance.adminTab.name);
-                            }
-                        } else {
-                            title = this.props.t(instance.name);
-                        }
-
-                        let obj;
-                        if (tabsInfo[tab]) {
-                            obj = { name: tab, ...tabsInfo[tab] };
-                        } else {
-                            obj = { name: tab, order: instance.adminTab.order !== undefined ? instance.adminTab.order : 200, icon: instance.adminTab.icon };
-                        }
-
-                        if (!obj.icon) {
-                            obj.icon = `adapter/${instance.name}/${instance.icon}`;
-                        } else if (typeof obj.icon !== 'object' && !obj.icon.startsWith('data:image') && !obj.icon.includes('/')) {
-                            obj.icon = `adapter/${instance.name}/${obj.icon}`;
-                        }
-
-                        obj.title = title;
-
-                        if (!singleton) {
-                            // obj.instance = instance;
-                            if (instNum) {
-                                obj.title += ` ${instNum}`;
-                            }
-                        }
-                        dynamicTabs.push(obj);
-                    });
-                }
-
-                const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects', 'tab-hosts', 'tab-users', 'tab-enums'];
-                // DEV ONLY
-                let tabs = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
-
-                tabs = tabs.map(name => {
-                    const obj = { name, ...tabsInfo[name] };
-                    obj.title = I18n.t(ucFirst(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1')));
-                    obj.visible = true;
-                    return obj;
-                });
-
-                // add dynamic tabs
-                tabs = tabs.concat(dynamicTabs);
-
-                tabs = tabs.filter(obj => obj);
-                tabs.forEach(obj => obj.visible = true);
-
-                tabs.sort((a, b) => {
-                    if (a.order && b.order) {
-                        return a.order - b.order;
-                    } if (a.order) {
-                        return -1;
-                    } if (b.order) {
-                        return 1;
+                    if (!instance?.adminTab) {
+                        return;
                     }
-                    return a.name > b.name ? -1 : (a.name > b.name ? 1 : 0);
+
+                    let tab = `tab-${id.replace('system.adapter.', '').replace(/\.\d+$/, '')}`;
+
+                    const singleton = instance.adminTab.singleton;
+                    let instNum;
+                    if (!singleton) {
+                        const m = id.match(/\.(\d+)$/);
+                        if (m) {
+                            instNum = parseInt(m[1], 10);
+                            tab += `-${instNum}`;
+                        }
+                    }
+
+                    if (dynamicTabs.find(item => item.name === tab)) {
+                        return;
+                    }
+
+                    let title;
+
+                    if (instance.adminTab.name) {
+                        if (typeof instance.adminTab.name === 'object') {
+                            if (instance.adminTab.name && instance.adminTab.name[this.props.lang]) {
+                                title = instance.adminTab.name[this.props.lang];
+                                // @ts-expect-error will be fixed in js-controller
+                            } else if (instance.adminTab.name?.en) {
+                                // @ts-expect-error will be fixed in js-controller
+                                title = this.props.t(instance.adminTab.name.en);
+                            } else {
+                                title = this.props.t(instance.name);
+                            }
+                        } else {
+                            title = this.props.t(instance.adminTab.name);
+                        }
+                    } else {
+                        title = this.props.t(instance.name);
+                    }
+
+                    let obj: AdminTab;
+                    if (tabsInfo[tab]) {
+                        obj = { name: tab, ...tabsInfo[tab] };
+                    } else {
+                        obj = {
+                            name: tab,
+                            // @ts-expect-error will be fixed in js-controller
+                            order: instance.adminTab.order !== undefined ? instance.adminTab.order : 200,
+                            // @ts-expect-error will be fixed in js-controller
+                            icon: instance.adminTab.icon,
+                        };
+                    }
+
+                    if (!obj.icon) {
+                        obj.icon = `adapter/${instance.name}/${instance.icon}`;
+                    } else if (typeof obj.icon !== 'object' && !obj.icon.startsWith('data:image') && !obj.icon.includes('/')) {
+                        obj.icon = `adapter/${instance.name}/${obj.icon}`;
+                    }
+
+                    obj.title = title;
+
+                    if (!singleton) {
+                        // obj.instance = instance;
+                        if (instNum) {
+                            obj.title += ` ${instNum}`;
+                        }
+                    }
+                    dynamicTabs.push(obj);
                 });
+            }
 
-                // Convert
-                this.props.socket.getCompactSystemConfig()
-                    .then(systemConfig => {
-                        systemConfig.common.tabsVisible = systemConfig.common.tabsVisible || [];
+            const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects', 'tab-hosts', 'tab-users', 'tab-enums'];
+            // DEV ONLY
+            const tabNames = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
 
-                        tabs.forEach(tab => {
-                            const it = systemConfig.common.tabsVisible.find(el => el.name === tab.name);
-                            if (it) {
-                                tab.visible = it.visible;
-                            }
-                        });
+            let tabs: AdminTab[] = tabNames.map(name => {
+                const obj: AdminTab = { name, ...tabsInfo[name] };
+                obj.title = I18n.t(ucFirst(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1')));
+                obj.visible = true;
+                return obj;
+            });
 
-                        const map = {};
-                        systemConfig.common.tabsVisible.forEach((item, i) => map[item.name] = i);
+            // add dynamic tabs
+            tabs = tabs.concat(dynamicTabs);
 
-                        tabs.sort((a, b) => {
-                            const aa = map[a.name];
-                            const bb = map[b.name];
-                            if (aa !== undefined && bb !== undefined) {
-                                return aa - bb;
-                            } if (aa) {
-                                return -1;
-                            } if (bb) {
-                                return 1;
-                            }
-                            return 0;
-                        });
+            tabs = tabs.filter(obj => obj);
+            tabs.forEach(obj => obj.visible = true);
 
-                        this.setState({ tabs }, () => {
-                            const tabsVisible = tabs.map(({ name, visible }) => ({ name, visible }));
+            tabs.sort((a, b) => {
+                if (a.order && b.order) {
+                    return a.order - b.order;
+                }
+                if (a.order) {
+                    return -1;
+                }
+                if (b.order) {
+                    return 1;
+                }
+                return a.name > b.name ? -1 : (a.name > b.name ? 1 : 0);
+            });
 
-                            if (JSON.stringify(tabsVisible) !== JSON.stringify(systemConfig.common.tabsVisible)) {
-                                this.props.socket.getSystemConfig(true)
-                                    .then(_systemConfig => {
-                                        _systemConfig.common.tabsVisible = tabsVisible;
+            // Convert
+            this.props.socket.getCompactSystemConfig()
+                .then(systemConfig => {
+                    // @ts-expect-error will be fixed in js-controller
+                    const tabsVisible: { name: string; visible: boolean; color?: string }[] = systemConfig.common.tabsVisible || [];
 
-                                        return this.props.socket.setSystemConfig(_systemConfig)
-                                            .catch(e => window.alert(`Cannot set system config: ${e}`));
-                                    });
-                            }
-                        });
+                    tabs.forEach(tab => {
+                        const it = tabsVisible.find(el => el.name === tab.name);
+                        if (it) {
+                            tab.visible = it.visible;
+                            tab.color = it.color;
+                        }
                     });
-            })
-            .catch(error => window.alert(`Cannot get instances: ${error}`));
+
+                    const map: Record<string, number> = {};
+                    tabsVisible.forEach((item, i) => map[item.name] = i);
+
+                    tabs.sort((a, b) => {
+                        const aa = map[a.name];
+                        const bb = map[b.name];
+                        if (aa !== undefined && bb !== undefined) {
+                            return aa - bb;
+                        }
+                        if (aa) {
+                            return -1;
+                        }
+                        if (bb) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+
+                    this.setState({ tabs }, () => {
+                        const newTabsVisible = tabs.map(({ name, visible, color }) => ({ name, visible, color }));
+
+                        if (JSON.stringify(newTabsVisible) !== JSON.stringify(tabsVisible)) {
+                            this.props.socket.getSystemConfig(true)
+                                .then(_systemConfig => {
+                                    // @ts-expect-error will be fixed in js-controller
+                                    _systemConfig.common.tabsVisible = tabsVisible;
+
+                                    return this.props.socket.setSystemConfig(_systemConfig)
+                                        .catch(e => window.alert(`Cannot set system config: ${e}`));
+                                });
+                        }
+                    });
+                });
+        } catch (error) {
+            window.alert(`Cannot get instances: ${error}`);
+        }
     }
 
     getHeader() {
         const { classes, state, handleNavigation } = this.props;
 
-        return <div className={Utils.clsx(
-            classes.header,
-            this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
-            !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact,
-        )}
+        return <div
+            className={Utils.clsx(
+                classes.header,
+                this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
+                !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact,
+            )}
         >
             <div className={Utils.clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
                 <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                     {this.props.adminGuiConfig.icon ?
-                        <div style={{ height: 50, withWidth: 102, lineHeight: '50px' }}>
+                        <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
                             <img src={this.props.adminGuiConfig.icon} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }} />
                         </div>
                         :
@@ -507,24 +591,25 @@ v
         return this.props.width === 'xs' || this.props.width === 'sm';
     }
 
-    tabsEditSystemConfig = async (idx, isVisibility, color) => {
+    tabsEditSystemConfig = async (idx?: number, isVisibility?: boolean, newColor?: string) => {
         const { tabs } = this.state;
         const { socket } = this.props;
         const newTabs = JSON.parse(JSON.stringify(tabs));
         if (isVisibility) {
             newTabs[idx].visible = !newTabs[idx].visible;
         }
-        if (color !== undefined) {
-            if (color === null) {
+        if (newColor !== undefined) {
+            if (newColor === null) {
                 delete newTabs[idx].color;
             } else {
-                newTabs[idx].color = color;
+                newTabs[idx].color = newColor;
             }
         }
         const newObjCopy = await this.props.socket.getSystemConfig(true);
-        newObjCopy.common.tabsVisible = newTabs.map(({ name, visible }) => ({ name, visible }));
+        // @ts-expect-error will be fixed in js-controller
+        newObjCopy.common.tabsVisible = newTabs.map(({ name, visible, color }) => ({ name, visible, color }));
 
-        if (isVisibility || color !== undefined) {
+        if (isVisibility || newColor !== undefined) {
             this.setState({ tabs: newTabs }, () =>
                 socket.setSystemConfig(newObjCopy)
                     .catch(e => window.alert(`Cannot set system config: ${e}`)));
@@ -542,12 +627,9 @@ v
             tabs, logErrors, logWarnings,
         } = this.state;
         const {
-            systemConfig, currentTab, state, classes, handleNavigation,
+            currentTab, state, classes, handleNavigation,
         } = this.props;
 
-        if (!systemConfig) {
-            return null;
-        }
         return tabs.map((tab, idx) => {
             if (!this.props.editMenuList && !tab.visible) {
                 return null;
@@ -570,10 +652,9 @@ v
                 badgeColor={logErrors ? 'error' : (logWarnings ? 'warn' : '')}
                 tabs={tabs}
                 setEndDrag={() => this.tabsEditSystemConfig()}
-                setTabs={newObj => this.setState({ tabs: newObj })}
+                setTabs={(newObj: AdminTab[]) => this.setState({ tabs: newObj })}
             >
                 <DrawerItem
-                    themeType={this.props.themeType}
                     key={tab.name}
                     editMenuList={this.props.editMenuList}
                     visible={tab.visible}
@@ -582,7 +663,7 @@ v
                     compact={!this.isSwipeable() && state !== STATES.opened}
                     onClick={e => {
                         if (e.ctrlKey || e.shiftKey) {
-                            getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts, this.props.adminInstance)
+                            getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts, this.props.adminInstance, this.props.themeType)
                                 .then(href => {
                                     if (href) {
                                         console.log(href);
@@ -608,7 +689,12 @@ v
         });
     }
 
-    badge = tab => {
+    badge = (tab: AdminTab): {
+        content: number;
+        color: 'error' | 'warn' | 'primary' | '';
+        additionalContent?: number;
+        additionalColor?: 'error' | '';
+    } => {
         switch (tab.name) {
             case 'tab-logs': {
                 const { logErrors, logWarnings } = this.state;
@@ -651,7 +737,6 @@ v
                 </List>
                 {this.props.isSecure &&
                     <DrawerItem
-                        themeType={this.props.themeType}
                         compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                         onClick={this.props.onLogout}
                         text={this.props.t('Logout')}
@@ -672,8 +757,8 @@ v
             anchor="left"
             open={this.props.state !== STATES.closed}
             classes={{ paper: classes.paper }}
-            onMouseEnter={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = 1)}
-            onMouseLeave={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = 0)}
+            onMouseEnter={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '1')}
+            onMouseLeave={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '0')}
         >
             <CustomDragLayer />
             {this.getHeader()}
@@ -682,7 +767,6 @@ v
             </List>
             {this.props.isSecure &&
                 <DrawerItem
-                    themeType={this.props.themeType}
                     style={{ flexShrink: 0 }}
                     compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                     onClick={this.props.onLogout}
@@ -702,37 +786,6 @@ v
         </MaterialDrawer>;
     }
 }
-
-Drawer.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    state: PropTypes.number,
-    adminGuiConfig: PropTypes.object,
-    onStateChange: PropTypes.func,
-    onLogout: PropTypes.func,
-    systemConfig: PropTypes.object,
-    isSecure: PropTypes.bool,
-    currentTab: PropTypes.string,
-    themeType: PropTypes.string,
-    socket: PropTypes.object,
-    versionAdmin: PropTypes.string,
-    handleNavigation: PropTypes.func,
-    editMenuList: PropTypes.bool,
-    setEditMenuList: PropTypes.func,
-
-    instancesWorker: PropTypes.object,
-    hostsWorker: PropTypes.object,
-    logsWorker: PropTypes.object,
-
-    hostname: PropTypes.string,
-    protocol: PropTypes.string,
-    port: PropTypes.number,
-    adminInstance: PropTypes.string,
-
-    installed: PropTypes.object,
-    hosts: PropTypes.array,
-    repository: PropTypes.object,
-};
 
 Drawer.contextType = ContextWrapper;
 export default withWidth()(withStyles(styles)(Drawer));

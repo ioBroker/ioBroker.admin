@@ -3,12 +3,28 @@ import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { findCard, moveCard } from '@/helpers/cardSort';
 
-const style = {
+const style: React.CSSProperties = {
     cursor: 'move',
 };
+interface DragWrapperProps {
+    canDrag: boolean;
+    setEndDrag: () => void;
+    iconJSX: React.JSX.Element;
+    selected: boolean;
+    compact: boolean;
+    badgeContent: number;
+    badgeColor: string;
+    tab: { name: string };
+    tabs: { name: string }[];
+    setTabs: (newTabs: { name: string }[]) => void;
+    _id: string;
+    children: any;
+    name: string;
+}
+
 const DragWrapper = ({
     canDrag, setEndDrag, iconJSX, selected, compact, badgeContent, badgeColor, tab, tabs, setTabs, _id, children, name,
-}) => {
+}: DragWrapperProps) => {
     const ref = useRef(null);
     const [{ handlerId }, drop] = useDrop({
         accept: 'box',
@@ -41,7 +57,13 @@ const DragWrapper = ({
     const [{ isDragging }, drag, preview] = useDrag({
         type: 'box',
         item: {
-            _id: tab.name, ...tab, iconJSX, selected, compact, badgeContent, badgeColor,
+            _id: tab.name,
+            ...tab,
+            iconJSX,
+            selected,
+            compact,
+            badgeContent,
+            badgeColor,
         },
         canDrag: () => canDrag,
         end: () => setEndDrag(),
@@ -62,7 +84,10 @@ const DragWrapper = ({
             onClick={event => event.preventDefault()}
             href={`/#${name}`}
             style={{
-                ...style, opacity, color: 'inherit', textDecoration: 'none',
+                ...style,
+                opacity,
+                color: 'inherit',
+                textDecoration: 'none',
             }}
         >
             {children}

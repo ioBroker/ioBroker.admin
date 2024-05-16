@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import React from 'react';
 
 import { withStyles } from '@mui/styles';
 
@@ -10,6 +10,7 @@ import {
     ListItemText,
     Tooltip,
     Checkbox,
+    type Theme,
 } from '@mui/material';
 import { DragHandle } from '@mui/icons-material';
 
@@ -18,7 +19,7 @@ import { amber } from '@mui/material/colors';
 import { Utils, ColorPicker } from '@iobroker/adapter-react-v5';
 import CommonUtils from '../Utils';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     selected: {
         background: theme.palette.primary.main,
         color: theme.palette.mode === 'light' ? 'white' : CommonUtils.invertColor(theme.palette.primary.main, true),
@@ -44,7 +45,25 @@ const styles = theme => ({
     },
 });
 
-const DrawerItem = props => {
+interface DrawerItemProps {
+    badgeColor?:  'error' | 'warn' | 'primary' | '';
+    badgeContent?: number;
+    classes: Record<string, string>;
+    compact?: boolean;
+    icon: React.JSX.Element;
+    onClick: (e?: React.MouseEvent) => void;
+    selected?: boolean;
+    text: string;
+    editMenuList?: boolean;
+    visible?: boolean;
+    color?: string;
+    editListFunc?: (visible: boolean, color?: string | null) => void;
+    badgeAdditionalContent?: number;
+    badgeAdditionalColor?:  'error' | '' | 'warn';
+    style?: Record<string, any>;
+}
+
+const DrawerItem = (props: DrawerItemProps) => {
     const {
         badgeColor,
         badgeContent,
@@ -113,18 +132,6 @@ const DrawerItem = props => {
             </Tooltip>
         </ListItemButton>
     </div>;
-};
-
-DrawerItem.propTypes = {
-    icon: PropTypes.object,
-    onClick: PropTypes.func,
-    style: PropTypes.object,
-    selected: PropTypes.bool,
-    compact: PropTypes.bool,
-    text: PropTypes.string,
-    badgeContent: PropTypes.number,
-    badgeColor: PropTypes.oneOf(['', 'default', 'primary', 'secondary', 'error', 'warn']),
-    editMenuList: PropTypes.bool,
 };
 
 export default withStyles(styles)(DrawerItem);
