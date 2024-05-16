@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.8 (2024-05-16)
 * (bluefox) Corrected style of time picker in JSON config
 * (bluefox) Corrected saving of tab color
 
@@ -105,9 +105,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.17.2 (2024-04-08)
 * (foxriver76) avoid a crash case if a user has no permission to write objects
-
-### 6.17.1 (2024-04-06)
-* (bluefox) support of includes in JSONConfig files
 
 ## License
 The MIT License (MIT)
