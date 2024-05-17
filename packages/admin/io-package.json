@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.8",
+    "version": "6.17.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.9": {
+        "en": "Corrected style of time picker in JSON config\nCorrected saving of tab color",
+        "de": "Korrigierter Zeitgeber in JSON config\nKorrigiertes Speichern der Tabfarbe",
+        "ru": "Исправленный стиль выбора времени в конфигурации JSON\nИсправлено сохранение цвета вкладки",
+        "pt": "Estilo corrigido do catador de tempo em JSON config\nPoupança correta da cor da aba",
+        "nl": "Gecorrigeerde tijdkiezer in JSON-configuratie\nGecorrigeerd opslaan van tabkleur",
+        "fr": "Style corrigé du sélectionneur de temps dans la configuration JSON\nCorrection de l'enregistrement de la couleur de l'onglet",
+        "it": "Corretto stile di time picker in configurazione JSON\nRisparmio corretto di colore scheda",
+        "es": "Estilo corregido de tiempo picker en JSON config\nSalvamento corregido del color de la pestaña",
+        "pl": "Poprawiony styl picker czasu w konfiguratorze JSON\nPoprawione zapisywanie koloru karty",
+        "uk": "Виправлений стиль таймера часу в налаштуваннях JSON\nВиправлено збереження кольору вкладки",
+        "zh-cn": "JSON 配置中纠正的时间选择样式\n已校正标签颜色的保存"
+      },
       "6.17.7": {
         "en": "Improved category tab",
         "de": "Verbesserte Kategorie Tab",
