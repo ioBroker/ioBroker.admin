@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 6.17.8 (2024-05-16)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected style of time picker in JSON config
 * (bluefox) Corrected saving of tab color
 

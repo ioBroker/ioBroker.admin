@@ -140,14 +140,14 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
     }
 
     componentDidMount() {
-        if (!this.registered && this.refIframe.contentWindow) {
+        if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
     }
 
     componentDidUpdate(/* prevProps, prevState, snapshot */) {
-        if (!this.registered && this.refIframe.contentWindow) {
+        if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
