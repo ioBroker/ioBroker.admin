@@ -28,7 +28,7 @@ const styles: Record<string, any> = {
 interface StateProps {
     state: boolean;
     classes: Record<string, any>;
-    children: React.JSX.Element | React.JSX.Element[] | string;
+    children: React.JSX.Element | React.JSX.Element[] | string | string [];
 }
 
 function State(props: StateProps) {

@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import {
-    Avatar, Card, Checkbox, DialogTitle, FormControlLabel, MenuItem, Select,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    Avatar, Card, Checkbox, DialogTitle,
+    FormControlLabel, MenuItem, Select,
+    type Theme,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
-import WarningIcon from '@mui/icons-material/Warning';
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import SettingsIcon from '@mui/icons-material/Lens';
-import IconCheck from '@mui/icons-material/Check';
-import IconClose from '@mui/icons-material/Close';
+import {
+    Warning as WarningIcon,
+    Schedule as ScheduleIcon,
+    Lens as SettingsIcon,
+    Check as IconCheck,
+    Close as IconClose,
+} from '@mui/icons-material';
 
 import {
     green, grey, orange, red,
@@ -23,7 +27,7 @@ import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import filterIcon from '../../assets/filter.svg';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
         padding: 10,
@@ -168,16 +172,20 @@ const modeArray = ['none', 'daemon', 'schedule', 'once'];
 //     'enabled and OK'
 // ];
 
-const getModeIcon = (idx, className) => {
+const getModeIcon = (idx: number, className: string): React.JSX.Element | null => {
     if (idx === 1) {
         return <SettingsIcon className={className} />;
-    } if (idx === 2) {
+    }
+    if (idx === 2) {
         return <SettingsIcon className={className} />;
-    } if (idx === 3) {
+    }
+    if (idx === 3) {
         return <WarningIcon className={className} />;
-    } if (idx === 4) {
+    }
+    if (idx === 4) {
         return <ScheduleIcon className={className} />;
-    } if (idx === 5) {
+    }
+    if (idx === 5) {
         return <div
             style={{
                 width: 20,
@@ -197,10 +205,11 @@ const getModeIcon = (idx, className) => {
             />
         </div>;
     }
+
     return null;
 };
 
-const statusArray = {
+const statusArray: Record<string, { text: string; _class: string; status: string }> = {
     none: { text: 'none', _class: '', status: '' },
     disabled: { text: 'disabled', _class: 'statusIcon_grey', status: 'grey' },
     not_alive: { text: 'enabled, but not alive', _class: 'statusIcon_red', status: 'red' },
@@ -209,16 +218,22 @@ const statusArray = {
     ok: { text: 'enabled and OK', _class: 'statusIcon_green', status: 'green' },
 };
 
+interface InstanceFilterDialogProps {
+    onClose: (filter?: { filterMode: string; filterStatus: string }) => void;
+    filterMode: string;
+    filterStatus: string;
+}
+
 const InstanceFilterDialog = ({
     onClose, filterMode, filterStatus,
-}) => {
+}: InstanceFilterDialogProps) => {
     const classes = useStyles();
 
     const [modeCheck, setModeCheck] = useState(filterMode);
     const [statusCheck, setStatusCheck] = useState(filterStatus);
 
     return <Dialog
-        onClose={onClose}
+        onClose={() => onClose()}
         open={!0}
         classes={{ paper: classes.paper }}
     >
@@ -285,7 +300,7 @@ const InstanceFilterDialog = ({
                     >
                         {Object.keys(statusArray).map((name, idx) => <MenuItem key={name} value={name}>
                             <div className={classes.menuWrapper}>
-                                {statusArray[name].status ? <div className={classes.iconWrapper}>{getModeIcon(idx, classes[`statusIcon_${idx}`])}</div> : null}
+                                {statusArray[name].status ? <div className={classes.iconWrapper}>{getModeIcon(idx, (classes as Record<string, string>)[`statusIcon_${idx}`])}</div> : null}
                                 <div className={classes.textWrapper}>{I18n.t(statusArray[name].text)}</div>
                             </div>
                         </MenuItem>)}

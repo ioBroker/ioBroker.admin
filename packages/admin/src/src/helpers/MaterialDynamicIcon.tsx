@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Icons from '@mui/icons-material/';
+import { type SvgIconComponent } from '@mui/icons-material';
 
-const ICON_CACHE = {};
+const ICON_CACHE: Record<string, Promise<ioBroker.AdapterObject>> = {};
 
-const objIcon = {
+const objIcon: Record<string, string> = {
     All: 'AllInclusive',
     messaging: 'Message',
     communication: 'WifiTethering',
@@ -35,9 +36,18 @@ const objIcon = {
     metering: 'LinearScale',
 };
 
+interface MaterialDynamicIconProps {
+    iconName?: string;
+    className?: string;
+    adapter?: string;
+    socket?: any;
+    onClick?: (e: React.MouseEvent) => void;
+    objIconBool?: boolean;
+}
+
 const MaterialDynamicIcon = ({
     iconName, className, adapter, socket, onClick, objIconBool,
-}) => {
+}: MaterialDynamicIconProps) => {
     const [url, setUrl] = useState('');
 
     useEffect(() => {
@@ -52,17 +62,12 @@ const MaterialDynamicIcon = ({
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
         return <img onClick={e => onClick && onClick(e)} src={url || ''} className={className} alt="" />;
     }
-    const Element = Icons[objIconBool ? objIcon[iconName] || 'Help' : (iconName || 'Help')];
+    const Element = (Icons as Record<string, SvgIconComponent>)[objIconBool ? objIcon[iconName] || 'Help' : (iconName || 'Help')];
+
     return <Element
         className={className}
-        onClick={e => onClick && onClick(e)}
+        onClick={(e: React.MouseEvent) => onClick && onClick(e)}
     />;
-};
-
-MaterialDynamicIcon.defaultProps = {
-    className: null,
-    iconName: 'Help',
-    objIconBool: false,
 };
 
 export default MaterialDynamicIcon;

@@ -2,6 +2,7 @@ import React from 'react';
 import { withStyles } from '@mui/styles';
 import {
     Accordion, AccordionDetails, AccordionSummary,
+    type Theme,
 } from '@mui/material';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -10,7 +11,7 @@ import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     root: {
         position: 'relative',
         margin: 10,
@@ -52,6 +53,15 @@ const styles = theme => ({
     },
 });
 
+interface InstanceCategoryProps {
+    name: string;
+    key: string;
+    children: React.JSX.Element[] | React.JSX.Element;
+    classes: Record<string, string>;
+    expanded: boolean;
+    onExpand: (expanded: boolean) => void;
+}
+
 const InstanceCategory = ({
     name,
     key,
@@ -59,7 +69,7 @@ const InstanceCategory = ({
     classes,
     expanded,
     onExpand,
-}) => <Accordion
+}: InstanceCategoryProps) => <Accordion
     expanded={!!expanded}
     onChange={() => onExpand(!expanded)}
     classes={{ root: classes.accordion }}
@@ -71,7 +81,11 @@ const InstanceCategory = ({
         expandIcon={<ExpandMoreIcon />}
     >
         <div className={classes.wrapperName}>
-            <MaterialDynamicIcon objIconBool iconName={name} className={classes.iconStyle} />
+            <MaterialDynamicIcon
+                objIconBool
+                iconName={name}
+                className={classes.iconStyle}
+            />
             {name}
         </div>
     </AccordionSummary>

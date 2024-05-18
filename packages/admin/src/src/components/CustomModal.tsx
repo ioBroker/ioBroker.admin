@@ -42,7 +42,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
 interface CustomModalProps {
     icon?: Component;
     onClose: () => void;
-    children: React.JSX.Element | React.JSX.Element [];
+    children?: React.JSX.Element | React.JSX.Element [];
     title?: string;
     titleButtonClose?: string;
     titleButtonApply?: string;
@@ -50,7 +50,7 @@ interface CustomModalProps {
     fullWidth?: boolean;
     maxWidth?: Breakpoint;
     applyButton?: boolean;
-    applyDisabled?: boolean;
+    disableApplyIfNotChanged?: boolean;
     overflowHidden?: boolean;
     help?: string;
     noTranslation?: boolean;
@@ -59,13 +59,14 @@ interface CustomModalProps {
     textInput?: boolean;
     defaultValue?: string | number;
     progress?: boolean;
+    disableApply?: boolean;
 }
 
 const CustomModal = ({
     toggleTranslation, noTranslation, title, fullWidth,
-    help, maxWidth, progress, icon, applyDisabled, applyButton,
+    help, maxWidth, progress, icon, disableApplyIfNotChanged, applyButton,
     classes, onClose, children, titleButtonApply, titleButtonClose,
-    onApply, textInput, defaultValue, overflowHidden,
+    onApply, textInput, defaultValue, overflowHidden, disableApply,
 }: CustomModalProps) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
@@ -134,7 +135,7 @@ const CustomModal = ({
         <DialogActions>
             {(applyButton === undefined || applyButton) && <Button
                 startIcon={<CheckIcon />}
-                disabled={progress || (applyDisabled && defaultValue === value)}
+                disabled={disableApply || progress || (disableApplyIfNotChanged && defaultValue === value)}
                 onClick={() => onApply && onApply(textInput ? value : '')}
                 variant="contained"
                 color="primary"

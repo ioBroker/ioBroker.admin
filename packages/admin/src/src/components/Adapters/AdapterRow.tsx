@@ -290,7 +290,6 @@ class AdapterRow extends Component<AdapterRowProps> {
                 </TableCell>
                 <TableCell onClick={this.props.onToggle}>
                     <div className={Utils.clsx(classes.nameDiv, classes.categoryName)}>
-                        {/** @ts-expect-error wait until ported to tsx */}
                         <MaterialDynamicIcon objIconBool iconName={categoryName} className={classes.marginRight5} />
                         {name}
                     </div>
