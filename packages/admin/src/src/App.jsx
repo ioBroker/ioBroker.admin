@@ -1016,7 +1016,6 @@ class App extends Router {
                                     const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
                                     this.showAdaptersWarning(
                                         notifications,
-                                        this.socket,
                                         newState.currentHost,
                                     );
 
@@ -1348,7 +1347,7 @@ class App extends Router {
         this.setState({ noNotifications, notifications: { notifications, instances } });
     };
 
-    showAdaptersWarning = (notifications, socket, host) => {
+    showAdaptersWarning = (notifications, host) => {
         if (!notifications || !notifications[host] || !notifications[host].result) {
             return Promise.resolve();
         }
@@ -2585,7 +2584,6 @@ class App extends Router {
                                                         const notifications = await this.hostsWorker.getNotifications(host);
                                                         this.showAdaptersWarning(
                                                             notifications,
-                                                            this.socket,
                                                             host,
                                                         );
                                                     },

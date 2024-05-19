@@ -24,7 +24,7 @@ export interface HostRowCardProps {
     openHostUpdateDialog: () => void;
     setBaseSettingsDialog: () => void;
     setEditDialog: (val: boolean) => void;
-    showAdaptersWarning: (notifications: Record<string, any>, socket: AdminConnection, host: string) => void;
+    showAdaptersWarning: (notifications: Record<string, any>, host: string) => void;
     socket: AdminConnection;
     systemConfig: any; // ioBroker.SystemConfigObject;
     t: (text: string, ...args: any[]) => string;

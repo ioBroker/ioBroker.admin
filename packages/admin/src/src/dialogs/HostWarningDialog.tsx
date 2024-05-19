@@ -309,7 +309,7 @@ const HostWarningDialog = ({
     const handleChangeAccordion = (panel: string) => (_event: unknown, isExpanded: boolean) =>
         setExpanded(isExpanded ? panel : '');
 
-    const black = themeType === 'dark';
+    const dark = themeType === 'dark';
 
     return <Dialog
         onClose={() => onClose()}
@@ -328,11 +328,11 @@ const HostWarningDialog = ({
                         onChange={handleChange}
                         variant="scrollable"
                         scrollButtons
-                        indicatorColor={black ? 'primary' : 'secondary'}
+                        indicatorColor={dark ? 'primary' : 'secondary'}
                         textColor="primary"
                     >
                         {Object.entries(messages).map(([name, entry], idx) => <Tab
-                            style={black ? undefined : { color: 'white' }}
+                            style={dark ? { color: 'white' } : { color: 'black' }}
                             disabled={disabled.includes(name)}
                             key={name}
                             label={entry.name[I18n.getLanguage()]}
@@ -341,99 +341,101 @@ const HostWarningDialog = ({
                         />)}
                     </Tabs>
                 </AppBar>
-                {/** @ts-expect-error seems to work with multiple children */}
                 {Object.keys(messages).map((name, idx) => <TabPanel
-                    className={classes.overflowAuto}
+                    // @ts-expect-error probably needs better types
+                    classes={{ root: classes.overflowAuto }}
                     classNameBox={classes.classNameBox}
                     key={`tabPanel-${name}`}
-                    style={black ? { color: 'black' } : null}
+                    style={dark ? { color: 'black' } : null}
                     value={value}
                     index={idx}
                 >
-                    <div className={classes.headerText} style={{ fontWeight: 'bold' }}>
-                        {messages[name].name[I18n.getLanguage()]}
-                    </div>
-                    <div className={classes.descriptionHeaderText}>
-                        {messages[name].description[I18n.getLanguage()]}
-                    </div>
                     <div>
-                        {messages[name].instances ? Object.keys(messages[name].instances).map(nameInst => {
-                            const index = Object.keys(messages).indexOf(name);
+                        <div className={classes.headerText} style={{ fontWeight: 'bold' }}>
+                            {messages[name].name[I18n.getLanguage()]}
+                        </div>
+                        <div className={classes.descriptionHeaderText}>
+                            {messages[name].description[I18n.getLanguage()]}
+                        </div>
+                        <div>
+                            {messages[name].instances ? Object.keys(messages[name].instances).map(nameInst => {
+                                const index = Object.keys(messages).indexOf(name);
 
-                            if (autoCollapse && value === index) {
-                                handleChangeAccordion(`${name}-${nameInst}`)('', true);
-                                setAutoCollapse(false);
-                            }
+                                if (autoCollapse && value === index) {
+                                    handleChangeAccordion(`${name}-${nameInst}`)('', true);
+                                    setAutoCollapse(false);
+                                }
 
-                            const currentInstance = instances && instances[nameInst];
-                            let icon = 'img/no-image.png';
-                            if (currentInstance?.common?.icon && currentInstance?.common?.name) {
-                                icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
-                            }
-                            return <Accordion
-                                style={black ? undefined : { background: '#c0c0c052' }}
-                                key={nameInst}
-                                expanded={expanded === `${name}-${nameInst}`}
-                                onChange={handleChangeAccordion(`${name}-${nameInst}`)}
-                            >
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    classes={{ content: classes.content }}
-                                    aria-controls="panel1bh-content"
-                                    id="panel1bh-header"
+                                const currentInstance = instances && instances[nameInst];
+                                let icon = 'img/no-image.png';
+                                if (currentInstance?.common?.icon && currentInstance?.common?.name) {
+                                    icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
+                                }
+                                return <Accordion
+                                    style={dark ? undefined : { background: '#c0c0c052' }}
+                                    key={nameInst}
+                                    expanded={expanded === `${name}-${nameInst}`}
+                                    onChange={handleChangeAccordion(`${name}-${nameInst}`)}
                                 >
-                                    <Typography className={classes.heading}>
-                                        <CardMedia className={classes.img2} component="img" image={icon} />
-                                        <div className={classes.textStyle}>
-                                            {nameInst.replace(/^system\.adapter\./, '')}
-                                        </div>
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails className={classes.column}>
-                                    {messages[name].instances[nameInst].messages.map(msg =>
-                                        <Typography key={msg.ts} component="div" className={classes.message}>
-                                            <div className={classes.terminal}>{msg.message}</div>
-                                            <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
-                                        </Typography>)}
-                                </AccordionDetails>
-                            </Accordion>;
-                        }) : null}
-                    </div>
-                    <div className={classes.button}>
-                        <Button
-                            variant="contained"
-                            autoFocus={Object.keys(messages).length !== 1}
-                            disabled={disabled.includes(name)}
-                            style={disabled.includes(name) ? { background: 'silver' } : undefined}
-                            className={classes.buttonStyle}
-                            onClick={() => {
-                                ackCallback(name);
-                                setDisabled([...disabled, name]);
-                            }}
-                            // @ts-expect-error grey is ok
-                            color={Object.keys(messages).length !== 1 ? 'primary' : 'grey'}
-                            startIcon={<CheckIcon />}
-                        >
-                            {I18n.t('Acknowledge')}
-                        </Button>
-                        {Object.keys(messages).length === 1 && <Button
-                            variant="contained"
-                            disabled={disabled.includes(name)}
-                            className={classes.buttonStyle}
-                            style={disabled.includes(name) ? { background: 'silver' } : undefined}
-                            onClick={() => {
-                                setDisabled([...disabled, name]);
-                                ackCallback(name);
-                                onClose();
-                            }}
-                            startIcon={<>
-                                <CheckIcon />
-                                <CloseIcon />
-                            </>}
-                            color="primary"
-                        >
-                            {I18n.t('Acknowledge & close')}
-                        </Button>}
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        classes={{ content: classes.content }}
+                                        aria-controls="panel1bh-content"
+                                        id="panel1bh-header"
+                                    >
+                                        <Typography className={classes.heading}>
+                                            <CardMedia className={classes.img2} component="img" image={icon} />
+                                            <div className={classes.textStyle}>
+                                                {nameInst.replace(/^system\.adapter\./, '')}
+                                            </div>
+                                        </Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails className={classes.column}>
+                                        {messages[name].instances[nameInst].messages.map(msg =>
+                                            <Typography key={msg.ts} component="div" className={classes.message}>
+                                                <div className={classes.terminal}>{msg.message}</div>
+                                                <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
+                                            </Typography>)}
+                                    </AccordionDetails>
+                                </Accordion>;
+                            }) : null}
+                        </div>
+                        <div className={classes.button}>
+                            <Button
+                                variant="contained"
+                                autoFocus={Object.keys(messages).length !== 1}
+                                disabled={disabled.includes(name)}
+                                style={disabled.includes(name) ? { background: 'silver' } : undefined}
+                                className={classes.buttonStyle}
+                                onClick={() => {
+                                    ackCallback(name);
+                                    setDisabled([...disabled, name]);
+                                }}
+                                // @ts-expect-error grey is ok
+                                color={Object.keys(messages).length !== 1 ? 'primary' : 'grey'}
+                                startIcon={<CheckIcon />}
+                            >
+                                {I18n.t('Acknowledge')}
+                            </Button>
+                            {Object.keys(messages).length === 1 && <Button
+                                variant="contained"
+                                disabled={disabled.includes(name)}
+                                className={classes.buttonStyle}
+                                style={disabled.includes(name) ? { background: 'silver' } : undefined}
+                                onClick={() => {
+                                    setDisabled([...disabled, name]);
+                                    ackCallback(name);
+                                    onClose();
+                                }}
+                                startIcon={<>
+                                    <CheckIcon />
+                                    <CloseIcon />
+                                </>}
+                                color="primary"
+                            >
+                                {I18n.t('Acknowledge & close')}
+                            </Button>}
+                        </div>
                     </div>
                 </TabPanel>)}
             </div>

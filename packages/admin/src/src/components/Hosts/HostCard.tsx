@@ -685,7 +685,7 @@ const HostCard = ({
                     className={classes.badge}
                     onClick={e => {
                         e.stopPropagation();
-                        showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
+                        showAdaptersWarning({ [_id]: errorHost.notifications }, _id);
                     }}
                 >
                     {name}

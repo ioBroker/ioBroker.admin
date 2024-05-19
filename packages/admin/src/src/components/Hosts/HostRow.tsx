@@ -669,7 +669,7 @@ const HostRow = ({
                     color="error"
                     onClick={e => {
                         e.stopPropagation();
-                        showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
+                        showAdaptersWarning({ [_id]: errorHost.notifications }, _id);
                     }}
                 >
                     <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
