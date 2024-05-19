@@ -431,9 +431,8 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         return obj?.common?.runAsCompactMode || false;
     }
 
-    static isSentry(obj: ioBroker.InstanceObject | null): boolean {
-        // @ts-expect-error will be fixed in js-controller
-        return !!obj?.common?.plugins?.sentry && !obj?.common?.disableDataReporting;
+    isSentry(): boolean {
+        return !!this.props.context.states[`system.adapter.${this.props.instance.id}.plugins.sentry.enabled`]?.val;
     }
 
     static getSchedule(obj: ioBroker.InstanceObject | null): string {
@@ -474,10 +473,9 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     }
 
     toggleSentry(): void {
-        const disableDataReporting = !!InstanceGeneric.isSentry(this.props.instance.obj);
-        // @ts-expect-error will be fixed in js-controller
-        this.setCommonValue(`system.adapter.${this.props.instance.id}`, { disableDataReporting })
-            .then(() => this.props.context.socket.setState(`system.adapter.${this.props.instance.id}.plugins.sentry.enabled`, { val: !disableDataReporting, ack: true }));
+        const sentryEnabled = !this.isSentry();
+        this.props.context.socket.setState(`system.adapter.${this.props.instance.id}.plugins.sentry.enabled`, sentryEnabled, true)
+            .catch(e => window.alert(`Cannot set sentry: ${e}`));
     }
 
     setTier(instance: InstanceEntry, tier: 1 | 2 | 3): void {

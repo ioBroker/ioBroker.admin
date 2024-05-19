@@ -674,6 +674,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         func.call(this.props.socket, 'system.adapter.*.memRss', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.outputCount', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.logLevel', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.plugins.sentry.enabled', this.onStateChange);
         // func('system.host.*', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskFree', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskSize', this.onStateChange);
@@ -800,6 +801,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
             this.props.executeCommand(`del ${deleteAdapter ? instance.id.split('.')[0] : instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`));
     };
 
+    isSentry(instanceId: string): boolean {
+        return !!this.states[`${instanceId}.plugins.sentry.enabled`]?.val;
+    }
+
     cacheInstances() {
         const currentHostNoPrefix = this.state.currentHost.replace(/^system.host./, '');
 
@@ -823,7 +828,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const memoryLimitMB = InstanceGeneric.getMemoryLimitMB(instance.obj);
 
             const checkSentry = InstanceGeneric.getSentrySettings(instance.obj); // is it possible to enable/disable sentry for this adapter
-            const currentSentry = InstanceGeneric.isSentry(instance.obj);
+            const currentSentry = this.isSentry(id);
 
             const item: InstanceItem = {
                 id,
