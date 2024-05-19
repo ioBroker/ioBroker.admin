@@ -24,7 +24,7 @@ import {
     Typography,
     Switch,
     Autocomplete,
-    Tooltip,
+    Tooltip, type Theme,
 } from '@mui/material';
 
 import {
@@ -42,7 +42,7 @@ import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';
 import Editor from '../Editor';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     input: {
         width: '100%',
     },
@@ -87,9 +87,9 @@ const styles = () => ({
     dialog: {
         minHeight: (window as any).clientHeight - 50 > 500 ? 500 : (window as any).clientHeight - 50,
     },
-});
+};
 
-const AntSwitch = withStyles(theme => ({
+const AntSwitch = withStyles((theme: Theme) => ({
     root: {
         width: 28,
         height: 16,
@@ -124,22 +124,24 @@ const AntSwitch = withStyles(theme => ({
 }))(Switch);
 
 interface NumberValidationOptions {
-    value: unknown; common: ioBroker.StateCommon;
+    value: unknown;
+    common: ioBroker.StateCommon;
 }
 
 interface ObjectBrowserValueProps {
     /** Css classes */
-   classes: Record<string, any>;
+    classes: Record<string, string>;
     /** State type */
     type: string;
     /** State role */
     role: string;
-    states: Record<string, any>;
+    /** common.states */
+    states: Record<string, string>;
     /** The state value */
-    value: any;
+    value: string | number | boolean;
     /** If expert mode is enabled */
     expertMode: boolean;
-    onClose: (...args: any[]) => void;
+    onClose: (newValue?: { val: ioBroker.State; ack: boolean; q: number; expire: number | undefined }) => void;
     /** Configured theme */
     themeType: string;
     socket: AdminConnection;
@@ -305,7 +307,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         }
 
         this.props.onClose({
-            val: value, ack: this.ack, q: this.q, expire: parseInt((this.expire as any), 10) || undefined,
+            val: value, ack: this.ack, q: this.q, expire: parseInt(this.expire as any as string, 10) || undefined,
         });
     }
 
@@ -314,8 +316,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
      * @param options value and common information
      */
     isNumberValid(options: NumberValidationOptions): boolean {
-        const { common } = options;
-        const { value } = options;
+        const { common, value } = options;
 
         if (value === '') {
             return false;
@@ -323,11 +324,11 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
 
         const numVal  = Number(value);
 
-        if (typeof common.min === 'number'  && numVal < common.min) {
+        if (typeof common.min === 'number' && numVal < common.min) {
             return false;
         }
 
-        if (typeof common.max === 'number'  && numVal > common.max) {
+        if (typeof common.max === 'number' && numVal > common.max) {
             return false;
         }
 
@@ -365,22 +366,20 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     }
 
     renderChart(): React.JSX.Element {
-        return (
-            <ObjectChart
-                t={this.props.t}
-                isFloatComma={this.props.isFloatComma}
-                showJumpToEchart={false}
-                lang={this.props.lang}
-                socket={this.props.socket}
-                obj={this.props.object}
-                themeType={this.props.themeType}
-                from={this.chartFrom}
-                end={Date.now()}
-                noToolbar
-                dateFormat={this.props.dateFormat}
-                defaultHistory={this.props.defaultHistory}
-            />
-        );
+        return <ObjectChart
+            t={this.props.t}
+            isFloatComma={this.props.isFloatComma}
+            showJumpToEchart={false}
+            lang={this.props.lang}
+            socket={this.props.socket}
+            obj={this.props.object}
+            themeType={this.props.themeType}
+            from={this.chartFrom}
+            end={Date.now()}
+            noToolbar
+            dateFormat={this.props.dateFormat}
+            defaultHistory={this.props.defaultHistory}
+        />;
     }
 
     static checkJsonError(value: string): boolean {

@@ -31,7 +31,7 @@ import {
 } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 
-import { Utils, withWidth } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, Utils, withWidth } from '@iobroker/adapter-react-v5';
 
 // icons
 import { FaChartLine as SplitLineIcon } from 'react-icons/fa';
@@ -148,8 +148,8 @@ const GRID_PADDING_RIGHT = 25;
 interface ObjectChartProps {
     obj: ioBroker.StateObject;
     customsInstances: string[];
-    objects: Record<string, any>;
-    socket: any;
+    objects: Record<string, ioBroker.Object>;
+    socket: AdminConnection;
     lang: ioBroker.Languages;
     themeType: string;
     // dateFormat: string;
@@ -166,7 +166,7 @@ interface ObjectChartProps {
 
 interface ObjectChartState {
     historyInstance: string;
-    historyInstances: { id: string; alive: boolean }[];
+    historyInstances: { id: string; alive: boolean }[] | null;
     defaultHistory: string;
     chartHeight: number;
     chartWidth: number;
@@ -182,7 +182,7 @@ interface ObjectChartState {
 }
 
 interface HistoryItem {
-    val: number;
+    val: ioBroker.StateValue;
     ts: number;
     i?: boolean;
 }
@@ -192,29 +192,39 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
 
     private readonly rangeRef: React.RefObject<HTMLDivElement>;
 
-    private readTimeout: any;
+    private readTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private chartValues: any;
+    private chartValues: { val: ioBroker.StateValue; ts: number }[] | null;
 
-    private rangeValues: any;
+    private rangeValues: { val: ioBroker.StateValue; ts: number }[] | null;
 
-    private subscribes: any[];
+    private subscribes: string[];
 
     private readonly unit: string;
 
     private readonly divRef: React.RefObject<HTMLDivElement>;
 
-    private chart: any;
+    private chart: {
+        min?: number;
+        max?: number;
+        withSeconds?: boolean;
+        withTime?: boolean;
+        diff?: number;
+        lastX?: number;
+        lastWidth?: number;
+    };
 
-    private timerResize: any;
+    private timerResize: ReturnType<typeof setTimeout> | null = null;
+
+    private updateTimer: ReturnType<typeof setTimeout> | null = null;
 
     private minY: number;
 
     private maxY: number;
 
-    private timeTimer: any;
+    private timeTimer: ReturnType<typeof setTimeout> | null = null;
 
-    private maxYLenTimeout: any;
+    private maxYLenTimeout: ReturnType<typeof setTimeout> | null = null;
 
     private mouseDown: boolean;
 
@@ -300,6 +310,16 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         this.maxYLenTimeout && clearTimeout(this.maxYLenTimeout);
         this.maxYLenTimeout = null;
 
+        this.timerResize && clearTimeout(this.timerResize);
+        this.timerResize = null;
+
+        this.updateTimer && clearTimeout(this.updateTimer);
+        this.updateTimer = null;
+
+        if (this.echartsReact) {
+            this.echartsReact.getEchartsInstance().dispose();
+        }
+
         for (let i = 0; i < this.subscribes.length; i++) {
             this.props.socket.unsubscribeState(this.subscribes[i], this.onChange);
         }
@@ -333,7 +353,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     this.updateChart();
                 }
             }
-        } else if (id.startsWith('system.adapter.') && id.endsWith('.alive')) {
+        } else if (id.startsWith('system.adapter.') && id.endsWith('.alive') && this.state.historyInstances) {
             const instance = id.substring('system.adapter.'.length, id.length - '.alive'.length);
             const list = this.state.historyInstances;
             const itemIndex = list.findIndex(it => it.id === instance);
@@ -354,12 +374,20 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
 
     async prepareData(): Promise<void> {
         if (this.props.noToolbar) {
+            const isAlive = this.props.defaultHistory && await this.props.socket.getState(`system.adapter.${this.props.defaultHistory}.alive`);
+
+            if (!this.subscribes.length) {
+                this.subscribes = [`system.adapter.${this.props.defaultHistory}.alive`];
+                await this.props.socket.subscribeState(`system.adapter.${this.props.defaultHistory}.alive`, this.onChange);
+            }
+
             await new Promise(resolve => {
                 this.setState(
                     {
                         // dateFormat: this.props.dateFormat.replace(/D/g, 'd').replace(/Y/g, 'y'),
                         defaultHistory: this.props.defaultHistory,
                         historyInstance: this.props.defaultHistory,
+                        historyInstances: [{ id: this.props.defaultHistory, alive: !!isAlive?.val }],
                     },
                     () => resolve(null),
                 );
@@ -368,7 +396,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }
 
         let list: { id: string; alive: boolean }[] = await this.getHistoryInstances();
-        const config: any = await this.props.socket.getCompactSystemConfig();
+        const config = await this.props.socket.getCompactSystemConfig();
         let instances: ioBroker.InstanceObject[] = [];
         if (this.props.showJumpToEchart) {
             instances = await this.props.socket.getAdapterInstances('echarts', true);
@@ -422,7 +450,9 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         const ids: string[] = [];
 
         this.props.customsInstances.forEach(instance => {
-            const instObj = this.props.objects[`system.adapter.${instance}`];
+            const instObj: ioBroker.InstanceObject = this.props.objects[`system.adapter.${instance}`] as
+                | ioBroker.InstanceObject
+                | undefined;
             if (instObj?.common?.getHistory) {
                 const listObj = { id: instance, alive: false };
                 list.push(listObj);
@@ -468,7 +498,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     addID: false,
                     aggregate: 'none',
                 })
-                .then((values: { val: number; ts: number }[]) => {
+                .then((values: { val: ioBroker.StateValue; ts: number }[]) => {
                     // remove interpolated first value
                     if (values && values[0]?.val === null) {
                         values.shift();
@@ -503,7 +533,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             return Promise.resolve([]);
         }
 
-        const options = {
+        const options: ioBroker.GetHistoryOptions = {
             instance: this.state.historyInstance,
             start,
             end,
@@ -512,6 +542,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             q: false,
             addID: false,
             aggregate: 'none',
+            // @ts-expect-error fix later
             returnNewestEntries: true,
         };
 
@@ -529,7 +560,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
 
         return this.props.socket
             .getHistory(this.props.obj._id, options)
-            .then((values: { val: number; ts: number }[]) => {
+            .then((values: { val: ioBroker.StateValue; ts: number }[]) => {
                 // merge range and chart
                 const chart = [];
                 let r = 0;
@@ -575,8 +606,8 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                 chart.sort((a, b) => (a.ts > b.ts ? 1 : a.ts < b.ts ? -1 : 0));
 
                 this.chartValues = chart;
-                this.minY = minY;
-                this.maxY = maxY;
+                this.minY = minY as number;
+                this.maxY = maxY as number;
 
                 if (this.minY < 10) {
                     this.minY = Math.round(this.minY * 10) / 10;
@@ -600,7 +631,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             return [];
         }
         for (let i = 0; i < values.length; i++) {
-            const dp: { value: number[]; exact?: boolean } = { value: [values[i].ts, values[i].val] };
+            const dp: { value: number[]; exact?: boolean } = { value: [values[i].ts, values[i].val as number] };
             if (values[i].i) {
                 dp.exact = false;
             }
@@ -636,13 +667,14 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         const serie = {
             xAxisIndex: 0,
             type: 'line',
-            step: this.state.stepType === 'stepStart'
-                ? 'start'
-                : this.state.stepType === 'stepMiddle'
-                    ? 'middle'
-                    : this.state.stepType === 'stepEnd'
-                        ? 'end'
-                        : undefined,
+            step:
+                this.state.stepType === 'stepStart'
+                    ? 'start'
+                    : this.state.stepType === 'stepMiddle'
+                        ? 'middle'
+                        : this.state.stepType === 'stepEnd'
+                            ? 'end'
+                            : undefined,
             showSymbol: false,
             hoverAnimation: true,
             animation: false,
@@ -671,7 +703,14 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
 
                     if (this.state.maxYLen < text.length) {
                         this.maxYLenTimeout && clearTimeout(this.maxYLenTimeout);
-                        this.maxYLenTimeout = setTimeout(maxYLen => this.setState({ maxYLen }), 200, text.length);
+                        this.maxYLenTimeout = setTimeout(
+                            maxYLen => {
+                                this.maxYLenTimeout = null;
+                                this.setState({ maxYLen });
+                            },
+                            200,
+                            text.length,
+                        );
                     }
                     return text;
                 },
@@ -1153,12 +1192,12 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
         }
     }
 
-    renderChart() {
+    private renderChart() {
         if (!this.state.historyInstance) {
-            return <div style={{ marginTop: 20, fontSize: 24 }}>{this.props.t('History instance not selected')}</div>;
+            return <div style={{ marginTop: 20, fontSize: 24, marginLeft: 24 }}>{this.props.t('History instance not selected')}</div>;
         }
-        if (!this.state.historyInstances.find(it => it.id === this.state.historyInstance && it.alive)) {
-            return <div style={{ marginTop: 20, fontSize: 24 }}>{this.props.t('History instance not alive')}</div>;
+        if (!this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)) {
+            return <div style={{ marginTop: 20, fontSize: 24, marginLeft: 24 }}>{this.props.t('History instance not alive')}</div>;
         }
         if (this.chartValues) {
             return <ReactEchartsCore
@@ -1173,6 +1212,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                 onEvents={{ rendered: () => this.installEventHandlers() }}
             />;
         }
+
         return <LinearProgress />;
     }
 
@@ -1182,7 +1222,11 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             const height = this.divRef.current.offsetHeight;
             if (this.state.chartHeight !== height) {
                 // || this.state.chartHeight !== height) {
-                setTimeout(() => this.setState({ chartHeight: height, chartWidth: width }), 100);
+                this.updateTimer && clearTimeout(this.updateTimer);
+                this.updateTimer = setTimeout(() => {
+                    this.updateTimer = null;
+                    this.setState({ chartHeight: height, chartWidth: width });
+                }, 100);
             }
         }
     }
@@ -1258,175 +1302,173 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
 
         const classes = this.props.classes;
 
-        return <Toolbar>
-            {!this.props.historyInstance && <FormControl variant="standard" className={classes.selectHistoryControl}>
-                <InputLabel>{this.props.t('History instance')}</InputLabel>
-                <Select
-                    variant="standard"
-                    value={this.state.historyInstance}
-                    onChange={async e => {
-                        this.localStorage.setItem(
-                            'App.historyInstance',
-                            e.target.value,
-                        );
-                        this.setState({ historyInstance: e.target.value });
+        return (
+            <Toolbar>
+                {!this.props.historyInstance && (
+                    <FormControl variant="standard" className={classes.selectHistoryControl}>
+                        <InputLabel>{this.props.t('History instance')}</InputLabel>
+                        <Select
+                            variant="standard"
+                            value={this.state.historyInstance}
+                            onChange={async e => {
+                                this.localStorage.setItem('App.historyInstance', e.target.value);
+                                this.setState({ historyInstance: e.target.value });
+                            }}
+                        >
+                            {this.state.historyInstances.map(it => (
+                                <MenuItem
+                                    key={it.id}
+                                    value={it.id}
+                                    className={Utils.clsx(!it.alive && classes.notAliveInstance)}
+                                >
+                                    {it.id}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                )}
+                <FormControl variant="standard" className={classes.selectRelativeTime}>
+                    <InputLabel>{this.props.t('Relative')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        ref={this.rangeRef}
+                        value={this.state.relativeRange}
+                        onChange={e => this.setRelativeInterval(e.target.value)}
+                    >
+                        <MenuItem key="custom" value="absolute" className={classes.customRange}>
+                            {this.props.t('custom range')}
+                        </MenuItem>
+                        <MenuItem key="1" value={10}>
+                            {this.props.t('last 10 minutes')}
+                        </MenuItem>
+                        <MenuItem key="2" value={30}>
+                            {this.props.t('last 30 minutes')}
+                        </MenuItem>
+                        <MenuItem key="3" value={60}>
+                            {this.props.t('last hour')}
+                        </MenuItem>
+                        <MenuItem key="4" value="day">
+                            {this.props.t('this day')}
+                        </MenuItem>
+                        <MenuItem key="5" value={24 * 60}>
+                            {this.props.t('last 24 hours')}
+                        </MenuItem>
+                        <MenuItem key="6" value="week">
+                            {this.props.t('this week')}
+                        </MenuItem>
+                        <MenuItem key="7" value={24 * 60 * 7}>
+                            {this.props.t('last week')}
+                        </MenuItem>
+                        <MenuItem key="8" value="2weeks">
+                            {this.props.t('this 2 weeks')}
+                        </MenuItem>
+                        <MenuItem key="9" value={24 * 60 * 14}>
+                            {this.props.t('last 2 weeks')}
+                        </MenuItem>
+                        <MenuItem key="10" value="month">
+                            {this.props.t('this month')}
+                        </MenuItem>
+                        <MenuItem key="11" value={30 * 24 * 60}>
+                            {this.props.t('last 30 days')}
+                        </MenuItem>
+                        <MenuItem key="12" value="year">
+                            {this.props.t('this year')}
+                        </MenuItem>
+                        <MenuItem key="13" value="12months">
+                            {this.props.t('last 12 months')}
+                        </MenuItem>
+                    </Select>
+                </FormControl>
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
+                    <div className={classes.toolbarTimeGrid}>
+                        <div
+                            className={classes.toolbarTimeLabel}
+                            style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
+                        >
+                            {this.props.t('Start time')}
+                        </div>
+                        <DatePicker
+                            className={classes.toolbarDate}
+                            disabled={this.state.relativeRange !== 'absolute'}
+                            value={new Date(this.state.min)}
+                            onChange={date => this.setStartDate(date)}
+                        />
+                        <TimePicker
+                            disabled={this.state.relativeRange !== 'absolute'}
+                            className={classes.toolbarTime}
+                            ampm={this.state.ampm}
+                            value={new Date(this.state.min)}
+                            onChange={date => this.setStartDate(date)}
+                        />
+                    </div>
+                    <div className={classes.toolbarTimeGrid}>
+                        <div
+                            className={classes.toolbarTimeLabel}
+                            style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
+                        >
+                            {this.props.t('End time')}
+                        </div>
+                        <DatePicker
+                            disabled={this.state.relativeRange !== 'absolute'}
+                            className={classes.toolbarDate}
+                            value={new Date(this.state.max)}
+                            onChange={date => this.setEndDate(date)}
+                        />
+                        <TimePicker
+                            disabled={this.state.relativeRange !== 'absolute'}
+                            className={classes.toolbarTime}
+                            ampm={this.state.ampm}
+                            value={new Date(this.state.max)}
+                            onChange={date => this.setEndDate(date)}
+                        />
+                    </div>
+                </LocalizationProvider>
+                <div className={classes.grow} />
+                <Button
+                    style={{ marginRight: 10 }}
+                    variant="outlined"
+                    onClick={e => this.setState({ showStepMenu: e.target as HTMLElement })}
+                >
+                    {this.state.stepType ? this.props.t(this.state.stepType) : this.props.t('Step type')}
+                </Button>
+                {this.state.showStepMenu ? <Menu
+                    open={!0}
+                    anchorEl={this.state.showStepMenu}
+                    onClose={() => this.setState({ showStepMenu: null })}
+                >
+                    <MenuItem selected={this.state.stepType === ''} onClick={() => this.onStepChanged('')}>
+                        {this.props.t('None')}
+                    </MenuItem>
+                    <MenuItem
+                        selected={this.state.stepType === 'stepStart'}
+                        onClick={() => this.onStepChanged('stepStart')}
+                    >
+                        {this.props.t('stepStart')}
+                    </MenuItem>
+                </Menu> : null}
+                {this.props.showJumpToEchart && this.state.echartsJump && <Fab
+                    className={classes.echartsButton}
+                    size="small"
+                    onClick={() => this.openEcharts()}
+                    title={this.props.t('Open charts in new window')}
+                >
+                    <img src={EchartsIcon} alt="echarts" className={classes.buttonIcon} />
+                </Fab>}
+                <Fab
+                    variant="extended"
+                    size="small"
+                    color={this.state.splitLine ? 'primary' : 'default'}
+                    aria-label="show lines"
+                    onClick={() => {
+                        this.localStorage.setItem('App.splitLine', this.state.splitLine ? 'false' : 'true');
+                        this.setState({ splitLine: !this.state.splitLine });
                     }}
                 >
-                    {this.state.historyInstances.map(it => (
-                        <MenuItem
-                            key={it.id}
-                            value={it.id}
-                            className={Utils.clsx(!it.alive && classes.notAliveInstance)}
-                        >
-                            {it.id}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>}
-            <FormControl variant="standard" className={classes.selectRelativeTime}>
-                <InputLabel>{this.props.t('Relative')}</InputLabel>
-                <Select
-                    variant="standard"
-                    ref={this.rangeRef}
-                    value={this.state.relativeRange}
-                    onChange={e => this.setRelativeInterval(e.target.value)}
-                >
-                    <MenuItem key="custom" value="absolute" className={classes.customRange}>
-                        {this.props.t('custom range')}
-                    </MenuItem>
-                    <MenuItem key="1" value={10}>
-                        {this.props.t('last 10 minutes')}
-                    </MenuItem>
-                    <MenuItem key="2" value={30}>
-                        {this.props.t('last 30 minutes')}
-                    </MenuItem>
-                    <MenuItem key="3" value={60}>
-                        {this.props.t('last hour')}
-                    </MenuItem>
-                    <MenuItem key="4" value="day">
-                        {this.props.t('this day')}
-                    </MenuItem>
-                    <MenuItem key="5" value={24 * 60}>
-                        {this.props.t('last 24 hours')}
-                    </MenuItem>
-                    <MenuItem key="6" value="week">
-                        {this.props.t('this week')}
-                    </MenuItem>
-                    <MenuItem key="7" value={24 * 60 * 7}>
-                        {this.props.t('last week')}
-                    </MenuItem>
-                    <MenuItem key="8" value="2weeks">
-                        {this.props.t('this 2 weeks')}
-                    </MenuItem>
-                    <MenuItem key="9" value={24 * 60 * 14}>
-                        {this.props.t('last 2 weeks')}
-                    </MenuItem>
-                    <MenuItem key="10" value="month">
-                        {this.props.t('this month')}
-                    </MenuItem>
-                    <MenuItem key="11" value={30 * 24 * 60}>
-                        {this.props.t('last 30 days')}
-                    </MenuItem>
-                    <MenuItem key="12" value="year">
-                        {this.props.t('this year')}
-                    </MenuItem>
-                    <MenuItem key="13" value="12months">
-                        {this.props.t('last 12 months')}
-                    </MenuItem>
-                </Select>
-            </FormControl>
-            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                <div className={classes.toolbarTimeGrid}>
-                    <div
-                        className={classes.toolbarTimeLabel}
-                        style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
-                    >
-                        {this.props.t('Start time')}
-                    </div>
-                    <DatePicker
-                        className={classes.toolbarDate}
-                        disabled={this.state.relativeRange !== 'absolute'}
-                        value={new Date(this.state.min)}
-                        onChange={date => this.setStartDate(date)}
-                    />
-                    <TimePicker
-                        disabled={this.state.relativeRange !== 'absolute'}
-                        className={classes.toolbarTime}
-                        ampm={this.state.ampm}
-                        value={new Date(this.state.min)}
-                        onChange={date => this.setStartDate(date)}
-                    />
-                </div>
-                <div className={classes.toolbarTimeGrid}>
-                    <div
-                        className={classes.toolbarTimeLabel}
-                        style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
-                    >
-                        {this.props.t('End time')}
-                    </div>
-                    <DatePicker
-                        disabled={this.state.relativeRange !== 'absolute'}
-                        className={classes.toolbarDate}
-                        value={new Date(this.state.max)}
-                        onChange={date => this.setEndDate(date)}
-                    />
-                    <TimePicker
-                        disabled={this.state.relativeRange !== 'absolute'}
-                        className={classes.toolbarTime}
-                        ampm={this.state.ampm}
-                        value={new Date(this.state.max)}
-                        onChange={date => this.setEndDate(date)}
-                    />
-                </div>
-            </LocalizationProvider>
-            <div className={classes.grow} />
-            <Button
-                style={{ marginRight: 10 }}
-                variant="outlined"
-                onClick={e => this.setState({ showStepMenu: e.target as HTMLElement })}
-            >
-                {this.state.stepType ? this.props.t(this.state.stepType) : this.props.t('Step type')}
-            </Button>
-            {this.state.showStepMenu ? <Menu
-                open={!0}
-                anchorEl={this.state.showStepMenu}
-                onClose={() => this.setState({ showStepMenu: null })}
-            >
-                <MenuItem selected={this.state.stepType === ''} onClick={() => this.onStepChanged('')}>
-                    {this.props.t('None')}
-                </MenuItem>
-                <MenuItem
-                    selected={this.state.stepType === 'stepStart'}
-                    onClick={() => this.onStepChanged('stepStart')}
-                >
-                    {this.props.t('stepStart')}
-                </MenuItem>
-            </Menu> : null}
-            {this.props.showJumpToEchart && this.state.echartsJump && <Fab
-                className={classes.echartsButton}
-                size="small"
-                onClick={() => this.openEcharts()}
-                title={this.props.t('Open charts in new window')}
-            >
-                <img src={EchartsIcon} alt="echarts" className={classes.buttonIcon} />
-            </Fab>}
-            <Fab
-                variant="extended"
-                size="small"
-                color={this.state.splitLine ? 'primary' : 'default'}
-                aria-label="show lines"
-                onClick={() => {
-                    this.localStorage.setItem(
-                        'App.splitLine',
-                        this.state.splitLine ? 'false' : 'true',
-                    );
-                    this.setState({ splitLine: !this.state.splitLine });
-                }}
-            >
-                <SplitLineIcon className={classes.splitLineButtonIcon} />
-                {this.props.t('Show lines')}
-            </Fab>
-        </Toolbar>;
+                    <SplitLineIcon className={classes.splitLineButtonIcon} />
+                    {this.props.t('Show lines')}
+                </Fab>
+            </Toolbar>
+        );
     }
 
     render() {

@@ -2179,15 +2179,13 @@ class App extends Router {
     }
 
     renderAlertSnackbar() {
-        return (
-            <Snackbar
-                className={this.props.classes[`alert_${this.state.alertType}`]}
-                open={this.state.alert}
-                autoHideDuration={6000}
-                onClose={() => this.handleAlertClose()}
-                message={this.state.alertMessage}
-            />
-        );
+        return <Snackbar
+            className={this.props.classes[`alert_${this.state.alertType}`]}
+            open={this.state.alert}
+            autoHideDuration={6000}
+            onClose={() => this.handleAlertClose()}
+            message={this.state.alertMessage}
+        />;
     }
 
     renderConfirmDialog() {
