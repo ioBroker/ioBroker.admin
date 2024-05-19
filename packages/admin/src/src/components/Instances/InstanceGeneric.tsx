@@ -50,7 +50,7 @@ import {
     Confirm as ConfirmDialog,
     SelectWithIcon,
     ComplexCronDialog as ComplexCron,
-    type AdminConnection, Utils as UtilsCommon, Utils, TextWithIcon,
+    type AdminConnection, Utils as UtilsCommon, Utils, TextWithIcon, Router,
 } from '@iobroker/adapter-react-v5';
 import type {
     ThemeType,
@@ -65,7 +65,7 @@ import InstanceInfo from '@/components/Instances/InstanceInfo';
 import sentry from '@/assets/sentry.svg';
 import noSentry from '@/assets/sentryNo.svg';
 import CustomModal from '../CustomModal';
-import LinksDialog from './LinksDialog';
+import LinksDialog, { type InstanceLink } from './LinksDialog';
 import BasicUtils from '../../Utils';
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
@@ -287,7 +287,7 @@ export const style = (theme: Theme): Record<string, any> => ({
     },
 });
 
-interface InstanceEntry {
+export interface InstanceEntry {
     id: string;
     obj: ioBroker.InstanceObject;
     host: string;
@@ -297,29 +297,29 @@ interface InstanceEntry {
     canStart: boolean;
     adapter: string;
     config: boolean;
-    links: {
-        name: ioBroker.StringOrTranslated;
-        link: string;
-        port: number;
-        color: string;
-    }[];
+    links: InstanceLink[];
     jsonConfig: boolean;
     materialize: boolean;
     compactMode: boolean;
     schedule: null | string;
     loglevel: ioBroker.LogLevel;
-    stoppedWhenWebExtension: string | undefined;
+    stoppedWhenWebExtension: boolean | undefined;
     compact: boolean;
     name: string;
     enabled: boolean;
 }
 
-interface InstanceItem {
+export type InstanceStatusType = 'green' | 'red' | 'orangeDevice' | 'orange' | 'grey' | 'blue';
+
+export interface InstanceItem {
+    id: string; // system.adapter.accuweather.0
+    nameId: string; // accuweather.0
     logLevel: ioBroker.LogLevel;
-    compactGroup: number;
+    mode: string;
+    compactGroup: number | null | string;
     tier: 1 | 2 | 3;
     memoryLimitMB: number;
-    name: ioBroker.StringOrTranslated;
+    name: string;
     stoppedWhenWebExtension: boolean;
     running: boolean;
     connected: boolean;
@@ -331,15 +331,19 @@ interface InstanceItem {
     };
     loglevelIcon: React.JSX.Element;
     logLevelObject: ioBroker.LogLevel;
-    modeSchedule: string;
+    modeSchedule: boolean;
     checkCompact: boolean;
-    compact: number;
+    compact: boolean;
+    category: string;
     supportCompact: boolean;
     checkSentry: boolean;
     sentry: boolean;
+    host: string;
+    status: InstanceStatusType;
+    allowInstanceSettings: boolean;
+    allowInstanceDelete: boolean;
+    allowInstanceLink: boolean;
 }
-
-export type InstanceStatusType = 'green' | 'red' | 'orangeDevice' | 'orange' | 'grey' | 'blue';
 
 export interface InstanceContext {
     adminInstance: string;
@@ -353,7 +357,6 @@ export interface InstanceContext {
     getInstanceStatus: (obj: ioBroker.InstanceObject) => InstanceStatusType;
     socket: AdminConnection;
     expertMode: boolean;
-    openConfig: (id: string) => void;
     maxCompactGroupNumber: number;
     states: Record<string, ioBroker.State>;
     onToggleExpanded: (inst: string) => void;
@@ -361,7 +364,7 @@ export interface InstanceContext {
 
 export interface InstanceGenericProps {
     classes: Record<string, string>;
-    hidden: boolean;
+    hidden?: boolean;
     id: string;
     instance: InstanceEntry;
     deleting: boolean;
@@ -389,7 +392,7 @@ export interface InstanceGenericState {
     showStopAdminDialog: string | false;
     logLevel: ioBroker.LogLevel;
     logOnTheFly: boolean;
-    compactGroup: number;
+    compactGroup: string | number;
     maxCompactGroupNumber: number;
     tier: 1 | 2 | 3;
     host: string;
@@ -996,7 +999,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        this.props.context.openConfig(this.props.id);
+                        Router.doNavigate('tab-instances', 'config', this.props.id);
                     }}
                 >
                     <BuildIcon />

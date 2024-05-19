@@ -23,9 +23,15 @@ const styles: Record<string, any> = {
         height: '100%',
     },
 };
+export interface InstanceLink {
+    name?: ioBroker.StringOrTranslated;
+    link: string;
+    port?: number;
+    color?: string;
+}
 
 interface LinksDialogProps {
-    links: { name: ioBroker.StringOrTranslated; link: string; port: number; color: string }[];
+    links: InstanceLink[];
     onClose: () => void;
     t: (text: string, ...args: any[]) => string;
     instanceId: string;

@@ -86,7 +86,7 @@ class InstancesWorker {
     }
 
     // be careful with this object. Do not change them.
-    getInstances(update?: boolean) {
+    getInstances(update?: boolean): Promise<void | Record<string, ioBroker.InstanceObject>> {
         if (!update && this.promise) {
             return this.promise;
         }

@@ -145,12 +145,12 @@ class Config extends Component {
             tempLogLevel: 'info',
         };
 
-        this.refIframe = React.createRef();
+        this.refIframe = null;
         this.registered = false;
     }
 
     componentDidUpdate(/* prevProps, prevState, snapshot */) {
-        if (!this.registered && this.refIframe.contentWindow) {
+        if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
@@ -228,7 +228,7 @@ class Config extends Component {
                 });
         }
 
-        if (!this.registered && this.refIframe.contentWindow) {
+        if (!this.registered && this.refIframe?.contentWindow) {
             this.registered = true;
             this.props.onRegisterIframeRef(this.refIframe);
         }
@@ -300,7 +300,7 @@ class Config extends Component {
 
         emit(eventName, event => this.closeConfig(event), false);
 
-        this.registered && this.props.onUnregisterIframeRef(this.refIframe);
+        this.registered && this.refIframe && this.props.onUnregisterIframeRef(this.refIframe);
         this.refIframe = null;
     }
 

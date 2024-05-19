@@ -17,9 +17,22 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+interface CustomSelectButtonProps {
+    arrayItem: { name: string | number }[];
+    title?: string;
+    onClick: (name: string | number) => void;
+    value: string | number;
+    contained?: boolean;
+    buttonIcon?: React.JSX.Element;
+    icons?: boolean;
+    t: (text: string, ...args: any[]) => string;
+    translateSuffix?: string;
+    noTranslation?: boolean;
+}
+
 const CustomSelectButton = ({
     arrayItem, title, onClick, value, contained, buttonIcon, icons, t, translateSuffix, noTranslation,
-}) => {
+}: CustomSelectButtonProps) => {
     const [anchorEl, setAnchorEl] = useState(null);
     translateSuffix = translateSuffix || '';
     const classes = useStyles();
@@ -32,7 +45,7 @@ const CustomSelectButton = ({
                 color="primary"
                 onClick={e => setAnchorEl(e.currentTarget)}
             >
-                {buttonIcon || (icons && <MaterialDynamicIcon objIconBool iconName={value} className={classes.icon} />)}
+                {buttonIcon || (icons && <MaterialDynamicIcon objIconBool iconName={value as string} className={classes.icon} />)}
                 {typeof value === 'number' ? value : (noTranslation ? value : t(value + translateSuffix))}
             </Button>
         </Tooltip>
@@ -44,8 +57,8 @@ const CustomSelectButton = ({
         >
             {arrayItem.map(({ name }, idx) => <MenuItem
                 key={name}
-                selected={value ? name === value : value === 0 ? name === value : idx === 0}
-                disabled={value ? name === value : value === 0 ? name === value : idx === 0}
+                selected={value ? name === value : (value === 0 ? name === value : idx === 0)}
+                disabled={value ? name === value : (value === 0 ? name === value : idx === 0)}
                 className={`tag-card-${name}`}
                 style={{ placeContent: 'space-between' }}
                 value={name}
@@ -56,18 +69,13 @@ const CustomSelectButton = ({
             >
                 {icons && <MaterialDynamicIcon
                     objIconBool
-                    iconName={name}
+                    iconName={name as string}
                     className={classes.icon}
                 />}
                 {typeof name === 'number' ? name : (noTranslation ? name : t(name + translateSuffix))}
             </MenuItem>)}
         </Menu>
     </>;
-};
-
-CustomSelectButton.defaultProps = {
-    icons: false,
-    translateSuffix: '',
 };
 
 export default CustomSelectButton;
