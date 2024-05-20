@@ -932,18 +932,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             } catch (e) {
                 // ignore
             }
-            /**
-             * sendToHostAsync('system.host.test', 'upgradeOsPackages', {
-             *     packages: [{
-             *       // the package name
-             *       name: 'google-chrome-stable',
-             *       // the optional version
-             *       version: '120.0.6099.199-1'
-             *     }],
-             *     // if the controller should be restarted afterwards
-             *     restart: true,
-             * });
-             */
+
+            // TODO: only show the refresh icon on linux platform and if flag CONTROLLER_OS_PACKAGE_UPGRADE is supported
             if (nodeUpdate) {
                 nodeUpdate =
                     <Tooltip title={this.props.t('Some updates available')}>
