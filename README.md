@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 6.17.10 (2024-05-20)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected custom configuration dialog
 
 ### 6.17.9 (2024-05-17)

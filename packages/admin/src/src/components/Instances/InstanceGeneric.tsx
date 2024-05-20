@@ -227,8 +227,8 @@ export const style = (theme: Theme): Record<string, any> => ({
         cursor: 'default',
     },
     smallAvatar: {
-        width: 24,
-        height: 24,
+        width: theme.spacing(3),
+        height: theme.spacing(3),
     },
     statusIndicator: {
         marginTop: 12,
@@ -284,6 +284,20 @@ export const style = (theme: Theme): Record<string, any> => ({
     },
     hidden: {
         display: 'none',
+    },
+    okSymbol: {
+        width: 20,
+        height: 20,
+        margin: 2,
+        borderRadius: 2,
+        // border: '2px solid #00000000',
+    },
+    okSymbolInner: {
+        width: 'calc(100% - 2px)',
+        height: 'calc(100% - 2px)',
+        borderRadius: 2,
+        margin: 1,
+        backgroundColor: '#66bb6a',
     },
 });
 
@@ -1185,6 +1199,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
             <InstanceInfo
                 icon={this.props.item.loglevelIcon}
                 tooltip={this.props.item.logLevelObject === this.props.item.logLevel ? `${this.props.context.t('loglevel')} ${this.props.item.logLevel}` : `${this.props.context.t('saved:')} ${this.props.item.logLevelObject} / ${this.props.context.t('actual:')} ${this.props.item.logLevel}`}
+                // className={this.props.classes[ this.props.item.logLevel]}
             >
                 {this.props.item.logLevelObject === this.props.item.logLevel ? this.props.item.logLevel : `${this.props.item.logLevelObject} / ${this.props.item.logLevel}`}
             </InstanceInfo>
