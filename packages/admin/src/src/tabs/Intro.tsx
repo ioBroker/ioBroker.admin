@@ -30,6 +30,7 @@ import EditIntroLinkDialog from '@/dialogs/EditIntroLinkDialog';
 
 import { type InstanceEvent } from '@/Workers/InstancesWorker';
 import { type HostEvent } from '@/Workers/HostsWorker';
+import NodeUpdateDialog from '@/dialogs/NodeUpdateDialog';
 
 const styles: Record<string, any> = (theme: Theme) => ({
     root: {
@@ -115,6 +116,13 @@ interface IntroProps {
     classes: Record<string, any>;
 }
 
+interface NodeUpdateDialog {
+    /** The host id of the host to upgrade node.js on */
+    hostId: string;
+    /** The node.js version to upgrade to */
+    version: string;
+}
+
 interface IntroState {
     /** Difference between client and host time in ms */
     hostTimeDiffMap: Map<string, number>;
@@ -133,13 +141,8 @@ interface IntroState {
     hosts: any;
     /** If controller supports upgrade of nodejs */
     nodeUpdateSupported: boolean;
-}
-
-interface UpdateNodeJsVersionOptions {
-    /** The host id of the host to uphrade node.js on */
-    hostId: string;
-    /** The node.js version to upgrade to */
-    version: string;
+    /** If node update dialog should be shown */
+    nodeUpdateDialog: null | NodeUpdateDialog;
 }
 
 class Intro extends React.Component<IntroProps, IntroState> {
@@ -179,6 +182,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             /** Difference between client and host time in ms */
             hostTimeDiffMap: new Map(),
             nodeUpdateSupported: false,
+            nodeUpdateDialog: null,
         };
 
         this.t = props.t;
@@ -878,35 +882,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    /**
-     * Update Node.JS to given version and restart the controller afterwards
-     *
-     * @param options version and host id information
-     */
-    updateNodeJsVersion(options: UpdateNodeJsVersionOptions): void {
-        const { hostId, version } = options;
-
-        console.log(hostId);
-        console.log(version);
-
-        return;
-        // TODO: show a short modal to explain, that this will lead to nodejs update + controller restart, if confirmed show loading indicator
-
-        this.props.socket.getRawSocket().emit(
-            'sendToHost',
-            hostId,
-            'upgradeOsPackages',
-            {
-                packages: [{
-                    name: 'nodejs',
-                    version,
-                }],
-                // restart the controller after the Node.JS update
-                restart: true,
-            },
-        );
-    }
-
     getHostDescription(id: string): React.JSX.Element {
         const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
@@ -948,7 +923,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 (
                             {nodeUpdate}
 )
-                            {updateSupported ? <RefreshIcon className={this.props.classes.updateIcon} onClick={() => this.updateNodeJsVersion({ hostId: id, version: hostData._nodeNewestNext })} /> : null}
+                            {updateSupported ? <RefreshIcon className={this.props.classes.updateIcon} onClick={() => this.setState({ nodeUpdateDialog: { hostId: id, version: hostData._nodeNewestNext } })} /> : null}
                         </span>
                     </Tooltip>;
             }
@@ -1134,6 +1109,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             overflow="visible"
         >
             {this.renderCopiedToast()}
+            {this.state.nodeUpdateDialog ? <NodeUpdateDialog onClose={() => this.setState({ nodeUpdateDialog: null })} socket={this.props.socket} {...this.state.nodeUpdateDialog} /> : null}
             <TabContent classes={{ root: classes.container }}>
                 <Grid container spacing={2}>
                     {this.getInstancesCards()}
