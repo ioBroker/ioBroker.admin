@@ -15,6 +15,7 @@ import {
     Check as CheckIcon,
     Close as CloseIcon,
     Create as CreateIcon,
+    Refresh as RefreshIcon,
 } from '@mui/icons-material';
 
 import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
@@ -84,6 +85,10 @@ const styles: Record<string, any> = (theme: Theme) => ({
         opacity: 0.7,
         fontSize: 16,
     },
+    updateIcon: {
+        cursor: 'pointer',
+        fontSize: 16,
+    },
 });
 
 const formatInfo  = {
@@ -126,6 +131,13 @@ interface IntroState {
     deactivated: string[] | null;
     instances: null | any[];
     hosts: any;
+}
+
+interface UpdateNodeJsVersionOptions {
+    /** The host id of the host to uphrade node.js on */
+    hostId: string;
+    /** The node.js version to upgrade to */
+    version: string;
 }
 
 class Intro extends React.Component<IntroProps, IntroState> {
@@ -860,6 +872,35 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
+    /**
+     * Update Node.JS to given version and restart the controller afterwards
+     *
+     * @param options version and host id information
+     */
+    updateNodeJsVersion(options: UpdateNodeJsVersionOptions): void {
+        const { hostId, version } = options;
+
+        console.log(hostId);
+        console.log(version);
+
+        return;
+        // TODO: show a short modal to explain, that this will lead to nodejs update + controller restart, if confirmed show loading indicator
+
+        this.props.socket.getRawSocket().emit(
+            'sendToHost',
+            hostId,
+            'upgradeOsPackages',
+            {
+                packages: [{
+                    name: 'nodejs',
+                    version,
+                }],
+                // restart the controller after the Node.JS update
+                restart: true,
+            },
+        );
+    }
+
     getHostDescription(id: string): React.JSX.Element {
         const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
@@ -891,14 +932,28 @@ class Intro extends React.Component<IntroProps, IntroState> {
             } catch (e) {
                 // ignore
             }
+            /**
+             * sendToHostAsync('system.host.test', 'upgradeOsPackages', {
+             *     packages: [{
+             *       // the package name
+             *       name: 'google-chrome-stable',
+             *       // the optional version
+             *       version: '120.0.6099.199-1'
+             *     }],
+             *     // if the controller should be restarted afterwards
+             *     restart: true,
+             * });
+             */
             if (nodeUpdate) {
-                nodeUpdate = <Tooltip title={this.props.t('Some updates available')}>
-                    <span className={this.props.classes.nodeUpdate}>
+                nodeUpdate =
+                    <Tooltip title={this.props.t('Some updates available')}>
+                        <span className={this.props.classes.nodeUpdate} style={{ display: 'inline-flex' }}>
 (
-                        {nodeUpdate}
+                            {nodeUpdate}
 )
-                    </span>
-                </Tooltip>;
+                            <RefreshIcon className={this.props.classes.updateIcon} onClick={() => this.updateNodeJsVersion({ hostId: id, version: hostData._nodeNewestNext })} />
+                        </span>
+                    </Tooltip>;
             }
 
             try {
