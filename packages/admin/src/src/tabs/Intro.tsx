@@ -131,6 +131,8 @@ interface IntroState {
     deactivated: string[] | null;
     instances: null | any[];
     hosts: any;
+    /** If controller supports upgrade of nodejs */
+    nodeUpdateSupported: boolean;
 }
 
 interface UpdateNodeJsVersionOptions {
@@ -176,6 +178,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             hosts: null,
             /** Difference between client and host time in ms */
             hostTimeDiffMap: new Map(),
+            nodeUpdateSupported: false,
         };
 
         this.t = props.t;
@@ -205,9 +208,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
         this.props.instancesWorker.registerHandler(this.getDataDelayed);
         this.props.hostsWorker.registerHandler(this.updateHosts);
         this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+
+        const nodeUpdateSupported = await this.props.socket.checkFeatureSupported('CONTROLLER_OS_PACKAGE_UPGRADE');
+
         // read reverse proxy settings
         const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
-        this.setState({ reverseProxy: obj?.native?.reverseProxy || [] });
+        this.setState({ nodeUpdateSupported, reverseProxy: obj?.native?.reverseProxy || [] });
         await this.checkBackendTime();
     }
 
@@ -933,15 +939,16 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 // ignore
             }
 
-            // TODO: only show the refresh icon on linux platform and if flag CONTROLLER_OS_PACKAGE_UPGRADE is supported
             if (nodeUpdate) {
+                const updateSupported = this.state.nodeUpdateSupported && hostData.Platform === 'linux';
+
                 nodeUpdate =
                     <Tooltip title={this.props.t('Some updates available')}>
                         <span className={this.props.classes.nodeUpdate} style={{ display: 'inline-flex' }}>
 (
                             {nodeUpdate}
 )
-                            <RefreshIcon className={this.props.classes.updateIcon} onClick={() => this.updateNodeJsVersion({ hostId: id, version: hostData._nodeNewestNext })} />
+                            {updateSupported ? <RefreshIcon className={this.props.classes.updateIcon} onClick={() => this.updateNodeJsVersion({ hostId: id, version: hostData._nodeNewestNext })} /> : null}
                         </span>
                     </Tooltip>;
             }
