@@ -104,7 +104,8 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
             {
                 packages: [{
                     name: 'nodejs',
-                    version: this.props.version,
+                    // For apt updates we need to be precise about the version, e.g. `18.20.2-1nodesource1`, thus we simply upgrade to the newest version instead
+                    // version: this.props.version,
                 }],
                 // restart the controller after the Node.js update
                 restart: true,
