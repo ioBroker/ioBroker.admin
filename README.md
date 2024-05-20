@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.10 (2024-05-20)
 * (bluefox) Corrected custom configuration dialog
 
 ### 6.17.9 (2024-05-17)
@@ -105,9 +105,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.17.3 (2024-04-11)
 * (foxriver76) fixed npm adapter installation
-
-### 6.17.2 (2024-04-08)
-* (foxriver76) avoid a crash case if a user has no permission to write objects
 
 ## License
 The MIT License (MIT)

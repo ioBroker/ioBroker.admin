@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.9",
+    "version": "6.17.10",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.10": {
+        "en": "Corrected custom configuration dialog",
+        "de": "Benutzerdefinierte Konfiguration Dialog korrigiert",
+        "ru": "Исправленный диалог настройки",
+        "pt": "Diálogo de configuração personalizado correto",
+        "nl": "Gecorrigeerd configuratievenster",
+        "fr": "Boîte de dialogue de configuration personnalisée corrigée",
+        "it": "Configurazione personalizzata corretta",
+        "es": "Diálogo de configuración personalizada corregido",
+        "pl": "Poprawione okno konfiguracji użytkownika",
+        "uk": "Виправлено користувацький діалог налаштування",
+        "zh-cn": "已校正自定义配置对话框"
+      },
       "6.17.9": {
         "en": "Corrected style of time picker in JSON config\nCorrected saving of tab color",
         "de": "Korrigierter Zeitgeber in JSON config\nKorrigiertes Speichern der Tabfarbe",
@@ -95,19 +108,6 @@
         "pl": "obsługa zawiera w plikach JSONConfig",
         "uk": "підтримка включає в себе файли JSONConfig",
         "zh-cn": "支持包含在 JSONConfig 文件"
-      },
-      "6.16.0": {
-        "en": "added a new tab to the installation wizard which recommends common adapters\napplied newest adapter-react-v5 changes and types",
-        "de": "einen neuen tab zum installationsassistenten hinzugefügt, der häufige adapter empfiehlt\nangewendet neueste adapter-react-v5 änderungen und typen",
-        "ru": "добавлена новая вкладка к мастеру установки, который рекомендует общие адаптеры\nприкладные новейшие изменения адаптера-реакта v5 и типы",
-        "pt": "adicionou uma nova guia ao assistente de instalação que recomenda adaptadores comuns\nmudanças e tipos mais novos do adaptador-react-v5 aplicados",
-        "nl": "toegevoegd een nieuw tabblad aan de installatie wizard die algemene adapters adviseert\ntoegepast nieuwste adapter-reactie-v5 wijzigingen en types",
-        "fr": "ajouté un nouvel onglet à l'assistant d'installation qui recommande des adaptateurs communs\nles derniers changements et types d'adaptateur-réaction-v5 appliqués",
-        "it": "aggiunto una nuova scheda alla procedura guidata di installazione che consiglia adattatori comuni\nnuovo adattatore-react-v5 modifiche e tipi",
-        "es": "agregó una nueva pestaña al asistente de instalación que recomienda adaptadores comunes\nnuevos cambios y tipos aplicados",
-        "pl": "dodano nową zakładkę do asystenta instalacji, który zaleca wspólne adaptery\nzastosowany najnowszy adapter- react- v5 zmiany i typy",
-        "uk": "додано нову вкладку в монтажний майстер, який рекомендує загальні адаптери\nзастосування новітніх змін і типів адаптерів-реакт-v5",
-        "zh-cn": "在安装向导中添加新标签, 它推荐通用适配器\n应用的最新适配器-反应-v5变化和类型"
       }
     },
     "desc": {
