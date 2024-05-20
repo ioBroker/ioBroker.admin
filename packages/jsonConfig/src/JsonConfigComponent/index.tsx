@@ -55,7 +55,7 @@ interface JsonConfigComponentState {
     data: Record<string, any> | null;
 }
 
-class JsonConfigComponent extends Component<JsonConfigComponentProps, JsonConfigComponentState> {
+export class JsonConfigComponentClass extends Component<JsonConfigComponentProps, JsonConfigComponentState> {
     private readonly forceUpdateHandlers: Record<string, (data: any) => void>;
 
     private errorTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -96,7 +96,7 @@ class JsonConfigComponent extends Component<JsonConfigComponentProps, JsonConfig
         return null;
     }
 
-    static async loadI18n(socket: AdminConnection, i18n: boolean | string, adapterName: string) {
+    static async loadI18n(socket: AdminConnection, i18n: boolean | string | Record<string, Record<ioBroker.Languages, string>>, adapterName: string) {
         if (i18n === true || (i18n && typeof i18n === 'string')) {
             const lang = I18n.getLanguage();
             const path = typeof i18n === 'string' ? i18n : 'i18n';
@@ -153,13 +153,13 @@ class JsonConfigComponent extends Component<JsonConfigComponentProps, JsonConfig
 
     onCommandRunning = (commandRunning: boolean) => this.setState({ commandRunning });
 
-    readSettings() {
+    async readSettings() : Promise<void> {
         if ((this.props.custom || this.props.common) && this.props.data) {
-            return Promise.resolve();
+            return;
         }
-        return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
-            // eslint-disable-next-line react/no-unused-state
-            .then(obj => this.setState({ data: this.props.data || obj.native }));
+        const obj = await this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`);
+        // eslint-disable-next-line react/no-unused-state
+        this.setState({ data: this.props.data || obj.native });
     }
 
     readData() {
@@ -432,4 +432,4 @@ class JsonConfigComponent extends Component<JsonConfigComponentProps, JsonConfig
     }
 }
 
-export default withStyles(styles)(JsonConfigComponent);
+export default withStyles(styles)(JsonConfigComponentClass);

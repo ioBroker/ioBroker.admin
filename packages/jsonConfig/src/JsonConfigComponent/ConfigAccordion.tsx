@@ -173,7 +173,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
     onAdd = () => {
         const { schema } = this.props;
         const newValue = JSON.parse(JSON.stringify(this.state.value));
-        const newItem = schema.items && schema.items.reduce((accumulator: Record<string, ConfigItemIndexed>, currentValue: ConfigItemIndexed) => {
+        const newItem: Record<string, any> = schema.items && schema.items.reduce((accumulator: Record<string, any>, currentValue: ConfigItemIndexed) => {
             let defaultValue;
             if (currentValue.defaultFunc) {
                 if (this.props.custom) {

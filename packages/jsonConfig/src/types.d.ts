@@ -27,9 +27,9 @@ export interface ConfigItem {
     label?: ioBroker.StringOrTranslated;
     /** @deprecated use label */
     text?: ioBroker.StringOrTranslated;
-    hidden?: string;
+    hidden?: string | boolean;
     hideOnlyControl?: boolean;
-    disabled?: string;
+    disabled?: string | boolean;
     help?: ioBroker.StringOrTranslated;
     helpLink?: string;
     style?: React.CSSProperties;
@@ -100,6 +100,7 @@ export interface ConfigItemPanel extends ConfigItem {
     collapsable?: boolean;
     color?: 'primary' | 'secondary';
     innerStyle?: React.CSSProperties;
+    i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
 export interface ConfigItemTabs extends ConfigItem {
@@ -107,6 +108,7 @@ export interface ConfigItemTabs extends ConfigItem {
     items: Record<string, ConfigItemPanel>;
     iconPosition?: 'bottom' | 'end' | 'start' | 'top';
     tabsStyle?: React.CSSProperties;
+    i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
 export interface ConfigItemText extends ConfigItem {
@@ -309,7 +311,7 @@ export interface ConfigItemTimePicker extends ConfigItem {
     returnFormat?: string;
 }
 
-export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigItemAutocompleteSendTo| ConfigItemPanel |
+export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigItemAutocompleteSendTo | ConfigItemPanel |
     ConfigItemTabs | ConfigItemText |
     ConfigItemNumber | ConfigItemColor | ConfigItemCheckbox |
     ConfigItemSlider | ConfigItemIP | ConfigItemUser | ConfigItemRoom | ConfigItemFunc |

@@ -1,5 +1,5 @@
 import JsonConfig from './JsonConfig';
-import JsonConfigComponent from './JsonConfigComponent';
+import JsonConfigComponent, { JsonConfigComponentClass } from './JsonConfigComponent';
 import ConfigPanel from './JsonConfigComponent/ConfigPanel';
 import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 
@@ -10,4 +10,5 @@ export {
     JsonConfigComponent,
     ConfigPanel,
     ConfigGeneric,
+    JsonConfigComponentClass,
 };

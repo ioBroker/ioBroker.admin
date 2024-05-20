@@ -586,18 +586,20 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
     }
 
     execute(
-        func: string | Record<string, string>,
-        defaultValue: any,
+        func: string | boolean | Record<string, string>,
+        defaultValue: string | number | boolean,
         data: Record<string, any>,
         arrayIndex: number,
         globalData: Record<string, any>,
-    ) {
+    ): string | number | boolean {
         let fun: string;
 
         if (isObject(func)) {
             fun = func.func;
-        } else {
+        } else if (typeof func === 'string') {
             fun = func;
+        } else {
+            return func as boolean;
         }
 
         if (!fun) {
@@ -637,19 +639,21 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
     }
 
     executeCustom(
-        func: string | Record<string, string>,
+        func: string | boolean | Record<string, string>,
         data: Record<string, any>,
         customObj: Record<string, any>,
         instanceObj: ioBroker.InstanceObject,
         arrayIndex: number,
         globalData: Record<string, any>,
-    ) {
+    ): string | boolean | number | null {
         let fun: string;
 
         if (isObject(func)) {
             fun = func.func;
-        } else {
+        } else if (typeof func === 'string') {
             fun = func;
+        } else {
+            return func as boolean;
         }
 
         if (!fun) {
@@ -686,11 +690,16 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         }
     }
 
-    calculate(schema: Record<string, any>) {
-        let error;
-        let disabled;
-        let hidden;
-        let defaultValue;
+    calculate(schema: Record<string, any>): {
+        error: boolean;
+        disabled: boolean;
+        hidden: boolean;
+        defaultValue: null | string | number | boolean;
+    } {
+        let error: boolean;
+        let disabled: boolean;
+        let hidden: boolean;
+        let defaultValue: null | string | number | boolean;
 
         if (this.props.custom) {
             error = schema.validator
@@ -701,7 +710,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                     this.props.instanceObj,
                     this.props.arrayIndex,
                     this.props.globalData,
-                )
+                ) as boolean
                 : false;
             disabled = schema.disabled
                 ? this.executeCustom(
@@ -711,7 +720,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                     this.props.instanceObj,
                     this.props.arrayIndex,
                     this.props.globalData,
-                )
+                ) as boolean
                 : false;
             hidden = schema.hidden
                 ? this.executeCustom(
@@ -721,7 +730,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                     this.props.instanceObj,
                     this.props.arrayIndex,
                     this.props.globalData,
-                )
+                ) as boolean
                 : false;
             defaultValue = schema.defaultFunc
                 ? this.executeCustom(
@@ -735,13 +744,13 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 : schema.default;
         } else {
             error = schema.validator
-                ? !this.execute(schema.validator, false, this.props.data, this.props.arrayIndex, this.props.globalData)
+                ? !this.execute(schema.validator, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
                 : false;
             disabled = schema.disabled
-                ? this.execute(schema.disabled, false, this.props.data, this.props.arrayIndex, this.props.globalData)
+                ? this.execute(schema.disabled, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
                 : false;
             hidden = schema.hidden
-                ? this.execute(schema.hidden, false, this.props.data, this.props.arrayIndex, this.props.globalData)
+                ? this.execute(schema.hidden, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
                 : false;
             defaultValue = schema.defaultFunc
                 ? this.execute(

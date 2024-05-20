@@ -1,5 +1,5 @@
-import React, { createRef, Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
+import React, { createRef, Component, type RefObject } from 'react';
+import { withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 
 import {
@@ -25,12 +25,13 @@ import {
     Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
-import { JsonConfigComponent, ConfigGeneric } from '@iobroker/json-config';
+import type { ConfigItemPanel } from '@iobroker/json-config/src/types';
+import { JsonConfigComponent, ConfigGeneric, JsonConfigComponentClass } from '@iobroker/json-config';
 import { deepClone } from '@mui/x-data-grid/utils/utils';
 import Utils from '@/Utils';
-import type { BasicComponentProps, ValueOrString } from '@/types';
+import type { BasicComponentProps } from '@/types';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -98,12 +99,12 @@ const styles = () => ({
     enabledInvisible: {
         display: 'none',
     },
-}) satisfies Styles<any, any>;
+};
 
 const URL_PREFIX = '.'; // or './' or 'http://localhost:8081' for debug
 
 interface ObjectCustomEditorProps extends BasicComponentProps {
-    objects: Record<string, any>;
+    objects: Record<string, ioBroker.Object>;
     /** All adapter instances that support custom attribute */
     customsInstances: string[];
     objectIDs: string[];
@@ -113,7 +114,7 @@ interface ObjectCustomEditorProps extends BasicComponentProps {
     data: Record<string, any>;
     originalData: Record<string, any>;
     systemConfig?: ioBroker.SystemConfigObject;
-    classes: Record<ValueOrString<keyof ReturnType<typeof styles>>, any>;
+    classes: Record<string, string>;
     onChange: (hasChanges?: boolean, update?: boolean) => void;
     reportChangedIds: (changedIds: string[]) => void;
 }
@@ -131,14 +132,20 @@ interface ObjectCustomEditorState {
     systemConfig?: ioBroker.SystemConfigObject;
 }
 
+interface JsonConfigStorage {
+    json?: ConfigItemPanel | null;
+    instanceObjs?: Record<string, ioBroker.InstanceObject>;
+    disabled?: boolean;
+}
+
 class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustomEditorState> {
     private readonly changedIds: string[];
 
     private readonly scrollDivRef: React.RefObject<HTMLDivElement>;
 
-    private readonly jsonConfigs: Record<string, any>;
+    private readonly jsonConfigs: Record<string, null | JsonConfigStorage>;
 
-    private readonly refTemplate: Record<string, any>;
+    private readonly refTemplate: Record<string, RefObject<HTMLDivElement>>;
 
     private readonly customObj: ioBroker.AnyObject;
 
@@ -177,7 +184,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
 
-        this.customObj = this.props.objectIDs.length > 1 ? { custom: {}, native: {} } : Utils.deepClone(this.props.objects[this.props.objectIDs[0]] || null);
+        this.customObj = this.props.objectIDs.length > 1 ? { common: { custom: {} }, native: {} } as ioBroker.AnyObject : Utils.deepClone(this.props.objects[this.props.objectIDs[0]] || null);
 
         if (this.customObj) {
             this.loadAllCustoms()
@@ -209,7 +216,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
             const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.', '');
             if (this.jsonConfigs[adapter] === undefined) {
-                this.jsonConfigs[adapter] = false;
+                this.jsonConfigs[adapter] = null;
                 promises.push(this.getCustomTemplate(adapter));
             }
         }
@@ -221,20 +228,23 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             if (this.jsonConfigs[adapter]) {
                 this.jsonConfigs[adapter].instanceObjs = this.jsonConfigs[adapter].instanceObjs || {};
                 this.jsonConfigs[adapter].instanceObjs[id] = {
-                    _id: id,
+                    _id: id as `system.adapter.${string}.${number}`,
                     common: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.common)),
                     native: JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${id}`]?.native)),
+                    type: 'instance',
+                    instanceObjects: [],
+                    objects: [],
                 };
             }
         });
     }
 
-    async getCustomTemplate(adapter: string) {
+    async getCustomTemplate(adapter: string): Promise<void> {
         const ad = this.props.objects[`system.adapter.${adapter}`] ? deepClone(this.props.objects[`system.adapter.${adapter}`]) : null;
 
         if (!ad) {
             console.error(`Cannot find adapter "${adapter}"`);
-            return Promise.resolve(null);
+            return;
         }
         Utils.fixAdminUI(ad);
 
@@ -245,7 +255,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     await this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json5');
                 }
                 let jsonText: string;
-                let json: {
+                const json: {
                     file: string;
                     mimeType: string;
                 } = await this.props.socket.readFile(`${adapter}.admin`, 'jsonCustom.json');
@@ -256,17 +266,18 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     // @ts-expect-error deprecated, but still possible
                     jsonText = json;
                 }
+                let jsonSchema: ConfigItemPanel;
                 try {
-                    json = JSON5.parse(jsonText);
+                    jsonSchema = JSON5.parse(jsonText) as ConfigItemPanel;
                     this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
-                    this.jsonConfigs[adapter].json = jsonText;
+                    this.jsonConfigs[adapter].json = jsonSchema;
                 } catch (e) {
                     console.error(`Cannot parse jsonConfig of ${adapter}: ${e}`);
                     window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
                 }
 
-                // @ts-expect-error wait for types
-                return JsonConfigComponent.loadI18n(this.props.socket, json.i18n, adapter);
+                await JsonConfigComponentClass.loadI18n(this.props.socket, jsonSchema.i18n, adapter);
+                return;
             } catch (e1) {
                 console.error(`Cannot load jsonConfig of ${adapter}: ${e1}`);
                 window.alert(`Cannot load jsonConfig of ${adapter}: ${e1}`);
@@ -274,11 +285,18 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         }
         console.error(`Adapter ${adapter} is not yet supported by this version of admin`);
         window.alert(`Adapter ${adapter} is not yet supported by this version of admin`);
-        return Promise.resolve(null);
     }
 
     // See configGeneric _executeCustom
-    _executeCustom(func: string | Record<string, any>, data: Record<string, any>, customObj: Record<string, any>, instanceObj: ioBroker.InstanceObject, items: Record<string, any>, attr: string, processed: string[]) {
+    _executeCustom(
+        func: string | { func: string; alsoDependsOn: string[] },
+        data: Record<string, any>,
+        customObj: Record<string, any>,
+        instanceObj: ioBroker.InstanceObject,
+        items: Record<string, any>,
+        attr: string,
+        processed: string[],
+    ) {
         if (processed.includes(attr)) {
             return undefined;
         }
@@ -468,7 +486,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         const enabled = this.state.newValues[instance] !== undefined && (!this.state.newValues[instance] || this.state.newValues[instance].enabled !== undefined) ? !!(this.state.newValues[instance] && this.state.newValues[instance].enabled) : (this.state.newValues[instance] === null ? false : this.commonConfig[instance].enabled);
         const isIndeterminate = Array.isArray(enabled) && (!this.state.newValues[instance] || this.state.newValues[instance].enabled === undefined);
 
-        const disabled = this.jsonConfigs[adapter] && this.jsonConfigs[adapter].json?.disabled;
+        const disabled = this.jsonConfigs[adapter]?.json?.disabled;
 
         const data = this.combineNewAndOld(instance);
 
@@ -478,8 +496,18 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
         if (typeof this.jsonConfigs[adapter].json.hidden === 'string') {
             // evaluate function
-            if (this._executeCustom(this.jsonConfigs[adapter].json.hidden, data, customObj, instanceObj, this.jsonConfigs[adapter].json.items, 'enabled', [])) {
+            if (this._executeCustom(this.jsonConfigs[adapter].json.hidden as string, data, customObj, instanceObj, this.jsonConfigs[adapter].json.items, 'enabled', [])) {
                 return null;
+            }
+        }
+
+        let help = null;
+        if (disabled && this.jsonConfigs[adapter].json.help) {
+            if (typeof this.jsonConfigs[adapter].json.help === 'object') {
+                help = (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>)[this.props.lang] ||
+                    (this.jsonConfigs[adapter].json.help as Record<ioBroker.Languages, string>).en;
+            } else {
+                help = this.props.t(this.jsonConfigs[adapter].json.help as string);
             }
         }
 
@@ -513,9 +541,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 <img src={icon} className={this.props.classes.headingIcon} alt="" />
                 <Typography className={this.props.classes.heading}>{ this.props.t('Settings %s', instance)}</Typography>
                 <div className={CommonUtils.clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible)}>
-                    {
-                        this.props.t('Enabled')
-                    }
+                    {this.props.t('Enabled')}
                 </div>
             </AccordionSummary>
             <AccordionDetails>
@@ -525,7 +551,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                         control={<Checkbox
                             indeterminate={isIndeterminate}
                             checked={!!enabled}
-                            disabled={disabled}
+                            disabled={!!disabled}
                             onChange={e => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                 const newValues = deepClone(this.cachedNewValues);
@@ -534,7 +560,11 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                                 if (isIndeterminate || e.target.checked) {
                                     newValues[instance].enabled = true;
                                 } else if (enabled) {
-                                    newValues[instance] = null;
+                                    if (this.commonConfig[instance].enabled) {
+                                        newValues[instance] = null;
+                                    } else {
+                                        delete newValues[instance];
+                                    }
                                 } else {
                                     delete newValues[instance];
                                 }
@@ -588,12 +618,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             }}
                         /> : null}
 
-                    {disabled && this.jsonConfigs[adapter].json.help ?
-                        (typeof this.jsonConfigs[adapter].json.help === 'object' ?
-                            this.jsonConfigs[adapter].json.help[this.props.lang] ||
-                            this.jsonConfigs[adapter].json.help.en
-                            :
-                            this.props.t(this.jsonConfigs[adapter].json.help)) : null}
+                    {help}
                 </div>
             </AccordionDetails>
         </Accordion>;

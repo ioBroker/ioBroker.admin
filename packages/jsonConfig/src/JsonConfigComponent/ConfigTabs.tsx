@@ -6,6 +6,7 @@ import { Tabs, Tab } from '@mui/material';
 import type { ConfigItemTabs } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
+import {bool} from "prop-types";
 
 const styles: Record<string, any> = {
     tabs: {
@@ -54,7 +55,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 }}
             >
                 {Object.keys(items).map(name => {
-                    let disabled;
+                    let disabled: boolean;
                     if (this.props.custom) {
                         const hidden = this.executeCustom(
                             items[name].hidden,
@@ -74,15 +75,15 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                             this.props.instanceObj,
                             this.props.index,
                             this.props.globalData,
-                        );
+                        ) as boolean;
                     } else {
-                        const hidden = this.execute(
+                        const hidden: boolean = this.execute(
                             items[name].hidden,
                             false,
                             this.props.data,
                             this.props.index,
                             this.props.globalData,
-                        );
+                        ) as boolean;
                         if (hidden) {
                             return null;
                         }
@@ -92,7 +93,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                             this.props.data,
                             this.props.index,
                             this.props.globalData,
-                        );
+                        ) as boolean;
                     }
                     return <Tab
                         wrapped

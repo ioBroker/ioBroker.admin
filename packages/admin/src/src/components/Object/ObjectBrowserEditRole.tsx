@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
 
 import {
     Dialog,
@@ -9,15 +8,16 @@ import {
     DialogActions,
     TextField,
     Button,
-    Autocomplete,
+    Autocomplete, type Theme,
 } from '@mui/material';
 
 import {
     Close as IconCancel,
     Check as IconCheck,
 } from '@mui/icons-material';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     input: {
         marginBottom: theme.spacing(2),
     },
@@ -35,8 +35,26 @@ const styles = theme => ({
     },
 });
 
-class ObjectBrowserEditRole extends Component {
-    constructor(props) {
+interface ObjectBrowserEditRoleProps {
+    classes: Record<string, string>;
+    roles: string[];
+    id: string;
+    socket: AdminConnection;
+    onClose: (obj?: ioBroker.Object) => void;
+
+    t: (text: string, ...args: any[]) => string;
+}
+
+interface ObjectBrowserEditRoleState {
+    role: string | null;
+    initRole: string | null;
+    roleInput: string | null;
+}
+
+class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, ObjectBrowserEditRoleState> {
+    private object: ioBroker.Object | null = null;
+
+    constructor(props: ObjectBrowserEditRoleProps) {
         super(props);
 
         this.state = {
@@ -48,16 +66,16 @@ class ObjectBrowserEditRole extends Component {
 
     componentDidMount() {
         this.props.socket.getObject(this.props.id)
-            .then(obj => {
+            .then((obj: ioBroker.Object) => {
                 this.object = obj;
                 const value = obj?.common?.role || null;
                 this.setState({ role: value, initRole: value, roleInput: value });
             })
-            .catch(e => console.error(e));
+            .catch((e: string) => console.error(e));
     }
 
     onUpdate() {
-        this.object.common = this.object.common || {};
+        this.object.common = this.object.common || {} as ioBroker.ObjectCommon;
         this.object.common.role = this.state.roleInput;
         this.props.socket.setObject(this.object._id, this.object)
             .then(() => this.props.onClose(this.object));
@@ -76,7 +94,6 @@ class ObjectBrowserEditRole extends Component {
             <DialogTitle id="edit-role-dialog-title">{this.object ? this.props.t('Update role for %s', this.object._id) : null}</DialogTitle>
             <DialogContent>
                 <Autocomplete
-                    variant="standard"
                     freeSolo
                     options={this.props.roles}
                     style={{ width: '100%' }}
@@ -113,15 +130,5 @@ class ObjectBrowserEditRole extends Component {
         </Dialog>;
     }
 }
-
-ObjectBrowserEditRole.propTypes = {
-    classes: PropTypes.object,
-    roles: PropTypes.array,
-    id: PropTypes.string,
-    socket: PropTypes.object,
-    onClose: PropTypes.func.isRequired,
-
-    t: PropTypes.func,
-};
 
 export default withStyles(styles)(ObjectBrowserEditRole);
