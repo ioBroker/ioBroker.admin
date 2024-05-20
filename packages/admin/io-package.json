@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.10",
+    "version": "6.17.11",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.11": {
+        "en": "Corrected custom configuration dialog",
+        "de": "Benutzerdefinierte Konfiguration Dialog korrigiert",
+        "ru": "Исправленный диалог настройки",
+        "pt": "Diálogo de configuração personalizado correto",
+        "nl": "Gecorrigeerd configuratievenster",
+        "fr": "Boîte de dialogue de configuration personnalisée corrigée",
+        "it": "Configurazione personalizzata corretta",
+        "es": "Diálogo de configuración personalizada corregido",
+        "pl": "Poprawione okno konfiguracji użytkownika",
+        "uk": "Виправлено користувацький діалог налаштування",
+        "zh-cn": "已校正自定义配置对话框"
+      },
       "6.17.9": {
         "en": "Corrected style of time picker in JSON config\nCorrected saving of tab color",
         "de": "Korrigierter Zeitgeber in JSON config\nKorrigiertes Speichern der Tabfarbe",

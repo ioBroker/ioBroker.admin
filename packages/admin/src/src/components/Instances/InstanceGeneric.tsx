@@ -415,6 +415,7 @@ export interface InstanceGenericState {
 }
 
 export default abstract class InstanceGeneric<TProps extends InstanceGenericProps, TState extends InstanceGenericState> extends Component<TProps, TState> {
+    // @
     getDefaultState(props: TProps): InstanceGenericState {
         return {
             openDialog: false,
