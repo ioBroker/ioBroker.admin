@@ -15,6 +15,7 @@ import {
     Check as CheckIcon,
     Close as CloseIcon,
     Create as CreateIcon,
+    Refresh as RefreshIcon,
 } from '@mui/icons-material';
 
 import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
@@ -29,6 +30,7 @@ import EditIntroLinkDialog from '@/dialogs/EditIntroLinkDialog';
 
 import { type InstanceEvent } from '@/Workers/InstancesWorker';
 import { type HostEvent } from '@/Workers/HostsWorker';
+import NodeUpdateDialog from '@/dialogs/NodeUpdateDialog';
 
 const styles: Record<string, any> = (theme: Theme) => ({
     root: {
@@ -84,6 +86,10 @@ const styles: Record<string, any> = (theme: Theme) => ({
         opacity: 0.7,
         fontSize: 16,
     },
+    updateIcon: {
+        cursor: 'pointer',
+        fontSize: 16,
+    },
 });
 
 const formatInfo  = {
@@ -110,6 +116,13 @@ interface IntroProps {
     classes: Record<string, any>;
 }
 
+interface NodeUpdateDialogInfo {
+    /** The host id of the host to upgrade node.js on */
+    hostId: string;
+    /** The node.js version to upgrade to */
+    version: string;
+}
+
 interface IntroState {
     /** Difference between client and host time in ms */
     hostTimeDiffMap: Map<string, number>;
@@ -126,6 +139,10 @@ interface IntroState {
     deactivated: string[] | null;
     instances: null | any[];
     hosts: any;
+    /** If controller supports upgrade of nodejs */
+    nodeUpdateSupported: boolean;
+    /** If node update dialog should be shown */
+    nodeUpdateDialog: null | NodeUpdateDialogInfo;
 }
 
 class Intro extends React.Component<IntroProps, IntroState> {
@@ -164,6 +181,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             hosts: null,
             /** Difference between client and host time in ms */
             hostTimeDiffMap: new Map(),
+            nodeUpdateSupported: false,
+            nodeUpdateDialog: null,
         };
 
         this.t = props.t;
@@ -193,9 +212,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
         this.props.instancesWorker.registerHandler(this.getDataDelayed);
         this.props.hostsWorker.registerHandler(this.updateHosts);
         this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+
+        const nodeUpdateSupported = await this.props.socket.checkFeatureSupported('CONTROLLER_OS_PACKAGE_UPGRADE');
+
         // read reverse proxy settings
         const obj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
-        this.setState({ reverseProxy: obj?.native?.reverseProxy || [] });
+        this.setState({ nodeUpdateSupported, reverseProxy: obj?.native?.reverseProxy || [] });
         await this.checkBackendTime();
     }
 
@@ -891,14 +913,19 @@ class Intro extends React.Component<IntroProps, IntroState> {
             } catch (e) {
                 // ignore
             }
+
             if (nodeUpdate) {
-                nodeUpdate = <Tooltip title={this.props.t('Some updates available')}>
-                    <span className={this.props.classes.nodeUpdate}>
+                const updateSupported = this.state.nodeUpdateSupported && hostData.Platform === 'linux';
+
+                nodeUpdate =
+                    <Tooltip title={this.props.t('Some updates available')}>
+                        <span className={this.props.classes.nodeUpdate} style={{ display: 'inline-flex' }}>
 (
-                        {nodeUpdate}
+                            {nodeUpdate}
 )
-                    </span>
-                </Tooltip>;
+                            {updateSupported ? <RefreshIcon className={this.props.classes.updateIcon} onClick={() => this.setState({ nodeUpdateDialog: { hostId: id, version: hostData._nodeNewestNext } })} /> : null}
+                        </span>
+                    </Tooltip>;
             }
 
             try {
@@ -1082,6 +1109,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             overflow="visible"
         >
             {this.renderCopiedToast()}
+            {this.state.nodeUpdateDialog ? <NodeUpdateDialog onClose={() => this.setState({ nodeUpdateDialog: null })} socket={this.props.socket} {...this.state.nodeUpdateDialog} /> : null}
             <TabContent classes={{ root: classes.container }}>
                 <Grid container spacing={2}>
                     {this.getInstancesCards()}
