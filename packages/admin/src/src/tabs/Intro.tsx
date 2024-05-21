@@ -116,7 +116,7 @@ interface IntroProps {
     classes: Record<string, any>;
 }
 
-interface NodeUpdateDialog {
+interface NodeUpdateDialogInfo {
     /** The host id of the host to upgrade node.js on */
     hostId: string;
     /** The node.js version to upgrade to */
@@ -142,7 +142,7 @@ interface IntroState {
     /** If controller supports upgrade of nodejs */
     nodeUpdateSupported: boolean;
     /** If node update dialog should be shown */
-    nodeUpdateDialog: null | NodeUpdateDialog;
+    nodeUpdateDialog: null | NodeUpdateDialogInfo;
 }
 
 class Intro extends React.Component<IntroProps, IntroState> {
