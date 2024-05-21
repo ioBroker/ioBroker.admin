@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.10",
+    "version": "6.17.11",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,7 +18,7 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "6.17.10": {
+      "6.17.11": {
         "en": "Corrected custom configuration dialog",
         "de": "Benutzerdefinierte Konfiguration Dialog korrigiert",
         "ru": "Исправленный диалог настройки",

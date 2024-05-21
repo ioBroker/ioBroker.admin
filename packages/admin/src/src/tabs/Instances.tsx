@@ -31,14 +31,6 @@ import {
 } from '@mui/icons-material';
 import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
-import {
-    amber,
-    blue,
-    grey,
-    red,
-    green,
-} from '@mui/material/colors';
-
 import { type AdminConnection, Router, withWidth } from '@iobroker/adapter-react-v5';
 import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
@@ -61,60 +53,6 @@ import InstanceFilterDialog from '../components/Instances/InstanceFilterDialog';
 import InstanceCategory from '../components/Instances/InstanceCategory';
 
 const styles: Record<string, any> = (theme: Theme) => ({
-    table: {
-        minWidth: 650,
-    },
-    tableRow: {
-        '&:nth-of-type(odd)': {
-            backgroundColor: grey[300],
-        },
-        '&:nth-of-type(even)': {
-            backgroundColor: grey[200],
-        },
-    },
-    smallAvatar: {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
-    },
-    button: {
-        padding: '5px',
-    },
-    enabled: {
-        color: green[400],
-        '&:hover': {
-            backgroundColor: green[200],
-        },
-    },
-    disabled: {
-        color: red[400],
-        '&:hover': {
-            backgroundColor: red[200],
-        },
-    },
-    hide: {
-        visibility: 'hidden',
-    },
-    state: {
-        width: theme.spacing(2),
-        height: theme.spacing(2),
-        borderRadius: '100%',
-    },
-    green: {
-        backgroundColor: green[700],
-    },
-    red: {
-        backgroundColor: red[700],
-    },
-    grey: {
-        backgroundColor: grey[700],
-    },
-    blue: {
-        backgroundColor: blue[700],
-    },
-    transparent: {
-        color: 'transparent',
-        backgroundColor: 'transparent',
-    },
     paper: {
         height: '100%',
     },
@@ -127,74 +65,10 @@ const styles: Record<string, any> = (theme: Theme) => ({
         boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
         border: '0px solid #888',
     },
-    silly: {
-
-    },
-    debug: {
-        backgroundColor: grey[700],
-    },
-    info: {
-        backgroundColor: blue[700],
-    },
-    warn: {
-        backgroundColor: amber[700],
-    },
-    error: {
-        backgroundColor: red[700],
-    },
-    grow: {
-        flexGrow: 1,
-    },
-    tableRender: {
-        tableLayout: 'fixed',
-        minWidth: 960,
-        '& td': {
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-        },
-    },
     cards: {
         display: 'flex',
         flexFlow: 'wrap',
         justifyContent: 'center',
-    },
-    sentry: {
-        width: 24,
-        height: 24,
-        objectFit: 'fill',
-        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-539deg) brightness(99%) contrast(97%)',
-    },
-    contrast0: {
-        filter: 'contrast(0%)',
-    },
-    compactButtons: {
-        display: 'inline-block',
-        borderRadius: 4,
-        border: '1px gray dotted',
-    },
-    okSymbol: {
-        width: 20,
-        height: 20,
-        margin: 2,
-        borderRadius: 2,
-        // border: '2px solid #00000000',
-    },
-    okSymbolInner: {
-        width: 'calc(100% - 2px)',
-        height: 'calc(100% - 2px)',
-        borderRadius: 2,
-        margin: 1,
-        backgroundColor: '#66bb6a',
-    },
-    square: {
-        width: 24,
-        height: 24,
-        filter: theme.palette.mode === 'dark' ? 'brightness(0) invert(1)' : 'grayscale(100%)',
-        opacity: theme.palette.mode === 'dark' ? 1 : 0.8,
-    },
-    primary: {
-        filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)',
     },
     filterActive: {
         color: theme.palette.primary.main,

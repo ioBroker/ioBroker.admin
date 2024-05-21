@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -14,9 +13,10 @@ import {
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemText } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     indeterminate: {
         opacity: 0.5,
     },
@@ -33,9 +33,19 @@ const styles = () => ({
         fontSize: 12,
         color: '#FF0000',
     },
-});
+};
 
-class ConfigText extends ConfigGeneric {
+interface ConfigTextProps extends ConfigGenericProps {
+    schema: ConfigItemText;
+}
+
+interface ConfigTextState extends ConfigGenericState {
+    oldValue?: string;
+}
+
+class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
+    private updateTimeout: ReturnType<typeof setTimeout> | null = null;
+
     componentDidMount() {
         super.componentDidMount();
         let value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -49,7 +59,7 @@ class ConfigText extends ConfigGeneric {
         this.setState({ value, oldValue: value });
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: ConfigTextProps, state: ConfigTextState) {
         if (props.multiEdit && state.value === ConfigGeneric.DIFFERENT_VALUE) {
             return ConfigGeneric.DIFFERENT_VALUE;
         }
@@ -66,7 +76,7 @@ class ConfigText extends ConfigGeneric {
         return null;
     }
 
-    renderItem(error, disabled) {
+    renderItem(error?: boolean, disabled?: boolean) {
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
@@ -89,7 +99,7 @@ class ConfigText extends ConfigGeneric {
                 className={this.props.classes.indeterminate}
                 fullWidth
                 value={arr[0]}
-                getOptionSelected={(option, value) => option.label === value.label}
+                // getOptionSelected={(option, value) => option.label === value.label}
                 onChange={(_, value) =>  {
                     const val = value ? value.value : '';
                     this.onChange(this.props.attr, val, () => {
@@ -119,7 +129,7 @@ class ConfigText extends ConfigGeneric {
             return <div style={{ width: '100%' }}>
                 {this.props.schema.label ? <div className={this.props.classes.label}>{this.getText(this.props.schema.label)}</div> : null}
                 <TextareaAutosize
-                    variant="standard"
+                    // variant="standard"
                     style={{
                         width: '100%',
                         resize: 'vertical',
@@ -153,7 +163,7 @@ class ConfigText extends ConfigGeneric {
             }}
             // eslint-disable-next-line react/jsx-no-duplicate-props
             InputProps={{
-                endAdornment: this.state.value ? <InputAdornment position="end">
+                endAdornment: this.state.value && !this.props.schema.noClearButton ? <InputAdornment position="end">
                     <IconButton
                         size="small"
                         onClick={() => this.setState({ value: '', oldValue: this.state.value }, () =>
@@ -174,17 +184,5 @@ class ConfigText extends ConfigGeneric {
         />;
     }
 }
-
-ConfigText.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigText);

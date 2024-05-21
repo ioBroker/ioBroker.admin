@@ -11,28 +11,49 @@ import {
 } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemCertCollection } from '#JC/types';
+import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-});
+};
 
-class ConfigCertCollection extends ConfigGeneric {
+interface ConfigCertCollectionProps extends ConfigGenericProps {
+    schema: ConfigItemCertCollection;
+}
+
+interface ConfigCertCollectionState extends ConfigGenericState {
+    collectionsOptions?: string[];
+}
+
+interface CertCollection {
+    /** Source of the certificate */
+    from: string;
+    key: string;
+    cert: string;
+    chain: string[],
+    domains: string[],
+    staging?: boolean,
+    tsExpires?: number;
+}
+
+class ConfigCertCollection extends ConfigGeneric<ConfigCertCollectionProps, ConfigCertCollectionState> {
     async componentDidMount() {
         super.componentDidMount();
 
-        let collectionsOptions = await this.props.socket.getObject('system.certificates');
-        if (collectionsOptions?.native?.collections) {
-            collectionsOptions = Object.keys(collectionsOptions.native.collections);
+        let collectionsOptions: string[];
+        const collectionsOptionsObj = await this.props.socket.getObject('system.certificates');
+        if (collectionsOptionsObj?.native?.collections) {
+            collectionsOptions = Object.keys(collectionsOptionsObj.native.collections as Record<string, CertCollection>);
         } else {
             collectionsOptions = [];
         }
         this.setState({ collectionsOptions });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean /* , defaultValue */) {
         if (!this.state.collectionsOptions) {
             return null;
         }
@@ -47,7 +68,7 @@ class ConfigCertCollection extends ConfigGeneric {
                 disabled={!!disabled}
                 value={leCollection}
                 onChange={e => this.onChange(
-                    this.props.schema.attr,
+                    this.props.schema.leCollectionName || 'leCollection',
                     e.target.value === 'false' ? false : (e.target.value === 'true' ? true : e.target.value),
                 )}
             >
@@ -77,17 +98,5 @@ class ConfigCertCollection extends ConfigGeneric {
         </FormControl>;
     }
 }
-
-ConfigCertCollection.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigCertCollection);

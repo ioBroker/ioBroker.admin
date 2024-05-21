@@ -227,8 +227,8 @@ export const style = (theme: Theme): Record<string, any> => ({
         cursor: 'default',
     },
     smallAvatar: {
-        width: 24,
-        height: 24,
+        width: theme.spacing(3),
+        height: theme.spacing(3),
     },
     statusIndicator: {
         marginTop: 12,
@@ -284,6 +284,20 @@ export const style = (theme: Theme): Record<string, any> => ({
     },
     hidden: {
         display: 'none',
+    },
+    okSymbol: {
+        width: 20,
+        height: 20,
+        margin: 2,
+        borderRadius: 2,
+        // border: '2px solid #00000000',
+    },
+    okSymbolInner: {
+        width: 'calc(100% - 2px)',
+        height: 'calc(100% - 2px)',
+        borderRadius: 2,
+        margin: 1,
+        backgroundColor: '#66bb6a',
     },
 });
 
@@ -401,6 +415,7 @@ export interface InstanceGenericState {
 }
 
 export default abstract class InstanceGeneric<TProps extends InstanceGenericProps, TState extends InstanceGenericState> extends Component<TProps, TState> {
+    // eslint-disable-next-line react/no-unused-class-component-methods
     getDefaultState(props: TProps): InstanceGenericState {
         return {
             openDialog: false,
@@ -832,6 +847,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         />;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderDialogs() {
         if (!this.state.openDialog) {
             return null;
@@ -872,6 +888,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         return null;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderModeIcon(status: InstanceStatusType) {
         return <div
             className={UtilsCommon.clsx(
@@ -911,6 +928,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         return null;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderTooltip() {
         const { instance,  item } = this.props;
         let next;
@@ -951,6 +969,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         ].filter(el => el);
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderMemoryUsage() {
         return this.props.item.running && <InstanceInfo
             icon={<MemoryIcon />}
@@ -960,6 +979,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </InstanceInfo>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderPlayPause() {
         return <Tooltip title={this.props.context.t('Start/stop')} classes={{ popper: this.props.classes.tooltip }}>
             <div>
@@ -984,6 +1004,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </Tooltip>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderSettingsButton() {
         return <Tooltip
             title={this.props.instance.config ? this.props.context.t('Settings') : ''}
@@ -1006,6 +1027,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </Tooltip>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderRestartButton() {
         return <Tooltip title={this.props.context.t('Restart')} classes={{ popper: this.props.classes.tooltip }}>
             <div>
@@ -1026,6 +1048,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </Tooltip>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderLink() {
         return <Tooltip title={this.props.context.t('Instance link %s', this.props.instance.id)} classes={{ popper: this.props.classes.tooltip }}>
             <div>
@@ -1053,6 +1076,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </Tooltip>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderEditNameButton() {
         return <Tooltip title={this.props.context.t('Edit')} classes={{ popper: this.props.classes.tooltip }}>
             <IconButton
@@ -1069,6 +1093,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </Tooltip>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderInputOutput() {
         return <InstanceInfo
             icon={<ImportExportIcon />}
@@ -1118,6 +1143,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </Tooltip>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderSentry() {
         return <Tooltip
             title="sentry"
@@ -1141,6 +1167,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </Tooltip>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderCompactGroupEnabled() {
         return <Tooltip title={this.props.context.t('compact groups')} classes={{ popper: this.props.classes.tooltip }}>
             <IconButton
@@ -1157,6 +1184,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </Tooltip>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderVersion() {
         return <InstanceInfo tooltip={this.props.context.t('Installed')}>
             v
@@ -1164,6 +1192,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </InstanceInfo>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderInfo() {
         return <>
             <span className={this.props.classes.instanceName}>{this.props.instance.id}</span>
@@ -1180,11 +1209,13 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderLogLevel() {
         return <>
             <InstanceInfo
                 icon={this.props.item.loglevelIcon}
                 tooltip={this.props.item.logLevelObject === this.props.item.logLevel ? `${this.props.context.t('loglevel')} ${this.props.item.logLevel}` : `${this.props.context.t('saved:')} ${this.props.item.logLevelObject} / ${this.props.context.t('actual:')} ${this.props.item.logLevel}`}
+                // className={this.props.classes[ this.props.item.logLevel]}
             >
                 {this.props.item.logLevelObject === this.props.item.logLevel ? this.props.item.logLevel : `${this.props.item.logLevelObject} / ${this.props.item.logLevel}`}
             </InstanceInfo>
@@ -1204,6 +1235,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderSchedule() {
         return <>
             <InstanceInfo icon={<ScheduleIcon />} tooltip={this.props.context.t('schedule_group')}>
@@ -1225,6 +1257,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderRestartSchedule() {
         return <>
             <InstanceInfo
@@ -1249,6 +1282,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderRamLimit() {
         return <>
             <InstanceInfo
@@ -1273,6 +1307,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderCompactGroup() {
         return <>
             <InstanceInfo
@@ -1299,6 +1334,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderTier() {
         return <>
             <InstanceInfo
@@ -1323,6 +1359,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderHostWithButton() {
         return <>
             <InstanceInfo
@@ -1335,6 +1372,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         </>;
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderDeleteButton() {
         return <Tooltip title={this.props.context.t('Delete')}>
             <IconButton

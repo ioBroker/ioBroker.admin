@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -10,9 +9,10 @@ import {
 } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemCertificates } from '#JC/types';
+import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
@@ -24,19 +24,31 @@ const styles = () => ({
         width: 200,
         marginRight: 10,
     },
-});
+};
 
-class ConfigCertificates extends ConfigGeneric {
+interface ConfigCertificatesProps extends ConfigGenericProps {
+    schema: ConfigItemCertificates;
+}
+
+interface ConfigCertificatesState extends ConfigGenericState {
+    certsPublicOptions?: { label: string; value: string }[];
+    certsChainOptions?: { label: string; value: string }[];
+    certsPrivateOptions?: { label: string; value: string }[];
+    collectionsOptions?: string[];
+}
+
+class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCertificatesState> {
     async componentDidMount() {
         super.componentDidMount();
         const certificates = await this.props.socket.getCertificates();
-        const certsPublicOptions = [];
-        const certsPrivateOptions = [];
-        const certsChainOptions = [];
+        const certsPublicOptions: { label: string; value: string }[] = [];
+        const certsPrivateOptions: { label: string; value: string }[] = [];
+        const certsChainOptions: { label: string; value: string }[] = [];
 
-        let collectionsOptions = await this.props.socket.getObject('system.certificates');
-        if (collectionsOptions?.native?.collections) {
-            collectionsOptions = Object.keys(collectionsOptions.native.collections);
+        let collectionsOptions: string[] | null = [];
+        const collectionsOptionsObj = await this.props.socket.getObject('system.certificates');
+        if (collectionsOptionsObj?.native?.collections) {
+            collectionsOptions = Object.keys(collectionsOptionsObj.native.collections);
         } else {
             collectionsOptions = null;
         }
@@ -68,7 +80,7 @@ class ConfigCertificates extends ConfigGeneric {
         });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean /* , defaultValue */) {
         if (!this.state.certsPublicOptions || !this.state.certsPrivateOptions || !this.state.certsChainOptions) {
             return null;
         }
@@ -186,17 +198,5 @@ class ConfigCertificates extends ConfigGeneric {
         </div>;
     }
 }
-
-ConfigCertificates.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigCertificates);

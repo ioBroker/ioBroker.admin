@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -9,15 +8,25 @@ import {
 
 import { IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemSendTo } from '#JC/types';
+import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-});
+};
 
-class ConfigTextSendTo extends ConfigGeneric {
+interface ConfigTextSendToProps extends ConfigGenericProps {
+    schema: ConfigItemSendTo;
+}
+
+interface ConfigTextSendToState extends ConfigGenericState {
+    text?: string;
+    context?: string;
+}
+
+class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSendToState> {
     componentDidMount() {
         super.componentDidMount();
 
@@ -26,13 +35,13 @@ class ConfigTextSendTo extends ConfigGeneric {
 
     askInstance() {
         if (this.props.alive) {
-            let data = this.props.schema.data;
+            let data: Record<string, any> | undefined = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                data = this.getPattern(this.props.schema.jsonData);
+                const dataStr: string = this.getPattern(this.props.schema.jsonData);
                 try {
-                    data = JSON.parse(data);
+                    data = JSON.parse(dataStr);
                 } catch (e) {
-                    console.error(`Cannot parse json data: ${data}`);
+                    console.error(`Cannot parse json data: ${dataStr}`);
                 }
             }
 
@@ -46,7 +55,7 @@ class ConfigTextSendTo extends ConfigGeneric {
     }
 
     getContext() {
-        const context = {};
+        const context: Record<string, any> = {};
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
             this.props.schema.alsoDependsOn.forEach(attr =>
                 context[attr] = ConfigGeneric.getValue(this.props.data, attr));
@@ -71,17 +80,15 @@ class ConfigTextSendTo extends ConfigGeneric {
                 variant="standard"
                 fullWidth
                 InputProps={{
-                    endAdornment: this.props.schema.copyToClipboard ?
-                        <IconButton
-                            size="small"
-                            onClick={() => {
-                                Utils.copyToClipboard(this.state.text);
-                                window.alert('Copied');
-                            }}
-                        >
-                            <IconCopy />
-                        </IconButton>
-                        : undefined,
+                    endAdornment: this.props.schema.copyToClipboard ? <IconButton
+                        size="small"
+                        onClick={() => {
+                            Utils.copyToClipboard(this.state.text);
+                            window.alert('Copied');
+                        }}
+                    >
+                        <IconCopy />
+                    </IconButton> : undefined,
                 }}
                 value={this.state.text}
                 label={this.getText(this.props.schema.label)}
@@ -91,13 +98,5 @@ class ConfigTextSendTo extends ConfigGeneric {
         return <div className={this.props.classes.fullWidth}>{this.state.text}</div>;
     }
 }
-
-ConfigTextSendTo.propTypes = {
-    socket: PropTypes.object.isRequired,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-};
 
 export default withStyles(styles)(ConfigTextSendTo);

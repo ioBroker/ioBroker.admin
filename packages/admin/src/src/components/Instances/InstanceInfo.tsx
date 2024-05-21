@@ -22,6 +22,7 @@ interface InstanceInfoProps {
     icon?: React.JSX.Element;
     tooltip?: string;
     classes: Record<string, string>;
+    className?: string;
 }
 
 const InstanceInfo = (props: InstanceInfoProps) => <Grid
@@ -44,7 +45,7 @@ const InstanceInfo = (props: InstanceInfoProps) => <Grid
         item
     >
         <Tooltip title={props.tooltip || ''}>
-            <Typography component="div">
+            <Typography component="div" className={props.className}>
                 {props.children}
             </Typography>
         </Tooltip>

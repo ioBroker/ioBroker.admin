@@ -114,14 +114,18 @@ export interface ConfigItemTabs extends ConfigItem {
 export interface ConfigItemText extends ConfigItem {
     type: 'text';
     maxLength?: number;
+    /** @deprecated use maxLength */
+    max?: number;
     readOnly?: boolean;
     trim?: boolean;
     minRows?: number;
     maxRows?: number;
+    noClearButton?: boolean;
 }
 
 export interface ConfigItemColor extends ConfigItem {
     type: 'color';
+    noClearButton?: boolean;
 }
 
 export interface ConfigItemCheckbox extends ConfigItem {
@@ -278,6 +282,31 @@ export interface ConfigItemSendTo extends ConfigItem {
     color?: 'primary' | 'secondary';
     /** button tooltip */
     title?: ioBroker.StringOrTranslated;
+    alsoDependsOn?: string[];
+    container?: 'text' | 'div';
+    copyToClipboard?: boolean;
+}
+
+export interface ConfigItemTextSendTo extends ConfigItem {
+    type: 'textSendTo';
+    container?: 'text' | 'div';
+    copyToClipboard?: boolean;
+    alsoDependsOn?: string[];
+    command?: string;
+    jsonData?: string;
+    data?: Record<string, any>;
+}
+
+export interface ConfigItemSelectSendTo extends ConfigItem {
+    type: 'selectSendTo';
+    manual?: boolean;
+    multiple?: boolean;
+    showAllValues?: boolean;
+    noClearButton?: boolean;
+    command?: string;
+    jsonData?: string;
+    data?: Record<string, any>;
+    alsoDependsOn?: string[];
 }
 
 export interface ConfigItemTable extends ConfigItem {
@@ -311,6 +340,27 @@ export interface ConfigItemTimePicker extends ConfigItem {
     returnFormat?: string;
 }
 
+export interface ConfigItemCertCollection extends ConfigItem {
+    type: 'certCollection';
+    leCollectionName?: string;
+}
+
+export interface ConfigItemCertificateSelect extends ConfigItem {
+    type: 'certificate';
+}
+
+export interface ConfigItemCertificates extends ConfigItem {
+    type: 'certificates';
+    leCollectionName?: string;
+    certPublicName?: string;
+    certPrivateName?: string;
+    certChainedName?: string;
+}
+
+export interface ConfigItemUUID extends ConfigItem {
+    type: 'uuid';
+}
+
 export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigItemAutocompleteSendTo | ConfigItemPanel |
     ConfigItemTabs | ConfigItemText |
     ConfigItemNumber | ConfigItemColor | ConfigItemCheckbox |
@@ -318,4 +368,5 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigIt
     ConfigItemSelect | ConfigItemAccordion | ConfigItemCoordinates |
     ConfigItemDivider | ConfigItemHeader | ConfigItemCustom | ConfigItemDatePicker |
     ConfigItemDeviceManager | ConfigItemLanguage | ConfigItemPort | ConfigItemSendTo |
-    ConfigItemTable | ConfigItemTimePicker;
+    ConfigItemTable | ConfigItemTimePicker | ConfigItemTextSendTo | ConfigItemSelectSendTo |
+    ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID;

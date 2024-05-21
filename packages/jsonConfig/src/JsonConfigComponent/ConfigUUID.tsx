@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import {
     TextField,
@@ -10,9 +9,18 @@ import { ContentCopy as IconCopy } from '@mui/icons-material';
 
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemUUID } from '#JC/types';
+import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
 
-class ConfigUUID extends ConfigGeneric {
+interface ConfigUUIDProps extends ConfigGenericProps {
+    schema: ConfigItemUUID;
+}
+
+interface ConfigUUIDState extends ConfigGenericState {
+    uuid?: string;
+}
+
+class ConfigUUID extends ConfigGeneric<ConfigUUIDProps, ConfigUUIDState> {
     async componentDidMount() {
         super.componentDidMount();
 
@@ -20,7 +28,7 @@ class ConfigUUID extends ConfigGeneric {
         this.setState({ uuid: uuidObj?.native?.uuid || 'unknown' });
     }
 
-    renderItem(error, disabled) {
+    renderItem(error: unknown, disabled: boolean) {
         return <TextField
             variant="standard"
             fullWidth
@@ -43,10 +51,5 @@ class ConfigUUID extends ConfigGeneric {
         />;
     }
 }
-
-ConfigUUID.propTypes = {
-    socket: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-};
 
 export default ConfigUUID;

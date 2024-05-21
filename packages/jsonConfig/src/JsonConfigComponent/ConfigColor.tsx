@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { ChromePicker } from 'react-color';
+import { ChromePicker, type ColorResult, type RGBColor } from 'react-color';
 
 import {
     IconButton,
@@ -10,11 +9,21 @@ import {
 
 import { Close as ClearIcon } from '@mui/icons-material';
 
-import { ColorPicker, Utils } from '@iobroker/adapter-react-v5';
+import { Utils } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemText } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-class ConfigColor extends ConfigGeneric {
+interface ConfigColorProps extends ConfigGenericProps {
+    schema: ConfigItemText;
+}
+
+interface ConfigColorState extends ConfigGenericState {
+    showColorDialog?: boolean;
+    colorDialogValue?: string;
+}
+
+class ConfigColor extends ConfigGeneric<ConfigColorProps, ConfigColorState> {
     renderColorDialog() {
         return !!this.state.showColorDialog && <Dialog
             onClose={() => this.setState({ showColorDialog: false })}
@@ -22,14 +31,14 @@ class ConfigColor extends ConfigGeneric {
         >
             <ChromePicker
                 color={this.state.colorDialogValue}
-                onChange={value =>
-                    this.setState({ colorDialogValue: value }, () =>
-                        this.onChange(this.props.attr, ColorPicker.getColor(this.state.colorDialogValue, true)))}
+                onChange={(color: ColorResult) =>
+                    this.setState({ colorDialogValue: color.hex }, () =>
+                        this.onChange(this.props.attr, this.state.colorDialogValue))}
             />
         </Dialog>;
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(_error: unknown, disabled: boolean /* , defaultValue */) {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         let textColor = Utils.isUseBright(value, null);
         if (textColor === null) {
@@ -58,35 +67,20 @@ class ConfigColor extends ConfigGeneric {
                 }}
                 // eslint-disable-next-line react/jsx-no-duplicate-props
                 InputProps={{
-                    endAdornment: value ?
-                        <IconButton
-                            disabled={!!this.props.onPaste}
-                            size="small"
-                            onClick={e => {
-                                e.stopPropagation();
-                                this.onChange(this.props.attr, '');
-                            }}
-                        >
-                            <ClearIcon />
-                        </IconButton>
-                        : undefined,
+                    endAdornment: value && !this.props.schema.noClearButton ? <IconButton
+                        size="small"
+                        onClick={e => {
+                            e.stopPropagation();
+                            this.onChange(this.props.attr, '');
+                        }}
+                    >
+                        <ClearIcon />
+                    </IconButton> : undefined,
                 }}
                 InputLabelProps={{ shrink: true }}
             />
         </>;
     }
 }
-
-ConfigColor.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default ConfigColor;

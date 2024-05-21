@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardMedia } from '@mui/material';
+import { Card, CardMedia, type Theme } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
 import { Utils } from '@iobroker/adapter-react-v5';
@@ -7,7 +7,7 @@ import { Utils } from '@iobroker/adapter-react-v5';
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: Theme) => ({
     root: {
         position: 'relative',
         margin: 10,
@@ -78,11 +78,21 @@ const styles = theme => ({
     },
 });
 
-function getText(text, lang) {
+function getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
     if (text && typeof text === 'object') {
         return text[lang] || text.en || '';
     }
-    return text || '';
+    return (text as string) || '';
+}
+
+interface EasyModeCardProps {
+    classes: Record<string, string>;
+    icon: string;
+    id: string;
+    key: string;
+    desc: string;
+    lang: ioBroker.Languages;
+    navigate: () => void;
 }
 
 const EasyModeCard = ({
@@ -93,17 +103,18 @@ const EasyModeCard = ({
     desc,
     lang,
     navigate,
-}) => <Card onClick={navigate} key={key} className={classes.root}>
+}: EasyModeCardProps) => <Card onClick={navigate} key={key} className={classes.root}>
     <div className={Utils.clsx(classes.imageBlock, classes.instanceStateNotAlive1)}>
-        <CardMedia className={classes.img} component="img" image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'} />
+        <CardMedia
+            className={classes.img}
+            component="img"
+            image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'}
+        />
     </div>
     <div className={classes.wrapperDesc}>
         <div className={classes.desc}>{getText(desc, lang)}</div>
         <div className={classes.adapter}>{id}</div>
     </div>
 </Card>;
-
-EasyModeCard.propTypes = {
-};
 
 export default withStyles(styles)(EasyModeCard);

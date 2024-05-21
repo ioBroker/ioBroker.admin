@@ -7,31 +7,32 @@ import {
     Fade,
     Paper,
     IconButton,
+    type Theme,
 } from '@mui/material';
 
 import { Edit as EditIcon } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
     typography: {
         padding: theme.spacing(2),
     },
 }));
 
-let timer;
+let timer: ReturnType<typeof setTimeout>;
 
-const CustomPopper = ({ editMenuList, onClick }) => {
+interface CustomPopperProps {
+    editMenuList: boolean;
+    onClick: () => void;
+}
+
+const CustomPopper = ({ editMenuList, onClick }: CustomPopperProps) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open, setOpen] = React.useState(false);
-    const [placement, setPlacement] = React.useState();
+    const [placement, setPlacement] = React.useState<'right' | null>(null);
     const classes = useStyles();
 
-    const handleClick = newPlacement => event => {
-        setAnchorEl(event.currentTarget);
-        setOpen(prev => placement !== newPlacement || !prev);
-        setPlacement(newPlacement);
-    };
     return <>
         <IconButton
             size="large"
@@ -39,7 +40,10 @@ const CustomPopper = ({ editMenuList, onClick }) => {
             onClick={el => {
                 onClick();
                 if (!editMenuList) {
-                    handleClick('right')(el);
+                    setAnchorEl(el.currentTarget);
+                    setOpen(prev => placement !== 'right' || !prev);
+                    setPlacement('right');
+
                     timer = setTimeout(() => setOpen(false), 3000);
                 } else {
                     setOpen(false);
