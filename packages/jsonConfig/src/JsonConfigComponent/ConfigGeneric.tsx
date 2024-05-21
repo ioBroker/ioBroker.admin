@@ -808,18 +808,21 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         </a>;
     }
 
-    getPattern(pattern: any, data?: any) {
+    getPattern(pattern: string | { func: string }, data?: Record<string, any>) {
         data = data || this.props.data;
         if (!pattern) {
             return '';
         }
+        let patternStr: string;
         if (typeof pattern === 'object') {
             if (pattern.func) {
-                pattern = pattern.func;
+                patternStr = (pattern as { func: string }).func;
             } else {
                 console.log(`Object must be stringified: ${JSON.stringify(pattern)}`);
-                pattern = JSON.stringify(pattern);
+                patternStr = JSON.stringify(pattern);
             }
+        } else {
+            patternStr = pattern as string;
         }
 
         try {
@@ -835,7 +838,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                     'customObj',
                     '_socket',
                     '_changed',
-                    `return \`${pattern.replace(/`/g, '\\`')}\``,
+                    `return \`${patternStr.replace(/`/g, '\\`')}\``,
                 );
                 return f(
                     data,
@@ -860,7 +863,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 '_common',
                 '_socket',
                 '_changed',
-                `return \`${pattern.replace(/`/g, '\\`')}\``,
+                `return \`${patternStr.replace(/`/g, '\\`')}\``,
             );
             return f(
                 data,
@@ -874,8 +877,8 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 this.props.changed,
             );
         } catch (e) {
-            console.error(`Cannot execute ${pattern}: ${e}`);
-            return pattern;
+            console.error(`Cannot execute ${patternStr}: ${e}`);
+            return patternStr;
         }
     }
 

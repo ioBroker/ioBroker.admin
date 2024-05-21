@@ -64,6 +64,7 @@ Possible types:
   - `trim` - default is true. Set this attribute to `false` if trim is not desired.
   - `minRows` - default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row.  
   - `maxRows` - max rows of textarea. Used only if `minRows` > 1.  
+  - `noClearButton` - if true, the clear button will not be shown
 
 - `number`
   - `min` - minimal value
@@ -71,6 +72,7 @@ Possible types:
   - `step` - step
 
 - `color` - color picker
+  - `noClearButton` - if true, the clear button will not be shown
 
 - `checkbox` - show checkbox
 
@@ -265,6 +267,7 @@ Possible types:
   ```
 
 - `certCollection` - select certificate collection or just use all collections or don't use let's encrypt at all.
+    - `leCollectionName` - name of the certificates collection
 
 - `custom` (only Admin6)
     - `name` - Component name that will be provided via props, like ComponentInstancesEditor

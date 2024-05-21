@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -11,21 +10,30 @@ import {
 } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemCertificateSelect } from '#JC/types';
+import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-});
+};
 
-class ConfigCertificateSelect extends ConfigGeneric {
+interface ConfigCertificateSelectProps extends ConfigGenericProps {
+    schema: ConfigItemCertificateSelect;
+}
+
+interface ConfigCertificateSelectState extends ConfigGenericState {
+    selectOptions?: { label: string; value: string }[];
+}
+
+class ConfigCertificateSelect extends ConfigGeneric<ConfigCertificateSelectProps, ConfigCertificateSelectState> {
     async componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        let selectOptions = await this.props.socket.getCertificates();
+        const certificates = await this.props.socket.getCertificates();
 
-        selectOptions = selectOptions
+        const selectOptions: { label: string; value: string }[] = certificates
             .filter(el => {
                 const name = this.props.attr.toLowerCase();
 
@@ -47,11 +55,11 @@ class ConfigCertificateSelect extends ConfigGeneric {
         this.setState({ value, selectOptions });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: unknown, disabled: boolean /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
-        // eslint-disable-next-line
+
         const item = this.state.selectOptions?.find(item => item.value === this.state.value);
 
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
@@ -73,26 +81,12 @@ class ConfigCertificateSelect extends ConfigGeneric {
                         value={item_.value}
                         style={item_.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}
                     >
-                        {
-                            this.getText(item_.label, this.props.schema.noTranslation !== false)
-                        }
+                        {this.getText(item_.label, this.props.schema.noTranslation !== false)}
                     </MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }
-
-ConfigCertificateSelect.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default withStyles(styles)(ConfigCertificateSelect);
