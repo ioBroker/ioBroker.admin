@@ -357,6 +357,10 @@ export interface ConfigItemCertificates extends ConfigItem {
     certChainedName?: string;
 }
 
+export interface ConfigItemUUID extends ConfigItem {
+    type: 'uuid';
+}
+
 export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigItemAutocompleteSendTo | ConfigItemPanel |
     ConfigItemTabs | ConfigItemText |
     ConfigItemNumber | ConfigItemColor | ConfigItemCheckbox |
@@ -365,4 +369,4 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigIt
     ConfigItemDivider | ConfigItemHeader | ConfigItemCustom | ConfigItemDatePicker |
     ConfigItemDeviceManager | ConfigItemLanguage | ConfigItemPort | ConfigItemSendTo |
     ConfigItemTable | ConfigItemTimePicker | ConfigItemTextSendTo | ConfigItemSelectSendTo |
-    ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates;
+    ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID;
