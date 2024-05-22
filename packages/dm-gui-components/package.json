@@ -28,7 +28,9 @@
     "access": "public"
   },
   "files": [
-    "build",
+    "build/",
+    "src/",
+    "LICENSE",
     "README.md"
   ],
   "module": "./build/index.js",

@@ -21,6 +21,7 @@
   },
   "files": [
     "build/",
+    "src/",
     "LICENSE"
   ]
 }
