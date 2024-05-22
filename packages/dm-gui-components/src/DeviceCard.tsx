@@ -13,9 +13,10 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Utils, Icon, Connection, I18n } from '@iobroker/adapter-react-v5';
+import { Utils, Icon, AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import type { DeviceDetails, DeviceInfo } from '@iobroker/dm-utils';
 import type { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
+import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
 import DeviceActionButton from './DeviceActionButton';
 import DeviceControlComponent from './DeviceControl';
@@ -37,7 +38,7 @@ interface DeviceCardProps {
     id: string;
     device: DeviceInfo;
     instanceId: string;
-    socket: Connection;
+    socket: AdminConnection;
     /* Instance, where the images should be uploaded to */
     uploadImagesToInstance?: string;
     deviceHandler: (deviceId: string, action: ActionBase<'api'>, refresh: () => void) => () => void;
@@ -45,6 +46,10 @@ interface DeviceCardProps {
     controlStateHandler: (deviceId: string, control: ControlBase) => () => Promise<ioBroker.State | null>;
     smallCards?: boolean;
     alive: boolean;
+    themeName: ThemeName;
+    themeType: ThemeType;
+    isFloatComma: boolean;
+    dateFormat: string;
 }
 
 function getText(text: ioBroker.StringOrTranslated | undefined): string | undefined {
@@ -156,6 +161,10 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     schema={this.state.details.schema}
                     data={this.state.data}
                     onChange={(data: Record<string, any>) => this.setState({ data })}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    isFloatComma={this.props.isFloatComma}
+                    dateFormat={this.props.dateFormat}
                 />
             </DialogContent>
             <DialogActions>

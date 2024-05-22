@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { Connection, JsonConfigComponent } from '@iobroker/adapter-react-v5';
+import { AdminConnection, JsonConfigComponent } from '@iobroker/adapter-react-v5';
+import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
 interface JsonConfigProps {
     instanceId: string;
-    socket: Connection;
+    socket: AdminConnection;
     schema: Record<string, any>;
     data: Record<string, any>;
     onChange: (data: Record<string, any>) => void;
+    themeName: ThemeName;
+    themeType: ThemeType;
+    isFloatComma?: boolean;
+    dateFormat?: string;
 }
 
 export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | null {
@@ -14,7 +19,7 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
         instanceId, socket, schema, data, onChange,
     } = props;
     console.log('JsonConfig', props);
-    const [error, setError] = useState();
+    const [error, setError] = useState(false);
 
     if (schema === undefined) {
         return null;
@@ -31,9 +36,12 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
             schema={schema}
             data={data}
             onError={setError}
-            // @ts-expect-error types needed
             onChange={_data => onChange(_data)}
             embedded
+            themeName={props.themeName}
+            themeType={props.themeType}
+            isFloatComma={props.isFloatComma === undefined ? this.props.socket.systemConfig.common.isFloatComma : props.isFloatComma}
+            dateFormat={props.dateFormat === undefined ? this.props.socket.systemConfig.common.dateFormat : props.dateFormat}
         />
     </>;
 

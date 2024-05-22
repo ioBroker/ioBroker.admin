@@ -13,19 +13,24 @@ import {
     Snackbar,
 } from '@mui/material';
 
-import { Connection } from '@iobroker/adapter-react-v5';
+import { AdminConnection } from '@iobroker/adapter-react-v5';
 import type { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 import type { DeviceRefresh } from '@iobroker/dm-utils/build/types';
 
 import { getTranslation } from './Utils';
 import JsonConfig from './JsonConfig';
+import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
 export type CommunicationProps = {
     /* socket object */
-    socket: Connection;
+    socket: AdminConnection;
     /* Instance to communicate with device-manager backend, like `adapterName.X` */
     selectedInstance: string; // adapterName.X
     registerHandler?: (handler: null | ((command: string) => void)) => void;
+    themeName: ThemeName;
+    themeType: ThemeType;
+    isFloatComma: boolean;
+    dateFormat: string;
 }
 
 interface CommunicationForm {
@@ -358,7 +363,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     schema={this.state.form.schema}
                     data={this.state.form.data}
                     socket={this.props.socket}
-                    onChange={(data: any) => {
+                    onChange={(data: Record<string, any>) => {
                         console.log('handleFormChange', { data });
                         const form: CommunicationForm | null | undefined = { ...this.state.form };
                         if (form) {
@@ -366,6 +371,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                             this.setState({ form });
                         }
                     }}
+                    themeName={this.props.themeName}
+                    themeType={this.props.themeType}
+                    isFloatComma={this.props.isFloatComma}
+                    dateFormat={this.props.dateFormat}
                 />
             </DialogContent>
             <DialogActions>

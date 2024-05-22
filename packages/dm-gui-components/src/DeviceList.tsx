@@ -258,6 +258,10 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
                 controlHandler={this.controlHandler}
                 controlStateHandler={this.controlStateHandler}
                 socket={this.props.socket}
+                themeName={this.props.themeName}
+                themeType={this.props.themeType}
+                isFloatComma={this.props.isFloatComma}
+                dateFormat={this.props.dateFormat}
             />);
         }
 
