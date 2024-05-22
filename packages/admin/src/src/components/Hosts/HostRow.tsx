@@ -308,7 +308,6 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
         const description = this.getHostDescriptionAll();
 
         return <div
-            // @ts-expect-error fixed in js-controller
             style={{ border: `2px solid ${this.props.host.common.color || 'inherit'}`, borderRadius: 5 }}
             key={this.props.hostId}
             className={Utils.clsx(classes.root, this.props.hidden ? classes.hidden : '')}
@@ -324,7 +323,6 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                 </div>
                 <div
                     ref={this.refWarning}
-                    // @ts-expect-error fixed in js-controller
                     style={{ background: this.props.host.common.color || 'inherit' }}
                     className={classes.imageBlock}
                 >
@@ -335,7 +333,6 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         image={this.props.host.common.image || 'img/no-image.png'}
                     />, true)}
                     <div
-                        // @ts-expect-error fixed in js-controller
                         style={{ color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }}
                         className={classes.host}
                     >

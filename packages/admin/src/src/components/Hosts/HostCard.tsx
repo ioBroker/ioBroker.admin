@@ -307,7 +307,6 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
             </div>
             <div
                 ref={this.refWarning}
-                // @ts-expect-error fixed in js-controller 6
                 style={{ background: this.props.host.common.color || 'inherit' }}
                 className={Utils.clsx(
                     classes.imageBlock,
@@ -321,7 +320,6 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                     image={this.props.host.common.image || 'img/no-image.png'}
                 />
                 <div
-                    // @ts-expect-error fixed in js-controller 6
                     style={{ color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }}
                     className={classes.adapter}
                 >
