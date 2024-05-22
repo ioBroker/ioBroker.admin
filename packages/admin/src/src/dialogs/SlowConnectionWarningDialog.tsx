@@ -40,14 +40,14 @@ interface SlowConnectionWarningDialogState {
     readTimeoutSec: number | string;
 }
 
-class SlowConnectionWarningDialog extends Component<SlowConnectionWarningDialogProps, SlowConnectionWarningDialogState> {
+export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWarningDialogProps, SlowConnectionWarningDialogState> {
     private readonly mobile: boolean;
 
     constructor(props: SlowConnectionWarningDialogProps) {
         super(props);
 
         this.state = {
-            readTimeoutSec: Math.round((props.readTimeoutMs || SlowConnectionWarningDialog.getReadTimeoutMs()) / 1000),
+            readTimeoutSec: Math.round((props.readTimeoutMs || SlowConnectionWarningDialogClass.getReadTimeoutMs()) / 1000),
         };
 
         this.mobile = window.innerWidth < MOBILE_WIDTH;
@@ -92,7 +92,7 @@ class SlowConnectionWarningDialog extends Component<SlowConnectionWarningDialogP
                     className={this.props.classes.buttonLabel}
                     variant="contained"
                     onClick={() => {
-                        SlowConnectionWarningDialog.saveReadTimeoutMs(60000);
+                        SlowConnectionWarningDialogClass.saveReadTimeoutMs(60000);
                         this.props.onClose(60000);
                     }}
                     startIcon={<TimeIcon />}
@@ -108,7 +108,7 @@ class SlowConnectionWarningDialog extends Component<SlowConnectionWarningDialogP
                     disabled={!parseInt(this.state.readTimeoutSec as string, 10)}
                     onClick={() => {
                         const readTimeoutMs = parseInt(this.state.readTimeoutSec as string, 10) * 1000;
-                        SlowConnectionWarningDialog.saveReadTimeoutMs(readTimeoutMs);
+                        SlowConnectionWarningDialogClass.saveReadTimeoutMs(readTimeoutMs);
                         this.props.onClose(readTimeoutMs);
                     }}
                     startIcon={<CheckIcon />}
@@ -129,4 +129,4 @@ class SlowConnectionWarningDialog extends Component<SlowConnectionWarningDialogP
     }
 }
 
-export default withStyles(styles)(SlowConnectionWarningDialog);
+export default withStyles(styles)(SlowConnectionWarningDialogClass);

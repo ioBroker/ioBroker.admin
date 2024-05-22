@@ -1,45 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { withStyles } from '@mui/styles';
 
 import {
-    Avatar,
-    Badge,
     CardContent,
-    CardMedia,
-    FormControl,
-    FormHelperText,
-    IconButton,
-    InputLabel,
-    MenuItem,
-    Select,
-    Tooltip,
+    CardMedia, Skeleton,
     Typography,
-    type Theme,
 } from '@mui/material';
 
-import {
-    Refresh as RefreshIcon,
-    Delete as DeleteIcon,
-    Build as BuildIcon,
-    Edit as EditIcon,
-    Cached as CachedIcon,
-} from '@mui/icons-material';
-
-import {
-    amber, blue, grey, red,
-} from '@mui/material/colors';
-
-import { Utils, IconCopy, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { Utils } from '@iobroker/adapter-react-v5';
+import { type Theme } from '@iobroker/adapter-react-v5/types';
 
 import BasicUtils from '@/Utils';
-import type { NotificationAnswer } from '@/Workers/HostsWorker';
-import CustomModal from '../CustomModal';
-import { toggleClassName, arrayLogLevel, type HostRowCardProps } from './HostUtils';
-
-const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
-const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
+import HostGeneric, {
+    boxShadow, boxShadowHover, genericStyle,
+    type HostGenericProps, type HostGenericState,
+} from './HostGeneric';
 
 const styles: Record<string, any> = (theme: Theme) => ({
+    ...genericStyle(theme),
     root: {
         position: 'relative',
         margin: 7,
@@ -62,24 +40,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
         position: 'relative',
         justifyContent: 'space-between',
         transition: 'background 0.5s',
-    },
-    img: {
-        width: 45,
-        height: 45,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
-        },
+        alignItems: 'baseline',
     },
     onBlick: {
         animation: '$onBlink 2s ease-in-out',
@@ -111,9 +72,6 @@ const styles: Record<string, any> = (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
-    collapseOff: {
-        height: 0,
-    },
     collapseOn: {
         animation: '$height 1s',
     },
@@ -124,15 +82,6 @@ const styles: Record<string, any> = (theme: Theme) => ({
         '100%': {
             height: 160,
         },
-    },
-    footerBlock: {
-        background: theme.palette.background.default,
-        padding: 10,
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-    hidden: {
-        display: 'none',
     },
     onOff: {
         alignSelf: 'center',
@@ -158,7 +107,6 @@ const styles: Record<string, any> = (theme: Theme) => ({
         height: '100%',
         display: 'flex',
         width: '100%',
-        // flexDirection: 'column',
         justifyContent: 'space-between',
         padding: '10px !important',
         alignItems: 'center',
@@ -171,9 +119,6 @@ const styles: Record<string, any> = (theme: Theme) => ({
     enableButton: {
         display: 'flex',
         justifyContent: 'space-between',
-    },
-    emptyButton: {
-        width: 48,
     },
     green: {
         background: '#00ce00',
@@ -216,7 +161,6 @@ const styles: Record<string, any> = (theme: Theme) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-
     cardContentInfo: {
         overflow: 'auto',
         paddingTop: 0,
@@ -282,579 +226,203 @@ const styles: Record<string, any> = (theme: Theme) => ({
     badge: {
         top: 14,
     },
-    greenText: {
-        color: theme.palette.success.dark,
-    },
     curdContentFlexCenter: {
         display: 'flex',
         alignItems: 'center',
     },
-    wrapperAvailable: {
+    wrapperInfo: {
         display: 'flex',
-        alignItems: 'center',
+        flexFlow: 'wrap',
+        width: '100%',
+        justifyContent: 'space-around',
     },
-    buttonUpdate: {
-        border: '1px solid',
-        padding: '0px 7px',
-        borderRadius: 5,
+    wrapperBlockItem: {
         display: 'flex',
-        alignItems: 'center',
-        cursor: 'pointer',
-        transition: 'background 0.5s',
-        '&:hover': {
-            background: '#00800026',
-        },
+        flexFlow: 'nowrap',
+        whiteSpace: 'nowrap',
+        margin: 10,
     },
-    buttonUpdateIcon: {
-        height: 20,
-        width: 20,
-        marginRight: 10,
+    bold: {
+        fontWeight: 'bold',
     },
-    debug: {
-        backgroundColor: grey[700],
-    },
-    info: {
-        backgroundColor: blue[700],
-    },
-    warn: {
-        backgroundColor: amber[700],
-    },
-    error: {
-        backgroundColor: red[700],
-    },
-    smallAvatar: {
-        width: 24,
-        height: 24,
-    },
-    formControl: {
+    nowrap: {
         display: 'flex',
-    },
-    baseSettingsButton: {
-        transform: 'rotate(45deg)',
-    },
-    newValue: {
-        animation: '$newValueAnimation 2s ease-in-out',
-    },
-    '@keyframes newValueAnimation': {
-        '0%': {
-            color: '#00f900',
-        },
-        '80%': {
-            color: '#008000',
-        },
-        '100%': {
-            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-        },
+        flexFlow: 'nowrap',
+        flex: 1,
+        whiteSpace: 'nowrap',
+        marginRight: 5,
     },
 });
 
-let outputCache = '-';
-let inputCache = '-';
-let cpuCache = '- %';
-let memCache = '- %';
-let uptimeCache = '-';
-
-let diskFreeCache = 1;
-let diskSizeCache = 1;
-/** if no disk warning in percentage is configured, we are using 1 % */
-let diskWarningCache = 1;
-
-const StyledBadge = withStyles(() => ({
-    badge: {
-        right: -3,
-        top: 13,
-        padding: '0 4px',
-    },
-}))(Badge);
-
-/**
- * Get the initial disk states to show problems with disk usage
- */
-async function getInitialDiskStates(
-    /** id of the host to get information from */
-    hostId: string,
-    socket: AdminConnection,
-): Promise<void> {
-    const diskWarningState = await socket.getState(`${hostId}.diskWarning`);
-    diskWarningCache = diskWarningState?.val as number ?? diskWarningCache;
-
-    const diskFreeState = await socket.getState(`${hostId}.diskFree`);
-    diskFreeCache = diskFreeState?.val as number ?? diskFreeCache;
-
-    const diskSizeState = await socket.getState(`${hostId}.diskSize`);
-    diskSizeCache = diskSizeState?.val as number ?? diskSizeCache;
+interface HostRowProps extends HostGenericProps {
+    hidden?: boolean;
 }
 
-const HostRow = ({
-    _id,
-    alive,
-    available,
-    classes,
-    color,
-    isCurrentHost,
-    description,
-    events,
-    executeCommandRemove,
-    expertMode,
-    getLogLevelIcon,
-    formatInfo,
-    hidden,
-    hostsWorker,
-    hostData,
-    image,
-    installed,
-    name,
-    openHostUpdateDialog,
-    setBaseSettingsDialog,
-    setEditDialog,
-    showAdaptersWarning,
-    socket,
-    systemConfig,
-    t,
-}: HostRowCardProps) => {
-    const [openCollapse, setCollapse] = useState(false);
-    const [focused, setFocused] = useState(false);
+interface HostRowState extends HostGenericState {
+    openCollapse?: boolean;
+}
 
-    const refEvents = useRef<HTMLDivElement>();
-    const refWarning = useRef<HTMLDivElement>();
-    const refCpu = useRef<HTMLDivElement>();
-    const refMem = useRef<HTMLDivElement>();
-    const refUptime = useRef<HTMLDivElement>();
-
-    const eventsInputFunc = (id: string, input: ioBroker.State) => {
-        inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
-        if (refEvents.current) {
-            refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
-            toggleClassName(refEvents.current, classes.newValue);
+class HostRow extends HostGeneric<HostRowProps, HostRowState> {
+    renderValue(value: string) {
+        if (typeof this.props.hostData !== 'object') {
+            return null;
         }
-    };
-
-    const eventsOutputFunc = (id: string, output: ioBroker.State) => {
-        outputCache = output && output.val !== null ? `↦${output.val}` : '-';
-        if (refEvents.current) {
-            refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
-            toggleClassName(refEvents.current, classes.newValue);
-        }
-    };
-
-    const formatValue = (state: ioBroker.State, unit: string) => {
-        if (!state || state.val === null || state.val === undefined) {
-            return `-${unit ? ` ${unit}` : ''}`;
-        } if (systemConfig.common.isFloatComma) {
-            return state.val.toString().replace('.', ',') + (unit ? ` ${unit}` : '');
-        }
-        return state.val + (unit ? ` ${unit}` : '');
-    };
-
-    const warningFunc = (name_: string, state: ioBroker.State) => {
-        if (name_.endsWith('diskFree')) {
-            diskFreeCache = state?.val as number || 0;
-        } else if (name_.endsWith('diskSize')) {
-            diskSizeCache = state?.val as number || 0;
-        } else if (name_.endsWith('diskWarning')) {
-            diskWarningCache = state?.val as number || 0;
-        }
-
-        const warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
-
-        if (refWarning.current) {
-            if (warning) {
-                refWarning.current.setAttribute('title', t('Warning: Free space on disk is low'));
-                refWarning.current.classList.add('warning');
-            } else {
-                refWarning.current.removeAttribute('title');
-                refWarning.current.classList.remove('warning');
-            }
-        }
-    };
-
-    const cpuFunc = (id: string, state: ioBroker.State) => {
-        cpuCache = formatValue(state, '%');
-        if (refCpu.current) {
-            refCpu.current.innerHTML = cpuCache;
-            toggleClassName(refCpu.current, classes.newValue);
-        }
-    };
-
-    const memFunc = (id: string, state: ioBroker.State) => {
-        memCache = formatValue(state, '%');
-        if (refMem.current) {
-            refMem.current.innerHTML = memCache;
-            toggleClassName(refMem.current, classes.newValue);
-        }
-    };
-
-    const uptimeFunc = (id: string, state: ioBroker.State) => {
-        if (state && state.val) {
-            const d = Math.floor(state.val as number / (3600 * 24));
-            const h = Math.floor((state.val as number % (3600 * 24)) / 3600);
-            uptimeCache = d ? `${d}d${h}h` : `${h}h`; // TODO translate
-        }
-        if (refUptime.current) {
-            refUptime.current.innerHTML = uptimeCache;
-            toggleClassName(refUptime.current, classes.newValue);
-        }
-    };
-
-    const calculateWarning = (notifications: NotificationAnswer) => {
-        if (!notifications) {
-            return 0;
-        }
-        const { result } = notifications;
-        let count = 0;
-        if (!result || !result.system) {
-            return count;
-        }
-        if (Object.keys(result.system.categories).length) {
-            const categories = result.system.categories;
-            Object.keys(categories).forEach(nameTab => Object.keys(categories[nameTab].instances).forEach(() => count++));
-        }
-
-        return count;
-    };
-
-    const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
-    const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
-    const [logLevelValue, setLogLevelValue] = useState(null);
-    const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
-
-    const upgradeAvailable = (isCurrentHost || alive) && BasicUtils.updateAvailable(installed, available);
-
-    const logLevelFunc = (id: string, state: ioBroker.State) => {
-        if (state) {
-            setLogLevelValue(state.val);
-            setLogLevelValueSelect(state.val);
-        }
-    };
-
-    useEffect(() => {
-        const notificationHandler = (notifications: Record<string, NotificationAnswer>) =>
-            notifications &&
-            notifications[_id] &&
-            setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
-
-        hostsWorker.registerNotificationHandler(notificationHandler);
-
-        hostsWorker.getNotifications(_id)
-            .then(notifications => {
-                notifications &&
-                    notifications[_id] &&
-                    setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
-            });
-
-        socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
-        socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
-
-        socket.subscribeState(`${_id}.cpu`, cpuFunc);
-        socket.subscribeState(`${_id}.mem`, memFunc);
-        socket.subscribeState(`${_id}.uptime`, uptimeFunc);
-
-        getInitialDiskStates(_id, socket)
-            .finally(async () => {
-                await socket.subscribeState(`${_id}.diskFree`, warningFunc);
-                await socket.subscribeState(`${_id}.diskSize`, warningFunc);
-                await socket.subscribeState(`${_id}.diskWarning`, warningFunc);
-            });
-
-        socket.subscribeState(`${_id}.logLevel`, logLevelFunc);
-
-        return () => {
-            hostsWorker.unregisterNotificationHandler(notificationHandler);
-            socket.unsubscribeState(`${_id}.inputCount`, eventsInputFunc);
-            socket.unsubscribeState(`${_id}.outputCount`, eventsOutputFunc);
-
-            socket.unsubscribeState(`${_id}.cpu`, cpuFunc);
-            socket.unsubscribeState(`${_id}.mem`, memFunc);
-            socket.unsubscribeState(`${_id}.uptime`, uptimeFunc);
-
-            socket.unsubscribeState(`${_id}.diskFree`, warningFunc);
-            socket.unsubscribeState(`${_id}.diskSize`, warningFunc);
-            socket.unsubscribeState(`${_id}.diskWarning`, warningFunc);
-
-            socket.unsubscribeState(`${_id}.logLevel`, logLevelFunc);
-        };
-    }, [_id, socket, classes]);
-
-    const onCopy = () => {
-        const text = [];
-        refCpu.current && text.push(`CPU: ${refCpu.current.innerHTML}`);
-        refMem.current && text.push(`RAM: ${refMem.current.innerHTML}`);
-        refUptime.current && text.push(`${t('Uptime')}: ${refUptime.current.innerHTML}`);
-        text.push(`${t('Available')}: ${available}`);
-        text.push(`${t('Installed')}: ${installed}`);
-        refEvents.current && text.push(`${t('Events')}: ${refEvents.current.innerHTML}`);
-
-        hostData &&
-            typeof hostData === 'object' &&
-            Object.keys(hostData).map(value =>
-                text.push(
-                    `${t(value)}: ${
-                        formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--'
-                    }`,
-                ));
-
-        Utils.copyToClipboard(text.join('\n'));
-        window.alert(t('Copied'));
-    };
-
-    let showModal = false;
-    let titleModal;
-    if (openDialogLogLevel) {
-        titleModal = t('Edit log level rule for %s', name);
-        showModal = true;
+        return <div className={this.props.classes.wrapperBlockItem} key={value}>
+            <span className={Utils.clsx(this.props.classes.bold, this.props.classes.nowrap)}>
+                {this.props.t(value)}
+                :
+                {' '}
+            </span>
+            {(HostGeneric.formatInfo[value] ? HostGeneric.formatInfo[value](this.props.hostData[value], this.props.t) : this.props.hostData[value] || '--')}
+        </div>;
     }
 
-    const customModal = showModal ? <CustomModal
-        title={titleModal}
-        onApply={() => {
-            if (openDialogLogLevel) {
-                socket.setState(`${_id}.logLevel`, logLevelValueSelect);
-                setOpenDialogLogLevel(false);
-            }
-        }}
-        onClose={() => {
-            if (openDialogLogLevel) {
-                setLogLevelValueSelect(logLevelValue);
-                setOpenDialogLogLevel(false);
-            }
-        }}
-    >
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
-            <InputLabel>{t('log level')}</InputLabel>
-            <Select
-                variant="standard"
-                value={logLevelValueSelect}
-                fullWidth
-                onChange={el => setLogLevelValueSelect(el.target.value)}
-            >
-                {arrayLogLevel.map(el => (
-                    <MenuItem key={el} value={el}>
-                        {t(el)}
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>}
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
-            <FormHelperText>
-                {t('Log level will be reset to the saved level after the restart of the controller')}
-            </FormHelperText>
-            <FormHelperText>
-                {t('You can set the log level permanently in the base host settings')}
-                <BuildIcon className={classes.baseSettingsButton} />
-            </FormHelperText>
-        </FormControl>}
-    </CustomModal> : null;
+    getHostDescriptionAll() {
+        if (!this.props.hostData) {
+            return <Skeleton />;
+        }
 
-    return <div
-        style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }}
-        onMouseOut={openDialogLogLevel ? null : () => setFocused(false)}
-        onMouseOver={openDialogLogLevel ? null : () => setFocused(true)}
-        onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
-        key={_id}
-        className={Utils.clsx(classes.root, hidden ? classes.hidden : '')}
-    >
-        {customModal}
-        <div
-            className={Utils.clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)}
-            onClick={openDialogLogLevel ? null : () => setCollapse(bool => !bool)}
-        >
-            <div className={classes.wrapperColor}>
-                <div className={Utils.clsx(classes.onOff, alive ? classes.green : classes.red)} />
-                {alive && <div className={classes.dotLine} />}
+        if (typeof this.props.hostData === 'string') {
+            return this.props.hostData;
+        }
+
+        return <div className={this.props.classes.wrapperInfo}>
+            <div className={this.props.classes.marginRight}>
+                {this.props.hostData && typeof this.props.hostData === 'object' ?
+                    Object.keys(this.props.hostData).map((value, idx) => idx < 5 && this.renderValue(value)) : <Skeleton />}
             </div>
-            <div ref={refWarning} style={{ background: color || 'inherit' }} className={classes.imageBlock}>
-                <StyledBadge
-                    title={t('Hosts notifications')}
-                    badgeContent={errorHost.count}
-                    color="error"
-                    onClick={e => {
-                        e.stopPropagation();
-                        showAdaptersWarning({ [_id]: errorHost.notifications }, _id);
-                    }}
-                >
-                    <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
-                </StyledBadge>
+            <div className={this.props.classes.marginRight}>
+                {this.props.hostData && typeof this.props.hostData === 'object' ? Object.keys(this.props.hostData).map((value, idx) => idx > 4 && idx < 10 &&
+                    this.renderValue(value)) : <Skeleton />}
+            </div>
+            <div className={this.props.classes.marginRight}>
+                {this.props.hostData && typeof this.props.hostData === 'object' && Object.keys(this.props.hostData).map((value, idx) => idx > 10 &&
+                    this.renderValue(value))}
+            </div>
+        </div>;
+    }
+
+    render() {
+        const upgradeAvailable = (this.props.isCurrentHost || this.props.alive) && BasicUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
+        const { classes } = this.props;
+        const description = this.getHostDescriptionAll();
+
+        return <div
+            // @ts-expect-error fixed in js-controller
+            style={{ border: `2px solid ${this.props.host.common.color || 'inherit'}`, borderRadius: 5 }}
+            key={this.props.hostId}
+            className={Utils.clsx(classes.root, this.props.hidden ? classes.hidden : '')}
+        >
+            {this.renderDialogs()}
+            <div
+                className={Utils.clsx(classes.wrapperFlex, !this.props.alive && classes.cursorNoDrop)}
+                onClick={this.state.openDialogLogLevel ? null : () => this.setState({ openCollapse: !this.state.openCollapse })}
+            >
+                <div className={classes.wrapperColor}>
+                    <div className={Utils.clsx(classes.onOff, this.props.alive ? classes.green : classes.red)} />
+                    {this.props.alive && <div className={classes.dotLine} />}
+                </div>
                 <div
-                    style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
-                    className={classes.host}
+                    ref={this.refWarning}
+                    // @ts-expect-error fixed in js-controller
+                    style={{ background: this.props.host.common.color || 'inherit' }}
+                    className={classes.imageBlock}
                 >
-                    {name}
-                    {!openCollapse && typeof description === 'object' ?
-                        <span className={classes.onBlick}>
+                    {this.renderNotificationsBadge(<CardMedia
+                        className={classes.img}
+                        component="img"
+                        // @ts-expect-error will be fixed in js-controller
+                        image={this.props.host.common.image || 'img/no-image.png'}
+                    />, true)}
+                    <div
+                        // @ts-expect-error fixed in js-controller
+                        style={{ color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }}
+                        className={classes.host}
+                    >
+                        {this.props.host.common.name}
+                        {!this.state.openCollapse && typeof description === 'object' ? <span className={classes.onBlick}>
                             (
-                            {t('Click for more')}
+                                {this.props.t('Click for more')}
                             )
                         </span> : null}
-                </div>
-            </div>
-            <CardContent className={classes.cardContentH5}>
-                {/* <Typography className={Utils.clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
-                {title}
-            </Typography> */}
-                <Typography
-                    className={Utils.clsx(classes.flex, classes.hidden800)}
-                    variant="body2"
-                    color="textSecondary"
-                    component="div"
-                >
-                    <div ref={refCpu}>- %</div>
-                </Typography>
-                <Typography
-                    className={Utils.clsx(classes.flex, classes.hidden800)}
-                    variant="body2"
-                    color="textSecondary"
-                    component="div"
-                >
-                    <div ref={refMem}>- %</div>
-                </Typography>
-                <Typography
-                    className={Utils.clsx(classes.flex, classes.hidden800)}
-                    variant="body2"
-                    color="textSecondary"
-                    component="div"
-                >
-                    <div ref={refUptime}>-/-</div>
-                </Typography>
-                <Typography
-                    className={Utils.clsx(classes.flex, classes.hidden1100)}
-                    variant="body2"
-                    color="textSecondary"
-                    component="div"
-                >
-                    <div
-                        className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}
-                    >
-                        {upgradeAvailable ? <Tooltip title={t('Update')}>
-                            <div
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    openHostUpdateDialog();
-                                }}
-                                className={classes.buttonUpdate}
-                            >
-                                <IconButton className={classes.buttonUpdateIcon} size="small">
-                                    <RefreshIcon />
-                                </IconButton>
-                                {available}
-                            </div>
-                        </Tooltip>
-                            :
-                            available}
                     </div>
-                </Typography>
-                <Typography
-                    className={Utils.clsx(classes.flex, classes.hidden1100)}
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                >
-                    {installed}
-                </Typography>
-                <Typography
-                    className={Utils.clsx(classes.flex, classes.hidden600)}
-                    variant="body2"
-                    color="textSecondary"
-                    component="div"
-                >
-                    <div ref={refEvents}>{events}</div>
-                </Typography>
-                <div className={classes.marginTop10}>
-                    <Typography component="span" className={classes.enableButton}>
-                        <IconButton
-                            size="large"
-                            onClick={e => {
-                                e.stopPropagation();
-                                setEditDialog(true);
-                            }}
-                        >
-                            <EditIcon />
-                        </IconButton>
-
-                        {expertMode && <Tooltip title={t('Host Base Settings')}>
-                            <div>
-                                <IconButton
-                                    size="large"
-                                    disabled={!alive}
-                                    onClick={e => {
-                                        setBaseSettingsDialog();
-                                        e.stopPropagation();
-                                    }}
-                                >
-                                    <BuildIcon className={classes.baseSettingsButton} />
-                                </IconButton>
-                            </div>
-                        </Tooltip>}
-                        <Tooltip title={t('Restart host')}>
-                            <div>
-                                <IconButton
-                                    size="large"
-                                    disabled={!alive}
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        socket
-                                            .restartController(_id)
-                                            .catch(err => window.alert(`Cannot restart: ${err}`));
-                                    }}
-                                >
-                                    <CachedIcon />
-                                </IconButton>
-                            </div>
-                        </Tooltip>
-                        {expertMode && logLevelValue ? <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
-                            <IconButton
-                                size="large"
-                                onClick={event => {
-                                    event.stopPropagation();
-                                    setOpenDialogLogLevel(true);
-                                }}
-                            >
-                                <Avatar className={Utils.clsx(classes.smallAvatar, classes[logLevelValue])}>
-                                    {getLogLevelIcon(logLevelValue)}
-                                </Avatar>
-                            </IconButton>
-                        </Tooltip>
-                            :
-                            <div className={classes.emptyButton} />}
-                        <Tooltip title={t('Remove')}>
-                            <span>
-                                <IconButton
-                                    size="large"
-                                    disabled={alive || isCurrentHost}
-                                    title={
-                                        alive || isCurrentHost ? t('You cannot delete host, when it is alive') : ''
-                                    }
-                                    onClick={e => {
-                                        executeCommandRemove();
-                                        e.stopPropagation();
-                                    }}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    </Typography>
                 </div>
-            </CardContent>
-        </div>
-        {(openCollapse || focused) && typeof description === 'object' && <div
-            className={Utils.clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)}
-            onClick={e => e.stopPropagation()}
-        >
-            <CardContent className={classes.cardContentInfo}>
-                {description}
-                <Tooltip title={t('Copy')}>
-                    <IconButton
-                        size="large"
-                        onClick={() => onCopy()}
-                        style={{ position: 'absolute', top: 8, right: 8 }}
+                <CardContent className={classes.cardContentH5}>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
                     >
-                        <IconCopy />
-                    </IconButton>
-                </Tooltip>
-            </CardContent>
-            <div className={classes.footerBlock}></div>
-        </div>}
-    </div>;
-};
+                        <div ref={this.refCpu}>- %</div>
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div ref={this.refMem}>- %</div>
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div ref={this.refUptime}>-/-</div>
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden1100)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div
+                            className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}
+                        >
+                            {this.renderUpdateButton(upgradeAvailable)}
+                        </div>
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden1100)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                    >
+                        {this.props.host.common.installedVersion}
+                    </Typography>
+                    <Typography
+                        className={Utils.clsx(classes.flex, classes.hidden600)}
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                    >
+                        <div ref={this.refEvents}>- / -</div>
+                    </Typography>
+                    <div className={classes.marginTop10}>
+                        <Typography component="span" className={classes.enableButton}>
+                            {this.renderEditButton()}
+                            {this.renderHostBaseEdit()}
+                            {this.renderRestartButton()}
+                            {this.props.expertMode && this.state.logLevel ? this.renderLogLevel() : <div className={classes.emptyButton} />}
+                            {this.renderRemoveButton()}
+                        </Typography>
+                    </div>
+                </CardContent>
+            </div>
+            {this.state.openCollapse && typeof description === 'object' && <div
+                className={Utils.clsx(classes.collapse, !this.state.openCollapse ? classes.collapseOff : classes.collapseOn)}
+                onClick={event => event.stopPropagation()}
+            >
+                <CardContent className={classes.cardContentInfo}>
+                    {description}
+                    {this.renderCopyButton()}
+                </CardContent>
+                <div className={classes.footerBlock} />
+            </div>}
+        </div>;
+    }
+}
 
 export default withStyles(styles)(HostRow);

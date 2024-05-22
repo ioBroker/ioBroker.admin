@@ -8,8 +8,8 @@ import {
     DialogActions,
     Button,
     TextField,
-    Tooltip, InputAdornment, IconButton,
-    type Theme,
+    Tooltip, InputAdornment,
+    IconButton,
 } from '@mui/material';
 
 import {
@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 
 import { Utils, UploadImage } from '@iobroker/adapter-react-v5';
+import { type Theme } from '@iobroker/adapter-react-v5/types';
 
 const styles: Record<string, any> = (theme: Theme) => ({
     error: {

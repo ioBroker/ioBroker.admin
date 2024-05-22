@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import ipaddr from 'ipaddr.js';
 
 import {
@@ -16,10 +15,46 @@ import {
     Refresh as ReloadIcon,
 } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import type { ThemeType } from '@iobroker/adapter-react-v5/types';
 
-class JsControllerUpdater extends Component {
-    constructor(props) {
+interface NetworkInterface {
+    address: string;
+    netmask: string;
+    family: string;
+    mac: string;
+    internal: boolean;
+    cidr: string;
+}
+
+interface JsControllerUpdaterProps {
+    socket: AdminConnection;
+    hostId: `system.host.${string}`;
+    onClose: () => void;
+    version: string;
+    adminInstance: string;
+    onUpdating: (updating: boolean) => void;
+    themeType?: ThemeType;
+}
+
+interface JsControllerUpdaterState {
+    response: any;
+    error: string | null;
+    starting: boolean;
+}
+
+class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControllerUpdaterState> {
+    private updating: boolean;
+
+    private readonly textareaRef: React.RefObject<HTMLTextAreaElement>;
+
+    private link: string;
+
+    private intervall: ReturnType<typeof setTimeout> | null;
+
+    private startTimeout: ReturnType<typeof setTimeout> | null;
+
+    constructor(props: JsControllerUpdaterProps) {
         super(props);
 
         this.state = {
@@ -35,7 +70,7 @@ class JsControllerUpdater extends Component {
         this.link = `${window.location.protocol}//${window.location.host}/`;
     }
 
-    setUpdating(updating) {
+    setUpdating(updating: boolean) {
         if (this.updating !== updating) {
             this.updating = updating;
             this.props.onUpdating(updating);
@@ -46,7 +81,7 @@ class JsControllerUpdater extends Component {
         // Controller to update: this.props.hostId
         // Current admin instance: this.props.adminInstance = 'admin.X'
         // read settings of admin.X
-        const instanceObj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
+        const instanceObj: ioBroker.InstanceObject = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`) as any as ioBroker.InstanceObject;
         if (instanceObj.common.host === this.props.hostId) {
             return;
         }
@@ -68,7 +103,7 @@ class JsControllerUpdater extends Component {
 
         // find common ip address in host.native.hardware.networkInterfaces
         for (const networkInterface of Object.values(host.native.hardware.networkInterfaces)) {
-            networkInterface.find(addr => {
+            (networkInterface as NetworkInterface[]).find(addr => {
                 // addr = {
                 //     "address": "192.168.178.45",
                 //     "netmask": "255.255.255.0",
@@ -108,7 +143,7 @@ class JsControllerUpdater extends Component {
                         version: this.props.version,
                         adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
                     },
-                    result => {
+                    (result: { result: string; error?: string }) => {
                         if (result.result) {
                             this.setUpdating(true);
                             this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
@@ -153,7 +188,7 @@ class JsControllerUpdater extends Component {
 
             // sometimes stderr has only one empty string in it
             if (response?.stderr) {
-                response.stderr = response.stderr.filter(line => line.trim());
+                response.stderr = response.stderr.filter((line: string) => line.trim());
             }
             if (response && !response.running && response.success && response.stdout) {
                 response.stdout.push('');
@@ -244,6 +279,7 @@ class JsControllerUpdater extends Component {
                             }
                             this.props.onClose();
                         }}
+                        // @ts-expect-error grey is valid color
                         color={this.state.response?.success ? 'primary' : 'grey'}
                         startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
                     >
@@ -254,15 +290,5 @@ class JsControllerUpdater extends Component {
         );
     }
 }
-
-JsControllerUpdater.propTypes = {
-    socket: PropTypes.object.isRequired,
-    hostId: PropTypes.string.isRequired,
-    onClose: PropTypes.func.isRequired,
-    version: PropTypes.string.isRequired,
-    adminInstance: PropTypes.string.isRequired,
-    onUpdating: PropTypes.func.isRequired,
-    themeType: PropTypes.string,
-};
 
 export default JsControllerUpdater;

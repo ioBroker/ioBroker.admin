@@ -91,6 +91,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (foxriver76) support of Node.js upgrade via UI (with js-controller Kiera - v6)
+* (bluefox) Corrected CRON settings
 
 ### 6.17.11 (2024-05-20)
 * (bluefox) Corrected custom configuration dialog

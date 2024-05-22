@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 
 import { withStyles } from '@mui/styles';
 
-import PropTypes from 'prop-types';
-
 import {
     Button,
     Dialog,
@@ -21,7 +19,10 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-const styles = theme => ({
+import { type Theme } from '@iobroker/adapter-react-v5/types';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
+
+const styles: Record<string, any> = (theme: Theme) => ({
     formControl: {
         marginTop: theme.spacing(3),
     },
@@ -36,8 +37,24 @@ const styles = theme => ({
     },
 });
 
-class AdapterDeletionDialog extends Component {
-    constructor(props) {
+interface AdapterDeletionDialogProps {
+    adapter: string;
+    socket: AdminConnection;
+    t: (word: string, ...args: any) => string;
+    onClose: () => void;
+    onClick: (deleteCustom: boolean) => void;
+    classes: Record<string, string>;
+}
+
+interface AdapterDeletionDialogState {
+    deleteCustom: boolean;
+    deleteCustomSupported: boolean;
+}
+
+class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, AdapterDeletionDialogState> {
+    private readonly t: (word: string, ...args: any) => string;
+
+    constructor(props: AdapterDeletionDialogProps) {
         super(props);
 
         this.state = {
@@ -115,12 +132,5 @@ class AdapterDeletionDialog extends Component {
         </Dialog>;
     }
 }
-
-AdapterDeletionDialog.propTypes = {
-    adapter: PropTypes.string.isRequired,
-    t: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-};
 
 export default withStyles(styles)(AdapterDeletionDialog);

@@ -20,8 +20,9 @@ import {
 } from '@mui/icons-material';
 
 import { I18n, Utils, IconCopy } from '@iobroker/adapter-react-v5';
+import type { Theme } from '@iobroker/adapter-react-v5/types';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
     root: {
         // backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -124,7 +125,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function removeChapter(text, remove, mustContain) {
+function removeChapter(text: string, remove: string, mustContain: string): string {
     const lines = text.split('\n');
     const newLines = [];
     let found = false;
@@ -142,15 +143,27 @@ function removeChapter(text, remove, mustContain) {
     return newLines.join('\n');
 }
 
+interface HostInfoShort {
+    location: string;
+    os: string;
+}
+
+interface JsControllerDialogProps {
+    socket: any;
+    hostId: string;
+    version: string;
+    onClose: () => void;
+}
+
 const JsControllerDialog = ({
     socket, hostId, version, onClose,
-}) => {
+}: JsControllerDialogProps) => {
     const classes = useStyles();
-    const [readme, setReadme] = useState(null);
+    const [readme, setReadme] = useState<(string | React.JSX.Element)[] | null>(null);
     const [location, setLocation] = useState('');
     const [os, setOS] = useState('');
 
-    const copyTextToClipboard = text => {
+    const copyTextToClipboard = (text: string) => {
         Utils.copyToClipboard(text);
         window.alert(I18n.t('Copied'));
     };
@@ -161,7 +174,7 @@ const JsControllerDialog = ({
         }
 
         (!location || !os) && hostId && typeof hostId === 'string' && socket.getHostInfoShort(hostId)
-            .then(data => {
+            .then((data: HostInfoShort) => {
                 data.location && data.location !== location && setLocation(data.location);
                 data.os && data.os !== os && setOS(data.os); // win32, linux, darwin, freebsd, android
 
@@ -178,9 +191,10 @@ const JsControllerDialog = ({
                         _readme = _readme.replace(/cd \/opt\/iobroker/g, `cd ${_location}`);
                         _readme = _readme.replace(/cd C:\\iobroker/g, `cd ${_location}`);
                         _readme = _readme.replace(/x\.y\.z/g, version);
-                        _readme = _readme.split('<!-- copy');
-                        const parts = [];
-                        _readme.forEach(chapter => {
+                        const readmeLines = _readme.split('<!-- copy');
+
+                        const parts: (string | React.JSX.Element)[] = [];
+                        readmeLines.forEach(chapter => {
                             if (chapter.includes('-->')) {
                                 const parts_ = chapter.split('-->');
                                 let button = parts_[0];
@@ -217,7 +231,7 @@ const JsControllerDialog = ({
                         setReadme(parts);
                     });
             })
-            .catch(e =>
+            .catch((e: string) =>
                 window.alert(`Cannot get information about host "${hostId}": ${e}`));
     }, [location, os, socket, version, hostId]);
 
@@ -226,20 +240,18 @@ const JsControllerDialog = ({
             key={`t_${i}`}
             components={{
                 // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
-                em: ({ node, ...props }) =>
-                    <IconButton
-                        className={classes.copyButtonSmall}
-                        onClick={() => copyTextToClipboard(props.children[0])}
-                    >
-                        <IconCopy />
-                    </IconButton>,
+                em: ({ ...props }) => <IconButton
+                    className={classes.copyButtonSmall}
+                    onClick={() => copyTextToClipboard((props.children as string[])[0].toString())}
+                >
+                    <IconCopy />
+                </IconButton>,
                 // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
-                a: ({ node, children, ...props }) =>
+                a: ({ children, ...props }) =>
                     <a style={{ color: 'inherit' }} {...props}>{children}</a>,
-                // eslint-disable-next-line react/no-unstable-nested-components
+                // eslint-disable-next-line react/no-unstable-nested-components,@typescript-eslint/no-unused-vars
                 code: ({
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    node, inline, className, children, ...props
+                    children, ...props
                 }) => <code className={classes.code} {...props}>{children}</code>,
             }}
         >

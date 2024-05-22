@@ -152,7 +152,7 @@ interface News {
     news: string;
 }
 
-interface RepoInstanceObject extends ioBroker.InstanceCommon {
+export interface RepoInstanceObject extends ioBroker.InstanceCommon {
     versionDate: string;
 }
 
@@ -336,20 +336,20 @@ export function checkCondition(
 interface AdapterUpdateDialogProps {
     adapter: string;
     adapterObject: RepoInstanceObject;
-    dependencies: Record<string, any>[];
+    dependencies?: Record<string, any>[];
     news: News[];
     noTranslation: boolean;
     toggleTranslation: () => void;
     onUpdate: (version: string) => void;
     onInstruction?: () => void;
-    onIgnore: (version: string) => void;
+    onIgnore?: (version: string) => void;
     onClose: () => void;
     rightDependencies: boolean;
     installedVersion: string;
     t: (text: string, arg1?: any, arg2?: any) => string;
     textUpdate: string;
     textInstruction: string;
-    instances: Record<string, ioBroker.InstanceObject>;
+    instances?: Record<string, ioBroker.InstanceObject>;
     classes: Record<string, any>;
 }
 
@@ -430,7 +430,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
     getDependencies(): React.JSX.Element[] {
         const result: React.JSX.Element[] = [];
 
-        this.props.dependencies && this.props.dependencies.forEach(dependency => {
+        this.props.dependencies?.forEach(dependency => {
             result.push(<State
                 key={dependency.name}
                 state={dependency.rightVersion}

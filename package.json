@@ -29,7 +29,7 @@
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@fnando/sparkline": "^0.3.10",
     "@honkhonk/vite-plugin-svgr": "^1.1.0",
-    "@iobroker/adapter-react-v5": "^4.13.14",
+    "@iobroker/adapter-react-v5": "^4.13.20",
     "@iobroker/admin-component-easy-access": "^0.3.2",
     "@iobroker/dm-utils": "^0.1.9",
     "@iobroker/legacy-testing": "^1.0.12",

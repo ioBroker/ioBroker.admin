@@ -15,7 +15,7 @@ interface NodeUpdateDialogProps {
     /** The host id of the host to upgrade node.js on */
     hostId: string;
     /** The node.js version to upgrade to */
-    version: string;
+    // version: string;
 }
 
 interface NodeUpdateDialogState {
@@ -97,21 +97,22 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
     async updateNodeJsVersion(): Promise<void> {
         this.setState({ inProgress: true });
 
-        const res = await new Promise<ControllerResponse>(resolve => this.props.socket.getRawSocket().emit(
-            'sendToHost',
-            this.props.hostId,
-            'upgradeOsPackages',
-            {
-                packages: [{
-                    name: 'nodejs',
-                    // For apt updates we need to be precise about the version, e.g. `18.20.2-1nodesource1`, thus we simply upgrade to the newest version instead
-                    // version: this.props.version,
-                }],
-                // restart the controller after the Node.js update
-                restart: true,
-            },
-            (resp: ControllerResponse)  => resolve(resp),
-        ));
+        const res = await new Promise<ControllerResponse>(resolve => this.props.socket.getRawSocket()
+            .emit(
+                'sendToHost',
+                this.props.hostId,
+                'upgradeOsPackages',
+                {
+                    packages: [{
+                        name: 'nodejs',
+                        // For apt updates we need to be precise about the version, e.g. `18.20.2-1nodesource1`, thus we simply upgrade to the newest version instead
+                        // version: this.props.version,
+                    }],
+                    // restart the controller after the Node.js update
+                    restart: true,
+                },
+                (resp: ControllerResponse) => resolve(resp),
+            ));
 
         this.setState({
             inProgress: false, success: res.success, error: res.error, finished: true,

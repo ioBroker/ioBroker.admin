@@ -6,14 +6,14 @@ export type HostEventType = 'new' | 'changed' | 'deleted';
 export type NotificationAnswer = { result: FilteredNotificationInformation } | null;
 
 export interface HostEvent {
-    id: string;
+    id: `system.host.${string}`;
     obj?: ioBroker.HostObject;
     type: HostEventType;
     oldObj?: ioBroker.HostObject;
 }
 
 export interface HostAliveEvent {
-    id: string;
+    id: `system.host.${string}`;
     alive: boolean;
     type: HostEventType;
 }
@@ -92,7 +92,10 @@ class HostsWorker {
             }
 
             this.handlers.forEach(cb => cb([{
-                id, obj, type, oldObj,
+                id: id as `system.host.${string}`,
+                obj,
+                type,
+                oldObj,
             }]));
         }
     };
@@ -122,7 +125,11 @@ class HostsWorker {
                 // deleted unknown instance
                 return;
             }
-            this.aliveHandlers.forEach(cb => cb && cb([{ id, alive: this.aliveStates[id], type }]));
+            this.aliveHandlers.forEach(cb => cb && cb([{
+                id: id as `system.host.${string}`,
+                alive: this.aliveStates[id],
+                type,
+            }]));
         }
     };
 
