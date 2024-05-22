@@ -1,7 +1,7 @@
 {
   "name": "@iobroker/json-config",
   "description": "This package contains the ioBroker JSON config UI components",
-  "version": "6.17.11",
+  "version": "6.17.12",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {

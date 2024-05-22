@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.12 (2024-05-22)
 * (foxriver76) support of Node.js upgrade via UI (with js-controller Kiera - v6)
 * (bluefox) Corrected CRON settings
 
@@ -106,9 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.17.6 (2024-04-19)
 * (bluefox) Extend the table JSON Config with the encryption possibility
 * (bluefox) Do not read historical data if instance is not active
-
-### 6.17.3 (2024-04-11)
-* (foxriver76) fixed npm adapter installation
 
 ## License
 The MIT License (MIT)

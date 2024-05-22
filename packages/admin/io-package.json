@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.11",
+    "version": "6.17.12",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.12": {
+        "en": "support of Node.js upgrade via UI (with js-controller Kiera - v6)\nCorrected CRON settings",
+        "de": "unterstützung von Node.js Upgrade über UI (mit js-Controller Kiera - v6)\nKorrigierte CRON-Einstellungen",
+        "ru": "поддержка обновления Node.js через UI (с js-контроллером Kiera - v6)\nИсправленные настройки CRON",
+        "pt": "suporte de atualização Node.js via UI (com js-controller Kiera - v6)\nConfigurações de CRON corrigidas",
+        "nl": "ondersteuning van Node.js upgrade via UI (met js-controller Kiera - v6)\nGecorrigeerde CRON-instellingen",
+        "fr": "prise en charge de la mise à niveau Node.js via l'interface utilisateur (avec js-controller Kiera - v6)\nParamètres CRON corrigés",
+        "it": "supporto di Node.js aggiornamento tramite UI (con js-controller Kiera - v6)\nImpostazioni CRON corrette",
+        "es": "soporte de Node.js actualización a través de UI (con js-controller Kiera - v6)\nAjustes CRON corregidos",
+        "pl": "obsługa aktualizacji Node.js poprzez UI (z sterownikiem js- Kiera - v6)\nPoprawione ustawienia CRON",
+        "uk": "підтримка оновлення NOde.js через UI (з js-controller Kiera - v6)\nВиправлені налаштування CRON",
+        "zh-cn": "通过 UI 支持 Node.js 升级( 带有 js- controller Kiera - v6)\n更正的 CRON 设置"
+      },
       "6.17.11": {
         "en": "Corrected custom configuration dialog",
         "de": "Benutzerdefinierte Konfiguration Dialog korrigiert",
@@ -95,19 +108,6 @@
         "pl": "uniknąć awarii, jeśli użytkownik nie ma prawa do zapisu obiektów",
         "uk": "якщо користувач не має дозволу на написання об’єктів",
         "zh-cn": "如果用户无权写入对象, 请避免崩溃大小写"
-      },
-      "6.17.1": {
-        "en": "support of includes in JSONConfig files",
-        "de": "unterstützung von Dateien in JSONConfig",
-        "ru": "поддержка включает в файлы JSONConfig",
-        "pt": "suporte de inclui em arquivos JSONConfig",
-        "nl": "ondersteuning van opnames in JSONConfig-bestanden",
-        "fr": "prise en charge d'inclusions dans les fichiers JSONConfig",
-        "it": "il supporto di include nei file JSONConfig",
-        "es": "soporte de incluye en archivos JSONConfig",
-        "pl": "obsługa zawiera w plikach JSONConfig",
-        "uk": "підтримка включає в себе файли JSONConfig",
-        "zh-cn": "支持包含在 JSONConfig 文件"
       }
     },
     "desc": {
