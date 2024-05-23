@@ -89,6 +89,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Alias editing corrected
+* (bluefox) Web-extension indicator corrected
+
 ### 6.17.12 (2024-05-22)
 * (foxriver76) support of Node.js upgrade via UI (with js-controller Kiera - v6)
 * (bluefox) Corrected CRON settings
