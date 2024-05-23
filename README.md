@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.13 (2024-05-23)
 * (bluefox) Alias editing corrected
 * (bluefox) Web-extension indicator corrected
 
@@ -106,10 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.17.7 (2024-04-26)
 * (bluefox) Improved category tab
-
-### 6.17.6 (2024-04-19)
-* (bluefox) Extend the table JSON Config with the encryption possibility
-* (bluefox) Do not read historical data if instance is not active
 
 ## License
 The MIT License (MIT)
