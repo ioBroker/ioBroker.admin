@@ -376,7 +376,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 loglevel: common.loglevel || null,
                 adapter: common.name || null,
                 version: common.version || null,
-                stoppedWhenWebExtension: obj.common.mode === 'daemon' ? !!obj.common.webExtension : undefined,
+                stoppedWhenWebExtension: obj.common.mode === 'daemon' ? (obj.common.webExtension !== undefined ? !!obj.common.webExtension : undefined) : undefined,
                 links: [],
             };
 
