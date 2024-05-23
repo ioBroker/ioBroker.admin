@@ -36,7 +36,7 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
             schema={schema}
             data={data}
             onError={setError}
-            onChange={_data => onChange(_data)}
+            onChange={(_data: Record<string, any>) => onChange(_data)}
             embedded
             themeName={props.themeName}
             themeType={props.themeType}

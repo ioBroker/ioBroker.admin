@@ -22,6 +22,10 @@ class ConfigDeviceManager extends ConfigGeneric<ConfigDeviceManagerProps, Config
             title={this.getText(this.props.schema.label)}
             socket={this.props.socket}
             selectedInstance={`${this.props.adapterName}.${this.props.instance}`}
+            themeName={this.props.themeName}
+            themeType={this.props.themeType}
+            isFloatComma={this.props.isFloatComma}
+            dateFormat={this.props.dateFormat}
         />;
     }
 }
