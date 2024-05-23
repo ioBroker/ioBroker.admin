@@ -33,7 +33,7 @@ interface ControllerResponse  {
     /** If upgrade was successful */
     success: boolean;
     /** Error message */
-    error: string;
+    error?: string;
 }
 
 export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogProps, NodeUpdateDialogState> {
