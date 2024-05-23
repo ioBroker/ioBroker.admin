@@ -135,6 +135,7 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
                 console.error(`Cannot find ip address: ${e}`);
             })
             .then(() => {
+                // @TODO: Move to iobroker socket
                 this.props.socket.getRawSocket().emit(
                     'sendToHost',
                     this.props.hostId,

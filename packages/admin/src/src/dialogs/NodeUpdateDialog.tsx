@@ -97,6 +97,7 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
     async updateNodeJsVersion(): Promise<void> {
         this.setState({ inProgress: true });
 
+        // @TODO: Move to iobroker socket
         const res = await new Promise<ControllerResponse>(resolve => this.props.socket.getRawSocket()
             .emit(
                 'sendToHost',

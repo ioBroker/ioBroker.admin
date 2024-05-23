@@ -29,7 +29,8 @@ import {
     Utils as UtilsCommon,
 } from '@iobroker/adapter-react-v5';
 
-import Utils, { type ioBrokerObject } from '../../Utils';
+import Utils from '../../Utils';
+import { type Translate, type ioBrokerObject } from '../../types';
 
 // icons
 
@@ -81,7 +82,7 @@ type CertificateArray = {
 type Certificate = Record<string, string>;
 
 interface Props {
-    t: (text: string) => string;
+    t: Translate;
     classes: Record<string, string>;
     data: ioBrokerObject<CertificateArray>;
     onChange: (data: ioBrokerObject<CertificateArray>) => void;

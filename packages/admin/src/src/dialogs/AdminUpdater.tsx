@@ -104,6 +104,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
             certPrivateName, certPublicName, port, useHttps,
         } = await this.getWebserverParams();
 
+        // @TODO: Move to iobroker socket
         this.props.socket.getRawSocket().emit(
             'sendToHost',
             this.props.host,

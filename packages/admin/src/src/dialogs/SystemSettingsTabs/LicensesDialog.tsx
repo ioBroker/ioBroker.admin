@@ -1,7 +1,6 @@
 // LicensesDialog
-import { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -12,13 +11,15 @@ import {
     TableHead,
     TableRow,
     TextField,
+    type Theme,
 } from '@mui/material';
 
 import { Refresh as IconRefresh } from '@mui/icons-material';
 
-import { withWidth, Utils } from '@iobroker/adapter-react-v5';
+import { withWidth, Utils, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { type Translate, type ioBrokerObject } from '../../types';
 
-const styles = () => ({
+const styles:Styles<Theme, any> = () => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -78,8 +79,42 @@ const styles = () => ({
     },
 });
 
-class LicensesDialog extends Component {
-    constructor(props) {
+interface License {
+    id: string;
+    product: string;
+    time: number;
+    uuid: string;
+    validTill: string;
+    version: string;
+    usedBy: string;
+    invoice: string;
+}
+
+type LicenseObject = ioBrokerObject<{
+    licenses: License[];
+    login: string;
+    password: string;
+}>;
+
+interface Props {
+    t: Translate;
+    classes: Record<string, string>;
+    data: LicenseObject;
+    host: string;
+    saving: boolean;
+    socket: AdminConnection;
+    onChange: (data: LicenseObject) => void;
+}
+
+interface State {
+    uuid: string;
+    requesting: boolean;
+    licenses: License[];
+    // readTime: number;
+}
+
+class LicensesDialog extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
@@ -90,7 +125,7 @@ class LicensesDialog extends Component {
         };
     }
 
-    onLicensesChanged = (id, obj) => {
+    onLicensesChanged = (id: string, obj: any): void => {
         if (id === 'system.licenses') {
             obj = obj || {};
             obj.native = obj.native || {};
@@ -116,21 +151,22 @@ class LicensesDialog extends Component {
         this.props.socket.unsubscribeObject('system.licenses', this.onLicensesChanged);
     }
 
-    doChange = (name, value) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    doChange = (name: 'login' | 'password', value: string): void => {
+        const newData = Utils.clone(this.props.data);
         newData.native[name] = value;
         this.props.onChange(newData);
     };
 
-    static requestLicensesByHost(socket, host, login, password, t) {
+    static requestLicensesByHost(socket: AdminConnection, host: string, login: string, password:string, t: (text: string) => string): Promise<License[]> {
         return new Promise((resolve, reject) => {
-            socket.getRawSocket().emit('updateLicenses', login, password, (err, licenses) => {
+            // @TODO: Move to iobroker socket
+            socket.getRawSocket().emit('updateLicenses', login, password, (err: string | { error: string }, licenses: License[]) => {
                 if (err === 'permissionError') {
                     reject(t('May not trigger "updateLicenses"'));
-                } else if (err && err.error) {
+                } else if (err && typeof err === 'object' && err.error) {
                     reject(t(err.error));
                 } else if (err) {
-                    reject(t(err));
+                    reject(t(err as string));
                 } else {
                     resolve(licenses);
                 }
@@ -260,12 +296,5 @@ class LicensesDialog extends Component {
         </div>;
     }
 }
-
-LicensesDialog.propTypes = {
-    t: PropTypes.func,
-    data: PropTypes.object,
-    host: PropTypes.string,
-    saving: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(LicensesDialog));

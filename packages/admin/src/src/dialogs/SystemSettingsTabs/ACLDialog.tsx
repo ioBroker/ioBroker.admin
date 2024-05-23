@@ -22,7 +22,8 @@ import {
 } from '@mui/material';
 
 import { I18n, withWidth } from '@iobroker/adapter-react-v5';
-import Utils, { type ioBrokerObject } from '@/Utils';
+import Utils from '@/Utils';
+import { type Translate, type ioBrokerObject } from '../../types';
 
 const styles:Styles<Theme, any> = theme => ({
     tabPanel: {
@@ -62,15 +63,17 @@ type ACLRights = {
 
 type ACLObject = ioBrokerObject<object, {defaultNewAcl: ACLOwners & ACLRights}>;
 
-class ACLDialog extends Component<{
-    t: (text: string) => string;
+type Props = {
+    t: Translate;
     classes: Record<string, string>;
     data: ACLObject;
     users: ioBroker.Object[];
     groups: ioBroker.Object[];
     onChange: (data: ACLObject) => void;
     saving: boolean;
-}> {
+}
+
+class ACLDialog extends Component<Props> {
     permBits:[number, number][] = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
 
     static getTypes(): { type: keyof ACLRights; title: string }[] {
@@ -96,7 +99,7 @@ class ACLDialog extends Component<{
         return this.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
     }
 
-    getTable(owner: keyof ACLRights): React.ReactNode {
+    getTable(owner: keyof ACLRights): React.JSX.Element {
         const checks = this.getRights(owner);
         const { classes } = this.props;
         const checkboxes = checks.map((elem, index) =>

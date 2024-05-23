@@ -667,9 +667,4 @@ class Utils {
     }
 }
 
-export type ioBrokerObject<Native extends object = object, Common extends object = object> = ioBroker.AnyObject & {
-    common: Record<string, any> & Common;
-    native: Record<string, any> & Native;
-};
-
 export default Utils;

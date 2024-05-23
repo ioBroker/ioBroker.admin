@@ -29,3 +29,10 @@ export type Repository = Record<string, RepositoryEntry>
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ValueOrString<T> = T | string & {}
+
+export type ioBrokerObject<Native extends object = object, Common extends object = object> = ioBroker.AnyObject & {
+    common: Record<string, any> & Common;
+    native: Record<string, any> & Native;
+};
+
+export type Translate = (text: string, ...args: (string | number | boolean)[]) => string;
