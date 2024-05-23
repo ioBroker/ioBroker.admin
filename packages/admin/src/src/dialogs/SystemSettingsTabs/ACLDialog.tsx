@@ -1,9 +1,8 @@
 // ACLDialog.js
 
 import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
 
-import { withStyles } from '@mui/styles';
+import { withStyles, type Styles } from '@mui/styles';
 import {
     Grid,
     Typography,
@@ -18,11 +17,13 @@ import {
     MenuItem,
     Select,
     InputLabel,
+    type SelectChangeEvent,
 } from '@mui/material';
 
 import { I18n, withWidth } from '@iobroker/adapter-react-v5';
+import Utils from '@/Utils';
 
-const styles = theme => ({
+const styles:Styles<any, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -47,10 +48,18 @@ const styles = theme => ({
     },
 });
 
-class ACLDialog extends Component {
-    permBits = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
+class ACLDialog extends Component<{
+    t: (text: string) => string;
+    classes: Record<string, string>;
+    data: ioBroker.Object;
+    users: ioBroker.Object[];
+    groups: ioBroker.Object[];
+    onChange: (data: ioBroker.Object) => void;
+    saving: boolean;
+}> {
+    permBits:[number, number][] = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
 
-    static getTypes() {
+    static getTypes(): { type: string; title: string }[] {
         return [
             {
                 type: 'object',
@@ -67,13 +76,13 @@ class ACLDialog extends Component {
         ];
     }
 
-    getRights(type) {
+    getRights(type: string): number[][] {
         const rts = this.props.data.common.defaultNewAcl[type];
         // eslint-disable-next-line no-bitwise
         return this.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
     }
 
-    getTable(owner) {
+    getTable(owner: string): React.ReactNode {
         const checks = this.getRights(owner);
         const { classes } = this.props;
         const checkboxes = checks.map((elem, index) =>
@@ -140,20 +149,20 @@ class ACLDialog extends Component {
         </TableContainer>;
     }
 
-    doChange = (name, value) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    doChange = (name: string, value: string): void => {
+        const newData = Utils.clone(this.props.data);
         newData.common.defaultNewAcl[name] = value;
         this.props.onChange(newData);
     };
 
-    handleCheck = (evt, ownerType, elemNum, num) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    handleCheck = (evt: React.ChangeEvent<HTMLInputElement>, ownerType: string, elemNum: number, num: number): void => {
+        const newData = Utils.clone(this.props.data);
         // eslint-disable-next-line no-bitwise
         newData.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
         this.props.onChange(newData);
     };
 
-    handleChange = (evt, id) => this.doChange(id, evt.target.value);
+    handleChange = (evt: SelectChangeEvent<any>, id: string): void => this.doChange(id, evt.target.value);
 
     render() {
         const lang = I18n.getLanguage();
@@ -226,13 +235,5 @@ class ACLDialog extends Component {
         </div>;
     }
 }
-
-ACLDialog.propTypes = {
-    t: PropTypes.func,
-    data: PropTypes.object,
-    users: PropTypes.array,
-    onChange: PropTypes.func,
-    saving: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(ACLDialog));
