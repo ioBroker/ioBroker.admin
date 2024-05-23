@@ -40,8 +40,8 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
             embedded
             themeName={props.themeName}
             themeType={props.themeType}
-            isFloatComma={props.isFloatComma === undefined ? this.props.socket.systemConfig.common.isFloatComma : props.isFloatComma}
-            dateFormat={props.dateFormat === undefined ? this.props.socket.systemConfig.common.dateFormat : props.dateFormat}
+            isFloatComma={props.isFloatComma === undefined ? props.socket.systemConfig.common.isFloatComma : props.isFloatComma}
+            dateFormat={props.dateFormat === undefined ? props.socket.systemConfig.common.dateFormat : props.dateFormat}
         />
     </>;
 
