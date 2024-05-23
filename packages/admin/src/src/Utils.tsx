@@ -462,8 +462,8 @@ class Utils {
         return [{ url: link, port }];
     }
 
-    static objectMap(object: Record<string, any>, callback: (res: any, key: string) => void): any[] {
-        const result = [];
+    static objectMap<Result = any, Value = any>(object: Record<string, Value>, callback: (res: Value, key: string) => Result): Result[] {
+        const result: Result[] = [];
         for (const key in object) {
             result.push(callback(object[key], key));
         }
@@ -666,5 +666,10 @@ class Utils {
         return JSON.parse(JSON.stringify(obj));
     }
 }
+
+export type ioBrokerObject<Native extends object = object, Common extends object = object> = ioBroker.AnyObject & {
+    common: Record<string, any> & Common;
+    native: Record<string, any> & Native;
+};
 
 export default Utils;
