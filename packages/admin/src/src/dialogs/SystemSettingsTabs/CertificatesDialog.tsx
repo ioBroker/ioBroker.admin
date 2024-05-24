@@ -1,12 +1,12 @@
-// CertificatesDialog.js
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
-import PropTypes from 'prop-types';
 
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
-    Fab, IconButton, InputAdornment,
+    Fab,
+    IconButton,
+    InputAdornment,
     Paper,
     Table,
     TableBody,
@@ -28,12 +28,14 @@ import {
     I18n,
     Utils as UtilsCommon,
 } from '@iobroker/adapter-react-v5';
+import { type Theme } from '@iobroker/adapter-react-v5/types';
 
 import Utils from '../../Utils';
+import { type Translate, type ioBrokerObject } from '@/types';
 
 // icons
 
-const styles = () => ({
+const styles: Styles<Theme, any> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -71,10 +73,30 @@ const styles = () => ({
     input: {
         width: '100%',
     },
-});
+};
 
-class CertificatesDialog extends Component {
-    constructor(props) {
+type CertificateArray = {
+    title: string;
+    data: string;
+}[];
+
+type Certificate = Record<string, string>;
+
+interface CertificatesDialogProps {
+    t: Translate;
+    classes: Record<string, string>;
+    data: ioBrokerObject<CertificateArray>;
+    onChange: (data: ioBrokerObject<CertificateArray>) => void;
+    saving: boolean;
+    width: string;
+}
+
+interface CertificatesDialogState {
+    chClass: boolean;
+}
+
+class CertificatesDialog extends Component<CertificatesDialogProps, CertificatesDialogState> {
+    constructor(props: CertificatesDialogProps) {
         super(props);
 
         this.state = {
@@ -82,15 +104,15 @@ class CertificatesDialog extends Component {
         };
     }
 
-    static certToArray(certs) {
-        return Utils.objectMap(certs, (cert, name) => ({
+    static certToArray(certs: Certificate): CertificateArray {
+        return Utils.objectMap(certs, (cert, name: string) => ({
             title: name,
             data: cert,
         }));
     }
 
-    static arrayToCert(array) {
-        const result = {};
+    static arrayToCert(array: CertificateArray): Certificate {
+        const result:Record<string, string> = {};
         for (const k in array) {
             result[array[k].title] = array[k].data;
         }
@@ -98,7 +120,7 @@ class CertificatesDialog extends Component {
         return result;
     }
 
-    static detectType(name) {
+    static detectType(name: string) {
         name = name.toLowerCase();
 
         if (name.includes('public') || name.includes('cert')) {
@@ -193,48 +215,46 @@ class CertificatesDialog extends Component {
             <Dropzone noClick>
                 {({
                     getRootProps, getInputProps, acceptedFiles, fileRejections,
-                }) => (
-                    <div {...getRootProps({
-                        className: this.state.chClass ? 'drop-container drop-dop' : 'drop-container',
-                        onDragEnter: () => this.setState({ chClass: true }),
-                        onDragLeave: () => this.setState({ chClass: false }),
-                        onDrop: () => {
-                            if (this.props.saving) {
-                                // ignore
-                                return;
-                            }
-                            if (fileRejections.length) {
-                                const msg = [];
-                                // eslint-disable-next-line array-callback-return
-                                fileRejections.map((e => {
-                                    const m = `${e.file.name}: `;
-                                    const mm = [];
-                                    e.errors.forEach(ee => mm.push(ee.message));
-                                    msg.push(m + mm.join(','));
-                                }));
+                }) => <div {...getRootProps({
+                    className: this.state.chClass ? 'drop-container drop-dop' : 'drop-container',
+                    onDragEnter: () => this.setState({ chClass: true }),
+                    onDragLeave: () => this.setState({ chClass: false }),
+                    onDrop: () => {
+                        if (this.props.saving) {
+                            // ignore
+                            return;
+                        }
+                        if (fileRejections.length) {
+                            const msg: string[] = [];
+                            // eslint-disable-next-line array-callback-return
+                            fileRejections.map((e => {
+                                const m = `${e.file.name}: `;
+                                const mm: string[] = [];
+                                e.errors.forEach(ee => mm.push(ee.message));
+                                msg.push(m + mm.join(','));
+                            }));
 
-                                alert(msg.join(', '));
-                            }
+                            alert(msg.join(', '));
+                        }
 
-                            if (acceptedFiles.length) {
-                                // eslint-disable-next-line array-callback-return
-                                acceptedFiles.map(file => {
-                                    const reader = new FileReader();
-                                    reader.onload = async e =>
-                                        this.onAdd(file.name, e.target.result);
-                                    reader.readAsText(file);
-                                });
-                            } else if (!fileRejections.length) {
-                                alert(this.props.t('No files exists'));
-                            }
+                        if (acceptedFiles.length) {
+                            // eslint-disable-next-line array-callback-return
+                            acceptedFiles.map(file => {
+                                const reader = new FileReader();
+                                reader.onload = async e =>
+                                    this.onAdd(file.name, e.target.result as string);
+                                reader.readAsText(file);
+                            });
+                        } else if (!fileRejections.length) {
+                            alert(this.props.t('No files exists'));
+                        }
 
-                            this.setState({ chClass: false });
-                        },
-                    })}
-                    >
-                        <input {...getInputProps()} />
-                    </div>
-                )}
+                        this.setState({ chClass: false });
+                    },
+                })}
+                >
+                    <input {...getInputProps()} />
+                </div>}
             </Dropzone>
             <div className={classes.buttonPanel}>
                 <Fab
@@ -273,16 +293,16 @@ class CertificatesDialog extends Component {
         </div>;
     }
 
-    onChangeText = (value, id, name) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    onChangeText = (value: string, id: string, name: 'title' | 'data') => {
+        const newData = Utils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         array.find(element => element.title === id)[name] = value;
         newData.native.certificates = CertificatesDialog.arrayToCert(array);
         this.props.onChange(newData);
     };
 
-    onDelete = id => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    onDelete = (id: string) => {
+        const newData = Utils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         const index = array.findIndex(element => element.title === id);
         delete array[index];
@@ -290,8 +310,8 @@ class CertificatesDialog extends Component {
         this.props.onChange(newData);
     };
 
-    onAdd = (title, data) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    onAdd = (title?: string, data?: string) => {
+        const newData = Utils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         if (!title) {
             let i = 1;
@@ -310,12 +330,5 @@ class CertificatesDialog extends Component {
         this.props.onChange(newData);
     };
 }
-
-CertificatesDialog.propTypes = {
-    t: PropTypes.func,
-    data: PropTypes.object,
-    onChange: PropTypes.func,
-    saving: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(CertificatesDialog));

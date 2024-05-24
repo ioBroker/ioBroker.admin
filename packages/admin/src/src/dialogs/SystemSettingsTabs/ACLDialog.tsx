@@ -1,9 +1,6 @@
-// ACLDialog.js
-
 import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
 
-import { withStyles } from '@mui/styles';
+import { withStyles, type Styles } from '@mui/styles';
 import {
     Grid,
     Typography,
@@ -21,8 +18,12 @@ import {
 } from '@mui/material';
 
 import { I18n, withWidth } from '@iobroker/adapter-react-v5';
+import { type Theme } from '@iobroker/adapter-react-v5/types';
 
-const styles = theme => ({
+import { type Translate, type ioBrokerObject } from '@/types';
+import Utils from '@/Utils';
+
+const styles: Styles<Theme, any> = (theme: Theme) => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -47,10 +48,33 @@ const styles = theme => ({
     },
 });
 
-class ACLDialog extends Component {
-    permBits = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
+type ACLOwners = {
+    owner: ioBroker.ObjectIDs.User;
+    ownerGroup: ioBroker.ObjectIDs.Group;
+}
 
-    static getTypes() {
+type ACLRights = {
+    object: number;
+    state: number;
+    file: number;
+}
+
+type ACLObject = ioBrokerObject<object, { defaultNewAcl: ACLOwners & ACLRights }>;
+
+type Props = {
+    t: Translate;
+    classes: Record<string, string>;
+    data: ACLObject;
+    users: ioBroker.Object[];
+    groups: ioBroker.Object[];
+    onChange: (data: ACLObject) => void;
+    saving: boolean;
+}
+
+class ACLDialog extends Component<Props> {
+    private static permBits: [number, number][] = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
+
+    static getTypes(): { type: keyof ACLRights; title: string }[] {
         return [
             {
                 type: 'object',
@@ -67,13 +91,13 @@ class ACLDialog extends Component {
         ];
     }
 
-    getRights(type) {
+    getRights(type: keyof ACLRights): number[][] {
         const rts = this.props.data.common.defaultNewAcl[type];
         // eslint-disable-next-line no-bitwise
-        return this.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
+        return ACLDialog.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
     }
 
-    getTable(owner) {
+    getTable(owner: keyof ACLRights): React.JSX.Element {
         const checks = this.getRights(owner);
         const { classes } = this.props;
         const checkboxes = checks.map((elem, index) =>
@@ -83,7 +107,7 @@ class ACLDialog extends Component {
                         disabled={this.props.saving}
                         checked={!!elem[0]}
                         color="primary"
-                        onChange={evt => this.handleCheck(evt, owner, index, 0)}
+                        onChange={evt => this.handleCheck(owner, index, 0)}
                     />
                 </TableCell>
                 <TableCell className={classes.tableCell}>
@@ -91,7 +115,7 @@ class ACLDialog extends Component {
                         disabled={this.props.saving}
                         checked={!!elem[1]}
                         color="primary"
-                        onChange={evt => this.handleCheck(evt, owner, index, 1)}
+                        onChange={evt => this.handleCheck(owner, index, 1)}
                     />
                 </TableCell>
             </Fragment>);
@@ -140,20 +164,26 @@ class ACLDialog extends Component {
         </TableContainer>;
     }
 
-    doChange = (name, value) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
-        newData.common.defaultNewAcl[name] = value;
+    doChange = (name: keyof ACLOwners, value: string): void => {
+        const newData = Utils.clone(this.props.data);
+        if (name === 'owner') {
+            newData.common.defaultNewAcl.owner = value as ioBroker.ObjectIDs.User;
+        } else if (name === 'ownerGroup') {
+            newData.common.defaultNewAcl.ownerGroup = value as ioBroker.ObjectIDs.Group;
+        }
         this.props.onChange(newData);
     };
 
-    handleCheck = (evt, ownerType, elemNum, num) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    handleCheck = (
+        ownerType: keyof ACLRights,
+        elemNum: number,
+        num: number,
+    ): void => {
+        const newData = Utils.clone(this.props.data);
         // eslint-disable-next-line no-bitwise
-        newData.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
+        newData.common.defaultNewAcl[ownerType] ^= ACLDialog.permBits[elemNum][num];
         this.props.onChange(newData);
     };
-
-    handleChange = (evt, id) => this.doChange(id, evt.target.value);
 
     render() {
         const lang = I18n.getLanguage();
@@ -192,7 +222,7 @@ class ACLDialog extends Component {
                             className={classes.formControl}
                             id="owner"
                             value={this.props.data.common.defaultNewAcl.owner}
-                            onChange={evt => this.handleChange(evt, 'owner')}
+                            onChange={evt => this.doChange('owner', evt.target.value)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'users' }}
                         >
@@ -211,7 +241,7 @@ class ACLDialog extends Component {
                             className={classes.formControl}
                             id="ownerGroup"
                             value={this.props.data.common.defaultNewAcl.ownerGroup}
-                            onChange={evt => this.handleChange(evt, 'ownerGroup')}
+                            onChange={evt => this.doChange('ownerGroup', evt.target.value)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'ownerGroup' }}
                         >
@@ -226,13 +256,5 @@ class ACLDialog extends Component {
         </div>;
     }
 }
-
-ACLDialog.propTypes = {
-    t: PropTypes.func,
-    data: PropTypes.object,
-    users: PropTypes.array,
-    onChange: PropTypes.func,
-    saving: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(ACLDialog));

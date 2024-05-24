@@ -1,7 +1,5 @@
-// LicensesDialog
-import { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -16,9 +14,12 @@ import {
 
 import { Refresh as IconRefresh } from '@mui/icons-material';
 
-import { withWidth, Utils } from '@iobroker/adapter-react-v5';
+import { withWidth, Utils, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { type Theme } from '@iobroker/adapter-react-v5/types';
 
-const styles = () => ({
+import { type Translate, type ioBrokerObject } from '@/types';
+
+const styles: Styles<Theme, any> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -76,10 +77,44 @@ const styles = () => ({
         opacity: 0.5,
         fontStyle: 'italic',
     },
-});
+};
 
-class LicensesDialog extends Component {
-    constructor(props) {
+interface License {
+    id: string;
+    product: string;
+    time: number;
+    uuid: string;
+    validTill: string;
+    version: string;
+    usedBy: string;
+    invoice: string;
+}
+
+type LicenseObject = ioBrokerObject<{
+    licenses: License[];
+    login: string;
+    password: string;
+}>;
+
+interface LicensesDialogProps {
+    t: Translate;
+    classes: Record<string, string>;
+    data: LicenseObject;
+    host: string;
+    saving: boolean;
+    socket: AdminConnection;
+    onChange: (data: LicenseObject) => void;
+}
+
+interface LicensesDialogState {
+    uuid: string;
+    requesting: boolean;
+    licenses: License[];
+    // readTime: number;
+}
+
+class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState> {
+    constructor(props: LicensesDialogProps) {
         super(props);
 
         this.state = {
@@ -90,11 +125,13 @@ class LicensesDialog extends Component {
         };
     }
 
-    onLicensesChanged = (id, obj) => {
+    onLicensesChanged = (id: string, obj: ioBroker.Object | null | undefined): void => {
         if (id === 'system.licenses') {
-            obj = obj || {};
+            obj = obj || {} as ioBroker.Object;
             obj.native = obj.native || {};
             obj.native.licenses = obj.native.licenses || [];
+
+            // if licenses changed
             if (JSON.stringify(obj.native.licenses) !== JSON.stringify(this.state.licenses)) {
                 window.alert(this.props.t('New licenses were stored'));
                 this.setState({ licenses: obj.native.licenses /* , readTime: obj.native.licenses.readTime || 0 */ });
@@ -107,7 +144,8 @@ class LicensesDialog extends Component {
     componentDidMount() {
         this.props.socket.getObject('system.meta.uuid')
             .then(obj => {
-                this.props.socket.subscribeObject('system.licenses', this.onLicensesChanged);
+                this.props.socket.subscribeObject('system.licenses', this.onLicensesChanged)
+                    .catch(e => window.alert(`Cannot subscribe on system.licenses: ${e}`));
                 this.setState({ uuid: obj.native.uuid });
             });
     }
@@ -116,27 +154,11 @@ class LicensesDialog extends Component {
         this.props.socket.unsubscribeObject('system.licenses', this.onLicensesChanged);
     }
 
-    doChange = (name, value) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    doChange = (name: 'login' | 'password', value: string): void => {
+        const newData = Utils.clone(this.props.data);
         newData.native[name] = value;
         this.props.onChange(newData);
     };
-
-    static requestLicensesByHost(socket, host, login, password, t) {
-        return new Promise((resolve, reject) => {
-            socket.getRawSocket().emit('updateLicenses', login, password, (err, licenses) => {
-                if (err === 'permissionError') {
-                    reject(t('May not trigger "updateLicenses"'));
-                } else if (err && err.error) {
-                    reject(t(err.error));
-                } else if (err) {
-                    reject(t(err));
-                } else {
-                    resolve(licenses);
-                }
-            });
-        });
-    }
 
     async requestLicenses() {
         this.setState({ requesting: true });
@@ -153,7 +175,7 @@ class LicensesDialog extends Component {
                 }
             }
 
-            const licenses = await LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, password ? this.props.data.native.login : null, password, this.props.t);
+            const licenses = await this.props.socket.updateLicenses(password ? this.props.data.native.login : null, password);
 
             if (licenses !== null && licenses !== undefined) {
                 if (password) {
@@ -166,7 +188,9 @@ class LicensesDialog extends Component {
             }
         } catch (error) {
             this.setState({ requesting: false });
-            if (error === 'Authentication required') {
+            if (error === 'permissionError') {
+                window.alert(this.props.t('May not trigger "updateLicenses"'));
+            } else if (error === 'Authentication required') {
                 window.alert(this.props.t('Cannot update licenses: %s', this.props.t('Authentication required')));
             } else {
                 window.alert(this.props.t('Cannot update licenses: %s', error));
@@ -260,12 +284,5 @@ class LicensesDialog extends Component {
         </div>;
     }
 }
-
-LicensesDialog.propTypes = {
-    t: PropTypes.func,
-    data: PropTypes.object,
-    host: PropTypes.string,
-    saving: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(LicensesDialog));

@@ -30,13 +30,6 @@ interface NodeUpdateDialogState {
     finished: boolean;
 }
 
-interface ControllerResponse  {
-    /** If upgrade was successful */
-    success: boolean;
-    /** Error message */
-    error?: string;
-}
-
 export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogProps, NodeUpdateDialogState> {
     constructor(props: NodeUpdateDialogProps) {
         super(props);

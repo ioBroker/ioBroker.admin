@@ -134,30 +134,24 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
                 // cannot find ip address
                 console.error(`Cannot find ip address: ${e}`);
             })
+            .then(() => this.props.socket.upgradeController(
+                this.props.hostId,
+                this.props.version,
+                parseInt(this.props.adminInstance.split('.').pop(), 10),
+            ))
             .then(() => {
-                this.props.socket.getRawSocket().emit(
-                    'sendToHost',
-                    this.props.hostId,
-                    'upgradeController',
-                    {
-                        version: this.props.version,
-                        adminInstance: parseInt(this.props.adminInstance.split('.').pop(), 10),
-                    },
-                    (result: { result: string; error?: string }) => {
-                        if (result.result) {
-                            this.setUpdating(true);
-                            this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
+                this.setUpdating(true);
+                this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
 
-                            this.startTimeout = setTimeout(() => {
-                                this.startTimeout = null;
-                                this.setState({ starting: false });
-                            }, 10_000); // give 10 seconds to controller to start update
-                        } else {
-                            this.setState({ error: I18n.t('Not updatable'), starting: false });
-                            this.setUpdating(false);
-                        }
-                    },
-                );
+                this.startTimeout = setTimeout(() => {
+                    this.startTimeout = null;
+                    this.setState({ starting: false });
+                }, 10_000); // give 10 seconds to controller to start update
+            })
+            .catch(error => {
+                console.error(`Cannot update controller: ${error}`);
+                this.setState({ error: I18n.t('Not updatable'), starting: false });
+                this.setUpdating(false);
             });
     }
 

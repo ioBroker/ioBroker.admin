@@ -462,8 +462,8 @@ class Utils {
         return [{ url: link, port }];
     }
 
-    static objectMap(object: Record<string, any>, callback: (res: any, key: string) => void): any[] {
-        const result = [];
+    static objectMap<Result = any, Value = any>(object: Record<string, Value>, callback: (res: Value, key: string) => Result): Result[] {
+        const result: Result[] = [];
         for (const key in object) {
             result.push(callback(object[key], key));
         }
@@ -660,6 +660,10 @@ class Utils {
         }
 
         return (word || '').toString();
+    }
+
+    static clone<T>(obj: T): T {
+        return JSON.parse(JSON.stringify(obj));
     }
 }
 
