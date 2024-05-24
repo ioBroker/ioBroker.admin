@@ -154,11 +154,11 @@ class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState>
         this.props.socket.unsubscribeObject('system.licenses', this.onLicensesChanged);
     }
 
-    doChange = (name: 'login' | 'password', value: string): void => {
+    doChange(name: 'login' | 'password', value: string): void {
         const newData = Utils.clone(this.props.data);
         newData.native[name] = value;
         this.props.onChange(newData);
-    };
+    }
 
     async requestLicenses() {
         this.setState({ requesting: true });

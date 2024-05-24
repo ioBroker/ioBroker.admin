@@ -61,7 +61,7 @@ type ACLRights = {
 
 type ACLObject = ioBrokerObject<object, { defaultNewAcl: ACLOwners & ACLRights }>;
 
-type Props = {
+type ACLObjectProps = {
     t: Translate;
     classes: Record<string, string>;
     data: ACLObject;
@@ -71,7 +71,7 @@ type Props = {
     saving: boolean;
 }
 
-class ACLDialog extends Component<Props> {
+class ACLDialog extends Component<ACLObjectProps> {
     private static permBits: [number, number][] = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
 
     static getTypes(): { type: keyof ACLRights; title: string }[] {
@@ -164,7 +164,7 @@ class ACLDialog extends Component<Props> {
         </TableContainer>;
     }
 
-    doChange = (name: keyof ACLOwners, value: string): void => {
+    doChange(name: keyof ACLOwners, value: string): void {
         const newData = Utils.clone(this.props.data);
         if (name === 'owner') {
             newData.common.defaultNewAcl.owner = value as ioBroker.ObjectIDs.User;
@@ -172,13 +172,13 @@ class ACLDialog extends Component<Props> {
             newData.common.defaultNewAcl.ownerGroup = value as ioBroker.ObjectIDs.Group;
         }
         this.props.onChange(newData);
-    };
+    }
 
-    handleCheck = (
+    handleCheck(
         ownerType: keyof ACLRights,
         elemNum: number,
         num: number,
-    ): void => {
+    ): void {
         const newData = Utils.clone(this.props.data);
         // eslint-disable-next-line no-bitwise
         newData.common.defaultNewAcl[ownerType] ^= ACLDialog.permBits[elemNum][num];
