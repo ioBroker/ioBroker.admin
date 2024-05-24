@@ -22,7 +22,7 @@ import HostGeneric, {
     boxShadowHover,
     genericStyle,
     type HostGenericProps,
-    type HostGenericState
+    type HostGenericState,
 } from './HostGeneric';
 
 export const style = (theme: Theme): Record<string, any> => ({

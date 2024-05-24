@@ -254,7 +254,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
     },
     cell: {
         // paddingLeft: 6,
-    }
+    },
 });
 
 interface HostRowProps extends HostGenericProps {
@@ -342,7 +342,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         {this.props.host.common.name}
                         {!this.state.openCollapse && typeof description === 'object' ? <span className={classes.onBlick}>
                             (
-                                {this.props.t('Click for more')}
+                            {this.props.t('Click for more')}
                             )
                         </span> : null}
                     </div>

@@ -2,7 +2,8 @@ import React from 'react';
 import {
     Box,
     Button, CircularProgress,
-    Dialog, DialogActions, DialogContent, DialogTitle, Typography,
+    Dialog, DialogActions, DialogContent,
+    DialogTitle, Typography,
 } from '@mui/material';
 import { AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import { Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
@@ -92,27 +93,20 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
     }
 
     /**
-     * Update Node.js to given version and restart the controller afterwards
+     * Update Node.js to given version and restart the controller afterward
      */
     async updateNodeJsVersion(): Promise<void> {
         this.setState({ inProgress: true });
-
-        const res = await new Promise<ControllerResponse>(resolve => this.props.socket.getRawSocket()
-            .emit(
-                'sendToHost',
-                this.props.hostId,
-                'upgradeOsPackages',
-                {
-                    packages: [{
-                        name: 'nodejs',
-                        // For apt updates we need to be precise about the version, e.g. `18.20.2-1nodesource1`, thus we simply upgrade to the newest version instead
-                        // version: this.props.version,
-                    }],
-                    // restart the controller after the Node.js update
-                    restart: true,
-                },
-                (resp: ControllerResponse) => resolve(resp),
-            ));
+        const res = await this.props.socket.upgradeOsPackages(
+            this.props.hostId,
+            [{
+                name: 'nodejs',
+                // For apt updates we need to be precise about the version, e.g. `18.20.2-1nodesource1`, thus we simply upgrade to the newest version instead
+                // version: this.props.version,
+            }],
+            // restart the controller after the Node.js update
+        true,
+        );
 
         this.setState({
             inProgress: false, success: res.success, error: res.error, finished: true,
