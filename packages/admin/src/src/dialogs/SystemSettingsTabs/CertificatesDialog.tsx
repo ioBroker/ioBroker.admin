@@ -30,8 +30,8 @@ import {
 } from '@iobroker/adapter-react-v5';
 import { type Theme } from '@iobroker/adapter-react-v5/types';
 
-import Utils from '../../Utils';
 import { type Translate, type ioBrokerObject } from '@/types';
+import Utils from '../../Utils';
 
 // icons
 
