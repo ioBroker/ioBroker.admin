@@ -28,6 +28,7 @@
     "@iobroker/types": "5.0.20-alpha.0-20240522-9b71d3242",
     "@iobroker/webserver": "^1.0.3",
     "@iobroker/ws-server": "^2.1.2",
+    "@types/leaflet": "^1.9.12",
     "ajv": "^8.13.0",
     "archiver": "^7.0.1",
     "axios": "^1.6.8",

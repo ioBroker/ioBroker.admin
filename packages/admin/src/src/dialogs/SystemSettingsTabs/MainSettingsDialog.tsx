@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 // eslint-disable-next-line import/no-unresolved
-import { useMap } from 'react-leaflet/hooks';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import {
@@ -15,7 +13,7 @@ import {
     Select,
     TextField,
     Autocomplete,
-    FormHelperText, InputAdornment, IconButton,
+    FormHelperText, InputAdornment, IconButton, type Theme, type SelectChangeEvent,
 } from '@mui/material';
 
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -24,11 +22,15 @@ import {
     Confirm as ConfirmDialog,
     withWidth,
 } from '@iobroker/adapter-react-v5';
+import type {
+    DragEndEvent, LatLngTuple, Map, Marker,
+} from 'leaflet';
+import { type AdminGuiConfig, type Translate, type ioBrokerObject } from '../../types';
 
 import Utils from '../../Utils';
-import countries from '../../assets/json/countries';
+import countries from '../../assets/json/countries.json';
 
-const styles = theme => ({
+const styles:Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -49,21 +51,66 @@ const styles = theme => ({
     },
 });
 
-function MyMapComponent(props) {
+const MyMapComponent:React.FC<{addMap: (map: any) => any}> = props => {
     const map = useMap();
     props.addMap && props.addMap(map);
     return null;
+};
+
+interface Setting {
+    id: string;
+    title: string;
+    translate?: boolean;
+    values: { id: string | boolean; title: string }[];
+    allowText?: boolean;
+    autocomplete?: boolean;
+    help?: string;
 }
 
-class MainSettingsDialog extends Component {
-    constructor(props) {
+type SystemObject = ioBrokerObject<object, ioBroker.SystemConfigCommon & {
+    latitude: string;
+    longitude: string;
+    city: string;
+    country: string;
+}>;
+
+interface Props {
+    t: Translate;
+    data: SystemObject;
+    dataAux: SystemObject;
+    adminGuiConfig: AdminGuiConfig;
+    saving: boolean;
+    onChange: (data: any, dataAux: any, cb?: () => void) => void;
+    histories: string[];
+    multipleRepos: boolean;
+    classes: Record<string, string>;
+}
+
+interface State {
+    zoom: number;
+    confirm: boolean;
+    confirmValue: string;
+}
+
+class MainSettingsDialog extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             zoom: 14,
+            confirm: false,
+            confirmValue: '',
         };
     }
 
-    getSettings() {
+    marker: Marker;
+
+    map: Map;
+
+    cityTimer: ReturnType<typeof setTimeout>;
+
+    latLongTimer: ReturnType<typeof setTimeout>;
+
+    getSettings():Setting[] {
         return [
             {
                 id: 'language',
@@ -233,15 +280,15 @@ class MainSettingsDialog extends Component {
         ];
     }
 
-    onMap = map => {
+    onMap = (map:Map) => {
         if (this.props.saving) {
             return;
         }
         if (!this.map || this.map !== map) {
             this.map = map;
-            const center = [
-                parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
-                parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0,
+            const center:LatLngTuple = [
+                parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : '50') || 0,
+                parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : '10') || 0,
             ];
 
             this.marker = window.L.marker(
@@ -259,7 +306,7 @@ class MainSettingsDialog extends Component {
         }
     };
 
-    getSelect(e, i) {
+    getSelect(e: Setting, i: number) {
         const { classes } = this.props;
         let value = this.props.data.common[e.id];
 
@@ -278,14 +325,18 @@ class MainSettingsDialog extends Component {
 
         if (e.autocomplete && e.values) {
             return <Grid item sm={6} xs={12} key={i}>
-                <Autocomplete
-                    variant="standard"
+                <Autocomplete<Setting['values'][0], false, false, true>
+                    // variant="standard"
                     freeSolo
                     disabled={this.props.saving}
                     options={e.values}
                     inputValue={value.toString()}
                     onChange={(evt, newValue) => {
                         const id = this.getSettings()[i].id;
+                        if (typeof newValue === 'string') {
+                            this.doChange(id, newValue);
+                            return;
+                        }
                         this.doChange(id, newValue ? newValue.id : '');
                     }}
                     onInputChange={(event, newValue) => {
@@ -293,12 +344,15 @@ class MainSettingsDialog extends Component {
                         this.doChange(id, newValue);
                     }}
                     getOptionLabel={option => {
-                        if (e.translate) {
-                            return this.props.t(option.title || option.id);
+                        if (typeof option === 'string') {
+                            return option;
                         }
-                        return option.title || option.id;
+                        if (e.translate) {
+                            return this.props.t(option.title || option.id.toString());
+                        }
+                        return option.title || option.id.toString();
                     }}
-                    renderOption={(props, option) => <li {...props}>{e.translate ? this.props.t(option.title || option.id) : option.title || option.id}</li>}
+                    renderOption={(props, option) => <li {...props}>{e.translate ? this.props.t(option.title || option.id.toString()) : option.title || option.id}</li>}
                     renderInput={params =>
                         <TextField {...params} variant="standard" label={this.props.t(e.title)} />}
                 />
@@ -337,8 +391,8 @@ class MainSettingsDialog extends Component {
             );
         }
 
-        const items = e.values.map((elem, index) => <MenuItem value={elem.id} key={index}>
-            {e.translate ? this.props.t(elem.title || elem.id) : elem.title || elem.id}
+        const items = e.values.map((elem, index) => <MenuItem value={elem.id as string} key={index}>
+            {e.translate ? this.props.t(elem.title || elem.id.toString()) : elem.title || elem.id}
         </MenuItem>);
 
         return <Grid item sm={6} xs={12} key={i}>
@@ -404,13 +458,13 @@ class MainSettingsDialog extends Component {
         </FormControl>;
     };
 
-    handleChangeCountry = evt => {
+    handleChangeCountry = (evt:SelectChangeEvent<string>) => {
         const value = evt.target.value;
         const id = 'country';
         this.doChange(id, value);
     };
 
-    onChangeText = (evt, id) => {
+    onChangeText = (evt: {target: { value: string } }, id: string) => {
         const value = evt.target.value;
         this.onChangeInput(value, id);
 
@@ -418,16 +472,16 @@ class MainSettingsDialog extends Component {
             this.latLongTimer && clearTimeout(this.latLongTimer);
             this.latLongTimer = setTimeout(() => {
                 this.latLongTimer = null;
-                this.map.flyTo([this.props.data.common.latitude, this.props.data.common.longitude]);
-                this.marker.setLatLng([this.props.data.common.latitude, this.props.data.common.longitude]);
+                this.map.flyTo([parseFloat(this.props.data.common.latitude), parseFloat(this.props.data.common.longitude)]);
+                this.marker.setLatLng([parseFloat(this.props.data.common.latitude), parseFloat(this.props.data.common.longitude)]);
             }, 500);
         }
     };
 
-    onChangeInput = (value, id, cb) =>
+    onChangeInput = (value: any, id: string, cb?: () => void) =>
         this.doChange(id, value, cb);
 
-    onChangeCity = evt => {
+    onChangeCity = (evt: {target: { value: string } }) => {
         this.onChangeText(evt, 'city');
 
         this.cityTimer && clearTimeout(this.cityTimer);
@@ -451,7 +505,7 @@ class MainSettingsDialog extends Component {
         }, 500);
     };
 
-    handleChange = (evt, selectId) => {
+    handleChange = (evt: {target: {value: string}}, selectId: number) => {
         const value = evt.target.value;
         const id = this.getSettings()[selectId].id;
 
@@ -462,14 +516,14 @@ class MainSettingsDialog extends Component {
         }
     };
 
-    doChange = (name, value, cb) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    doChange = (name: string, value: any, cb?: () => void) => {
+        const newData = Utils.clone(this.props.data);
         newData.common[name] = value;
         this.props.onChange(newData, null, () =>
             cb && cb());
     };
 
-    onMarkerDragend = evt => {
+    onMarkerDragend = (evt:DragEndEvent) => {
         const ll = JSON.parse(JSON.stringify(evt.target._latlng));
         this.doChange('latitude',  ll.lat, () =>
             this.doChange('longitude', ll.lng));
@@ -479,9 +533,9 @@ class MainSettingsDialog extends Component {
         const { classes } = this.props;
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
-        const center = [
-            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
-            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0,
+        const center:LatLngTuple = [
+            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : '50') || 0,
+            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : '10') || 0,
         ];
 
         const { zoom } = this.state;
@@ -527,7 +581,7 @@ class MainSettingsDialog extends Component {
                         doubleClickZoom
                         scrollWheelZoom
                         dragging
-                        animate
+                        // animate
                         easeLinearity={0.35}
                     >
                         <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
@@ -604,13 +658,5 @@ class MainSettingsDialog extends Component {
         </div>;
     }
 }
-
-MainSettingsDialog.propTypes = {
-    t: PropTypes.func,
-    data: PropTypes.object,
-    dataAux: PropTypes.object,
-    adminGuiConfig: PropTypes.object,
-    saving: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(MainSettingsDialog));

@@ -36,3 +36,12 @@ export type ioBrokerObject<Native extends object = object, Common extends object
 };
 
 export type Translate = (text: string, ...args: (string | number | boolean)[]) => string;
+
+export interface AdminGuiConfig {
+    admin: {
+        menu: any;
+        settings: any;
+        adapters: any;
+        login: any;
+    };
+}
