@@ -1,5 +1,3 @@
-// ACLDialog.js
-
 import React, { Component, Fragment } from 'react';
 
 import { withStyles, type Styles } from '@mui/styles';
@@ -17,15 +15,15 @@ import {
     MenuItem,
     Select,
     InputLabel,
-    type SelectChangeEvent,
-    type Theme,
 } from '@mui/material';
 
 import { I18n, withWidth } from '@iobroker/adapter-react-v5';
-import Utils from '@/Utils';
-import { type Translate, type ioBrokerObject } from '../../types';
+import { type Theme } from '@iobroker/adapter-react-v5/types';
 
-const styles:Styles<Theme, any> = theme => ({
+import { type Translate, type ioBrokerObject } from '@/types';
+import Utils from '@/Utils';
+
+const styles: Styles<Theme, any> = (theme: Theme) => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -51,8 +49,8 @@ const styles:Styles<Theme, any> = theme => ({
 });
 
 type ACLOwners = {
-    owner: string;
-    ownerGroup: string;
+    owner: ioBroker.ObjectIDs.User;
+    ownerGroup: ioBroker.ObjectIDs.Group;
 }
 
 type ACLRights = {
@@ -61,7 +59,7 @@ type ACLRights = {
     file: number;
 }
 
-type ACLObject = ioBrokerObject<object, {defaultNewAcl: ACLOwners & ACLRights}>;
+type ACLObject = ioBrokerObject<object, { defaultNewAcl: ACLOwners & ACLRights }>;
 
 type Props = {
     t: Translate;
@@ -74,7 +72,7 @@ type Props = {
 }
 
 class ACLDialog extends Component<Props> {
-    permBits:[number, number][] = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
+    private static permBits: [number, number][] = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
 
     static getTypes(): { type: keyof ACLRights; title: string }[] {
         return [
@@ -96,7 +94,7 @@ class ACLDialog extends Component<Props> {
     getRights(type: keyof ACLRights): number[][] {
         const rts = this.props.data.common.defaultNewAcl[type];
         // eslint-disable-next-line no-bitwise
-        return this.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
+        return ACLDialog.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
     }
 
     getTable(owner: keyof ACLRights): React.JSX.Element {
@@ -109,7 +107,7 @@ class ACLDialog extends Component<Props> {
                         disabled={this.props.saving}
                         checked={!!elem[0]}
                         color="primary"
-                        onChange={evt => this.handleCheck(evt, owner, index, 0)}
+                        onChange={evt => this.handleCheck(owner, index, 0)}
                     />
                 </TableCell>
                 <TableCell className={classes.tableCell}>
@@ -117,7 +115,7 @@ class ACLDialog extends Component<Props> {
                         disabled={this.props.saving}
                         checked={!!elem[1]}
                         color="primary"
-                        onChange={evt => this.handleCheck(evt, owner, index, 1)}
+                        onChange={evt => this.handleCheck(owner, index, 1)}
                     />
                 </TableCell>
             </Fragment>);
@@ -168,18 +166,24 @@ class ACLDialog extends Component<Props> {
 
     doChange = (name: keyof ACLOwners, value: string): void => {
         const newData = Utils.clone(this.props.data);
-        newData.common.defaultNewAcl[name] = value;
+        if (name === 'owner') {
+            newData.common.defaultNewAcl.owner = value as ioBroker.ObjectIDs.User;
+        } else if (name === 'ownerGroup') {
+            newData.common.defaultNewAcl.ownerGroup = value as ioBroker.ObjectIDs.Group;
+        }
         this.props.onChange(newData);
     };
 
-    handleCheck = (evt: React.ChangeEvent<HTMLInputElement>, ownerType: keyof ACLRights, elemNum: number, num: number): void => {
+    handleCheck = (
+        ownerType: keyof ACLRights,
+        elemNum: number,
+        num: number,
+    ): void => {
         const newData = Utils.clone(this.props.data);
         // eslint-disable-next-line no-bitwise
-        newData.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
+        newData.common.defaultNewAcl[ownerType] ^= ACLDialog.permBits[elemNum][num];
         this.props.onChange(newData);
     };
-
-    handleChange = (evt: SelectChangeEvent<string>, id: keyof ACLOwners): void => this.doChange(id, evt.target.value);
 
     render() {
         const lang = I18n.getLanguage();
@@ -218,7 +222,7 @@ class ACLDialog extends Component<Props> {
                             className={classes.formControl}
                             id="owner"
                             value={this.props.data.common.defaultNewAcl.owner}
-                            onChange={evt => this.handleChange(evt, 'owner')}
+                            onChange={evt => this.doChange('owner', evt.target.value)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'users' }}
                         >
@@ -237,7 +241,7 @@ class ACLDialog extends Component<Props> {
                             className={classes.formControl}
                             id="ownerGroup"
                             value={this.props.data.common.defaultNewAcl.ownerGroup}
-                            onChange={evt => this.handleChange(evt, 'ownerGroup')}
+                            onChange={evt => this.doChange('ownerGroup', evt.target.value)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'ownerGroup' }}
                         >

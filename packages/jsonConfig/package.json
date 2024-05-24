@@ -1,7 +1,7 @@
 {
   "name": "@iobroker/json-config",
   "description": "This package contains the ioBroker JSON config UI components",
-  "version": "6.17.12",
+  "version": "6.17.13",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {
@@ -14,14 +14,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@iobroker/adapter-react-v5": "^4.13.13",
+    "@iobroker/adapter-react-v5": "^4.13.22",
     "@iobroker/dm-gui-components": "file:../dm-gui-components",
     "crypto-js": "^4.2.0",
     "react-ace": "^11.0.1"
   },
   "files": [
     "build/",
-    "src/",
     "LICENSE"
   ]
 }

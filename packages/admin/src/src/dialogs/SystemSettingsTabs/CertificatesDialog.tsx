@@ -1,11 +1,12 @@
-// CertificatesDialog.js
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 
 import { type Styles, withStyles } from '@mui/styles';
 
 import {
-    Fab, IconButton, InputAdornment,
+    Fab,
+    IconButton,
+    InputAdornment,
     Paper,
     Table,
     TableBody,
@@ -14,7 +15,6 @@ import {
     TableHead,
     TableRow,
     TextField,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -28,13 +28,14 @@ import {
     I18n,
     Utils as UtilsCommon,
 } from '@iobroker/adapter-react-v5';
+import { type Theme } from '@iobroker/adapter-react-v5/types';
 
+import { type Translate, type ioBrokerObject } from '@/types';
 import Utils from '../../Utils';
-import { type Translate, type ioBrokerObject } from '../../types';
 
 // icons
 
-const styles: Styles<Theme, any> = () => ({
+const styles: Styles<Theme, any> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -72,7 +73,7 @@ const styles: Styles<Theme, any> = () => ({
     input: {
         width: '100%',
     },
-});
+};
 
 type CertificateArray = {
     title: string;
@@ -81,7 +82,7 @@ type CertificateArray = {
 
 type Certificate = Record<string, string>;
 
-interface Props {
+interface CertificatesDialogProps {
     t: Translate;
     classes: Record<string, string>;
     data: ioBrokerObject<CertificateArray>;
@@ -90,12 +91,12 @@ interface Props {
     width: string;
 }
 
-interface State {
+interface CertificatesDialogState {
     chClass: boolean;
 }
 
-class CertificatesDialog extends Component<Props, State> {
-    constructor(props: Props) {
+class CertificatesDialog extends Component<CertificatesDialogProps, CertificatesDialogState> {
+    constructor(props: CertificatesDialogProps) {
         super(props);
 
         this.state = {
@@ -214,48 +215,46 @@ class CertificatesDialog extends Component<Props, State> {
             <Dropzone noClick>
                 {({
                     getRootProps, getInputProps, acceptedFiles, fileRejections,
-                }) => (
-                    <div {...getRootProps({
-                        className: this.state.chClass ? 'drop-container drop-dop' : 'drop-container',
-                        onDragEnter: () => this.setState({ chClass: true }),
-                        onDragLeave: () => this.setState({ chClass: false }),
-                        onDrop: () => {
-                            if (this.props.saving) {
-                                // ignore
-                                return;
-                            }
-                            if (fileRejections.length) {
-                                const msg: string[] = [];
-                                // eslint-disable-next-line array-callback-return
-                                fileRejections.map((e => {
-                                    const m = `${e.file.name}: `;
-                                    const mm: string[] = [];
-                                    e.errors.forEach(ee => mm.push(ee.message));
-                                    msg.push(m + mm.join(','));
-                                }));
+                }) => <div {...getRootProps({
+                    className: this.state.chClass ? 'drop-container drop-dop' : 'drop-container',
+                    onDragEnter: () => this.setState({ chClass: true }),
+                    onDragLeave: () => this.setState({ chClass: false }),
+                    onDrop: () => {
+                        if (this.props.saving) {
+                            // ignore
+                            return;
+                        }
+                        if (fileRejections.length) {
+                            const msg: string[] = [];
+                            // eslint-disable-next-line array-callback-return
+                            fileRejections.map((e => {
+                                const m = `${e.file.name}: `;
+                                const mm: string[] = [];
+                                e.errors.forEach(ee => mm.push(ee.message));
+                                msg.push(m + mm.join(','));
+                            }));
 
-                                alert(msg.join(', '));
-                            }
+                            alert(msg.join(', '));
+                        }
 
-                            if (acceptedFiles.length) {
-                                // eslint-disable-next-line array-callback-return
-                                acceptedFiles.map(file => {
-                                    const reader = new FileReader();
-                                    reader.onload = async e =>
-                                        this.onAdd(file.name, e.target.result as string);
-                                    reader.readAsText(file);
-                                });
-                            } else if (!fileRejections.length) {
-                                alert(this.props.t('No files exists'));
-                            }
+                        if (acceptedFiles.length) {
+                            // eslint-disable-next-line array-callback-return
+                            acceptedFiles.map(file => {
+                                const reader = new FileReader();
+                                reader.onload = async e =>
+                                    this.onAdd(file.name, e.target.result as string);
+                                reader.readAsText(file);
+                            });
+                        } else if (!fileRejections.length) {
+                            alert(this.props.t('No files exists'));
+                        }
 
-                            this.setState({ chClass: false });
-                        },
-                    })}
-                    >
-                        <input {...getInputProps()} />
-                    </div>
-                )}
+                        this.setState({ chClass: false });
+                    },
+                })}
+                >
+                    <input {...getInputProps()} />
+                </div>}
             </Dropzone>
             <div className={classes.buttonPanel}>
                 <Fab

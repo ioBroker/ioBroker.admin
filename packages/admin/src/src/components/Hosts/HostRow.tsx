@@ -252,6 +252,9 @@ const styles: Record<string, any> = (theme: Theme) => ({
         whiteSpace: 'nowrap',
         marginRight: 5,
     },
+    cell: {
+        // paddingLeft: 6,
+    },
 });
 
 interface HostRowProps extends HostGenericProps {
@@ -339,14 +342,14 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         {this.props.host.common.name}
                         {!this.state.openCollapse && typeof description === 'object' ? <span className={classes.onBlick}>
                             (
-                                {this.props.t('Click for more')}
+                            {this.props.t('Click for more')}
                             )
                         </span> : null}
                     </div>
                 </div>
                 <CardContent className={classes.cardContentH5}>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        className={Utils.clsx(classes.flex, classes.hidden800, classes.cell)}
                         variant="body2"
                         color="textSecondary"
                         component="div"
@@ -354,7 +357,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         <div ref={this.refCpu}>- %</div>
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        className={Utils.clsx(classes.flex, classes.hidden800, classes.cell)}
                         variant="body2"
                         color="textSecondary"
                         component="div"
@@ -362,7 +365,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         <div ref={this.refMem}>- %</div>
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800)}
+                        className={Utils.clsx(classes.flex, classes.hidden800, classes.cell)}
                         variant="body2"
                         color="textSecondary"
                         component="div"
@@ -370,7 +373,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         <div ref={this.refUptime}>-/-</div>
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden1100)}
+                        className={Utils.clsx(classes.flex, classes.hidden1100, classes.cell)}
                         variant="body2"
                         color="textSecondary"
                         component="div"
@@ -390,7 +393,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         {this.props.host.common.installedVersion}
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden600)}
+                        className={Utils.clsx(classes.flex, classes.hidden600, classes.cell)}
                         variant="body2"
                         color="textSecondary"
                         component="div"

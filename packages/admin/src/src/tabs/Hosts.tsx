@@ -45,7 +45,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
         margin: 7,
     },
     tabHeaderFirstItem: {
-        width: 312,
+        width: 306,
         paddingLeft: 30,
         fontSize: 14,
         fontWeight: 600,
@@ -58,7 +58,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
         alignSelf: 'center',
     },
     tabHeaderItemButton: {
-        width: 144,
+        width: 192,
         fontSize: 14,
         fontWeight: 600,
         alignSelf: 'center',

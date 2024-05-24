@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.12",
+    "version": "6.17.13",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.13": {
+        "en": "Alias editing corrected\nWeb-extension indicator corrected",
+        "de": "Alias Bearbeitung korrigiert\nWeb-Extension Indikator korrigiert",
+        "ru": "Исправлено редактирование\nИндикатор расширения сети",
+        "pt": "Alias edição corrigida\nIndicador de extensão Web corrigido",
+        "nl": "Alias bewerken gecorrigeerd\nWeb-extension indicator gecorrigeerd",
+        "fr": "Révision de Alias corrigée\nIndicateur d'extension du Web corrigé",
+        "it": "Alias editing corretto\nIndicatore di estensione web corretto",
+        "es": "Corrección de la edición de Alias\nIndicador de la vista web corregido",
+        "pl": "Alias edycja poprawiona\nKorekta wskaźnika rozszerzania stron internetowych",
+        "uk": "Виправлено редагування Alias\nІндикатор налаштування веб-перегляду",
+        "zh-cn": "别名编辑更正\n网络扩展指标得到更正"
+      },
       "6.17.12": {
         "en": "support of Node.js upgrade via UI (with js-controller Kiera - v6)\nCorrected CRON settings",
         "de": "unterstützung von Node.js Upgrade über UI (mit js-Controller Kiera - v6)\nKorrigierte CRON-Einstellungen",
@@ -95,19 +108,6 @@
         "pl": "zainstalowana instalacja adaptera npm",
         "uk": "установка адаптера npm",
         "zh-cn": "固定 npm 适配器安装"
-      },
-      "6.17.2": {
-        "en": "avoid crash case if user has no permission to write objects",
-        "de": "vermeidung von crash-fall, wenn der benutzer keine erlaubnis zum schreiben von objekten hat",
-        "ru": "избегайте случайного сбоя, если пользователь не имеет разрешения писать объекты",
-        "pt": "evitar caso de acidente se o usuário não tem permissão para escrever objetos",
-        "nl": "crash case vermijden als de gebruiker geen rechten heeft om objecten te schrijven",
-        "fr": "éviter le cas de crash si l'utilisateur n'a pas la permission d'écrire des objets",
-        "it": "evitare caso crash se l'utente non ha il permesso di scrivere oggetti",
-        "es": "evitar caso de accidente si el usuario no tiene permiso para escribir objetos",
-        "pl": "uniknąć awarii, jeśli użytkownik nie ma prawa do zapisu obiektów",
-        "uk": "якщо користувач не має дозволу на написання об’єктів",
-        "zh-cn": "如果用户无权写入对象, 请避免崩溃大小写"
       }
     },
     "desc": {

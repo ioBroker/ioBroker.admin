@@ -135,6 +135,8 @@ function copyFiles() {
     deleteFoldersRecursive(`${__dirname}/dest`);
     deleteFoldersRecursive(`${__dirname}/admin/custom`);
     deleteFoldersRecursive(`${__dirname}/${srcRx}public/lib/js/crypto-js`);
+    deleteFoldersRecursive(`${__dirname}/../dm-gui-components/build/src`);
+    deleteFoldersRecursive(`${__dirname}/../jsonConfig/build/src`);
 
     return Promise.all([
         gulp
@@ -146,6 +148,20 @@ function copyFiles() {
                 `!${srcRx}build/i18n`,
             ])
             .pipe(gulp.dest(dest)),
+
+        // copy source files of jsonConfig
+        gulp
+            .src([
+                `${__dirname}/../jsonConfig/src/**/*`,
+            ])
+            .pipe(gulp.dest(`${__dirname}/../jsonConfig/build/src`)),
+
+        // copy source files of dm-gui-components
+        gulp
+            .src([
+                `${__dirname}/../dm-gui-components/src/**/*`,
+            ])
+            .pipe(gulp.dest(`${__dirname}/../dm-gui-components/build/src`)),
 
         gulp
             .src([`${srcRx}build/index.html`])

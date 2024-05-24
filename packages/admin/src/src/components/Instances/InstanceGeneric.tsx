@@ -334,7 +334,7 @@ export interface InstanceItem {
     tier: 1 | 2 | 3;
     memoryLimitMB: number;
     name: string;
-    stoppedWhenWebExtension: boolean;
+    stoppedWhenWebExtension: boolean | undefined;
     running: boolean;
     connected: boolean;
     connectedToHost: boolean;
@@ -906,7 +906,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         mode: ioBroker.InstanceMode,
         status: InstanceStatusType,
         className: string,
-        stoppedWhenWebExtension: boolean,
+        stoppedWhenWebExtension: boolean | undefined,
     ): React.JSX.Element | null {
         if (mode === 'daemon') {
             if (stoppedWhenWebExtension) {
