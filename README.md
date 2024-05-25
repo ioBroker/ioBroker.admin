@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Only some packages updated
+
 ### 6.17.13 (2024-05-23)
 * (bluefox) Alias editing corrected
 * (bluefox) Web-extension indicator corrected

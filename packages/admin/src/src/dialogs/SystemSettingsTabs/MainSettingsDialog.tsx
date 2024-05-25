@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
-// eslint-disable-next-line import/no-unresolved
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import {
@@ -22,15 +21,18 @@ import {
     Confirm as ConfirmDialog,
     withWidth,
 } from '@iobroker/adapter-react-v5';
+import {  Marker } from 'leaflet';
 import type {
-    DragEndEvent, LatLngTuple, Map, Marker,
+    DragEndEvent, LatLngTuple, Map,
 } from 'leaflet';
-import { type AdminGuiConfig, type Translate, type ioBrokerObject } from '../../types';
+import { type AdminGuiConfig, type Translate, type ioBrokerObject } from '@/types';
+
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries.json';
 
-const styles:Styles<Theme, any> = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -68,8 +70,7 @@ interface Setting {
 }
 
 type SystemObject = ioBrokerObject<object, ioBroker.SystemConfigCommon & {
-    latitude: string;
-    longitude: string;
+    // @TODO extend js-controller
     city: string;
     country: string;
 }>;
@@ -110,7 +111,7 @@ class MainSettingsDialog extends Component<Props, State> {
 
     latLongTimer: ReturnType<typeof setTimeout>;
 
-    getSettings():Setting[] {
+    getSettings(): Setting[] {
         return [
             {
                 id: 'language',
@@ -280,29 +281,29 @@ class MainSettingsDialog extends Component<Props, State> {
         ];
     }
 
-    onMap = (map:Map) => {
+    onMap = (map: Map) => {
         if (this.props.saving) {
             return;
         }
         if (!this.map || this.map !== map) {
             this.map = map;
-            const center:LatLngTuple = [
+            const center: LatLngTuple = [
                 parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : '50') || 0,
                 parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : '10') || 0,
             ];
 
-            this.marker = window.L.marker(
+            this.marker = new Marker(
                 center,
                 {
                     draggable: true,
-                    title: 'Resource location',
-                    alt: 'Resource Location',
+                    title: I18n.t('Resource location'),
+                    alt: I18n.t('Resource Location'),
                     riseOnHover: true,
                 },
             )
                 .addTo(map)
                 .bindPopup('Popup for any custom information.')
-                .on({ dragend: evt => this.onMarkerDragend(evt) });
+                .on({ dragend: (evt: DragEndEvent) => this.onMarkerDragend(evt) });
         }
     };
 
@@ -523,7 +524,7 @@ class MainSettingsDialog extends Component<Props, State> {
             cb && cb());
     };
 
-    onMarkerDragend = (evt:DragEndEvent) => {
+    onMarkerDragend = (evt: DragEndEvent) => {
         const ll = JSON.parse(JSON.stringify(evt.target._latlng));
         this.doChange('latitude',  ll.lat, () =>
             this.doChange('longitude', ll.lng));
