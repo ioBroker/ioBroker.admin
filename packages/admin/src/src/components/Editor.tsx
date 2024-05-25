@@ -13,7 +13,7 @@ interface EditorProps {
     defaultValue?: string;
     mode?: string;
     name?: string;
-    onChange: (newVal: string) => void;
+    onChange?: (newVal: string) => void;
     themeType: string;
     /** flag that indicates the "value edit mode" */
     editValueMode?: boolean;

@@ -107,7 +107,7 @@ class ACLDialog extends Component<ACLObjectProps> {
                         disabled={this.props.saving}
                         checked={!!elem[0]}
                         color="primary"
-                        onChange={evt => this.handleCheck(owner, index, 0)}
+                        onChange={() => this.handleCheck(owner, index, 0)}
                     />
                 </TableCell>
                 <TableCell className={classes.tableCell}>
@@ -115,7 +115,7 @@ class ACLDialog extends Component<ACLObjectProps> {
                         disabled={this.props.saving}
                         checked={!!elem[1]}
                         color="primary"
-                        onChange={evt => this.handleCheck(owner, index, 1)}
+                        onChange={() => this.handleCheck(owner, index, 1)}
                     />
                 </TableCell>
             </Fragment>);
@@ -183,7 +183,7 @@ class ACLDialog extends Component<ACLObjectProps> {
         // eslint-disable-next-line no-bitwise
         newData.common.defaultNewAcl[ownerType] ^= ACLDialog.permBits[elemNum][num];
         this.props.onChange(newData);
-    };
+    }
 
     render() {
         const lang = I18n.getLanguage();
