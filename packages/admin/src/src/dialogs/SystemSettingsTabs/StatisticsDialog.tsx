@@ -1,8 +1,7 @@
 // StatisticsDialog.js
 
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import React, { Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid, Paper, Card, Typography, MenuItem,
@@ -12,12 +11,15 @@ import {
 import blueGrey from '@mui/material/colors/blueGrey';
 
 import { withWidth } from '@iobroker/adapter-react-v5';
+import { type Theme, type Translator } from '@iobroker/adapter-react-v5/types';
+import type { ioBrokerObject } from '@/types';
+import Utils from '@/Utils';
 import Editor from '../../components/Editor';
 
 // eslint-disable-next-line no-undef
-ace.config.set('basePath', 'lib/js/ace');
+(window as any).ace.config.set('basePath', 'lib/js/ace');
 
-const styles = theme => ({
+const styles:Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -50,7 +52,18 @@ const styles = theme => ({
     },
 });
 
-class StatisticsDialog extends Component {
+interface StatisticsDialogProps {
+    t: Translator;
+    data: ioBrokerObject<object, {diag: string}>;
+    dataAux: ioBrokerObject;
+    themeType: string;
+    onChange: (data: ioBrokerObject<object, {diag: string}>) => void;
+    saving: boolean;
+    handle: (type: string) => void;
+    classes: Record<string, string>;
+}
+
+class StatisticsDialog extends Component<StatisticsDialogProps> {
     static getTypes() {
         return [
             {
@@ -72,7 +85,7 @@ class StatisticsDialog extends Component {
         ];
     }
 
-    getTypesSelector = () => {
+    getTypesSelector() {
         const { classes } = this.props;
         const { common } = this.props.data;
         const items = StatisticsDialog.getTypes().map((elem, index) =>
@@ -96,15 +109,15 @@ class StatisticsDialog extends Component {
                 {items}
             </Select>
         </FormControl>;
-    };
+    }
 
-    doChange = (name, value) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    doChange(name: string, value: string) {
+        const newData = Utils.clone(this.props.data);
         newData.common[name] = value;
         this.props.onChange(newData);
-    };
+    }
 
-    handleChangeType = evt => {
+    handleChangeType = (evt: { target: { value: string } }) => {
         this.doChange('diag', evt.target.value);
         if (this.props.handle) {
             this.props.handle(evt.target.value);
@@ -160,14 +173,5 @@ class StatisticsDialog extends Component {
         </div>;
     }
 }
-
-StatisticsDialog.propTypes = {
-    t: PropTypes.func,
-    data: PropTypes.object,
-    dataAux: PropTypes.object,
-    themeType: PropTypes.string,
-    handle: PropTypes.func.isRequired,
-    saving: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(StatisticsDialog));

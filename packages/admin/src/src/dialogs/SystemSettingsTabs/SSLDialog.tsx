@@ -1,7 +1,7 @@
 // SSLDialog.js
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -15,8 +15,11 @@ import {
 import { Close as CloseIcon } from '@mui/icons-material';
 
 import { withWidth } from '@iobroker/adapter-react-v5';
+import { type Translator, type Theme } from '@iobroker/adapter-react-v5/types';
+import type { ioBrokerObject } from '@/types';
+import Utils from '@/Utils';
 
-const styles = theme => ({
+const styles:Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -47,7 +50,15 @@ const styles = theme => ({
     },
 });
 
-class SSLDialog extends Component {
+interface SSLDialogProps {
+    t: Translator;
+    data: ioBrokerObject<{letsEncrypt: {email?: string; domains?: string; path?: string}}>;
+    onChange: (data: Record<string, any>) => void;
+    saving: boolean;
+    classes: Record<string, string>;
+}
+
+class SSLDialog extends Component<SSLDialogProps> {
     render() {
         const { classes, data } = this.props;
         const { letsEncrypt } = data.native || {};
@@ -82,7 +93,6 @@ class SSLDialog extends Component {
                             label={this.props.t('Email for account:')}
                             value={letsEncrypt?.email || ''}
                             InputLabelProps={{
-                                readOnly: false,
                                 shrink: true,
                             }}
                             onChange={evt => this.onChangeText(evt, 'email')}
@@ -109,7 +119,6 @@ class SSLDialog extends Component {
                             label={this.props.t('Domains:')}
                             value={letsEncrypt?.domains || ''}
                             InputLabelProps={{
-                                readOnly: false,
                                 shrink: true,
                             }}
                             onChange={evt => this.onChangeText(evt, 'domains')}
@@ -136,7 +145,6 @@ class SSLDialog extends Component {
                             label={this.props.t('Path to storage:')}
                             value={letsEncrypt?.path || ''}
                             InputLabelProps={{
-                                readOnly: false,
                                 shrink: true,
                             }}
                             onChange={evt => this.onChangeText(evt, 'path')}
@@ -158,24 +166,17 @@ class SSLDialog extends Component {
         </div>;
     }
 
-    onChangeText = (evt, id) => {
+    onChangeText(evt: { target: { value: string } }, id: 'email' | 'domains' | 'path') {
         const value = evt.target.value;
         this.doChange(id, value);
-    };
+    }
 
-    doChange = (name, value) => {
-        const newData = JSON.parse(JSON.stringify(this.props.data));
+    doChange(name: 'email' | 'domains' | 'path', value: string) {
+        const newData = Utils.clone(this.props.data);
         newData.native.letsEncrypt = newData.native.letsEncrypt || {};
         newData.native.letsEncrypt[name] = value;
         this.props.onChange(newData);
-    };
+    }
 }
-
-SSLDialog.propTypes = {
-    t: PropTypes.func,
-    data: PropTypes.object,
-    onChange: PropTypes.func,
-    saving: PropTypes.bool,
-};
 
 export default withWidth()(withStyles(styles)(SSLDialog));
