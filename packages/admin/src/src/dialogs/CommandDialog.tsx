@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import PropTypes from 'prop-types';
-
 import { type Styles, withStyles } from '@mui/styles';
 
 import {
