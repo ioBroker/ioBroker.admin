@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import { amber, blue, red } from '@mui/material/colors';
 
@@ -10,9 +9,11 @@ import {
 
 import Router from '@iobroker/adapter-react-v5/Components/Router';
 
+import type { Theme } from '@iobroker/adapter-react-v5/types';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
 
-const styles = theme => ({
+const styles: Styles<Theme, any> = (theme: Theme) => ({
     log: {
         height: 400,
         width: 860,
@@ -37,8 +38,45 @@ const styles = theme => ({
     },
 });
 
-class Command extends Component {
-    constructor(props) {
+interface CommandProps {
+    noSpacing?: boolean;
+    host: string;
+    callback: (exitCode: number) => void;
+    socket: AdminConnection;
+    onFinished: (exitCode: number, log: string[]) => void;
+    ready: boolean;
+    t: (text: string) => string;
+    inBackground?: boolean;
+    commandError?: boolean;
+    errorFunc?: (exitCode: number, log: string[]) => void;
+    performed?: () => void;
+    cmd: string;
+    onSetCommandRunning: (running: boolean) => void;
+    showElement?: boolean;
+    classes: Record<string, string>;
+    logsRead?: string[];
+}
+
+interface CommandState {
+    log: string[];
+    init: boolean;
+    max: number | null;
+    value: number | null;
+    // progressText: string;
+    moreChecked: boolean;
+    stopped: boolean;
+    activeCmdId?: number;
+    // closeOnReady: boolean;
+}
+
+class Command extends Component<CommandProps, CommandState> {
+    private readonly logRef: React.RefObject<HTMLDivElement>;
+
+    private static pattern = ['error', 'warn', 'info', 'ERROR', 'WARN', 'INFO'];
+
+    private readonly regExp: RegExp;
+
+    constructor(props: CommandProps) {
         super(props);
 
         this.state = {
@@ -53,8 +91,7 @@ class Command extends Component {
 
         this.logRef = React.createRef();
 
-        const pattern = ['error', 'warn', 'info'];
-        this.regExp = new RegExp(pattern.join('|'), 'i');
+        this.regExp = new RegExp(Command.pattern.join('|'), 'i');
     }
 
     componentDidMount() {
@@ -91,12 +128,13 @@ class Command extends Component {
 
         this.setState({ activeCmdId });
 
+        // @ts-expect-error fixed in socket-classes
         this.props.socket.cmdExec(this.props.host.startsWith('system.host.') ? this.props.host : (`system.host.${this.props.host}`), this.props.cmd, activeCmdId)
             .catch(error =>
                 console.log(error));
     }
 
-    cmdStdoutHandler(id, text) {
+    cmdStdoutHandler(id: number, text: string) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
             const log = this.state.log.slice();
             log.push(text);
@@ -133,7 +171,7 @@ class Command extends Component {
         }
     }
 
-    cmdStderrHandler(id, text) {
+    cmdStderrHandler(id: number, text: string) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
             const log = this.state.log.slice();
             log.push(text);
@@ -146,7 +184,7 @@ class Command extends Component {
         }
     }
 
-    cmdExitHandler(id, exitCode) {
+    cmdExitHandler(id: number, exitCode: number) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
             const log = this.state.log.slice();
             if (!window.document.hidden && exitCode === 0 && log.length && log[log.length - 1].endsWith('created') && this.props.callback) {
@@ -184,7 +222,7 @@ class Command extends Component {
         }
     }
 
-    colorize(text, maxLength) {
+    colorize(text: string, maxLength?: number) {
         if (maxLength !== undefined) {
             text = text.substring(0, maxLength);
         }
@@ -204,7 +242,7 @@ class Command extends Component {
                     text = text.replace(part, '');
                 }
 
-                const part = text.substr(0, match.length);
+                const part = text.substring(0, match.length);
                 if (part) {
                     const message = Utils.parseColorMessage(part);
                     result.push(<span key={result.length} className={classes[match.toLowerCase()]}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
@@ -243,13 +281,13 @@ class Command extends Component {
             direction="column"
             spacing={this.props.noSpacing ? 0 : 2}
         >
-            {this.props.showElement && <Grid item>
+            {this.props.showElement === undefined || this.props.showElement === true ? <Grid item>
                 {!this.state.stopped && <LinearProgress
                     style={this.props.commandError ? { backgroundColor: '#f44336' } : null}
                     variant={this.props.inBackground ? 'determinate' : 'indeterminate'}
                     value={this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : this.props.commandError ? 0 : 100}
                 />}
-            </Grid>}
+            </Grid> : null}
             <div style={{
                 width: '100%',
                 display: 'flex',
@@ -268,7 +306,7 @@ class Command extends Component {
                 >
                     {this.colorize(this.state.log[this.state.log.length - 1])}
                 </Typography>
-                {this.props.showElement && <Typography component="div" style={{ width: 250 }}>
+                {this.props.showElement === undefined || this.props.showElement === true ? <Typography component="div" style={{ width: 250 }}>
                     <Grid component="label" container alignItems="center" spacing={1}>
                         <Grid item>{this.props.t('less')}</Grid>
                         <Grid item>
@@ -280,7 +318,7 @@ class Command extends Component {
                         </Grid>
                         <Grid item>{this.props.t('more')}</Grid>
                     </Grid>
-                </Typography>}
+                </Typography> : null}
             </div>
             <Grid item style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
                 {this.state.moreChecked && <Paper className={this.props.noSpacing ? classes.logNoSpacing : classes.log}>
@@ -290,26 +328,5 @@ class Command extends Component {
         </Grid>;
     }
 }
-
-Command.defaultProps = {
-    showElement: true,
-};
-
-Command.propTypes = {
-    noSpacing: PropTypes.bool,
-    host: PropTypes.string.isRequired,
-    callback: PropTypes.func.isRequired,
-    socket: PropTypes.object.isRequired,
-    onFinished: PropTypes.func.isRequired,
-    ready: PropTypes.bool.isRequired,
-    t: PropTypes.func.isRequired,
-    inBackground: PropTypes.bool,
-    commandError: PropTypes.bool,
-    errorFunc: PropTypes.func,
-    performed: PropTypes.func,
-    cmd: PropTypes.string.isRequired,
-    onSetCommandRunning: PropTypes.func.isRequired,
-    showElement: PropTypes.bool,
-};
 
 export default withStyles(styles)(Command);

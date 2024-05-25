@@ -19,15 +19,13 @@ import { Close as CloseIcon } from '@mui/icons-material';
 
 import {
     Confirm as ConfirmDialog,
-    withWidth,
+    withWidth, I18n,
 } from '@iobroker/adapter-react-v5';
-import {  Marker } from 'leaflet';
+import { Marker } from 'leaflet';
 import type {
     DragEndEvent, LatLngTuple, Map,
 } from 'leaflet';
 import { type AdminGuiConfig, type Translate, type ioBrokerObject } from '@/types';
-
-import { I18n } from '@iobroker/adapter-react-v5';
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries.json';
@@ -53,7 +51,7 @@ const styles: Styles<Theme, any> = theme => ({
     },
 });
 
-const MyMapComponent:React.FC<{addMap: (map: any) => any}> = props => {
+const MyMapComponent: React.FC<{ addMap: (map: any) => any }> = props => {
     const map = useMap();
     props.addMap && props.addMap(map);
     return null;

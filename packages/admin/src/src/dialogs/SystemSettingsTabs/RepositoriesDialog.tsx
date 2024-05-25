@@ -1,4 +1,3 @@
-// RepositoriesDialog
 import React, { Component } from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
@@ -36,7 +35,7 @@ import { type Translator, type Theme } from '@iobroker/adapter-react-v5/types';
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import Utils from '../../Utils';
 
-const styles:Styles<Theme, any> = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -118,11 +117,11 @@ interface RepositoriesDialogProps {
     t: Translator;
     classes: Record<string, string>;
     data: ioBrokerObject<{ repositories: Repository }>;
-    dataAux: ioBrokerObject<object, {activeRepo: string | string[]}>;
+    dataAux: ioBrokerObject<object, { activeRepo: string | string[] }>;
     multipleRepos: boolean;
     repoInfo: Repository;
     saving: boolean;
-    onChange: (data: ioBrokerObject<{ repositories: Repository }>, dataAux?: ioBrokerObject<object, {activeRepo: string | string[]}>) => void;
+    onChange: (data: ioBrokerObject<{ repositories: Repository }>, dataAux?: ioBrokerObject<object, { activeRepo: string | string[] }>) => void;
     adminGuiConfig: AdminGuiConfig;
 }
 
@@ -130,13 +129,13 @@ interface RepositoriesDialogState {
     error: boolean;
     confirm: boolean;
     confirmValue: {
-        newData: ioBrokerObject<object, {activeRepo: string | string[]}>;
+        newData: ioBrokerObject<object, { activeRepo: string | string[] }>;
         error: boolean;
     } | null;
 }
 
-const SortableList = SortableContainer<{value: any}>(({ value }: {value: any}) => value);
-const SortableItem = SortableElement<{value: any}>(({ value }: {value: any}) => value);
+const SortableList = SortableContainer<{ value: any }>(({ value }: { value: any }) => value);
+const SortableItem = SortableElement<{ value: any }>(({ value }: { value: any }) => value);
 
 class RepositoriesDialog extends Component<RepositoriesDialogProps, RepositoriesDialogState> {
     constructor(props: RepositoriesDialogProps) {
@@ -159,9 +158,12 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
         newData.native.repositories = arrayToRepo(array);
 
         let newConfig;
-        if (((typeof this.props.dataAux.common.activeRepo === 'string' && this.props.dataAux.common.activeRepo === id) ||
-                (typeof this.props.dataAux.common.activeRepo !== 'string' && this.props.dataAux.common.activeRepo.includes(id))) &&
-            name === 'title') {
+        if ((
+            (typeof this.props.dataAux.common.activeRepo === 'string' && this.props.dataAux.common.activeRepo === id) ||
+            (typeof this.props.dataAux.common.activeRepo !== 'string' && this.props.dataAux.common.activeRepo.includes(id))
+            ) &&
+            name === 'title'
+        ) {
             newConfig = this.getUpdateDefaultRepo(value, newData, oldTitle, value);
         }
 

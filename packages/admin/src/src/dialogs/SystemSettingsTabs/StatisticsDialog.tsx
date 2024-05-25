@@ -1,5 +1,3 @@
-// StatisticsDialog.js
-
 import React, { Component } from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 
@@ -54,10 +52,10 @@ const styles:Styles<Theme, any> = theme => ({
 
 interface StatisticsDialogProps {
     t: Translator;
-    data: ioBrokerObject<object, {diag: string}>;
+    data: ioBrokerObject<object, { diag: string }>;
     dataAux: ioBrokerObject;
     themeType: string;
-    onChange: (data: ioBrokerObject<object, {diag: string}>) => void;
+    onChange: (data: ioBrokerObject<object, { diag: string }>) => void;
     saving: boolean;
     handle: (type: string) => void;
     classes: Record<string, string>;

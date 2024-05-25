@@ -1,6 +1,4 @@
-// SSLDialog.js
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { type Styles, withStyles } from '@mui/styles';
 
 import {
@@ -19,7 +17,7 @@ import { type Translator, type Theme } from '@iobroker/adapter-react-v5/types';
 import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 
-const styles:Styles<Theme, any> = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -52,7 +50,7 @@ const styles:Styles<Theme, any> = theme => ({
 
 interface SSLDialogProps {
     t: Translator;
-    data: ioBrokerObject<{letsEncrypt: {email?: string; domains?: string; path?: string}}>;
+    data: ioBrokerObject<{ letsEncrypt: { email?: string; domains?: string; path?: string } }>;
     onChange: (data: Record<string, any>) => void;
     saving: boolean;
     classes: Record<string, string>;

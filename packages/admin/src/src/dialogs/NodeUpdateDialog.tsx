@@ -46,43 +46,53 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
      * Render the element
      */
     render(): React.JSX.Element {
-        return <Dialog
-            open={!0}
-            maxWidth="lg"
-            fullWidth
-        >
-            <DialogTitle>{I18n.t('Node.js upgrade')}</DialogTitle>
-            <DialogContent style={{ height: 100, padding: '0 20px', overflow: 'hidden' }}>
-                {!this.state.finished ? <Typography>{I18n.t('Performing this update will restart the js-controller afterwards!')}</Typography> : null}
-                {this.state.inProgress ? <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <CircularProgress />
-                </Box> : null}
-                {this.state.success ? <Typography>{I18n.t('Node.js update successful, restarting controller now!')}</Typography> : null}
-                {this.state.error ? <Typography sx={{ color: 'red' }}>{I18n.t('Node.js update failed: %s', this.state.error)}</Typography> : null}
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    disabled={this.state.inProgress || this.state.finished}
-                    color="primary"
-                    variant="contained"
-                    startIcon={<RefreshIcon />}
-                    onClick={() => this.updateNodeJsVersion()}
-                >
-                    {I18n.t('Upgrade')}
-                </Button>
-                <Button
-                    disabled={this.state.inProgress}
-                    variant="contained"
-                    onClick={() => {
-                        this.props.onClose();
-                    }}
-                    color="primary"
-                    startIcon={<CloseIcon />}
-                >
-                    {I18n.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>;
+        return (
+            <Dialog open={!0} maxWidth="lg" fullWidth>
+                <DialogTitle>{I18n.t('Node.js upgrade')}</DialogTitle>
+                <DialogContent style={{ height: 100, padding: '0 20px', overflow: 'hidden' }}>
+                    {!this.state.finished ? (
+                        <Typography>
+                            {I18n.t('Performing this update will restart the js-controller afterwards!')}
+                        </Typography>
+                    ) : null}
+                    {this.state.inProgress ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <CircularProgress />
+                        </Box>
+                    ) : null}
+                    {this.state.success ? (
+                        <Typography>{I18n.t('Node.js update successful, restarting controller now!')}</Typography>
+                    ) : null}
+                    {this.state.error ? (
+                        <Typography sx={{ color: 'red' }}>
+                            {I18n.t('Node.js update failed: %s', this.state.error)}
+                        </Typography>
+                    ) : null}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        disabled={this.state.inProgress || this.state.finished}
+                        color="primary"
+                        variant="contained"
+                        startIcon={<RefreshIcon />}
+                        onClick={() => this.updateNodeJsVersion()}
+                    >
+                        {I18n.t('Upgrade')}
+                    </Button>
+                    <Button
+                        disabled={this.state.inProgress}
+                        variant="contained"
+                        onClick={() => {
+                            this.props.onClose();
+                        }}
+                        color="primary"
+                        startIcon={<CloseIcon />}
+                    >
+                        {I18n.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
     /**
@@ -92,17 +102,22 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
         this.setState({ inProgress: true });
         const res = await this.props.socket.upgradeOsPackages(
             this.props.hostId,
-            [{
-                name: 'nodejs',
-                // For apt updates we need to be precise about the version, e.g. `18.20.2-1nodesource1`, thus we simply upgrade to the newest version instead
-                // version: this.props.version,
-            }],
+            [
+                {
+                    name: 'nodejs',
+                    // For apt updates we need to be precise about the version, e.g. `18.20.2-1nodesource1`, thus we simply upgrade to the newest version instead
+                    // version: this.props.version,
+                },
+            ],
             // restart the controller after the Node.js update
-        true,
+            true,
         );
 
         this.setState({
-            inProgress: false, success: res.success, error: res.error, finished: true,
+            inProgress: false,
+            success: res.success,
+            error: res.error,
+            finished: true,
         });
     }
 }
