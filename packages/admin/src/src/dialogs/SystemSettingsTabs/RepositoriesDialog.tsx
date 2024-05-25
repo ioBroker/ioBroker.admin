@@ -161,7 +161,7 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
         if ((
             (typeof this.props.dataAux.common.activeRepo === 'string' && this.props.dataAux.common.activeRepo === id) ||
             (typeof this.props.dataAux.common.activeRepo !== 'string' && this.props.dataAux.common.activeRepo.includes(id))
-            ) &&
+        ) &&
             name === 'title'
         ) {
             newConfig = this.getUpdateDefaultRepo(value, newData, oldTitle, value);

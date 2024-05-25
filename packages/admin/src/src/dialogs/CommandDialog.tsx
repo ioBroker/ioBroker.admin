@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -20,9 +20,12 @@ import {
     OpenInBrowser as OpenInBrowserIcon,
 } from '@mui/icons-material';
 
+import type { Theme } from '@iobroker/adapter-react-v5/types';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { Translate } from '@/types';
 import Command from '../components/Command';
 
-const styles = theme => ({
+const styles: Styles<Theme, any> = (theme: Theme) => ({
     closeButton: {
         position: 'absolute',
         right: theme.spacing(1),
@@ -37,13 +40,39 @@ const styles = theme => ({
     },
 });
 
-class CommandDialog extends Component {
-    constructor(props) {
+interface CommandDialogProps {
+    t: Translate;
+    confirmText: string;
+    onClose: () => void;
+    callback: () => void;
+    onInBackground: () => void;
+    visible: boolean;
+    ready: boolean;
+    onSetCommandRunning: (running: boolean) => void;
+    cmd: string;
+    errorFunc: () => void;
+    performed: () => void;
+    inBackground: boolean;
+    commandError: boolean;
+    socket: AdminConnection
+    host: string;
+    classes: Record<string, string>;
+}
+
+interface CommandDialogState {
+    progressText: string;
+    closeOnReady: boolean;
+    isError: boolean;
+}
+
+class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
+    constructor(props: CommandDialogProps) {
         super(props);
 
         this.state = {
             progressText: '',
-            closeOnReady: (window._localStorage || window.localStorage).getItem('CommandDialog.closeOnReady') === 'true',
+            isError: false,
+            closeOnReady: ((window as any)._localStorage as Storage || window.localStorage).getItem('CommandDialog.closeOnReady') === 'true',
         };
     }
 
@@ -74,12 +103,15 @@ class CommandDialog extends Component {
                     t={this.props.t}
                     inBackground={this.props.inBackground}
                     commandError={this.props.commandError}
-                    errorFunc={this.props.errorFunc}
+                    errorFunc={() => {
+                        this.setState({ isError: true });
+                        this.props.errorFunc();
+                    }}
                     performed={this.props.performed}
                     callback={this.props.callback}
                     cmd={this.props.cmd}
                     onFinished={() => this.state.closeOnReady && this.props.onClose()}
-                    onSetCommandRunning={running => this.props.onSetCommandRunning(running)}
+                    onSetCommandRunning={(running: boolean) => this.props.onSetCommandRunning(running)}
                 />
             </DialogContent>
             <DialogActions style={{ justifyContent: 'space-between' }}>
@@ -90,7 +122,7 @@ class CommandDialog extends Component {
                             checked={this.state.closeOnReady}
                             onChange={e => {
                                 this.setState({ closeOnReady: e.target.checked });
-                                (window._localStorage || window.localStorage).setItem('CommandDialog.closeOnReady', e.target.checked ? 'true' : 'false');
+                                ((window as any)._localStorage as Storage || window.localStorage).setItem('CommandDialog.closeOnReady', e.target.checked ? 'true' : 'false');
                             }}
                         />
                     }
@@ -101,10 +133,12 @@ class CommandDialog extends Component {
                         variant="contained"
                         autoFocus
                         disabled={this.props.inBackground}
-                        style={{ marginRight: 8 }}
                         onClick={this.props.onInBackground}
                         startIcon={<OpenInBrowserIcon />}
                         color="primary"
+                        style={{
+                            marginRight: 8,
+                        }}
                     >
                         {this.props.confirmText || this.props.t('In background')}
                     </Button>
@@ -114,6 +148,10 @@ class CommandDialog extends Component {
                         onClick={this.props.onClose}
                         // @ts-expect-error grey is valid color
                         color="grey"
+                        style={{
+                            backgroundColor: this.state.isError ? '#834141' : undefined,
+                            color: this.state.isError ? '#fff' : undefined,
+                        }}
                         startIcon={<CloseIcon />}
                     >
                         {this.props.t('Close')}
@@ -123,23 +161,5 @@ class CommandDialog extends Component {
         </Dialog>;
     }
 }
-
-CommandDialog.propTypes = {
-    t: PropTypes.func,
-    confirmText: PropTypes.string,
-    onClose: PropTypes.func.isRequired,
-    callback: PropTypes.func,
-    onInBackground: PropTypes.func.isRequired,
-    visible: PropTypes.bool.isRequired,
-    ready: PropTypes.bool.isRequired,
-    onSetCommandRunning: PropTypes.func.isRequired,
-    cmd: PropTypes.string,
-    errorFunc: PropTypes.func,
-    performed: PropTypes.func,
-    inBackground: PropTypes.bool,
-    commandError: PropTypes.bool,
-    socket: PropTypes.object.isRequired,
-    host: PropTypes.string.isRequired,
-};
 
 export default withStyles(styles)(CommandDialog);

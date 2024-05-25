@@ -72,7 +72,7 @@ interface CommandState {
 class Command extends Component<CommandProps, CommandState> {
     private readonly logRef: React.RefObject<HTMLDivElement>;
 
-    private static pattern = ['error', 'warn', 'info', 'ERROR', 'WARN', 'INFO'];
+    private static pattern = ['error', 'warn', 'info'];
 
     private readonly regExp: RegExp;
 
@@ -205,7 +205,7 @@ class Command extends Component<CommandProps, CommandState> {
 
             this.setState({ log, stopped: true }, () => {
                 this.props.onSetCommandRunning && this.props.onSetCommandRunning(false);
-                if (exitCode !== 0) {
+                if (exitCode !== 0 || this.state.log[this.state.log.length - 1].toLowerCase().includes('error')) {
                     this.props.errorFunc && this.props.errorFunc(exitCode, this.state.log);
                 } else {
                     this.props.performed && this.props.performed();
@@ -223,11 +223,11 @@ class Command extends Component<CommandProps, CommandState> {
     }
 
     colorize(text: string, maxLength?: number) {
-        if (maxLength !== undefined) {
+        if (maxLength) {
             text = text.substring(0, maxLength);
         }
 
-        if (text.search(this.regExp)) {
+        if (text.search(this.regExp) !== -1) {
             const result = [];
             const { classes } = this.props;
 
