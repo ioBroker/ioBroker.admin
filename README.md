@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.17.14 (2024-05-25)
 * (bluefox) Only some packages updated
 
 ### 6.17.13 (2024-05-23)
@@ -106,9 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.17.9 (2024-05-17)
 * (bluefox) Corrected style of time picker in JSON config
 * (bluefox) Corrected saving of tab color
-
-### 6.17.7 (2024-04-26)
-* (bluefox) Improved category tab
 
 ## License
 The MIT License (MIT)

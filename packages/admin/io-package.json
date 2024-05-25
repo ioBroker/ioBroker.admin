@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.17.13",
+    "version": "6.17.14",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.17.14": {
+        "en": "Only some packages updated",
+        "de": "Nur einige Pakete aktualisiert",
+        "ru": "Только некоторые пакеты обновляются",
+        "pt": "Apenas alguns pacotes atualizados",
+        "nl": "Slechts enkele pakketten bijgewerkt",
+        "fr": "Seulement quelques paquets mis à jour",
+        "it": "Solo alcuni pacchetti aggiornati",
+        "es": "Sólo algunos paquetes actualizados",
+        "pl": "Tylko niektóre pakiety zaktualizowane",
+        "uk": "Тільки деякі пакети оновлено",
+        "zh-cn": "只更新一些软件包"
+      },
       "6.17.13": {
         "en": "Alias editing corrected\nWeb-extension indicator corrected",
         "de": "Alias Bearbeitung korrigiert\nWeb-Extension Indikator korrigiert",
@@ -95,19 +108,6 @@
         "pl": "Rozszerzenie tabeli JSON Config z możliwością szyfrowania\nNie należy odczytywać danych historycznych, jeśli instancja nie jest aktywna",
         "uk": "Розширення таблиці JSON Config з можливістю шифрування\nНе прочитайте історичні дані, якщо не активна",
         "zh-cn": "扩展表 JSON 配置到加密可能性\n如果实例不活动, 不读取历史数据"
-      },
-      "6.17.3": {
-        "en": "fixed npm adapter installation",
-        "de": "installation von npm adapter",
-        "ru": "стационарная установка адаптера npm",
-        "pt": "instalação do adaptador fixo npm",
-        "nl": "vaste npm-adapterinstallatie",
-        "fr": "installation d'adaptateur npm fixe",
-        "it": "installazione adattatore npm fisso",
-        "es": "instalación de adaptador fijo npm",
-        "pl": "zainstalowana instalacja adaptera npm",
-        "uk": "установка адаптера npm",
-        "zh-cn": "固定 npm 适配器安装"
       }
     },
     "desc": {
