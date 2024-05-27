@@ -31,7 +31,7 @@ const styles: Styles<any, any> = (theme: Theme) => ({
     },
 });
 
-interface MultihostSettings {
+export interface MultihostSettings {
     enabled?: boolean;
     secure?: boolean;
     password?: string;

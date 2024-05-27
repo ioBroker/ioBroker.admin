@@ -747,7 +747,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                                 maxCompactGroupNumber: this.state.maxCompactGroupNumber + 1,
                             })}
                             variant="outlined"
-                            stylevariable="outlined"
+                            // stylevariable="outlined"
                         >
                             {this.props.context.t('Add compact group')}
                         </Button>

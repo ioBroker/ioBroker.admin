@@ -505,7 +505,6 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     }}
                     startIcon={<IconWeb />}
                     variant="contained"
-                    // @ts-expect-error grey is allowed
                     color="grey"
                 >
                     {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
@@ -594,7 +593,6 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                             variant="contained"
                             onClick={() => this.setState({ showMessageDialog: false })}
                             startIcon={<CloseIcon />}
-                            // @ts-expect-error grey is allowed
                             color="grey"
                         >
                             {this.t('Cancel')}
@@ -705,7 +703,6 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error grey is allowed
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

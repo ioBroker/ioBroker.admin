@@ -69,7 +69,7 @@ const DEFAULT_JSONL_OPTIONS = {
     },
 };
 
-interface SettingsStates {
+export interface SettingsStates {
     type?: 'file' | 'jsonl' | 'redis';
     host?: string;
     port?: number;

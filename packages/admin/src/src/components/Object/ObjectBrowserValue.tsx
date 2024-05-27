@@ -721,7 +721,6 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error Ts does not like it but it works
                     color="grey"
                     startIcon={<IconCancel />}
                 >

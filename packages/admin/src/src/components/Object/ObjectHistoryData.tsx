@@ -684,16 +684,16 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 }
             }
         } else
-        if (e.ctrlKey) {
-            if (pos !== -1) {
-                selected.splice(pos, 1);
+            if (e.ctrlKey) {
+                if (pos !== -1) {
+                    selected.splice(pos, 1);
+                } else {
+                    selected.push(ts);
+                }
+                selected.sort();
             } else {
-                selected.push(ts);
+                selected = [ts];
             }
-            selected.sort();
-        } else {
-            selected = [ts];
-        }
 
         this.localStorage.setItem('App.historyLastSelected', ts.toString());
         this.localStorage.setItem('App.historyLastSelectedColumn', column);
@@ -719,64 +719,64 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     {this.state.lcVisible ? <TableCell /> : null}
                 </TableRow>);
             } else
-            if (state.noData || state.noDataForPeriod) {
-                rows.push(<TableRow
-                    className={Utils.clsx(classes.row, classes.updatedRow, classes.rowNoData)}
-                    key={state.noData ? 'nodata' : ''}
-                    hover
-                >
-                    <TableCell />
-                    <TableCell>{ state.noData ? this.props.t('No data in history') : this.props.t('No data in history for selected period')}</TableCell>
-                    {this.state.ackVisible  ? <TableCell /> : null}
-                    {this.state.fromVisible ? <TableCell /> : null}
-                    {this.state.lcVisible  ? <TableCell /> : null}
-                </TableRow>);
-            } else {
-                const interpolated = state.i;
-                const selected = this.state.lastSelected === ts;
-                let val = state.val;
-                if (this.props.isFloatComma && this.props.obj.common.type === 'number' && val) {
-                    val = val.toString().replace('.', ',');
-                }
-                if (val === null) {
-                    val = 'null';
-                }
-                if (val === undefined) {
-                    val = '_';
-                }
-                const selectedClass = this.state.selected.includes(ts);
+                if (state.noData || state.noDataForPeriod) {
+                    rows.push(<TableRow
+                        className={Utils.clsx(classes.row, classes.updatedRow, classes.rowNoData)}
+                        key={state.noData ? 'nodata' : ''}
+                        hover
+                    >
+                        <TableCell />
+                        <TableCell>{ state.noData ? this.props.t('No data in history') : this.props.t('No data in history for selected period')}</TableCell>
+                        {this.state.ackVisible  ? <TableCell /> : null}
+                        {this.state.fromVisible ? <TableCell /> : null}
+                        {this.state.lcVisible  ? <TableCell /> : null}
+                    </TableRow>);
+                } else {
+                    const interpolated = state.i;
+                    const selected = this.state.lastSelected === ts;
+                    let val = state.val;
+                    if (this.props.isFloatComma && this.props.obj.common.type === 'number' && val) {
+                        val = val.toString().replace('.', ',');
+                    }
+                    if (val === null) {
+                        val = 'null';
+                    }
+                    if (val === undefined) {
+                        val = '_';
+                    }
+                    const selectedClass = this.state.selected.includes(ts);
 
-                rows.push(<TableRow
-                    className={Utils.clsx(
-                        classes.row,
-                        classes.updatedRow,
-                        interpolated && classes.rowInterpolated,
-                        selectedClass && classes.rowSelected,
-                    )}
-                    key={ts.toString() + (state.val || '').toString()}
-                >
-                    <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
-                        {`${this.formatTimestamp(state.ts)}`}
-                        {selected && this.state.lastSelectedColumn === 'ts' ? <div className={classes.rowFocused} /> : ''}
-                    </TableCell>
-                    <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'val')}>
-                        {val + this.unit}
-                        {selected && this.state.lastSelectedColumn === 'val' ? <div className={classes.rowFocused} /> : ''}
-                    </TableCell>
-                    {this.state.ackVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')} className={state.ack ? classes.cellAckTrue : classes.cellAckFalse}>
-                        {state.ack ? 'true' : 'false' }
-                        {selected && this.state.lastSelectedColumn === 'ack' ? <div className={classes.rowFocused} /> : ''}
-                    </TableCell> : null}
-                    {this.state.fromVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'from')}>
-                        {state.from || ''}
-                        {selected && this.state.lastSelectedColumn === 'from' ? <div className={classes.rowFocused} /> : ''}
-                    </TableCell> : null}
-                    {this.state.lcVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
-                        {state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${(state.ts % 1000).toString().padStart(3, '0')}` : ''}
-                        {selected && this.state.lastSelectedColumn === 'lc' ? <div className={classes.rowFocused} /> : ''}
-                    </TableCell> : null}
-                </TableRow>);
-            }
+                    rows.push(<TableRow
+                        className={Utils.clsx(
+                            classes.row,
+                            classes.updatedRow,
+                            interpolated && classes.rowInterpolated,
+                            selectedClass && classes.rowSelected,
+                        )}
+                        key={ts.toString() + (state.val || '').toString()}
+                    >
+                        <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
+                            {`${this.formatTimestamp(state.ts)}`}
+                            {selected && this.state.lastSelectedColumn === 'ts' ? <div className={classes.rowFocused} /> : ''}
+                        </TableCell>
+                        <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'val')}>
+                            {val + this.unit}
+                            {selected && this.state.lastSelectedColumn === 'val' ? <div className={classes.rowFocused} /> : ''}
+                        </TableCell>
+                        {this.state.ackVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')} className={state.ack ? classes.cellAckTrue : classes.cellAckFalse}>
+                            {state.ack ? 'true' : 'false' }
+                            {selected && this.state.lastSelectedColumn === 'ack' ? <div className={classes.rowFocused} /> : ''}
+                        </TableCell> : null}
+                        {this.state.fromVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'from')}>
+                            {state.from || ''}
+                            {selected && this.state.lastSelectedColumn === 'from' ? <div className={classes.rowFocused} /> : ''}
+                        </TableCell> : null}
+                        {this.state.lcVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
+                            {state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${(state.ts % 1000).toString().padStart(3, '0')}` : ''}
+                            {selected && this.state.lastSelectedColumn === 'lc' ? <div className={classes.rowFocused} /> : ''}
+                        </TableCell> : null}
+                    </TableRow>);
+                }
         }
 
         return rows;
@@ -1210,8 +1210,6 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 >
                     {this.state.updateOpened ? this.props.t('Update') : this.props.t('Add')}
                 </Button>
-                {/*
-                // @ts-expect-error this color works */}
                 <Button variant="contained" onClick={() => this.setState({ updateOpened: false, insertOpened: false })} color="grey">{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;

@@ -25,12 +25,12 @@ import {
 } from '@mui/icons-material';
 
 import { type Theme, type Translator } from '@iobroker/adapter-react-v5/types';
-import BaseSettingsSystem from '../components/BaseSettings/BaseSettingsSystem';
-import BaseSettingsMultihost from '../components/BaseSettings/BaseSettingsMultihost';
-import BaseSettingsObjects from '../components/BaseSettings/BaseSettingsObjects';
-import BaseSettingsStates from '../components/BaseSettings/BaseSettingsStates';
-import BaseSettingsLog from '../components/BaseSettings/BaseSettingsLog';
-import BaseSettingsPlugins from '../components/BaseSettings/BaseSettingsPlugins';
+import BaseSettingsSystem, { type SystemSettings } from '../components/BaseSettings/BaseSettingsSystem';
+import BaseSettingsMultihost, { type MultihostSettings } from '../components/BaseSettings/BaseSettingsMultihost';
+import BaseSettingsObjects, { type SettingsObjects } from '../components/BaseSettings/BaseSettingsObjects';
+import BaseSettingsStates, { type SettingsStates } from '../components/BaseSettings/BaseSettingsStates';
+import BaseSettingsLog, { type SettingsLog } from '../components/BaseSettings/BaseSettingsLog';
+import BaseSettingsPlugins, { type PluginsSettings } from '../components/BaseSettings/BaseSettingsPlugins';
 
 // icons
 
@@ -66,12 +66,12 @@ interface BaseSettingsDialogState {
     loading: boolean;
     confirmExit: boolean;
     showRestart: boolean;
-    system: any;
-    multihostService: any;
-    objects: any;
-    states: any;
-    log: any;
-    plugins: any;
+    system: SystemSettings;
+    multihostService?: MultihostSettings;
+    objects?: SettingsObjects;
+    states: SettingsStates;
+    log: SettingsLog;
+    plugins: PluginsSettings;
     saving: boolean;
 }
 

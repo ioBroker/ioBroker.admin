@@ -1274,7 +1274,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     }
 
-    onCopy(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+    onCopy(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         // @ts-expect-error types in adapter-react-v5 not optimal
         Utils.copyToClipboard(this.state.text, e);
         window.alert(this.props.t('ra_Copied'));
@@ -1325,7 +1325,6 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     {this.props.t('Clone')}
                 </Button>
                 <Button
-                    // @ts-expect-error this works
                     color="grey"
                     onClick={() => this.setState({ showCopyDialog: '' })}
                     startIcon={<IconClose />}
@@ -1395,7 +1394,6 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             </DialogContent>
             <DialogActions className={this.props.classes.wrapperButton}>
                 <Button
-                    // @ts-expect-error this works
                     color="grey"
                     onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
                     disabled={this.state.error || this.state.changed}
@@ -1405,7 +1403,6 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 </Button>
                 <div style={{ flexGrow: 1 }} />
                 {this.state.tab === 'object' && <Button
-                    // @ts-expect-error this works
                     color="grey"
                     onClick={e => this.onCopy(e)}
                     disabled={this.state.error}
@@ -1424,7 +1421,6 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     {this.props.t('Write')}
                 </Button>
                 <Button
-                    // @ts-expect-error this works
                     color="grey"
                     variant="contained"
                     onClick={() => this.props.onClose()}

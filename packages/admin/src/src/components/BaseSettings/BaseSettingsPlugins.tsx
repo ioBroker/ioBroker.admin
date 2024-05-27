@@ -29,7 +29,7 @@ const styles: Styles<any, any> = (theme: Theme) => ({
     },
 });
 
-interface PluginsSettings {
+export interface PluginsSettings {
     [key: string]: any;
 }
 

@@ -96,7 +96,6 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
                         this.props.onClose(60000);
                     }}
                     startIcon={<TimeIcon />}
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                 >
                     {this.mobile ? this.props.t('1 minute') : this.props.t('Set timeout to 1 minute')}
@@ -118,7 +117,6 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

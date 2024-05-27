@@ -96,7 +96,7 @@ interface TransportSettings {
     ssl?: boolean;
 }
 
-interface SettingsLog {
+export interface SettingsLog {
     transport?: Record<string, TransportSettings>;
     level?: string;
     maxDays?: number;
@@ -919,7 +919,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             </Grid>
             <Toolbar>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"
@@ -930,7 +929,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.props.t('File log')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"
@@ -941,7 +939,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.props.t('Syslog')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"
@@ -952,7 +949,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.props.t('HTTP log')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"
@@ -963,7 +959,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.props.t('Stream log')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"

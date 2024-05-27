@@ -30,7 +30,7 @@ const styles: Styles<any, any> = (theme: Theme) => ({
     },
 });
 
-interface SystemSettings {
+export interface SystemSettings {
     memoryLimitMB?: number;
     hostname?: string;
     statisticsInterval?: number;

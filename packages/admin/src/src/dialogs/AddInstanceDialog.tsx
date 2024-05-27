@@ -215,7 +215,6 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                     }}
                     startIcon={<IconWeb />}
                     variant="contained"
-                    // @ts-expect-error grey is allowed
                     color="grey"
                 >
                     {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
@@ -315,7 +314,6 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     startIcon={<CloseIcon />}
                 >
