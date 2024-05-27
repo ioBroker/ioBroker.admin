@@ -30,7 +30,7 @@ import { type AdminGuiConfig, type Translate, type ioBrokerObject } from '../../
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries.json';
 
-const styles:Styles<Theme, any> = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -51,7 +51,7 @@ const styles:Styles<Theme, any> = theme => ({
     },
 });
 
-const MyMapComponent:React.FC<{addMap: (map: any) => any}> = props => {
+const MyMapComponent: React.FC<{addMap: (map: any) => any}> = props => {
     const map = useMap();
     props.addMap && props.addMap(map);
     return null;
@@ -110,7 +110,7 @@ class MainSettingsDialog extends Component<Props, State> {
 
     latLongTimer: ReturnType<typeof setTimeout>;
 
-    getSettings():Setting[] {
+    getSettings(): Setting[] {
         return [
             {
                 id: 'language',
@@ -280,13 +280,13 @@ class MainSettingsDialog extends Component<Props, State> {
         ];
     }
 
-    onMap = (map:Map) => {
+    onMap = (map: Map) => {
         if (this.props.saving) {
             return;
         }
         if (!this.map || this.map !== map) {
             this.map = map;
-            const center:LatLngTuple = [
+            const center: LatLngTuple = [
                 parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : '50') || 0,
                 parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : '10') || 0,
             ];
@@ -458,7 +458,7 @@ class MainSettingsDialog extends Component<Props, State> {
         </FormControl>;
     };
 
-    handleChangeCountry = (evt:SelectChangeEvent<string>) => {
+    handleChangeCountry = (evt: SelectChangeEvent<string>) => {
         const value = evt.target.value;
         const id = 'country';
         this.doChange(id, value);
@@ -523,7 +523,7 @@ class MainSettingsDialog extends Component<Props, State> {
             cb && cb());
     };
 
-    onMarkerDragend = (evt:DragEndEvent) => {
+    onMarkerDragend = (evt: DragEndEvent) => {
         const ll = JSON.parse(JSON.stringify(evt.target._latlng));
         this.doChange('latitude',  ll.lat, () =>
             this.doChange('longitude', ll.lng));
@@ -533,7 +533,7 @@ class MainSettingsDialog extends Component<Props, State> {
         const { classes } = this.props;
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
-        const center:LatLngTuple = [
+        const center: LatLngTuple = [
             parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : '50') || 0,
             parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : '10') || 0,
         ];

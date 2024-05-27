@@ -19,7 +19,7 @@ import Editor from '../../components/Editor';
 // eslint-disable-next-line no-undef
 (window as any).ace.config.set('basePath', 'lib/js/ace');
 
-const styles:Styles<Theme, any> = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',

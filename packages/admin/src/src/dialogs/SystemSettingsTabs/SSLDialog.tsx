@@ -19,7 +19,7 @@ import { type Translator, type Theme } from '@iobroker/adapter-react-v5/types';
 import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 
-const styles:Styles<Theme, any> = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',

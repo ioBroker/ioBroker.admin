@@ -179,11 +179,11 @@ class Hosts extends Component<HostsProps, HostsState> {
         if (arg1 !== undefined && arg2 !== undefined && !wordCache[`${word} ${arg1} ${arg2}`]) {
             wordCache[`${word} ${arg1} ${arg2}`] = this.props.t(word, arg1, arg2);
         } else
-            if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
-                wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
-            } else if (!wordCache[word]) {
-                wordCache[word] = this.props.t(word);
-            }
+        if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
+            wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
+        } else if (!wordCache[word]) {
+            wordCache[word] = this.props.t(word);
+        }
 
         return arg1 !== undefined && arg2 !== undefined ? wordCache[`${word} ${arg1} ${arg2}`] : (arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word]);
     };

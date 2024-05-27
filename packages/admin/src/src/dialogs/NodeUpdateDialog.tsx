@@ -98,7 +98,7 @@ export default class NodeUpdateDialog extends React.Component<NodeUpdateDialogPr
                 // version: this.props.version,
             }],
             // restart the controller after the Node.js update
-        true,
+            true,
         );
 
         this.setState({

@@ -112,7 +112,7 @@ class CertificatesDialog extends Component<CertificatesDialogProps, Certificates
     }
 
     static arrayToCert(array: CertificateArray): Certificate {
-        const result:Record<string, string> = {};
+        const result: Record<string, string> = {};
         for (const k in array) {
             result[array[k].title] = array[k].data;
         }
