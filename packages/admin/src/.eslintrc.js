@@ -94,5 +94,6 @@ module.exports = {
                 requireLast: false,
             },
         }],
+        '@typescript-eslint/type-annotation-spacing': 'error',
     },
 };
