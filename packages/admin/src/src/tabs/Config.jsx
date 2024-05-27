@@ -437,7 +437,7 @@ class Config extends Component {
                     {this.props.t('Ok')}
                 </Button>
                 <Button
-                                        color="grey"
+                    color="grey"
                     variant="contained"
                     onClick={() => this.setState({ showLogLevelDialog: false })}
                 >

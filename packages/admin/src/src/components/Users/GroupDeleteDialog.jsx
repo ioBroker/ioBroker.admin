@@ -39,7 +39,7 @@ function GroupDeleteDialog(props) {
             </Button>
             <Button
                 variant="contained"
-                                color="grey"
+                color="grey"
                 autoFocus
                 onClick={props.onClose}
                 startIcon={<IconCancel />}

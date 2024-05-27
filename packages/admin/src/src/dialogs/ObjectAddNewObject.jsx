@@ -270,7 +270,7 @@ const ObjectAddNewObject = ({
                 {I18n.t('add')}
             </Button>
             <Button
-                                color="grey"
+                color="grey"
                 onClick={onClose}
                 variant="contained"
                 startIcon={<CloseIcon />}

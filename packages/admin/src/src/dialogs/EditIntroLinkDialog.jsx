@@ -378,7 +378,7 @@ class EditIntroLinkDialog extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                                        color="grey"
+                    color="grey"
                     startIcon={<CloseIcon />}
                 >
                     {this.props.t('Close')}

@@ -147,7 +147,7 @@ class ObjectViewFileDialog extends Component {
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     startIcon={<CloseIcon />}
-                                        color="grey"
+                    color="grey"
                 >
                     {this.props.t('Close')}
                 </Button>

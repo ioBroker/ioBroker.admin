@@ -363,9 +363,9 @@ const FileEditOfAccessControl2 = ({
                     if (_id.startsWith('system.group.') && obj?.type === 'group') {
                         _groups.push(obj);
                     } else
-                        if (_id.startsWith('system.user.') && obj?.type === 'user') {
-                            _users.push(obj);
-                        }
+                    if (_id.startsWith('system.user.') && obj?.type === 'user') {
+                        _users.push(obj);
+                    }
                 });
 
                 const defaultAcl = objects['system.config'].common.defaultNewAcl;

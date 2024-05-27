@@ -517,7 +517,7 @@ class SystemSettingsDialog extends Component {
                     disabled={this.state.saving}
                     onClick={() => (changed ? this.setState({ confirmExit: true }) : this.props.onClose())}
                     startIcon={<CloseIcon />}
-                                        color="grey"
+                    color="grey"
                 >
                     {changed ? this.props.t('Cancel') : this.props.t('Close')}
                 </Button>

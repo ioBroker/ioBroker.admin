@@ -189,7 +189,7 @@ class WizardLicenseTab extends Component {
                 <div className={this.props.classes.grow} />
                 <Button
                     variant="contained"
-                                        color="grey"
+                    color="grey"
                     onClick={() => this.setState({ notAgree: true })}
                     startIcon={<IconCancel />}
                 >

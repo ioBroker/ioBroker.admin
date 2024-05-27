@@ -112,7 +112,7 @@ class CommandDialog extends Component {
                         variant="contained"
                         disabled={!this.props.inBackground}
                         onClick={this.props.onClose}
-                                                color="grey"
+                        color="grey"
                         startIcon={<CloseIcon />}
                     >
                         {this.props.t('Close')}

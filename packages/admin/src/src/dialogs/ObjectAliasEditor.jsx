@@ -355,7 +355,7 @@ class ObjectAliasEditor extends Component {
                     variant="contained"
                     onClick={() => this.setState({ showAddNewAlias: false })}
                     startIcon={<Close />}
-                                        color="grey"
+                    color="grey"
                 >
                     {this.props.t('Close')}
                 </Button>

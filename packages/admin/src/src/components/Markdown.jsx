@@ -521,10 +521,10 @@ class Markdown extends Component {
                     this.parseText());
             }
         } else
-            if (this.props.language !== nextProps.language) {
-                this.mounted && this.setState({ notFound: false, parts: [] });
-                this.load(null, nextProps.language);
-            }
+        if (this.props.language !== nextProps.language) {
+            this.mounted && this.setState({ notFound: false, parts: [] });
+            this.load(null, nextProps.language);
+        }
     }
 
     /* onHashChange(location) {

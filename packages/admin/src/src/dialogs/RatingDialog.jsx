@@ -361,7 +361,7 @@ class RatingDialog extends Component {
                     autoFocus={!this.props.version}
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                                        color="grey"
+                    color="grey"
                     startIcon={<CloseIcon />}
                 >
                     {this.props.t('Close')}

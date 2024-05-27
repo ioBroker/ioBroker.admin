@@ -343,7 +343,7 @@ const GenerateInputsModal = ({
             <Button
                 variant="contained"
                 onClick={() => onClose()}
-                                color="grey"
+                color="grey"
                 startIcon={<CloseIcon />}
             >
                 {I18n.t('Close')}

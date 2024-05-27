@@ -256,7 +256,7 @@ function UserEditDialog(props) {
             </Button>
             <Button
                 variant="contained"
-                                color="grey"
+                color="grey"
                 onClick={props.onClose}
                 startIcon={<IconCancel />}
             >
