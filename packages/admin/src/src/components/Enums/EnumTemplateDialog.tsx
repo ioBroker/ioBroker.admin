@@ -166,7 +166,6 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                             return null;
                         } if (!this.state.filter || name.toLowerCase().includes(this.state.filter)) {
                             return <Button
-                                // @ts-expect-error grey is valid color
                                 color="grey"
                                 key={i}
                                 variant="outlined"
@@ -207,7 +206,6 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                     {this.props.prefix === 'enum.rooms' ? this.props.t('Custom room') : (this.props.prefix === 'enum.functions' ? this.props.t('Custom function') : this.props.t('Custom enumeration'))}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="contained"
                     onClick={this.props.onClose}

@@ -2154,7 +2154,6 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        // @ts-expect-error grey is valid color
                         color="grey"
                         variant="contained"
                         onClick={() => {
@@ -2175,7 +2174,6 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                     <Button
                         variant="contained"
                         onClick={() => this.setState({ deleteItem: '' })}
-                        // @ts-expect-error grey is valid color
                         color="grey"
                     >
                         {this.props.t('ra_Cancel')}

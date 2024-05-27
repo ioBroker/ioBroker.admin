@@ -355,8 +355,7 @@ class ObjectAliasEditor extends Component {
                     variant="contained"
                     onClick={() => this.setState({ showAddNewAlias: false })}
                     startIcon={<Close />}
-                    // @ts-expect-error grey is valid color
-                    color="grey"
+                                        color="grey"
                 >
                     {this.props.t('Close')}
                 </Button>

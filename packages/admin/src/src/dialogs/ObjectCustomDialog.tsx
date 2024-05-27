@@ -323,7 +323,6 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                     disabled={this.state.progressRunning}
                     variant="contained"
                     onClick={() => this.onClose()}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                 >
                     {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}

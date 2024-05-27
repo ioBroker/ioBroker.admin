@@ -159,8 +159,7 @@ class Objects extends Component {
                 {this.state.deleteObjectShow.hasChildren ?
                     <Button
                         variant="contained"
-                        // @ts-expect-error grey is valid color
-                        color="grey"
+                                                color="grey"
                         classes={{ label: this.props.classes.buttonText }}
                         onClick={() => this.onDelete(true)}
                         startIcon={<IconDeleteAll className={this.props.classes.buttonAll} />}
@@ -180,8 +179,7 @@ class Objects extends Component {
                     </Button> : null}
                 <Button
                     variant="contained"
-                    // @ts-expect-error grey is valid color
-                    color="grey"
+                                        color="grey"
                     onClick={() => this.setState({ deleteObjectShow: null })}
                     startIcon={<IconCancel />}
                 >

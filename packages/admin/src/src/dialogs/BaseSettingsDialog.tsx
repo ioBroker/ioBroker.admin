@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -15,6 +14,7 @@ import {
 } from '@mui/material';
 
 import {
+    AdminConnection,
     Confirm as ConfirmDialog,
     withWidth,
 } from '@iobroker/adapter-react-v5';
@@ -24,6 +24,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
+import { type Theme, type Translator } from '@iobroker/adapter-react-v5/types';
 import BaseSettingsSystem from '../components/BaseSettings/BaseSettingsSystem';
 import BaseSettingsMultihost from '../components/BaseSettings/BaseSettingsMultihost';
 import BaseSettingsObjects from '../components/BaseSettings/BaseSettingsObjects';
@@ -33,7 +34,7 @@ import BaseSettingsPlugins from '../components/BaseSettings/BaseSettingsPlugins'
 
 // icons
 
-const styles = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     content: {
         height: 500,
         overflow: 'hidden',
@@ -48,8 +49,36 @@ const styles = theme => ({
     },
 });
 
-class BaseSettingsDialog extends Component {
-    constructor(props) {
+interface BaseSettingsDialogProps {
+    t: Translator;
+    currentHost: string;
+    currentHostName: string;
+    socket: AdminConnection;
+    themeType: string;
+    onClose: () => void;
+    classes: Record<string, string>;
+}
+
+interface BaseSettingsDialogState {
+    currentTab: number;
+    hasChanges: string[];
+    currentHost: string;
+    loading: boolean;
+    confirmExit: boolean;
+    showRestart: boolean;
+    system: any;
+    multihostService: any;
+    objects: any;
+    states: any;
+    log: any;
+    plugins: any;
+    saving: boolean;
+}
+
+class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettingsDialogState> {
+    originalSettings: any;
+
+    constructor(props: BaseSettingsDialogProps) {
         super(props);
         this.state = {
             currentTab: 0,
@@ -101,7 +130,7 @@ class BaseSettingsDialog extends Component {
                             this.props.socket.restartController(this.props.currentHost)
                                 .then(() =>
                                     setTimeout(() =>  // reload admin
-                                        window.location.reload(false), 500))
+                                        window.location.reload(), 500))
                                 .catch(e => window.alert(`Cannot restart: ${e}`));
                         }
 
@@ -112,9 +141,9 @@ class BaseSettingsDialog extends Component {
         return null;
     }
 
-    getSettings(host) {
+    getSettings(host: string) {
         this.props.socket.readBaseSettings(host || this.state.currentHost)
-            .then(settings => {
+            .then((settings: any) => {
                 if (settings && settings.config) {
                     delete settings.config.dataDirComment;
                     this.originalSettings = JSON.parse(JSON.stringify(settings.config));
@@ -124,7 +153,7 @@ class BaseSettingsDialog extends Component {
             });
     }
 
-    onSave(host) {
+    onSave(host?: string) {
         const settings = {
             system: this.state.system,
             multihostService: this.state.multihostService,
@@ -151,7 +180,7 @@ class BaseSettingsDialog extends Component {
         });
     }
 
-    updateSettings(name, settings) {
+    updateSettings(name: keyof BaseSettingsDialogState, settings: any) {
         const hasChanges = [...this.state.hasChanges];
         const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
 
@@ -162,7 +191,7 @@ class BaseSettingsDialog extends Component {
             hasChanges.splice(pos, 1);
         }
 
-        this.setState({ [name]: settings, hasChanges });
+        this.setState({ [name]: settings, hasChanges } as any);
     }
 
     renderSystem() {
@@ -171,7 +200,7 @@ class BaseSettingsDialog extends Component {
             settings={this.state[name]}
             t={this.props.t}
             currentHost={this.props.currentHost}
-            onChange={settings =>
+            onChange={(settings: any) =>
                 this.updateSettings(name, settings)}
         />;
     }
@@ -183,7 +212,7 @@ class BaseSettingsDialog extends Component {
             t={this.props.t}
             socket={this.props.socket}
             currentHost={this.props.currentHost}
-            onChange={settings =>
+            onChange={(settings: any) =>
                 this.updateSettings(name, settings)}
         />;
     }
@@ -195,7 +224,7 @@ class BaseSettingsDialog extends Component {
             t={this.props.t}
             socket={this.props.socket}
             currentHost={this.props.currentHost}
-            onChange={settings =>
+            onChange={(settings: any) =>
                 this.updateSettings(name, settings)}
         />;
     }
@@ -207,7 +236,7 @@ class BaseSettingsDialog extends Component {
             t={this.props.t}
             socket={this.props.socket}
             currentHost={this.props.currentHost}
-            onChange={settings =>
+            onChange={(settings: any) =>
                 this.updateSettings(name, settings)}
         />;
     }
@@ -219,7 +248,7 @@ class BaseSettingsDialog extends Component {
             t={this.props.t}
             socket={this.props.socket}
             currentHost={this.props.currentHost}
-            onChange={settings =>
+            onChange={(settings: any) =>
                 this.updateSettings(name, settings)}
         />;
     }
@@ -230,7 +259,7 @@ class BaseSettingsDialog extends Component {
             settings={this.state[name]}
             t={this.props.t}
             themeType={this.props.themeType}
-            onChange={settings =>
+            onChange={(settings: any) =>
                 this.updateSettings(name, settings)}
         />;
     }
@@ -299,7 +328,6 @@ class BaseSettingsDialog extends Component {
                 </Button>
                 <Button
                     variant="contained"
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     disabled={this.state.saving}
                     onClick={() => (this.state.hasChanges.length ? this.setState({ confirmExit: true }) : this.props.onClose())}
@@ -311,14 +339,5 @@ class BaseSettingsDialog extends Component {
         </Dialog>;
     }
 }
-
-BaseSettingsDialog.propTypes = {
-    t: PropTypes.func,
-    currentHost: PropTypes.string,
-    currentHostName: PropTypes.string,
-    socket: PropTypes.object,
-    themeType: PropTypes.string,
-    onClose: PropTypes.func.isRequired,
-};
 
 export default withWidth()(withStyles(styles)(BaseSettingsDialog));

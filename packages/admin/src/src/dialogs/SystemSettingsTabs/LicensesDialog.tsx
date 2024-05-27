@@ -275,7 +275,6 @@ class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState>
                 }
                 onClick={() => this.requestLicenses()}
                 className={this.props.classes.button}
-                // @ts-expect-error grey is valid color
                 color="grey"
             >
                 {this.props.t('Check')}

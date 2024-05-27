@@ -305,7 +305,6 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
             <DialogActions>
                 {this.state.copyPossible ?
                     <Button
-                        // @ts-expect-error grey is valid color
                         color="grey"
                         onClick={e => {
                             e.stopPropagation();
@@ -318,7 +317,6 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                     </Button> : null}
                 {this.state.editing ?
                     <Button
-                        // @ts-expect-error grey is valid color
                         color="grey"
                         disabled={this.state.editingValue === this.state.code || this.state.editingValue === this.state.text}
                         variant="contained"

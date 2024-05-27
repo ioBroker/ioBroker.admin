@@ -4193,7 +4193,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             </DialogContent>
             <DialogActions>
                 {this.state.filter.expertMode || this.state.showAllExportOptions ? <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="outlined"
                     onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false }, () =>
@@ -4210,7 +4209,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     {Object.keys(this.objects).length}
                     )
                 </Button> : <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="outlined"
                     startIcon={<IconExpert />}
@@ -4238,7 +4236,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     )
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="contained"
                     onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false })}
@@ -5429,7 +5426,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     {this.props.t('ra_Update')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="contained"
                     onClick={() => this.onColumnsEditCustomDialogClose()}

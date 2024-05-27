@@ -38,8 +38,7 @@ function UserDeleteDialog(props) {
                 </Button>
                 <Button
                     variant="contained"
-                    // @ts-expect-error grey is valid color
-                    color="grey"
+                                        color="grey"
                     autoFocus
                     onClick={props.onClose}
                     startIcon={<IconCancel />}

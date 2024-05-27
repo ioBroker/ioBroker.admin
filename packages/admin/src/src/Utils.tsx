@@ -667,4 +667,11 @@ class Utils {
     }
 }
 
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        grey: true;
+        gray: true;
+    }
+}
+
 export default Utils;

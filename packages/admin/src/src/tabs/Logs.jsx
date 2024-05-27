@@ -800,8 +800,7 @@ class Logs extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.closeLogDelete()}
-                    // @ts-expect-error grey is valid color
-                    color="grey"
+                                        color="grey"
                     startIcon={<CloseIcon />}
                 >
                     {this.t('Cancel')}

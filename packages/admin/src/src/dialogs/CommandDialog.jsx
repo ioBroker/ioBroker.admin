@@ -112,8 +112,7 @@ class CommandDialog extends Component {
                         variant="contained"
                         disabled={!this.props.inBackground}
                         onClick={this.props.onClose}
-                        // @ts-expect-error grey is valid color
-                        color="grey"
+                                                color="grey"
                         startIcon={<CloseIcon />}
                     >
                         {this.props.t('Close')}

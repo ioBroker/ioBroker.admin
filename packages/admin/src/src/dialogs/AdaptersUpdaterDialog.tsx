@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     DialogActions,
@@ -14,6 +13,7 @@ import {
     IconButton,
     Tooltip,
     DialogContent,
+    type PaletteColorOptions,
 } from '@mui/material';
 
 import {
@@ -23,12 +23,13 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { AdminConnection, I18n, Utils } from '@iobroker/adapter-react-v5';
 
+import { type Theme, type Translator } from '@iobroker/adapter-react-v5/types';
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
 
-const styles = theme => ({
+const styles: Styles<Theme, any> | Record<string, any> = theme => ({
     dialogRoot: {
         height: 'calc(100% - 64px)',
     },
@@ -70,8 +71,41 @@ const styles = theme => ({
     },
 });
 
-class AdaptersUpdaterDialog extends Component {
-    constructor(props) {
+interface AdaptersUpdaterDialogProps {
+    currentHost: string;
+    lang: string;
+    t: Translator;
+    socket: AdminConnection;
+    onClose: (updated: boolean) => void;
+    repository: Record<string, any>;
+    installed: Record<string, any>;
+    onSetCommandRunning: (running: boolean) => void;
+    noTranslation?: boolean;
+    toggleTranslation?: () => void;
+    classes: Record<string, string>;
+}
+
+interface AdaptersUpdaterDialogState {
+    selected: string[];
+    inProcess: boolean;
+    finished: boolean;
+    current: string;
+    updated: string[];
+    stopped: boolean;
+    debug: boolean;
+    stopOnError: boolean;
+    closeOnFinished: boolean;
+    currentVersion: string;
+}
+
+class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, AdaptersUpdaterDialogState> {
+    updateAvailable: string[] = [];
+
+    onAdapterFinished: () => void;
+
+    processList: { adapter: string; version: string }[];
+
+    constructor(props: AdaptersUpdaterDialogProps) {
         super(props);
 
         this.state = {
@@ -85,12 +119,13 @@ class AdaptersUpdaterDialog extends Component {
             debug: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.debug') === 'true',
             stopOnError: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.stopOnError') !== 'false',
             closeOnFinished: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.closeOnFinished') === 'true',
+            currentVersion: '',
         };
 
         this.updateAvailable = [];
     }
 
-    updateAdapter(adapter, version, cb) {
+    updateAdapter(adapter: string, version: string, cb: () => void) {
         this.onAdapterFinished = cb;
         this.setState({ current: adapter, currentVersion: version });
     }
@@ -98,8 +133,7 @@ class AdaptersUpdaterDialog extends Component {
     onStartUpdate() {
         this.setState({ inProcess: true }, () => {
             this.props.onSetCommandRunning(true);
-            this.processList = [...this.state.selected];
-            this.processList = this.processList.map(adapter => ({ adapter, version: this.props.repository[adapter]?.version }));
+            this.processList = [...this.state.selected].map(adapter => ({ adapter, version: this.props.repository[adapter]?.version }));
 
             this.updateAdapters(() => {
                 this.setState({ inProcess: false, finished: true }, () => {
@@ -114,7 +148,7 @@ class AdaptersUpdaterDialog extends Component {
         });
     }
 
-    updateAdapters(cb) {
+    updateAdapters(cb: () => void) {
         if (!this.processList || !this.processList.length || this.state.stopped) {
             cb && cb();
         } else {
@@ -151,7 +185,7 @@ class AdaptersUpdaterDialog extends Component {
                             indeterminate={this.state.selected.length !== this.updateAvailable.length && this.state.selected.length !== 0}
                             disableRipple
                             onClick={() => {
-                                let selected = [];
+                                let selected: string[] = [];
                                 if (this.state.selected.length !== this.updateAvailable.length) {
                                     selected = [...this.updateAvailable];
                                 }
@@ -187,7 +221,7 @@ class AdaptersUpdaterDialog extends Component {
                                 repository={this.props.repository}
                                 noTranslation={this.props.noTranslation}
                                 toggleTranslation={this.props.toggleTranslation}
-                                onUpdateSelected={(selected, updateAvailable) => {
+                                onUpdateSelected={(selected: string[], updateAvailable: string[]) => {
                                     if (updateAvailable) {
                                         this.updateAvailable = updateAvailable;
                                     }
@@ -276,7 +310,6 @@ class AdaptersUpdaterDialog extends Component {
                 <Button
                     variant="contained"
                     disabled={!this.state.inProcess}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<CancelIcon />}
                     onClick={() => {
@@ -290,7 +323,7 @@ class AdaptersUpdaterDialog extends Component {
                     variant="contained"
                     onClick={() => this.props.onClose(!!this.state.updated.length)}
                     disabled={this.state.inProcess && !this.state.stopped}
-                    color={this.state.stopped ? 'error' : 'grey'}
+                    color={(this.state.stopped ? 'error' : 'grey')}
                     startIcon={<CloseIcon />}
                 >
                     {this.props.t('Close')}
@@ -299,18 +332,5 @@ class AdaptersUpdaterDialog extends Component {
         </Dialog>;
     }
 }
-
-AdaptersUpdaterDialog.propTypes = {
-    currentHost: PropTypes.string.isRequired,
-    lang: PropTypes.string.isRequired,
-    t: PropTypes.func.isRequired,
-    socket: PropTypes.object.isRequired,
-    onClose: PropTypes.func.isRequired,
-    repository: PropTypes.object.isRequired,
-    installed: PropTypes.object.isRequired,
-    onSetCommandRunning: PropTypes.func.isRequired,
-    noTranslation: PropTypes.bool,
-    toggleTranslation: PropTypes.func,
-};
 
 export default withStyles(styles)(AdaptersUpdaterDialog);

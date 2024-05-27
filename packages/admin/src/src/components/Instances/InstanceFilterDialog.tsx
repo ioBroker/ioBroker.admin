@@ -325,7 +325,6 @@ const InstanceFilterDialog = ({
                 {I18n.t('Apply')}
             </Button>
             <Button
-                // @ts-expect-error grey is valid color
                 color="grey"
                 variant="contained"
                 onClick={() => onClose()}

@@ -273,7 +273,6 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
                             }
                             this.props.onClose();
                         }}
-                        // @ts-expect-error grey is valid color
                         color={this.state.response?.success ? 'primary' : 'grey'}
                         startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
                     >

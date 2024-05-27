@@ -606,7 +606,6 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                     {this.props.context.t('Delete instance')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     onClick={() => this.setState({ openDialogDelete: false, openDialog: false })}
                     variant="contained"
@@ -741,7 +740,6 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                         className={this.props.classes.selectStyle}
                     >
                         <Button
-                            // @ts-expect-error grey is valid color
                             color="grey"
                             onClick={() => this.setState({
                                 openSelectCompactGroup: false,

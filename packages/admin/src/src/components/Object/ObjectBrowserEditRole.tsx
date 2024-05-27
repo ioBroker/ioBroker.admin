@@ -120,7 +120,6 @@ class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, Object
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<IconCancel />}
                 >
