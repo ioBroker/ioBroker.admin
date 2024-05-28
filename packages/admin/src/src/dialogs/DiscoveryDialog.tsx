@@ -641,7 +641,6 @@ function DiscoveryDialog({
             themeType={themeType}
             themeName={themeName}
             newInstances={showInputsDialog.obj}
-            // @ts-expect-error wait until component is typed
             onClose={params => {
                 const { cb } = showInputsDialog;
                 const { obj } = showInputsDialog;
