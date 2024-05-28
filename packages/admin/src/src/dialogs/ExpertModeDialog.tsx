@@ -17,8 +17,9 @@ import {
 } from '@mui/icons-material';
 
 import { I18n, IconExpert } from '@iobroker/adapter-react-v5';
+import type { Theme } from '@iobroker/adapter-react-v5/types';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<Theme>(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -50,7 +51,12 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const ExpertModeDialog = ({ expertMode, onClose }) => {
+interface ExpertModeDialogProps {
+    expertMode: boolean;
+    onClose: (result?: string | boolean) => void;
+}
+
+const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose }) => {
     const classes = useStyles();
     const [doNotShow, setDoNotShow] = useState(false);
 
