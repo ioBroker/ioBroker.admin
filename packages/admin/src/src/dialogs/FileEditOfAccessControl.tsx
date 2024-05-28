@@ -320,16 +320,26 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
     const [valueFileAccessControl, setValueFileAccessControl] = useState<number>(null);
     const [differentOwner, setDifferentOwner] = useState(false);
     const [differentGroup, setDifferentGroup] = useState(false);
-    const [differentObject, setDifferentObject] = useState<any[]>([]);
+    const [differentObject, setDifferentObject] = useState<number[]>([]);
     const [maskObject, setMaskObject] = useState(0);
-    const [ids, setIds] = useState<any[]>([]);
+    const [ids, setIds] = useState<{
+        _id: string;
+        acl: Partial<{
+            file: number;
+            owner: string;
+            ownerGroup: string;
+            permissions: number;
+        }>;
+        id: string;
+        folder: boolean;
+    }[]>([]);
     const [disabledButton, setDisabledButton] = useState(true);
     const [progress, setProgress] = useState(false);
 
     const lang = I18n.getLanguage();
 
     useEffect(() => {
-        const _differentObject: any[] = [];
+        const _differentObject: number[] = [];
 
         const id = object.id as string;
 
@@ -542,7 +552,7 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
                             }
 
                             try {
-                                changed && (await extendObject(item._id, item));
+                                changed && (await extendObject(item._id, item as unknown as AccessControlObject));
                             } catch (error) {
                                 console.error(error);
                             }
