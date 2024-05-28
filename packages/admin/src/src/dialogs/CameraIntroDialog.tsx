@@ -1,8 +1,6 @@
 import React, { createRef, Component } from 'react';
 
-import { withStyles } from '@mui/styles';
-
-import PropTypes from 'prop-types';
+import { withStyles, type Styles } from '@mui/styles';
 
 import {
     Button,
@@ -17,8 +15,10 @@ import {
 import {
     Close as CloseIcon,
 } from '@mui/icons-material';
+import type { Theme, Translator } from '@iobroker/adapter-react-v5/types';
+import type { AdminConnection } from '@iobroker/socket-client';
 
-const styles = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     rootGrid: {
         flexGrow: 1,
     },
@@ -41,8 +41,24 @@ const styles = theme => ({
     },
 });
 
-class EditIntroLinkDialog extends Component {
-    constructor(props) {
+interface CameraIntroLinkDialogProps {
+    t: Translator;
+    camera: string;
+    socket: AdminConnection;
+    interval: string;
+    onClose: () => void;
+    name: string;
+    addTs: boolean;
+    children: string;
+    classes: Record<string, string>;
+}
+
+class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
+    cameraUpdateTimer: ReturnType<typeof setInterval>;
+
+    cameraRef: React.RefObject<HTMLImageElement>;
+
+    constructor(props: CameraIntroLinkDialogProps) {
         super(props);
 
         this.cameraUpdateTimer = null;
@@ -127,12 +143,4 @@ class EditIntroLinkDialog extends Component {
     }
 }
 
-EditIntroLinkDialog.propTypes = {
-    t: PropTypes.func.isRequired,
-    camera: PropTypes.string,
-    socket: PropTypes.object,
-    interval: PropTypes.string,
-    onClose: PropTypes.func.isRequired,
-};
-
-export default withStyles(styles)(EditIntroLinkDialog);
+export default withStyles(styles)(CameraIntroLinkDialog);

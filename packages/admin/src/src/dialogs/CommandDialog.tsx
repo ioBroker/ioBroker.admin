@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 
-import PropTypes from 'prop-types';
-
-import { withStyles } from '@mui/styles';
+import { withStyles, type Styles } from '@mui/styles';
 
 import {
     Button,
@@ -20,9 +18,11 @@ import {
     OpenInBrowser as OpenInBrowserIcon,
 } from '@mui/icons-material';
 
+import type { Theme, Translator } from '@iobroker/adapter-react-v5/types';
+import type { AdminConnection } from '@iobroker/socket-client';
 import Command from '../components/Command';
 
-const styles = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     closeButton: {
         position: 'absolute',
         right: theme.spacing(1),
@@ -37,8 +37,32 @@ const styles = theme => ({
     },
 });
 
-class CommandDialog extends Component {
-    constructor(props) {
+interface CommandDialogProps {
+    t: Translator;
+    confirmText: string;
+    onClose: () => void;
+    onInBackground: () => void;
+    visible: boolean;
+    ready: boolean;
+    onSetCommandRunning: (running: boolean) => void;
+    cmd: string;
+    errorFunc: (error: string) => void;
+    performed: () => void;
+    inBackground: boolean;
+    commandError: boolean;
+    socket: AdminConnection;
+    host: string;
+    classes: Record<string, string>;
+    callback: (exitCode: number) => void;
+}
+
+interface CommandDialogState {
+    progressText: string;
+    closeOnReady: boolean;
+}
+
+class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
+    constructor(props: CommandDialogProps) {
         super(props);
 
         this.state = {
@@ -79,7 +103,7 @@ class CommandDialog extends Component {
                     callback={this.props.callback}
                     cmd={this.props.cmd}
                     onFinished={() => this.state.closeOnReady && this.props.onClose()}
-                    onSetCommandRunning={running => this.props.onSetCommandRunning(running)}
+                    onSetCommandRunning={(running: boolean) => this.props.onSetCommandRunning(running)}
                 />
             </DialogContent>
             <DialogActions style={{ justifyContent: 'space-between' }}>
@@ -122,23 +146,5 @@ class CommandDialog extends Component {
         </Dialog>;
     }
 }
-
-CommandDialog.propTypes = {
-    t: PropTypes.func,
-    confirmText: PropTypes.string,
-    onClose: PropTypes.func.isRequired,
-    callback: PropTypes.func,
-    onInBackground: PropTypes.func.isRequired,
-    visible: PropTypes.bool.isRequired,
-    ready: PropTypes.bool.isRequired,
-    onSetCommandRunning: PropTypes.func.isRequired,
-    cmd: PropTypes.string,
-    errorFunc: PropTypes.func,
-    performed: PropTypes.func,
-    inBackground: PropTypes.bool,
-    commandError: PropTypes.bool,
-    socket: PropTypes.object.isRequired,
-    host: PropTypes.string.isRequired,
-};
 
 export default withStyles(styles)(CommandDialog);
