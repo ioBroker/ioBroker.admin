@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
+import type { Styles } from '@mui/styles';
 import { withStyles } from '@mui/styles';
-
-import PropTypes from 'prop-types';
 
 import {
     Button,
@@ -30,11 +29,13 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import { UploadImage } from '@iobroker/adapter-react-v5';
 
+import type { Theme, Translator } from '@iobroker/adapter-react-v5/types';
 import IntroCard from '../components/IntroCard';
 
-const styles = theme => ({
+const styles: Styles<Theme, any> = theme => ({
     formControl: {
         marginTop: theme.spacing(4),
     },
@@ -116,8 +117,30 @@ const styles = theme => ({
     },
 });
 
-class EditIntroLinkDialog extends Component {
-    constructor(props) {
+interface EditIntroLinkDialogProps {
+    t: Translator;
+    socket: AdminConnection;
+    link: Record<string, any>;
+    onClose: (link?: Record<string, any>) => void;
+    isNew: boolean;
+    classes: Record<string, string>;
+}
+
+interface EditIntroLinkDialogState {
+    image: string;
+    name: string;
+    link: string;
+    linkName: string;
+    color: string;
+    desc: string;
+    addTs: boolean;
+    interval: number;
+    camera: string;
+    cameraList: { id: string; name: string }[];
+}
+
+class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroLinkDialogState> {
+    constructor(props: EditIntroLinkDialogProps) {
         super(props);
 
         this.state = {
@@ -142,8 +165,8 @@ class EditIntroLinkDialog extends Component {
     getCamerasInstances() {
         this.props.socket.getAdapterInstances('cameras', true)
             .then(list => {
-                const cameraList = [];
-                const promises = [];
+                const cameraList: { id: string; name: string }[] = [];
+                const promises: Promise<{ id: string; name: string }>[] = [];
                 list.forEach(obj => {
                     const instance = obj._id.replace('system.adapter.', '');
 
@@ -154,7 +177,7 @@ class EditIntroLinkDialog extends Component {
                                 // get the list of cameras
                                 .then(state => state && state.val && this.props.socket.sendTo(instance, 'list', null))
                                 .then(result =>
-                                    result && result.list && result.list.forEach(cam =>
+                                    result && result.list && result.list.forEach((cam: { id: string; name: string; desc: string }) =>
                                         cameraList.push({ id: cam.id, name: `${cam.desc} [${instance}/${cam.name}]` }))),
                         );
                     }
@@ -166,7 +189,7 @@ class EditIntroLinkDialog extends Component {
             });
     }
 
-    static getLinkNameFromLink(link) {
+    static getLinkNameFromLink(link: string) {
         const m = link.trim().match(/^https?:\/\/([^/:]+)(:\d+)?/);
         if (m) {
             return m[1] + (m[2] || '');
@@ -316,7 +339,7 @@ class EditIntroLinkDialog extends Component {
                                 className={this.props.classes.editItemSlider}
                                 value={this.state.interval}
                                 getAriaValueText={() => `${this.state.interval}ms`}
-                                onChange={(e, interval) => this.setState({ interval })}
+                                onChange={(e, interval) => this.setState({ interval: interval as number })}
                                 step={100}
                                 min={500}
                                 max={60000}
@@ -324,7 +347,15 @@ class EditIntroLinkDialog extends Component {
                             /> : null}
 
                             <div style={{ width: 50 }} className={this.props.classes.editItem}>
-                                <TextField variant="standard" fullWidth label={this.props.t('Color')} className={this.props.editColor} type="color" value={this.state.color} onChange={e => this.setState({ color: e.target.value })} />
+                                <TextField
+                                    variant="standard"
+                                    fullWidth
+                                    label={this.props.t('Color')}
+                                    className={this.props.classes.editColor}
+                                    type="color"
+                                    value={this.state.color}
+                                    onChange={e => this.setState({ color: e.target.value })}
+                                />
                             </div>
                             <UploadImage
                                 disabled={false}
@@ -333,7 +364,7 @@ class EditIntroLinkDialog extends Component {
                                 icon={this.state.image}
                                 removeIconFunc={() => this.setState({ image: '' })}
                                 onChange={base64 => this.setState({ image: base64 })}
-                                t={this.props.t}
+                                // t={this.props.t}
                             />
                         </Grid>
                     </Grid>
@@ -387,13 +418,5 @@ class EditIntroLinkDialog extends Component {
         </Dialog>;
     }
 }
-
-EditIntroLinkDialog.propTypes = {
-    t: PropTypes.func.isRequired,
-    socket: PropTypes.object.isRequired,
-    link: PropTypes.object.isRequired,
-    onClose: PropTypes.func.isRequired,
-    isNew: PropTypes.bool,
-};
 
 export default withStyles(styles)(EditIntroLinkDialog);
