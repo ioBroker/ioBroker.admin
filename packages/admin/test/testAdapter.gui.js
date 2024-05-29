@@ -3,6 +3,11 @@ const guiHelper = require('./guiHelper');
 
 let gPage;
 
+async function screenshot(page, fileName) {
+    page = page || gPage;
+    await page.screenshot({path: `${__dirname}/../tmp/screenshots/${fileName}.png`});
+}
+
 describe('admin-gui', () => {
     before(async function () {
         this.timeout(240_000);
@@ -16,6 +21,7 @@ describe('admin-gui', () => {
     it('Check all widgets', async function () {
         this.timeout(120_000);
         await gPage.waitForSelector('a[href="/#easy"]', { timeout: 120_000 });
+        await screenshot(gPage, '00_started');
     });
 
     after(async function () {
