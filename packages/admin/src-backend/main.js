@@ -1344,34 +1344,46 @@ class Admin extends utils.Adapter {
         }
     }
 
+    restartRepoUpdate() {
+        // start the next cycle
+        if (this.config.autoUpdate) {
+            this.timerRepo && clearTimeout(this.timerRepo);
+            this.log.debug(
+                `Next repo update on ${new Date(
+                    Date.now() + this.config.autoUpdate * ONE_HOUR_MS + 1
+                ).toLocaleString()}`
+            );
+            this.timerRepo = setTimeout(
+                () => {
+                    this.timerRepo = null;
+                    this.updateRegister();
+                },
+                this.config.autoUpdate * ONE_HOUR_MS + 1
+            );
+        }
+    }
+
     /**
      * Read repository information from active repository
      */
     updateRegister() {
         if (lastRepoUpdate && Date.now() - lastRepoUpdate < 3600000) {
             this.log.error('Automatic repository update is not allowed more than once a hour');
-            if (this.config.autoUpdate) {
-                this.timerRepo && clearTimeout(this.timerRepo);
-                this.timerRepo = setTimeout(
-                    () => {
-                        this.timerRepo = null;
-                        this.updateRegister();
-                    },
-                    this.config.autoUpdate * ONE_HOUR_MS + 1
-                );
-            }
+            this.restartRepoUpdate();
             return;
         }
 
         lastRepoUpdate = Date.now();
 
-        this.getForeignObject('system.config', (err, systemConfig) => {
+        this.getForeignObject('system.config', async (err, systemConfig) => {
             err && this.log.error('May not read "system.config"');
 
             if (systemConfig && systemConfig.common) {
-                this.getForeignObject('system.repositories', (err, repos) => {
-                    err && this.log.error('May not read "system.repositories"');
+                try {
+                    const repos = await this.getForeignObjectAsync('system.repositories');
                     if (!repos || repos.ts === undefined) {
+                        // start the next cycle
+                        this.restartRepoUpdate();
                         return;
                     }
 
@@ -1390,6 +1402,15 @@ class Admin extends utils.Adapter {
 
                     if (!exists) {
                         this.log.info('Request actual repository...');
+                        // first check if the host is running
+                        const aliveState = await this.getForeignStateAsync(`${this.host}.alive`);
+                        if (!aliveState || !aliveState.val) {
+                            this.log.error('Host is not alive');
+                            // start the next cycle
+                            this.restartRepoUpdate();
+                            return;
+                        }
+
                         // request repo from host
                         this.sendToHost(
                             this.host,
@@ -1410,21 +1431,7 @@ class Admin extends utils.Adapter {
                                 }
 
                                 // start the next cycle
-                                if (this.config.autoUpdate) {
-                                    this.timerRepo && clearTimeout(this.timerRepo);
-                                    this.log.debug(
-                                        `Next repo update on ${new Date(
-                                            Date.now() + this.config.autoUpdate * ONE_HOUR_MS + 1
-                                        ).toLocaleString()}`
-                                    );
-                                    this.timerRepo = setTimeout(
-                                        () => {
-                                            this.timerRepo = null;
-                                            this.updateRegister();
-                                        },
-                                        this.config.autoUpdate * ONE_HOUR_MS + 1
-                                    );
-                                }
+                                this.restartRepoUpdate();
                             }
                         );
                     } else if (this.config.autoUpdate) {
@@ -1439,7 +1446,9 @@ class Admin extends utils.Adapter {
                             this.updateRegister();
                         }, interval);
                     }
-                });
+                } catch (err) {
+                    err && this.log.error(`May not read "system.repositories": ${err}`);
+                }
             }
         });
     }
