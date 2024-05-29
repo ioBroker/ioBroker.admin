@@ -1,5 +1,6 @@
 import React from 'react';
 import { type Styles, withStyles } from '@mui/styles';
+import AutoUpgradeConfigDialog from '@/dialogs/AutoUpgradeConfigDialog';
 
 import {
     Card, CardContent, CardMedia, Fab,
@@ -13,6 +14,7 @@ import {
     AddToPhotos as AddToPhotosIcon,
     DeleteForever as DeleteForeverIcon,
     Help as HelpIcon,
+    KeyboardArrowUp as UpdateSettingsIcon,
     Publish as PublishIcon,
     Cloud as CloudIcon,
     CloudOff as CloudOffIcon,
@@ -24,7 +26,7 @@ import {
 } from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
-import { i18n, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, i18n, Utils } from '@iobroker/adapter-react-v5';
 
 import Link from '@mui/material/Link';
 import sentryIcon from '../../assets/sentry.svg';
@@ -290,9 +292,12 @@ interface AdapterTileProps {
     allowAdapterDelete: boolean;
     allowAdapterUpdate: boolean;
     allowAdapterRating: boolean;
+    socket: AdminConnection;
+    hostId: string;
 }
 
 interface AdapterTileState {
+    autoUpgradeDialogOpen: boolean;
     openCollapse: boolean;
     focused: boolean;
 }
@@ -310,6 +315,7 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
         this.state = {
             openCollapse: false,
             focused: false,
+            autoUpgradeDialogOpen: false,
         };
     }
 
@@ -360,7 +366,24 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                                 </IconButton>
                             </Tooltip>
                         </IsVisible>
+                        <IsVisible value={this.state.autoUpgradeDialogOpen}>
+                            <AutoUpgradeConfigDialog
+                                onClose={() => this.setState({ autoUpgradeDialogOpen: false })}
+                                adapter={this.props.adapter}
+                                hostId={this.props.hostId}
+                                socket={this.props.socket}
+                            />
+                        </IsVisible>
                         <div className={this.props.classes.cardContentFlex}>
+                            <Tooltip title="TODO">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ autoUpgradeDialogOpen: true })}
+                                >
+                                    <UpdateSettingsIcon />
+                                </IconButton>
+                            </Tooltip>
+
                             <IsVisible value={this.props.allowAdapterReadme}>
                                 <Tooltip title={this.props.t('Readme')}>
                                     <IconButton

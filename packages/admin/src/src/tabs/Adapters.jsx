@@ -1759,6 +1759,8 @@ class Adapters extends Component {
             }
 
             return <AdapterTile
+                hostId={this.props.host}
+                socket={this.props.socket}
                 t={this.t}
                 commandRunning={this.props.commandRunning}
                 key={`adapter-${value}`}
