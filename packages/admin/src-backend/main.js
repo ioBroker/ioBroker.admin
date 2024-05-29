@@ -1270,7 +1270,7 @@ class Admin extends utils.Adapter {
 
             for (const _adapter of adapters) {
                 if (repository[_adapter].blockedVersions) {
-                    // read current version
+                    // read a current version
                     if (Array.isArray(repository[_adapter].blockedVersions)) {
                         const instance = instances.rows.find(
                             item => item.value?.common.name === _adapter && item.value.common.enabled
@@ -1378,7 +1378,7 @@ class Admin extends utils.Adapter {
         this.getForeignObject('system.config', async (err, systemConfig) => {
             err && this.log.error('May not read "system.config"');
 
-            if (systemConfig && systemConfig.common) {
+            if (systemConfig?.common) {
                 try {
                     const repos = await this.getForeignObjectAsync('system.repositories');
                     if (!repos || repos.ts === undefined) {
@@ -1392,18 +1392,25 @@ class Admin extends utils.Adapter {
                     const active = systemConfig.common.activeRepo;
 
                     // if repo is valid and actual
-                    if (
-                        !err &&
-                        repos?.native?.repositories?.[active] &&
-                        Date.now() < repos.ts + this.config.autoUpdate * ONE_HOUR_MS
-                    ) {
-                        exists = true;
+                    if (Array.isArray(active)) {
+                        if (!err &&
+                            Date.now() < repos.ts + this.config.autoUpdate * ONE_HOUR_MS &&
+                            !active.find(repo => !repos?.native?.repositories?.[repo]?.json)
+                        ) {
+                            exists = true;
+                        }
+                    } else {
+                        if (!err &&
+                            repos?.native?.repositories?.[active]?.json &&
+                            Date.now() < repos.ts + this.config.autoUpdate * ONE_HOUR_MS
+                        ) {
+                            exists = true;
+                        }
                     }
-
                     if (!exists) {
                         this.log.info('Request actual repository...');
                         // first check if the host is running
-                        const aliveState = await this.getForeignStateAsync(`${this.host}.alive`);
+                        const aliveState = await this.getForeignStateAsync(`system.host.${this.host}.alive`);
                         if (!aliveState || !aliveState.val) {
                             this.log.error('Host is not alive');
                             // start the next cycle
@@ -1427,7 +1434,8 @@ class Admin extends utils.Adapter {
                                     this.log.info('Repository received successfully.');
 
                                     socket && socket.repoUpdated();
-                                    this.checkRevokedVersions(_repository).then(() => {});
+                                    this.checkRevokedVersions(_repository)
+                                        .catch(e => this.log.error(`Cannot check revoked versions: ${e}`));
                                 }
 
                                 // start the next cycle
@@ -1491,15 +1499,16 @@ class Admin extends utils.Adapter {
         }
 
         // check info.connected
-        this.getObjectAsync('info.connected').then(obj => {
-            if (!obj) {
-                const packageJson = JSON.parse(fs.readFileSync(`${__dirname}/../io-package.json`).toString('utf8'));
-                const obj = packageJson.instanceObjects.find(o => o._id === 'info.connected');
-                if (obj) {
-                    return this.setObjectAsync(obj._id, obj);
+        this.getObjectAsync('info.connected')
+            .then(obj => {
+                if (!obj) {
+                    const packageJson = JSON.parse(fs.readFileSync(`${__dirname}/../io-package.json`).toString('utf8'));
+                    const obj = packageJson.instanceObjects.find(o => o._id === 'info.connected');
+                    if (obj) {
+                        return this.setObjectAsync(obj._id, obj);
+                    }
                 }
-            }
-        });
+            });
 
         this.config.autoUpdate && this.updateRegister();
 
