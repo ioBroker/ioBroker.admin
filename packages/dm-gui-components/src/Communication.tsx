@@ -493,6 +493,15 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         if (!this.state.showInput || !this.state.showInput.inputBefore) {
             return null;
         }
+        let okDisabled = false;
+        if (!this.state.showInput.inputBefore.allowEmptyValue && this.state.showInput.inputBefore.type !== 'checkbox') {
+            if (this.state.showInput.inputBefore.type === 'number' || this.state.showInput.inputBefore.type === 'slider') {
+                okDisabled = this.state.inputValue === '' || this.state.inputValue === null || !window.isFinite(this.state.inputValue as number);
+            } else {
+                okDisabled = !this.state.inputValue;
+            }
+        }
+
         return <Dialog
             open={!0}
             onClose={() => this.setState({ showInput: null })}
@@ -581,10 +590,14 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             <DialogActions>
                 <Button
                     variant="contained"
+                    disabled={okDisabled}
                     color="primary"
                     onClick={() => {
                         this.setState({ showInput: null }, () =>
-                            this.sendActionToInstance('dm:instanceAction', { actionId: this.state.showInput.id, value: this.state.inputValue }));
+                            this.sendActionToInstance('dm:instanceAction', {
+                                actionId: this.state.showInput.id,
+                                value: this.state.showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (this.state.showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue) || 0 : this.state.inputValue),
+                            }));
                     }}
                     startIcon={<Check />}
                 >
