@@ -29,7 +29,7 @@ import {
     type Translate,
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import { type AdminGuiConfig , type ioBrokerObject } from '@/types';
+import { type AdminGuiConfig, type ioBrokerObject } from '@/types';
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries.json';

@@ -75,8 +75,7 @@ class Files extends Component {
                                     if ((data.owner || data.ownerGroup) && data.permissions) {
                                         await this.props.socket.chownFile(adapter, file, { owner: data.owner, ownerGroup: data.ownerGroup });
                                         result = await this.props.socket.chmodFile(adapter, file, { mode: data.permissions });
-                                    } else
-                                    if (data.permissions) {
+                                    } else if (data.permissions) {
                                         result = await this.props.socket.chmodFile(adapter, file, { mode: data.permissions });
                                     } else if (data.owner || data.ownerGroup) {
                                         result = await this.props.socket.chownFile(adapter, file, { owner: data.owner, ownerGroup: data.ownerGroup });

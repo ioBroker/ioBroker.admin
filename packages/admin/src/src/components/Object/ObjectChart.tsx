@@ -30,7 +30,10 @@ import {
 } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 
-import { type AdminConnection, Utils, withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, Utils,
+    withWidth, type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
 // icons
 import { FaChartLine as SplitLineIcon } from 'react-icons/fa';

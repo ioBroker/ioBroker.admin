@@ -19,10 +19,10 @@ import {
 } from '@mui/icons-material';
 
 import {
-    AdminConnection,
+    type AdminConnection,
     Confirm as ConfirmDialog,
     withWidth,
-    type IobTheme, type Translate
+    type IobTheme, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import BaseSettingsSystem, { type SystemSettings } from '../components/BaseSettings/BaseSettingsSystem';

@@ -18,8 +18,8 @@ import {
 } from '@mui/icons-material';
 
 import {
-    type AdminConnection, i18n, Utils as UtilsCommon,
-    type IobTheme,
+    type AdminConnection, Utils as UtilsCommon,
+    type IobTheme, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
@@ -106,7 +106,7 @@ const formatInfo  = {
 interface IntroProps {
     showAlert: (title: string, msg: string) => void;
     socket: AdminConnection;
-    t: typeof i18n.t;
+    t: Translate;
     lang: ioBroker.Languages;
     instancesWorker: InstancesWorker;
     hostsWorker: HostsWorker;
@@ -160,7 +160,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     private deactivatedOriginal?: string[];
 
-    private readonly t: typeof i18n.t;
+    private readonly t: Translate;
 
     private getDataTimeout?: ReturnType<typeof setTimeout>;
 

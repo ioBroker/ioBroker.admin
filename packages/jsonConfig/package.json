@@ -5,7 +5,7 @@
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {
-    "build": "tsc && tsc-alias ",
+    "build": "tsc && tsc-alias && node after_build",
     "clean": "rimraf build",
     "prepublishOnly": "npm run build",
     "build:ts": "tsc -p tsconfig.json"
@@ -16,8 +16,7 @@
   "dependencies": {
     "@iobroker/adapter-react-v5": "^5.0.1",
     "crypto-js": "^4.2.0",
-    "react-ace": "^11.0.1",
-    "@iobroker/dm-gui-components": "6.17.14"
+    "react-ace": "^11.0.1"
   },
   "files": [
     "build/",

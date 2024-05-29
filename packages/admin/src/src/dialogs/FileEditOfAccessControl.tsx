@@ -480,6 +480,7 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
     return <CustomModal
         titleButtonApply="apply"
         overflowHidden
+        disableApply={disabledButton}
         progress={progress}
         onClose={onClose}
         onApply={() => {

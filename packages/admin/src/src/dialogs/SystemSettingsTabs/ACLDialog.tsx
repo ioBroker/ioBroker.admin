@@ -17,7 +17,10 @@ import {
     InputLabel,
 } from '@mui/material';
 
-import { I18n, withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import {
+    I18n, withWidth,
+    type IobTheme, type Translate,
+} from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
 import Utils from '@/Utils';

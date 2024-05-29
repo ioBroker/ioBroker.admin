@@ -41,7 +41,7 @@ import {
     MonetizationOn,
 } from '@mui/icons-material';
 
-import { i18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { type Translate, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import IsVisible from '../IsVisible';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
@@ -187,7 +187,7 @@ interface AdapterRowProps {
     connectionType: string;
     openInstallVersionDialog: () => void;
     dataSource: string;
-    t: typeof i18n.t;
+    t: Translate;
     installedFrom: string;
     sentry: boolean;
     allowAdapterInstall: boolean;

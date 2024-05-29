@@ -42,7 +42,6 @@ import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
 import BasicUtils from '../../Utils';
 import HostEdit from './HostEdit';
 import CustomModal from '../CustomModal';
-import { toggleClassName, arrayLogLevel } from './HostUtils';
 
 export const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 export const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -185,6 +184,21 @@ export const genericStyle = (theme: IobTheme): Record<string, any> => ({
         pointerEvents: 'none',
     },
 });
+
+const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+
+function toggleClassName(el: HTMLElement, name: string) {
+    const classNames = el.className.split(' ');
+    const pos = classNames.indexOf(name);
+    if (pos !== -1) {
+        classNames.splice(pos, 1);
+        el.className = classNames.join(' ');
+    }
+    classNames.push(name);
+    // el.className = classNames.join(' ');
+    setTimeout(_classNames => (el.className = _classNames), 100, classNames.join(' '));
+}
+
 
 function getLogLevelIcon(level: ioBroker.LogLevel | ''): React.JSX.Element | null {
     if (level === 'debug') {

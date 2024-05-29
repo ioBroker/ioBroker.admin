@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
-import { i18n, Utils } from '@iobroker/adapter-react-v5';
+import { type Translate, Utils } from '@iobroker/adapter-react-v5';
 
 import Link from '@mui/material/Link';
 import sentryIcon from '../../assets/sentry.svg';
@@ -282,7 +282,7 @@ interface AdapterTileProps {
     connectionType: string;
     openInstallVersionDialog: () => void;
     dataSource: string;
-    t: typeof i18n.t;
+    t: Translate;
     installedFrom: string;
     sentry: boolean;
     allowAdapterInstall: boolean;

@@ -21,7 +21,8 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/json-config": "file:../../jsonConfig"
+        "@iobroker/json-config": "file:../../jsonConfig",
+        "@iobroker/dm-gui-components": "file:../../dm-gui-components"
     },
     "proxy": "http://127.0.0.1:8081",
     "plugins": [

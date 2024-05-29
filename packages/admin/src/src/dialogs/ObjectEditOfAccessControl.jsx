@@ -250,8 +250,7 @@ const ObjectEditOfAccessControl = ({
                     icon: obj.common?.icon,
                     color: obj.common?.color,
                 });
-            } else
-            if (key.startsWith('system.user.') && obj?.type === 'user') {
+            } else if (key.startsWith('system.user.') && obj?.type === 'user') {
                 users.push({
                     name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
                     value: key,

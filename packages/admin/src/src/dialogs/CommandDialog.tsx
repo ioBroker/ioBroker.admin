@@ -50,7 +50,7 @@ interface CommandDialogProps {
     performed: () => void;
     inBackground: boolean;
     commandError: boolean;
-    socket: AdminConnection
+    socket: AdminConnection;
     host: string;
     classes: Record<string, string>;
 }

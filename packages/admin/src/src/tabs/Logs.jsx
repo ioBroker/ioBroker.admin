@@ -284,8 +284,7 @@ function padding3(num) {
     let s = num.toString();
     if (s.length < 2) {
         s = `00${s}`;
-    } else
-    if (s.length < 3) {
+    } else if (s.length < 3) {
         s = `0${s}`;
     }
     return s;

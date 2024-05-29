@@ -96,7 +96,7 @@ import {
     IconState,
     withWidth,
     Connection,
-    Router,
+    type Router,
     type IobTheme,
     type ThemeType,
     type ThemeName,
