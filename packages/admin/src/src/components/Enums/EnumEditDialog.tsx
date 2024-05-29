@@ -223,7 +223,6 @@ function EnumEditDialog(props: EnumEditDialogProps) {
             </Button>
             <Button
                 variant="contained"
-                // @ts-expect-error grey is a valid color
                 color="grey"
                 onClick={props.onClose}
                 startIcon={<CloseIcon />}

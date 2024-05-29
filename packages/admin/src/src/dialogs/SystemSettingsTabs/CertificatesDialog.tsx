@@ -27,15 +27,16 @@ import {
     withWidth,
     I18n,
     Utils as UtilsCommon,
+    type Translate,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import { type Theme } from '@iobroker/adapter-react-v5/types';
 
-import { type Translate, type ioBrokerObject } from '@/types';
+import { type ioBrokerObject } from '@/types';
 import Utils from '../../Utils';
 
 // icons
 
-const styles: Styles<Theme, any> = {
+const styles: Styles<IobTheme, any> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -112,7 +113,7 @@ class CertificatesDialog extends Component<CertificatesDialogProps, Certificates
     }
 
     static arrayToCert(array: CertificateArray): Certificate {
-        const result:Record<string, string> = {};
+        const result: Record<string, string> = {};
         for (const k in array) {
             result[array[k].title] = array[k].data;
         }

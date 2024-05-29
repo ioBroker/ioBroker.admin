@@ -1,5 +1,5 @@
-import { I18n } from '@iobroker/adapter-react-v5';
 import semver from 'semver';
+import { type Translate } from '@iobroker/adapter-react-v5';
 
 const ANSI_RESET = 0;
 const ANSI_RESET_COLOR = 39;
@@ -147,7 +147,7 @@ class Utils {
      * @param seconds
      * @param t i18n.t function
      */
-    static formatSeconds(seconds: number, t: typeof I18n.t): string {
+    static formatSeconds(seconds: number, t: Translate): string {
         const days = Math.floor(seconds / (3600 * 24));
         let minutesRes: string;
         let secondsRes: string;
@@ -664,6 +664,13 @@ class Utils {
 
     static clone<T>(obj: T): T {
         return JSON.parse(JSON.stringify(obj));
+    }
+}
+
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        grey: true;
+        gray: true;
     }
 }
 

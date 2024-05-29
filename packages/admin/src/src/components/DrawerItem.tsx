@@ -10,16 +10,15 @@ import {
     ListItemText,
     Tooltip,
     Checkbox,
-    type Theme,
 } from '@mui/material';
 import { DragHandle } from '@mui/icons-material';
 
 import { amber } from '@mui/material/colors';
 
-import { Utils, ColorPicker } from '@iobroker/adapter-react-v5';
+import { Utils, ColorPicker, type IobTheme } from '@iobroker/adapter-react-v5';
 import CommonUtils from '../Utils';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     selected: {
         background: theme.palette.primary.main,
         color: theme.palette.mode === 'light' ? 'white' : CommonUtils.invertColor(theme.palette.primary.main, true),

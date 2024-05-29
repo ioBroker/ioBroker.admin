@@ -37,10 +37,13 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Router, Utils, Icon, Confirm as ConfirmDialog,
+    Router, Utils,
+    Icon,
+    Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
 import { JsonConfig } from '@iobroker/json-config';
+import  DeviceManager from '@iobroker/dm-gui-components';
 import BasicUtils from '../Utils';
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
@@ -355,6 +358,7 @@ class Config extends Component {
                 isFloatComma={this.props.isFloatComma}
                 configStored={this.props.configStored}
                 t={this.props.t}
+                DeviceManager={DeviceManager}
             />;
         }
         const src = `adapter/${this.props.adapter}/` +
@@ -437,7 +441,6 @@ class Config extends Component {
                     {this.props.t('Ok')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="contained"
                     onClick={() => this.setState({ showLogLevelDialog: false })}

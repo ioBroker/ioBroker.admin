@@ -5,7 +5,6 @@ import {
     Accordion, AccordionDetails, AccordionSummary, Avatar,
     Grid, Hidden,
     Tooltip, Typography,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -14,6 +13,7 @@ import {
 
 import {
     Utils,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import BasicUtils from '@/Utils';
@@ -25,7 +25,7 @@ import InstanceGeneric, {
     style as genericStyles,
 } from './InstanceGeneric';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     ...genericStyles(theme),
     row: {
         paddingLeft: 8,

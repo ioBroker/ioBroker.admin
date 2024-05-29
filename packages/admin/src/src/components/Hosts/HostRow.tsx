@@ -7,8 +7,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
-import { type Theme } from '@iobroker/adapter-react-v5/types';
+import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import BasicUtils from '@/Utils';
 import HostGeneric, {
@@ -16,7 +15,7 @@ import HostGeneric, {
     type HostGenericProps, type HostGenericState,
 } from './HostGeneric';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     ...genericStyle(theme),
     root: {
         position: 'relative',

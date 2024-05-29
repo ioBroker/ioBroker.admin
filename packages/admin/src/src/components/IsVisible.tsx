@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 function getAttr(obj: Record<any, any>, attr: string | string[]): boolean {
     if (!obj) {

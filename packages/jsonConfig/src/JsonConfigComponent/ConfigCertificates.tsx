@@ -40,6 +40,7 @@ interface ConfigCertificatesState extends ConfigGenericState {
 class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCertificatesState> {
     async componentDidMount() {
         super.componentDidMount();
+        // Important: getCertificates is only available in AdminConnection
         const certificates = await this.props.socket.getCertificates();
         const certsPublicOptions: { label: string; value: string }[] = [];
         const certsPrivateOptions: { label: string; value: string }[] = [];

@@ -25,8 +25,10 @@ import {
     Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemPanel } from '@iobroker/json-config/src/types';
-import { JsonConfigComponent, ConfigGeneric, JsonConfigComponentClass } from '@iobroker/json-config';
+import {
+    JsonConfigComponent, ConfigGeneric,
+    JsonConfigComponentClass, type ConfigItemPanel,
+} from '@iobroker/json-config';
 import { deepClone } from '@mui/x-data-grid/utils/utils';
 import Utils from '@/Utils';
 import type { BasicComponentProps } from '@/types';

@@ -3,35 +3,35 @@ import {
     Button, Fab,
     Switch,
 } from '@mui/material';
-import { renderIcon, getTranslation } from './Utils';
+
+import { Connection } from '@iobroker/adapter-react-v5';
 import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
+import type { DeviceControl } from '@iobroker/dm-utils/build/types/api';
+
+import { renderControlIcon, getTranslation } from './Utils';
 
 interface DeviceControlProps {
     deviceId: string;
-    control: any;
-    socket: any;
+    /** Control object */
+    control: DeviceControl;
+    socket: Connection;
+    /** Control handler to set the state */
     controlHandler: (deviceId: string, control: ControlBase, state: ControlState) => () => Promise<ioBroker.State | null>;
+    /** Control handler to read the state */
     controlStateHandler: (deviceId: string, control: ControlBase) => () => Promise<ioBroker.State | null>;
-    colors: any;
+    colors: { primary: string; secondary: string };
     disabled?: boolean;
 }
 
 interface DeviceControlState {
-    value: any;
+    value: ControlState;
     ts: number;
 }
 
 /**
  * Device Control component
- * @param {object} props - Parameters
- * @param {object} props.control - Control object
- * @param {object} props.socket - Socket object
- * @param {object} props.controlHandler - Control handler to set the state
- * @param {object} props.controlStateHandler - Control handler to read the state
- * @returns {React.JSX.Element|null}
- * @constructor
  */
-export default class DeviceControl extends Component<DeviceControlProps, DeviceControlState> {
+export default class DeviceControlComponent extends Component<DeviceControlProps, DeviceControlState> {
     constructor(props: DeviceControlProps) {
         super(props);
         this.state = {
@@ -88,10 +88,11 @@ export default class DeviceControl extends Component<DeviceControlProps, DeviceC
 
     renderButton() {
         const tooltip = getTranslation(this.props.control.description);
-        const icon = renderIcon(this.props.control, this.props.colors, this.state.value);
+        const icon = renderControlIcon(this.props.control, this.props.colors, this.state.value);
 
         if (!this.props.control.label) {
             return <Fab
+                size="small"
                 disabled={this.props.disabled}
                 title={tooltip}
                 onClick={() => this.sendControl(this.props.deviceId, this.props.control, true)}
@@ -105,7 +106,7 @@ export default class DeviceControl extends Component<DeviceControlProps, DeviceC
             onClick={() => this.sendControl(this.props.deviceId, this.props.control, true)}
             startIcon={icon}
         >
-            {this.props.control.label}
+            {getTranslation(this.props.control.label)}
         </Button>;
     }
 
@@ -116,7 +117,7 @@ export default class DeviceControl extends Component<DeviceControlProps, DeviceC
         return <Switch
             disabled={this.props.disabled}
             title={tooltip}
-            checked={this.state.value}
+            checked={!!this.state.value}
             onChange={e => this.sendControl(this.props.deviceId, this.props.control, e.target.checked)}
         />;
     }
@@ -151,16 +152,22 @@ export default class DeviceControl extends Component<DeviceControlProps, DeviceC
 
     renderIcon() {
         const tooltip = getTranslation(this.props.control.description);
-        const icon = renderIcon(this.props.control, this.props.colors, this.state.value);
+        const icon = renderControlIcon(this.props.control, this.props.colors, this.state.value);
         const color = this.getColor();
+        const style: React.CSSProperties | undefined = color === this.props.colors.primary || color === this.props.colors.secondary ? {} : { color };
+        const colorProps = color === this.props.colors.primary ? 'primary' : (color === this.props.colors.secondary ? 'secondary' : undefined);
 
         if (!this.props.control.label) {
+            style.width = 34;
+            style.height = 34;
+            style.minHeight = 34;
+
             return <Fab
                 disabled={this.props.disabled}
                 size="small"
                 title={tooltip}
-                color={color === this.props.colors.primary ? 'primary' : (color === this.props.colors.secondary ? 'secondary' : undefined)}
-                style={color === this.props.colors.primary || color === this.props.colors.secondary ? undefined : { color }}
+                color={colorProps}
+                style={style}
                 onClick={() => this.sendControl(this.props.deviceId, this.props.control, !this.state.value)}
             >
                 {icon}
@@ -169,12 +176,12 @@ export default class DeviceControl extends Component<DeviceControlProps, DeviceC
         return <Button
             disabled={this.props.disabled}
             title={tooltip}
-            color={color === this.props.colors.primary ? 'primary' : (color === this.props.colors.secondary ? 'secondary' : undefined)}
-            style={color === this.props.colors.primary || color === this.props.colors.secondary ? undefined : { color }}
+            color={colorProps}
+            style={style}
             onClick={() => this.sendControl(this.props.deviceId, this.props.control, !this.state.value)}
             startIcon={icon}
         >
-            {this.props.control.label}
+            {getTranslation(this.props.control.label)}
         </Button>;
     }
 
@@ -191,6 +198,8 @@ export default class DeviceControl extends Component<DeviceControlProps, DeviceC
             return this.renderSwitch();
         }
 
-        return <div style={{ color: 'red' }}>{this.props.control.type}</div>;
+        return <div style={{ color: 'red' }}>
+            {this.props.control.type}
+        </div>;
     }
 }

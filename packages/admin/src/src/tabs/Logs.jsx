@@ -284,10 +284,9 @@ function padding3(num) {
     let s = num.toString();
     if (s.length < 2) {
         s = `00${s}`;
-    } else
-        if (s.length < 3) {
-            s = `0${s}`;
-        }
+    } else if (s.length < 3) {
+        s = `0${s}`;
+    }
     return s;
 }
 
@@ -800,7 +799,6 @@ class Logs extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.closeLogDelete()}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

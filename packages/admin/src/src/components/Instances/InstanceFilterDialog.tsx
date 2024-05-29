@@ -7,7 +7,6 @@ import {
     DialogContent,
     Avatar, Card, Checkbox, DialogTitle,
     FormControlLabel, MenuItem, Select,
-    type Theme,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
@@ -23,11 +22,11 @@ import {
     green, grey, orange, red,
 } from '@mui/material/colors';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
+import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import filterIcon from '../../assets/filter.svg';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: IobTheme) => ({
     root: {
         width: '100%',
         padding: 10,
@@ -325,7 +324,6 @@ const InstanceFilterDialog = ({
                 {I18n.t('Apply')}
             </Button>
             <Button
-                // @ts-expect-error grey is valid color
                 color="grey"
                 variant="contained"
                 onClick={() => onClose()}

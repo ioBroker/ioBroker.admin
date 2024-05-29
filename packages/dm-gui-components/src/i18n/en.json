@@ -17,5 +17,6 @@
   "copied": "Copied",
   "toClipboard": "to clipboard",
   "instanceNotAlive": "Instance is not alive",
-  "allDevicesFilteredOut": "All devices filtered out"
+  "allDevicesFilteredOut": "All devices filtered out",
+  "pleaseEnterValueText": "Please enter"
 }

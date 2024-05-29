@@ -6,12 +6,12 @@ import {
     FormControlLabel,
     Checkbox,
     TextField,
-    Paper, type Theme,
+    Paper,
 } from '@mui/material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
+import { withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<any, any> = (theme: Theme) => ({
+const styles: Styles<any, any> = (theme: IobTheme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -31,7 +31,7 @@ const styles: Styles<any, any> = (theme: Theme) => ({
     },
 });
 
-interface MultihostSettings {
+export interface MultihostSettings {
     enabled?: boolean;
     secure?: boolean;
     password?: string;

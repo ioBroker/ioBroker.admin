@@ -13,7 +13,6 @@ import {
     MenuItem,
     Paper,
     Select,
-    type Theme,
     Toolbar,
 } from '@mui/material';
 
@@ -31,7 +30,10 @@ import {
 } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 
-import { type AdminConnection, Utils, withWidth } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, Utils,
+    withWidth, type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
 // icons
 import { FaChartLine as SplitLineIcon } from 'react-icons/fa';
@@ -40,7 +42,7 @@ import { localeMap } from './utils';
 
 echarts.use([TimelineComponent, ToolboxComponent, TitleComponent, TooltipComponent, GridComponent, LineChart, SVGRenderer]);
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',

@@ -15,22 +15,27 @@ import {
     MenuItem,
     Select,
     Typography,
-    type Theme,
     type SelectChangeEvent,
 } from '@mui/material';
 import {
     Close as CloseIcon,
-    Add as AddIcon, Public as IconWeb, Language as LanguageIcon,
+    Add as AddIcon,
+    Public as IconWeb,
+    Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, Utils } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection,
+    I18n, Utils,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import { checkCondition, type Message } from '@/dialogs/AdapterUpdateDialog';
 import HostSelectors from '@/components/HostSelectors';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     formControl: {
         marginTop: theme.spacing(3),
     },
@@ -215,7 +220,6 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                     }}
                     startIcon={<IconWeb />}
                     variant="contained"
-                    // @ts-expect-error grey is allowed
                     color="grey"
                 >
                     {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
@@ -315,7 +319,6 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

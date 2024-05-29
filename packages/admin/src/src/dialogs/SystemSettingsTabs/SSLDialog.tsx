@@ -12,12 +12,11 @@ import {
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
-import { type Translator, type Theme } from '@iobroker/adapter-react-v5/types';
+import { withWidth, type Translate, type IobTheme } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 
-const styles: Styles<Theme, any> = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -49,7 +48,7 @@ const styles: Styles<Theme, any> = theme => ({
 });
 
 interface SSLDialogProps {
-    t: Translator;
+    t: Translate;
     data: ioBrokerObject<{ letsEncrypt: { email?: string; domains?: string; path?: string } }>;
     onChange: (data: Record<string, any>) => void;
     saving: boolean;

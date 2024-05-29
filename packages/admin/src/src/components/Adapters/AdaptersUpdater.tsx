@@ -388,7 +388,6 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                     <Button
                         variant="contained"
                         onClick={() => this.setState({ showNews: null })}
-                        // @ts-expect-error this is fine
                         color="grey"
                         startIcon={<CloseIcon />}
                     >

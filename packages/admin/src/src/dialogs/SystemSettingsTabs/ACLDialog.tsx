@@ -17,13 +17,15 @@ import {
     InputLabel,
 } from '@mui/material';
 
-import { I18n, withWidth } from '@iobroker/adapter-react-v5';
-import { type Theme } from '@iobroker/adapter-react-v5/types';
+import {
+    I18n, withWidth,
+    type IobTheme, type Translate,
+} from '@iobroker/adapter-react-v5';
 
-import { type Translate, type ioBrokerObject } from '@/types';
+import { type ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 
-const styles: Styles<Theme, any> = (theme: Theme) => ({
+const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
     tabPanel: {
         width: '100%',
         height: '100% ',

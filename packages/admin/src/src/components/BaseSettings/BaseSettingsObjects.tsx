@@ -16,13 +16,16 @@ import {
     Paper,
     Switch,
     LinearProgress,
-    type Theme,
 } from '@mui/material';
 
-import { Utils, withWidth, Confirm as DialogConfirm } from '@iobroker/adapter-react-v5';
+import {
+    Utils, withWidth,
+    Confirm as DialogConfirm,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 import { type AdminConnection } from '@iobroker/socket-client';
 
-const styles: Styles<any, any> = (theme: Theme) => ({
+const styles: Styles<any, any> = (theme: IobTheme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -68,7 +71,7 @@ const DEFAULT_JSONL_OPTIONS = {
     },
 };
 
-interface SettingsObjects {
+export interface SettingsObjects {
     type?: 'file' | 'jsonl' | 'redis';
     host?: string;
     port?: number;

@@ -31,7 +31,6 @@ import {
     Button,
     Input,
     Breadcrumbs,
-    type Theme,
 } from '@mui/material';
 
 // MUI Icons
@@ -73,8 +72,11 @@ import {
     withWidth,
     Icon,
     type Connection,
+    type ThemeName,
+    type ThemeType,
+    type Translate,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType, Translator } from '@iobroker/adapter-react-v5/types';
 
 import FileViewer, { EXTENSIONS } from './FileViewer';
 
@@ -94,7 +96,7 @@ const FILE_TYPE_ICONS = {
     video: TypeIconVideo,
 };
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     dialog: {
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
     },
@@ -441,7 +443,7 @@ export interface FileBrowserProps {
     /** The CSS class name. */
     className?: string;
     /** Translation function. */
-    t: Translator;
+    t: Translate;
     /** The selected language. */
     lang: ioBroker.Languages;
     /** The socket connection. */
@@ -2154,7 +2156,6 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        // @ts-expect-error grey is valid color
                         color="grey"
                         variant="contained"
                         onClick={() => {
@@ -2175,7 +2176,6 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                     <Button
                         variant="contained"
                         onClick={() => this.setState({ deleteItem: '' })}
-                        // @ts-expect-error grey is valid color
                         color="grey"
                     >
                         {this.props.t('ra_Cancel')}

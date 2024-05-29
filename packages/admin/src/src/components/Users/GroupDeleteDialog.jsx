@@ -39,7 +39,6 @@ function GroupDeleteDialog(props) {
             </Button>
             <Button
                 variant="contained"
-                // @ts-expect-error grey is valid color
                 color="grey"
                 autoFocus
                 onClick={props.onClose}

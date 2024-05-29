@@ -641,7 +641,6 @@ function DiscoveryDialog({
             themeType={themeType}
             themeName={themeName}
             newInstances={showInputsDialog.obj}
-            // @ts-expect-error wait until component is typed
             onClose={params => {
                 const { cb } = showInputsDialog;
                 const { obj } = showInputsDialog;
@@ -1147,7 +1146,6 @@ function DiscoveryDialog({
                             }
                             stepDown();
                         }}
-                        // @ts-expect-error TS does not like this but it works
                         color="grey"
                         startIcon={<NavigateBeforeIcon />}
                     >
@@ -1190,7 +1188,6 @@ function DiscoveryDialog({
                                         checkInstall();
                                     }
                                 }}
-                                // @ts-expect-error check if grey really works
                                 color={step === 1 ? 'primary' : 'grey'}
                                 startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
                             >
@@ -1203,7 +1200,6 @@ function DiscoveryDialog({
                     variant="contained"
                     disabled={disableScanner}
                     onClick={() => onClose()}
-                    // @ts-expect-error check if grey really works
                     color={step === 2 ? 'primary' : 'grey'}
                     startIcon={<CloseIcon />}
                 >

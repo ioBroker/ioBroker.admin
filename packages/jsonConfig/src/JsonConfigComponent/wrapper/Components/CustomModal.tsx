@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import {type Styles, withStyles} from '@mui/styles';
 
 import {
     Dialog, DialogActions, DialogContent,
@@ -13,9 +13,9 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { Utils, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     modalDialog: {
         minWidth: 400,
         maxWidth: 800,
@@ -40,9 +40,31 @@ const styles = theme => ({
     },
 });
 
+interface CustomModalProps {
+    toggleTranslation?: () => void;
+    noTranslation?: boolean;
+    title: string;
+    fullWidth?: boolean;
+    help?: string;
+    maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
+    progress?: boolean;
+    icon?: any;
+    applyDisabled?: boolean;
+    applyButton?: boolean;
+    classes: Record<string, string>;
+    onClose: () => void;
+    children: any;
+    titleButtonApply: string;
+    titleButtonClose: string;
+    onApply: (value: string) => void;
+    textInput?: boolean;
+    defaultValue: string;
+    overflowHidden?: boolean;
+}
+
 const CustomModal = ({
     toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden,
-}) => {
+}: CustomModalProps) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
@@ -102,6 +124,7 @@ const CustomModal = ({
                 {I18n.t(titleButtonApply)}
             </Button>}
             <Button
+                // @ts-expect-error grey is valid color
                 color="grey"
                 onClick={onClose}
                 disabled={progress}

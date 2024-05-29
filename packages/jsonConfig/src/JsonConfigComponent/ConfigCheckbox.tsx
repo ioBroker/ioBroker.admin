@@ -8,11 +8,10 @@ import {
     FormControl,
 } from '@mui/material';
 
-import  { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
+import  { I18n } from '@iobroker/adapter-react-v5';
 
+import type { ConfigItemCheckbox } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
-import type {ConfigItemCheckbox} from "#JC/types";
 
 const styles: Record<string, any> = {
     error: {

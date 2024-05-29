@@ -1,16 +1,17 @@
 import React, { createRef, Component } from 'react';
 import { type Styles, withStyles } from '@mui/styles';
-import { withWidth } from '@iobroker/adapter-react-v5';
 
 import {
     Grid,
     FormControlLabel,
     Checkbox,
     TextField,
-    Paper, type Theme,
+    Paper,
 } from '@mui/material';
 
-const styles: Styles<any, any> = (theme: Theme) => ({
+import { withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
+
+const styles: Styles<any, any> = (theme: IobTheme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -30,7 +31,7 @@ const styles: Styles<any, any> = (theme: Theme) => ({
     },
 });
 
-interface SystemSettings {
+export interface SystemSettings {
     memoryLimitMB?: number;
     hostname?: string;
     statisticsInterval?: number;

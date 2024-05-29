@@ -7,13 +7,10 @@ import {
     Grid, LinearProgress, Paper, Switch, Typography,
 } from '@mui/material';
 
-import Router from '@iobroker/adapter-react-v5/Components/Router';
-
-import type { Theme } from '@iobroker/adapter-react-v5/types';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import { Router, type AdminConnection, type IobTheme } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
 
-const styles: Styles<Theme, any> = (theme: Theme) => ({
+const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
     log: {
         height: 400,
         width: 860,
@@ -128,7 +125,6 @@ class Command extends Component<CommandProps, CommandState> {
 
         this.setState({ activeCmdId });
 
-        // @ts-expect-error fixed in socket-classes
         this.props.socket.cmdExec(this.props.host.startsWith('system.host.') ? this.props.host : (`system.host.${this.props.host}`), this.props.cmd, activeCmdId)
             .catch(error =>
                 console.log(error));

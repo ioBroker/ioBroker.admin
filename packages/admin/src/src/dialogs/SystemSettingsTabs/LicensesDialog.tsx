@@ -14,12 +14,17 @@ import {
 
 import { Refresh as IconRefresh } from '@mui/icons-material';
 
-import { withWidth, Utils, type AdminConnection } from '@iobroker/adapter-react-v5';
-import { type Theme } from '@iobroker/adapter-react-v5/types';
+import {
+    withWidth,
+    Utils,
+    type AdminConnection,
+    type Translate,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
-import { type Translate, type ioBrokerObject } from '@/types';
+import { type ioBrokerObject } from '@/types';
 
-const styles: Styles<Theme, any> = {
+const styles: Styles<IobTheme, any> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -275,7 +280,6 @@ class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState>
                 }
                 onClick={() => this.requestLicenses()}
                 className={this.props.classes.button}
-                // @ts-expect-error grey is valid color
                 color="grey"
             >
                 {this.props.t('Check')}

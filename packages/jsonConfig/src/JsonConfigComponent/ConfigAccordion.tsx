@@ -6,7 +6,7 @@ import {
     Accordion, AccordionSummary, AccordionDetails,
     IconButton, Paper,
     Toolbar, Tooltip,
-    Typography, type Theme,
+    Typography,
 } from '@mui/material';
 
 import {
@@ -18,14 +18,15 @@ import {
     ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { Utils, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
+import type { ConfigItemAccordion, ConfigItemIndexed, ConfigItemPanel } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
+
 // eslint-disable-next-line import/no-cycle
 import ConfigPanel from './ConfigPanel';
-import type {ConfigItemAccordion, ConfigItemIndexed, ConfigItemPanel} from "#JC/types";
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     fullWidth: {
         width: '100%',
     },

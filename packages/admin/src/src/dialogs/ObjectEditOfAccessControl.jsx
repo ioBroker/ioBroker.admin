@@ -250,15 +250,14 @@ const ObjectEditOfAccessControl = ({
                     icon: obj.common?.icon,
                     color: obj.common?.color,
                 });
-            } else
-                if (key.startsWith('system.user.') && obj?.type === 'user') {
-                    users.push({
-                        name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
-                        value: key,
-                        icon: obj.common?.icon,
-                        color: obj.common?.color,
-                    });
-                }
+            } else if (key.startsWith('system.user.') && obj?.type === 'user') {
+                users.push({
+                    name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
+                    value: key,
+                    icon: obj.common?.icon,
+                    color: obj.common?.color,
+                });
+            }
         }
 
         _stateOwnerUser = _stateOwnerUser || objects['system.config'].common.defaultNewAcl.owner;

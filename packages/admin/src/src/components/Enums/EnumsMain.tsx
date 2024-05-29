@@ -16,7 +16,6 @@ import {
     MenuItem,
     MenuList,
     IconButton,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -27,10 +26,10 @@ import {
 } from '@mui/icons-material';
 import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 
-import { type AdminConnection, Utils } from '@iobroker/adapter-react-v5';
-import type {
-    ThemeType,
-} from '@iobroker/adapter-react-v5/types';
+import {
+    type AdminConnection, Utils,
+    type IobTheme, type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 import EnumBlock, { isTouchDevice } from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
@@ -40,7 +39,7 @@ import EnumDeleteDialog from './EnumDeleteDialog';
 import DragObjectBrowser from './DragObjectBrowser';
 import BasicUtils from '../../Utils';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     mainGridCont: {
         height: '100%',
         overflowY:'auto',

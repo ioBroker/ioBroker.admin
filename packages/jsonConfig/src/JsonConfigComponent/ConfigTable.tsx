@@ -10,7 +10,6 @@ import {
     TextField, Toolbar, Tooltip,
     Typography,
     FormHelperText,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -28,7 +27,7 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { Utils, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type {ConfigItemTableIndexed, ConfigItemPanel, ConfigItemTable} from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
@@ -37,7 +36,7 @@ import ConfigPanel from './ConfigPanel';
 
 const MAX_SIZE = 1024 * 1024; // 1MB
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     fullWidth: {
         width: '100%',
     },

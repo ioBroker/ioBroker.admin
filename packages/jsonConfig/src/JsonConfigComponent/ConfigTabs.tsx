@@ -6,7 +6,6 @@ import { Tabs, Tab } from '@mui/material';
 import type { ConfigItemTabs } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
-import {bool} from "prop-types";
 
 const styles: Record<string, any> = {
     tabs: {

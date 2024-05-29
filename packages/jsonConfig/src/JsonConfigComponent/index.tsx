@@ -3,10 +3,14 @@ import { withStyles } from '@mui/styles';
 
 import { LinearProgress } from '@mui/material';
 
-import {type AdminConnection, I18n, Utils} from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
+import {
+    type AdminConnection, I18n,
+    Utils, type ThemeName,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemPanel, ConfigItemTabs } from '#JC/types';
+import type { DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
 
@@ -41,6 +45,7 @@ interface JsonConfigComponentProps {
     customs?: Record<string, Component>;
     classes: Record<string, string>;
     className?: string;
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
 }
 
 interface JsonConfigComponentState {
@@ -358,6 +363,7 @@ export class JsonConfigComponentClass extends Component<JsonConfigComponentProps
                 onChange={this.onChange}
                 changed={this.state.changed}
                 onError={(attr, error) => this.onError(attr, error)}
+                DeviceManager={this.props.DeviceManager}
             />;
         }
         if (item.type === 'panel' ||
@@ -394,6 +400,7 @@ export class JsonConfigComponentClass extends Component<JsonConfigComponentProps
                 registerOnForceUpdate={this.registerOnForceUpdate}
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
+                DeviceManager={this.props.DeviceManager}
             />;
         }
 

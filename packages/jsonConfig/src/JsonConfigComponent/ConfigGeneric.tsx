@@ -18,8 +18,9 @@ import {
 import {
     Confirm as ConfirmDialog, Icon,
     Utils, type AdminConnection, I18n,
+    type Connection,
+    type ThemeType, type ThemeName,
 } from '@iobroker/adapter-react-v5';
-import type { ThemeType, ThemeName } from '@iobroker/adapter-react-v5/types';
 import type { ConfigItemAny, ConfigItemConfirmData } from '#JC/types';
 
 // because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
@@ -32,7 +33,32 @@ export function isObject(it: any): it is Record<string, any> {
     // return it && typeof it === 'object' && !(it instanceof Array);
 }
 
+export interface DeviceManagerPropsProps {
+    /* socket object */
+    socket: Connection;
+    /* Instance to communicate with device-manager backend, like `adapterName.X` */
+    selectedInstance: string; // adapterName.X
+    registerHandler?: (handler: null | ((command: string) => void)) => void;
+    themeName: ThemeName;
+    themeType: ThemeType;
+    isFloatComma: boolean;
+    dateFormat: string;
+    /** Instance to upload images to, like `adapterName.X` */
+    uploadImagesToInstance?: string;
+    /** Filter devices with this string */
+    filter?: string;
+    /** If this component is used in GUI with own toolbar. `false` if this list is used with multiple instances and true if only with one (in this case, it will monitor alive itself */
+    embedded?: boolean;
+    /** If embedded, this text is shown in the toolbar */
+    title?: string;
+    /** Style of a component that displays all devices */
+    style?: React.CSSProperties;
+    /** Use small cards for devices */
+    smallCards?: boolean;
+}
+
 export interface ConfigGenericProps {
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
     adapterName: string;
     alive: boolean;
     arrayIndex?: number;

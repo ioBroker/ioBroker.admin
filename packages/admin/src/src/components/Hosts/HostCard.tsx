@@ -13,8 +13,7 @@ import {
     MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
-import { type Theme } from '@iobroker/adapter-react-v5/types';
+import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import BasicUtils from '@/Utils';
 import HostGeneric, {
@@ -25,7 +24,7 @@ import HostGeneric, {
     type HostGenericState,
 } from './HostGeneric';
 
-export const style = (theme: Theme): Record<string, any> => ({
+export const style = (theme: IobTheme): Record<string, any> => ({
     ...genericStyle(theme),
     root: {
         position: 'relative',

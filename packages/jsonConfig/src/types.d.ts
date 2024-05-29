@@ -60,10 +60,15 @@ export interface ConfigItem {
     width?: string | number;
 
     // generated from alsoDependsOn
+    // eslint-disable-next-line no-use-before-define
     confirmDependsOn?: ConfigItemIndexed[];
+    // eslint-disable-next-line no-use-before-define
     onChangeDependsOn?: ConfigItemIndexed[];
+    // eslint-disable-next-line no-use-before-define
     hiddenDependsOn?: ConfigItemIndexed[];
+    // eslint-disable-next-line no-use-before-define
     labelDependsOn?: ConfigItemIndexed[];
+    // eslint-disable-next-line no-use-before-define
     helpDependsOn?: ConfigItemIndexed[];
 }
 
@@ -356,6 +361,15 @@ export interface ConfigItemCertificates extends ConfigItem {
     certPrivateName?: string;
     certChainedName?: string;
 }
+export interface ConfigItemCheckLicense extends ConfigItem {
+    type: 'checkLicense';
+    /** Check UUID */
+    uuid?: boolean;
+    /** Check version */
+    version?: boolean;
+    variant?: 'text' | 'outlined' | 'contained';
+    color?: 'primary' | 'secondary';
+}
 
 export interface ConfigItemUUID extends ConfigItem {
     type: 'uuid';
@@ -369,4 +383,5 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigIt
     ConfigItemDivider | ConfigItemHeader | ConfigItemCustom | ConfigItemDatePicker |
     ConfigItemDeviceManager | ConfigItemLanguage | ConfigItemPort | ConfigItemSendTo |
     ConfigItemTable | ConfigItemTimePicker | ConfigItemTextSendTo | ConfigItemSelectSendTo |
-    ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID;
+    ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID |
+    ConfigItemCheckLicense;

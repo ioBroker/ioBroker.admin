@@ -15,8 +15,7 @@ import {
     Refresh as ReloadIcon,
 } from '@mui/icons-material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import type { ThemeType } from '@iobroker/adapter-react-v5/types';
+import { type AdminConnection, I18n, type ThemeType } from '@iobroker/adapter-react-v5';
 
 interface NetworkInterface {
     address: string;
@@ -273,7 +272,6 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
                             }
                             this.props.onClose();
                         }}
-                        // @ts-expect-error grey is valid color
                         color={this.state.response?.success ? 'primary' : 'grey'}
                         startIcon={this.state.response?.success ? <ReloadIcon /> : <CloseIcon />}
                     >

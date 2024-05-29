@@ -7,14 +7,13 @@ import {
     Fade,
     Paper,
     IconButton,
-    type Theme,
 } from '@mui/material';
 
 import { Edit as EditIcon } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: IobTheme) => ({
     typography: {
         padding: theme.spacing(2),
     },

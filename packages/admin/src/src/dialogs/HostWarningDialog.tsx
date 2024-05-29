@@ -411,7 +411,6 @@ const HostWarningDialog = ({
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
                                 }}
-                                // @ts-expect-error grey is ok
                                 color={Object.keys(messages).length !== 1 ? 'primary' : 'grey'}
                                 startIcon={<CheckIcon />}
                             >
@@ -445,7 +444,6 @@ const HostWarningDialog = ({
                 variant="contained"
                 onClick={() => onClose()}
                 startIcon={<CloseIcon />}
-                // @ts-expect-error grey is ok
                 color="grey"
             >
                 {I18n.t('Ok')}

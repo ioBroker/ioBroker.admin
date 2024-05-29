@@ -17,11 +17,17 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { withWidth, Utils as UtilsCommon, type AdminConnection } from '@iobroker/adapter-react-v5';
-import type { Theme, ThemeType } from '@iobroker/adapter-react-v5/types';
+import {
+    withWidth,
+    Utils as UtilsCommon,
+    type AdminConnection,
+    type IobTheme,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
-import HostsWorker, { type NotificationAnswer, type HostAliveEvent, type HostEvent } from '@/Workers/HostsWorker';
+import type HostsWorker from '@/Workers/HostsWorker';
+import type { NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import type { RepoInstanceObject } from '@/dialogs/AdapterUpdateDialog';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
@@ -30,7 +36,7 @@ import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 import ComponentUtils from '../components/Utils';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     grow: {
         flexGrow: 1,
     },
@@ -135,7 +141,7 @@ interface HostsProps {
     executeCommand: (command: string) => void;
     hostsWorker: HostsWorker;
     showAdaptersWarning: (notifications: Record<string, NotificationAnswer>, hostId: string) => void;
-    theme: Theme;
+    theme: IobTheme;
     noTranslation: boolean;
     toggleTranslation: () => void;
     currentHost: string;
@@ -178,12 +184,11 @@ class Hosts extends Component<HostsProps, HostsState> {
     t = (word: string, arg1?: any, arg2?: any): string => {
         if (arg1 !== undefined && arg2 !== undefined && !wordCache[`${word} ${arg1} ${arg2}`]) {
             wordCache[`${word} ${arg1} ${arg2}`] = this.props.t(word, arg1, arg2);
-        } else
-            if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
-                wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
-            } else if (!wordCache[word]) {
-                wordCache[word] = this.props.t(word);
-            }
+        } else if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
+            wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
+        } else if (!wordCache[word]) {
+            wordCache[word] = this.props.t(word);
+        }
 
         return arg1 !== undefined && arg2 !== undefined ? wordCache[`${word} ${arg1} ${arg2}`] : (arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word]);
     };

@@ -8,7 +8,6 @@ import {
     List,
     Typography,
     SwipeableDrawer,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -29,9 +28,10 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Utils, I18n, Icon, withWidth, IconLogout as LogoutIcon, type AdminConnection,
+    Utils, I18n, Icon, withWidth,
+    IconLogout as LogoutIcon, type AdminConnection,
+    type IobTheme, type ThemeType,
 } from '@iobroker/adapter-react-v5';
-import type { ThemeType } from '@iobroker/adapter-react-v5/types';
 
 import { getHref } from '@/tabs/CustomTab';
 import BasicUtils from '@/Utils';
@@ -53,7 +53,7 @@ function ucFirst(str: string): string {
     return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
 }
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     root: {
         flexShrink: 0,
         transition: theme.transitions.create('width', {
