@@ -16,14 +16,13 @@ import {
 
 import { Close, Check } from '@mui/icons-material';
 
-import { Connection, AdminConnection } from '@iobroker/adapter-react-v5';
+import type { Connection, AdminConnection, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
 import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
 import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 import type { DeviceRefresh } from '@iobroker/dm-utils/build/types';
 
 import { getTranslation } from './Utils';
 import JsonConfig from './JsonConfig';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
 export type CommunicationProps = {
     /* socket object */

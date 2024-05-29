@@ -10,7 +10,7 @@ import {
     Toolbar,
     Stepper,
     Step,
-    StepLabel, type Theme,
+    StepLabel,
 } from '@mui/material';
 
 // Icons
@@ -21,7 +21,9 @@ import {
 
 import {
     withWidth, Utils,
-    Router, ToggleThemeMenu, I18n, type AdminConnection,
+    Router, ToggleThemeMenu, I18n,
+    type AdminConnection,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
@@ -37,7 +39,7 @@ import LongLogo from '@/assets/longLogo.svg';
 
 const TOOLBAR_HEIGHT = 64;
 
-const styles = (theme: Theme) => ({
+const styles = (theme: IobTheme) => ({
     dialog: {
         height: '100%',
         maxHeight: '100%',

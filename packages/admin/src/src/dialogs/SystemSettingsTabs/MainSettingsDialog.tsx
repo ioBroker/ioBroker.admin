@@ -12,25 +12,29 @@ import {
     Select,
     TextField,
     Autocomplete,
-    FormHelperText, InputAdornment, IconButton, type Theme, type SelectChangeEvent,
+    FormHelperText, InputAdornment, IconButton,
+    type SelectChangeEvent,
 } from '@mui/material';
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import {
-    Confirm as ConfirmDialog,
-    withWidth, I18n,
-} from '@iobroker/adapter-react-v5';
 import { Marker } from 'leaflet';
 import type {
     DragEndEvent, LatLngTuple, Map,
 } from 'leaflet';
-import { type AdminGuiConfig, type Translate, type ioBrokerObject } from '@/types';
+
+import {
+    Confirm as ConfirmDialog,
+    withWidth, I18n,
+    type Translate,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
+import { type AdminGuiConfig , type ioBrokerObject } from '@/types';
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries.json';
 
-const styles: Styles<Theme, any> = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -457,7 +461,7 @@ class MainSettingsDialog extends Component<Props, State> {
         </FormControl>;
     };
 
-    handleChangeCountry = (evt:SelectChangeEvent<string>) => {
+    handleChangeCountry = (evt: SelectChangeEvent<string>) => {
         const value = evt.target.value;
         const id = 'country';
         this.doChange(id, value);
@@ -532,7 +536,7 @@ class MainSettingsDialog extends Component<Props, State> {
         const { classes } = this.props;
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
-        const center:LatLngTuple = [
+        const center: LatLngTuple = [
             parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : '50') || 0,
             parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : '10') || 0,
         ];

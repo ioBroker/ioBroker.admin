@@ -7,9 +7,9 @@ import 'ace-builds/src-min-noconflict/worker-json';
 import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-min-noconflict/theme-chrome';
 import 'ace-builds/src-min-noconflict/ext-language_tools';
-import type { Theme } from '@iobroker/adapter-react-v5/types';
+import type { IobTheme } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<Theme, any> = {
+const styles: Styles<IobTheme, any> = {
     jsonError: {
         border: '1px solid red',
         minHeight: 200,

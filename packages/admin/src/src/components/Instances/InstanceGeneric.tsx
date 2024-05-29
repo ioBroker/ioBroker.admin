@@ -25,7 +25,7 @@ import {
     InputLabel,
     MenuItem,
     Select,
-    type Theme, Tooltip,
+    Tooltip,
 } from '@mui/material';
 
 import {
@@ -51,10 +51,9 @@ import {
     SelectWithIcon,
     ComplexCronDialog as ComplexCron,
     type AdminConnection, Utils as UtilsCommon, Utils, TextWithIcon, Router,
+    type IobTheme,
+    type ThemeType,
 } from '@iobroker/adapter-react-v5';
-import type {
-    ThemeType,
-} from '@iobroker/adapter-react-v5/types';
 import {
     amber, blue, green,
     grey, orange, red,
@@ -78,7 +77,7 @@ export const arrayTier = [
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-export const style = (theme: Theme): Record<string, any> => ({
+export const style = (theme: IobTheme): Record<string, any> => ({
     root: {
         position: 'relative',
         margin: 10,
@@ -606,7 +605,6 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                     {this.props.context.t('Delete instance')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     onClick={() => this.setState({ openDialogDelete: false, openDialog: false })}
                     variant="contained"
@@ -741,7 +739,6 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                         className={this.props.classes.selectStyle}
                     >
                         <Button
-                            // @ts-expect-error grey is valid color
                             color="grey"
                             onClick={() => this.setState({
                                 openSelectCompactGroup: false,
@@ -749,7 +746,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                                 maxCompactGroupNumber: this.state.maxCompactGroupNumber + 1,
                             })}
                             variant="outlined"
-                            stylevariable="outlined"
+                            // stylevariable="outlined"
                         >
                             {this.props.context.t('Add compact group')}
                         </Button>

@@ -2,16 +2,18 @@ import React from 'react';
 import { withStyles } from '@mui/styles';
 import {
     Accordion, AccordionDetails, AccordionSummary,
-    type Theme,
 } from '@mui/material';
 
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+
+import { type IobTheme } from '@iobroker/adapter-react-v5';
+
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     root: {
         position: 'relative',
         margin: 10,

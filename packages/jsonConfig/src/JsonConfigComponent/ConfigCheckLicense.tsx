@@ -19,13 +19,12 @@ import {
 
 import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
-import { Confirm as ConfirmDialog, I18n } from '@iobroker/adapter-react-v5';
-import { type Theme } from '@iobroker/adapter-react-v5/types';
+import { Confirm as ConfirmDialog, I18n, type IobTheme} from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemCheckLicense } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Styles<Theme, any> = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     fullWidth: {
         width: '100%',
     },

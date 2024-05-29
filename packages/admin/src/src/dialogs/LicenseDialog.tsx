@@ -95,7 +95,6 @@ const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
                 variant="contained"
                 onClick={() => onClose()}
                 startIcon={<IconClose />}
-                // @ts-expect-error is okay
                 color="grey"
             >
                 {I18n.t('Close')}

@@ -23,7 +23,7 @@ interface TabContainerProps {
     /** The content of the component. */
     children: React.JSX.Element | React.JSX.Element[];
     /** The elevation of the tab container. */
-    elevation?:number;
+    elevation?: number;
     /** Set to 'visible' show the overflow. */
     overflow?: string;
     className?: string;

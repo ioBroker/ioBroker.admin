@@ -13,8 +13,11 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Utils, Icon, Connection, I18n } from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
+import {
+    Utils, Icon,
+    type Connection, I18n,
+    type ThemeName, type ThemeType,
+} from '@iobroker/adapter-react-v5';
 import type { DeviceDetails } from '@iobroker/dm-utils';
 import type { DeviceInfo, ActionBase } from '@iobroker/dm-utils/build/types/api';
 import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';

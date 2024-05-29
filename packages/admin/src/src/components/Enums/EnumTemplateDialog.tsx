@@ -9,7 +9,7 @@ import {
     DialogTitle,
     TextField,
     LinearProgress,
-    IconButton, type Theme,
+    IconButton,
 } from '@mui/material';
 
 import {
@@ -18,7 +18,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Icon } from '@iobroker/adapter-react-v5';
+import { Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
@@ -32,7 +32,7 @@ interface EnumIcon {
     icon: string;
 }
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     icon: {
         width: 32,
         height: 32,
@@ -166,7 +166,6 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                             return null;
                         } if (!this.state.filter || name.toLowerCase().includes(this.state.filter)) {
                             return <Button
-                                // @ts-expect-error grey is valid color
                                 color="grey"
                                 key={i}
                                 variant="outlined"
@@ -207,7 +206,6 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                     {this.props.prefix === 'enum.rooms' ? this.props.t('Custom room') : (this.props.prefix === 'enum.functions' ? this.props.t('Custom function') : this.props.t('Custom enumeration'))}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="contained"
                     onClick={this.props.onClose}

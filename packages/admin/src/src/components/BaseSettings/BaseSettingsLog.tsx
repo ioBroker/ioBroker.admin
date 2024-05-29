@@ -19,7 +19,6 @@ import {
     AccordionSummary,
     Typography,
     Fab,
-    type Theme,
 } from '@mui/material';
 
 // Icons
@@ -32,10 +31,10 @@ import {
     Computer as IconSyslog,
     Send as IconStream,
 } from '@mui/icons-material';
-import { withWidth } from '@iobroker/adapter-react-v5';
+import { withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
 import IconSeq from '../../assets/seq.png';
 
-const styles: Styles<any, any> = (theme: Theme) => ({
+const styles: Styles<any, any> = (theme: IobTheme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -96,7 +95,7 @@ interface TransportSettings {
     ssl?: boolean;
 }
 
-interface SettingsLog {
+export interface SettingsLog {
     transport?: Record<string, TransportSettings>;
     level?: string;
     maxDays?: number;
@@ -919,7 +918,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             </Grid>
             <Toolbar>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"
@@ -930,7 +928,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.props.t('File log')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"
@@ -941,7 +938,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.props.t('Syslog')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"
@@ -952,7 +948,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.props.t('HTTP log')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"
@@ -963,7 +958,6 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.props.t('Stream log')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     className={this.props.classes.addButton}
                     variant="contained"

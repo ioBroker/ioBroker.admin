@@ -1564,7 +1564,7 @@ class App extends Router {
     /**
      * Get a theme
      * @param {string} name Theme name
-     * @returns {Theme}
+     * @returns {IobTheme}
      */
     static createTheme(name) {
         return Theme(Utils.getThemeName(name));

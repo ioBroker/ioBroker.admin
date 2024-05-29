@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
-import { AdminConnection, Connection, JsonConfigComponent } from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
+import {
+    type AdminConnection,
+    Connection,
+    JsonConfigComponent,
+    type ThemeName,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 interface JsonConfigProps {
     instanceId: string;

@@ -486,7 +486,6 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         this.props.onClose();
                         closeInit();
                     }}
-                    // @ts-expect-error color is valid
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

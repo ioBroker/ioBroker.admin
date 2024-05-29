@@ -60,10 +60,15 @@ export interface ConfigItem {
     width?: string | number;
 
     // generated from alsoDependsOn
+    // eslint-disable-next-line no-use-before-define
     confirmDependsOn?: ConfigItemIndexed[];
+    // eslint-disable-next-line no-use-before-define
     onChangeDependsOn?: ConfigItemIndexed[];
+    // eslint-disable-next-line no-use-before-define
     hiddenDependsOn?: ConfigItemIndexed[];
+    // eslint-disable-next-line no-use-before-define
     labelDependsOn?: ConfigItemIndexed[];
+    // eslint-disable-next-line no-use-before-define
     helpDependsOn?: ConfigItemIndexed[];
 }
 

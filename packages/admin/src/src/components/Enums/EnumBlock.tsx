@@ -12,7 +12,7 @@ import {
     Typography,
     Card,
     CardContent,
-    Tooltip, type Theme,
+    Tooltip,
 } from '@mui/material';
 
 import {
@@ -33,16 +33,15 @@ import {
     IconChannel,
     IconDevice,
     IconState, type AdminConnection,
+    type IobTheme,
+    type ThemeType,
 } from '@iobroker/adapter-react-v5';
-import type {
-    ThemeType,
-} from '@iobroker/adapter-react-v5/types';
 
 import { type DragItem } from './DragObjectBrowser';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     enumGroupCard: {
         border: '1px solid #FFF',
         borderColor: theme.palette.divider,

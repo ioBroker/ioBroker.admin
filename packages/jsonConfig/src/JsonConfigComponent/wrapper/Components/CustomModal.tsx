@@ -13,10 +13,9 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
-import type { Theme } from '@iobroker/adapter-react-v5/types';
+import { Utils, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<Theme, any> = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     modalDialog: {
         minWidth: 400,
         maxWidth: 800,

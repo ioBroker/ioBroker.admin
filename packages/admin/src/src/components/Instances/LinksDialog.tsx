@@ -11,8 +11,7 @@ import {
     Avatar,
 } from '@mui/material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
-import type { ThemeType } from '@iobroker/adapter-react-v5/types';
+import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import Utils from '../Utils';
 import BasicUtils from '../../Utils';

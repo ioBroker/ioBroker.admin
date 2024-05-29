@@ -1,9 +1,9 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { type Component, useEffect, useState } from 'react';
 import { withStyles } from '@mui/styles';
 
 import {
     Dialog, DialogActions, DialogContent,
-    DialogTitle, IconButton, TextField, Button, InputAdornment, type Theme, type Breakpoint,
+    DialogTitle, IconButton, TextField, Button, InputAdornment, type Breakpoint,
 } from '@mui/material';
 
 import {
@@ -12,9 +12,9 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { Utils, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     modalDialog: {
         minWidth: 400,
         maxWidth: 800,
@@ -143,7 +143,6 @@ const CustomModal = ({
                 {I18n.t(titleButtonApply || 'Ok')}
             </Button>}
             <Button
-                // @ts-expect-error grey is valid color
                 color="grey"
                 onClick={onClose}
                 disabled={progress}

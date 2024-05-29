@@ -417,7 +417,6 @@ const NotificationsDialog = ({
                                     ackCallback(messages[scope][name].host, name);
                                     setDisabled([...disabled, name]);
                                 }}
-                                // @ts-expect-error grey is ok
                                 color={Object.keys(messages[scope]).length !== 1 ? 'primary' : 'grey'}
                                 startIcon={<CheckIcon />}
                             >
@@ -451,7 +450,6 @@ const NotificationsDialog = ({
                 variant="contained"
                 onClick={() => onClose()}
                 startIcon={<CloseIcon />}
-                // @ts-expect-error grey is ok
                 color="grey"
             >
                 {I18n.t('Ok')}

@@ -28,10 +28,13 @@ import {
     amber, blue, grey, red,
 } from '@mui/material/colors';
 
-import { Utils, IconCopy, type AdminConnection } from '@iobroker/adapter-react-v5';
-import { type Theme, type ThemeType } from '@iobroker/adapter-react-v5/types';
+import {
+    Utils, IconCopy, type AdminConnection,
+    type IobTheme, type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
-import HostsWorker, { type NotificationAnswer } from '@/Workers/HostsWorker';
+import type HostsWorker from '@/Workers/HostsWorker';
+import { type NotificationAnswer } from '@/Workers/HostsWorker';
 import AdapterUpdateDialog, { type RepoInstanceObject } from '@/dialogs/AdapterUpdateDialog';
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
@@ -44,7 +47,7 @@ import { toggleClassName, arrayLogLevel } from './HostUtils';
 export const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 export const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-export const genericStyle = (theme: Theme): Record<string, any> => ({
+export const genericStyle = (theme: IobTheme): Record<string, any> => ({
     '@keyframes warning': {
         '0%': {
             opacity: 1,
@@ -219,7 +222,7 @@ export interface HostGenericProps {
     socket: AdminConnection;
     systemConfig: ioBroker.SystemConfigObject;
     t: (text: string, ...args: any) => string;
-    theme: Theme;
+    theme: IobTheme;
     themeType: ThemeType;
     toggleTranslation: () => void;
 }

@@ -19,10 +19,9 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { type Theme } from '@iobroker/adapter-react-v5/types';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection, IobTheme, Translate } from '@iobroker/adapter-react-v5';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     formControl: {
         marginTop: theme.spacing(3),
     },
@@ -40,7 +39,7 @@ const styles: Record<string, any> = (theme: Theme) => ({
 interface AdapterDeletionDialogProps {
     adapter: string;
     socket: AdminConnection;
-    t: (word: string, ...args: any) => string;
+    t: Translate;
     onClose: () => void;
     onClick: (deleteCustom: boolean) => void;
     classes: Record<string, string>;
@@ -52,7 +51,7 @@ interface AdapterDeletionDialogState {
 }
 
 class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, AdapterDeletionDialogState> {
-    private readonly t: (word: string, ...args: any) => string;
+    private readonly t: Translate;
 
     constructor(props: AdapterDeletionDialogProps) {
         super(props);
@@ -122,7 +121,6 @@ class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, Adapte
                     variant="contained"
                     autoFocus
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

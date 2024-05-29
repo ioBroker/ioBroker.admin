@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 
 import { type Styles, withStyles } from '@mui/styles';
 
-import { i18n, Utils } from '@iobroker/adapter-react-v5';
-
 import {
     Avatar,
     CardMedia,
@@ -14,7 +12,6 @@ import {
     Tooltip,
     Typography,
     Rating,
-    type Theme,
     Link,
 } from '@mui/material';
 
@@ -44,11 +41,13 @@ import {
     MonetizationOn,
 } from '@mui/icons-material';
 
+import { i18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+
 import IsVisible from '../IsVisible';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import sentryIcon from '../../assets/sentry.svg';
 
-const styles = (theme: Theme) => ({
+const styles = (theme: IobTheme) => ({
     smallAvatar: {
         width: theme.spacing(4),
         height: theme.spacing(4),

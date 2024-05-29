@@ -10,7 +10,6 @@ import {
     AppBar,
     Tabs,
     Tab,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -18,6 +17,7 @@ import {
     Confirm as ConfirmDialog,
     Router,
     type AdminConnection,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 // Icons
@@ -31,7 +31,7 @@ import ObjectHistoryData from '../components/Object/ObjectHistoryData';
 import ObjectChart from '../components/Object/ObjectChart';
 import MobileDialog from '../helpers/MobileDialog';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     dialog: {
         height: '100%',
     },
@@ -61,7 +61,7 @@ interface ObjectCustomDialogProps {
     expertMode?: boolean;
     objects: Record<string, ioBroker.Object>;
     socket: AdminConnection;
-    theme: Theme;
+    theme: IobTheme;
     themeName: string;
     themeType: string;
     customsInstances: string[];
@@ -323,7 +323,6 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                     disabled={this.state.progressRunning}
                     variant="contained"
                     onClick={() => this.onClose()}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                 >
                     {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}

@@ -437,7 +437,6 @@ class Config extends Component {
                     {this.props.t('Ok')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="contained"
                     onClick={() => this.setState({ showLogLevelDialog: false })}

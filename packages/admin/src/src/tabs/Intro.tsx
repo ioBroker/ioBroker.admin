@@ -7,7 +7,6 @@ import { withStyles } from '@mui/styles';
 import {
     Fab, Snackbar, Tooltip, Grid, LinearProgress,
     Skeleton,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -18,7 +17,10 @@ import {
     Refresh as RefreshIcon,
 } from '@mui/icons-material';
 
-import { AdminConnection, i18n, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, i18n, Utils as UtilsCommon,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
@@ -32,7 +34,7 @@ import { type InstanceEvent } from '@/Workers/InstancesWorker';
 import { type HostEvent } from '@/Workers/HostsWorker';
 import NodeUpdateDialog from '@/dialogs/NodeUpdateDialog';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     root: {
         width: '100%',
         height: '100%',

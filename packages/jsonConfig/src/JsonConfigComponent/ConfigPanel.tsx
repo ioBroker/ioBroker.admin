@@ -6,12 +6,12 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    Typography, type Theme,
+    Typography,
 } from '@mui/material';
 
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 import type { ConfigItemPanel } from '#JC/types';
 
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
@@ -122,7 +122,7 @@ const components = {
     user: ConfigUser,
 };
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     fullWidth: {
         width: '100%',
         // height: '100%',

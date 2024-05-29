@@ -12,11 +12,12 @@ import {
     InputLabel,
     Chip,
     FormControl,
-    FormHelperText, type Theme,
+    FormHelperText,
 } from '@mui/material';
 import FilledInput from '@mui/material/FilledInput/FilledInput';
 import blue from '@mui/material/colors/blue';
 
+import { type IobTheme } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
 
 const variantComponent = {
@@ -25,7 +26,7 @@ const variantComponent = {
     outlined: OutlinedInput,
 };
 
-const styles: Record<string, any> = (theme: Theme) => {
+const styles: Record<string, any> = (theme: IobTheme) => {
     // @ts-expect-error The type does exist
     const light = theme.palette.type === 'light';
     const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)';

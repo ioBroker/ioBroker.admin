@@ -24,7 +24,7 @@ import {
     Typography,
     Switch,
     Autocomplete,
-    Tooltip, type Theme,
+    Tooltip,
 } from '@mui/material';
 
 import {
@@ -36,7 +36,7 @@ import {
     Info as InfoIcon,
 } from '@mui/icons-material';
 
-import { AdminConnection, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';
@@ -89,7 +89,7 @@ const styles: Record<string, any> = {
     },
 };
 
-const AntSwitch = withStyles((theme: Theme) => ({
+const AntSwitch = withStyles((theme: IobTheme) => ({
     root: {
         width: 28,
         height: 16,
@@ -721,7 +721,6 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error Ts does not like it but it works
                     color="grey"
                     startIcon={<IconCancel />}
                 >
