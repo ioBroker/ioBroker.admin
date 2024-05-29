@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { AdminConnection, JsonConfigComponent } from '@iobroker/adapter-react-v5';
+import { AdminConnection, Connection, JsonConfigComponent } from '@iobroker/adapter-react-v5';
 import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 
 interface JsonConfigProps {
     instanceId: string;
-    socket: AdminConnection;
+    socket: Connection;
     schema: Record<string, any>;
     data: Record<string, any>;
     onChange: (data: Record<string, any>) => void;
@@ -18,7 +18,6 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
     const {
         instanceId, socket, schema, data, onChange,
     } = props;
-    console.log('JsonConfig', props);
     const [error, setError] = useState(false);
 
     if (schema === undefined) {
@@ -30,9 +29,9 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
     return <>
         {error && <div>{error}</div>}
         <JsonConfigComponent
-            socket={socket}
+            socket={socket as any as AdminConnection}
             adapterName={adapterName}
-            instance={parseInt(instance)}
+            instance={parseInt(instance, 10)}
             schema={schema}
             data={data}
             onError={setError}

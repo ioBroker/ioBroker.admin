@@ -7,7 +7,7 @@ import {
 import { Clear, Refresh } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import type { DeviceInfo, InstanceDetails } from '@iobroker/dm-utils';
+import type { DeviceInfo, InstanceDetails } from '@iobroker/dm-utils/build/types/api';
 
 import DeviceCard from './DeviceCard';
 import { getTranslation } from './Utils';
@@ -27,17 +27,17 @@ import uk from './i18n/uk.json';
 import zhCn from './i18n/zh-cn.json';
 
 interface DeviceListProps extends CommunicationProps {
-    /* Instance to upload images to, like `adapterName.X` */
+    /** Instance to upload images to, like `adapterName.X` */
     uploadImagesToInstance?: string;
-    /* Filter devices with this string */
+    /** Filter devices with this string */
     filter?: string;
-    /* If this component is used in GUI with own toolbar. `false` if this list is used with multiple instances and true if only with one (in this case, it will monitor alive itself */
+    /** If this component is used in GUI with own toolbar. `false` if this list is used with multiple instances and true if only with one (in this case, it will monitor alive itself */
     embedded?: boolean;
-    /* If embedded, this text is shown in the toolbar */
+    /** If embedded, this text is shown in the toolbar */
     title?: string;
-    /* Style of a component that displays all devices */
+    /** Style of a component that displays all devices */
     style?: React.CSSProperties;
-    /* Use small cards for devices */
+    /** Use small cards for devices */
     smallCards?: boolean;
 }
 
@@ -52,15 +52,6 @@ interface DeviceListState extends CommunicationState {
 
 /**
  * Device List Component
- * @param {object} params - Component parameters
- * @param {object} params.socket - socket object
- * @param {string} params.selectedInstance - Selected instance
- * @param {string} params.uploadImagesToInstance - Instance to upload images to
- * @param {string} params.filter - Filter
- * @param {string} params.empbedded - true if this list used with multiple instances and false if only with one
- * @param {string} params.title - Title in appbar (only in non-embedded mode)
- * @param {string} params.style - Style of devices list
- * @returns {*[]} - Array of device cards
  */
 export default class DeviceList extends Communication<DeviceListProps, DeviceListState> {
     static i18nInitialized = false;

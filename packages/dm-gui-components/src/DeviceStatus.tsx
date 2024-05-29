@@ -17,11 +17,12 @@ import {
     BatteryCharging50 as BatteryCharging50Icon,
 } from '@mui/icons-material';
 
+import type { DeviceStatus } from '@iobroker/dm-utils';
+
 import { getTranslation } from './Utils';
 
-
 interface DeviceStatusProps {
-    status: any;
+    status: DeviceStatus | null;
 }
 /**
  * Device Status component
@@ -35,31 +36,27 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
         return null;
     }
 
-    let status;
+    let status: DeviceStatus;
 
     if (typeof params.status === 'string') {
         status = {
-            connection: params.status,
+            connection: params.status as 'connected' | 'disconnected',
         };
     } else {
         status = params.status;
     }
 
-    /** @type {object} */
     const iconStyleOK = {
         fill: '#00ac00',
     };
-    /** @type {object} */
     const iconStyleNotOK = {
         fill: '#ff0000',
     };
-    /** @type {object} */
     const iconStyleWarning = {
         fill: '#ff9900',
     };
 
-    /** @type {object} */
-    let batteryIconTooltip;
+    let batteryIconTooltip: React.JSX.Element;
     if (typeof status.battery === 'number') {
         if (status.battery >= 96 && status.battery <= 100) {
             batteryIconTooltip = <BatteryFullIcon style={iconStyleOK} />;
