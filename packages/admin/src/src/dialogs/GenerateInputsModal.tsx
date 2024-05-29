@@ -24,7 +24,7 @@ import {
     type ThemeName, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
-import { ConfigPanel } from '@iobroker/json-config-with-dm';
+import { ConfigPanel } from '@iobroker/json-config';
 
 const useStyles = makeStyles<IobTheme>(theme => ({
     root: {

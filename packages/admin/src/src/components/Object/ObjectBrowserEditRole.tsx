@@ -15,7 +15,7 @@ import {
     Close as IconCancel,
     Check as IconCheck,
 } from '@mui/icons-material';
-import type { AdminConnection, IobTheme } from '@iobroker/adapter-react-v5';
+import type { AdminConnection, IobTheme, Translate } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = (theme: IobTheme) => ({
     input: {
@@ -42,7 +42,7 @@ interface ObjectBrowserEditRoleProps {
     socket: AdminConnection;
     onClose: (obj?: ioBroker.Object) => void;
 
-    t: (text: string, ...args: any[]) => string;
+    t: Translate;
 }
 
 interface ObjectBrowserEditRoleState {

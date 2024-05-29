@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
+import { withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -33,12 +33,14 @@ import {
     Utils, I18n,
     SelectID as DialogSelectID,
     IconFx,
-    UploadImage, AdminConnection, i18n,
+    UploadImage,
+    type AdminConnection,
+    type Translate, type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 
-const styles = (theme: Record<string, any>) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     divWithoutTitle: {
         width: '100%',
         height: '100%',
@@ -173,7 +175,7 @@ const styles = (theme: Record<string, any>) => ({
         fontStyle: 'italic',
         fontSize: 'smaller',
     },
-}) satisfies Styles<any, any>;
+});
 
 const DEFAULT_ROLES = [
     'button',
@@ -432,7 +434,7 @@ const DEFAULT_ROLES = [
 ] as const;
 
 interface ObjectBrowserEditObjectProps {
-    classes: Record<string, any>;
+    classes: Record<string, string>;
     socket: AdminConnection;
     obj: ioBroker.AnyObject;
     roleArray: string[];
@@ -441,11 +443,11 @@ interface ObjectBrowserEditObjectProps {
     aliasTab: boolean;
     onClose: (obj?: ioBroker.AnyObject) => void;
     dialogName: string;
-    objects: Record<string, any>;
+    objects: Record<string, ioBroker.AnyObject>;
     dateFormat: string;
     isFloatComma: boolean;
     onNewObject: (obj: ioBroker.AnyObject) => void;
-    t: typeof i18n.t;
+    t: Translate;
 }
 
 interface ObjectBrowserEditObjectState {
@@ -552,9 +554,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
 
         //  if source and target types exist
-        if (json?.common?.type && this.props.objects[json.common.alias?.id]?.common?.type) {
-            const initialType: ioBroker.CommonType = isWrite ? json.common.type : this.props.objects[json.common.alias.id].common.type;
-            const finalType: ioBroker.CommonType = isWrite ? this.props.objects[json.common.alias.id].common.type : json.common.type;
+        if (json?.common?.type && (this.props.objects[json.common.alias?.id]?.common as ioBroker.StateCommon)?.type) {
+            const initialType: ioBroker.CommonType = isWrite ? json.common.type : (this.props.objects[json.common.alias.id] as ioBroker.StateObject).common.type;
+            const finalType: ioBroker.CommonType = isWrite ? (this.props.objects[json.common.alias.id] as ioBroker.StateObject).common.type : json.common.type;
             if (initialType && finalType) {
                 let arg = null;
                 if (initialType === 'boolean') {

@@ -28,7 +28,7 @@ import {
 import {
     JsonConfigComponent, ConfigGeneric,
     JsonConfigComponentClass, type ConfigItemPanel,
-} from '@iobroker/json-config-with-dm';
+} from '@iobroker/json-config';
 import { deepClone } from '@mui/x-data-grid/utils/utils';
 import Utils from '@/Utils';
 import type { BasicComponentProps } from '@/types';

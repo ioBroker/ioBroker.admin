@@ -178,8 +178,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                         }
                     }
 
-                    // @ts-expect-error I don't know how to fix it
-                    this.setState(newState);
+                    this.setState(newState as FileViewerState);
                 })
                 .catch(e => window.alert(`Cannot read file: ${e}`));
         }

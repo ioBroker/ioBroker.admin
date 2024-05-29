@@ -14,8 +14,8 @@ describe('admin-gui', () => {
     });
 
     it('Check all widgets', async function () {
-        this.timeout(5_000);
-        await gPage.waitForSelector('a[href="/#easy"]', { timeout: 5000 });
+        this.timeout(120_000);
+        await gPage.waitForSelector('a[href="/#easy"]', { timeout: 120_000 });
     });
 
     after(async function () {

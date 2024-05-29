@@ -10,14 +10,21 @@ import { List as ListIcon } from '@mui/icons-material';
 import { type AdminConnection, Icon } from '@iobroker/adapter-react-v5';
 
 import ObjectBrowser, {
-    type TreeItemData, type TreeItem,
+    type TreeItemData,
+    type TreeItem,
     getSelectIdIconFromObjects, ITEM_IMAGES,
 } from '../ObjectBrowser';
 
 export interface DragItem {
     data: TreeItemData;
     children: DragItem[];
-    preview: React.JSX.Element | null;
+    // preview: React.JSX.Element | null;
+}
+
+interface DragWrapperProps {
+    item: TreeItem;
+    className: string;
+    children: React.JSX.Element | null;
 }
 
 interface DragSettings {
@@ -45,10 +52,10 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
 
     useEffect(() => {
         // eslint-disable-next-line react/no-unstable-nested-components
-        const DragWrapper = (dragProps: { item: DragItem; className: string; key?: string; children: React.JSX.Element | null }) => {
+        const DragWrapper = (dragProps: DragWrapperProps) => {
             const onDragEnd = (
                 item: TreeItem,
-                monitor: DragSourceMonitor<DragItem, { enumId: string }>,
+                monitor: DragSourceMonitor<TreeItem, { enumId: string }>,
             ) => {
                 const dropResult = monitor.getDropResult();
                 if (item.data && dropResult) {

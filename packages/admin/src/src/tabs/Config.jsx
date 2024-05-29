@@ -42,7 +42,8 @@ import {
     Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
-import { JsonConfig } from '@iobroker/json-config-with-dm';
+import { JsonConfig } from '@iobroker/json-config';
+import  DeviceManager from '@iobroker/dm-gui-components';
 import BasicUtils from '../Utils';
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
@@ -357,6 +358,7 @@ class Config extends Component {
                 isFloatComma={this.props.isFloatComma}
                 configStored={this.props.configStored}
                 t={this.props.t}
+                DeviceManager={DeviceManager}
             />;
         }
         const src = `adapter/${this.props.adapter}/` +

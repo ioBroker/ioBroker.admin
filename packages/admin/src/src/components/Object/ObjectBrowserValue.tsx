@@ -132,16 +132,16 @@ interface ObjectBrowserValueProps {
     /** Css classes */
     classes: Record<string, string>;
     /** State type */
-    type: string;
+    type: 'states' | 'string' | 'number' | 'boolean' | 'json';
     /** State role */
     role: string;
     /** common.states */
-    states: Record<string, string>;
+    states: Record<string, string> | null;
     /** The state value */
-    value: string | number | boolean;
+    value: string | number | boolean | null;
     /** If expert mode is enabled */
     expertMode: boolean;
-    onClose: (newValue?: { val: ioBroker.State; ack: boolean; q: number; expire: number | undefined }) => void;
+    onClose: (newValue?: { val: ioBroker.StateValue; ack: boolean; q: number; expire: number | undefined }) => void;
     /** Configured theme */
     themeType: string;
     socket: AdminConnection;
@@ -155,9 +155,9 @@ interface ObjectBrowserValueProps {
 
 interface ObjectBrowserValueState {
     /** The state value */
-    targetValue: any;
+    targetValue: ioBroker.StateValue;
     /** State type */
-    type: string;
+    type: 'states' | 'string' | 'number' | 'boolean' | 'json';
     chart: boolean;
     chartEnabled: boolean;
     fullScreen: boolean;
@@ -180,7 +180,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     private readonly inputRef = React.createRef<any>();
 
     /** State quality */
-    private q: number;
+    private q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY];
 
     /** Expiration of the state */
     private expire: number;
@@ -188,7 +188,10 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     constructor(props: ObjectBrowserValueProps) {
         super(props);
 
-        let type = this.props.type || typeof this.props.value;
+        let type: 'states' | 'string' | 'number' | 'boolean' | 'json' = this.props.type;
+        if (!type) {
+            type = (typeof this.props.value) as 'boolean' | 'string' | 'number';
+        }
 
         let value = this.props.value;
         this.propsValue = value;
@@ -282,6 +285,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 value = null;
             } else {
                 const type = this.props.type || typeof this.state.targetValue;
+                // @ts-expect-error deprecated
                 value = typeof value === 'object' ? value.value : value;
 
                 if (type === 'number') {
@@ -307,7 +311,10 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         }
 
         this.props.onClose({
-            val: value, ack: this.ack, q: this.q, expire: parseInt(this.expire as any as string, 10) || undefined,
+            val: value,
+            ack: this.ack,
+            q: this.q,
+            expire: parseInt(this.expire as any as string, 10) || undefined,
         });
     }
 
@@ -551,7 +558,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                     value={this.state.type}
                                                     onChange={e => {
                                                         this.setState({
-                                                            type: e.target.value,
+                                                            type: e.target.value as 'states' | 'string' | 'number' | 'boolean' | 'json',
                                                             valid: e.target.value === 'number' ? this.isNumberValid({ value: this.state.targetValue, common: this.props.object.common }) : true,
                                                             jsonError: false,
                                                         }, () => {
@@ -653,7 +660,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                         <Select
                                             variant="standard"
                                             defaultValue={0}
-                                            onChange={e => (this.q = Number(e.target.value))}
+                                            onChange={e => (this.q = Number(e.target.value) as ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY])}
                                         >
                                             <MenuItem value={0x00}>0x00 - good</MenuItem>
 

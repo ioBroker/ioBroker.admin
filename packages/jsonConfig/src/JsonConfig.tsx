@@ -24,7 +24,7 @@ import {
 
 import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
 import Utils from '#JC/Utils';
-import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
+import ConfigGeneric, { type DeviceManagerPropsProps } from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 
 const styles: Record<string, any> = {
@@ -192,6 +192,7 @@ interface JsonConfigProps {
     t: typeof I18n.t;
     configStored: (notChanged: boolean) => void;
     width: 'xs' | 'sm' | 'md';
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
 }
 
 interface JsonConfigState {
@@ -692,6 +693,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                         this.setState({ saveConfigDialog });
                     }
                 }}
+                DeviceManager={this.props.DeviceManager}
             />
             <SaveCloseButtons
                 isIFrame={false}
