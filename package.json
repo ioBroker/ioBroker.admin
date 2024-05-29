@@ -5,8 +5,8 @@
     "packages/*"
   ],
   "dependencies": {
-    "@iobroker/dm-gui-components": "6.17.14",
-    "@iobroker/json-config": "6.17.14",
+    "@iobroker/dm-gui-components": "file:packages/dm-gui-components",
+    "@iobroker/json-config": "file:packages/jsonConfig",
     "iobroker.admin": "file:packages/admin"
   },
   "devDependencies": {
