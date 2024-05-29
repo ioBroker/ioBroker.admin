@@ -4,7 +4,7 @@ import AutoUpgradeConfigDialog from '@/dialogs/AutoUpgradeConfigDialog';
 
 import {
     Card, CardContent, CardMedia, Fab,
-    IconButton, Tooltip, Typography, Rating,
+    IconButton, Tooltip, Typography, Rating
 } from '@mui/material';
 
 import {
@@ -375,7 +375,7 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                             />
                         </IsVisible>
                         <div className={this.props.classes.cardContentFlex}>
-                            <Tooltip title="TODO">
+                            <Tooltip title="Automatic Upgrade Policy">
                                 <IconButton
                                     size="small"
                                     onClick={() => this.setState({ autoUpgradeDialogOpen: true })}

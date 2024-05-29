@@ -1,14 +1,14 @@
 import React from 'react';
 import {
-    Box,
-    Button, CircularProgress,
+    Button,
     Dialog, DialogActions, DialogContent,
-    DialogTitle, Typography,
+    DialogTitle, MenuItem, Select, Typography,
 } from '@mui/material';
 import {
-    AdminConnection, I18n, IconCopy, IconCopy as SaveIcon,
+    AdminConnection, I18n, IconCopy as SaveIcon,
 } from '@iobroker/adapter-react-v5';
 import { Close as CloseIcon } from '@mui/icons-material';
+import IsVisible from '@/components/IsVisible';
 
 interface AutoUpgradeConfigDialogProps {
     /** Called when user closes dialog */
@@ -66,13 +66,23 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
      * Render the element
      */
     render(): React.JSX.Element {
+        console.log(this.state.policy);
         return (
             <Dialog open={!0} maxWidth="lg" fullWidth>
                 <DialogTitle>{I18n.t('Auto upgrade policy for %s', this.props.adapter)}</DialogTitle>
-                <DialogContent style={{ height: 100, padding: '0 20px', overflow: 'hidden' }}>
-                    <Typography>TODO: How to Text</Typography>
-                    <Typography>TODO: Dropdown</Typography>
-                    <Typography>TODO: warning</Typography>
+                <DialogContent style={{ height: 150, padding: '0 20px', overflow: 'hidden' }}>
+                    <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
+                    <Select sx={{ height: 40 }} value={this.state.policy} onChange={e => this.setState({ policy: e.target.value as ioBroker.AutoUpgradePolicy })}>
+                        {AUTO_UPGRADE_SETTINGS.map(
+                            option => <MenuItem value={option}>{option}</MenuItem>,
+                        )}
+                    </Select>
+                    <IsVisible value={this.state.repositories.includes('beta') && this.state.policy !== 'none'}>
+                        <Typography sx={{ color: 'red' }}>{I18n.t('You have configured to run automatic upgrades for the "beta" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!')}</Typography>
+                    </IsVisible>
+                    <IsVisible value={this.state.policy === 'major'}>
+                        <Typography sx={{ color: 'red' }}>{I18n.t('This will allow to automatically pull in breaking changes of this adapter!')}</Typography>
+                    </IsVisible>
                 </DialogContent>
                 <DialogActions>
                     <Button
