@@ -37,10 +37,12 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Router, Utils, Icon, Confirm as ConfirmDialog,
+    Router, Utils,
+    Icon,
+    Confirm as ConfirmDialog,
 } from '@iobroker/adapter-react-v5';
 
-import { JsonConfig } from '@iobroker/json-config';
+import { JsonConfig } from '@iobroker/json-config-with-dm';
 import BasicUtils from '../Utils';
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];

@@ -31,7 +31,7 @@
     "@honkhonk/vite-plugin-svgr": "^1.1.0",
     "@iobroker/adapter-react-v5": "^5.0.0",
     "@iobroker/admin-component-easy-access": "^0.3.2",
-    "@iobroker/dm-utils": "^0.1.9",
+    "@iobroker/dm-utils": "^0.2.0",
     "@iobroker/legacy-testing": "^1.0.12",
     "@iobroker/socket-client": "^2.4.13",
     "@iobroker/testing": "^4.1.3",

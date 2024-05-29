@@ -1,7 +1,7 @@
 import React from 'react';
 
 // START-WITH-DM
-// import DeviceManager from '@iobroker/dm-gui-components';
+import DeviceManager from '@iobroker/dm-gui-components';
 // END-WITH-DM
 
 import type { ConfigItemDeviceManager } from '#JC/types';
@@ -20,25 +20,25 @@ class ConfigDeviceManager extends ConfigGeneric<ConfigDeviceManagerProps, Config
         }
 
         // START-WITHOUT-DM
-        return <div>
-            Use
-            <b> @iobroker/json-config-with-dm </b>
-            instead of
-            <b> @iobroker/json-config</b>
-        </div>;
+        // return <div>
+        //     Use
+        //     <b> @iobroker/json-config-with-dm </b>
+        //     instead of
+        //     <b> @iobroker/json-config</b>
+        // </div>;
         // END-WITHOUT-DM
 
         // START-WITH-DM
-        // return <DeviceManager
-        //     uploadImagesToInstance={`${this.props.adapterName}.${this.props.instance}`}
-        //     title={this.getText(this.props.schema.label)}
-        //     socket={this.props.socket}
-        //     selectedInstance={`${this.props.adapterName}.${this.props.instance}`}
-        //     themeName={this.props.themeName}
-        //     themeType={this.props.themeType}
-        //     isFloatComma={this.props.isFloatComma}
-        //     dateFormat={this.props.dateFormat}
-        // />;
+        return <DeviceManager
+            uploadImagesToInstance={`${this.props.adapterName}.${this.props.instance}`}
+            title={this.getText(this.props.schema.label)}
+            socket={this.props.socket}
+            selectedInstance={`${this.props.adapterName}.${this.props.instance}`}
+            themeName={this.props.themeName}
+            themeType={this.props.themeType}
+            isFloatComma={this.props.isFloatComma}
+            dateFormat={this.props.dateFormat}
+        />;
         // END-WITH-DM
     }
 }

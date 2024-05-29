@@ -151,7 +151,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 return;
             }
             if (action.inputBefore) {
-                this.setState({ showInput: action, inputValue: action.inputValue.defaultValue || '' });
+                this.setState({ showInput: action, inputValue: action.inputBefore.defaultValue || '' });
                 return;
             }
 
@@ -569,9 +569,9 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     const min = this.state.showInput.inputBefore.min === undefined ? 0 : this.state.showInput.inputBefore.min;
                                     const max = this.state.showInput.inputBefore.max === undefined ? 100 : this.state.showInput.inputBefore.max;
 
-                                    if (this.state.inputValue < min) {
+                                    if ((this.state.inputValue as number) < min) {
                                         this.setState({ inputValue: min });
-                                    } else if (this.state.inputValue > max) {
+                                    } else if ((this.state.inputValue as number) > max) {
                                         this.setState({ inputValue: max });
                                     }
                                 }}
@@ -591,13 +591,11 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     variant="contained"
                     disabled={okDisabled}
                     color="primary"
-                    onClick={() => {
-                        this.setState({ showInput: null }, () =>
-                            this.sendActionToInstance('dm:instanceAction', {
-                                actionId: this.state.showInput.id,
-                                value: this.state.showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (this.state.showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue) || 0 : this.state.inputValue),
-                            }));
-                    }}
+                    onClick={() => this.setState({ showInput: null }, () =>
+                        this.sendActionToInstance('dm:instanceAction', {
+                            actionId: this.state.showInput.id,
+                            value: this.state.showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (this.state.showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
+                        }))}
                     startIcon={<Check />}
                 >
                     {getTranslation('yesButtonText')}

@@ -47,7 +47,7 @@
     "ws": "^8.17.0"
   },
   "devDependencies": {
-    "@iobroker/json-config": "file:../jsonConfig",
+    "@iobroker/json-config-with-dm": "file:../jsonConfig",
     "@types/ace": "^0.0.52"
   },
   "bugs": {
