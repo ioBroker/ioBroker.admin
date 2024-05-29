@@ -4,7 +4,7 @@ import AutoUpgradeConfigDialog from '@/dialogs/AutoUpgradeConfigDialog';
 
 import {
     Card, CardContent, CardMedia, Fab,
-    IconButton, Tooltip, Typography, Rating
+    IconButton, Tooltip, Typography, Rating,
 } from '@mui/material';
 
 import {

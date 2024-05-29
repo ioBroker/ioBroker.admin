@@ -25,10 +25,14 @@ interface AutoUpgradeConfigDialogProps {
 const AUTO_UPGRADE_SETTINGS: ioBroker.AutoUpgradePolicy[] = ['none', 'patch', 'minor', 'major'];
 
 interface AutoUpgradeConfigDialogState {
+    /** Auto upgrade policy which is currently saved */
+    currentSavedPolicy: ioBroker.AutoUpgradePolicy;
     /** The current configured auto upgrade policy */
     policy: ioBroker.AutoUpgradePolicy;
     /** The repositories the config applies for */
     repositories: string[];
+    /** If the feature is supported */
+    supported: boolean;
 }
 
 export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgradeConfigDialogProps, AutoUpgradeConfigDialogState> {
@@ -36,8 +40,10 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
         super(props);
 
         this.state = {
+            currentSavedPolicy: 'none',
             policy: 'none',
             repositories: [],
+            supported: true,
         };
     }
 
@@ -45,7 +51,6 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
      * Lifecycle hook called if component is mounted
      */
     async componentDidMount(): Promise<void> {
-        console.log(this.getAdapterId());
         await this.getConfiguredRepositories();
         await this.getCurrentAutoUpgradeSetting();
     }
@@ -66,26 +71,31 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
      * Render the element
      */
     render(): React.JSX.Element {
-        console.log(this.state.policy);
         return (
             <Dialog open={!0} maxWidth="lg" fullWidth>
                 <DialogTitle>{I18n.t('Auto upgrade policy for %s', this.props.adapter)}</DialogTitle>
                 <DialogContent style={{ height: 150, padding: '0 20px', overflow: 'hidden' }}>
-                    <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
-                    <Select sx={{ height: 40 }} value={this.state.policy} onChange={e => this.setState({ policy: e.target.value as ioBroker.AutoUpgradePolicy })}>
-                        {AUTO_UPGRADE_SETTINGS.map(
-                            option => <MenuItem value={option}>{option}</MenuItem>,
-                        )}
-                    </Select>
-                    <IsVisible value={this.state.repositories.includes('beta') && this.state.policy !== 'none'}>
-                        <Typography sx={{ color: 'red' }}>{I18n.t('You have configured to run automatic upgrades for the "beta" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!')}</Typography>
+                    <IsVisible value={!this.state.supported}>
+                        <Typography>{I18n.t('This feature is supported up from js-controller Kiera (Version 6)!')}</Typography>
                     </IsVisible>
-                    <IsVisible value={this.state.policy === 'major'}>
-                        <Typography sx={{ color: 'red' }}>{I18n.t('This will allow to automatically pull in breaking changes of this adapter!')}</Typography>
+                    <IsVisible value={this.state.supported}>
+                        <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
+                        <Select sx={{ height: 40 }} value={this.state.policy} onChange={e => this.setState({ policy: e.target.value as ioBroker.AutoUpgradePolicy })}>
+                            {AUTO_UPGRADE_SETTINGS.map(
+                                option => <MenuItem value={option}>{option}</MenuItem>,
+                            )}
+                        </Select>
+                        <IsVisible value={this.state.repositories.includes('beta') && this.state.policy !== 'none'}>
+                            <Typography sx={{ color: 'red' }}>{I18n.t('You have configured to run automatic upgrades for the "beta" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!')}</Typography>
+                        </IsVisible>
+                        <IsVisible value={this.state.policy === 'major'}>
+                            <Typography sx={{ color: 'red' }}>{I18n.t('This will allow to automatically pull in breaking changes of this adapter!')}</Typography>
+                        </IsVisible>
                     </IsVisible>
                 </DialogContent>
                 <DialogActions>
                     <Button
+                        disabled={this.state.currentSavedPolicy === this.state.policy}
                         color="primary"
                         variant="contained"
                         startIcon={<SaveIcon />}
@@ -122,10 +132,12 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
         const obj = await this.props.socket.getObject(this.getAdapterId()) as ioBroker.AdapterObject;
 
         if (!obj) {
-            throw new Error('no adapter object existing');
+            console.error('no adapter object existing');
+            this.setState({ supported: false });
+            return;
         }
 
-        this.setState({ policy: obj.common.automaticUpgrade });
+        this.setState({ policy: obj.common.automaticUpgrade, currentSavedPolicy: obj.common.automaticUpgrade });
     }
 
     /**
@@ -135,10 +147,13 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
         const obj = await this.props.socket.getObject(this.getAdapterId()) as ioBroker.AdapterObject;
 
         if (!obj) {
-            throw new Error('no adapter object existing');
+            console.error('no adapter object existing');
+            this.setState({ supported: false });
+            return;
         }
 
         obj.common.automaticUpgrade = this.state.policy;
         await this.props.socket.setObject(this.getAdapterId(), obj);
+        this.setState({ currentSavedPolicy: this.state.policy });
     }
 }
