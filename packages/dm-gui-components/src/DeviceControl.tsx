@@ -4,9 +4,9 @@ import {
     Switch,
 } from '@mui/material';
 
-import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 import { Connection } from '@iobroker/adapter-react-v5';
-import { DeviceControl } from '@iobroker/dm-utils/build/types/api';
+import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
+import type { DeviceControl } from '@iobroker/dm-utils/build/types/api';
 
 import { renderControlIcon, getTranslation } from './Utils';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ControlBase } from '@iobroker/dm-utils/build/types/base';
+import type { ControlBase } from '@iobroker/dm-utils/build/types/base';
 import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
 import {
     Add, Delete, Edit,

@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 
 import {
-    Backdrop,
-    Button,
+    Backdrop, Box,
+    Button, Checkbox,
     CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
-    LinearProgress,
-    Snackbar,
+    DialogTitle, FormControl, FormControlLabel,
+    Grid, IconButton, Input, InputAdornment, InputLabel,
+    LinearProgress, MenuItem, Select, Slider,
+    Snackbar, TextField, Typography,
 } from '@mui/material';
+
+import { Close, Check } from '@mui/icons-material';
 
 import { Connection, AdminConnection } from '@iobroker/adapter-react-v5';
 import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
@@ -57,6 +60,9 @@ export type CommunicationState = {
         open: boolean;
         progress: number;
     } | null;
+    showConfirmation: ActionBase | null;
+    showInput: ActionBase | null;
+    inputValue: string | boolean | number | null;
 }
 
 interface DmResponse {
@@ -114,7 +120,6 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
     constructor(props: P) {
         super(props);
 
-        // @ts-expect-error
         this.state = {
             showSpinner: false,
             showToast: null,
@@ -122,13 +127,37 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             confirm: null,
             form: null,
             progress: null,
-        };
+            showConfirmation: null,
+            showInput: null,
+            inputValue: null,
+        } as S;
 
         // eslint-disable-next-line react/no-unused-class-component-methods
-        this.instanceHandler = action => () => this.sendActionToInstance('dm:instanceAction', { actionId: action.id });
+        this.instanceHandler = action => () => {
+            if (action.confirmation) {
+                return this.setState({ showConfirmation: action });
+            }
+            if (action.inputBefore) {
+                this.setState({ showInput: action });
+                return;
+            }
+
+            return this.sendActionToInstance('dm:instanceAction', { actionId: action.id });
+        }
 
         // eslint-disable-next-line react/no-unused-class-component-methods
-        this.deviceHandler = (deviceId, action, refresh) => () => this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
+        this.deviceHandler = (deviceId, action, refresh) => () => {
+            if (action.confirmation) {
+                this.setState({ showConfirmation: action });
+                return;
+            }
+            if (action.inputBefore) {
+                this.setState({ showInput: action, inputValue: action.inputValue.defaultValue || '' });
+                return;
+            }
+
+            return this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
+        }
 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.controlHandler = (deviceId, control, state) => () => this.sendControlToInstance('dm:deviceControl', { deviceId, controlId: control.id, state });
@@ -147,10 +176,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
     sendActionToInstance = (command: string, messageToSend: any, refresh?: () => void) => {
         const send = async () => {
             this.setState({ showSpinner: true });
-            /** @type {object} */
             const response: DmActionResponse = await this.props.socket.sendTo(this.props.selectedInstance, command, messageToSend);
 
-            /** @type {string} */
             const type: string = response.type;
             console.log(`Response: ${response.type}`);
             switch (type) {
@@ -236,6 +263,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     }
                     this.setState({ showSpinner: false });
                     break;
+
                 default:
                     console.log(`Unknown response type: ${type}`);
                     this.setState({ showSpinner: false });
@@ -426,6 +454,156 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         </Backdrop>;
     }
 
+    renderConfirmationDialog() {
+        if (!this.state.showConfirmation) {
+            return null;
+        }
+        return <Dialog
+            open={!0}
+            onClose={() => this.setState({ showConfirmation: null })}
+        >
+            <DialogTitle>{getTranslation(this.state.showConfirmation.confirmation === true ? getTranslation('areYouSureText') : getTranslation(this.state.showConfirmation.confirmation as ioBroker.StringOrTranslated))}</DialogTitle>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                        this.setState({ showConfirmation: null }, () =>
+                            this.sendActionToInstance('dm:instanceAction', { actionId: this.state.showConfirmation.id }));
+                    }}
+                    autoFocus
+                    startIcon={<Check />}
+                >
+                    {getTranslation('yesButtonText')}
+                </Button>
+                <Button
+                    variant="contained"
+                    // @ts-expect-error grey is a valid color
+                    color="grey"
+                    onClick={() => this.setState({ showConfirmation: null })}
+                    startIcon={<Close />}
+                >
+                    {getTranslation('cancelButtonText')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
+    }
+
+    renderInputDialog() {
+        if (!this.state.showInput || !this.state.showInput.inputBefore) {
+            return null;
+        }
+        return <Dialog
+            open={!0}
+            onClose={() => this.setState({ showInput: null })}
+        >
+            <DialogTitle>{getTranslation('pleaseEnterValueText')}</DialogTitle>
+            <DialogContent>
+                {this.state.showInput.inputBefore.type === 'text' || this.state.showInput.inputBefore.type === 'number' || !this.state.showInput.inputBefore.type ? <TextField
+                    autoFocus
+                    margin="dense"
+                    label={getTranslation(this.state.showInput.inputBefore.label)}
+                    inputProps={this.state.showInput.inputBefore.type === 'number' ? {
+                        min: this.state.showInput.inputBefore.min,
+                        max: this.state.showInput.inputBefore.max,
+                        step: this.state.showInput.inputBefore.step,
+                    } : undefined}
+                    type={this.state.showInput.inputBefore.type === 'number' ? 'number' : 'text'}
+                    fullWidth
+                    value={this.state.inputValue}
+                    onChange={e => this.setState({ inputValue: e.target.value })}
+                    InputProps={{
+                        endAdornment: this.state.inputValue ? <InputAdornment position="end">
+                            <IconButton
+                                size="small"
+                                onClick={() => this.setState({ inputValue: '' })}
+                            >
+                                <Close />
+                            </IconButton>
+                        </InputAdornment> : null,
+                    }}
+                /> : null}
+                {this.state.showInput.inputBefore.type === 'checkbox' ? <FormControlLabel
+                    control={<Checkbox
+                        checked={!!this.state.inputValue}
+                        autoFocus
+                        onChange={e => this.setState({ inputValue: e.target.checked })}
+                    />}
+                    label={getTranslation(this.state.showInput.inputBefore.label)}
+                /> : null}
+                {this.state.showInput.inputBefore.type === 'select' ? <FormControl fullWidth>
+                    <InputLabel>{getTranslation(this.state.showInput.inputBefore.label)}</InputLabel>
+                    <Select
+                        value={this.state.inputValue}
+                        onChange={e => this.setState({ inputValue: e.target.value })}
+                    >
+                        {this.state.showInput.inputBefore.options.map(item =>
+                            <MenuItem value={item.value}>{getTranslation(item.label)}</MenuItem>)}
+                    </Select>
+                </FormControl> : null}
+                {this.state.showInput.inputBefore.type === 'slider' ? <Box sx={{ width: '100%' }}>
+                    <Typography gutterBottom>
+                        {getTranslation(this.state.showInput.inputBefore.label)}
+                    </Typography>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs>
+                            <Slider
+                                value={typeof this.state.inputValue === 'number' ? this.state.inputValue : 0}
+                                onChange={(event: Event, newValue: number) => this.setState({ inputValue: newValue })}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <Input
+                                value={this.state.inputValue}
+                                size="small"
+                                onChange={e => this.setState({ inputValue: e.target.value === '' ? 0 : Number(e.target.value) })}
+                                onBlur={() => {
+                                    const min = this.state.showInput.inputBefore.min === undefined ? 0 : this.state.showInput.inputBefore.min;
+                                    const max = this.state.showInput.inputBefore.max === undefined ? 100 : this.state.showInput.inputBefore.max;
+
+                                    if (this.state.inputValue < min) {
+                                        this.setState({ inputValue: min });
+                                    } else if (this.state.inputValue > max) {
+                                        this.setState({ inputValue: max });
+                                    }
+                                }}
+                                inputProps={{
+                                    step: this.state.showInput.inputBefore.step,
+                                    min: this.state.showInput.inputBefore.min === undefined ? 0 : this.state.showInput.inputBefore.min,
+                                    max: this.state.showInput.inputBefore.max === undefined ? 100 : this.state.showInput.inputBefore.max,
+                                    type: 'number',
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box> : null}
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                        this.setState({ showInput: null }, () =>
+                            this.sendActionToInstance('dm:instanceAction', { actionId: this.state.showInput.id, value: this.state.inputValue }));
+                    }}
+                    startIcon={<Check />}
+                >
+                    {getTranslation('yesButtonText')}
+                </Button>
+                <Button
+                    variant="contained"
+                    // @ts-expect-error grey is a valid color
+                    color="grey"
+                    onClick={() => this.setState({ showInput: null })}
+                    hideBackdrop
+                    startIcon={<Close />}
+                >
+                    {getTranslation('cancelButtonText')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    }
+
     render() {
         return <>
             {this.renderSnackbar()}
@@ -435,6 +613,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             {this.renderMessageDialog()}
             {this.renderFormDialog()}
             {this.renderProgressDialog()}
+            {this.renderConfirmationDialog()}
+            {this.renderInputDialog()}
         </>;
     }
 }

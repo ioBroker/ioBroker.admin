@@ -356,6 +356,15 @@ export interface ConfigItemCertificates extends ConfigItem {
     certPrivateName?: string;
     certChainedName?: string;
 }
+export interface ConfigItemCheckLicense extends ConfigItem {
+    type: 'checkLicense';
+    /** Check UUID */
+    uuid?: boolean;
+    /** Check version */
+    version?: boolean;
+    variant?: 'text' | 'outlined' | 'contained';
+    color?: 'primary' | 'secondary';
+}
 
 export interface ConfigItemUUID extends ConfigItem {
     type: 'uuid';
@@ -369,4 +378,5 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigIt
     ConfigItemDivider | ConfigItemHeader | ConfigItemCustom | ConfigItemDatePicker |
     ConfigItemDeviceManager | ConfigItemLanguage | ConfigItemPort | ConfigItemSendTo |
     ConfigItemTable | ConfigItemTimePicker | ConfigItemTextSendTo | ConfigItemSelectSendTo |
-    ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID;
+    ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID |
+    ConfigItemCheckLicense;
