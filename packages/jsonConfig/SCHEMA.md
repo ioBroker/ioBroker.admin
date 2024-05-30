@@ -64,7 +64,7 @@ Possible types:
   - `trim` - default is true. Set this attribute to `false` if trim is not desired.
   - `minRows` - default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row.  
   - `maxRows` - max rows of textarea. Used only if `minRows` > 1.  
-  - `noClearButton` - if true, the clear button will not be shown
+  - `noClearButton` - if true, the clear button will not be shown (admin >= 6.17.13)
 
 - `number`
   - `min` - minimal value
@@ -72,7 +72,7 @@ Possible types:
   - `step` - step
 
 - `color` - color picker
-  - `noClearButton` - if true, the clear button will not be shown
+  - `noClearButton` - if true, the clear button will not be shown (admin >= 6.17.13)
 
 - `checkbox` - show checkbox
 
