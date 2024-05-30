@@ -18,11 +18,15 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import {
+    I18n, Utils,
+    type AdminConnection, type IobTheme,
+    type ThemeName, type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 import { ConfigPanel } from '@iobroker/json-config';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<IobTheme>(theme => ({
     root: {
         // backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -165,7 +169,16 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TabPanel = ({
+interface TabPanelProps {
+    classes: Record<string, string>;
+    children: React.JSX.Element;
+    value: number;
+    index: number;
+    title: string;
+    custom?: boolean;
+}
+
+const TabPanel: React.FC<TabPanelProps> = ({
     classes, children, value, index, title, custom, ...props
 }) => {
     if (custom) {
@@ -206,9 +219,9 @@ const types = {
     title: 'staticText',
 };
 
-const generateObj = (obj, path, value) => {
-    path = path.split('.');
-    path.forEach((element, idx) => {
+const generateObj = <T, >(obj: Record<string, Record<string, T>>, path: string, value: T) => {
+    const pathArray = path.split('.');
+    pathArray.forEach((element, idx) => {
         if (idx === path.length - 1) {
             if (!obj[path[idx - 1]]) {
                 obj[path[idx - 1]] = {};
@@ -218,26 +231,70 @@ const generateObj = (obj, path, value) => {
     });
     return obj;
 };
-const GenerateInputsModal = ({
+
+interface SchemaItem {
+    type: string;
+    label: string;
+    text: string;
+    href: string;
+    sm: number;
+    newLine: boolean;
+    button: boolean;
+    variant: 'contained';
+    icon: string;
+    repeat: boolean;
+    required: boolean;
+    name: string;
+}
+
+interface GenerateInputsModalProps {
+    themeType: ThemeType;
+    themeName: ThemeName;
+    socket: AdminConnection;
+    newInstances: {
+        _id: string;
+        comment: {
+            add: string[];
+            inputs: {
+                type: keyof typeof types;
+                title: string;
+                def: string;
+            }[];
+        };
+    };
+    onClose: (obj?: Record<string, Record<string, string | boolean | SchemaItem>>) => void;
+}
+
+const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
     themeType, themeName, socket, newInstances, onClose,
 }) => {
     const classes = useStyles();
-    const [error, setError] = useState({});
+    const [error, setError] = useState<Record<string, string>>({});
 
-    const [schema, setSchema] = useState({
-        items: {},
-    });
+    const [schema, setSchema] = useState<{items:
+        Record<string, Partial<SchemaItem>>;
+}>({
+    items: {},
+});
 
-    const [schemaData, setSchemaData] = useState({});
+    const [schemaData, setSchemaData] = useState<Record<string, SchemaItem | string | boolean>>({});
 
     useEffect(() => {
-        const obj = {};
-        const objValue = {};
+        const obj: {
+            [key: number]: Partial<SchemaItem>;
+        } = {};
+        const objValue: {
+            [key: string]: SchemaItem | string | boolean;
+        } = {};
         if (newInstances) {
-            newInstances.comment.add.forEach((text, idx) =>
+            newInstances.comment.add.forEach((text: string, idx: number) =>
                 obj[idx] = { type: 'header', text });
 
-            newInstances.comment.inputs.forEach((el, idx) => {
+            newInstances.comment.inputs.forEach((el: {
+                type: keyof typeof types;
+                title: string;
+                def: string;
+            }, idx: number) => {
                 obj[idx + 1] = {
                     ...el,
                     type: types[el.type],
@@ -295,8 +352,11 @@ const GenerateInputsModal = ({
                     index={1}
                     custom
                     title={I18n.t('Test')}
+                    classes={classes}
                 >
                     <Paper className={classes.paperTable}>
+                        {/*
+                            @ts-expect-error missing param */}
                         <ConfigPanel
                             data={schemaData}
                             socket={socket}
@@ -316,9 +376,9 @@ const GenerateInputsModal = ({
                 autoFocus
                 disabled={!!Object.keys(error).find(attr => error[attr])}
                 onClick={() => {
-                    let obj = {};
+                    let obj: Record<string, Record<string, string | boolean | SchemaItem>> = {};
                     let err = false;
-                    Object.keys(schema.items).forEach(key => {
+                    Object.keys(schema.items).forEach((key: string) => {
                         if (schema.items[key].required) {
                             if (!schemaData[key] && schema.items[key].type !== 'checkbox') {
                                 err = true;
@@ -343,7 +403,6 @@ const GenerateInputsModal = ({
             <Button
                 variant="contained"
                 onClick={() => onClose()}
-                // @ts-expect-error grey is valid color
                 color="grey"
                 startIcon={<CloseIcon />}
             >

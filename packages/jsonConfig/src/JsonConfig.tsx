@@ -1,5 +1,5 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 import MD5 from 'crypto-js/md5';
 
@@ -14,18 +14,20 @@ import {
     I18n,
     Router,
     SaveCloseButtons,
-    Theme as theme,
+    Theme,
     Confirm as ConfirmDialog,
-    AdminConnection,
+    type AdminConnection,
+    type IobTheme,
+    type ThemeName,
+    type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
-import type { Theme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
 import type { ConfigItemAny, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
 import Utils from '#JC/Utils';
-import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
+import ConfigGeneric, { type DeviceManagerPropsProps } from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 
-const styles = {
+const styles: Record<string, any> = {
     root: {
         width: '100%',
         height: '100%',
@@ -45,7 +47,7 @@ const styles = {
     button: {
         marginRight: 5,
     },
-} satisfies Styles<any, any>;
+};
 
 /**
  * Decrypt the password/value with given key
@@ -181,7 +183,7 @@ interface JsonConfigProps {
     dateFormat: string;
     secret: string;
     socket: AdminConnection;
-    theme: Record<string, any>;
+    theme: IobTheme;
     themeName: ThemeName;
     themeType: ThemeType;
     /** CSS classes */
@@ -190,6 +192,7 @@ interface JsonConfigProps {
     t: typeof I18n.t;
     configStored: (notChanged: boolean) => void;
     width: 'xs' | 'sm' | 'md';
+    DeviceManager?: React.FC<DeviceManagerPropsProps>;
 }
 
 interface JsonConfigState {
@@ -200,7 +203,7 @@ interface JsonConfigState {
     common?: ioBroker.InstanceCommon;
     changed: boolean;
     confirmDialog: boolean;
-    theme: Theme;
+    theme: IobTheme;
     saveConfigDialog: boolean;
     hash: string;
     error?: boolean;
@@ -220,7 +223,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             updateData: 0,
             changed: false,
             confirmDialog: false,
-            theme: theme(props.themeName), // buttons require special theme
+            theme: Theme(props.themeName), // buttons require special theme
             saveConfigDialog: false,
             hash: '_',
         };
@@ -690,6 +693,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                         this.setState({ saveConfigDialog });
                     }
                 }}
+                DeviceManager={this.props.DeviceManager}
             />
             <SaveCloseButtons
                 isIFrame={false}

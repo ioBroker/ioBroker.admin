@@ -8,16 +8,16 @@ import {
     DialogActions,
     TextField,
     Button,
-    Autocomplete, type Theme,
+    Autocomplete,
 } from '@mui/material';
 
 import {
     Close as IconCancel,
     Check as IconCheck,
 } from '@mui/icons-material';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection, IobTheme, Translate } from '@iobroker/adapter-react-v5';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     input: {
         marginBottom: theme.spacing(2),
     },
@@ -42,7 +42,7 @@ interface ObjectBrowserEditRoleProps {
     socket: AdminConnection;
     onClose: (obj?: ioBroker.Object) => void;
 
-    t: (text: string, ...args: any[]) => string;
+    t: Translate;
 }
 
 interface ObjectBrowserEditRoleState {
@@ -120,7 +120,6 @@ class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, Object
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<IconCancel />}
                 >

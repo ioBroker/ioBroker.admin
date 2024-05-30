@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -20,11 +19,12 @@ import {
 
 import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
-import { Confirm as ConfirmDialog, I18n } from '@iobroker/adapter-react-v5';
+import { Confirm as ConfirmDialog, I18n, type IobTheme} from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemCheckLicense } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     fullWidth: {
         width: '100%',
     },
@@ -55,7 +55,47 @@ const styles = theme => ({
     },
 });
 
-class ConfigCheckLicense extends ConfigGeneric {
+export interface License {
+    id: string;
+    product: string;
+    time: number;
+    uuid: string;
+    validTill: string;
+    version: string;
+    usedBy: string;
+    invoice: string;
+    json: string;
+}
+
+interface LicenseResult {
+    id: string;
+    validName: boolean;
+    validUuid: boolean;
+    validVersion: boolean;
+    validTill: boolean;
+    license: License;
+    used?: boolean;
+}
+
+interface ConfigCheckLicenseProps extends ConfigGenericProps {
+    schema: ConfigItemCheckLicense;
+    fullWidth?: boolean;
+}
+
+interface ConfigCheckLicenseState extends ConfigGenericState {
+    showLicenseData: null | Record<string, any>;
+    _error: string;
+    result: null | boolean;
+    running: boolean;
+    foundSuitableLicense: boolean;
+    licenseOfflineCheck: boolean;
+    showLinkToProfile: boolean;
+    allLicenses: null | LicenseResult[]
+    askForUpdate: boolean;
+}
+
+
+class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCheckLicenseState> {
     async componentDidMount() {
         super.componentDidMount();
         this.setState({
@@ -65,12 +105,15 @@ class ConfigCheckLicense extends ConfigGeneric {
             foundSuitableLicense: false,
             licenseOfflineCheck: false,
             result: null,
+            allLicenses: null,
+            askForUpdate: false,
+            showLinkToProfile: false,
         });
     }
 
     renderErrorDialog() {
         if (this.state._error && !this.state.showLicenseData) {
-            let content = this.state._error;
+            let content: string | React.JSX.Element[] = this.state._error;
             if (this.state.allLicenses) {
                 content = [
                     <div key="error">{content}</div>,
@@ -123,7 +166,7 @@ class ConfigCheckLicense extends ConfigGeneric {
                 open={!0}
                 maxWidth="xl"
                 fullWidth={this.props.fullWidth !== undefined ? this.props.fullWidth : true}
-                onClose={() => this.handleOk()}
+                onClick={() => this.setState({ _error: '', allLicenses: null })}
             >
                 <DialogTitle>
                     {I18n.t('ra_Error')}
@@ -232,7 +275,7 @@ class ConfigCheckLicense extends ConfigGeneric {
         return null;
     }
 
-    static parseJwt(token) {
+    static parseJwt(token: string) {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(
@@ -248,7 +291,12 @@ class ConfigCheckLicense extends ConfigGeneric {
         }
     }
 
-    static isVersionValid(version, rule, invoice, adapterName) {
+    static isVersionValid(
+        version: string,
+        rule: string,
+        invoice: string,
+        adapterName: string,
+    ) {
         if (!rule || !version) {
             return true;
         }
@@ -280,28 +328,28 @@ class ConfigCheckLicense extends ConfigGeneric {
         return true;
     }
 
-    async findInLicenseManager(adapterName) {
+    async findInLicenseManager(adapterName: string): Promise<LicenseResult[]> {
         // read if the license manager is supported
         const licenses = await this.props.socket.getObject('system.licenses');
-        const errors = [];
+        const errors: LicenseResult[] = [];
         if (licenses?.native?.licenses?.length) {
             // enable license manager
-            let useLicense;
+            let useLicense: License | null = null;
             const now = Date.now();
 
-            let uuid;
+            let uuid: string;
             if (this.props.schema.uuid) {
                 const uuidObj = await this.props.socket.getObject('system.meta.uuid');
                 uuid = uuidObj?.native?.uuid;
             }
-            let version;
+            let version: string;
             if (this.props.schema.version) {
                 const aObj = await this.props.socket.getObject(`system.adapter.${adapterName}`);
                 version = aObj?.common?.version;
             }
 
             // find license for vis
-            licenses.native.licenses.forEach(license => {
+            licenses.native.licenses.forEach((license: License) => {
                 const validTill = !license.validTill || license.validTill === '0000-00-00 00:00:00' || new Date(license.validTill).getTime() > now;
                 const parts = (license.product || '').split('.');
                 const validName = parts[1] === adapterName || (adapterName === 'vis-2' && parts[1] === 'vis');
@@ -329,31 +377,7 @@ class ConfigCheckLicense extends ConfigGeneric {
         return errors;
     }
 
-    static updateLicenses(socket) {
-        return new Promise((resolve, reject) => {
-            socket.getRawSocket().emit('updateLicenses', null, null, (err, licenses) => {
-                if (err === 'permissionError') {
-                    reject(I18n.t('ra_May not trigger "updateLicenses"'));
-                } else if (err && err.error) {
-                    if (typeof err.error === 'string') {
-                        reject(I18n.t(err.error));
-                    } else {
-                        reject(JSON.stringify(err.error));
-                    }
-                } else if (err) {
-                    if (typeof err === 'string') {
-                        reject(I18n.t(err));
-                    } else {
-                        reject(JSON.stringify(err));
-                    }
-                } else {
-                    resolve(licenses);
-                }
-            });
-        });
-    }
-
-    async checkLicense(license, adapterName) {
+    async checkLicense(license: string, adapterName: string) {
         let uuid;
         if (this.props.schema.uuid) {
             const uuidObj = await this.props.socket.getObject('system.meta.uuid');
@@ -381,9 +405,19 @@ class ConfigCheckLicense extends ConfigGeneric {
                 signal: controller.signal,
             });
             timeout && clearTimeout(timeout);
-            let data = await response.text();
+            const dataStr = await response.text();
+            let data: {
+                error?: string;
+                validTill?: string;
+                /** @deprecated use validTill */
+                valid_till?: string;
+                name?: string;
+                version?: string;
+                uuid?: string;
+                invoice?: string;
+            };
             try {
-                data = JSON.parse(data);
+                data = JSON.parse(dataStr);
             } catch (e) {
                 // ignore
             }
@@ -573,7 +607,8 @@ class ConfigCheckLicense extends ConfigGeneric {
                 if (isYes) {
                     this.setState({ askForUpdate: false });
                     try {
-                        await ConfigCheckLicense.updateLicenses(this.props.socket);
+                        // updateLicense is available only in AdminConnection
+                        await this.props.socket.updateLicenses(null, null);
                     } catch (e) {
                         window.alert(I18n.t('ra_Cannot read licenses: %s', e));
                         return;
@@ -586,7 +621,7 @@ class ConfigCheckLicense extends ConfigGeneric {
         />;
     }
 
-    async _onClick(secondRun) {
+    async _onClick(secondRun?: boolean) {
         const adapterName = this.props.adapterName === 'vis-2' ? 'vis' : this.props.adapterName;
         this.setState({ running: true });
         let license;
@@ -607,7 +642,7 @@ class ConfigCheckLicense extends ConfigGeneric {
             license = this.props.data.license;
         }
         if (license) {
-            await this.checkLicense(license, adapterName, this.props.schema.uuid);
+            await this.checkLicense(license, adapterName);
         } else if (this.props.data.useLicenseManager) {
             this.setState({
                 _error: I18n.t('ra_Suitable license not found in license manager'),
@@ -644,19 +679,5 @@ class ConfigCheckLicense extends ConfigGeneric {
         </div>;
     }
 }
-
-ConfigCheckLicense.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-};
 
 export default withStyles(styles)(ConfigCheckLicense);

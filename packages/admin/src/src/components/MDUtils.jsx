@@ -116,77 +116,77 @@ class MDUtils {
                 // ignore it
             } else
             // <h1><img src="ru/adapterref/iobroker.linkeddevices/admin/linkeddevices.png" width="32" /> ioBroker.linkeddevices</h1>
-                if (line.match(/^<h1>.+<\/h1>/)) {
+            if (line.match(/^<h1>.+<\/h1>/)) {
                 // skip
-                } else
-                    if (line.match(/^# /)) {
-                        const cont = MDUtils.findTitle(line, -1, path);
-                        title = cont.title;
-                    } else
-                        if (line.trim().startsWith('|')) {
-                            if (!parts[last] || parts[last].type !== 'table') {
-                                parts.push({ type: 'table', lines: [line] });
-                            } else {
-                                parts[last].lines.push(line);
-                            }
-                        } else
-                            if (line.match(/^##+ /)) {
-                                parts.push({ lines: [line], type: 'chapter' });
-                                last++;
-                                let level = line.split('#').length - 3;
-                                const cont = MDUtils.findTitle(line, level, path);
-                                content[cont.href] = cont;
-                                current[level] = cont;
-                                level++;
-                                while (current[level] !== undefined) level = null;
-                            } else
-                                if (line.startsWith('@@@')) {
-                                    line = line.substring(3).trim();
-                                    parts.push({ lines: [line], type: '@@@' });
-                                    last++;
-                                    if (line.trim().endsWith('@@@')) {
-                                        parts[last].lines[0] = line.substring(0, line.length - 3);
-                                    } else {
-                                        while (i + 1 < lines.length && !lines[i + 1].trim().endsWith('@@@')) {
-                                            parts[last].lines.push(lines[i + 1].trim());
-                                            i++;
-                                        }
-                                    }
-                                } else if (line.trim().startsWith('```')) {
-                                    parts.push({ lines: [line], type: 'code' });
-                                    last++;
-                                    if (!line.substring(3).trim().endsWith('```')) {
-                                        while (i + 1 < lines.length && !lines[i + 1].trim().endsWith('```')) {
-                                            parts[last].lines.push(lines[i + 1]);
-                                            i++;
-                                        }
-                                        parts[last].lines.push(lines[i + 1]);
-                                        i++;
-                                    }
-                                } else if (line.startsWith('?> ') || line.startsWith('!> ')) {
-                                    parts.push({ lines: [line.substring(3)], type: line.startsWith('?>') ? 'warn' : 'alarm' });
-                                    last++;
-                                    while (i + 1 < lines.length && lines[i + 1].trim()) {
-                                        parts[last].lines.push(lines[i + 1]);
-                                        i++;
-                                    }
-                                } else if (line.startsWith('> ')) {
-                                    parts.push({ lines: [line.substring(2)], type: 'notice' });
-                                    last++;
-                                    while (i + 1 < lines.length && lines[i + 1].trim()) {
-                                        parts[last].lines.push(lines[i + 1]);
-                                        i++;
-                                    }
-                                } else if (line.trim()) {
-                                    parts.push({ lines: [line], type: 'p' });
-                                    last++;
-                                    while (i + 1 < lines.length && // lines[i + 1].trim() &&
+            } else
+            if (line.match(/^# /)) {
+                const cont = MDUtils.findTitle(line, -1, path);
+                title = cont.title;
+            } else
+            if (line.trim().startsWith('|')) {
+                if (!parts[last] || parts[last].type !== 'table') {
+                    parts.push({ type: 'table', lines: [line] });
+                } else {
+                    parts[last].lines.push(line);
+                }
+            } else
+            if (line.match(/^##+ /)) {
+                parts.push({ lines: [line], type: 'chapter' });
+                last++;
+                let level = line.split('#').length - 3;
+                const cont = MDUtils.findTitle(line, level, path);
+                content[cont.href] = cont;
+                current[level] = cont;
+                level++;
+                while (current[level] !== undefined) level = null;
+            } else
+            if (line.startsWith('@@@')) {
+                line = line.substring(3).trim();
+                parts.push({ lines: [line], type: '@@@' });
+                last++;
+                if (line.trim().endsWith('@@@')) {
+                    parts[last].lines[0] = line.substring(0, line.length - 3);
+                } else {
+                    while (i + 1 < lines.length && !lines[i + 1].trim().endsWith('@@@')) {
+                        parts[last].lines.push(lines[i + 1].trim());
+                        i++;
+                    }
+                }
+            } else if (line.trim().startsWith('```')) {
+                parts.push({ lines: [line], type: 'code' });
+                last++;
+                if (!line.substring(3).trim().endsWith('```')) {
+                    while (i + 1 < lines.length && !lines[i + 1].trim().endsWith('```')) {
+                        parts[last].lines.push(lines[i + 1]);
+                        i++;
+                    }
+                    parts[last].lines.push(lines[i + 1]);
+                    i++;
+                }
+            } else if (line.startsWith('?> ') || line.startsWith('!> ')) {
+                parts.push({ lines: [line.substring(3)], type: line.startsWith('?>') ? 'warn' : 'alarm' });
+                last++;
+                while (i + 1 < lines.length && lines[i + 1].trim()) {
+                    parts[last].lines.push(lines[i + 1]);
+                    i++;
+                }
+            } else if (line.startsWith('> ')) {
+                parts.push({ lines: [line.substring(2)], type: 'notice' });
+                last++;
+                while (i + 1 < lines.length && lines[i + 1].trim()) {
+                    parts[last].lines.push(lines[i + 1]);
+                    i++;
+                }
+            } else if (line.trim()) {
+                parts.push({ lines: [line], type: 'p' });
+                last++;
+                while (i + 1 < lines.length && // lines[i + 1].trim() &&
                 //! lines[i + 1].trim().match(/^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)) {
                 !lines[i + 1].trim().match(/^```|^>\s|^\?>\s|^!>\s|^@@@|^#+|^====|^\|/)) {
-                                        parts[last].lines.push(lines[i + 1].trimRight());
-                                        i++;
-                                    }
-                                }
+                    parts[last].lines.push(lines[i + 1].trimRight());
+                    i++;
+                }
+            }
         }
 
         return {

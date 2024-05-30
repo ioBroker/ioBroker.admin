@@ -10,7 +10,6 @@ import {
     Hidden,
     InputAdornment,
     TextField,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -31,8 +30,14 @@ import {
 } from '@mui/icons-material';
 import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
-import { type AdminConnection, Router, withWidth } from '@iobroker/adapter-react-v5';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
+import {
+    type AdminConnection,
+    Router,
+    withWidth,
+    type IobTheme,
+    type ThemeName,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 import BasicUtils from '@/Utils';
 import type InstancesWorker from '@/Workers/InstancesWorker';
@@ -52,7 +57,7 @@ import CustomSelectButton from '../components/CustomSelectButton';
 import InstanceFilterDialog from '../components/Instances/InstanceFilterDialog';
 import InstanceCategory from '../components/Instances/InstanceCategory';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     paper: {
         height: '100%',
     },
@@ -80,7 +85,7 @@ interface InstancesProps {
     lang: ioBroker.Languages;
     themeType: ThemeType;
     themeName: ThemeName;
-    theme: Theme;
+    theme: IobTheme;
     socket: AdminConnection;
     instancesWorker: InstancesWorker;
     executeCommand: (command: string) => void;

@@ -5,8 +5,9 @@ import {
     Dialog, DialogActions, DialogContent,
     DialogTitle, Typography,
 } from '@mui/material';
-import { AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import { Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
+
+import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 
 interface NodeUpdateDialogProps {
     /** Called when user closes dialog */

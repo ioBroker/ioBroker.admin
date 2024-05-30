@@ -27,12 +27,7 @@ import {
     TextField,
     TableBody,
     TableContainer,
-    type Theme,
 } from '@mui/material';
-
-import {
-    Utils, withWidth, TableResize, AdminConnection,
-} from '@iobroker/adapter-react-v5';
 
 // icons
 import { FaPlusSquare as InsertIcon, FaDownload as ExportIcon } from 'react-icons/fa';
@@ -42,9 +37,14 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
+import {
+    Utils, withWidth, TableResize, type AdminConnection,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
+
 import { localeMap } from './utils';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -1210,8 +1210,6 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 >
                     {this.state.updateOpened ? this.props.t('Update') : this.props.t('Add')}
                 </Button>
-                {/*
-                // @ts-expect-error this color works */}
                 <Button variant="contained" onClick={() => this.setState({ updateOpened: false, insertOpened: false })} color="grey">{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;

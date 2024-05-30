@@ -16,9 +16,9 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { I18n, IconExpert } from '@iobroker/adapter-react-v5';
+import { I18n, IconExpert, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<IobTheme>(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -50,7 +50,12 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const ExpertModeDialog = ({ expertMode, onClose }) => {
+interface ExpertModeDialogProps {
+    expertMode: boolean;
+    onClose: (result?: string | boolean) => void;
+}
+
+const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose }) => {
     const classes = useStyles();
     const [doNotShow, setDoNotShow] = useState(false);
 

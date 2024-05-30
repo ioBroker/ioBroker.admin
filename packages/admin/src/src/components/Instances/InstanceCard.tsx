@@ -8,7 +8,6 @@ import {
     Fab,
     Hidden,
     Typography,
-    type Theme,
 } from '@mui/material';
 
 import {
@@ -17,6 +16,7 @@ import {
 
 import {
     Utils,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import InstanceGeneric, {
@@ -27,7 +27,7 @@ import InstanceGeneric, {
 import IsVisible from '../IsVisible';
 import BasicUtils from '../../Utils';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     ...genericStyles(theme),
     fab: {
         position: 'absolute',

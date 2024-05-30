@@ -1,8 +1,7 @@
-import type { I18n, AdminConnection } from '@iobroker/adapter-react-v5';
 import type {
-    ThemeType,
-    ThemeName,
-} from '@iobroker/adapter-react-v5/types';
+    I18n, AdminConnection,
+    ThemeType, ThemeName,
+} from '@iobroker/adapter-react-v5';
 
 export interface BasicComponentProps {
     t: typeof I18n.t;
@@ -34,8 +33,6 @@ export type ioBrokerObject<Native extends object = object, Common extends object
     common: Record<string, any> & Common;
     native: Record<string, any> & Native;
 };
-
-export type Translate = (text: string, ...args: (string | number | boolean)[]) => string;
 
 export interface AdminGuiConfig {
     admin: {

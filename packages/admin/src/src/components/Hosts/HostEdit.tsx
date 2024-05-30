@@ -19,10 +19,9 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Utils, UploadImage } from '@iobroker/adapter-react-v5';
-import { type Theme } from '@iobroker/adapter-react-v5/types';
+import { Utils, UploadImage, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     error: {
         border: '2px solid #FF0000',
     },
@@ -321,7 +320,6 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     startIcon={<IconClose />}
                 >

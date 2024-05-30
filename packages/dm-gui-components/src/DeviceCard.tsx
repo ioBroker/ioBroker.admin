@@ -13,19 +13,29 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Utils, Icon, AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import type { DeviceDetails, DeviceInfo } from '@iobroker/dm-utils';
-import type { ActionBase, ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
-import type { ThemeName, ThemeType } from '@iobroker/adapter-react-v5/types';
+import {
+    Utils, Icon,
+    type Connection, I18n,
+    type ThemeName, type ThemeType,
+} from '@iobroker/adapter-react-v5';
+import type { DeviceDetails } from '@iobroker/dm-utils';
+import type { DeviceInfo, ActionBase } from '@iobroker/dm-utils/build/types/api';
+import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 
 import DeviceActionButton from './DeviceActionButton';
 import DeviceControlComponent from './DeviceControl';
-import DeviceStatus from './DeviceStatus';
+import DeviceStatusComponent from './DeviceStatus';
 import JsonConfig from './JsonConfig';
 import DeviceImageUpload from './DeviceImageUpload';
 import { getTranslation } from './Utils';
 
-const NoImageIcon = (props: { style?: React.CSSProperties, className?: string }) => <svg viewBox="0 0 24 24" width="24" height="24" style={props.style} className={props.className}>
+const NoImageIcon = (props: { style?: React.CSSProperties, className?: string }) => <svg
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    style={props.style}
+    className={props.className}
+>
     <path
         fill="currentColor"
         d="M21.9,21.9l-8.49-8.49l0,0L3.59,3.59l0,0L2.1,2.1L0.69,3.51L3,5.83V19c0,1.1,0.9,2,2,2h13.17l2.31,2.31L21.9,21.9z M5,18 l3.5-4.5l2.5,3.01L12.17,15l3,3H5z M21,18.17L5.83,3H19c1.1,0,2,0.9,2,2V18.17z"
@@ -38,10 +48,10 @@ interface DeviceCardProps {
     id: string;
     device: DeviceInfo;
     instanceId: string;
-    socket: AdminConnection;
+    socket: Connection;
     /* Instance, where the images should be uploaded to */
     uploadImagesToInstance?: string;
-    deviceHandler: (deviceId: string, action: ActionBase<'api'>, refresh: () => void) => () => void;
+    deviceHandler: (deviceId: string, action: ActionBase, refresh: () => void) => () => void;
     controlHandler: (deviceId: string, control: ControlBase, state: ControlState) => () => Promise<ioBroker.State | null>;
     controlStateHandler: (deviceId: string, control: ControlBase) => () => Promise<ioBroker.State | null>;
     smallCards?: boolean;
@@ -136,9 +146,8 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
 
     /**
      * Copy the device ID to the clipboard
-     * @returns {void}
      */
-    copyToClipboard = async () => {
+    copyToClipboard = (): void => {
         const textToCopy = this.props.device.id;
         Utils.copyToClipboard(textToCopy);
         alert(`${getTranslation('copied')} ${textToCopy} ${getTranslation('toClipboard')}!`);
@@ -223,7 +232,10 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
     renderControls() {
         const colors = { primary: '#111', secondary: '#888' };
         const firstControl = this.props.device.controls?.[0];
-        if (this.props.device.controls?.length === 1 && firstControl && ((firstControl.type === 'icon' || firstControl.type === 'switch') && !firstControl.label)) {
+        if (this.props.device.controls?.length === 1 &&
+            firstControl &&
+            ((firstControl.type === 'icon' || firstControl.type === 'switch') && !firstControl.label)
+        ) {
             // control can be placed in button icon
             return <DeviceControlComponent
                 disabled={!this.props.alive}
@@ -321,7 +333,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                         width: 'calc(100% - 46px)',
                     }}
                 >
-                    {status.map((s, i) => <DeviceStatus key={i} status={s} />)}
+                    {status.map((s, i) => <DeviceStatusComponent key={i} status={s} />)}
                 </div> : null}
                 <div>
                     <Typography variant="body1">
@@ -454,7 +466,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 </Fab> : null}
             </div>
             <div style={statusStyle}>
-                {status.map((s, i) => <DeviceStatus key={i} status={s} />)}
+                {status.map((s, i) => <DeviceStatusComponent key={i} status={s} />)}
             </div>
             <div style={bodyStyle}>
                 <Typography variant="body1" style={deviceInfoStyle}>

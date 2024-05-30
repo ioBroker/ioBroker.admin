@@ -19,10 +19,12 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, IconCopy } from '@iobroker/adapter-react-v5';
-import type { Theme } from '@iobroker/adapter-react-v5/types';
+import {
+    I18n, Utils, IconCopy,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: IobTheme) => ({
     root: {
         // backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -464,7 +466,6 @@ cd
                     window.open('https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md', '_blank');
                     onClose();
                 }}
-                // @ts-expect-error grey is valid color
                 color="grey"
                 startIcon={<DescriptionIcon />}
             >

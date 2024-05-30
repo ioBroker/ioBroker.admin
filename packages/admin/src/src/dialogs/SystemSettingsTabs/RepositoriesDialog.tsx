@@ -29,14 +29,14 @@ import {
     Utils as UtilsCommon,
     withWidth,
     Confirm as ConfirmDialog,
+    type Translate, type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
-import { type Translator, type Theme } from '@iobroker/adapter-react-v5/types';
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
 import Utils from '../../Utils';
 
-const styles: Styles<Theme, any> = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -99,7 +99,7 @@ type Repository = Record<'stable' | string, { link: string; hash?: string; time?
 
 type RepositoryArray = Array<{ title: string; link: string }>;
 
-function repoToArray(repos: Repository):RepositoryArray {
+function repoToArray(repos: Repository): RepositoryArray {
     return Utils.objectMap(repos, (repo, name) => ({
         title: name,
         link: repo.link,
@@ -107,7 +107,7 @@ function repoToArray(repos: Repository):RepositoryArray {
 }
 
 function arrayToRepo(array: RepositoryArray): Repository {
-    const result:Repository = {};
+    const result: Repository = {};
     for (const k in array) {
         result[array[k].title] = { link: array[k].link };
     }
@@ -118,7 +118,7 @@ function arrayToRepo(array: RepositoryArray): Repository {
 const DragHandle = SortableHandle(() => <DragHandleIcon style={{ marginTop: 8, marginRight: 0, cursor: 'handle' }} />);
 
 interface RepositoriesDialogProps {
-    t: Translator;
+    t: Translate;
     classes: Record<string, string>;
     data: ioBrokerObject<{ repositories: Repository }>;
     dataAux: ioBrokerObject<object, { activeRepo: string | string[] }>;

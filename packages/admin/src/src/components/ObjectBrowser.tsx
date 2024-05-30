@@ -38,7 +38,6 @@ import {
     Snackbar,
     Switch,
     TextField,
-    type Theme,
     Tooltip,
 } from '@mui/material';
 
@@ -97,12 +96,11 @@ import {
     IconState,
     withWidth,
     Connection,
-    Router,
+    type Router,
+    type IobTheme,
+    type ThemeType,
+    type ThemeName,
 } from '@iobroker/adapter-react-v5';
-import type {
-    ThemeType,
-    ThemeName,
-} from '@iobroker/adapter-react-v5/types';
 // own
 import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
@@ -277,7 +275,7 @@ interface GetValueStyleOptions {
     isButton?: boolean;
 }
 
-const styles: Record<string, any> = (theme: Theme) => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     toolbar: {
         minHeight: 38, // Theme.toolbar.height,
         //        boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
@@ -2219,7 +2217,7 @@ interface ObjectBrowserProps {
     themeType: ThemeType;
     /** will be filled by withWidth */
     width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-    theme: Theme;
+    theme: IobTheme;
     t: (word: string, ...args: any[]) => string;
     lang: ioBroker.Languages;
     multiSelect?: boolean;
@@ -4193,7 +4191,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             </DialogContent>
             <DialogActions>
                 {this.state.filter.expertMode || this.state.showAllExportOptions ? <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="outlined"
                     onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false }, () =>
@@ -4210,7 +4207,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     {Object.keys(this.objects).length}
                     )
                 </Button> : <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="outlined"
                     startIcon={<IconExpert />}
@@ -4238,7 +4234,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     )
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="contained"
                     onClick={() => this.setState({ showExportDialog: false, showAllExportOptions: false })}
@@ -5429,7 +5424,6 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     {this.props.t('ra_Update')}
                 </Button>
                 <Button
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     variant="contained"
                     onClick={() => this.onColumnsEditCustomDialogClose()}

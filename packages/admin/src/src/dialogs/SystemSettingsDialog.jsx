@@ -517,7 +517,6 @@ class SystemSettingsDialog extends Component {
                     disabled={this.state.saving}
                     onClick={() => (changed ? this.setState({ confirmExit: true }) : this.props.onClose())}
                     startIcon={<CloseIcon />}
-                    // @ts-expect-error grey is valid color
                     color="grey"
                 >
                     {changed ? this.props.t('Cancel') : this.props.t('Close')}

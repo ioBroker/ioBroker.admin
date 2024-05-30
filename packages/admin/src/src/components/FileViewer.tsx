@@ -23,17 +23,19 @@ import {
 
 import type { Connection } from '@iobroker/socket-client';
 
+// File viewer in adapter-react does not use ace editor
+import * as ace from 'ace-builds';
+import 'ace-builds/src-noconflict/ext-modelist';
+
 import {
     Utils,
     withWidth,
     IconNoIcon,
     Icon,
+    type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
-import type { Translator, ThemeType } from '@iobroker/adapter-react-v5/types';
 
-// File viewer in adapter-react does not use ace editor
-import * as ace from 'ace-builds';
-import 'ace-builds/src-noconflict/ext-modelist';
 import Editor from './Editor';
 
 const modelist = ace.require('ace/ext/modelist');
@@ -83,7 +85,7 @@ function bufferToBase64(buffer: Buffer, isFull?: boolean) {
 
 interface FileViewerProps {
     /** Translation function */
-    t: Translator;
+    t: Translate;
     /** Callback when the viewer is closed. */
     onClose: () => void;
     /** The URL (file path) to the file to be displayed. */
@@ -176,8 +178,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                         }
                     }
 
-                    // @ts-expect-error I don't know how to fix it
-                    this.setState(newState);
+                    this.setState(newState as FileViewerState);
                 })
                 .catch(e => window.alert(`Cannot read file: ${e}`));
         }
@@ -305,7 +306,6 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
             <DialogActions>
                 {this.state.copyPossible ?
                     <Button
-                        // @ts-expect-error grey is valid color
                         color="grey"
                         onClick={e => {
                             e.stopPropagation();
@@ -318,7 +318,6 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                     </Button> : null}
                 {this.state.editing ?
                     <Button
-                        // @ts-expect-error grey is valid color
                         color="grey"
                         disabled={this.state.editingValue === this.state.code || this.state.editingValue === this.state.text}
                         variant="contained"

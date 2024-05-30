@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 
-import { Paper, type Theme } from '@mui/material';
+import { Paper } from '@mui/material';
 
-import { Utils, withWidth } from '@iobroker/adapter-react-v5';
+import { Utils, withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 
-const styles: Styles<any, any> = (theme: Theme) => ({
+const styles: Styles<any, any> = (theme: IobTheme) => ({
     paper: {
         height:    '100%',
         maxHeight: '100%',
@@ -29,7 +29,7 @@ const styles: Styles<any, any> = (theme: Theme) => ({
     },
 });
 
-interface PluginsSettings {
+export interface PluginsSettings {
     [key: string]: any;
 }
 

@@ -18,12 +18,10 @@ import {
     OpenInBrowser as OpenInBrowserIcon,
 } from '@mui/icons-material';
 
-import type { Theme } from '@iobroker/adapter-react-v5/types';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
-import type { Translate } from '@/types';
+import type { IobTheme, Translate, AdminConnection } from '@iobroker/adapter-react-v5';
 import Command from '../components/Command';
 
-const styles: Styles<Theme, any> = (theme: Theme) => ({
+const styles: Styles<IobTheme, any> = theme => ({
     closeButton: {
         position: 'absolute',
         right: theme.spacing(1),
@@ -52,7 +50,7 @@ interface CommandDialogProps {
     performed: () => void;
     inBackground: boolean;
     commandError: boolean;
-    socket: AdminConnection
+    socket: AdminConnection;
     host: string;
     classes: Record<string, string>;
 }
@@ -144,7 +142,6 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
                         variant="contained"
                         disabled={!this.props.inBackground}
                         onClick={this.props.onClose}
-                        // @ts-expect-error grey is valid color
                         color="grey"
                         style={{
                             backgroundColor: this.state.isError ? '#834141' : undefined,

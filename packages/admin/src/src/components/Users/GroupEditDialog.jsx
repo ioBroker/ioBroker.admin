@@ -320,7 +320,6 @@ function GroupEditDialog(props) {
                 </Button>
                 <Button
                     variant="contained"
-                    // @ts-expect-error grey is valid color
                     color="grey"
                     onClick={props.onClose}
                     startIcon={<IconCancel />}

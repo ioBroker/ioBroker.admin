@@ -8,8 +8,7 @@ import {
 
 import blueGrey from '@mui/material/colors/blueGrey';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
-import { type Theme, type Translator } from '@iobroker/adapter-react-v5/types';
+import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 import Editor from '../../components/Editor';
@@ -17,7 +16,7 @@ import Editor from '../../components/Editor';
 // eslint-disable-next-line no-undef
 (window as any).ace.config.set('basePath', 'lib/js/ace');
 
-const styles:Styles<Theme, any> = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -51,7 +50,7 @@ const styles:Styles<Theme, any> = theme => ({
 });
 
 interface StatisticsDialogProps {
-    t: Translator;
+    t: Translate;
     data: ioBrokerObject<object, { diag: string }>;
     dataAux: ioBrokerObject;
     themeType: string;

@@ -3,9 +3,7 @@ import { withStyles } from '@mui/styles';
 
 import { LinearProgress } from '@mui/material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
-
-import type { ThemeType } from '@iobroker/adapter-react-v5/types';
+import { withWidth, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import Utils from '../Utils';

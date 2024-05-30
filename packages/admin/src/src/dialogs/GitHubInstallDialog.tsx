@@ -77,7 +77,7 @@ const styles = ((theme: Record<string, any>) => ({
         marginRight: 8,
     },
     tabSelected: {
-        color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#FFFFFF !important',
+        color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#222 !important',
     },
 } satisfies Styles<any, any>));
 
@@ -486,7 +486,6 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         this.props.onClose();
                         closeInit();
                     }}
-                    // @ts-expect-error color is valid
                     color="grey"
                     startIcon={<CloseIcon />}
                 >
