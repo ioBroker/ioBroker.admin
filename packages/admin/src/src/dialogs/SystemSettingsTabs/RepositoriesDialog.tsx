@@ -70,6 +70,9 @@ const styles: Styles<Theme, any> = theme => ({
     stableColumn: {
         width: 80,
     },
+    upgradePolicyColumn:  {
+        width: 140,
+    },
     buttonColumn: {
         width: 80,
     },
@@ -329,7 +332,7 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
         return null;
     }
 
-    renderSortableItem(item: RepositoryArray[0], index: number) {
+    renderSortableItem(item: RepositoryArray[number], index: number) {
         const result = <TableRow className="float_row">
             <TableCell className={UtilsCommon.clsx(this.props.classes.dragColumn, 'float_cell')} title={this.props.t('Drag and drop to reorder')}>
                 <DragHandle />
@@ -384,6 +387,27 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
                             disabled
                             checked={this.props.repoInfo[item.title]?.stable}
                             indeterminate={!this.props.repoInfo[item.title]}
+                        />
+                    </span>
+                </Tooltip>
+            </TableCell>
+            <TableCell className={UtilsCommon.clsx(this.props.classes.upgradePolicyColumn, 'float_cell')}>
+                <Tooltip title={I18n.t('Allow automatic adapter upgrades for this repository')}>
+                    <span>
+                        <Checkbox
+                            disabled={this.props.saving}
+                            checked={this.props.dataAux.common?.adapterAutoUpgrade?.repositories[item.title]}
+                            onChange={e => {
+                                const sysConfig = Utils.clone(this.props.dataAux);
+
+                                if (!sysConfig.common.adapterAutoUpgrade) {
+                                    sysConfig.common.adapterAutoUpgrade = { repositories: {} };
+                                }
+
+                                sysConfig.common.adapterAutoUpgrade.repositories[item.title] = e.target.checked;
+
+                                this.props.onChange(this.props.data, sysConfig);
+                            }}
                         />
                     </span>
                 </Tooltip>
@@ -454,6 +478,7 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
                     <TableCell className={UtilsCommon.clsx(this.props.classes.dragColumn, 'float_cell')} />
                     <TableCell className={UtilsCommon.clsx(this.props.classes.enableColumn, 'float_cell')}>{this.props.multipleRepos ? I18n.t('Active') : ''}</TableCell>
                     <TableCell className={UtilsCommon.clsx(this.props.classes.stableColumn, 'float_cell')}>{I18n.t('Stable')}</TableCell>
+                    <TableCell className={UtilsCommon.clsx(this.props.classes.upgradePolicyColumn, 'float_cell')}>{I18n.t('Auto-Upgrade')}</TableCell>
                     <TableCell className={UtilsCommon.clsx(this.props.classes.nameRow, 'float_cell')}>
                         {this.props.t('name')}
                     </TableCell>
