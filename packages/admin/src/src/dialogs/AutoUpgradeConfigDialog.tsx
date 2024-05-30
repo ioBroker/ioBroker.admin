@@ -89,7 +89,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
                             <Typography sx={{ color: 'red' }}>{I18n.t('You have configured to run automatic upgrades for the "beta" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!')}</Typography>
                         </IsVisible>
                         <IsVisible value={this.state.policy === 'major'}>
-                            <Typography sx={{ color: 'red' }}>{I18n.t('This will allow to automatically pull in breaking changes of this adapter!')}</Typography>
+                            <Typography sx={{ color: 'red' }}>{I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}</Typography>
                         </IsVisible>
                     </IsVisible>
                 </DialogContent>

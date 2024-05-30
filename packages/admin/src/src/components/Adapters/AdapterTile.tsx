@@ -375,7 +375,7 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                             />
                         </IsVisible>
                         <div className={this.props.classes.cardContentFlex}>
-                            <Tooltip title="Automatic Upgrade Policy">
+                            <Tooltip title={this.props.t('Automatic Upgrade Policy')}>
                                 <IconButton
                                     size="small"
                                     onClick={() => this.setState({ autoUpgradeDialogOpen: true })}
