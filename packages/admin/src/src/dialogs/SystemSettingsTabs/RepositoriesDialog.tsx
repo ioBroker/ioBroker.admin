@@ -13,7 +13,7 @@ import {
     TableRow,
     TextField,
     Tooltip,
-    Paper, InputAdornment, IconButton,
+    Paper, InputAdornment, IconButton, Select, MenuItem, Typography, Box,
 } from '@mui/material';
 
 import {
@@ -33,6 +33,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
+import IsVisible from '@/components/IsVisible';
 import Utils from '../../Utils';
 
 const styles: Styles<IobTheme, any> = theme => ({
@@ -69,6 +70,9 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
     stableColumn: {
         width: 80,
+    },
+    upgradePolicyColumn:  {
+        width: 140,
     },
     buttonColumn: {
         width: 80,
@@ -136,6 +140,8 @@ interface RepositoriesDialogState {
 
 const SortableList = SortableContainer<{ value: any }>(({ value }: { value: any }) => value);
 const SortableItem = SortableElement<{ value: any }>(({ value }: { value: any }) => value);
+/** All possible auto upgrade settings */
+const AUTO_UPGRADE_SETTINGS: ioBroker.AutoUpgradePolicy[] = ['none', 'patch', 'minor', 'major'];
 
 class RepositoriesDialog extends Component<RepositoriesDialogProps, RepositoriesDialogState> {
     constructor(props: RepositoriesDialogProps) {
@@ -241,6 +247,7 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
             return newConfig;
         }
         newConfig.common.activeRepo = ['stable'];
+        newConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
 
         this.props.onChange(newData, newConfig);
         return null;
@@ -329,7 +336,7 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
         return null;
     }
 
-    renderSortableItem(item: RepositoryArray[0], index: number) {
+    renderSortableItem(item: RepositoryArray[number], index: number) {
         const result = <TableRow className="float_row">
             <TableCell className={UtilsCommon.clsx(this.props.classes.dragColumn, 'float_cell')} title={this.props.t('Drag and drop to reorder')}>
                 <DragHandle />
@@ -384,6 +391,27 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
                             disabled
                             checked={this.props.repoInfo[item.title]?.stable}
                             indeterminate={!this.props.repoInfo[item.title]}
+                        />
+                    </span>
+                </Tooltip>
+            </TableCell>
+            <TableCell className={UtilsCommon.clsx(this.props.classes.upgradePolicyColumn, 'float_cell')}>
+                <Tooltip title={I18n.t('Allow automatic adapter upgrades for this repository')}>
+                    <span>
+                        <Checkbox
+                            disabled={this.props.saving}
+                            checked={this.props.dataAux.common?.adapterAutoUpgrade?.repositories[item.title]}
+                            onChange={e => {
+                                const sysConfig = Utils.clone(this.props.dataAux);
+
+                                if (!sysConfig.common.adapterAutoUpgrade) {
+                                    sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
+                                }
+
+                                sysConfig.common.adapterAutoUpgrade.repositories[item.title] = e.target.checked;
+
+                                this.props.onChange(this.props.data, sysConfig);
+                            }}
                         />
                     </span>
                 </Tooltip>
@@ -454,6 +482,7 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
                     <TableCell className={UtilsCommon.clsx(this.props.classes.dragColumn, 'float_cell')} />
                     <TableCell className={UtilsCommon.clsx(this.props.classes.enableColumn, 'float_cell')}>{this.props.multipleRepos ? I18n.t('Active') : ''}</TableCell>
                     <TableCell className={UtilsCommon.clsx(this.props.classes.stableColumn, 'float_cell')}>{I18n.t('Stable')}</TableCell>
+                    <TableCell className={UtilsCommon.clsx(this.props.classes.upgradePolicyColumn, 'float_cell')}>{I18n.t('Auto-Upgrade')}</TableCell>
                     <TableCell className={UtilsCommon.clsx(this.props.classes.nameRow, 'float_cell')}>
                         {this.props.t('name')}
                     </TableCell>
@@ -476,6 +505,43 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
             onSortEnd={this.onSortEnd}
             value={result}
         />;
+    }
+
+    /**
+     * Render the auto upgrade policy
+     */
+    renderAutoUpgradePolicy(): React.JSX.Element {
+        const policy: ioBroker.AutoUpgradePolicy = this.props.dataAux.common.adapterAutoUpgrade?.defaultPolicy || 'none';
+        const activatedRepos = this.props.dataAux.common.adapterAutoUpgrade?.repositories || {};
+
+        return <Box sx={{ marginTop: 2 }}>
+            <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
+            <Select
+                sx={{ height: 40 }}
+                value={policy}
+                onChange={e => {
+                    const sysConfig = Utils.clone(this.props.dataAux);
+
+                    if (!sysConfig.common.adapterAutoUpgrade) {
+                        sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
+                    }
+
+                    sysConfig.common.adapterAutoUpgrade.defaultPolicy = e.target.value;
+
+                    this.props.onChange(this.props.data, sysConfig);
+                }}
+            >
+                {AUTO_UPGRADE_SETTINGS.map(
+                    option => <MenuItem value={option}>{option}</MenuItem>,
+                )}
+            </Select>
+            <IsVisible value={!!activatedRepos.beta && policy !== 'none'}>
+                <Typography sx={{ color: 'red' }}>{I18n.t('You have configured to run automatic upgrades for the "beta" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!')}</Typography>
+            </IsVisible>
+            <IsVisible value={policy === 'major'}>
+                <Typography sx={{ color: 'red' }}>{I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}</Typography>
+            </IsVisible>
+        </Box>;
     }
 
     render() {
@@ -521,6 +587,7 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
                     disabled={this.props.saving}
                 /> */}
             </TableContainer>
+            {this.renderAutoUpgradePolicy()}
         </div>;
     }
 }
