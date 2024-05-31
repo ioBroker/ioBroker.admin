@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import {
     type AdminConnection,
     Connection,
-    JsonConfigComponent,
     type ThemeName,
     type ThemeType,
 } from '@iobroker/adapter-react-v5';
+import {
+    JsonConfigComponent,
+    type ConfigItemPanel,
+} from '@iobroker/json-config';
 
 interface JsonConfigProps {
     instanceId: string;
     socket: Connection;
-    schema: Record<string, any>;
+    schema: ConfigItemPanel;
     data: Record<string, any>;
     onChange: (data: Record<string, any>) => void;
     themeName: ThemeName;

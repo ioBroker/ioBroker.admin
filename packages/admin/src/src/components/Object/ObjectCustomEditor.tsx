@@ -26,10 +26,11 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import {
-    JsonConfigComponent, ConfigGeneric,
-    JsonConfigComponentClass, type ConfigItemPanel,
+    ConfigGeneric, type ConfigItemPanel,
 } from '@iobroker/json-config';
-import { deepClone } from '@mui/x-data-grid/utils/utils';
+import {
+    JsonConfigComponent, JsonConfigComponentClass,
+} from '@iobroker/json-config';
 import Utils from '@/Utils';
 import type { BasicComponentProps } from '@/types';
 
@@ -242,7 +243,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     }
 
     async getCustomTemplate(adapter: string): Promise<void> {
-        const ad = this.props.objects[`system.adapter.${adapter}`] ? deepClone(this.props.objects[`system.adapter.${adapter}`]) : null;
+        const ad = this.props.objects[`system.adapter.${adapter}`] ? Utils.deepClone(this.props.objects[`system.adapter.${adapter}`]) : null;
 
         if (!ad) {
             console.error(`Cannot find adapter "${adapter}"`);
@@ -556,7 +557,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             disabled={!!disabled}
                             onChange={e => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
-                                const newValues = deepClone(this.cachedNewValues);
+                                const newValues = Utils.deepClone(this.cachedNewValues);
 
                                 newValues[instance] = newValues[instance] || {};
                                 if (isIndeterminate || e.target.checked) {
@@ -602,7 +603,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             onValueChange={(attr: string, value: any) => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                 console.log(`${attr} => ${value}`);
-                                const newValues = deepClone(this.cachedNewValues);
+                                const newValues = Utils.deepClone(this.cachedNewValues);
                                 newValues[instance] = newValues[instance] || {};
                                 if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig?.[instance], attr)) === JSON.stringify(value)) {
                                     ConfigGeneric.setValue(newValues[instance], attr, null);
@@ -641,7 +642,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         }
         return this.props.socket.getObject(id)
             .then((obj: ioBroker.AnyObject) => {
-                oldObjects[id] = deepClone(obj);
+                oldObjects[id] = Utils.deepClone(obj);
                 objects[id] = obj;
                 return obj;
             });

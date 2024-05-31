@@ -17,6 +17,7 @@ import {
 import { Close, Check } from '@mui/icons-material';
 
 import type { Connection, AdminConnection, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
+import {type ConfigItemPanel } from '@iobroker/json-config';
 import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
 import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 import type { DeviceRefresh } from '@iobroker/dm-utils/build/types';
@@ -38,7 +39,7 @@ export type CommunicationProps = {
 
 interface CommunicationForm {
     title?: string | null | undefined;
-    schema?: Record<string, any>;
+    schema?: ConfigItemPanel;
     data?: Record<string, any>;
     handleClose?: (data?: Record<string, any>) => void;
 }

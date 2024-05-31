@@ -416,9 +416,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         if (typeof instance.adminTab.name === 'object') {
                             if (instance.adminTab.name && instance.adminTab.name[this.props.lang]) {
                                 title = instance.adminTab.name[this.props.lang];
-                                // @ts-expect-error will be fixed in js-controller
                             } else if (instance.adminTab.name?.en) {
-                                // @ts-expect-error will be fixed in js-controller
                                 title = this.props.t(instance.adminTab.name.en);
                             } else {
                                 title = this.props.t(instance.name);
@@ -436,9 +434,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                     } else {
                         obj = {
                             name: tab,
-                            // @ts-expect-error will be fixed in js-controller
                             order: instance.adminTab.order !== undefined ? instance.adminTab.order : 200,
-                            // @ts-expect-error will be fixed in js-controller
                             icon: instance.adminTab.icon,
                         };
                     }
@@ -494,7 +490,6 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             // Convert
             this.props.socket.getCompactSystemConfig()
                 .then(systemConfig => {
-                    // @ts-expect-error will be fixed in js-controller
                     const tabsVisible: { name: string; visible: boolean; color?: string }[] = systemConfig.common.tabsVisible || [];
 
                     tabs.forEach(tab => {
@@ -529,7 +524,6 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         if (JSON.stringify(newTabsVisible) !== JSON.stringify(tabsVisible)) {
                             this.props.socket.getSystemConfig(true)
                                 .then(_systemConfig => {
-                                    // @ts-expect-error will be fixed in js-controller
                                     _systemConfig.common.tabsVisible = tabsVisible;
 
                                     return this.props.socket.setSystemConfig(_systemConfig)

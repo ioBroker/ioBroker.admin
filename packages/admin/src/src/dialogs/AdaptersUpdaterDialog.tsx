@@ -118,7 +118,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             finished: false,
             current: '',
             updated: [],
-            /** If upgrade process has been stopped e.g. due to an error */
+            /** If an upgrade process has been stopped, e.g., due to an error */
             stopped: false,
             debug: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.debug') === 'true',
             stopOnError: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.stopOnError') !== 'false',

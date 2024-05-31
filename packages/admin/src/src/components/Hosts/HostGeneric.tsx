@@ -199,7 +199,6 @@ function toggleClassName(el: HTMLElement, name: string) {
     setTimeout(_classNames => (el.className = _classNames), 100, classNames.join(' '));
 }
 
-
 function getLogLevelIcon(level: ioBroker.LogLevel | ''): React.JSX.Element | null {
     if (level === 'debug') {
         return <BugReportIcon />;
@@ -741,8 +740,8 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             Object.keys(adapter.news).forEach(version => {
                 try {
                     if (semver.gt(version, installed) || all) {
-                        // @ts-expect-error will be fixed in js-controller 6
-                        const newsText: string = this.props.noTranslation ? adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en) as string;
+                        const newsText: string = this.props.noTranslation ?
+                            adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en) as string;
 
                         news.push({
                             version,

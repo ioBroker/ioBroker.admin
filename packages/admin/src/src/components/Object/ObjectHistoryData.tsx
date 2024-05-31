@@ -530,7 +530,6 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             q:         true,
             addID:     false,
             aggregate: 'none',
-            // @ts-expect-error needs a type update
             returnNewestEntries: true,
         })
             .then((values: ioBroker.GetHistoryResult) => {

@@ -462,7 +462,6 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     }
 
     static getSentrySettings(obj: ioBroker.InstanceObject): boolean {
-        // @ts-expect-error will be fixed in js-controller
         return !!obj?.common?.plugins?.sentry;
     }
 
@@ -497,7 +496,6 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     }
 
     setName(instance: InstanceEntry, value: string) {
-        // @ts-expect-error will be fixed in js-controller
         this.setCommonValue(`system.adapter.${instance.id}`, { titleLang: value });
     }
 

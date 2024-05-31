@@ -100,6 +100,7 @@ import {
     type IobTheme,
     type ThemeType,
     type ThemeName,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 // own
 import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
@@ -2201,6 +2202,103 @@ interface AdapterColumn {
     align?: 'center' | 'left' | 'right';
 }
 
+interface ObjectBrowserEditRoleProps {
+    classes: Record<string, string>;
+    roles: string[];
+    id: string;
+    socket: Connection;
+    onClose: (obj?: ioBroker.Object | null) => void;
+    t: Translate;
+}
+
+interface ObjectViewFileDialogProps {
+    t: Translate;
+    socket: Connection;
+    obj: ioBroker.AnyObject;
+    onClose: () => void;
+}
+
+interface DragWrapperProps {
+    item: TreeItem;
+    className: string;
+    children: React.JSX.Element | null;
+}
+
+interface ObjectCustomDialogProps {
+    t: Translate;
+    lang: ioBroker.Languages;
+    expertMode?: boolean;
+    objects: Record<string, ioBroker.Object>;
+    socket: Connection;
+    theme: IobTheme;
+    themeName: string;
+    themeType: string;
+    customsInstances: string[];
+    objectIDs: string[];
+    onClose: () => void;
+    reportChangedIds: (ids: string[]) => void;
+    isFloatComma: boolean;
+    classes: Record<string, string>;
+    allVisibleObjects: boolean;
+    systemConfig: ioBroker.SystemConfigObject;
+}
+
+interface ObjectBrowserValueProps {
+    /** Css classes */
+    classes: Record<string, string>;
+    /** State type */
+    type: 'states' | 'string' | 'number' | 'boolean' | 'json';
+    /** State role */
+    role: string;
+    /** common.states */
+    states: Record<string, string> | null;
+    /** The state value */
+    value: string | number | boolean | null;
+    /** If expert mode is enabled */
+    expertMode: boolean;
+    onClose: (newValue?: {
+        val: ioBroker.StateValue;
+        ack: boolean;
+        q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY];
+        expire: number | undefined;
+    }) => void;
+    /** Configured theme */
+    themeType: string;
+    socket: Connection;
+    defaultHistory: string;
+    dateFormat: string;
+    object: ioBroker.StateObject;
+    isFloatComma: boolean;
+    t: Translate;
+    lang: ioBroker.Languages;
+}
+
+interface ObjectBrowserEditObjectProps {
+    classes: Record<string, string>;
+    socket: Connection;
+    obj: ioBroker.AnyObject;
+    roleArray: string[];
+    expertMode: boolean;
+    themeType: string;
+    aliasTab: boolean;
+    onClose: (obj?: ioBroker.AnyObject) => void;
+    dialogName?: string;
+    objects: Record<string, ioBroker.AnyObject>;
+    dateFormat: string;
+    isFloatComma: boolean;
+    onNewObject: (obj: ioBroker.AnyObject) => void;
+    t: Translate;
+}
+
+interface ObjectAliasEditorProps {
+    t: Translate;
+    socket: Connection;
+    objects: Record<string, ioBroker.AnyObject>;
+    onRedirect: (id: string, delay?: number) => void;
+    obj: ioBroker.AnyObject;
+    onClose: () => void;
+}
+
 interface ObjectBrowserProps {
     /** where to store settings in localStorage */
     dialogName?: string;
@@ -2218,7 +2316,7 @@ interface ObjectBrowserProps {
     /** will be filled by withWidth */
     width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     theme: IobTheme;
-    t: (word: string, ...args: any[]) => string;
+    t: Translate;
     lang: ioBroker.Languages;
     multiSelect?: boolean;
     notEditable?: boolean;
@@ -2229,7 +2327,7 @@ interface ObjectBrowserProps {
     levelPadding?: number;
 
     // components
-    objectCustomDialog?: Component;
+    objectCustomDialog?: React.FC<ObjectCustomDialogProps>;
     objectAddBoolean?: boolean;   // optional toolbar button
     objectEditBoolean?: boolean;  // optional toolbar button
     objectStatesView?: boolean;   // optional toolbar button
@@ -2255,14 +2353,14 @@ interface ObjectBrowserProps {
      *   `{common: {role: ['switch', 'button']}` - show only states with roles starting from `switch` and `button`
      */
     customFilter: ObjectBrowserCustomFilter;
-    objectBrowserValue?: Component;
-    objectBrowserEditObject?: Component;
+    objectBrowserValue?: React.FC<ObjectBrowserValueProps>;
+    objectBrowserEditObject?: React.FC<ObjectBrowserEditObjectProps>;
     /** on edit alias */
-    objectBrowserAliasEditor?: Component;
+    objectBrowserAliasEditor?: React.FC<ObjectAliasEditorProps>;
     /** on Edit role */
-    objectBrowserEditRole?: Component;
+    objectBrowserEditRole?: React.FC<ObjectBrowserEditRoleProps>;
     /** on view file state */
-    objectBrowserViewFile?: Component;
+    objectBrowserViewFile?: React.FC<ObjectViewFileDialogProps>;
     router?: typeof Router;
     types?: ioBroker.ObjectType[];
     /** Possible columns: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'] */
@@ -2277,7 +2375,7 @@ interface ObjectBrowserProps {
      * */
     filterFunc?: (obj: ioBroker.Object) => boolean;
     /** Used for enums dragging */
-    DragWrapper?: Component;
+    DragWrapper?: React.FC<DragWrapperProps>;
     /** let DragWrapper know about objects to get the icons */
     setObjectsReference?: (objects: Record<string, ioBroker.Object>) => void;
     dragEnabled?: boolean;
@@ -2340,6 +2438,7 @@ interface ObjectBrowserState {
 }
 
 class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
+    // do not define the type as null to save the performance, so we must check it every time
     private info: TreeInfo;
 
     private localStorage: Storage = (window as any)._localStorage as Storage || window.localStorage;
@@ -5277,14 +5376,16 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
         if (this.state.roleDialog && this.props.objectBrowserEditRole) {
             const ObjectBrowserEditRole = this.props.objectBrowserEditRole;
-            // @ts-expect-error How to solve it?
+
             return <ObjectBrowserEditRole
+                // dummy, just to make compiler happy
+                classes={{}}
                 key="objectBrowserEditRole"
                 id={this.state.roleDialog}
                 socket={this.props.socket}
                 t={this.props.t}
                 roles={this.info.roles}
-                onClose={(obj: ioBroker.Object | null) => {
+                onClose={(obj?: ioBroker.Object) => {
                     if (obj) {
                         this.info.objects[this.state.roleDialog as string] = obj;
                     }
@@ -6166,10 +6267,13 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         counter = counter || { count: 0 };
         let leaf = this.renderLeaf(root, isExpanded, classes, counter);
         const DragWrapper = this.props.DragWrapper;
-        if (this.props.dragEnabled) {
+        if (this.props.dragEnabled && DragWrapper) {
             if (root.data.sumVisibility) {
-                // @ts-expect-error How to solve it?
-                leaf = <DragWrapper key={root.data.id} item={root} className={classes.draggable}>
+                leaf = <DragWrapper
+                    key={root.data.id}
+                    item={root}
+                    className={classes.draggable}
+                >
                     {leaf}
                 </DragWrapper>;
             } else {
@@ -6776,13 +6880,12 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         if (this.state.customDialog && this.props.objectCustomDialog) {
             const ObjectCustomDialog = this.props.objectCustomDialog;
 
-            // @ts-expect-error How to solve it?
             return <ObjectCustomDialog
                 reportChangedIds={(changedIds: string[]) => (this.changedIds = [...changedIds])}
                 objectIDs={this.state.customDialog}
-                allVisibleObjects={this.state.customDialogAll}
+                allVisibleObjects={!!this.state.customDialogAll}
                 expertMode={this.state.filter.expertMode}
-                isFloatComma={this.props.isFloatComma}
+                isFloatComma={this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma}
                 t={this.props.t}
                 lang={this.props.lang}
                 socket={this.props.socket}
@@ -6803,12 +6906,19 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                     this.props.router?.doNavigate('tab-objects');
                 }}
                 systemConfig={this.systemConfig}
+                // dummy, just to make compiler happy
+                classes={{}}
             />;
         }
         return null;
     }
 
-    private onUpdate(valAck: Partial<ioBroker.State>) {
+    private onUpdate(valAck: {
+        val: ioBroker.StateValue;
+        ack: boolean;
+        q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY];
+        expire: number | undefined;
+    }) {
         this.props.socket
             .setState(this.edit.id, {
                 val: valAck.val,
@@ -6826,33 +6936,34 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
         const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
 
-        // @ts-expect-error How to solve it?
         return <ObjectBrowserEditObject
+            // dummy, just to make compiler happy
+            classes={{}}
             key={this.state.editObjectDialog}
             obj={this.objects[this.state.editObjectDialog]}
             roleArray={this.info.roles}
             objects={this.objects}
-            dateFormat={this.props.dateFormat}
-            isFloatComma={this.props.isFloatComma}
+            dateFormat={this.props.dateFormat || this.systemConfig.common.dateFormat}
+            isFloatComma={this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma}
             themeType={this.props.themeType}
             socket={this.props.socket}
             dialogName={this.props.dialogName}
             aliasTab={this.state.editObjectAlias}
             t={this.props.t}
-            expertMode={this.state.filter.expertMode}
-            onNewObject={(obj: ioBroker.Object) =>
+            expertMode={!!this.state.filter.expertMode}
+            onNewObject={(obj: ioBroker.AnyObject) =>
                 this.props.socket
                     .setObject(obj._id, obj)
                     .then(() => this.setState({ editObjectDialog: obj._id, editObjectAlias: false }, () =>
                         this.onSelect(obj._id)))
                     .catch(e => this.showError(`Cannot write object: ${e}`))}
-            onClose={(obj: ioBroker.Object | null) => {
+            onClose={(obj?: ioBroker.AnyObject) => {
                 if (obj) {
                     let updateAlias: string;
                     if (this.state.editObjectDialog.startsWith('alias.')) {
                         if (
                             JSON.stringify(this.objects[this.state.editObjectDialog].common?.alias) !==
-                            JSON.stringify(obj.common?.alias)
+                            JSON.stringify((obj as ioBroker.StateObject).common?.alias)
                         ) {
                             updateAlias = this.state.editObjectDialog;
                         }
@@ -6879,15 +6990,11 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
         const ObjectBrowserViewFile = this.props.objectBrowserViewFile;
 
-        // @ts-expect-error How to solve it?
         return <ObjectBrowserViewFile
             key="viewFile"
             obj={this.objects[this.state.viewFileDialog]}
-            themeType={this.props.themeType}
             socket={this.props.socket}
-            dialogName={this.props.dialogName}
             t={this.props.t}
-            expertMode={this.state.filter.expertMode}
             onClose={() => this.setState({ viewFileDialog: '' })}
         />;
     }
@@ -6898,16 +7005,12 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         }
         const ObjectBrowserAliasEditor = this.props.objectBrowserAliasEditor;
 
-        // @ts-expect-error How to solve it?
         return <ObjectBrowserAliasEditor
             key="editAlias"
             obj={this.objects[this.state.showAliasEditor]}
             objects={this.objects}
-            themeType={this.props.themeType}
             socket={this.props.socket}
-            dialogName={this.props.dialogName}
             t={this.props.t}
-            expertMode={this.state.filter.expertMode}
             onClose={() => this.setState({ showAliasEditor: '' })}
             onRedirect={(id: string, timeout?: number) => setTimeout(() =>
                 this.onSelect(id, false, () =>
@@ -7342,24 +7445,26 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
         const ObjectBrowserValue = this.props.objectBrowserValue;
 
-        // @ts-expect-error How to solve it?
         return <ObjectBrowserValue
             t={this.props.t}
             lang={this.props.lang}
             type={type}
-            role={role}
+            role={role || ''}
             states={Utils.getStates(this.objects[this.edit.id] as ioBroker.StateObject)}
             themeType={this.props.themeType}
-            expertMode={this.state.filter.expertMode}
+            expertMode={!!this.state.filter.expertMode}
             value={this.edit.val}
             socket={this.props.socket}
-            object={this.objects[this.edit.id]}
+            object={this.objects[this.edit.id] as ioBroker.StateObject}
             defaultHistory={this.defaultHistory}
-            dateFormat={this.props.dateFormat}
-            onClose={(res: Partial<ioBroker.State>) => {
+            dateFormat={this.props.dateFormat || this.systemConfig.common.dateFormat}
+            isFloatComma={this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma}
+            onClose={(res?: { val: ioBroker.StateValue; ack: boolean; q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY]; expire: number | undefined }) => {
                 this.setState({ updateOpened: false });
                 res && this.onUpdate(res);
             }}
+            // dummy, just to make compiler happy
+            classes={{}}
         />;
     }
 

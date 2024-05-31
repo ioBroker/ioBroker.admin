@@ -24,16 +24,14 @@ const updateText: Record<ioBroker.Languages, string> = {
 };
 
 /**
- * Get text for message about adapter update in given language
+ * Get text for a message about adapter update in given language
  * @param options
  */
 export function getAdapterUpdateText(options: AdapterUpdateOptions): string {
     const { lang, adapter, installedVersion, newVersion } = options;
 
-    const text = updateText[lang]
+    return updateText[lang]
         .replace('%adapter', adapter)
         .replace('%installedVersion', installedVersion)
         .replace('%newVersion', newVersion);
-
-    return text;
 }

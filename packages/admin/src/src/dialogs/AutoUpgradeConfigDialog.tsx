@@ -4,10 +4,12 @@ import {
     Dialog, DialogActions, DialogContent,
     DialogTitle, MenuItem, Select, Typography,
 } from '@mui/material';
-import {
-    AdminConnection, I18n, IconCopy as SaveIcon,
-} from '@iobroker/adapter-react-v5';
+
 import { Close as CloseIcon } from '@mui/icons-material';
+
+import {
+    type AdminConnection, I18n, IconCopy as SaveIcon,
+} from '@iobroker/adapter-react-v5';
 import IsVisible from '@/components/IsVisible';
 
 interface AutoUpgradeConfigDialogProps {
@@ -62,7 +64,8 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
             return;
         }
 
-        const activeRepos = Object.entries(sysConfig.common.adapterAutoUpgrade.repositories).filter(([repoName, active]) => active).map(([repoName]) => repoName);
+        const activeRepos = Object.entries(sysConfig.common.adapterAutoUpgrade.repositories)
+            .filter(([, active]) => active).map(([repoName]) => repoName);
 
         this.setState({ repositories: activeRepos });
     }

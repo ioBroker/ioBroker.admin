@@ -544,7 +544,6 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             q: false,
             addID: false,
             aggregate: 'none',
-            // @ts-expect-error fix later
             returnNewestEntries: true,
         };
 

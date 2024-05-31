@@ -778,19 +778,21 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const links = common.localLinks || { _default: common.localLink ?? '' };
 
                     Object.keys(links).forEach(linkName => {
-                        let link = links[linkName];
-                        const instance: Record<string, any> = {};
-                        if (typeof link === 'string') {
-                            // @ts-expect-error check later on
-                            link = { link };
+                        let link: { link: string; color?: string };
+                        if (typeof links[linkName] === 'string') {
+                            link = { link: links[linkName] as string };
+                        } else {
+                            link = links[linkName] as any as { link: string; color?: string };
                         }
 
-                        instance.id = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`);
-                        instance.name = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ` ${linkName}`);
-                        // @ts-expect-error check later, at first glance makes no sense or types are wrong
-                        instance.color = link.color || '';
-                        instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                        instance.image = common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png';
+                        const instance: { id: string; name: string; color: string; description: string; image: string } = {
+                            id: obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`),
+                            name: (common.titleLang ?
+                                ((common.titleLang as ioBroker.Translated)[this.props.lang] || (common.titleLang as ioBroker.Translated).en) : common.title) + (linkName === '_default' ? '' : ` ${linkName}`),
+                            color: link.color || '',
+                            description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc as string || '',
+                            image: common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png',
+                        };
 
                         // @ts-expect-error fix all the constructs here later on
                         this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
