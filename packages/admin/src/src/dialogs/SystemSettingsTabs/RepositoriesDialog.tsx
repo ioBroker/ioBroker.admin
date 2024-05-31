@@ -13,7 +13,8 @@ import {
     TableRow,
     TextField,
     Tooltip,
-    Paper, InputAdornment, IconButton, Select, MenuItem, Typography, Box,
+    Paper, InputAdornment, IconButton,
+    Select, MenuItem, Typography, Box,
 } from '@mui/material';
 
 import {
