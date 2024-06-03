@@ -18,6 +18,7 @@ import { withWidth, Utils, type AdminConnection } from '@iobroker/adapter-react-
 import { type Theme } from '@iobroker/adapter-react-v5/types';
 
 import { type Translate, type ioBrokerObject } from '@/types';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<Theme, any> = {
     tabPanel: {
@@ -113,7 +114,7 @@ interface LicensesDialogState {
     // readTime: number;
 }
 
-export class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState> {
+class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, LicensesDialogState> {
     constructor(props: LicensesDialogProps) {
         super(props);
 
@@ -123,23 +124,6 @@ export class LicensesDialog extends Component<LicensesDialogProps, LicensesDialo
             licenses: this.props.data.native.licenses || [],
             // readTime: this.props.data.native.readTime || 0,
         };
-    }
-
-    static requestLicensesByHost(socket: AdminConnection, host: string, login: string, password: string, t: (text: string) => string): Promise<License[]> {
-        return new Promise((resolve, reject) => {
-            // @TODO: Move to iobroker socket
-            socket.getRawSocket().emit('updateLicenses', login, password, (err: string | { error: string }, licenses: License[]) => {
-                if (err === 'permissionError') {
-                    reject(t('May not trigger "updateLicenses"'));
-                } else if (err && typeof err === 'object' && err.error) {
-                    reject(t(err.error));
-                } else if (err) {
-                    reject(t(err as string));
-                } else {
-                    resolve(licenses);
-                }
-            });
-        });
     }
 
     onLicensesChanged = (id: string, obj: ioBroker.Object | null | undefined): void => {
@@ -299,6 +283,23 @@ export class LicensesDialog extends Component<LicensesDialogProps, LicensesDialo
             {this.renderLicenses()}
         </div>;
     }
+}
+
+export function requestLicensesByHost(socket: AdminConnection, host: string, login: string, password: string, t: (text: string) => string): Promise<License[]> {
+    return new Promise((resolve, reject) => {
+        // @TODO: Move to iobroker socket
+        socket.getRawSocket().emit('updateLicenses', login, password, (err: string | { error: string }, licenses: License[]) => {
+            if (err === 'permissionError') {
+                reject(t('May not trigger "updateLicenses"'));
+            } else if (err && typeof err === 'object' && err.error) {
+                reject(t(err.error));
+            } else if (err) {
+                reject(t(err as string));
+            } else {
+                resolve(licenses);
+            }
+        });
+    });
 }
 
 export default withWidth()(withStyles(styles)(LicensesDialog));

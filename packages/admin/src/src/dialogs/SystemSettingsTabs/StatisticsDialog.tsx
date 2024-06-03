@@ -15,6 +15,7 @@ import { type Theme, type Translator } from '@iobroker/adapter-react-v5/types';
 import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 import Editor from '../../components/Editor';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 // eslint-disable-next-line no-undef
 (window as any).ace.config.set('basePath', 'lib/js/ace');
@@ -63,7 +64,7 @@ interface StatisticsDialogProps {
     classes: Record<string, string>;
 }
 
-class StatisticsDialog extends Component<StatisticsDialogProps> {
+class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     static getTypes() {
         return [
             {

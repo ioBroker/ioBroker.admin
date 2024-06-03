@@ -35,6 +35,7 @@ import {
 import { type Translator, type Theme } from '@iobroker/adapter-react-v5/types';
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import Utils from '../../Utils';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
@@ -138,7 +139,7 @@ interface RepositoriesDialogState {
 const SortableList = SortableContainer<{value: any}>(({ value }: {value: any}) => value);
 const SortableItem = SortableElement<{value: any}>(({ value }: {value: any}) => value);
 
-class RepositoriesDialog extends Component<RepositoriesDialogProps, RepositoriesDialogState> {
+class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProps, RepositoriesDialogState> {
     constructor(props: RepositoriesDialogProps) {
         super(props);
         const repos = (typeof this.props.dataAux.common.activeRepo === 'string' ? [this.props.dataAux.common.activeRepo] : this.props.dataAux.common.activeRepo).filter(r => r);

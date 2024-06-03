@@ -30,6 +30,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { Theme, Translator } from '@iobroker/adapter-react-v5/types';
+import Utils from '@/Utils';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
 import LicensesDialog, { requestLicensesByHost } from './SystemSettingsTabs/LicensesDialog';
@@ -42,7 +43,7 @@ import StatisticsDialog from './SystemSettingsTabs/StatisticsDialog';
 
 // style
 import '../assets/css/style.css';
-import Utils from '@/Utils';
+import type BaseSystemSettingsDialog from './SystemSettingsTabs/BaseSystemSettingsDialog';
 
 const SOME_PASSWORD = '__SOME_PASSWORD__';
 
@@ -106,7 +107,7 @@ interface SystemSettingsDialogState {
     multipleRepos: boolean;
     licenseManager: boolean;
     host: string;
-    repoInfo: Record<string, any>;
+    repoInfo: Record<string, ioBroker.RepoInfo>;
     users?: ioBroker.UserObject[];
     groups?: ioBroker.GroupObject[];
     histories?: string[];
@@ -117,7 +118,7 @@ interface SystemSettingsDialogState {
 interface SystemSettingsDialogTab {
     id: number;
     title: string;
-    component: any;
+    component: typeof BaseSystemSettingsDialog;
     data: string;
     name: string;
     dataAux: string;
@@ -245,7 +246,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                         licenses: [],
                     },
                     type: 'config',
-                } as unknown as ioBroker.Object;
+                } as unknown as typeof ioBroker.Object;
                 if (systemLicenses.native.password) {
                     systemLicenses.native.password = SOME_PASSWORD;
                 }
@@ -363,7 +364,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 0,
                 title: 'System settings',
-                component: MainSettingsDialog,
+                component: MainSettingsDialog as unknown as typeof BaseSystemSettingsDialog,
                 data: 'systemConfig',
                 name: 'tabConfig',
                 dataAux: 'systemRepositories',
@@ -372,7 +373,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 1,
                 title: 'Repositories',
-                component: RepositoriesDialog,
+                component: RepositoriesDialog as unknown as typeof BaseSystemSettingsDialog,
                 data: 'systemRepositories',
                 name: 'tabRepositories',
                 dataAux: 'systemConfig',
@@ -382,7 +383,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 2,
                 title: 'Licenses',
-                component: LicensesDialog,
+                component: LicensesDialog as unknown as typeof BaseSystemSettingsDialog,
                 data: 'systemLicenses',
                 name: 'tabLicenses',
                 dataAux: null,
@@ -392,7 +393,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 3,
                 title: 'Certificates',
-                component: CertificatesDialog,
+                component: CertificatesDialog as unknown as typeof BaseSystemSettingsDialog,
                 data: 'systemCertificates',
                 name: 'tabCertificates',
                 dataAux: null,
@@ -401,7 +402,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 4,
                 title: 'Let\'s encrypt SSL',
-                component: SSLDialog,
+                component: SSLDialog as unknown as typeof BaseSystemSettingsDialog,
                 data: 'systemCertificates',
                 name: 'tabLetsEncrypt',
                 dataAux: null,
@@ -410,7 +411,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 5,
                 title: 'Default ACL',
-                component: ACLDialog,
+                component: ACLDialog as unknown as typeof BaseSystemSettingsDialog,
                 data: 'systemConfig',
                 name: 'tabDefaultACL',
                 dataAux: null,
@@ -419,7 +420,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 6,
                 title: 'Statistics',
-                component: StatisticsDialog,
+                component: StatisticsDialog as unknown as typeof BaseSystemSettingsDialog,
                 data: 'systemConfig',
                 dataAux: 'diagData',
                 name: 'tabStatistics',
@@ -588,17 +589,6 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
     }
 }
 
-SystemSettingsDialog.propTypes = {
-    t: PropTypes.func,
-    socket: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
-    onClose: PropTypes.func.isRequired,
-    currentTab: PropTypes.object,
-    width: PropTypes.string,
-    adminGuiConfig: PropTypes.object,
-};
-
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));
 
 interface TabPanelProps {
@@ -623,10 +613,4 @@ const TabPanel: React.FC<TabPanelProps> = (props: TabPanelProps) => {
             <Typography>{children}</Typography>
         </Box>}
     </div>;
-};
-
-TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
 };

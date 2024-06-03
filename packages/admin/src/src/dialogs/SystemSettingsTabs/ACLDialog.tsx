@@ -22,6 +22,7 @@ import { type Theme } from '@iobroker/adapter-react-v5/types';
 
 import { type Translate, type ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<Theme, any> = (theme: Theme) => ({
     tabPanel: {
@@ -71,7 +72,7 @@ type ACLObjectProps = {
     saving: boolean;
 }
 
-class ACLDialog extends Component<ACLObjectProps> {
+class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
     private static permBits: [number, number][] = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
 
     static getTypes(): { type: keyof ACLRights; title: string }[] {

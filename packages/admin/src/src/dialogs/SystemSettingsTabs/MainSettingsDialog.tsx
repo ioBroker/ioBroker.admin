@@ -29,6 +29,7 @@ import { type AdminGuiConfig, type Translate, type ioBrokerObject } from '../../
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries.json';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
@@ -92,7 +93,7 @@ interface State {
     confirmValue: string;
 }
 
-class MainSettingsDialog extends Component<Props, State> {
+class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {

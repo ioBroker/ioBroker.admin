@@ -32,6 +32,7 @@ import { type Theme } from '@iobroker/adapter-react-v5/types';
 
 import { type Translate, type ioBrokerObject } from '@/types';
 import Utils from '../../Utils';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 // icons
 
@@ -95,7 +96,7 @@ interface CertificatesDialogState {
     chClass: boolean;
 }
 
-class CertificatesDialog extends Component<CertificatesDialogProps, CertificatesDialogState> {
+class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProps, CertificatesDialogState> {
     constructor(props: CertificatesDialogProps) {
         super(props);
 

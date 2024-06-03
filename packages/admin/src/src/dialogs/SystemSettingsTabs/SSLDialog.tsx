@@ -18,6 +18,7 @@ import { withWidth } from '@iobroker/adapter-react-v5';
 import { type Translator, type Theme } from '@iobroker/adapter-react-v5/types';
 import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<Theme, any> = theme => ({
     tabPanel: {
@@ -58,7 +59,7 @@ interface SSLDialogProps {
     classes: Record<string, string>;
 }
 
-class SSLDialog extends Component<SSLDialogProps> {
+class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
     render() {
         const { classes, data } = this.props;
         const { letsEncrypt } = data.native || {};
