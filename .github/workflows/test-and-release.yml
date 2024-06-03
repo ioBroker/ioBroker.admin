@@ -45,11 +45,11 @@ jobs:
       - name: 'Build backend'
         run: npm run build:ts -w packages/admin
 
-      - name: 'Build dm-gui-components'
-        run: npm run build -w packages/dm-gui-components/
-
       - name: 'Build JsonConfig'
         run: npm run build -w packages/jsonConfig/
+
+      - name: 'Build dm-gui-components'
+        run: npm run build -w packages/dm-gui-components/
 
       - name: Check TypeScript files
         run: |
