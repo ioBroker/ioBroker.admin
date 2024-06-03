@@ -377,14 +377,16 @@ class AdapterTile extends React.Component<AdapterTileProps, AdapterTileState> {
                             />
                         </IsVisible>
                         <div className={this.props.classes.cardContentFlex}>
-                            <Tooltip title={this.props.t('Automatic Upgrade Policy')}>
-                                <IconButton
-                                    size="small"
-                                    onClick={() => this.setState({ autoUpgradeDialogOpen: true })}
-                                >
-                                    <UpdateSettingsIcon />
-                                </IconButton>
-                            </Tooltip>
+                            <IsVisible value={!!this.props.installedVersion}>
+                                <Tooltip title={this.props.t('Automatic Upgrade Policy')}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.setState({ autoUpgradeDialogOpen: true })}
+                                    >
+                                        <UpdateSettingsIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </IsVisible>
 
                             <IsVisible value={this.props.allowAdapterReadme}>
                                 <Tooltip title={this.props.t('Readme')}>

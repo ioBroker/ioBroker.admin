@@ -1441,6 +1441,8 @@ class Adapters extends Component {
 
             return <AdapterRow
                 t={this.t}
+                hostId={this.props.host}
+                socket={this.props.socket}
                 descHidden={descHidden}
                 key={`adapter-${value}`}
                 connectionType={cached.connectionType}

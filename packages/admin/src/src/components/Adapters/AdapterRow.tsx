@@ -38,11 +38,14 @@ import {
     ArrowUpward as ArrowUpwardIcon,
     ArrowDownward as ArrowDownwardIcon,
     Remove as RemoveIcon,
-    MonetizationOn,
+    MonetizationOn, KeyboardArrowUp as UpdateSettingsIcon,
 } from '@mui/icons-material';
 
-import { type Translate, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import {
+    type Translate, type IobTheme, Utils, type AdminConnection,
+} from '@iobroker/adapter-react-v5';
 
+import AutoUpgradeConfigDialog from '@/dialogs/AutoUpgradeConfigDialog';
 import IsVisible from '../IsVisible';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import sentryIcon from '../../assets/sentry.svg';
@@ -184,6 +187,10 @@ interface AdapterRowProps {
     versionDate: any;
     /** adapter id without 'system.adapter. */
     adapter: string;
+    /** Selected host in form system.host.xy */
+    hostId: string;
+    /** The socket connection */
+    socket: AdminConnection;
     connectionType: string;
     openInstallVersionDialog: () => void;
     dataSource: string;
@@ -212,7 +219,20 @@ interface AdapterRowProps {
     count: number;
 }
 
-class AdapterRow extends Component<AdapterRowProps> {
+interface AdapterRowState {
+    /** If auto upgrade dialog is opened */
+    autoUpgradeDialogOpen: boolean;
+}
+
+class AdapterRow extends Component<AdapterRowProps, AdapterRowState> {
+    constructor(props: AdapterRowProps) {
+        super(props);
+
+        this.state = {
+            autoUpgradeDialogOpen: false,
+        };
+    }
+
     renderVersion() {
         const {
             adapter,
@@ -309,6 +329,14 @@ class AdapterRow extends Component<AdapterRowProps> {
             hover
             className={this.props.hidden ? classes.displayNone : ''}
         >
+            <IsVisible value={this.state.autoUpgradeDialogOpen}>
+                <AutoUpgradeConfigDialog
+                    onClose={() => this.setState({ autoUpgradeDialogOpen: false })}
+                    adapter={this.props.adapter}
+                    hostId={this.props.hostId}
+                    socket={this.props.socket}
+                />
+            </IsVisible>
             <TableCell />
             <TableCell>
                 <Grid container spacing={1} alignItems="center" className={classes.name}>
@@ -492,6 +520,18 @@ class AdapterRow extends Component<AdapterRowProps> {
                         </IconButton>
                     </Tooltip>
                 </IsVisible>
+
+                <IsVisible value={!!this.props.installedVersion}>
+                    <Tooltip title={this.props.t('Automatic Upgrade Policy')}>
+                        <IconButton
+                            size="small"
+                            onClick={() => this.setState({ autoUpgradeDialogOpen: true })}
+                        >
+                            <UpdateSettingsIcon />
+                        </IconButton>
+                    </Tooltip>
+                </IsVisible>
+
                 {this.props.expertMode && this.props.allowAdapterUpdate !== false &&
                         <Tooltip title={this.props.t('Install a specific version')}>
                             <IconButton
