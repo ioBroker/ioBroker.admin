@@ -4,8 +4,7 @@ import {
     LinearProgress, MenuItem, Select, Switch,
 } from '@mui/material';
 
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
-import { I18n, Icon, SelectWithIcon } from '@iobroker/adapter-react-v5';
+import { I18n, Icon } from '@iobroker/adapter-react-v5';
 
 import type { ThemeType, Translator } from '@iobroker/adapter-react-v5/types';
 import Utils from '../components/Utils';
@@ -398,7 +397,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
             setProgress(true);
             setTimeout(async () => {
                 if (!applyToChildren) {
-                    const newAcl: AccessControlObject['acl'] = JSON.parse(JSON.stringify(objects[selected].acl || {}));
+                    const newAcl: AccessControlObject['acl'] = Utils.clone(objects[selected].acl || {});
                     newAcl.object = valueObjectAccessControl;
                     newAcl.owner = stateOwnerUser ? stateOwnerUser.value : 'system.user.admin';
                     newAcl.ownerGroup = stateOwnerGroup ? stateOwnerGroup.value : 'system.group.administrator';
@@ -419,7 +418,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
                     for (let i = 0; i < ids.length; i++) {
                         const key = ids[i];
                         const obj = objects[key];
-                        const newAcl: AccessControlObject['acl'] = JSON.parse(JSON.stringify(obj.acl || {}));
+                        const newAcl: AccessControlObject['acl'] = Utils.clone(obj.acl || {});
                         newAcl.object = newValueAccessControl(obj.acl.object, valueObjectAccessControl, _maskState);
                         if (stateOwnerUser && stateOwnerUser.value !== 'different') {
                             newAcl.owner = stateOwnerUser.value;

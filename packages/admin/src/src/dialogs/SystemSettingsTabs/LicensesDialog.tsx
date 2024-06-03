@@ -113,7 +113,7 @@ interface LicensesDialogState {
     // readTime: number;
 }
 
-class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState> {
+export class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState> {
     constructor(props: LicensesDialogProps) {
         super(props);
 
@@ -123,6 +123,23 @@ class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState>
             licenses: this.props.data.native.licenses || [],
             // readTime: this.props.data.native.readTime || 0,
         };
+    }
+
+    static requestLicensesByHost(socket: AdminConnection, host: string, login: string, password: string, t: (text: string) => string): Promise<License[]> {
+        return new Promise((resolve, reject) => {
+            // @TODO: Move to iobroker socket
+            socket.getRawSocket().emit('updateLicenses', login, password, (err: string | { error: string }, licenses: License[]) => {
+                if (err === 'permissionError') {
+                    reject(t('May not trigger "updateLicenses"'));
+                } else if (err && typeof err === 'object' && err.error) {
+                    reject(t(err.error));
+                } else if (err) {
+                    reject(t(err as string));
+                } else {
+                    resolve(licenses);
+                }
+            });
+        });
     }
 
     onLicensesChanged = (id: string, obj: ioBroker.Object | null | undefined): void => {
