@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
+import type { ioBrokerObject } from '@/types';
 import Utils from '../components/Utils';
 
 const stateTypeArray = [
@@ -45,11 +46,22 @@ const TYPES = {
     folder:  { name: 'Folder', value: 'folder' },
 };
 
-const ObjectAddNewObject = ({
+interface ObjectAddNewObjectProps {
+    onClose: () => void;
+    onApply: () => void;
+    selected: string;
+    setObject: (id: string, obj: ioBrokerObject) => Promise<void>;
+    objects: Record<string, ioBrokerObject>;
+    expertMode: boolean;
+    initialType?: ioBrokerObject['type'] | '';
+    initialStateType?: string;
+}
+
+const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
     onClose, onApply, selected, setObject, objects,
     expertMode, initialType, initialStateType,
 }) => {
-    const names = {
+    const names: Record<string, string> = {
         state:   I18n.t('New state'),
         channel: I18n.t('New channel'),
         device:  I18n.t('New device'),
@@ -97,28 +109,30 @@ const ObjectAddNewObject = ({
         }
     }
 
-    const storedType = (window._localStorage || window.localStorage).getItem('App.lastObjectType');
+    const storedType = (window._localStorage || window.localStorage).getItem('App.lastObjectType') as ioBrokerObject['type'];
     if (storedType && types.find(item => item.value === storedType)) {
         initialType = storedType;
     }
 
-    function buildId(_name) {
+    function buildId(_name: string) {
         return `${selected}.${_name.toString().replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_')}`;
     }
 
-    const [type, setType] = useState(initialType);
-    const [name, setName] = useState(names[initialType]);
-    const [stateType, setStateType] = useState(initialStateType || (window._localStorage || window.localStorage).getItem('App.lastStateType') || 'string');
-    const [unique, setUnique] = useState(!objects[buildId(names.state)]);
+    const [type, setType] = useState<ioBrokerObject['type'] | ''>(initialType);
+    const [name, setName] = useState<string>(names[initialType]);
+    const [stateType, setStateType] = useState<keyof typeof stateDefValues>(
+        (initialStateType || (window._localStorage || window.localStorage).getItem('App.lastStateType') || 'string') as keyof typeof stateDefValues,
+    );
+    const [unique, setUnique] = useState<boolean>(!objects[buildId(names.state)]);
 
     const onLocalApply = () => {
-        const newObj = {
+        const newObj: ioBrokerObject = {
             common: {
                 name,
                 desc: I18n.t('Manually created'),
             },
             type,
-        };
+        } as ioBrokerObject;
 
         if (type === 'state') {
             newObj.common = {
@@ -151,9 +165,9 @@ const ObjectAddNewObject = ({
         fullWidth
         maxWidth="md"
         disableEscapeKeyDown={false}
-        titleButtonApply="add"
+        // titleButtonApply="add"
         onClose={onClose}
-        onApply={() => onLocalApply()}
+        // onApply={() => onLocalApply()}
     >
         <DialogTitle>
             <div
@@ -193,10 +207,10 @@ const ObjectAddNewObject = ({
 
                             if (name === names[type]) {
                                 setName(names[el.target.value]);
-                                setUnique(objects[buildId(names[el.target.value])]);
+                                setUnique(!!objects[buildId(names[el.target.value])]);
                             }
 
-                            setType(el.target.value);
+                            setType(el.target.value as ioBrokerObject['type']);
                         }}
                     >
                         {types.map(el => <MenuItem key={el.value} value={el.value}>
@@ -217,7 +231,7 @@ const ObjectAddNewObject = ({
                         value={stateType}
                         onChange={el => {
                             (window._localStorage || window.localStorage).setItem('App.lastStateType', el.target.value);
-                            setStateType(el.target.value);
+                            setStateType(el.target.value as keyof typeof stateDefValues);
                         }}
                     >
                         {stateTypeArray.map(el => <MenuItem key={el} value={el}>
