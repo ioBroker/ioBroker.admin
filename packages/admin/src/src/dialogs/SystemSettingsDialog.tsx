@@ -1,7 +1,6 @@
 import type { Styles } from '@mui/styles';
 import { withStyles } from '@mui/styles';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import {
     Dialog,
@@ -30,6 +29,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { Theme, Translator } from '@iobroker/adapter-react-v5/types';
+import type { AdminGuiConfig } from '@/types';
 import Utils from '@/Utils';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
@@ -79,6 +79,17 @@ const styles: Styles<Theme, any> = theme => ({
 type SystemConfigObjectCustom = ioBroker.SystemConfigObject & {
     common: {
         firstDayOfWeek: string;
+        expertMode: boolean;
+    };
+}
+
+type SystemLicenseObject = ioBroker.Object & {
+    name: string;
+}
+
+type AdapterObjectCustom = ioBroker.AdapterObject & {
+    common: {
+        host: string;
     };
 }
 
@@ -90,7 +101,7 @@ interface SystemSettingsDialogProps {
     onClose: (repoChanged?: boolean) => void;
     currentTab: { id: string };
     width: string;
-    adminGuiConfig: ioBroker.Object;
+    adminGuiConfig: AdminGuiConfig;
     expertModeFunc: (val: boolean) => void;
     classes: Record<string, string>;
     currentHost: string;
@@ -122,7 +133,7 @@ interface SystemSettingsDialogTab {
     data: string;
     name: string;
     dataAux: string;
-    handle?: (type: string) => void;
+    handle?: (type: 'none' | 'extended' | 'no-city') => void;
     socket?: AdminConnection;
 }
 
@@ -157,7 +168,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             .then(multipleRepos => this.props.socket.checkFeatureSupported('CONTROLLER_LICENSE_MANAGER')
                 .then(licenseManager => this.props.socket.getCurrentInstance()
                     .then(namespace => this.props.socket.getObject(`system.adapter.${namespace}`))
-                    .then(obj => this.setState({ host: obj.common.host, multipleRepos, licenseManager }))));
+                    .then(obj => this.setState({ host: (obj as AdapterObjectCustom).common.host, multipleRepos, licenseManager }))));
     }
 
     getSettings() {
@@ -246,7 +257,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                         licenses: [],
                     },
                     type: 'config',
-                } as unknown as typeof ioBroker.Object;
+                } as unknown as ioBroker.Object;
                 if (systemLicenses.native.password) {
                     systemLicenses.native.password = SOME_PASSWORD;
                 }
@@ -307,12 +318,12 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     await this.props.socket.setObject('system.repositories', systemRepositories);
                 }
 
-                let systemLicenses = await this.props.socket.getObject('system.licenses');
-                systemLicenses = systemLicenses || {} as ioBroker.Object;
+                let systemLicenses = await this.props.socket.getObject('system.licenses') as SystemLicenseObject;
+                systemLicenses = systemLicenses || {} as SystemLicenseObject;
                 systemLicenses.type = systemLicenses.type || 'config';
                 systemLicenses.name = systemLicenses.name || 'Licenses from iobroker.net';
-                systemLicenses.common = systemLicenses.common || {} as ioBroker.Object['common'];
-                systemLicenses.native = systemLicenses.native || {} as ioBroker.Object['native'];
+                systemLicenses.common = systemLicenses.common || {} as SystemLicenseObject['common'];
+                systemLicenses.native = systemLicenses.native || {} as SystemLicenseObject['native'];
                 systemLicenses.native.licenses = systemLicenses.native.licenses || [];
                 systemLicenses.native.password = systemLicenses.native.password || '';
                 systemLicenses.native.login = systemLicenses.native.login || '';
@@ -429,7 +440,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         ];
     }
 
-    onChangeDiagType = (type: string) => {
+    onChangeDiagType = (type: 'none' | 'extended' | 'no-city') => {
         this.props.socket.getDiagData(this.props.currentHost, type)
             .then(diagData =>
                 this.setState({

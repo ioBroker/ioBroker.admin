@@ -1,13 +1,13 @@
-import type { Translate } from '@/types';
+import type { AdminGuiConfig, Translate } from '@/types';
 import type { AdminConnection } from '@iobroker/socket-client';
 import React, { Component } from 'react';
 
 interface BaseSystemSettingsDialogProps {
-    adminGuiConfig: ioBroker.Object;
+    adminGuiConfig: AdminGuiConfig;
     onChange: (data: any, dataAux: any, cb: () => void) => void;
     data: any;
     dataAux: any;
-    handle: (type: string) => void;
+    handle: (type: 'none' | 'extended' | 'no-city') => void;
     users: ioBroker.UserObject[];
     groups: ioBroker.GroupObject[];
     multipleRepos: boolean;
