@@ -13,6 +13,7 @@ declare global {
             accessAllowedConfigs: string[];
             accessAllowedTabs: string[];
             reverseProxy: unknown[];
+            language: ioBroker.Languages;
         }
     }
 }

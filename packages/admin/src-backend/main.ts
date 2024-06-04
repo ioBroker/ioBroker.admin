@@ -139,7 +139,7 @@ class Admin extends utils.Adapter {
             if (!err && obj) {
                 obj.native = obj.native || {};
                 if (this.config.language) {
-                    systemLanguage = this.config.language as ioBroker.Languages;
+                    systemLanguage = this.config.language;
                 } else if (obj.common?.language) {
                     systemLanguage = obj.common.language;
                 }
@@ -1517,7 +1517,9 @@ class Admin extends utils.Adapter {
             }
         });
 
-        this.config.autoUpdate && this.updateRegister();
+        if (this.config.autoUpdate) {
+            this.updateRegister();
+        }
 
         this.updateNews();
         this.updateIcons();
