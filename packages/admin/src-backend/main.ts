@@ -65,7 +65,7 @@ class Admin extends utils.Adapter {
             name: adapterName, // adapter name
             logTransporter: true, // receive the logs
             systemConfig: true,
-            install: () => null,
+            install: () => void null,
         };
 
         super(options as utils.AdapterOptions);
@@ -81,10 +81,10 @@ class Admin extends utils.Adapter {
 
     /**
      * Is called if a subscribed object changes
-     * @param {string} id
+     * @param id
      * @param {ioBroker.Object | null | undefined} obj
      */
-    onObjectChange(id, obj) {
+    onObjectChange(id: string, obj): void {
         if (obj) {
             // console.log('objectChange: ' + id);
             objects[id] = obj;
@@ -116,16 +116,16 @@ class Admin extends utils.Adapter {
 
     /**
      * Is called if a subscribed state changes
-     * @param {string} id
-     * @param {ioBroker.State | null | undefined} state
+     * @param id
+     * @param state
      */
-    onStateChange(id, state) {
+    onStateChange(id: string, state: ioBroker.State | null | undefined): void {
         if (socket) {
             socket.stateChange(id, state);
         }
     }
 
-    onFileChange(id, fileName, size) {
+    onFileChange(id: string, fileName, size): void {
         if (socket) {
             socket.fileChange(id, fileName, size);
         }
@@ -134,7 +134,7 @@ class Admin extends utils.Adapter {
     /**
      * Is called when databases are connected and adapter received configuration.
      */
-    onReady() {
+    onReady(): void {
         this.getForeignObject('system.config', (err, obj) => {
             if (!err && obj) {
                 obj.native = obj.native || {};
@@ -166,9 +166,9 @@ class Admin extends utils.Adapter {
      * Using this method requires "common.messagebox" property to be set to true in io-package.json
      * @param {ioBroker.Message} obj
      */
-    onMessage(obj) {
+    onMessage(obj): void {
         if (!obj) {
-            return false;
+            return;
         }
         if (obj.command === 'im') {
             // if not instance message
@@ -234,15 +234,13 @@ class Admin extends utils.Adapter {
         }
 
         socket && socket.sendCommand(obj);
-
-        return true;
     }
 
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      * @param {() => void} callback
      */
-    onUnload(callback) {
+    onUnload(callback): void {
         this.timerRepo && clearTimeout(this.timerRepo);
         this.timerRepo = null;
 
@@ -265,13 +263,13 @@ class Admin extends utils.Adapter {
         }
     }
 
-    onLog(obj) {
+    onLog(obj): void {
         if (socket) {
             socket.sendLog(obj);
         }
     }
 
-    createUpdateInfo() {
+    async createUpdateInfo(): Promise<void> {
         const promises = [];
         // create connected object and state
         const updatesNumberObj = objects[`${this.namespace}.info.updatesNumber`];
@@ -429,7 +427,7 @@ class Admin extends utils.Adapter {
             promises.push(this.setObjectAsync(obj._id, obj));
         }
 
-        return Promise.all(promises);
+        await Promise.all(promises);
     }
 
     upToDate(v1: string, v2: string): boolean {
@@ -441,7 +439,7 @@ class Admin extends utils.Adapter {
      *
      * @param sources current sources if given
      */
-    writeUpdateInfo(sources?: Record<string, ioBroker.RepositoryJsonAdapterContent>) {
+    writeUpdateInfo(sources?: Record<string, ioBroker.RepositoryJsonAdapterContent>): void {
         if (!objects['system.config'] || !objects['system.config'].common) {
             return this.log.warn('Repository cannot be read. Invalid "system.config" object.');
         }
@@ -589,7 +587,7 @@ class Admin extends utils.Adapter {
         });
     }
 
-    initSocket(server, store) {
+    initSocket(server, store): void {
         socket = new SocketAdmin(this.config, this, objects);
         socket.start(server, ws, {
             userKey: 'connect.sid',
@@ -613,7 +611,7 @@ class Admin extends utils.Adapter {
             .catch(error => this.log.error(`Cannot read UUID: ${error}`));
     }
 
-    processTasks() {
+    processTasks(): void {
         if (!this._running && this._tasks.length) {
             this._running = true;
 
@@ -635,7 +633,7 @@ class Admin extends utils.Adapter {
         }
     }
 
-    async applyRightsToObjects(pattern: string, types: string[] | string) {
+    async applyRightsToObjects(pattern: string, types: string[] | string): Promise<void> {
         if (typeof types === 'object') {
             for (const type of types) {
                 this.applyRightsToObjects(pattern, type);
@@ -659,7 +657,7 @@ class Admin extends utils.Adapter {
         }
     }
 
-    applyRights() {
+    applyRights(): void {
         const promises = [];
         this.config.accessAllowedConfigs = this.config.accessAllowedConfigs || [];
         this.config.accessAllowedTabs = this.config.accessAllowedTabs || [];
@@ -703,10 +701,8 @@ class Admin extends utils.Adapter {
 
     /**
      * Read news from server and register them as notifications
-     *
-     * @return {Promise<void>}
      */
-    async updateNews() {
+    async updateNews(): Promise<void> {
         this.timerNews && clearTimeout(this.timerNews);
         this.timerNews = null;
 
@@ -816,7 +812,7 @@ class Admin extends utils.Adapter {
      *
      * @return {Promise<void>}
      */
-    async registerNewsNotifications(messages, lastMessageId) {
+    async registerNewsNotifications(messages, lastMessageId): Promise<void> {
         const adapters = await this.getObjectViewAsync('system', 'adapter', {
             startkey: 'system.adapter.\u0000',
             endkey: 'system.adapter.\u9999',
@@ -924,11 +920,13 @@ class Admin extends utils.Adapter {
     /**
      * Check if adapter is active
      *
-     * @param {string} adapterName
-     * @param {Awaited<ioBroker.GetObjectViewPromise<ioBroker.InstanceObject>>} instances
-     * @return {boolean}
+     * @param adapterName
+     * @param instances
      */
-    checkActive(adapterName, instances) {
+    checkActive(
+        adapterName: string,
+        instances: Awaited<ioBroker.GetObjectViewPromise<ioBroker.InstanceObject>>
+    ): boolean {
         return !!Object.keys(instances)
             .filter(id => id.startsWith(`adapter.system.${adapterName}.`))
             .find(id => instances.rows.find(row => id === row.id)?.value?.common.enabled);
@@ -937,11 +935,10 @@ class Admin extends utils.Adapter {
     /**
      * Check if conditions met
      *
-     * @param {string} condition
-     * @param {string} installedVersion
-     * @return {boolean}
+     * @param condition
+     * @param installedVersion
      */
-    checkConditions(condition, installedVersion) {
+    checkConditions(condition: string, installedVersion: string): boolean {
         if (condition.startsWith('equals')) {
             const vers = condition.substring(7, condition.length - 1).trim();
             return installedVersion === vers;
@@ -991,7 +988,7 @@ class Admin extends utils.Adapter {
         return hostInfo.NPM;
     }
 
-    async checkNodeJsVersion() {
+    async checkNodeJsVersion(): Promise<void> {
         // allow only one admin instance to check the versions for every host
         if (this.instance !== 0) {
             const objs = await this.getObjectViewAsync('system', 'instance', {
@@ -1235,7 +1232,7 @@ class Admin extends utils.Adapter {
         }
     }
 
-    getData(callback) {
+    getData(callback): void {
         this.log.info('requesting all objects');
 
         this.getObjectList({ include_docs: true }, (err, res) => {
@@ -1264,7 +1261,7 @@ class Admin extends utils.Adapter {
         });
     }
 
-    async checkRevokedVersions(repository) {
+    async checkRevokedVersions(repository): Promise<void> {
         try {
             const adapters = Object.keys(repository);
             const instances = await this.getObjectViewAsync('system', 'instance', {
@@ -1332,7 +1329,7 @@ class Admin extends utils.Adapter {
     }
 
     // update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
-    updateIcons() {
+    updateIcons(): void {
         if (fs.existsSync(`${utils.controllerDir}/io-package.json`)) {
             const ioPackage = JSON.parse(
                 fs.readFileSync(path.join(utils.controllerDir, 'io-package.json'), {
@@ -1353,7 +1350,7 @@ class Admin extends utils.Adapter {
         }
     }
 
-    restartRepoUpdate() {
+    restartRepoUpdate(): void {
         // start the next cycle
         if (this.config.autoUpdate) {
             this.timerRepo && clearTimeout(this.timerRepo);
@@ -1375,7 +1372,7 @@ class Admin extends utils.Adapter {
     /**
      * Read repository information from active repository
      */
-    updateRegister() {
+    updateRegister(): void {
         if (lastRepoUpdate && Date.now() - lastRepoUpdate < 3600000) {
             this.log.error('Automatic repository update is not allowed more than once a hour');
             this.restartRepoUpdate();
@@ -1476,7 +1473,7 @@ class Admin extends utils.Adapter {
     /**
      * Initialize the adapter
      */
-    init() {
+    init(): void {
         this.config.defaultUser = this.config.defaultUser || 'admin';
         if (!this.config.defaultUser.match(/^system\.user\./)) {
             this.config.defaultUser = `system.user.${this.config.defaultUser}`;
@@ -1530,7 +1527,7 @@ class Admin extends utils.Adapter {
     /**
      * Create 0_userdata if it does not exist
      */
-    validateUserData0() {
+    validateUserData0(): void {
         this.getForeignObject('0_userdata.0', (err, obj) => {
             if (!obj) {
                 try {
