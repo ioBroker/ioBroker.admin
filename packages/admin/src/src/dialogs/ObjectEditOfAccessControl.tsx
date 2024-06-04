@@ -207,8 +207,8 @@ interface ObjectEditOfAccessControlProps {
     onClose: () => void;
     onApply: () => void;
     selected: string;
-    extendObject: (id: string, obj: Partial<AccessControlObject>) => Promise<void>;
-    objects: Record<string, AccessControlObject>;
+    extendObject: (id: string, obj: Partial<ioBroker.Object>) => Promise<void>;
+    objects: Record<string, ioBroker.Object>;
     t: Translate;
     modalEmptyId: string;
     themeType: ThemeType;
@@ -273,8 +273,8 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
                 if (_valueObjectAccessControl === null && obj.acl.object !== undefined) {
                     _valueObjectAccessControl = obj.acl.object;
                 }
-                if (_valueStateAccessControl === null && obj.acl.state !== undefined) {
-                    _valueStateAccessControl = obj.acl.state;
+                if (_valueStateAccessControl === null && (obj as ioBroker.StateObject).acl.state !== undefined) {
+                    _valueStateAccessControl = (obj as ioBroker.StateObject).acl.state;
                 }
                 if (_stateOwnerUser === null && obj.acl.owner !== undefined) {
                     _stateOwnerUser = obj.acl.owner;
@@ -289,8 +289,8 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
                 if (!differentGroup && _stateOwnerGroup !== obj.acl.ownerGroup && obj.acl.ownerGroup !== undefined) {
                     _differentGroup = true;
                 }
-                if (obj.acl.state !== undefined && _valueStateAccessControl !== obj.acl.state && !_differentState.includes(obj.acl.state)) {
-                    _differentState.push(obj.acl.state);
+                if ((obj as ioBroker.StateObject).acl.state !== undefined && _valueStateAccessControl !== (obj as ioBroker.StateObject).acl.state && !_differentState.includes((obj as ioBroker.StateObject).acl.state)) {
+                    _differentState.push((obj as ioBroker.StateObject).acl.state);
                 }
                 if (obj.acl.object !== undefined && _valueObjectAccessControl !== obj.acl.object && !_differentObject.includes(obj.acl.object)) {
                     _differentObject.push(obj.acl.object);
@@ -405,7 +405,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
                     if (objects[selected].type === 'state') {
                         newAcl.state = valueStateAccessControl;
                     }
-                    extendObject(selected, { acl: newAcl });
+                    extendObject(selected, { acl: newAcl } as Partial<ioBroker.Object>);
                 } else {
                     // let maskState = Object.keys(differentHexState).reduce((sum, key) => sum | (differentHexState[key] ? parseInt(key, 16) : 0), 0);
                     // eslint-disable-next-line no-bitwise
@@ -429,7 +429,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
                         if (obj.type === 'state') {
                             newAcl.state = newValueAccessControl(obj.acl.state, valueStateAccessControl, _maskObject);
                         }
-                        await extendObject(key, { acl: newAcl });
+                        await extendObject(key, { acl: newAcl } as Partial<ioBroker.Object>);
                     }
                 }
 

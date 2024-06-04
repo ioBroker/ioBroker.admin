@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -19,12 +18,23 @@ import {
     Delete as IconDeleteOne,
 } from '@mui/icons-material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
-import Router from '@iobroker/adapter-react-v5/Components/Router';
+import {
+    type AdminConnection,
+    type IobTheme,
+    type ThemeName, type ThemeType,
+    type Translate,
+    withWidth,
+    Router
+} from '@iobroker/adapter-react-v5';
 
-import ObjectBrowser from '../components/ObjectBrowser';
+import type ObjectsWorker from '@/Workers/ObjectsWorker';
+
+import ObjectBrowser, {
+    ObjectBrowserClass,
+    type ObjectBrowserFilter,
+    type TreeItemData
+} from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
-// eslint-disable-next-line import/no-unresolved
 import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';
 import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';
@@ -34,7 +44,7 @@ import ObjectViewFileDialog from '../dialogs/ObjectViewFileDialog';
 import ObjectAliasEditor from '../dialogs/ObjectAliasEditor';
 
 const IconDeleteAll = IconDeleteOne;
-const styles = {
+const styles: Record<string, any> = {
     buttonIcon: {
         marginRight: 4,
     },
@@ -48,21 +58,54 @@ const styles = {
         whiteSpace: 'nowrap',
     },
 };
-class Objects extends Component {
-    constructor(props) {
+
+interface ObjectsProps {
+    t: Translate;
+    lang: ioBroker.Languages;
+    socket: AdminConnection;
+    themeName: ThemeName;
+    themeType: ThemeType;
+    theme: IobTheme;
+    expertMode: boolean;
+    isFloatComma: boolean;
+    dateFormat: string;
+    objectsWorker: ObjectsWorker;
+    statesOnly: boolean;
+    classes: Record<string, string>;
+    prefix: string;
+}
+
+interface ObjectsState {
+    selected: string;
+    name: string;
+    toast: string;
+    deleteObjectShow: any;
+    // suppressDeleteConfirm: boolean;
+}
+
+class Objects extends Component<ObjectsProps, ObjectsState> {
+    private readonly dialogName: string;
+
+    private filters: Record<string, any>;
+
+    private readonly t: Translate;
+
+    private readonly wordCache: Record<string, string>;
+
+    constructor(props: ObjectsProps) {
         super(props);
 
         this.dialogName = 'AdminObjects';
 
-        this.filters = (window._localStorage || window.localStorage).getItem(`${this.dialogName || 'App'}.filters`) || '{}';
+        const filtersStr: string = ((window as any)._localStorage as Storage || window.localStorage).getItem(`${this.dialogName || 'App'}.filters`) || '{}';
 
         try {
-            this.filters = JSON.parse(this.filters);
+            this.filters = JSON.parse(filtersStr);
         } catch (e) {
             this.filters = {};
         }
 
-        const selected = (window._localStorage || window.localStorage).getItem(`${this.dialogName || 'App'}.selected`) || '';
+        const selected = ((window as any)._localStorage as Storage || window.localStorage).getItem(`${this.dialogName || 'App'}.selected`) || '';
 
         this.state = {
             selected,
@@ -75,7 +118,7 @@ class Objects extends Component {
         this.wordCache = {};
     }
 
-    translate = (word, arg1, arg2) => {
+    translate = (word: string, arg1: any, arg2: any) => {
         if (arg1 !== undefined) {
             return this.props.t(word, arg1, arg2);
         }
@@ -87,7 +130,7 @@ class Objects extends Component {
         return this.wordCache[word];
     };
 
-    onDelete(withChildren) {
+    onDelete(withChildren?: boolean) {
         const id = this.state.deleteObjectShow.id;
         if (withChildren) {
             this.props.socket.delObjects(id, true)
@@ -160,7 +203,7 @@ class Objects extends Component {
                     <Button
                         variant="contained"
                         color="grey"
-                        classes={{ label: this.props.classes.buttonText }}
+                        classes={{ text: this.props.classes.buttonText }}
                         onClick={() => this.onDelete(true)}
                         startIcon={<IconDeleteAll className={this.props.classes.buttonAll} />}
                     >
@@ -169,7 +212,7 @@ class Objects extends Component {
                 {this.state.deleteObjectShow.exists ?
                     <Button
                         variant="contained"
-                        classes={{ label: this.props.classes.buttonText }}
+                        classes={{ text: this.props.classes.buttonText }}
                         onClick={() => this.onDelete(false)}
                         color="primary"
                         startIcon={<IconDeleteOne />}
@@ -219,25 +262,33 @@ class Objects extends Component {
                 objectBrowserAliasEditor={ObjectAliasEditor}
                 router={Router}
                 enableStateValueEdit
-                onObjectDelete={(id, hasChildren, exists, childrenCount) =>
+                onObjectDelete={(id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) =>
                     this.setState({
                         deleteObjectShow: {
-                            id, hasChildren, exists, childrenCount,
+                            id,
+                            hasChildren,
+                            exists: objectExists,
+                            childrenCount,
                         },
                     })}
-                onFilterChanged={filterConfig => {
+                onFilterChanged={(filterConfig: ObjectBrowserFilter) => {
                     this.filters = filterConfig;
-                    (window._localStorage || window.localStorage).setItem(`${this.dialogName || 'App'}.filters`, JSON.stringify(filterConfig));
+                    ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.dialogName || 'App'}.filters`, JSON.stringify(filterConfig));
                 }}
-                onSelect={selected =>
-                    (window._localStorage || window.localStorage).setItem(`${this.dialogName || 'App'}.selected`, selected[0] || '')}
+                onSelect={(selected: string | string[]) => {
+                    if (Array.isArray(selected)) {
+                        ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.dialogName || 'App'}.selected`, selected[0] || '');
+                    } else {
+                        ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.dialogName || 'App'}.selected`, selected as string || '');
+                    }
+                }}
                 objectEditBoolean
                 objectAddBoolean
                 objectStatesView
                 objectImportExport
                 objectEditOfAccessControl
                 // eslint-disable-next-line react/no-unstable-nested-components
-                modalNewObject={context =>
+                modalNewObject={(context: ObjectBrowserClass) =>
                     <ObjectAddNewObject
                         objects={context.objects}
                         expertMode={this.props.expertMode}
@@ -250,21 +301,22 @@ class Objects extends Component {
                         onApply={() => context.setState({ modalNewObj: null })}
                     />}
                 // eslint-disable-next-line react/no-unstable-nested-components
-                modalEditOfAccessControl={(context, objData) =>
+                modalEditOfAccessControl={(context: ObjectBrowserClass, objData: TreeItemData) =>
                     <ObjectEditOfAccessControl
                         themeType={this.props.themeType}
-                        open={context.state.modalEditOfAccess}
-                        extendObject={(id, data) => {
+                        extendObject={async (id: string, data: Partial<ioBroker.Object>) => {
                             this.props.socket.extendObject(id, data)
                                 .catch(error => window.alert(error));
+
                             objData.aclTooltip = null;
                         }}
                         selected={context.state.selected[0]}
-                        modalEmptyId={context.state.modalEmptyId}
+                        // If an object is virtual, it has no obj attribute
+                        modalEmptyId={objData.obj ? '' : objData.id}
                         objects={context.objects}
                         t={this.t}
-                        onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null, modalEmptyId: null })}
-                        onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null, modalEmptyId: null })}
+                        onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
+                        onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
                     />}
             />,
             this.renderDeleteDialog(),
@@ -272,19 +324,4 @@ class Objects extends Component {
     }
 }
 
-Objects.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    socket: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
-    theme: PropTypes.object,
-    expertMode: PropTypes.bool,
-    isFloatComma: PropTypes.bool,
-    dateFormat: PropTypes.string,
-    objectsWorker: PropTypes.object,
-};
-
-/** @type {typeof Objects} */
-const _export = withWidth()(withStyles(styles)(Objects));
-export default _export;
+export default withWidth()(withStyles(styles)(Objects));
