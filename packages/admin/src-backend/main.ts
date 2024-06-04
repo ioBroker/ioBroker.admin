@@ -12,7 +12,7 @@ import * as semver from 'semver';
 import axios from 'axios';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
-import * as path from 'path';
+import * as path from 'node:path';
 import * as crypto from 'node:crypto';
 
 import * as utils from '@iobroker/adapter-core';
@@ -290,6 +290,7 @@ class Admin extends utils.Adapter {
                         it: 'Numero di adattatori da aggiornare',
                         es: 'Número de adaptadores para actualizar',
                         pl: 'Liczba adapterów do aktualizacji',
+                        uk: 'Кількість адаптерів для оновлення',
                         'zh-cn': '要更新的适配器数量',
                     },
                     type: 'number',
@@ -321,6 +322,7 @@ class Admin extends utils.Adapter {
                         it: 'Elenco degli adattatori da aggiornare',
                         es: 'Lista de adaptadores para actualizar',
                         pl: 'Lista adapterów do aktualizacji',
+                        uk: 'Список адаптерів для оновлення',
                         'zh-cn': '要更新的适配器列表',
                     },
                     type: 'string',
@@ -352,6 +354,7 @@ class Admin extends utils.Adapter {
                         it: "Indicatore se sono disponibili nuovi aggiornamenti dell'adattatore",
                         es: 'Indicador si hay nuevas actualizaciones de adaptadores disponibles',
                         pl: 'Wskaźnik, czy dostępne są nowe aktualizacje adaptera',
+                        uk: 'Індикатор наявності нових оновлень адаптера',
                         'zh-cn': '指示是否有新的适配器更新可用',
                     },
                     type: 'boolean',
@@ -383,6 +386,7 @@ class Admin extends utils.Adapter {
                         it: "Stringa JSON con informazioni sull'aggiornamento dell'adattatore",
                         es: 'Cadena JSON con información de actualización del adaptador',
                         pl: 'Ciąg JSON z informacjami o aktualizacji adaptera',
+                        uk: 'Рядок JSON з інформацією про оновлення адаптера',
                         'zh-cn': '带有适配器更新信息的 JSON 字符串',
                     },
                     type: 'string',
@@ -414,6 +418,7 @@ class Admin extends utils.Adapter {
                         it: "Timestamp dell'ultimo controllo di aggiornamento",
                         es: 'Marca de tiempo de la última verificación de actalización',
                         pl: 'Znacznik czasu ostatniego sprawdzenia aktualizacji',
+                        uk: 'Відмітка часу останньої перевірки оновлень',
                         'zh-cn': '上次更新检查的时间戳',
                     },
                     type: 'number',
@@ -1067,6 +1072,7 @@ class Admin extends utils.Adapter {
                         it: 'Node.js/Npm versioni',
                         es: 'Node.js/Npm versiones',
                         pl: 'Wersja node.js/Npm',
+                        uk: 'Версії Node.js/Npm',
                         'zh-cn': '页: 1',
                     },
                 },
@@ -1089,6 +1095,7 @@ class Admin extends utils.Adapter {
                             it: 'Versione attuale node.js',
                             es: 'Versión actual node.js',
                             pl: 'Aktualna wersja.js',
+                            uk: 'Поточна версія вузла',
                             'zh-cn': '目前没有。',
                         },
                         type: 'string',
@@ -1113,6 +1120,7 @@ class Admin extends utils.Adapter {
                             it: 'Nuova versione node.js',
                             es: 'Versión más reciente node.js',
                             pl: 'Najnowsza wersja węzła.js',
+                            uk: 'Остання версія вузла',
                             'zh-cn': '最新版本',
                         },
                         type: 'string',
@@ -1137,6 +1145,7 @@ class Admin extends utils.Adapter {
                             it: 'Nuova versione principale node.js',
                             es: 'Versión más reciente node.js',
                             pl: 'Najnowsza wersja węzła.js',
+                            uk: 'Новейшая наступна версія вузла',
                             'zh-cn': '今后最新的重要内容。',
                         },
                         type: 'string',
@@ -1161,6 +1170,7 @@ class Admin extends utils.Adapter {
                             it: 'Versione npm attuale',
                             es: 'Versión actual npm',
                             pl: 'Aktualna wersja',
+                            uk: 'Поточна версія npm',
                             'zh-cn': '目前的印本',
                         },
                         type: 'string',
@@ -1185,6 +1195,7 @@ class Admin extends utils.Adapter {
                             it: 'Nuova versione npm',
                             es: 'Versión más reciente npm',
                             pl: 'Wersja nowa',
+                            uk: 'Остання версія npm',
                             'zh-cn': '最新版本',
                         },
                         type: 'string',
@@ -1209,6 +1220,7 @@ class Admin extends utils.Adapter {
                             it: 'Nuova versione NPM',
                             es: 'Versión NPM más reciente',
                             pl: 'Nowa wersja NPM',
+                            uk: 'Новейша наступна велика версія NPM',
                             'zh-cn': '下一次主要国家预防计划',
                         },
                         type: 'string',

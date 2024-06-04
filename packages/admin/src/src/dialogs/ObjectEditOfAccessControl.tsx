@@ -47,7 +47,7 @@ interface AccessControlGroup {
     color?: string;
 }
 
-type AccessControlObject = {
+export type AccessControlObject = {
     acl: {
         object?: number;
         owner?: string;
