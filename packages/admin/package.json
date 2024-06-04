@@ -53,7 +53,7 @@
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
   },
-  "main": "build-backend/src-backend/main.js",
+  "main": "build-backend/main.js",
   "files": [
     "admin/",
     "build-backend",
