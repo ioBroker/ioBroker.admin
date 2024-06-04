@@ -18,7 +18,7 @@
     // "strictNullChecks": true,
     // "strictPropertyInitialization": true,
     // "strictBindCallApply": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     // "noUnusedLocals": true,
     // "noUnusedParameters": true,
     "useUnknownInCatchVariables": false,
