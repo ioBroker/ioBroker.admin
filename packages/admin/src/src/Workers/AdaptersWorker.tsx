@@ -3,14 +3,14 @@ import Utils from '../Utils';
 
 export type AdapterEventType = 'new' | 'changed' | 'deleted';
 
-interface AdapterEvent {
+export interface AdapterEvent {
     id: string;
     obj?: ioBroker.AdapterObject;
     type: AdapterEventType;
     oldObj?: ioBroker.AdapterObject;
 }
 
-class AdaptersWorker {
+export default class AdaptersWorker {
     private readonly socket: AdminConnection;
 
     private readonly handlers: ((events: AdapterEvent[]) => void)[];
@@ -178,5 +178,3 @@ class AdaptersWorker {
         }
     }
 }
-
-export default AdaptersWorker;

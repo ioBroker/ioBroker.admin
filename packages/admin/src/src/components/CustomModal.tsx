@@ -46,7 +46,7 @@ interface CustomModalProps {
     title?: string;
     titleButtonClose?: string;
     titleButtonApply?: string;
-    onApply: (value: string | number) => void;
+    onApply?: (value: string | number) => void;
     fullWidth?: boolean;
     maxWidth?: Breakpoint;
     applyButton?: boolean;

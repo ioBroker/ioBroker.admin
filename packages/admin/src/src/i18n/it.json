@@ -1602,5 +1602,6 @@
   "write": "Scrivi",
   "write operation": "Scrivi",
   "wrongPassword": "Nome utente o password errati",
-  "yesterday": "Ieri"
+  "yesterday": "Ieri",
+  "Filter adapters to see others. There is %s more": "Filtra gli adattatori per vederne altri. C'è ancora %s"
 }

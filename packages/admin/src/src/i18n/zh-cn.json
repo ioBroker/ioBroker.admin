@@ -1602,5 +1602,6 @@
   "write": "写",
   "write operation": "写",
   "wrongPassword": "用户名或密码无效",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "Filter adapters to see others. There is %s more": "过滤适配器以查看其他适配器。还有 %s"
 }

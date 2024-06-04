@@ -1657,7 +1657,7 @@ class App extends Router {
                         systemConfig={this.state.systemConfig}
                         socket={this.socket}
                         hosts={this.state.hosts}
-                        host={this.state.ownHost}
+                        adminHost={this.state.ownHost}
                         hostsWorker={this.hostsWorker}
                         currentHost={this.state.currentHost}
                         ready={this.state.ready}
@@ -1670,7 +1670,7 @@ class App extends Router {
                         menuOpened={opened}
                         menuClosed={closed}
                         menuCompact={compact}
-                        adminGuiConfig={this.adminGuiConfig}
+                        adminGuiConfig={this.adminGuiConfig.admin}
                         toggleTranslation={this.toggleTranslation}
                         noTranslation={this.state.noTranslation}
                         adminInstance={this.adminInstance}

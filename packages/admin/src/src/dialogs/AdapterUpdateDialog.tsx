@@ -152,8 +152,24 @@ interface News {
     news: string;
 }
 
-export interface RepoInstanceObject extends ioBroker.InstanceCommon {
+export interface RepoAdapterObject extends ioBroker.AdapterCommon {
     versionDate: string;
+    controller?: boolean;
+    stat?: number;
+    node?: string;
+    allowAdapterInstall?: boolean;
+    allowAdapterUpdate?: boolean;
+    allowAdapterDelete?: boolean;
+    allowAdapterReadme?: boolean;
+    allowAdapterRating?: boolean;
+}
+
+export interface CompactInstanceInfo {
+    adminTab: ioBroker.AdapterCommon['adminTab'];
+    name: ioBroker.InstanceCommon['name'];
+    icon: ioBroker.InstanceCommon['icon'];
+    enabled: ioBroker.InstanceCommon['enabled'];
+    version: ioBroker.InstanceCommon['version'];
 }
 
 /**
@@ -163,7 +179,7 @@ export function checkCondition(
     objMessages: ioBroker.MessageRule[] | false | null | undefined,
     oldVersion: string | null,
     newVersion: string,
-    instances: Record<string, ioBroker.InstanceObject>,
+    instances: Record<string, CompactInstanceInfo>,
 ): Message[] | null {
     let messages: Message[] | null = null;
 
@@ -226,10 +242,10 @@ export function checkCondition(
                             // it could be the name of required adapter, like vis-2
                             const split = rule.match(/([a-z][-a-z_0-9]+)([!=<>]+)([.\d]+)/);
                             if (split) {
-                                // Check that adapter is installed in desired version
-                                const instId = Object.keys(instances).find(id => instances[id]?.common?.name === split[1]);
+                                // Check that adapter is installed in a desired version
+                                const instId = Object.keys(instances).find(id => instances[id]?.name === split[1]);
                                 if (instId) {
-                                    version = instances[instId].common.version;
+                                    version = instances[instId].version;
                                     op = split[2];
                                     ver = split[3];
                                     try {
@@ -260,13 +276,13 @@ export function checkCondition(
                                 }
                             } else if (!rule.match(/^[!=<>]+/)) {
                                 // Check if adapter is installed
-                                if (Object.keys(instances).find(id => instances[id]?.common?.name === rule)) {
+                                if (Object.keys(instances).find(id => instances[id]?.name === rule)) {
                                     return true;
                                 }
                             } else if (rule.startsWith('!')) {
                                 // Check if adapter is not installed
                                 const adapter = rule.substring(1);
-                                if (!Object.keys(instances).find(id => instances[id]?.common?.name === adapter)) {
+                                if (!Object.keys(instances).find(id => instances[id]?.name === adapter)) {
                                     return true;
                                 }
                             }
@@ -335,7 +351,7 @@ export function checkCondition(
 
 interface AdapterUpdateDialogProps {
     adapter: string;
-    adapterObject: RepoInstanceObject;
+    adapterObject: RepoAdapterObject;
     dependencies?: Record<string, any>[];
     news: News[];
     noTranslation: boolean;
@@ -347,9 +363,9 @@ interface AdapterUpdateDialogProps {
     rightDependencies: boolean;
     installedVersion: string;
     t: (text: string, arg1?: any, arg2?: any) => string;
-    textUpdate: string;
-    textInstruction: string;
-    instances?: Record<string, ioBroker.InstanceObject>;
+    textUpdate?: string;
+    textInstruction?: string;
+    instances?: Record<string, CompactInstanceInfo>;
     classes: Record<string, any>;
 }
 

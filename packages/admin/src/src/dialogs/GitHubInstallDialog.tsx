@@ -106,7 +106,13 @@ if (!Array.prototype.flat) {
 }
 
 interface GitHubInstallDialogProps {
-    categories: Record<string, any>[];
+    categories: {
+        name: string;
+        translation: string;
+        count: number;
+        installed: number;
+        adapters: string[];
+    }[];
     repository: Record<string, any>;
     onClose: () => void;
     t: typeof I18n.t;
@@ -466,7 +472,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
 
                             try {
                                 await this.props.installFromUrl(`iobroker.${adapterName}@latest`, this.state.debug, true);
-                                // on npm installs we want to perform an additional upload
+                                // on npm installations we want to perform an additional upload
                                 this.props.upload(adapterName);
                             } catch (e) {
                                 console.error(`Installation from url failed: ${e.message}`);

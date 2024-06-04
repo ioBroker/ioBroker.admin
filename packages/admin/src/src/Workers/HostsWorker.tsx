@@ -18,7 +18,7 @@ export interface HostAliveEvent {
     type: HostEventType;
 }
 
-class HostsWorker {
+export default class HostsWorker {
     private readonly socket: AdminConnection;
 
     private readonly handlers: ((events: HostEvent[]) => void)[];
@@ -291,5 +291,3 @@ class HostsWorker {
         }
     }
 }
-
-export default HostsWorker;

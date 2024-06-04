@@ -183,7 +183,12 @@ class RatingDialog extends Component {
             headers: { 'Content-Type': 'application/json' },
             redirect: 'follow',
             body: JSON.stringify({
-                uuid: this.props.uuid, adapter, version, rating, comment, lang,
+                uuid: this.props.uuid,
+                adapter,
+                version,
+                rating,
+                comment,
+                lang,
             }),
         })
             .then(res => res.json())
@@ -288,12 +293,12 @@ class RatingDialog extends Component {
             onClose={() => this.props.onClose()}
         >
             <DialogTitle>{`${this.props.t('Review')} ${this.props.adapter}${this.props.version ? `@${this.props.version}` : ''}`}</DialogTitle>
-            <DialogContent style={{ textAlign: 'center' }} title={(this.props.currentRating && this.props.currentRating.title) || ''}>
+            <DialogContent style={{ textAlign: 'center' }} title={this.props.currentRating?.title || ''}>
                 {this.renderInfoText()}
                 <Rating
                     className={this.props.classes.rating}
                     name={this.props.adapter}
-                    value={this.props.version ? this.state.ratingNumber : this.props.currentRating?.rating && this.props.currentRating.rating.r}
+                    value={this.props.version ? this.state.ratingNumber : this.props.currentRating?.rating?.r}
                     size="large"
                     readOnly={!this.props.version}
                     onChange={(event, newValue) =>

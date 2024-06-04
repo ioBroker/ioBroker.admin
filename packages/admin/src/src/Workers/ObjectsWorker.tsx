@@ -16,7 +16,7 @@ export interface ObjectEvent {
 //     unregisterHandler(cb: (events: ObjectEvent[]) => void, doNotUnsubscribe?: boolean): void;
 // }
 
-class ObjectsWorker {
+export default class ObjectsWorker {
     private readonly socket: AdminConnection;
 
     private readonly handlers: ((events: ObjectEvent[]) => void)[];
@@ -131,5 +131,3 @@ class ObjectsWorker {
         }
     }
 }
-
-export default ObjectsWorker;

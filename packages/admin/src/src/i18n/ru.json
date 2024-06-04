@@ -1602,5 +1602,6 @@
   "write": "писать",
   "write operation": "Писать",
   "wrongPassword": "Неверные имя пользователя или пароль",
-  "yesterday": "вчера"
+  "yesterday": "вчера",
+  "Filter adapters to see others. There is %s more": "Отфильтруйте адаптеры, чтобы увидеть другие. Есть ещё %s"
 }

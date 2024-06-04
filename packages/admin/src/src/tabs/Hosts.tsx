@@ -28,7 +28,7 @@ import {
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import type HostsWorker from '@/Workers/HostsWorker';
 import type { NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
-import type { RepoInstanceObject } from '@/dialogs/AdapterUpdateDialog';
+import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
@@ -153,7 +153,7 @@ interface HostsProps {
 }
 
 interface HostsState {
-    repository: Record<string, RepoInstanceObject>;
+    repository: Record<string, RepoAdapterObject>;
     viewMode: boolean;
     alive: Record<`system.host.${string}`, boolean>;
     hosts: ioBroker.HostObject[];

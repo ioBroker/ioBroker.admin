@@ -1602,5 +1602,6 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
-  "yesterday": "yesterday"
+  "yesterday": "yesterday",
+  "Filter adapters to see others. There is %s more": "Filter adapters to see others. There is %s more"
 }

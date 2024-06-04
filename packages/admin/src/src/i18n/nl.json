@@ -1602,5 +1602,6 @@
   "write": "schrijven",
   "write operation": "schrijven",
   "wrongPassword": "ongeldige gebruikersnaam of wachtwoord",
-  "yesterday": "gisteren"
+  "yesterday": "gisteren",
+  "Filter adapters to see others. There is %s more": "Filteradapters om anderen te zien. Er is %s meer"
 }
