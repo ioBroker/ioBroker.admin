@@ -1,7 +1,7 @@
-import { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { type Styles, withStyles } from '@mui/styles';
 import MonacoEditor from 'react-monaco-editor';
+import type { editor as MonacoEditorType } from 'monaco-editor';
 
 import {
     Button,
@@ -17,9 +17,10 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
+import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import type { ioBrokerObject } from '@/types';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     dialog: {
         height: '100%',
         maxHeight: '100%',
@@ -41,8 +42,21 @@ export const EXTENSIONS = {
     txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
-class ObjectEditDialog extends Component {
-    constructor(props) {
+interface ObjectEditDialogProps {
+    t: Translate;
+    themeName: string;
+    obj: ioBrokerObject;
+    onClose: () => void;
+    classes: Record<string, string>;
+}
+
+interface ObjectEditDialogState {
+    code: string;
+    changed: boolean;
+}
+
+class ObjectEditDialog extends Component<ObjectEditDialogProps, ObjectEditDialogState> {
+    constructor(props: ObjectEditDialogProps) {
         super(props);
 
         this.state = {
@@ -51,12 +65,12 @@ class ObjectEditDialog extends Component {
         };
     }
 
-    static editorDidMount(editor /* , monaco */) {
+    static editorDidMount(editor: MonacoEditorType.IStandaloneCodeEditor /* , monaco */) {
         console.log('editorDidMount', editor);
         editor.focus();
     }
 
-    static onChange(newValue, e) {
+    static onChange(newValue: string, e: MonacoEditorType.IModelContentChangedEvent) {
         console.log('onChange', newValue, e);
     }
 
@@ -87,7 +101,7 @@ class ObjectEditDialog extends Component {
                     value={this.state.code}
                     options={{ selectOnLineNumbers: true }}
                     onChange={(newValue, e) => ObjectEditDialog.onChange(newValue, e)}
-                    editorDidMount={(editor, monaco) => ObjectEditDialog.editorDidMount(editor, monaco)}
+                    editorDidMount={(editor/* , monaco */) => ObjectEditDialog.editorDidMount(editor/* , monaco */)}
                 />
             </DialogContent>
             <DialogActions>
@@ -112,12 +126,5 @@ class ObjectEditDialog extends Component {
         </Dialog>;
     }
 }
-
-ObjectEditDialog.propTypes = {
-    t: PropTypes.func,
-    themeName: PropTypes.string,
-    obj: PropTypes.object,
-    onClose: PropTypes.func.isRequired,
-};
 
 export default withWidth()(withStyles(styles)(ObjectEditDialog));

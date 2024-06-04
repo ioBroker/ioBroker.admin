@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -29,7 +28,10 @@ import {
     Info as InfoIcon,
 } from '@mui/icons-material';
 
-const styles = theme => ({
+import type { IobTheme, Translate } from '@iobroker/adapter-react-v5';
+import Utils from '@/Utils';
+
+const styles: Styles<IobTheme, any> = theme => ({
     rating: {
         marginBottom: 20,
     },
@@ -135,8 +137,45 @@ const LANGUAGES = [
     },
 ];
 
-class RatingDialog extends Component {
-    constructor(props) {
+interface RatingDialogRepository {
+    [adapter: string]: {
+        rating: {
+            [version: string]: {
+                r: number;
+                ts: number;
+            };
+        };
+    };
+}
+
+interface RatingDialogVotings {
+    rating?: Record<string, { r: number; ts: number }>;
+    comments?: Array<{ comment: string; lang: string; rating: number; ts: number; uuid: string; version: string }>;
+}
+
+interface RatingDialogProps {
+    t: Translate;
+    lang: string;
+    uuid: string;
+    version: string;
+    currentRating: { rating: { r: number; ts: number }; title: string };
+    adapter: string;
+    onClose: (repository?: RatingDialogRepository) => void;
+    repository: RatingDialogRepository;
+    classes: Record<string, string>;
+}
+
+interface RatingDialogState {
+    ratingNumber: number;
+    ratingComment: string;
+    votings: RatingDialogVotings;
+    ratingLang: string;
+    filterLang: string;
+    commentsByLanguage: Record<string, number>;
+}
+
+class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
+    constructor(props: RatingDialogProps) {
         super(props);
 
         this.state = {
@@ -144,7 +183,7 @@ class RatingDialog extends Component {
             ratingComment: '',
             votings: null,
             ratingLang: this.props.lang,
-            filterLang: (window._localStorage || window.localStorage).getItem('app.commentLang') || this.props.lang,
+            filterLang: ((window as any)._localStorage as Storage || window.localStorage).getItem('app.commentLang') || this.props.lang,
             commentsByLanguage: {},
         };
     }
@@ -152,12 +191,12 @@ class RatingDialog extends Component {
     componentDidMount() {
         fetch(`https://rating.iobroker.net/adapter/${this.props.adapter}?uuid=${this.props.uuid}`)
             .then(res => res.json())
-            .then(votings => {
+            .then((votings: RatingDialogVotings) => {
                 votings = votings || {};
                 votings.rating = votings.rating || {};
                 const versions = Object.keys(votings.rating);
                 versions.sort((a, b) => (votings.rating[a].ts > votings.rating[b].ts ? -1 : (votings.rating[a].ts < votings.rating[b].ts ? 1 : 0)));
-                const commentsByLanguage = {};
+                const commentsByLanguage: Record<string, number> = {};
 
                 if (votings.comments) {
                     votings.comments.sort((a, b) => (a.ts > b.ts ? -1 : (a.ts < b.ts ? 1 : 0)));
@@ -177,7 +216,7 @@ class RatingDialog extends Component {
             });
     }
 
-    setAdapterRating(adapter, version, rating, comment, lang) {
+    setAdapterRating(adapter: string, version: string, rating: number, comment: string, lang: string) {
         return fetch('https://rating.iobroker.net/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -192,9 +231,9 @@ class RatingDialog extends Component {
             }),
         })
             .then(res => res.json())
-            .then(update => {
+            .then((update: RatingDialogRepository['adapter']['rating']) => {
                 window.alert(`${this.props.t('Vote:')} ${adapter}@${version}=${rating}`);
-                const repository = JSON.parse(JSON.stringify(this.props.repository));
+                const repository = Utils.clone(this.props.repository);
                 repository[adapter].rating = update;
                 return repository;
             })
@@ -229,7 +268,7 @@ class RatingDialog extends Component {
                         variant="standard"
                         value={this.state.filterLang}
                         onChange={e => {
-                            (window._localStorage || window.localStorage).setItem('app.commentLang', e.target.value);
+                            ((window as any)._localStorage as Storage || window.localStorage).setItem('app.commentLang', e.target.value);
                             this.setState({ filterLang: e.target.value });
                         }}
                     >
@@ -277,8 +316,8 @@ class RatingDialog extends Component {
     }
 
     render() {
-        let item;
-        let versions;
+        let item: { r: number; ts: number };
+        let versions: string[];
         if (this.state.votings) {
             const votings = this.state.votings.rating;
             versions = Object.keys(votings);
@@ -353,7 +392,7 @@ class RatingDialog extends Component {
                     onClick={() => {
                         if (this.state.ratingNumber !== item?.r || this.state.ratingComment) {
                             this.setAdapterRating(this.props.adapter, this.props.version, this.state.ratingNumber, this.state.ratingComment, this.state.ratingLang)
-                                .then(repository => this.props.onClose(repository));
+                                .then((repository: RatingDialogRepository) => this.props.onClose(repository));
                         } else {
                             this.props.onClose();
                         }
@@ -375,16 +414,5 @@ class RatingDialog extends Component {
         </Dialog>;
     }
 }
-
-RatingDialog.propTypes = {
-    t: PropTypes.func.isRequired,
-    lang: PropTypes.string.isRequired,
-    uuid: PropTypes.string.isRequired,
-    version: PropTypes.string,
-    currentRating: PropTypes.object,
-    adapter: PropTypes.string.isRequired,
-    onClose: PropTypes.func.isRequired,
-    repository: PropTypes.object,
-};
 
 export default withStyles(styles)(RatingDialog);

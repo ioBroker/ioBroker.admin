@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 
@@ -36,6 +36,7 @@ import {
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
 import Utils from '../../Utils';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<IobTheme, any> = theme => ({
     tabPanel: {
@@ -96,7 +97,7 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
 });
 
-type Repository = Record<'stable' | string, { link: string; hash?: string; time?: string; json?: object; stable?: boolean }>;
+type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
 
 type RepositoryArray = Array<{ title: string; link: string }>;
 
@@ -110,6 +111,7 @@ function repoToArray(repos: Repository): RepositoryArray {
 function arrayToRepo(array: RepositoryArray): Repository {
     const result: Repository = {};
     for (const k in array) {
+        // @ts-expect-error will be fixed in js-controller
         result[array[k].title] = { link: array[k].link };
     }
 
@@ -144,7 +146,7 @@ const SortableItem = SortableElement<{ value: any }>(({ value }: { value: any })
 /** All possible auto upgrade settings */
 const AUTO_UPGRADE_SETTINGS: ioBroker.AutoUpgradePolicy[] = ['none', 'patch', 'minor', 'major'];
 
-class RepositoriesDialog extends Component<RepositoriesDialogProps, RepositoriesDialogState> {
+class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProps, RepositoriesDialogState> {
     constructor(props: RepositoriesDialogProps) {
         super(props);
         const repos = (typeof this.props.dataAux.common.activeRepo === 'string' ? [this.props.dataAux.common.activeRepo] : this.props.dataAux.common.activeRepo).filter(r => r);
@@ -209,15 +211,18 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
     onRestore = () => {
         const newData = Utils.clone(this.props.data);
         newData.native.repositories = {
+            // @ts-expect-error will be fixed in js-controller
             stable: {
                 link: 'http://download.iobroker.net/sources-dist.json',
             },
+            // @ts-expect-error will be fixed in js-controller
             beta: {
                 link: 'http://download.iobroker.net/sources-dist-latest.json',
             },
         };
         // Store old information if already read
-        const oldStable = Object.keys(this.props.data.native.repositories).find(name => this.props.data.native.repositories[name].link === newData.native.repositories.stable.link);
+        const oldStable = Object.keys(this.props.data.native.repositories)
+            .find(name => this.props.data.native.repositories[name].link === newData.native.repositories.stable.link);
         if (oldStable) {
             if (newData.native.repositories.stable.json) {
                 newData.native.repositories.stable.json = this.props.data.native.repositories[oldStable].json;
@@ -229,7 +234,8 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
                 newData.native.repositories.stable.time = this.props.data.native.repositories[oldStable].time;
             }
         }
-        const oldBeta = Object.keys(this.props.data.native.repositories).find(name => this.props.data.native.repositories[name].link === newData.native.repositories.beta.link);
+        const oldBeta = Object.keys(this.props.data.native.repositories)
+            .find(name => this.props.data.native.repositories[name].link === newData.native.repositories.beta.link);
         if (oldBeta) {
             if (newData.native.repositories.beta.json) {
                 newData.native.repositories.beta.json = this.props.data.native.repositories[oldBeta].json;
@@ -390,6 +396,7 @@ class RepositoriesDialog extends Component<RepositoriesDialogProps, Repositories
                     <span>
                         <Checkbox
                             disabled
+                            // @ts-expect-error will be fixed in js-controller
                             checked={this.props.repoInfo[item.title]?.stable}
                             indeterminate={!this.props.repoInfo[item.title]}
                         />

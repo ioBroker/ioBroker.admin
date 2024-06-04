@@ -1,6 +1,6 @@
+import type { Styles } from '@mui/styles';
 import { withStyles } from '@mui/styles';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import {
     Dialog,
@@ -9,7 +9,6 @@ import {
     AppBar,
     Tab,
     Tabs,
-    Box,
     Typography,
     Button,
     LinearProgress,
@@ -21,20 +20,24 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import Router from '@iobroker/adapter-react-v5/Components/Router';
 import {
     Confirm as ConfirmDialog,
-    withWidth,
+    withWidth, type IobTheme, type Translate,
+    Router, type AdminConnection,
 } from '@iobroker/adapter-react-v5';
 
+import type { AdminGuiConfig } from '@/types';
+import Utils from '@/Utils';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
-import LicensesDialog from './SystemSettingsTabs/LicensesDialog';
+import LicensesDialog, { requestLicensesByHost } from './SystemSettingsTabs/LicensesDialog';
 import CertificatesDialog from './SystemSettingsTabs/CertificatesDialog';
 import SSLDialog from './SystemSettingsTabs/SSLDialog';
 import ACLDialog from './SystemSettingsTabs/ACLDialog';
 import StatisticsDialog from './SystemSettingsTabs/StatisticsDialog';
-
+import type {
+    BaseSystemSettingsDialogProps,
+} from './SystemSettingsTabs/BaseSystemSettingsDialog';
 // icons
 
 // style
@@ -42,7 +45,7 @@ import '../assets/css/style.css';
 
 const SOME_PASSWORD = '__SOME_PASSWORD__';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     tabPanel: {
         width: '100%',
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
@@ -71,8 +74,64 @@ const styles = theme => ({
     },
 });
 
-class SystemSettingsDialog extends Component {
-    constructor(props) {
+type SystemLicenseObject = ioBroker.Object & {
+    name: string;
+}
+
+interface SystemSettingsDialogProps {
+    t: Translate;
+    socket: AdminConnection;
+    themeName: string;
+    themeType: string;
+    onClose: (repoChanged?: boolean) => void;
+    currentTab: { id: string };
+    width: string;
+    adminGuiConfig: AdminGuiConfig;
+    expertModeFunc: (val: boolean) => void;
+    classes: Record<string, string>;
+    currentHost: string;
+    host: string;
+}
+
+interface SystemSettingsDialogState {
+    loading: boolean;
+    confirmExit: boolean;
+    systemConfig: ioBroker.SystemConfigObject;
+    systemCertificates: ioBroker.Object;
+    systemRepositories: ioBroker.Object;
+    systemLicenses: ioBroker.Object;
+    multipleRepos: boolean;
+    licenseManager: boolean;
+    host: string;
+    repoInfo: Record<string, ioBroker.RepoInfo>;
+    users?: ioBroker.UserObject[];
+    groups?: ioBroker.GroupObject[];
+    histories?: string[];
+    diagData?: any;
+    saving?: boolean;
+}
+
+interface SystemSettingsDialogTab {
+    id: number;
+    title: string;
+    component: React.FC<BaseSystemSettingsDialogProps>;
+    data: string;
+    name: string;
+    dataAux: string;
+    handle?: (type: 'none' | 'extended' | 'no-city') => void;
+    socket?: AdminConnection;
+}
+
+class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSettingsDialogState> {
+    originalCertificates: string;
+
+    originalConfig: string;
+
+    originalRepositories: string;
+
+    originalLicenses: string;
+
+    constructor(props: SystemSettingsDialogProps) {
         super(props);
         this.state = {
             loading: true,
@@ -86,113 +145,98 @@ class SystemSettingsDialog extends Component {
             host: '',
             repoInfo: {},
         };
-        this.getSettings(this.state.currentHost);
+        this.getSettings(/* this.state.currentHost */)
+            .catch(e => window.alert(`Cannot read settings: ${e}`));
     }
 
-    componentDidMount() {
-        this.props.socket.checkFeatureSupported('CONTROLLER_MULTI_REPO')
-            .then(multipleRepos => this.props.socket.checkFeatureSupported('CONTROLLER_LICENSE_MANAGER')
-                .then(licenseManager => this.props.socket.getCurrentInstance()
-                    .then(namespace => this.props.socket.getObject(`system.adapter.${namespace}`))
-                    .then(obj => this.setState({ host: obj.common.host, multipleRepos, licenseManager }))));
+    async componentDidMount() {
+        const multipleRepos = await this.props.socket.checkFeatureSupported('CONTROLLER_MULTI_REPO');
+        const licenseManager = await this.props.socket.checkFeatureSupported('CONTROLLER_LICENSE_MANAGER');
+        const namespace = await this.props.socket.getCurrentInstance();
+        const obj = (await this.props.socket.getObject(`system.adapter.${namespace}`)) as any as ioBroker.InstanceObject;
+        this.setState({ host: obj.common.host, multipleRepos, licenseManager });
     }
 
-    getSettings() {
-        const newState = { loading: false };
-        return this.props.socket.getObject('system.repositories')
-            .then(systemRepositories => {
-                systemRepositories = JSON.parse(JSON.stringify(systemRepositories));
-                systemRepositories = systemRepositories || {};
-                systemRepositories.native = systemRepositories.native || {};
-                systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                newState.repoInfo = {};
+    async getSettings() {
+        const newState: Partial<SystemSettingsDialogState> = { loading: false };
+        try {
+            let systemRepositories = await this.props.socket.getObject('system.repositories');
+            systemRepositories = Utils.clone(systemRepositories);
+            systemRepositories = (systemRepositories || {}) as ioBroker.RepositoryObject;
+            systemRepositories.native = (systemRepositories.native || {}) as ioBroker.RepositoryObject['native'];
+            systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+            newState.repoInfo = {};
 
-                Object.keys(systemRepositories.native.repositories).forEach(repo => {
-                    if (systemRepositories.native.repositories[repo]) {
-                        if (systemRepositories.native.repositories[repo].json) {
-                            newState.repoInfo[repo] = systemRepositories.native.repositories[repo].json._repoInfo;
-                            delete systemRepositories.native.repositories[repo].json;
-                        }
-                        if (systemRepositories.native.repositories[repo].hash) {
-                            delete systemRepositories.native.repositories[repo].hash;
-                        }
-                        if (systemRepositories.native.repositories[repo].time) {
-                            delete systemRepositories.native.repositories[repo].time;
-                        }
+            Object.keys(systemRepositories.native.repositories).forEach(repo => {
+                if (systemRepositories.native.repositories[repo]) {
+                    if (systemRepositories.native.repositories[repo].json) {
+                        newState.repoInfo[repo] = systemRepositories.native.repositories[repo].json._repoInfo;
+                        delete systemRepositories.native.repositories[repo].json;
                     }
+                    if (systemRepositories.native.repositories[repo].hash) {
+                        delete systemRepositories.native.repositories[repo].hash;
+                    }
+                    if (systemRepositories.native.repositories[repo].time) {
+                        delete systemRepositories.native.repositories[repo].time;
+                    }
+                }
+            });
+
+            this.originalRepositories = JSON.stringify(systemRepositories);
+            newState.systemRepositories = systemRepositories;
+            const systemConfig = await this.props.socket.getSystemConfig(true);
+            this.originalConfig = JSON.stringify(systemConfig || {});
+            newState.systemConfig = systemConfig || {} as ioBroker.SystemConfigObject;
+            systemConfig.common = systemConfig.common || {} as ioBroker.SystemConfigCommon;
+            systemConfig.native = systemConfig.native || {} as ioBroker.SystemConfigObject['native'];
+
+            systemConfig.common.defaultNewAcl = systemConfig.common.defaultNewAcl || {
+                object: 1636,
+                state: 1636,
+                file: 1632,
+                owner: 'system.user.admin',
+                ownerGroup: 'system.group.administrator',
+            };
+
+            // @ts-expect-error will be fixed in js-controller
+            systemConfig.common.firstDayOfWeek = systemConfig.common.firstDayOfWeek || 'monday';
+
+            newState.diagData = await this.props.socket.getDiagData(this.props.currentHost, systemConfig.common.diag);
+            newState.users = await this.props.socket.getUsers();
+            newState.groups = await this.props.socket.getGroups();
+            const instances = await this.props.socket.getAdapterInstances(true);
+            newState.histories = Object.values(instances)
+                .filter(instance => instance.common.getHistory)
+                .map(instance => {
+                    const id = instance._id.split('.');
+                    return `${id[id.length - 2]}.${id[id.length - 1]}`;
                 });
 
-                this.originalRepositories = JSON.stringify(systemRepositories);
-                newState.systemRepositories = systemRepositories;
-                return this.props.socket.getSystemConfig(true);
-            })
-            .then(systemConfig => {
-                this.originalConfig = JSON.stringify(systemConfig || {});
-                newState.systemConfig = systemConfig || {};
-                systemConfig.common = systemConfig.common || {};
-                systemConfig.native = systemConfig.native || {};
+            const systemCertificates = await this.props.socket.getObject('system.certificates');
+            this.originalCertificates = JSON.stringify(systemCertificates);
+            newState.systemCertificates = systemCertificates;
+            let systemLicenses: ioBroker.Object = this.props.socket.getObject('system.licenses') as any as ioBroker.Object;
+            systemLicenses = systemLicenses || {
+                common: {
+                    name: 'Licenses from iobroker.net',
+                },
+                native: {
+                    login: '',
+                    password: '',
+                    licenses: [],
+                },
+                type: 'config',
+            } as unknown as ioBroker.Object;
+            if (systemLicenses.native.password) {
+                systemLicenses.native.password = SOME_PASSWORD;
+            }
 
-                systemConfig.common.defaultNewAcl = systemConfig.common.defaultNewAcl || {
-                    object: 1636,
-                    state: 1636,
-                    file: 1632,
-                    owner: 'system.user.admin',
-                    ownerGroup: 'system.group.administrator',
-                };
-
-                systemConfig.common.firstDayOfWeek = systemConfig.common.firstDayOfWeek || 'monday';
-
-                return this.props.socket.getDiagData(this.props.currentHost, systemConfig.common.diag);
-            })
-            /**/
-            .then(diagData => {
-                newState.diagData = diagData;
-                return this.props.socket.getUsers();
-            })
-            .then(users => {
-                newState.users = users;
-                return this.props.socket.getGroups();
-            })
-            .then(groups => {
-                newState.groups = groups;
-                return this.props.socket.getAdapterInstances(true);
-            })
-            .then(instances => {
-                newState.histories = Object.values(instances)
-                    .filter(instance => instance.common.getHistory)
-                    .map(instance => {
-                        const id = instance._id.split('.');
-                        return `${id[id.length - 2]}.${id[id.length - 1]}`;
-                    });
-
-                return this.props.socket.getObject('system.certificates');
-            })
-            .then(systemCertificates => {
-                this.originalCertificates = JSON.stringify(systemCertificates);
-                newState.systemCertificates = systemCertificates;
-                return this.props.socket.getObject('system.licenses');
-            })
-            .then(systemLicenses => {
-                systemLicenses = systemLicenses || {
-                    common: {
-                        name: 'Licenses from iobroker.net',
-                    },
-                    native: {
-                        login: '',
-                        password: '',
-                        licenses: [],
-                    },
-                    type: 'config',
-                };
-                if (systemLicenses.native.password) {
-                    systemLicenses.native.password = SOME_PASSWORD;
-                }
-
-                this.originalLicenses = JSON.stringify({ login: systemLicenses.native.login, password: systemLicenses.native.password });
-                newState.systemLicenses = systemLicenses;
-                this.setState(newState);
-            })
-            .catch(e => window.alert(`Cannot read settings: ${e}`));
+            this.originalLicenses = JSON.stringify({ login: systemLicenses.native.login, password: systemLicenses.native.password });
+            newState.systemLicenses = systemLicenses;
+            this.setState(newState as SystemSettingsDialogState);
+        } catch (e) {
+            window.alert(`Cannot read settings: ${e}`);
+        }
     }
 
     renderConfirmDialog() {
@@ -212,15 +256,15 @@ class SystemSettingsDialog extends Component {
         this.setState({ saving: true }, async () => {
             try {
                 let systemConfig = await this.props.socket.getSystemConfig(true);
-                systemConfig = systemConfig || {};
+                systemConfig = systemConfig || {} as ioBroker.SystemConfigObject;
                 if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) {
                     await this.props.socket.setSystemConfig(this.state.systemConfig);
                 }
                 await this.props.socket.setObject('system.certificates', this.state.systemCertificates);
 
                 let systemRepositories = await this.props.socket.getObject('system.repositories');
-                systemRepositories = systemRepositories || {};
-                systemRepositories.native = systemRepositories.native || {};
+                systemRepositories = systemRepositories || {} as ioBroker.RepositoryObject;
+                systemRepositories.native = systemRepositories.native || {} as ioBroker.RepositoryObject['native'];
                 systemRepositories.native.repositories = systemRepositories.native.repositories || {};
                 const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
 
@@ -244,12 +288,12 @@ class SystemSettingsDialog extends Component {
                     await this.props.socket.setObject('system.repositories', systemRepositories);
                 }
 
-                let systemLicenses = await this.props.socket.getObject('system.licenses');
-                systemLicenses = systemLicenses || {};
+                let systemLicenses = await this.props.socket.getObject('system.licenses') as SystemLicenseObject;
+                systemLicenses = systemLicenses || {} as SystemLicenseObject;
                 systemLicenses.type = systemLicenses.type || 'config';
                 systemLicenses.name = systemLicenses.name || 'Licenses from iobroker.net';
-                systemLicenses.common = systemLicenses.common || {};
-                systemLicenses.native = systemLicenses.native || {};
+                systemLicenses.common = systemLicenses.common || {} as SystemLicenseObject['common'];
+                systemLicenses.native = systemLicenses.native || {} as SystemLicenseObject['native'];
                 systemLicenses.native.licenses = systemLicenses.native.licenses || [];
                 systemLicenses.native.password = systemLicenses.native.password || '';
                 systemLicenses.native.login = systemLicenses.native.login || '';
@@ -273,7 +317,7 @@ class SystemSettingsDialog extends Component {
                     }
                     try {
                         await this.props.socket.setObject('system.licenses', systemLicenses);
-                        LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, null, null, this.props.t);
+                        requestLicensesByHost(this.props.socket, this.props.host, null, null, this.props.t);
                     } catch (error) {
                         window.alert(this.props.t('Cannot update licenses: %s', error));
                     }
@@ -287,7 +331,7 @@ class SystemSettingsDialog extends Component {
                 }
                 if (this.state.systemConfig.common.language !== JSON.parse(this.originalConfig).common.language ||
                     JSON.stringify(this.state.systemConfig.common.activeRepo) !== JSON.stringify(JSON.parse(this.originalConfig).common.activeRepo)) {
-                    window.location.reload(false);
+                    window.location.reload();
                 }
                 this.setState({ saving: false });
             } catch (e) {
@@ -296,7 +340,7 @@ class SystemSettingsDialog extends Component {
         });
     }
 
-    getTabs() {
+    getTabs(): SystemSettingsDialogTab[] {
         return [
             {
                 id: 0,
@@ -333,7 +377,7 @@ class SystemSettingsDialog extends Component {
                 component: CertificatesDialog,
                 data: 'systemCertificates',
                 name: 'tabCertificates',
-                dataAux: {},
+                dataAux: null,
                 handle: null,
             },
             {
@@ -342,7 +386,7 @@ class SystemSettingsDialog extends Component {
                 component: SSLDialog,
                 data: 'systemCertificates',
                 name: 'tabLetsEncrypt',
-                dataAux: {},
+                dataAux: null,
                 handle: null,
             },
             {
@@ -351,7 +395,7 @@ class SystemSettingsDialog extends Component {
                 component: ACLDialog,
                 data: 'systemConfig',
                 name: 'tabDefaultACL',
-                dataAux: {},
+                dataAux: null,
                 handle: null,
             },
             {
@@ -366,7 +410,7 @@ class SystemSettingsDialog extends Component {
         ];
     }
 
-    onChangeDiagType = type => {
+    onChangeDiagType = (type: 'none' | 'extended' | 'no-city') => {
         this.props.socket.getDiagData(this.props.currentHost, type)
             .then(diagData =>
                 this.setState({
@@ -381,21 +425,21 @@ class SystemSettingsDialog extends Component {
                 }));
     };
 
-    getDialogContent(tabsList) {
+    getDialogContent(tabsList: SystemSettingsDialogTab[]) {
         if (this.state.loading) {
             return <LinearProgress />;
         }
 
         const tab = tabsList.find(t => t.name === this.props.currentTab.id) || tabsList[0];
 
-        const MyComponent = tab.component;
+        const MyComponent: React.FC<BaseSystemSettingsDialogProps> = tab.component;
         const { groups, users, histories } = this.state;
         return <div className={this.props.classes.tabPanel}>
             <MyComponent
                 adminGuiConfig={this.props.adminGuiConfig}
-                onChange={(data, dataAux, cb) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux, cb)}
-                data={this.state[tab.data]}
-                dataAux={this.state[tab.dataAux]}
+                onChange={(data: any, dataAux: any, cb: () => void) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux, cb)}
+                data={this.state[tab.data as keyof SystemSettingsDialogState]}
+                dataAux={this.state[tab.dataAux as keyof SystemSettingsDialogState]}
                 handle={tab.handle}
                 users={users}
                 groups={groups}
@@ -413,18 +457,18 @@ class SystemSettingsDialog extends Component {
         </div>;
     }
 
-    static onTabChanged = (event, newTab) => {
+    static onTabChanged = (newTab: string) => {
         Router.doNavigate(null, 'system', newTab);
     };
 
-    onChangedTab(id, data, idAux, dataAux, cb) {
+    onChangedTab(id: any, data: any, idAux: any, dataAux: any, cb: () => void) {
         if (data || dataAux) {
-            const state = { ...this.state };
+            const state: SystemSettingsDialogState = { ...this.state };
             if (data) {
-                state[id] = data;
+                (state as any)[id] = data;
             }
             if (dataAux) {
-                state[idAux] = dataAux;
+                (state as any)[idAux] = dataAux;
             }
             this.setState(state, () => cb && cb());
         }
@@ -481,7 +525,7 @@ class SystemSettingsDialog extends Component {
                             className={this.props.classes.tab}
                             indicatorColor="secondary"
                             value={this.props.currentTab.id || 'tabConfig'}
-                            onChange={(event, newTab) => SystemSettingsDialog.onTabChanged(event, newTab)}
+                            onChange={(event, newTab: string) => SystemSettingsDialog.onTabChanged(newTab)}
                             variant="scrollable"
                             scrollButtons="auto"
                         >
@@ -526,39 +570,28 @@ class SystemSettingsDialog extends Component {
     }
 }
 
-SystemSettingsDialog.propTypes = {
-    t: PropTypes.func,
-    socket: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
-    onClose: PropTypes.func.isRequired,
-    currentTab: PropTypes.object,
-    width: PropTypes.string,
-    adminGuiConfig: PropTypes.object,
-};
-
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));
 
-function TabPanel(props) {
-    const {
-        children, value, index, ...other
-    } = props;
-
-    return <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`nav-tabpanel-${index}`}
-        aria-labelledby={`nav-tab-${index}`}
-        {...other}
-    >
-        {value === index && <Box p={3}>
-            <Typography>{children}</Typography>
-        </Box>}
-    </div>;
-}
-
-TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
+// interface TabPanelProps {
+//     children: React.ReactNode;
+//     index: number;
+//     value: number;
+// }
+//
+// const TabPanel: React.FC<TabPanelProps> = (props: TabPanelProps) => {
+//     const {
+//         children, value, index, ...other
+//     } = props;
+//
+//     return <div
+//         role="tabpanel"
+//         hidden={value !== index}
+//         id={`nav-tabpanel-${index}`}
+//         aria-labelledby={`nav-tab-${index}`}
+//         {...other}
+//     >
+//         {value === index && <Box p={3}>
+//             <Typography>{children}</Typography>
+//         </Box>}
+//     </div>;
+// };
