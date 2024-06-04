@@ -93,8 +93,8 @@ function EnumEditDialog(props: EnumEditDialogProps) {
             .replace(/__/g, '_')
             .replace(/__/g, '_');
 
-    const getText = (text: ioBroker.StringOrTranslated) =>
-        (text && typeof text === 'object' ? text[props.lang] || text.en : text || '');
+    const getText = (text: ioBroker.StringOrTranslated): string =>
+        (text && typeof text === 'object' ? text[props.lang] || text.en : text as string || '');
 
     const changeShortId = (_id: string, short: string) => {
         const idArray = _id.split('.');
@@ -121,15 +121,15 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         label="Name"
                         t={props.t}
                         value={props.getName(props.enum.common.name)}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={(value: string) => {
                             const newData = props.enum;
                             if (
                                 !props.enum.common.dontDelete &&
                                 name2Id(props.getName(newData.common.name)) === getShortId(newData._id)
                             ) {
-                                newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                                newData._id = changeShortId(newData._id, name2Id(value));
                             }
-                            newData.common.name = e.target.value;
+                            newData.common.name = value;
                             props.onChange(newData);
                         }}
                         autoComplete="off"
@@ -143,9 +143,9 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         t={props.t}
                         disabled={props.enum.common.dontDelete}
                         value={props.enum._id.split('.')[props.enum._id.split('.').length - 1]}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={(value: string) => {
                             const newData = JSON.parse(JSON.stringify(props.enum));
-                            newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                            newData._id = changeShortId(newData._id, name2Id(value));
                             props.onChange(newData);
                         }}
                         icon={LocalOfferIcon}
@@ -167,9 +167,9 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         label="Description"
                         t={props.t}
                         value={getText((props.enum.common as EnumCommon).desc)}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={(value: string) => {
                             const newData = props.enum;
-                            (newData.common as EnumCommon).desc = e.target.value;
+                            (newData.common as EnumCommon).desc = value;
                             props.onChange(newData);
                         }}
                         icon={DescriptionIcon}

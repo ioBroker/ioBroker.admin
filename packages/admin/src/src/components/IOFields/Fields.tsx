@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import {
     TextField,
@@ -10,10 +9,24 @@ import {
 
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import { ColorPicker } from '@iobroker/adapter-react-v5';
+import { ColorPicker, type Translate } from '@iobroker/adapter-react-v5';
 
-export function IOTextField(props) {
+interface IOTextFieldProps {
+    label: string;
+    value: string;
+    onChange?: (value: string) => void;
+    disabled?: boolean;
+    error?: string;
+    type?: string;
+    icon?: React.FC<{ className: string }>;
+    classes: Record<string, string>;
+    autoComplete?: string;
+    t: Translate;
+}
+
+export function IOTextField(props: IOTextFieldProps) {
     const IconCustom = props.icon;
+
     return <div className={props.classes.formContainer}>
         {IconCustom ? <IconCustom className={props.classes.formIcon} /> : null}
         <FormControl className={props.classes.formControl} variant="standard">
@@ -24,7 +37,7 @@ export function IOTextField(props) {
                 error={!!props.error}
                 helperText={props.error || ''}
                 value={props.value}
-                onChange={props.onChange}
+                onChange={e => props.onChange(e.target.value)}
                 disabled={props.disabled}
                 InputLabelProps={{ shrink: true }}
                 type={props.type}
@@ -33,7 +46,7 @@ export function IOTextField(props) {
                     endAdornment: props.value ? <InputAdornment position="end">
                         <IconButton
                             size="small"
-                            onClick={() => props.onChange({ target: { value: '' } })}
+                            onClick={() => props.onChange('')}
                         >
                             <CloseIcon />
                         </IconButton>
@@ -44,30 +57,31 @@ export function IOTextField(props) {
     </div>;
 }
 
-const IOColorPicker = props => {
+interface IOColorPickerProps {
+    label: string;
+    value: string;
+    onChange: (color: string) => void;
+    icon?: React.FC<{ className: string }>;
+    previewClassName?: string;
+    className?: string;
+    classes: Record<string, string>;
+    t: Translate;
+}
+
+function IOColorPicker(props: IOColorPickerProps): React.JSX.Element {
     const IconCustom = props.icon;
+
     return <div style={{ width: '100%' }}>
         {IconCustom ? <IconCustom className={props.previewClassName || props.classes.formIcon} /> : null}
         <ColorPicker
-            t={props.t}
             style={{ width: IconCustom ? 'calc(100% - 45px)' : '100%', display: 'inline-block', verticalAlign: 'top' }}
-            name={props.t(props.label)}
+            label={props.t(props.label)}
             onChange={props.onChange}
             openAbove
-            color={props.value || ''}
+            value={props.value || ''}
             className={props.className}
         />
     </div>;
-};
+}
 
-IOColorPicker.propTypes = {
-    label: PropTypes.string,
-    value: PropTypes.any,
-    classes: PropTypes.object,
-    previewClassName: PropTypes.string,
-    onChange: PropTypes.func,
-    icon: PropTypes.object,
-    className: PropTypes.string,
-    t: PropTypes.func.isRequired,
-};
 export { IOColorPicker };

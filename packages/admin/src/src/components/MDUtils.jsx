@@ -4,7 +4,6 @@
  * MIT License
  *
  * */
-// import React from 'react';
 import { Utils } from '@iobroker/adapter-react-v5';
 
 class MDUtils {
