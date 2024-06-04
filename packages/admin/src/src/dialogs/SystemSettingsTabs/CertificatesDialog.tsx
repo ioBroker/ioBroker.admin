@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Dropzone from 'react-dropzone';
 
 import { type Styles, withStyles } from '@mui/styles';
@@ -33,6 +33,7 @@ import {
 
 import { type ioBrokerObject } from '@/types';
 import Utils from '../../Utils';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 // icons
 
@@ -86,6 +87,7 @@ type Certificate = Record<string, string>;
 interface CertificatesDialogProps {
     t: Translate;
     classes: Record<string, string>;
+    // TODO: implement certificates in js-controller - 'system.certificates'
     data: ioBrokerObject<CertificateArray>;
     onChange: (data: ioBrokerObject<CertificateArray>) => void;
     saving: boolean;
@@ -96,7 +98,7 @@ interface CertificatesDialogState {
     chClass: boolean;
 }
 
-class CertificatesDialog extends Component<CertificatesDialogProps, CertificatesDialogState> {
+class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProps, CertificatesDialogState> {
     constructor(props: CertificatesDialogProps) {
         super(props);
 

@@ -62,6 +62,7 @@ import AdapterInstallDialog, {
     type AdapterInstallDialogProps,
 } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
+import type { AdminGuiConfig } from '@/types';
 
 type DockerInformation = {
     /** If it is a Docker installation */
@@ -119,13 +120,6 @@ type HostInfo = {
     NPM: string;
 };
 
-export type CompactSystemRepositoryEntry = {
-    link: string;
-    hash?: string;
-    stable?: boolean;
-    json: { _repoInfo: { stable?: boolean; name?: ioBroker.StringOrTranslated } } | null | undefined;
-};
-
 export type CompactSystemRepository = {
     _id: string;
     common: {
@@ -133,20 +127,9 @@ export type CompactSystemRepository = {
         dontDelete: boolean;
     };
     native: {
-        repositories: Record<string, CompactSystemRepositoryEntry>;
+        repositories: Record<string, ioBroker.RepositoryInformation>;
     };
 };
-
-export interface AdminGuiConfig {
-    menu?: Record<string, boolean>;
-    settings?: Record<string, boolean>;
-    adapters: {
-        allowAdapterRating?: boolean;
-        gitHubInstall?: boolean;
-
-    };
-    login: Record<string, boolean>;
-}
 
 const styles: Record<string, any> = (theme: IobTheme) => ({
     grow: {
@@ -946,7 +929,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                 });
 
-                if (this.props.adminGuiConfig.adapters?.allowAdapterRating !== false) {
+                if (this.props.adminGuiConfig.admin.adapters?.allowAdapterRating !== false) {
                     ratings = await this.props.socket.getRatings(update).catch(e => window.alert(`Cannot read ratings: ${e}`));
                     this.uuid = ratings?.uuid || null;
                 } else {
@@ -1569,7 +1552,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                         />
                     </IconButton>
                 </Tooltip>}
-            <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.filterUpdates">
+            <IsVisible config={this.props.adminGuiConfig.admin} name="admin.adapters.filterUpdates">
                 <Tooltip title={this.t('Filter adapter with updates')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton size="large" onClick={() => this.changeUpdateList()}>
                         <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
@@ -1587,7 +1570,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 </IconButton>
             </Tooltip>}
 
-            {this.props.expertMode && this.props.adminGuiConfig?.adapters.gitHubInstall !== false &&
+            {this.props.expertMode && this.props.adminGuiConfig.admin?.adapters.gitHubInstall !== false &&
                 <Tooltip title={this.t('Install from custom URL')} classes={{ popper: this.props.classes.tooltip }}>
                     <IconButton size="large" onClick={() => this.setState({ gitHubInstallDialog: true })}>
                         <GithubIcon />
@@ -1634,7 +1617,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 value={this.state.filterTiles}
             />
             <div className={classes.grow} />
-            <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.statistics">
+            <IsVisible config={this.props.adminGuiConfig.admin} name="admin.adapters.statistics">
                 <Hidden only={['xs', 'sm']}>
                     <div
                         className={classes.infoAdapters}
@@ -1699,7 +1682,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         let stableRepo = Utils.isStableRepository(this.props.systemConfig.common.activeRepo);
 
         // if repositories are available
-        const repositories: Record<string, CompactSystemRepositoryEntry> = this.state.compactRepositories?.native?.repositories;
+        const repositories: Record<string, ioBroker.RepositoryInformation> = this.state.compactRepositories?.native?.repositories;
         if (repositories) {
             // new style with multiple active repositories
             if (
@@ -1728,6 +1711,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     if (repoInfo.name && typeof repoInfo.name === 'object') {
                         repoName = repoInfo.name[this.props.lang] || repoInfo.name.en;
                     } else {
+                        // @ts-expect-error deprecated
                         repoName = repoInfo.name as string;
                     }
                 }
@@ -1743,6 +1727,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                             if (repoInfo.name && typeof repoInfo.name === 'object') {
                                 return repoInfo.name[this.props.lang] || repoInfo.name.en;
                             }
+                            // @ts-expect-error deprecated
                             return repoInfo.name as string;
                         }
                         return repo;

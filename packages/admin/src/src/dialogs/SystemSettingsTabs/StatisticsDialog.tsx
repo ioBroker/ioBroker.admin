@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 
 import {
@@ -9,9 +9,9 @@ import {
 import blueGrey from '@mui/material/colors/blueGrey';
 
 import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
-import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 import Editor from '../../components/Editor';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 // eslint-disable-next-line no-undef
 (window as any).ace.config.set('basePath', 'lib/js/ace');
@@ -51,16 +51,16 @@ const styles: Styles<IobTheme, any> = theme => ({
 
 interface StatisticsDialogProps {
     t: Translate;
-    data: ioBrokerObject<object, { diag: string }>;
-    dataAux: ioBrokerObject;
+    data: ioBroker.SystemConfigObject;
+    dataAux: ioBroker.SystemConfigObject;
     themeType: string;
-    onChange: (data: ioBrokerObject<object, { diag: string }>) => void;
+    onChange: (data: ioBroker.SystemConfigObject) => void;
     saving: boolean;
     handle: (type: string) => void;
     classes: Record<string, string>;
 }
 
-class StatisticsDialog extends Component<StatisticsDialogProps> {
+class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     static getTypes() {
         return [
             {
@@ -110,7 +110,7 @@ class StatisticsDialog extends Component<StatisticsDialogProps> {
 
     doChange(name: string, value: string) {
         const newData = Utils.clone(this.props.data);
-        newData.common[name] = value;
+        (newData.common as Record<string, any>)[name] = value;
         this.props.onChange(newData);
     }
 

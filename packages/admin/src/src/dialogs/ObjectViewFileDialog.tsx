@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import type { Styles } from '@mui/styles';
 import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
 
 import {
     Button,
@@ -18,11 +18,15 @@ import {
     GetApp as DownloadIcon,
 } from '@mui/icons-material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
+import {
+    withWidth, type IobTheme,
+    type Translate, type AdminConnection,
+} from '@iobroker/adapter-react-v5';
 
+import type { ioBrokerObject } from '@/types';
 import Utils from '../components/Utils';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     dialog: {
         height: '100%',
         maxHeight: '100%',
@@ -65,8 +69,28 @@ export const EXTENSIONS = {
     txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
-class ObjectViewFileDialog extends Component {
-    constructor(props) {
+interface ObjectViewFileDialogProps {
+    t: Translate;
+    socket: AdminConnection;
+    obj: ioBrokerObject;
+    onClose: () => void;
+    classes: Record<string, string>;
+}
+
+interface ObjectViewFileDialogState {
+    error: string;
+    image: boolean;
+    text: string | null;
+    binary: string | null;
+    fileName: string;
+    mime?: string;
+    audio?: boolean;
+}
+
+class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectViewFileDialogState> {
+    audioRef: React.RefObject<HTMLAudioElement>;
+
+    constructor(props: ObjectViewFileDialogProps) {
         super(props);
 
         const parts = this.props.obj._id.split('.');
@@ -84,7 +108,7 @@ class ObjectViewFileDialog extends Component {
 
     componentDidMount() {
         this.props.socket.getBinaryState(this.props.obj._id)
-            .then(data => {
+            .then((data: string) => {
                 let ext = this.props.obj._id.toLowerCase().split('.').pop();
 
                 const detectedMimeType = Utils.detectMimeType(data);
@@ -155,12 +179,5 @@ class ObjectViewFileDialog extends Component {
         </Dialog>;
     }
 }
-
-ObjectViewFileDialog.propTypes = {
-    t: PropTypes.func,
-    socket: PropTypes.object,
-    obj: PropTypes.object,
-    onClose: PropTypes.func.isRequired,
-};
 
 export default withWidth()(withStyles(styles)(ObjectViewFileDialog));

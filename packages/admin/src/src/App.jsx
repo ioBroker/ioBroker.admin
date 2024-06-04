@@ -1670,7 +1670,7 @@ class App extends Router {
                         menuOpened={opened}
                         menuClosed={closed}
                         menuCompact={compact}
-                        adminGuiConfig={this.adminGuiConfig.admin}
+                        adminGuiConfig={this.adminGuiConfig}
                         toggleTranslation={this.toggleTranslation}
                         noTranslation={this.state.noTranslation}
                         adminInstance={this.adminInstance}

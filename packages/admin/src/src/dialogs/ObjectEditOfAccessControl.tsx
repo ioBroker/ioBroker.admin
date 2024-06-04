@@ -4,12 +4,15 @@ import {
     LinearProgress, MenuItem, Select, Switch,
 } from '@mui/material';
 
-import { Icon, I18n } from '@iobroker/adapter-react-v5';
+import {
+    I18n, Icon, type ThemeType,
+    type Translate,
+} from '@iobroker/adapter-react-v5';
 
 import Utils from '../components/Utils';
 import CustomModal from '../components/CustomModal';
 
-const readWriteArray = [
+const readWriteArray: Record<string, { name: string; valueNum: number; title: string }[]>[] = [
     {
         Owner: [
             { name: 'read', valueNum: 0x400, title: 'read owner' },
@@ -30,7 +33,39 @@ const readWriteArray = [
     },
 ];
 
-const newValueAccessControl = (value, newValue, mask) => {
+interface AccessControlUser {
+    name: string;
+    value: string;
+    icon?: string;
+    color?: string;
+}
+
+interface AccessControlGroup {
+    name: string;
+    value: string;
+    icon?: string;
+    color?: string;
+}
+
+type AccessControlObject = {
+    acl: {
+        object?: number;
+        owner?: string;
+        ownerGroup?: string;
+        state?: number;
+    };
+    type: string;
+    common: {
+        defaultNewAcl: {
+            object: number;
+            owner: string;
+            ownerGroup: string;
+            state: number;
+        };
+    };
+} & ioBroker.PartialObject;
+
+const newValueAccessControl = (value: number, newValue: number, mask: number) => {
     // eslint-disable-next-line no-bitwise
     value |= newValue & mask;
     // eslint-disable-next-line no-bitwise
@@ -38,8 +73,19 @@ const newValueAccessControl = (value, newValue, mask) => {
     return value;
 };
 
-const ObjectRights = ({
-    value, disabled, setValue, t, differentValues, applyToChildren, mask, setMask,
+interface ObjectRightsProps {
+    value: number;
+    setValue: (value: number) => void;
+    t: Translate;
+    differentValues: number[];
+    applyToChildren: boolean;
+    mask: number;
+    setMask: (mask: number) => void;
+    disabled: boolean;
+}
+
+const ObjectRights: React.FC<ObjectRightsProps> = ({
+    value, setValue, t, differentValues, applyToChildren, mask, setMask, disabled,
 }) => {
     useEffect(() => {
         if (applyToChildren) {
@@ -130,7 +176,7 @@ const ObjectRights = ({
                                     checked={bool}
                                     color={masked ? 'primary' : 'secondary'}
                                     indeterminate={!!(masked)}
-                                    style={masked ? { opacity: 0.5 } : null}
+                                    style={masked ? { opacity: 0.5 } : undefined}
                                     onChange={e => {
                                         if (masked) {
                                             // eslint-disable-next-line no-bitwise
@@ -157,25 +203,36 @@ const ObjectRights = ({
     </div>;
 };
 
-const ObjectEditOfAccessControl = ({
-    onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId, themeType,
+interface ObjectEditOfAccessControlProps {
+    onClose: () => void;
+    onApply: () => void;
+    selected: string;
+    extendObject: (id: string, obj: Partial<AccessControlObject>) => Promise<void>;
+    objects: Record<string, AccessControlObject>;
+    t: Translate;
+    modalEmptyId: string;
+    themeType: ThemeType;
+}
+
+const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
+    onClose, onApply, selected, extendObject, objects, t, modalEmptyId, themeType,
 }) => {
-    const [stateOwnerUser, setStateOwnerUser] = useState(null);
-    const [stateOwnerGroup, setStateOwnerGroup] = useState(null);
-    const [ownerUsers, setOwnerUsers] = useState([]);
-    const [ownerGroups, setOwnerGroups] = useState([]);
+    const [stateOwnerUser, setStateOwnerUser] = useState<AccessControlUser>(null);
+    const [stateOwnerGroup, setStateOwnerGroup] = useState<AccessControlGroup>(null);
+    const [ownerUsers, setOwnerUsers] = useState<AccessControlUser[]>([]);
+    const [ownerGroups, setOwnerGroups] = useState<AccessControlGroup[]>([]);
     const [applyToChildren, setApplyToChildren] = useState(false);
     const [checkState, setCheckState] = useState(false);
     const [childrenCount, setChildrenCount] = useState(0);
-    const [valueObjectAccessControl, setValueObjectAccessControl] = useState(null);
-    const [valueStateAccessControl, setValueStateAccessControl] = useState(null);
+    const [valueObjectAccessControl, setValueObjectAccessControl] = useState<number>(null);
+    const [valueStateAccessControl, setValueStateAccessControl] = useState<number>(null);
     const [differentOwner, setDifferentOwner] = useState(false);
     const [differentGroup, setDifferentGroup] = useState(false);
     const [differentState, setDifferentState] = useState([]);
     const [differentObject, setDifferentObject] = useState([]);
     const [maskState, setMaskState] = useState(0);
     const [maskObject, setMaskObject] = useState(0);
-    const [ids, setIds] = useState([]);
+    const [ids, setIds] = useState<string[]>([]);
     const [progress, setProgress] = useState(false);
 
     const [disabledButton, setDisabledButton] = useState(true);
@@ -184,24 +241,24 @@ const ObjectEditOfAccessControl = ({
 
     useEffect(() => {
         let count = 0;
-        const _differentState = [];
-        const _differentObject = [];
+        const _differentState: number[] = [];
+        const _differentObject: number[] = [];
 
         const id = selected || modalEmptyId;
         const idWithDot = `${id}.`;
         const keys = Object.keys(objects).sort();
         let _checkState = false;
-        const groups = [];
-        const users = [];
+        const groups: AccessControlGroup[] = [];
+        const users: AccessControlUser[] = [];
         const lang = I18n.getLanguage();
 
         let _differentOwner = false;
         let _differentGroup = false;
-        let _stateOwnerUser = null;
-        let _stateOwnerGroup = null;
-        let _valueObjectAccessControl = null;
-        let _valueStateAccessControl = null;
-        const _ids = [];
+        let _stateOwnerUser: string = null;
+        let _stateOwnerGroup: string = null;
+        let _valueObjectAccessControl: number = null;
+        let _valueStateAccessControl: number = null;
+        const _ids: string[] = [];
 
         for (let k = 0; k < keys.length; k++) {
             const key = keys[k];
@@ -250,14 +307,15 @@ const ObjectEditOfAccessControl = ({
                     icon: obj.common?.icon,
                     color: obj.common?.color,
                 });
-            } else if (key.startsWith('system.user.') && obj?.type === 'user') {
-                users.push({
-                    name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
-                    value: key,
-                    icon: obj.common?.icon,
-                    color: obj.common?.color,
-                });
-            }
+            } else
+                if (key.startsWith('system.user.') && obj?.type === 'user') {
+                    users.push({
+                        name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
+                        value: key,
+                        icon: obj.common?.icon,
+                        color: obj.common?.color,
+                    });
+                }
         }
 
         _stateOwnerUser = _stateOwnerUser || objects['system.config'].common.defaultNewAcl.owner;
@@ -315,10 +373,10 @@ const ObjectEditOfAccessControl = ({
             }
         } else {
             if (stateOwnerUser && stateOwnerUser.value === 'different') {
-                setStateOwnerUser(objects[selected].acl.owner);
+                setStateOwnerUser(objects[selected].acl.owner as unknown as AccessControlUser);
             }
             if (stateOwnerGroup && stateOwnerGroup.value === 'different') {
-                setStateOwnerGroup(objects[selected].acl.ownerGroup);
+                setStateOwnerGroup(objects[selected].acl.ownerGroup as unknown as AccessControlGroup);
             }
             // remove different from a list
             setOwnerGroups(el => el.filter(({ value }) => value !== 'different'));
@@ -330,17 +388,16 @@ const ObjectEditOfAccessControl = ({
         return <LinearProgress />;
     }
     return <CustomModal
-        open={open}
         titleButtonApply="apply"
         overflowHidden
-        applyDisabled={disabledButton}
+        disableApply={disabledButton}
         progress={progress}
         onClose={onClose}
         onApply={() => {
             setProgress(true);
             setTimeout(async () => {
                 if (!applyToChildren) {
-                    const newAcl = JSON.parse(JSON.stringify(objects[selected].acl || {}));
+                    const newAcl: AccessControlObject['acl'] = Utils.clone(objects[selected].acl || {});
                     newAcl.object = valueObjectAccessControl;
                     newAcl.owner = stateOwnerUser ? stateOwnerUser.value : 'system.user.admin';
                     newAcl.ownerGroup = stateOwnerGroup ? stateOwnerGroup.value : 'system.group.administrator';
@@ -361,7 +418,7 @@ const ObjectEditOfAccessControl = ({
                     for (let i = 0; i < ids.length; i++) {
                         const key = ids[i];
                         const obj = objects[key];
-                        const newAcl = JSON.parse(JSON.stringify(obj.acl || {}));
+                        const newAcl: AccessControlObject['acl'] = Utils.clone(obj.acl || {});
                         newAcl.object = newValueAccessControl(obj.acl.object, valueObjectAccessControl, _maskState);
                         if (stateOwnerUser && stateOwnerUser.value !== 'different') {
                             newAcl.owner = stateOwnerUser.value;
@@ -381,7 +438,6 @@ const ObjectEditOfAccessControl = ({
             }, 200);
         }}
     >
-
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{
                 margin: 10,

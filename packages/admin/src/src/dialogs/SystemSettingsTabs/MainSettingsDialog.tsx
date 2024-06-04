@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
@@ -33,6 +33,7 @@ import { type AdminGuiConfig, type ioBrokerObject } from '@/types';
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries.json';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<IobTheme, any> = theme => ({
     tabPanel: {
@@ -71,16 +72,10 @@ interface Setting {
     help?: string;
 }
 
-type SystemObject = ioBrokerObject<object, ioBroker.SystemConfigCommon & {
-    // @TODO extend js-controller
-    city: string;
-    country: string;
-}>;
-
 interface Props {
     t: Translate;
-    data: SystemObject;
-    dataAux: SystemObject;
+    data: ioBroker.SystemConfigObject;
+    dataAux: ioBroker.SystemConfigObject;
     adminGuiConfig: AdminGuiConfig;
     saving: boolean;
     onChange: (data: any, dataAux: any, cb?: () => void) => void;
@@ -95,7 +90,7 @@ interface State {
     confirmValue: string;
 }
 
-class MainSettingsDialog extends Component<Props, State> {
+class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -311,7 +306,7 @@ class MainSettingsDialog extends Component<Props, State> {
 
     getSelect(e: Setting, i: number) {
         const { classes } = this.props;
-        let value = this.props.data.common[e.id];
+        let value = (this.props.data.common as Record<string, any>)[e.id];
 
         if (e.id === 'defaultLogLevel' && !value) {
             value = 'info';
@@ -521,7 +516,7 @@ class MainSettingsDialog extends Component<Props, State> {
 
     doChange = (name: string, value: any, cb?: () => void) => {
         const newData = Utils.clone(this.props.data);
-        newData.common[name] = value;
+        (newData.common as Record<string, any>)[name] = value;
         this.props.onChange(newData, null, () =>
             cb && cb());
     };
@@ -555,10 +550,12 @@ class MainSettingsDialog extends Component<Props, State> {
                                 variant="standard"
                                 id="siteName"
                                 label={this.props.t('Site name')}
+                                // @ts-expect-error will be fixed in js-controller
                                 value={this.props.data.common.siteName || ''}
                                 onChange={e => this.doChange('siteName', e.target.value)}
                                 helperText={this.props.t('This name will be shown in admin\'s header. Just to identify the whole installation')}
                                 InputProps={{
+                                    // @ts-expect-error will be fixed in js-controller
                                     endAdornment: this.props.data.common.siteName ? <InputAdornment position="end">
                                         <IconButton
                                             size="small"

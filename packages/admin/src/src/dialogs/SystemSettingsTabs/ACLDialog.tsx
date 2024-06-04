@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 
 import { withStyles, type Styles } from '@mui/styles';
 import {
@@ -24,6 +24,7 @@ import {
 
 import { type ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
     tabPanel: {
@@ -73,7 +74,7 @@ type ACLObjectProps = {
     saving: boolean;
 }
 
-class ACLDialog extends Component<ACLObjectProps> {
+class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
     private static permBits: [number, number][] = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
 
     static getTypes(): { type: keyof ACLRights; title: string }[] {

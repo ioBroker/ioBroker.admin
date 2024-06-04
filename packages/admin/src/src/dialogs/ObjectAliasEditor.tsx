@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import { withStyles, type Styles } from '@mui/styles';
 
 import {
     Button,
@@ -25,9 +24,14 @@ import {
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
-import { I18n, IconFx, Utils } from '@iobroker/adapter-react-v5';
+import {
+    I18n, IconFx,
+    Utils, type IobTheme,
+    type AdminConnection,
+} from '@iobroker/adapter-react-v5';
+import type { ioBrokerObject } from '@/types';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     funcIcon: {
         width: 16,
         height: 16,
@@ -56,11 +60,40 @@ const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', '
 
 // todo: icon, enum function, enum room, write from other object
 
-class ObjectAliasEditor extends Component {
-    constructor(props) {
+interface ObjectAliasEditorProps {
+    t: (text: string) => string;
+    socket: AdminConnection;
+    objects: Record<string, ioBrokerObject>;
+    onRedirect: (id: string, timeout?: number) => void;
+    obj: ioBrokerObject;
+    onClose: () => void;
+    classes: Record<string, string>;
+}
+
+interface ObjectAliasEditorState {
+    usedInAliases: string[];
+    showAddNewAlias: boolean;
+    newAliasId: string;
+    newAliasName: string;
+    newAliasRead: boolean;
+    newAliasWrite: boolean;
+    newAliasUnit: string;
+    newAliasDesc: string;
+    newAliasType: string;
+    newAliasUseFormula: boolean;
+    newAliasReadFormula: string;
+    newAliasWriteFormula: string;
+    newAliasColor: string;
+    newAliasIcon: string;
+}
+
+class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEditorState> {
+    aliasIDs: string[];
+
+    constructor(props: ObjectAliasEditorProps) {
         super(props);
 
-        const usedInAliases = [];
+        const usedInAliases: string[] = [];
         const id = this.props.obj._id;
 
         this.aliasIDs = Object.keys(this.props.objects).filter(_id => _id.startsWith('alias.0'));
@@ -90,7 +123,7 @@ class ObjectAliasEditor extends Component {
         };
     }
 
-    static getText(text) {
+    static getText(text: ioBroker.StringOrTranslated): string {
         if (!text) {
             return '';
         }
@@ -216,12 +249,12 @@ class ObjectAliasEditor extends Component {
                         indeterminate={this.state.newAliasRead === undefined || this.state.newAliasRead === null}
                         checked={this.state.newAliasRead}
                         onChange={e => {
-                            const newState = { newAliasRead: e.target.checked };
+                            const newState: Partial<ObjectAliasEditorState> = { newAliasRead: e.target.checked };
                             // state cannot be not readable and not writeable
                             if (newState.newAliasRead === false && this.state.newAliasWrite === false) {
                                 newState.newAliasWrite = true;
                             }
-                            this.setState(newState);
+                            this.setState(newState as ObjectAliasEditorState);
                         }}
                     />}
                     label={I18n.t('Alias read')}
@@ -232,12 +265,12 @@ class ObjectAliasEditor extends Component {
                         indeterminate={this.state.newAliasWrite === undefined || this.state.newAliasWrite === null}
                         checked={this.state.newAliasWrite}
                         onChange={e => {
-                            const newState = { newAliasWrite: e.target.checked };
+                            const newState: Partial<ObjectAliasEditorState> = { newAliasWrite: e.target.checked };
                             // state cannot be not readable and not writeable
                             if (newState.newAliasRead === false && this.state.newAliasWrite === false) {
                                 newState.newAliasRead = true;
                             }
-                            this.setState(newState);
+                            this.setState(newState as ObjectAliasEditorState);
                         }}
                     />}
                     label={I18n.t('Alias write')}
@@ -300,7 +333,7 @@ class ObjectAliasEditor extends Component {
                     variant="contained"
                     disabled={!this.state.newAliasId || !!this.props.objects[`alias.0.${this.state.newAliasId}`]}
                     onClick={async () => {
-                        const obj = {
+                        const obj: ioBrokerObject = {
                             _id: `alias.0.${this.state.newAliasId}`,
                             type: 'state',
                             common: {
@@ -311,7 +344,7 @@ class ObjectAliasEditor extends Component {
                                 },
                             },
                             native: {},
-                        };
+                        } as ioBrokerObject;
                         if (this.state.newAliasDesc) {
                             obj.common.desc = this.state.newAliasDesc;
                         }
@@ -413,14 +446,5 @@ class ObjectAliasEditor extends Component {
         </Dialog>;
     }
 }
-
-ObjectAliasEditor.propTypes = {
-    t: PropTypes.func,
-    socket: PropTypes.object,
-    objects: PropTypes.object,
-    onRedirect: PropTypes.func,
-    obj: PropTypes.object,
-    onClose: PropTypes.func.isRequired,
-};
 
 export default withWidth()(withStyles(styles)(ObjectAliasEditor));
