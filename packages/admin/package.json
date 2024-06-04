@@ -29,7 +29,7 @@
     "@iobroker/webserver": "^1.0.3",
     "@iobroker/ws-server": "^2.1.2",
     "@types/leaflet": "^1.9.12",
-    "ajv": "^8.13.0",
+    "ajv": "^8.15.0",
     "archiver": "^7.0.1",
     "axios": "^1.7.2",
     "body-parser": "^1.20.2",
