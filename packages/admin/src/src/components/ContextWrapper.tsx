@@ -6,10 +6,26 @@ import React, {
 
 import BasicUtils from '@/Utils';
 
-export const ContextWrapper = createContext();
+type MyContext = {
+    hostsUpdate: number;
+    adaptersUpdate: number;
 
-export const ContextWrapperProvider = ({ children }) => {
-    const [stateContext, setState] = useState({
+    hosts: ioBroker.HostObject[] | null;
+    repository: {  [adapterName: string]: { icon: string; version: string } } | null;
+    installed: {  [adapterName: string]: { version: string; ignoreVersion?: string } } | null;
+};
+
+export const ContextWrapper = createContext<MyContext>({
+    hostsUpdate:    0,
+    adaptersUpdate: 0,
+
+    hosts:          null,
+    repository:     null,
+    installed:      null,
+});
+
+export function ContextWrapperProvider({ children }: { children: React.JSX.Element[] | React.JSX.Element }) {
+    const [stateContext, setState] = useState<MyContext>({
         hostsUpdate:    0,
         adaptersUpdate: 0,
 
@@ -18,11 +34,13 @@ export const ContextWrapperProvider = ({ children }) => {
         installed:      null,
     });
 
-    const setStateContext = useMemo(() => obj => {
+    const setStateContext = useMemo(() => (obj: any) => {
         setState(prevState =>
+            // If a full object is passed, replace it
             (Object.keys(prevState).length === Object.keys(obj).length ?
                 { ...obj }
                 :
+                // else merge the new object with the old one
                 { ...prevState, ...obj }));
     }, [setState]);
 
@@ -59,7 +77,7 @@ export const ContextWrapperProvider = ({ children }) => {
     }, [stateContext.hosts, stateContext.installed, stateContext.repository]);
 
     // eslint-disable-next-line react/jsx-no-constructed-context-values
-    return <ContextWrapper.Provider value={{ stateContext, setStateContext }}>
+    return <ContextWrapper.Provider value={stateContext}>
         {children}
     </ContextWrapper.Provider>;
-};
+}

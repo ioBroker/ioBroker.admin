@@ -1,9 +1,12 @@
 import React from 'react';
 import { useDragLayer } from 'react-dnd';
 import { withStyles } from '@mui/styles';
+
+import type { IobTheme } from '@iobroker/adapter-react-v5';
+
 import DrawerItem from './DrawerItem';
 
-const layerStyles = {
+const layerStyles: React.CSSProperties = {
     position: 'fixed',
     pointerEvents: 'none',
     zIndex: 100,
@@ -13,13 +16,17 @@ const layerStyles = {
     height: '100%',
 };
 
-const snapToGrid = (x, y) => {
+function snapToGrid(x: number, y: number) {
     const snappedX = Math.round(x / 32) * 32;
     const snappedY = Math.round(y / 32) * 32;
     return [snappedX, snappedY];
-};
+}
 
-const getItemStyles = (initialOffset, currentOffset, isSnapToGrid) => {
+function getItemStyles(
+    initialOffset: { x: number; y: number },
+    currentOffset: { x: number; y: number },
+    isSnapToGrid?: boolean,
+): React.CSSProperties {
     if (!initialOffset || !currentOffset) {
         return {
             display: 'none',
@@ -38,14 +45,15 @@ const getItemStyles = (initialOffset, currentOffset, isSnapToGrid) => {
         transform,
         WebkitTransform: transform,
     };
-};
+}
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     root: {
         background: theme.palette.background.default,
     },
 });
-const CustomDragLayer = ({ classes }) => {
+
+const CustomDragLayer = ({ classes }: { classes: Record<string, string>}) => {
     const {
         itemType,
         isDragging,
@@ -59,31 +67,27 @@ const CustomDragLayer = ({ classes }) => {
         initialOffset: monitor.getInitialSourceClientOffset(),
         currentOffset: monitor.getSourceClientOffset(),
         isDragging: monitor.isDragging(),
-        targetIds: monitor.getTargetIds(),
+        // targetIds: monitor.getTargetIds(),
     }));
 
-    const renderItem = () => {
-        switch (itemType) {
-            case 'box':
-                return <div className={classes.root} style={{ width: 179 }}>
-                    <DrawerItem
-                        key={item.name}
-                        editList
-                        visible={item.visible}
-                        editListFunc={() => undefined}
-                        compact={item.compact}
-                        // onClick={() => this.props.handleNavigation(tab.name)}
-                        icon={item.iconJSX}
-                        text={item.title}
-                        selected={item.selected}
-                        badgeContent={item.badgeContent}
-                        badgeColor={item.badgeColor}
-                    />
-                </div>;
-            default:
-                return null;
+    function renderItem() {
+        if (itemType === 'box') {
+            return <div className={classes.root} style={{ width: 179 }}>
+                <DrawerItem
+                    key={item.name}
+                    visible={item.visible}
+                    editListFunc={() => undefined}
+                    compact={item.compact}
+                    icon={item.iconJSX}
+                    text={item.title}
+                    selected={item.selected}
+                    badgeContent={item.badgeContent}
+                    badgeColor={item.badgeColor}
+                />
+            </div>;
         }
-    };
+        return null;
+    }
 
     if (!isDragging) {
         return null;

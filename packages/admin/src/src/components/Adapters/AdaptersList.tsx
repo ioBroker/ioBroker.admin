@@ -30,7 +30,7 @@ export const WIDTHS: Record<string, number> = {
     available: 120,
     update: 40,
     license: 80,
-    install: 220,
+    install: 34 * 7 + 8,
 };
 
 export const SUM = Object.keys(WIDTHS).reduce((s, i) => s + WIDTHS[i], 0);
@@ -78,7 +78,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         width: WIDTHS.emptyBlock,
     },
     description: {
-        width: `calc(100% - ${SUM}px)`,
+        width: `calc(100% - ${SUM + 2}px)`,
     },
     connectionType: {
         width: WIDTHS.connectionType,
@@ -150,6 +150,7 @@ interface AdaptersListState {
     oneListView: boolean;
     categoriesExpanded: string;
     cachedAdapters: number;
+    listOfVisibleAdapter: string;
     update: boolean;
     sortByName: boolean;
     sortPopularFirst: boolean;
@@ -176,6 +177,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             sortPopularFirst: props.sortPopularFirst,
             sortRecentlyUpdated: props.sortRecentlyUpdated,
             renderCounter: 0,
+            listOfVisibleAdapter: JSON.stringify(props.listOfVisibleAdapter),
         };
     }
 
@@ -342,51 +344,47 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
 
     renderTableView(stableRepo: boolean, repoName: string, context: AdaptersContext) {
         const classes = this.props.classes;
-        return (
-            <TabContent>
-                {!stableRepo ? (
-                    <div className={this.props.classes.notStableRepo}>
-                        {this.props.context.t('Active repo is "%s"', repoName)}
-                    </div>
-                ) : null}
-                <TableContainer
-                    className={Utils.clsx(
-                        classes.container,
-                        !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight,
-                    )}
-                >
-                    <Table stickyHeader size="small" className={classes.table}>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell className={classes.emptyBlock}></TableCell>
-                                <TableCell className={classes.name}>
-                                    <Typography>{this.props.context.t('Name')}</Typography>
+        return <TabContent>
+            {!stableRepo ? <div className={this.props.classes.notStableRepo}>
+                {this.props.context.t('Active repo is "%s"', repoName)}
+            </div> : null}
+            <TableContainer
+                className={Utils.clsx(
+                    classes.container,
+                    !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight,
+                )}
+            >
+                <Table stickyHeader size="small" className={classes.table}>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell className={classes.emptyBlock}></TableCell>
+                            <TableCell className={classes.name}>
+                                <Typography>{this.props.context.t('Name')}</Typography>
+                            </TableCell>
+                            {!context.descHidden && (
+                                <TableCell className={classes.description} style={{ width: this.props.descWidth }}>
+                                    <Typography>{this.props.context.t('Description')}</Typography>
                                 </TableCell>
-                                {!context.descHidden && (
-                                    <TableCell className={classes.description} style={{ width: this.props.descWidth }}>
-                                        <Typography>{this.props.context.t('Description')}</Typography>
-                                    </TableCell>
-                                )}
-                                <TableCell className={classes.connectionType} />
-                                <TableCell className={classes.installed}>
-                                    <Typography>{this.props.context.t('Installed')}</Typography>
-                                </TableCell>
-                                <TableCell className={classes.available}>
-                                    <Typography>{this.props.context.t('Available')}</Typography>
-                                </TableCell>
-                                <TableCell className={classes.license}>
-                                    <Typography>{this.props.context.t('License')}</Typography>
-                                </TableCell>
-                                <TableCell className={classes.install}>
-                                    <Typography>{this.props.context.t('Install')}</Typography>
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>{this.getRows(context)}</TableBody>
-                    </Table>
-                </TableContainer>
-            </TabContent>
-        );
+                            )}
+                            <TableCell className={classes.connectionType} />
+                            <TableCell className={classes.installed}>
+                                <Typography>{this.props.context.t('Installed')}</Typography>
+                            </TableCell>
+                            <TableCell className={classes.available}>
+                                <Typography>{this.props.context.t('Available')}</Typography>
+                            </TableCell>
+                            <TableCell className={classes.license}>
+                                <Typography>{this.props.context.t('License')}</Typography>
+                            </TableCell>
+                            <TableCell className={classes.install}>
+                                <Typography>{this.props.context.t('Install')}</Typography>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>{this.getRows(context)}</TableBody>
+                </Table>
+            </TableContainer>
+        </TabContent>;
     }
 
     static getDerivedStateFromProps(props: AdaptersListProps, state: AdaptersListState) {
@@ -438,6 +436,11 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             console.log('Render because of sortRecentlyUpdated');
             changed = true;
         }
+        const listOfVisibleAdapter = JSON.stringify(props.listOfVisibleAdapter);
+        if (listOfVisibleAdapter !== state.listOfVisibleAdapter) {
+            console.log('Render because of listOfVisibleAdapter');
+            changed = true;
+        }
         if (changed) {
             return {
                 descWidth: props.descWidth,
@@ -445,12 +448,13 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 systemConfig: !!props.systemConfig,
                 tableViewMode: props.tableViewMode,
                 oneListView: props.oneListView,
-                categoriesExpanded: JSON.stringify(props.categoriesExpanded),
+                categoriesExpanded,
                 cachedAdapters,
                 update: props.update,
                 sortByName: props.sortByName,
                 sortPopularFirst: props.sortPopularFirst,
                 sortRecentlyUpdated: props.sortRecentlyUpdated,
+                listOfVisibleAdapter,
                 renderCounter: state.renderCounter + 1,
             };
         }

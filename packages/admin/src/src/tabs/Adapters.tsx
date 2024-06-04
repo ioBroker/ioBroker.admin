@@ -1406,13 +1406,13 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
     getDescWidth() {
         if (this.props.menuOpened) {
-            return document.body.scrollWidth - SUM - 180 + 15;
+            return document.body.scrollWidth - SUM - 180 + 13;
         }
         if (this.props.menuClosed) {
             return document.body.scrollWidth - SUM;
         }
         // if (this.props.menuCompact) {
-        return document.body.scrollWidth - SUM - 50 + 15;
+        return document.body.scrollWidth - SUM - 50 + 13;
     }
 
     getStatistics() {
