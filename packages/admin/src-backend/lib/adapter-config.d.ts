@@ -13,6 +13,14 @@ declare global {
             accessAllowedConfigs: string[];
             accessAllowedTabs: string[];
             reverseProxy: unknown[];
+            /** Language of admin */
+            language: ioBroker.Languages;
+            /** If https should be used */
+            secure: boolean;
+            /** Update repo every X hours */
+            autoUpdate: number;
+            /** Run admin as this user */
+            defaultUser: string;
         }
     }
 }
