@@ -216,7 +216,7 @@ interface DrawerProps {
     protocol: string;
     port: number;
     adminInstance: string;
-    installed: Record<string, { version: string; ignoreVersion?: string  }>;
+    installed: Record<string, { version: string; ignoreVersion?: string }>;
     hosts: ioBroker.HostObject[];
     repository: Record<string, { icon: string; version: string }>;
     classes: Record<string, string>;
@@ -251,7 +251,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
         this.refEditButton = React.createRef();
 
-        this.getTabs();
+        this.getTabs()
+            .catch(e => window.alert(`Cannot get tabs: ${e}`));
     }
 
     static getDerivedStateFromProps(props: DrawerProps, state: DrawerState) {

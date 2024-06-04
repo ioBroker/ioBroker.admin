@@ -1,8 +1,10 @@
-import { withStyles } from '@mui/styles';
+import React from 'react';
+import { type Styles, withStyles } from '@mui/styles';
+import type { IobTheme } from '@iobroker/adapter-react-v5';
 
 const offset = 187;
 
-const styles = {
+const styles: Styles<IobTheme, any> = {
     root: {
         left: 0,
         top: 0,
@@ -68,7 +70,11 @@ const styles = {
     },
 };
 
-function Connecting(props) {
+interface ConnectingProps {
+    classes: Record<string, string>;
+}
+
+function Connecting(props: ConnectingProps) {
     const { classes } = props;
 
     return <div className={classes.root}>
