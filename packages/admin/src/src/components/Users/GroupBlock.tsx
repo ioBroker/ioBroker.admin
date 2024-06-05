@@ -16,10 +16,10 @@ import {
 
 import { Utils, Icon } from '@iobroker/adapter-react-v5';
 import React from 'react';
-import type { Translator } from '@iobroker/adapter-react-v5/types';
+import type { Translate } from '@iobroker/adapter-react-v5/types';
 
 interface GroupBlockProps {
-    t: Translator;
+    t: Translate;
     group: ioBroker.GroupObject;
     users: ioBroker.UserObject[];
     showGroupEditDialog: (group: ioBroker.GroupObject, isNew: boolean) => void;

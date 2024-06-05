@@ -11,11 +11,11 @@ import {
     Close as IconCancel,
     Delete as IconDelete,
 } from '@mui/icons-material';
-import type { Translator } from '@iobroker/adapter-react-v5/types';
+import type { Translate } from '@iobroker/adapter-react-v5/types';
 import React from 'react';
 
 interface GroupDeleteDialogProps {
-    t: Translator;
+    t: Translate;
     open: boolean;
     onClose: () => void;
     group: ioBroker.GroupObject;

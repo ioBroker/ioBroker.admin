@@ -20,10 +20,10 @@ import {
 
 import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import { Icon, Utils } from '@iobroker/adapter-react-v5';
-import type { Translator } from '@iobroker/adapter-react-v5/types';
+import type { Translate } from '@iobroker/adapter-react-v5/types';
 
 interface UserBlockProps {
-    t: Translator;
+    t: Translate;
     user: ioBroker.UserObject;
     groups: ioBroker.GroupObject[];
     showUserEditDialog: (user: ioBroker.UserObject, isNew: boolean) => void;

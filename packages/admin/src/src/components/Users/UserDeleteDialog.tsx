@@ -13,10 +13,10 @@ import {
 } from '@mui/icons-material';
 
 import React from 'react';
-import type { Translator } from '@iobroker/adapter-react-v5/types';
+import type { Translate } from '@iobroker/adapter-react-v5/types';
 
 interface UserDeleteDialogProps {
-    t: Translator;
+    t: Translate;
     open: boolean;
     onClose: () => void;
     user: ioBroker.UserObject;

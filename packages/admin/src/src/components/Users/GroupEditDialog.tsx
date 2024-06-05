@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 
 import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
+import type { Translate } from '@iobroker/adapter-react-v5/types';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 
 import Group1 from '../../assets/groups/group1.svg';
@@ -42,22 +43,41 @@ import Group10 from '../../assets/groups/group10.svg';
 
 const GROUPS_ICONS = [Group1, Group2, Group3, Group4, Group5, Group6, Group7, Group8, Group9, Group10];
 
-function PermissionsTab(props) {
-    const mapObject = (object, mapFunction) => Object.values(object).map((value, index) => {
-        const key = Object.keys(object)[index];
-        return mapFunction(value, key);
-    });
+interface GroupEditDialogProps {
+    t: Translate;
+    // lang: string;
+    open: boolean;
+    onClose: () => void;
+    groups: ioBroker.GroupObject[];
+    group: ioBroker.GroupObject;
+    isNew: boolean;
+    onChange: (group: ioBroker.GroupObject) => void;
+    saveData: (originalId: string | null) => void;
+    innerWidth: number;
+    getText: (text: ioBroker.StringOrTranslated) => string;
+    classes: Record<string, string>;
+}
+
+const PermissionsTab: React.FC<GroupEditDialogProps> = props => {
+    const mapObject = <T, Result>(
+        object: Record<string, T>,
+        mapFunction: (item: T, key: string) => Result,
+    ): Result[] => Object.values(object).map((value, index) => {
+            const key = Object.keys(object)[index];
+            return mapFunction(value, key);
+        });
 
     let acl = props.group.common.acl;
 
     // Initialize ACL if not exists or is invalid
-    acl = acl || {};
+    acl = acl || ({} as ioBroker.GroupObject['common']['acl']);
 
     acl.object = acl.object || {
         read: true,
         list: true,
         write: true,
         delete: false,
+        create: undefined,
     };
     acl.object = {
         read: true, list: true, write: true, delete: false, ...acl.object,
@@ -68,6 +88,7 @@ function PermissionsTab(props) {
         list: true,
         write: true,
         delete: false,
+        create: undefined,
     };
     acl.state = {
         read: true, list: true, write: true, delete: false, ...acl.state,
@@ -77,6 +98,8 @@ function PermissionsTab(props) {
         write: false,
         delete: false,
         create: false,
+        list: undefined,
+        read: undefined,
     };
     acl.users = {
         write: false, delete: false, create: false, ...acl.users,
@@ -107,7 +130,7 @@ function PermissionsTab(props) {
             mapObject(props.group.common.acl || {}, (block, blockKey) =>
                 <Grid item xs={12} md={12} key={blockKey}>
                     <h2 className={props.classes.permHeaders}>{props.t(`group_acl_${blockKey}`)}</h2>
-                    {mapObject(block, (perm, permKey) =>
+                    {mapObject(block as Record<string, boolean>, (perm, permKey) =>
                         <FormControlLabel
                             key={permKey}
                             control={<Checkbox
@@ -125,7 +148,7 @@ function PermissionsTab(props) {
                 </Grid>)
         }
     </Grid>;
-}
+};
 
 const styles = () => ({
     contentRoot:{
@@ -133,7 +156,7 @@ const styles = () => ({
     },
 });
 
-function GroupEditDialog(props) {
+const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
     const [tab, setTab] = useState(0);
 
     const [originalId, setOriginalId] = useState(null);
@@ -144,7 +167,7 @@ function GroupEditDialog(props) {
             const icon = GROUPS_ICONS[Math.round(Math.random() * (GROUPS_ICONS.length - 1))];
 
             icon && Utils.getSvg(icon)
-                .then(fileBlob => {
+                .then((fileBlob: string) => {
                     const newData = Utils.clone(props.group);
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
@@ -161,15 +184,15 @@ function GroupEditDialog(props) {
     const idChanged = props.group._id !== originalId;
 
     let canSave = props.group._id !== 'system.group.' &&
-        props.group.common.password === props.group.common.passwordRepeat;
+        (props.group.common as any).password === (props.group.common as any).passwordRepeat;
 
-    const getShortId = _id =>
+    const getShortId = (_id: string) =>
         _id.split('.').pop();
 
-    const name2Id = name =>
+    const name2Id = (name: string) =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
 
-    const changeShortId = (_id, short) => {
+    const changeShortId = (_id: string, short: string) => {
         const idArray = _id.split('.');
         idArray[idArray.length - 1] = short;
         return idArray.join('.');
@@ -192,7 +215,7 @@ function GroupEditDialog(props) {
                 label="Name"
                 t={props.t}
                 value={name}
-                onChange={e => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const newData = Utils.clone(props.group);
                     if (!props.group.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
                         newData._id = changeShortId(newData._id, name2Id(e.target.value));
@@ -211,7 +234,7 @@ function GroupEditDialog(props) {
                 t={props.t}
                 disabled={props.group.common.dontDelete}
                 value={props.group._id.split('.')[props.group._id.split('.').length - 1]}
-                onChange={e => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const newData = Utils.clone(props.group);
                     newData._id = changeShortId(newData._id, name2Id(e.target.value));
                     props.onChange(newData);
@@ -235,7 +258,7 @@ function GroupEditDialog(props) {
                 label="Description"
                 t={props.t}
                 value={description}
-                onChange={e => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const newData = Utils.clone(props.group);
                     newData.common.desc = e.target.value;
                     props.onChange(newData);
@@ -248,8 +271,8 @@ function GroupEditDialog(props) {
             <IconPicker
                 label="Icon"
                 icons={GROUPS_ICONS}
-                t={props.t}
-                lang={props.lang}
+                // t={props.t}
+                // lang={props.lang}
                 value={props.group.common.icon}
                 onChange={fileBlob => {
                     const newData = Utils.clone(props.group);
@@ -258,7 +281,7 @@ function GroupEditDialog(props) {
                 }}
                 previewClassName={props.classes.iconPreview}
                 icon={ImageIcon}
-                classes={props.classes}
+                // classes={props.classes}
             />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -329,20 +352,6 @@ function GroupEditDialog(props) {
             </DialogActions>
         </Dialog>
     );
-}
-
-GroupEditDialog.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    open: PropTypes.bool,
-    onClose: PropTypes.func,
-    groups: PropTypes.array,
-    group: PropTypes.object,
-    isNew: PropTypes.bool,
-    onChange: PropTypes.func,
-    saveData: PropTypes.func,
-    innerWidth: PropTypes.number,
-    getText: PropTypes.func,
 };
 
 export default withStyles(styles)(GroupEditDialog);
