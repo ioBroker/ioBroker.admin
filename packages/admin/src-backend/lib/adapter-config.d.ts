@@ -16,6 +16,15 @@ declare global {
             tmpPath: string;
             port: number;
             secure: boolean;
+            loginBackgroundImage: string;
+            loginBackgroundColor: string;
+            loadingBackgroundImage: string;
+            loadingBackgroundColor: string;
+            loginMotto: string;
+            ttl: number;
+            cache: boolean;
+            doNotCheckPublicIP: boolean;
+            bind: string;
         }
     }
 }
