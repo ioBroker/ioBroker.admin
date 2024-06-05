@@ -1,6 +1,4 @@
-import { useDrop } from 'react-dnd';
-import PropTypes from 'prop-types';
-
+import { useDrop, type DropTargetMonitor } from 'react-dnd';
 import {
     Typography,
     Card,
@@ -17,13 +15,27 @@ import {
 } from '@mui/icons-material';
 
 import { Utils, Icon } from '@iobroker/adapter-react-v5';
+import React from 'react';
+import type { Translator } from '@iobroker/adapter-react-v5/types';
 
-function canMeDrop(monitor, props) {
+interface GroupBlockProps {
+    t: Translator;
+    group: ioBroker.GroupObject;
+    users: ioBroker.UserObject[];
+    showGroupEditDialog: (group: ioBroker.GroupObject, isNew: boolean) => void;
+    showGroupDeleteDialog: (group: ioBroker.GroupObject) => void;
+    removeUserFromGroup: (userId: string, groupId: string) => void;
+    getText: (text: ioBroker.StringOrTranslated) => string;
+    themeType: string;
+    classes: Record<string, string>;
+}
+
+function canMeDrop(monitor: DropTargetMonitor<{userId: ioBroker.ObjectIDs.User}>, props: GroupBlockProps) {
     return props.group.common.members ? !props.group.common.members.includes(monitor.getItem().userId) : true;
 }
 
-function GroupBlock(props) {
-    const [{ CanDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
+const GroupBlock: React.FC<GroupBlockProps> = props => {
+    const [{ CanDrop, isOver/* , isCanDrop */ }, drop] = useDrop(() => ({
         accept: 'user',
         drop: () => ({ groupId: props.group._id }),
         canDrop: (item, monitor) => canMeDrop(monitor, props),
@@ -38,15 +50,15 @@ function GroupBlock(props) {
     const isActive = CanDrop && isOver;
 
     if (isActive) {
-        opacity = isCanDrop ? 1 : 0.125;
+        opacity = CanDrop ? 1 : 0.125;
         backgroundColor = props.classes.userGroupCardSecondary;
     } else if (CanDrop) {
-        opacity = isCanDrop ? 0.75 : 0.25;
+        opacity = CanDrop ? 0.75 : 0.25;
     }
 
     const textColor = Utils.getInvertedColor(props.group.common.color, props.themeType, true);
 
-    const style = { opacity, overflow: 'hidden', color: textColor };
+    const style: React.CSSProperties = { opacity, overflow: 'hidden', color: textColor };
 
     if (props.group.common.color) {
         style.backgroundColor = props.group.common.color;
@@ -144,17 +156,6 @@ function GroupBlock(props) {
             </div>
         </CardContent>
     </Card>;
-}
-
-GroupBlock.propTypes = {
-    t: PropTypes.func,
-    group: PropTypes.object,
-    users: PropTypes.array,
-    showGroupEditDialog: PropTypes.func,
-    showGroupDeleteDialog: PropTypes.func,
-    removeUserFromGroup: PropTypes.func,
-    getText: PropTypes.func,
-    themeType: PropTypes.string,
 };
 
 export default GroupBlock;

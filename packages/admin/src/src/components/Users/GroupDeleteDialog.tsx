@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-
 import {
     Dialog,
     DialogActions,
@@ -13,8 +11,19 @@ import {
     Close as IconCancel,
     Delete as IconDelete,
 } from '@mui/icons-material';
+import type { Translator } from '@iobroker/adapter-react-v5/types';
+import React from 'react';
 
-function GroupDeleteDialog(props) {
+interface GroupDeleteDialogProps {
+    t: Translator;
+    open: boolean;
+    onClose: () => void;
+    group: ioBroker.GroupObject;
+    deleteGroup: (groupId: string) => void;
+    classes: Record<string, string>;
+}
+
+const GroupDeleteDialog: React.FC<GroupDeleteDialogProps> = props => {
     if (!props.open) {
         return null;
     }
@@ -48,14 +57,6 @@ function GroupDeleteDialog(props) {
             </Button>
         </DialogActions>
     </Dialog>;
-}
-
-GroupDeleteDialog.propTypes = {
-    t: PropTypes.func,
-    open: PropTypes.bool,
-    onClose: PropTypes.func,
-    group: PropTypes.object,
-    deleteGroup: PropTypes.func,
 };
 
 export default GroupDeleteDialog;
