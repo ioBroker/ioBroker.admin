@@ -2371,6 +2371,7 @@ class App extends Router {
                                     themeType={this.state.themeType}
                                     theme={this.state.theme}
                                     width={this.props.width}
+                                    adminInstance={this.adminInstance}
                                     configs={this.state.easyModeConfigs}
                                     socket={this.socket}
                                     configStored={value => this.allStored(value)}

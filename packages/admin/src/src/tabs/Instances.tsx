@@ -108,7 +108,7 @@ interface InstancesProps {
     onUnregisterIframeRef: (el: HTMLIFrameElement) => void;
 
     classes: Record<string, string>;
-    configStored: boolean;
+    configStored: (allStored: boolean) => void;
 }
 
 interface HostData {
@@ -1034,7 +1034,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         jsonConfig={instance.jsonConfig}
                         lang={this.props.lang}
                         materialize={instance.materialize}
-                        menuPadding={this.props.menuPadding}
                         socket={this.props.socket}
                         t={this.t}
                         theme={this.props.theme}

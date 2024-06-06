@@ -176,7 +176,6 @@ interface BufferObject {
 }
 
 interface JsonConfigProps {
-    menuPadding: number;
     adapterName: string;
     instance: number;
     isFloatComma: boolean;
@@ -191,7 +190,7 @@ interface JsonConfigProps {
     /** Translate method */
     t: typeof I18n.t;
     configStored: (notChanged: boolean) => void;
-    width: 'xs' | 'sm' | 'md';
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     DeviceManager?: React.FC<DeviceManagerPropsProps>;
 }
 
@@ -704,7 +703,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 noTextOnButtons={this.props.width === 'xs' || this.props.width === 'sm' || this.props.width === 'md'}
                 changed={!!(this.state.error || this.state.changed)}
                 error={!!this.state.error}
-                onSave={(close: any) => this.onSave(true, close)}
+                onSave={(close: boolean) => this.onSave(true, close)}
                 onClose={() => this.onSave(false)}
             />
         </div>;
