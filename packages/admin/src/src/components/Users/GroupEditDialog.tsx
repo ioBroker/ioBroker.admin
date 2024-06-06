@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
+/* eslint-disable react/no-unused-prop-types */
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@mui/styles';
+import { withStyles, type Styles } from '@mui/styles';
 
 import {
     Dialog,
@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 
 import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
-import type { Translate } from '@iobroker/adapter-react-v5/types';
+import type { Translate, IobTheme } from '@iobroker/adapter-react-v5/types';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 
 import Group1 from '../../assets/groups/group1.svg';
@@ -150,7 +150,7 @@ const PermissionsTab: React.FC<GroupEditDialogProps> = props => {
     </Grid>;
 };
 
-const styles = () => ({
+const styles: Styles<IobTheme, any> = () => ({
     contentRoot:{
         padding: '16px 24px',
     },
