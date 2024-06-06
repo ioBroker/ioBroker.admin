@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-
 import {
     Dialog,
     DialogActions,
@@ -14,7 +12,18 @@ import {
     Delete as IconDelete,
 } from '@mui/icons-material';
 
-function UserDeleteDialog(props) {
+import React from 'react';
+import type { Translate } from '@iobroker/adapter-react-v5/types';
+
+interface UserDeleteDialogProps {
+    t: Translate;
+    open: boolean;
+    onClose: () => void;
+    user: ioBroker.UserObject;
+    deleteUser: (userId: string) => void;
+}
+
+const UserDeleteDialog: React.FC<UserDeleteDialogProps> = props => {
     if (!props.open) {
         return null;
     }
@@ -48,14 +57,6 @@ function UserDeleteDialog(props) {
             </DialogActions>
         </Dialog>
     );
-}
-
-UserDeleteDialog.propTypes = {
-    t: PropTypes.func,
-    open: PropTypes.bool,
-    onClose: PropTypes.func,
-    user: PropTypes.object,
-    deleteUser: PropTypes.func,
 };
 
 export default UserDeleteDialog;

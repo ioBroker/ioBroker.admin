@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types';
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { /* DragPreviewImage, */useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
@@ -19,14 +18,33 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 import { Icon, Utils } from '@iobroker/adapter-react-v5';
+import type { Translate } from '@iobroker/adapter-react-v5/types';
 
-function UserBlock(props) {
+interface UserBlockProps {
+    t: Translate;
+    user: ioBroker.UserObject;
+    groups: ioBroker.GroupObject[];
+    showUserEditDialog: (user: ioBroker.UserObject, isNew: boolean) => void;
+    showUserDeleteDialog: (user: ioBroker.UserObject) => void;
+    updateData: () => void;
+    // eslint-disable-next-line react/no-unused-prop-types
+    addUserToGroup?: (userId: string, groupId: string) => void;
+    removeUserFromGroup: (userId: string, groupId: string) => void;
+    getText: (text: ioBroker.StringOrTranslated) => string;
+    themeType: string;
+    classes: Record<string, string>;
+    socket: AdminConnection;
+    isDragging?: boolean;
+}
+
+const UserBlock: React.FC<UserBlockProps> = props => {
     const opacity = props.isDragging ? 0 : 1;
 
     const textColor = Utils.getInvertedColor(props.user.common.color, props.themeType, true);
 
-    const style = {
+    const style: React.CSSProperties = {
         cursor: 'grab', opacity, overflow: 'hidden', color: textColor,
     };
     if (props.user.common.color) {
@@ -145,16 +163,19 @@ function UserBlock(props) {
         </div>
     </Card>;
     // </>
-}
+};
 
-const UserBlockDrag = props => {
-    const widthRef = useRef();
+const UserBlockDrag: React.FC<UserBlockProps> = props => {
+    const widthRef = useRef<HTMLDivElement>();
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
             type: 'user',
-            item: () => ({ userId: props.user._id, preview: <div style={{ width: widthRef.current.offsetWidth }}><UserBlock {...props} /></div> }),
+            item: () => ({
+                userId: props.user._id,
+                preview: <div style={{ width: widthRef.current?.offsetWidth }}><UserBlock {...props} /></div>,
+            }),
             end: (item, monitor) => {
-                const dropResult = monitor.getDropResult();
+                const dropResult = monitor.getDropResult<{groupId: string}>();
                 if (item && dropResult) {
                     props.addUserToGroup(item.userId, dropResult.groupId);
                 }
@@ -172,21 +193,9 @@ const UserBlockDrag = props => {
 
     return <div ref={dragRef}>
         <div ref={widthRef}>
-            <UserBlock isDragging={isDragging} widthRef={widthRef} {...props} />
+            <UserBlock isDragging={isDragging} {...props} />
         </div>
     </div>;
-};
-
-UserBlockDrag.propTypes = {
-    t: PropTypes.func,
-    user: PropTypes.object,
-    groups: PropTypes.array,
-    showUserEditDialog: PropTypes.func,
-    showUserDeleteDialog: PropTypes.func,
-    updateData: PropTypes.func,
-    addUserToGroup: PropTypes.func,
-    removeUserFromGroup: PropTypes.func,
-    getText: PropTypes.func,
 };
 
 export default UserBlockDrag;

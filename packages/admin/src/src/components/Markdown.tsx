@@ -1,8 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { withStyles, type Styles } from '@mui/styles';
 import MarkdownView from 'react-showdown';
 import semver from 'semver';
 
@@ -27,7 +26,11 @@ import {
 } from 'react-icons/md';
 
 import { FaGithub as IconGithub } from 'react-icons/fa';
-import { Loader, I18n } from '@iobroker/adapter-react-v5';
+import type {
+    AdminConnection, IobTheme, ThemeName,
+} from '@iobroker/adapter-react-v5';
+
+import { I18n, Loader } from '@iobroker/adapter-react-v5';
 
 import IconGlobe from '../assets/globe.svg';
 import IconLink from '../assets/link.svg';
@@ -35,7 +38,7 @@ import IconLink from '../assets/link.svg';
 import Utils from './MDUtils';
 // import Page404 from '@iobroker/adapter-react-v5/Components/404';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     root: {
         width: 'calc(100% - 10px)',
         maxWidth: 1400,
@@ -384,8 +387,93 @@ const EXPAND_LANGUAGE = {
     'zh-cn': 'chinese (simplified)',
 };
 
-class Markdown extends Component {
-    constructor(props) {
+interface MarkdownEntry {
+    version: string;
+    date?: string;
+    lines: ({ author?: string; line: string } | string)[];
+}
+
+interface MarkdownHeader {
+    title: string;
+    affiliate: string;
+    translatedFrom: keyof typeof EXPAND_LANGUAGE;
+    readme: string;
+    logo: string;
+    description: string;
+    lastChanged: string;
+    editLink: string;
+    adapter: string;
+    [key: string]: string;
+}
+
+interface MarkdownContent {
+    title: string;
+    level: number;
+    external: boolean;
+    link: string;
+    children: string[];
+}
+
+interface MarkdownPart {
+    lines: string[];
+    type: string;
+}
+
+interface MarkdownProps {
+    path: string;
+    text: string;
+    language: string;
+    theme: ThemeName;
+    classes: Record<string, string>;
+    onNavigate: (id: string, link?: string) => void;
+    socket: AdminConnection & {
+        getRepository(host?: string, args?: any, update?: boolean, timeoutMs?: number): Promise<any>;
+    };
+    adapter: string;
+    link: string;
+    editMode: boolean;
+    editEnabled: boolean;
+    onEditMode: (editMode: boolean) => void;
+    affiliates: React.FC<any>;
+    mobile: boolean;
+    editor: React.FC<any>;
+    className: string;
+}
+
+interface MarkdownState {
+    parts: MarkdownPart[];
+    title: string;
+    loadTimeout: boolean;
+    header: Partial<MarkdownHeader>;
+    content: Record<string, MarkdownContent>;
+    license: string;
+    changeLog: string | Record<string, MarkdownEntry>;
+    tooltip: string;
+    text: string;
+    notFound: boolean;
+    affiliate: any;
+    adapterNews: Record<string, ioBroker.StringOrTranslated>;
+    hideContent: boolean;
+}
+
+class Markdown extends Component<MarkdownProps, MarkdownState> {
+    contentRef: React.RefObject<HTMLDivElement>;
+
+    mounted: boolean;
+
+    customLink: ({ text, link }: { text: string; link: string }) => React.JSX.Element;
+
+    customH: ({
+        text, id, level, prefix,
+    }: { text: string; id: string; level: string; prefix: string }) => React.JSX.Element;
+
+    meta: () => string;
+
+    link: () => React.JSX.Element;
+
+    editText: string;
+
+    constructor(props: MarkdownProps) {
         super(props);
         // load page
         this.state = {
@@ -423,7 +511,7 @@ class Markdown extends Component {
                 onClick={() => {
                     if (link) {
                         if (link.startsWith('#')) {
-                            this.onNavigate(Utils.text2link(link.substring(1)));
+                            Markdown.onNavigate(Utils.text2link(link.substring(1)));
                         } else {
                             let href = link;
                             if (!href.match(/^https?:\/\//)) {
@@ -434,7 +522,7 @@ class Markdown extends Component {
                                 href = prefix + link;
                             }
 
-                            this.onNavigate(null, href);
+                            Markdown.onNavigate(null, href);
                         }
                     }
                 }}
@@ -505,7 +593,7 @@ class Markdown extends Component {
             .then(repo => this.setState({ adapterNews: repo[this.props.adapter]?.news }));
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps/* , nextContext */) {
+    UNSAFE_componentWillReceiveProps(nextProps: MarkdownProps/* , nextContext */) {
         if (this.props.path !== nextProps.path) {
             this.mounted && this.setState({ notFound: false, parts: [] });
             this.load(nextProps.path);
@@ -521,10 +609,10 @@ class Markdown extends Component {
                     this.parseText());
             }
         } else
-        if (this.props.language !== nextProps.language) {
-            this.mounted && this.setState({ notFound: false, parts: [] });
-            this.load(null, nextProps.language);
-        }
+            if (this.props.language !== nextProps.language) {
+                this.mounted && this.setState({ notFound: false, parts: [] });
+                this.load(null, nextProps.language);
+            }
     }
 
     /* onHashChange(location) {
@@ -535,7 +623,7 @@ class Markdown extends Component {
         }
     } */
 
-    static onNavigate(id, link) {
+    static onNavigate(id: string, link?: string) {
         if (link && link.match(/^https?:\/\//)) {
             Utils.openLink(link);
         } else if (id) {
@@ -582,10 +670,10 @@ class Markdown extends Component {
         }
     }
 
-    static parseChangeLog(changeLog) {
+    static parseChangeLog(changeLog: string) {
         const lines = changeLog.split('\n');
-        const entries = {};
-        let oneEntry;
+        const entries: Record<string, MarkdownEntry> = {};
+        let oneEntry: MarkdownEntry;
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
             if (line.startsWith('##')) {
@@ -596,7 +684,7 @@ class Markdown extends Component {
                 // ### 3.0.5 (2020-10-30) or ### 3.0.5 [2020-10-30] or ### 3.0.5
                 const [version, date] = line.replace(/^#+\s?/, '').split(/[\s([]+/);
                 if (version) {
-                    oneEntry = { lines: [] };
+                    oneEntry = { lines: [] } as MarkdownEntry;
                     oneEntry.version = version.trim();
                     oneEntry.date = (date || '').trim().replace(/\)/, '');
                 }
@@ -622,7 +710,7 @@ class Markdown extends Component {
         return entries;
     }
 
-    parseText(text) {
+    parseText(text?: string) {
         text = text || this.state.text || '';
         if (this.props.editEnabled) {
             this.editText = text;
@@ -652,7 +740,7 @@ class Markdown extends Component {
             }
         }
 
-        let _changeLog;
+        let _changeLog: Record<string, MarkdownEntry>;
         // try to add missing news
         if (changeLog) {
             // split news
@@ -684,10 +772,10 @@ class Markdown extends Component {
             title: _title,
         });
 
-        this.onHashChange && setTimeout(() => this.onHashChange(), 200);
+        // this.onHashChange && setTimeout(() => this.onHashChange(), 200);
     }
 
-    load(path, language) {
+    load(path?: string, language?: string) {
         path = path || this.props.path;
         language = language || this.props.language;
         if (path && language) {
@@ -697,10 +785,17 @@ class Markdown extends Component {
         }
     }
 
-    format(text) {
+    format(text: string): {
+        header: MarkdownHeader;
+        parts: MarkdownPart[];
+        content: Record<string, MarkdownContent>;
+        license: string;
+        changeLog: string;
+        title: string;
+    } {
         text = (text || '').trim();
         const result = Utils.extractHeader(text);
-        const header = result.header;
+        const header = result.header as MarkdownHeader;
         let body = result.body;
 
         if (body.startsWith('# ')) {
@@ -728,11 +823,11 @@ class Markdown extends Component {
         } = Utils.decorateText(body, header, `${this.props.path && (this.props.path[0] === '/' ? this.props.path : `/${this.props.path}`)}`);
 
         return {
-            header, parts, content, license, changeLog, title,
+            header, parts, content: content as Record<string, MarkdownContent>, license, changeLog, title,
         };
     }
 
-    formatAuthors(text) {
+    formatAuthors(text: string) {
         const parts = text.split(',').map(t => t.trim()).filter(t => t);
 
         const authors = [];
@@ -879,7 +974,7 @@ class Markdown extends Component {
         </div>;
     }
 
-    _renderSubContent(menu) {
+    _renderSubContent(menu: MarkdownContent) {
         return <ul>
             {
                 menu.children.map(item => {
@@ -997,7 +1092,7 @@ class Markdown extends Component {
         }
 
         try {
-            versions.sort(semver.gt);
+            versions.sort(semver.gt as any);
         } catch (e) {
             console.warn(`Cannot semver: ${e}`);
         }
@@ -1009,7 +1104,7 @@ class Markdown extends Component {
 
         return <div className={classes.changeLog} key="change-log">
             {versions.map(version => {
-                const item = this.state.changeLog[version];
+                const item = (this.state.changeLog as Record<string, MarkdownEntry>)[version];
                 if (version.includes('WORK')) {
                     version = 'WORK IN PROGRESS';
                     item.date = '';
@@ -1071,7 +1166,7 @@ class Markdown extends Component {
         />;
     }
 
-    replaceHref(line) {
+    replaceHref(line: string) {
         if (!line) {
             return '';
         }
@@ -1157,7 +1252,7 @@ class Markdown extends Component {
         } */
     }
 
-    static makeHeadersAsLink(line, prefix) {
+    static makeHeadersAsLink(line: string, prefix: string) {
         if (!line) {
             return '';
         }
@@ -1178,7 +1273,7 @@ class Markdown extends Component {
         } */
     }
 
-    renderTable(lines, key) {
+    renderTable(lines: string[], key: string) {
         const header = lines[0].replace(/^\||\|$/g, '').split('|').map(h => h.trim());
         const CustomLink = this.customLink;
         const CustomH = this.customH;
@@ -1238,7 +1333,7 @@ class Markdown extends Component {
 
         const reactElements = this.state.parts.map((part, i) => {
             if (part.type === 'table') {
-                return this.renderTable(part.lines, i);
+                return this.renderTable(part.lines, i.toString());
             }
             let line = part.lines.join('\n');
             if (part.type === 'code') {
@@ -1298,22 +1393,5 @@ class Markdown extends Component {
         </div>;
     }
 }
-
-Markdown.propTypes = {
-    language: PropTypes.string,
-    onNavigate: PropTypes.func,
-    theme: PropTypes.object,
-    mobile: PropTypes.bool,
-    path:  PropTypes.string,
-    text:  PropTypes.string,
-    editMode: PropTypes.bool,
-    onEditMode: PropTypes.func,
-    editEnabled:  PropTypes.bool,
-    affiliates: PropTypes.object,
-    editor: PropTypes.object,
-    className: PropTypes.string,
-    socket: PropTypes.object,
-    adapter: PropTypes.string,
-};
 
 export default withStyles(styles)(Markdown);

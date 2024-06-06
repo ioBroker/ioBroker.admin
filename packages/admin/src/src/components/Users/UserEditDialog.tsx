@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import React, { useState, useEffect } from 'react';
+import { withStyles, type Styles } from '@mui/styles';
 
 import {
     Dialog,
@@ -25,6 +24,7 @@ import {
 
 import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
 
+import type { IobTheme, Translate } from '@iobroker/adapter-react-v5/types';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import AdminUtils from '../../Utils';
 
@@ -43,13 +43,27 @@ import User12 from '../../assets/users/user12.svg';
 
 const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User9, User10, User11, User12];
 
-const styles = () => ({
+const styles: Styles<IobTheme, any> = () => ({
     contentRoot:{
         padding: '16px 24px',
     },
 });
 
-function UserEditDialog(props) {
+interface UserEditDialogProps {
+    t: Translate;
+    open: boolean;
+    onClose: () => void;
+    users: ioBroker.UserObject[];
+    user: ioBroker.UserObject;
+    isNew: boolean;
+    onChange: (user: ioBroker.UserObject) => void;
+    saveData: (originalId: string) => void;
+    innerWidth: number;
+    getText: (text: ioBroker.StringOrTranslated) => string;
+    classes: Record<string, string>;
+}
+
+const UserEditDialog: React.FC<UserEditDialogProps> = props => {
     const [originalId, setOriginalId] = useState(null);
 
     useEffect(() => {
@@ -58,7 +72,7 @@ function UserEditDialog(props) {
             const icon = USER_ICONS[Math.round(Math.random() * (USER_ICONS.length - 1))];
 
             icon && Utils.getSvg(icon)
-                .then(fileBlob => {
+                .then((fileBlob: string) => {
                     const newData = Utils.clone(props.user);
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
@@ -74,16 +88,16 @@ function UserEditDialog(props) {
     const idExists = props.users.find(user => user._id === props.user._id);
     const idChanged = props.user._id !== originalId;
 
-    const getShortId = _id =>
+    const getShortId = (_id: string) =>
         _id.split('.').pop();
 
-    const name2Id = name =>
+    const name2Id = (name: string) =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').replace(/,/g, '_')
             .replace(/__/g, '_')
             .replace(/__/g, '_')
             .toLowerCase();
 
-    const changeShortId = (_id, short) => {
+    const changeShortId = (_id: string, short: string) => {
         const idArray = _id.split('.');
         idArray[idArray.length - 1] = short;
         return idArray.join('.');
@@ -92,8 +106,8 @@ function UserEditDialog(props) {
     const description = props.getText(props.user.common.desc);
     const name = props.getText(props.user.common.name);
 
-    const errorPassword = AdminUtils.checkPassword(props.user.common.password);
-    const errorPasswordRepeat = AdminUtils.checkPassword(props.user.common.password, props.user.common.passwordRepeat);
+    const errorPassword = AdminUtils.checkPassword((props.user.common as any).password);
+    const errorPasswordRepeat = AdminUtils.checkPassword((props.user.common as any).password, (props.user.common as any).passwordRepeat);
 
     let canSave = props.user._id !== 'system.user.' && !errorPassword && !errorPasswordRepeat;
 
@@ -122,7 +136,7 @@ function UserEditDialog(props) {
                         label="Name"
                         t={props.t}
                         value={name}
-                        onChange={e => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newData = Utils.clone(props.user);
                             if (!props.user.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
@@ -141,7 +155,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         disabled={props.user.common.dontDelete}
                         value={props.user._id.split('.')[props.user._id.split('.').length - 1]}
-                        onChange={e => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newData = Utils.clone(props.user);
                             newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             props.onChange(newData);
@@ -165,7 +179,7 @@ function UserEditDialog(props) {
                         label="Description"
                         t={props.t}
                         value={description}
-                        onChange={e => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newData = Utils.clone(props.user);
                             newData.common.desc = e.target.value;
                             props.onChange(newData);
@@ -180,7 +194,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         value={props.user.common.password}
                         error={errorPassword ? props.t(errorPassword) : false}
-                        onChange={e => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newData = Utils.clone(props.user);
                             newData.common.password = e.target.value;
                             props.onChange(newData);
@@ -195,9 +209,9 @@ function UserEditDialog(props) {
                     <IOTextField
                         label="Password repeat"
                         t={props.t}
-                        value={props.user.common.passwordRepeat}
+                        value={(props.user.common as any).passwordRepeat}
                         error={errorPasswordRepeat ? props.t(errorPasswordRepeat) : false}
-                        onChange={e => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newData = Utils.clone(props.user);
                             newData.common.passwordRepeat = e.target.value;
                             props.onChange(newData);
@@ -212,8 +226,8 @@ function UserEditDialog(props) {
                     <IconPicker
                         icons={USER_ICONS}
                         label="Icon"
-                        t={props.t}
-                        lang={props.lang}
+                        // t={props.t}
+                        // lang={props.lang}
                         value={props.user.common.icon}
                         onChange={fileBlob => {
                             const newData = Utils.clone(props.user);
@@ -222,7 +236,7 @@ function UserEditDialog(props) {
                         }}
                         previewClassName={props.classes.iconPreview}
                         icon={ImageIcon}
-                        classes={props.classes}
+                        // classes={props.classes}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -264,20 +278,6 @@ function UserEditDialog(props) {
             </Button>
         </DialogActions>
     </Dialog>;
-}
-
-UserEditDialog.propTypes = {
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    open: PropTypes.bool,
-    onClose: PropTypes.func,
-    users: PropTypes.array,
-    user: PropTypes.object,
-    isNew: PropTypes.bool,
-    onChange: PropTypes.func,
-    saveData: PropTypes.func,
-    innerWidth: PropTypes.number,
-    getText: PropTypes.func,
 };
 
 export default withStyles(styles)(UserEditDialog);

@@ -603,7 +603,7 @@ class Utils {
     /** The languages for which docs are generated */
     static SUPPORTED_DOC_LANGUAGES: ioBroker.Languages[] = ['en', 'de', 'ru', 'zh-cn'];
 
-    static checkPassword(password: string, passwordRepeat: string) {
+    static checkPassword(password: string, passwordRepeat?: string) {
         password = password || '';
         passwordRepeat = passwordRepeat || '';
         if (password && passwordRepeat && password !== Utils.PASSWORD_SET && passwordRepeat !== Utils.PASSWORD_SET) {

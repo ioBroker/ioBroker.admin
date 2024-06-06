@@ -705,7 +705,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                         if (typeof adapter.news[version] === 'object') {
                             text = this.props.context.noTranslation
                                 ? adapter.news[version].en
-                                : adapter.news[version][this.props.context.lang] || adapter.news[version].en;
+                                : (adapter.news[version][this.props.context.lang] || adapter.news[version].en);
                         } else {
                             // @ts-expect-error deprecated
                             text = adapter.news[version] as string;
