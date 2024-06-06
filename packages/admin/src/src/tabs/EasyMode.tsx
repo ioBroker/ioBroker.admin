@@ -1,5 +1,4 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -8,12 +7,17 @@ import {
 
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 
-import { Utils, ToggleThemeMenu } from '@iobroker/adapter-react-v5';
+import {
+    Utils, ToggleThemeMenu,
+    type IobTheme, type AdminConnection,
+    type ThemeType, type ThemeName,
+    type Translate,
+} from '@iobroker/adapter-react-v5';
 
 import Config from './Config';
 import EasyModeCard from '../components/EasyModeCard';
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
@@ -76,8 +80,54 @@ const styles = theme => ({
     },
 });
 
-class EasyMode extends Component {
-    constructor(props) {
+interface InstanceConfig {
+    id: string;
+    title: ioBroker.StringOrTranslated;
+    desc: ioBroker.StringOrTranslated;
+    color: string;
+    url: string;
+    icon: string;
+    materialize: boolean;
+    jsonConfig: boolean;
+    version: string;
+    tab?: boolean;
+    config?: boolean;
+}
+
+interface EasyModeConfig {
+    strict: boolean;
+    configs: InstanceConfig[];
+}
+
+interface EasyModeProps {
+    classes: Record<string, string>;
+    themeName: ThemeName;
+    toggleTheme: () => void;
+    t: Translate;
+    lang: ioBroker.Languages;
+    navigate: (tab: string | undefined | null, dialog?: string | null, id?: string | null, arg?: string | null) => void;
+    location: { id: string };
+    socket: AdminConnection;
+    themeType: ThemeType;
+    theme: IobTheme;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    isFloatComma: boolean;
+    dateFormat: string;
+    configStored: (changed: boolean) => void;
+    getLocation: () => { dialog: boolean };
+    onRegisterIframeRef: (ref: HTMLIFrameElement) => void;
+    onUnregisterIframeRef: (ref: HTMLIFrameElement) => void;
+    configs?: InstanceConfig[];
+    adminInstance: string;
+}
+
+interface EasyModeState {
+    configs: InstanceConfig[];
+    strictMode: boolean;
+}
+
+class EasyMode extends Component<EasyModeProps, EasyModeState> {
+    constructor(props: EasyModeProps) {
         super(props);
         this.state = {
             configs: this.props.configs,
@@ -88,7 +138,7 @@ class EasyMode extends Component {
     componentDidMount() {
         if (!this.props.configs) {
             this.props.socket.getEasyMode()
-                .then(config => this.setState({ configs: config.configs }));
+                .then((config: EasyModeConfig) => this.setState({ configs: config.configs }));
         }
     }
 
@@ -108,6 +158,7 @@ class EasyMode extends Component {
             dateFormat,
             configStored,
             getLocation,
+            adminInstance,
         } = this.props;
 
         const { configs, strictMode } = this.state;
@@ -132,7 +183,12 @@ class EasyMode extends Component {
                         {((strictMode && !getLocation().dialog) || currentInstance?.tab) && <IconButton size="large" onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
-                        <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} size="large" />
+                        <ToggleThemeMenu
+                            t={t}
+                            toggleTheme={toggleTheme}
+                            themeName={themeName as ('dark' | 'blue' | 'colored' | 'light')}
+                            size="large"
+                        />
                     </div>
                 </Toolbar>
             </AppBar>
@@ -141,7 +197,7 @@ class EasyMode extends Component {
                     <Config
                         className={classes.iframe}
                         adapter={currentInstance.id.split('.')[0]}
-                        instance={currentInstance.id.split('.')[1]}
+                        instance={parseInt(currentInstance.id.split('.')[1], 10)}
                         jsonConfig={currentInstance.jsonConfig}
                         materialize={currentInstance.materialize}
                         tab={currentInstance?.tab}
@@ -152,12 +208,15 @@ class EasyMode extends Component {
                         theme={theme}
                         width={width}
                         t={t}
+                        lang={this.props.lang}
+                        icon={currentInstance.icon}
+                        adminInstance={adminInstance}
                         configStored={configStored}
                         dateFormat={dateFormat}
                         isFloatComma={isFloatComma}
                         // version={currentInstance.version} We don't need a version in easy mode
-                        onRegisterIframeRef={ref => this.props.onRegisterIframeRef(ref)}
-                        onUnregisterIframeRef={ref => this.props.onUnregisterIframeRef(ref)}
+                        onRegisterIframeRef={(ref: HTMLIFrameElement) => this.props.onRegisterIframeRef(ref)}
+                        onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
                     />
                 </Paper> :
                 <div className={classes.wrapperCard}>
@@ -175,15 +234,5 @@ class EasyMode extends Component {
         </Paper>;
     }
 }
-
-EasyMode.propTypes = {
-    configs: PropTypes.array,
-    socket: PropTypes.object,
-    t: PropTypes.func,
-    lang: PropTypes.string,
-
-    onRegisterIframeRef: PropTypes.func,
-    onUnregisterIframeRef: PropTypes.func,
-};
 
 export default withStyles(styles)(EasyMode);

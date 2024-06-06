@@ -1,3 +1,4 @@
+import React from 'react';
 import {
     Dialog,
     DialogActions,
@@ -11,24 +12,20 @@ import {
     Close as IconCancel,
     Delete as IconDelete,
 } from '@mui/icons-material';
+
 import type { Translate } from '@iobroker/adapter-react-v5/types';
-import React from 'react';
 
 interface GroupDeleteDialogProps {
     t: Translate;
-    open: boolean;
     onClose: () => void;
     group: ioBroker.GroupObject;
     deleteGroup: (groupId: string) => void;
     classes: Record<string, string>;
 }
 
-const GroupDeleteDialog: React.FC<GroupDeleteDialogProps> = props => {
-    if (!props.open) {
-        return null;
-    }
+export default function GroupDeleteDialog(props: GroupDeleteDialogProps): React.JSX.Element {
     return <Dialog
-        open={props.open}
+        open={!0}
         onClose={props.onClose}
     >
         <DialogTitle>{props.t('Please confirm')}</DialogTitle>
@@ -57,6 +54,4 @@ const GroupDeleteDialog: React.FC<GroupDeleteDialogProps> = props => {
             </Button>
         </DialogActions>
     </Dialog>;
-};
-
-export default GroupDeleteDialog;
+}

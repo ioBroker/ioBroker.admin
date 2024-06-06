@@ -7,7 +7,7 @@ import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-min-noconflict/theme-chrome';
 import 'ace-builds/src-min-noconflict/ext-language_tools';
 
-interface EditorProps {
+export interface EditorProps {
     fontSize?: number;
     value?: string;
     defaultValue?: string;

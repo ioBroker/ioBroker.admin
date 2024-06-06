@@ -18,10 +18,11 @@ import {
     GroupAdd as GroupAddIcon,
 } from '@mui/icons-material';
 
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
-import { Utils } from '@iobroker/adapter-react-v5';
+import {
+    Utils, type AdminConnection,
+    type Translate, type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
-import type { Translate, IobTheme } from '@iobroker/adapter-react-v5/types';
 import UserBlock from './UserBlock';
 import GroupBlock from './GroupBlock';
 import UserEditDialog from './UserEditDialog';
@@ -212,6 +213,7 @@ const DndPreview = () => {
     if (!preview.display) {
         return null;
     }
+
     return <div style={preview.style}>{preview.item.preview}</div>;
 };
 
@@ -223,8 +225,8 @@ declare global {
 
 function isTouchDevice() {
     return (('ontouchstart' in window) ||
-        (navigator.maxTouchPoints > 0) ||
-        (navigator.msMaxTouchPoints > 0));
+        (window.navigator.maxTouchPoints > 0) ||
+        (window.navigator.msMaxTouchPoints > 0));
 }
 
 const USER_TEMPLATE = {
@@ -542,29 +544,27 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                         <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
                     </div>
                     <div className={this.props.classes.blocksContainer}>
-                        {
-                            this.state.groups
-                                .sort((a, b) => {
-                                    const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
-                                    const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
-                                    if (_a > _b) {
-                                        return 1;
-                                    } if (_a < _b) {
-                                        return -1;
-                                    }
-                                    return 0;
-                                }).map(group => <GroupBlock
-                                    themeType={this.props.themeType}
-                                    group={group}
-                                    key={group._id}
-                                    users={this.state.users}
-                                    showGroupEditDialog={this.showGroupEditDialog}
-                                    showGroupDeleteDialog={this.showGroupDeleteDialog}
-                                    removeUserFromGroup={this.removeUserFromGroup}
-                                    getText={this.getText}
-                                    {...this.props}
-                                />)
-                        }
+                        {this.state.groups
+                            .sort((a, b) => {
+                                const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
+                                const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
+                                if (_a > _b) {
+                                    return 1;
+                                } if (_a < _b) {
+                                    return -1;
+                                }
+                                return 0;
+                            }).map(group => <GroupBlock
+                                themeType={this.props.themeType}
+                                group={group}
+                                key={group._id}
+                                users={this.state.users}
+                                showGroupEditDialog={this.showGroupEditDialog}
+                                showGroupDeleteDialog={this.showGroupDeleteDialog}
+                                removeUserFromGroup={this.removeUserFromGroup}
+                                getText={this.getText}
+                                {...this.props}
+                            />)}
                     </div>
                 </Grid>
                 <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
@@ -591,37 +591,34 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                         </Typography>
                     </div>
                     <div className={this.props.classes.blocksContainer}>
-                        {
-                            this.state.users
-                                .sort((a, b) => {
-                                    const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
-                                    const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
-                                    if (_a > _b) {
-                                        return 1;
-                                    } if (_a < _b) {
-                                        return -1;
-                                    }
-                                    return 0;
-                                })
-                                .map(user => <UserBlock
-                                    themeType={this.props.themeType}
-                                    user={user}
-                                    key={user._id}
-                                    groups={this.state.groups}
-                                    showUserEditDialog={this.showUserEditDialog}
-                                    showUserDeleteDialog={this.showUserDeleteDialog}
-                                    updateData={this.updateData}
-                                    addUserToGroup={this.addUserToGroup}
-                                    removeUserFromGroup={this.removeUserFromGroup}
-                                    getText={this.getText}
-                                    {...this.props}
-                                />)
-                        }
+                        {this.state.users
+                            .sort((a, b) => {
+                                const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
+                                const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
+                                if (_a > _b) {
+                                    return 1;
+                                } if (_a < _b) {
+                                    return -1;
+                                }
+                                return 0;
+                            })
+                            .map(user => <UserBlock
+                                themeType={this.props.themeType}
+                                user={user}
+                                key={user._id}
+                                groups={this.state.groups}
+                                showUserEditDialog={this.showUserEditDialog}
+                                showUserDeleteDialog={this.showUserDeleteDialog}
+                                updateData={this.updateData}
+                                addUserToGroup={this.addUserToGroup}
+                                removeUserFromGroup={this.removeUserFromGroup}
+                                getText={this.getText}
+                                {...this.props}
+                            />)}
                     </div>
                 </Grid>
             </Grid>
             {this.state.userEditDialog ? <UserEditDialog
-                open={!0}
                 onClose={() => this.setState({ userEditDialog: false })}
                 users={this.state.users}
                 user={this.state.userEditDialog}
@@ -635,13 +632,11 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 innerWidth={this.state.innerWidth}
             /> : null}
             {this.state.groupEditDialog ? <GroupEditDialog
-                open={!0}
                 onClose={() => this.setState({ groupEditDialog: false })}
                 groups={this.state.groups}
                 group={this.state.groupEditDialog}
                 isNew={this.state.groupEditDialogNew}
                 t={this.props.t}
-                // lang={this.props.lang}
                 getText={this.getText}
                 classes={this.props.classes}
                 onChange={this.changeGroupFormData}
@@ -649,15 +644,12 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 saveData={this.saveGroup}
             /> : null}
             {this.state.userDeleteDialog ? <UserDeleteDialog
-                open={!0}
                 onClose={() => this.setState({ userDeleteDialog: false })}
                 user={this.state.userDeleteDialog}
                 t={this.props.t}
-                // classes={this.props.classes}
                 deleteUser={this.deleteUser}
             /> : null}
             {this.state.groupDeleteDialog ? <GroupDeleteDialog
-                open={!0}
                 onClose={() => this.setState({ groupDeleteDialog: false })}
                 group={this.state.groupDeleteDialog}
                 t={this.props.t}

@@ -272,7 +272,7 @@ const COLORS_DARK = [
     'rgba(255,255,105,0.2)',
 ];
 
-// Number prototype is read only, properties should not be added
+// Number prototype is read-only, properties should not be added
 function padding2(num) {
     let s = num.toString();
     if (s.length < 2) {

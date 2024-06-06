@@ -22,15 +22,16 @@ import {
 } from '@mui/material';
 
 import {
-    MdEdit as IconEdit, MdClose as IconClose, MdMenu as IconMenu, MdExpandMore as IconExpandMore,
+    MdClose as IconClose,
+    MdMenu as IconMenu, MdExpandMore as IconExpandMore,
 } from 'react-icons/md';
 
 import { FaGithub as IconGithub } from 'react-icons/fa';
-import type {
-    AdminConnection, IobTheme, ThemeName,
-} from '@iobroker/adapter-react-v5';
 
-import { I18n, Loader } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, type IobTheme, type ThemeName,
+    I18n, Loader,
+} from '@iobroker/adapter-react-v5';
 
 import IconGlobe from '../assets/globe.svg';
 import IconLink from '../assets/link.svg';
@@ -422,21 +423,16 @@ interface MarkdownPart {
 interface MarkdownProps {
     path: string;
     text: string;
-    language: string;
-    theme: ThemeName;
+    language: ioBroker.Languages;
+    themeName: ThemeName;
     classes: Record<string, string>;
     onNavigate: (id: string, link?: string) => void;
-    socket: AdminConnection & {
-        getRepository(host?: string, args?: any, update?: boolean, timeoutMs?: number): Promise<any>;
-    };
+    socket: AdminConnection;
     adapter: string;
     link: string;
-    editMode: boolean;
-    editEnabled: boolean;
-    onEditMode: (editMode: boolean) => void;
-    affiliates: React.FC<any>;
     mobile: boolean;
-    editor: React.FC<any>;
+    affiliates: React.FC<any>;
+    currentHost: string;
     className: string;
 }
 
@@ -457,21 +453,21 @@ interface MarkdownState {
 }
 
 class Markdown extends Component<MarkdownProps, MarkdownState> {
-    contentRef: React.RefObject<HTMLDivElement>;
+    private readonly contentRef: React.RefObject<HTMLDivElement>;
 
-    mounted: boolean;
+    private mounted: boolean;
 
-    customLink: ({ text, link }: { text: string; link: string }) => React.JSX.Element;
+    private readonly customLink: ({ text, link }: { text: string; link: string }) => React.JSX.Element;
 
-    customH: ({
+    private readonly customH: ({
         text, id, level, prefix,
     }: { text: string; id: string; level: string; prefix: string }) => React.JSX.Element;
 
-    meta: () => string;
+    private readonly meta: () => string;
 
-    link: () => React.JSX.Element;
+    private readonly link: () => React.JSX.Element;
 
-    editText: string;
+    private editText: string;
 
     constructor(props: MarkdownProps) {
         super(props);
@@ -589,7 +585,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
     componentDidMount() {
         this.mounted = true;
         this.state.text && this.parseText(this.state.text);
-        this.props.socket && this.props.socket.getRepository()
+        this.props.socket?.getRepository(this.props.currentHost, { })
             .then(repo => this.setState({ adapterNews: repo[this.props.adapter]?.news }));
     }
 
@@ -712,9 +708,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
     parseText(text?: string) {
         text = text || this.state.text || '';
-        if (this.props.editEnabled) {
-            this.editText = text;
-        }
+
         if (!text || text.startsWith('<!DOCTYPE html>')) {
             // page isn't found
             this.setState({ notFound: true });
@@ -807,7 +801,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         // remove comments like <!-- -->
         body = body.replace(/\r\n|\n/g, '§$§$');
         body = body.replace(/<!--[^>]*-->/gm, '\n');
-        body = body.replace(/<! -[^>]* ->/gm, '\n'); // translator make it wrong
+        body = body.replace(/<! -[^>]* ->/gm, '\n'); // translator makes it wrong
         body = body.replace(/§\$§\$/g, '\n');
         body = body.replace(/\[\*\*\*\s(.+)\s\*\*\*]/g, '[***$1***]');
         body = body.replace(/\[\*\*\s(.+)\s\*\*]/g, '[**$1**]');
@@ -950,27 +944,6 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 </span>,
                 <span key="lastChangedValue" className={this.props.classes.infoValue}>{this.state.header.lastChanged}</span>,
             ] : null}
-            {this.props.editMode && this.state.header.editLink ?
-                <a
-                    className={this.props.classes.infoEdit}
-                    href={this.state.header.editLink.replace(/\/edit\//, '/blob/')}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                >
-                    <IconGithub style={{ marginRight: 4 }} />
-                    {I18n.t('See on github')}
-                </a> : null}
-            {this.props.editEnabled && this.editText ?
-                <div
-                    className={this.props.classes.infoEditLocal}
-                    onClick={() => {
-                        this.props.onEditMode && this.props.onEditMode(true);
-                    }}
-                >
-                    <IconEdit />
-                    {I18n.t('Edit local')}
-                </div> : null}
-
         </div>;
     }
 
@@ -1000,7 +973,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             key="affiliates"
             language={this.props.language}
             mobile={this.props.mobile}
-            theme={this.props.theme}
+            theme={this.props.themeName}
             data={this.state.affiliate}
         />;
     }
@@ -1310,18 +1283,9 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         if (this.state.notFound) {
             return null; // <Page404 className={this.props.classes.root} language={this.props.language}/>;
         }
-        if (this.props.editMode && this.props.editor) {
-            const Editor = this.props.editor;
-            return <Editor
-                language={this.props.language}
-                mobile={this.props.mobile}
-                theme={this.props.theme}
-                path={this.state.header.editLink}
-                onClose={() => this.props.onEditMode && this.props.onEditMode(false)}
-            />;
-        }
+
         if (this.state.loadTimeout && !this.state.parts.length) {
-            return <Loader theme={this.props.theme} />;
+            return <Loader themeName={this.props.themeName} />;
         }
 
         const prefix = window.location.hash.split('?')[0];

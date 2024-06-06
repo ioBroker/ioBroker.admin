@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
 import React, { useState, useEffect } from 'react';
 import { withStyles, type Styles } from '@mui/styles';
 
@@ -26,8 +25,10 @@ import {
     Check as IconCheck,
 } from '@mui/icons-material';
 
-import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
-import type { Translate, IobTheme } from '@iobroker/adapter-react-v5/types';
+import {
+    Utils, IconPicker,
+    type Translate, type IobTheme,
+} from '@iobroker/adapter-react-v5';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 
 import Group1 from '../../assets/groups/group1.svg';
@@ -43,22 +44,15 @@ import Group10 from '../../assets/groups/group10.svg';
 
 const GROUPS_ICONS = [Group1, Group2, Group3, Group4, Group5, Group6, Group7, Group8, Group9, Group10];
 
-interface GroupEditDialogProps {
+interface PermissionsTabProps {
     t: Translate;
-    // lang: string;
-    open: boolean;
-    onClose: () => void;
-    groups: ioBroker.GroupObject[];
     group: ioBroker.GroupObject;
-    isNew: boolean;
     onChange: (group: ioBroker.GroupObject) => void;
-    saveData: (originalId: string | null) => void;
-    innerWidth: number;
-    getText: (text: ioBroker.StringOrTranslated) => string;
     classes: Record<string, string>;
+    innerWidth: number;
 }
 
-const PermissionsTab: React.FC<GroupEditDialogProps> = props => {
+function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
     const mapObject = <T, Result>(
         object: Record<string, T>,
         mapFunction: (item: T, key: string) => Result,
@@ -121,40 +115,48 @@ const PermissionsTab: React.FC<GroupEditDialogProps> = props => {
         delete: false,
         create: false,
     };
+
     acl.file = {
         read: true, list: true, write: false, delete: false, create: false, ...acl.file,
     };
 
     return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermissionsTab">
-        {
-            mapObject(props.group.common.acl || {}, (block, blockKey) =>
-                <Grid item xs={12} md={12} key={blockKey}>
-                    <h2 className={props.classes.permHeaders}>{props.t(`group_acl_${blockKey}`)}</h2>
-                    {mapObject(block as Record<string, boolean>, (perm, permKey) =>
-                        <FormControlLabel
-                            key={permKey}
-                            control={<Checkbox
-                                disabled={props.group._id === 'system.group.administrator'}
-                                checked={perm}
-                                onChange={e => {
-                                    const newData = Utils.clone(props.group);
-                                    newData.common.acl[blockKey][permKey] = e.target.checked;
-                                    props.onChange(newData);
-                                }}
-                            />}
-                            label={props.t(`group_acl_${permKey}`)}
-                            labelPlacement="top"
-                        />)}
-                </Grid>)
-        }
+        {mapObject(props.group.common.acl || {}, (block, blockKey) =>
+            <Grid item xs={12} md={12} key={blockKey}>
+                <h2 className={props.classes.permHeaders}>{props.t(`group_acl_${blockKey}`)}</h2>
+                {mapObject(block as Record<string, boolean>, (perm, permKey) =>
+                    <FormControlLabel
+                        key={permKey}
+                        control={<Checkbox
+                            disabled={props.group._id === 'system.group.administrator'}
+                            checked={perm}
+                            onChange={e => {
+                                const newData = Utils.clone(props.group);
+                                newData.common.acl[blockKey][permKey] = e.target.checked;
+                                props.onChange(newData);
+                            }}
+                        />}
+                        label={props.t(`group_acl_${permKey}`)}
+                        labelPlacement="top"
+                    />)}
+            </Grid>)}
     </Grid>;
-};
+}
 
 const styles: Styles<IobTheme, any> = () => ({
     contentRoot:{
         padding: '16px 24px',
     },
 });
+
+interface GroupEditDialogProps extends PermissionsTabProps{
+    onClose: () => void;
+    groups: ioBroker.GroupObject[];
+    isNew: boolean;
+    onChange: (group: ioBroker.GroupObject) => void;
+    saveData: (originalId: string | null) => void;
+    getText: (text: ioBroker.StringOrTranslated) => string;
+}
 
 const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
     const [tab, setTab] = useState(0);
@@ -173,12 +175,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                     props.onChange(newData);
                 });
         }
-    // eslint-disable-next-line
-    }, [props.open]);
-
-    if (!props.open) {
-        return null;
-    }
+    }, []);
 
     const idExists = props.groups.find(group => group._id === props.group._id);
     const idChanged = props.group._id !== originalId;
@@ -215,12 +212,12 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 label="Name"
                 t={props.t}
                 value={name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                onChange={value => {
                     const newData = Utils.clone(props.group);
                     if (!props.group.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
-                        newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                        newData._id = changeShortId(newData._id, name2Id(value));
                     }
-                    newData.common.name = e.target.value;
+                    newData.common.name = value;
                     props.onChange(newData);
                 }}
                 autoComplete="off"
@@ -234,9 +231,9 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 t={props.t}
                 disabled={props.group.common.dontDelete}
                 value={props.group._id.split('.')[props.group._id.split('.').length - 1]}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                onChange={value => {
                     const newData = Utils.clone(props.group);
-                    newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                    newData._id = changeShortId(newData._id, name2Id(value));
                     props.onChange(newData);
                 }}
                 icon={LocalOfferIcon}
@@ -258,9 +255,9 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 label="Description"
                 t={props.t}
                 value={description}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                onChange={value => {
                     const newData = Utils.clone(props.group);
-                    newData.common.desc = e.target.value;
+                    newData.common.desc = value;
                     props.onChange(newData);
                 }}
                 icon={DescriptionIcon}
@@ -304,54 +301,52 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
 
     const selectedTab = [mainTab, PermissionsTab(props)][tab];
 
-    return (
-        <Dialog
-            open={props.open}
-            onClose={(event, reason) => {
-                if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
-                    props.onClose();
-                }
+    return <Dialog
+        open={!0}
+        onClose={(event, reason) => {
+            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                props.onClose();
+            }
+        }}
+        fullWidth={props.innerWidth < 500}
+    >
+        <DialogTitle className={props.classes.dialogTitle}>
+            <Tabs variant="fullWidth" value={tab} onChange={(e, newTab) => setTab(newTab)}>
+                <Tab label={props.t('Main')} value={0} />
+                <Tab label={props.t('Permissions')} value={1} />
+            </Tabs>
+        </DialogTitle>
+        <DialogContent
+            classes={{
+                root: Utils.clsx(
+                    props.innerWidth < 500 ? props.classes.narrowContent : '',
+                    props.classes.contentRoot,
+                ),
             }}
-            fullWidth={props.innerWidth < 500}
         >
-            <DialogTitle className={props.classes.dialogTitle}>
-                <Tabs variant="fullWidth" value={tab} onChange={(e, newTab) => setTab(newTab)}>
-                    <Tab label={props.t('Main')} value={0} />
-                    <Tab label={props.t('Permissions')} value={1} />
-                </Tabs>
-            </DialogTitle>
-            <DialogContent
-                classes={{
-                    root: Utils.clsx(
-                        props.innerWidth < 500 ? props.classes.narrowContent : '',
-                        props.classes.contentRoot,
-                    ),
-                }}
+            {selectedTab}
+        </DialogContent>
+        <DialogActions className={props.classes.dialogActions}>
+            <Button
+                variant="contained"
+                color="primary"
+                autoFocus
+                onClick={() => props.saveData(props.isNew ? null : originalId)}
+                disabled={!canSave}
+                startIcon={<IconCheck />}
             >
-                {selectedTab}
-            </DialogContent>
-            <DialogActions className={props.classes.dialogActions}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    autoFocus
-                    onClick={() => props.saveData(props.isNew ? null : originalId)}
-                    disabled={!canSave}
-                    startIcon={<IconCheck />}
-                >
-                    {props.t('Save')}
-                </Button>
-                <Button
-                    variant="contained"
-                    color="grey"
-                    onClick={props.onClose}
-                    startIcon={<IconCancel />}
-                >
-                    {props.t('Cancel')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
+                {props.t('Save')}
+            </Button>
+            <Button
+                variant="contained"
+                color="grey"
+                onClick={props.onClose}
+                startIcon={<IconCancel />}
+            >
+                {props.t('Cancel')}
+            </Button>
+        </DialogActions>
+    </Dialog>;
 };
 
 export default withStyles(styles)(GroupEditDialog);

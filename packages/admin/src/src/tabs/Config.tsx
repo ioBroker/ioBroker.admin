@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -39,16 +38,26 @@ import {
 import {
     Router, Utils,
     Icon,
-    Confirm as ConfirmDialog,
+    Confirm as ConfirmDialog, type IobTheme, type AdminConnection, type ThemeName, type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { JsonConfig } from '@iobroker/json-config';
-import  DeviceManager from '@iobroker/dm-gui-components';
+import DeviceManager from '@iobroker/dm-gui-components';
+
 import BasicUtils from '../Utils';
 
-const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+const arrayLogLevel: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
 
-const styles = theme => ({
+declare global {
+    interface Window {
+        // @deprecated
+        attachEvent: any;
+        // @deprecated
+        detachEvent: any;
+    }
+}
+
+const styles: Record<string, any> = (theme: IobTheme) => ({
     root: {
         height: '100%',
         display: 'flex',
@@ -130,8 +139,57 @@ const styles = theme => ({
     },
 });
 
-class Config extends Component {
-    constructor(props) {
+interface ConfigProps {
+    adapter: string;
+    instance: number;
+    materialize: boolean;
+    tab?: boolean;
+    jsonConfig: boolean;
+    socket: AdminConnection;
+    themeName: ThemeName;
+    themeType: ThemeType;
+    t: Translate;
+    isFloatComma: boolean;
+    dateFormat: string;
+    className: string;
+    icon: string;
+    lang: ioBroker.Languages;
+    easyMode?: boolean;
+    adminInstance: string;
+    onRegisterIframeRef: (ref: HTMLIFrameElement) => void;
+    onUnregisterIframeRef: (ref: HTMLIFrameElement) => void;
+    configStored: (allStored: boolean) => void;
+    classes: Record<string, string>;
+    theme: IobTheme;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    version?: string;
+}
+
+interface ConfigState {
+    checkedExist: boolean | string;
+    showStopAdminDialog: boolean;
+    running: boolean;
+    canStart: boolean;
+    alive: boolean;
+    connected: boolean | null;
+    connectedToHost: boolean;
+    logOnTheFlyValue: boolean;
+    logLevel: ioBroker.LogLevel;
+    logLevelValue: ioBroker.LogLevel;
+    tempLogLevel: ioBroker.LogLevel;
+    common?: Record<string, any>;
+    native?: Record<string, any>;
+    adapterDocLangs?: ioBroker.Languages[];
+    extension?: boolean | null;
+    showLogLevelDialog: boolean;
+}
+
+class Config extends Component<ConfigProps, ConfigState> {
+    private refIframe: HTMLIFrameElement | null;
+
+    private registered: boolean;
+
+    constructor(props: ConfigProps) {
         super(props);
 
         this.state = {
@@ -146,6 +204,7 @@ class Config extends Component {
             logLevel: 'info',
             logLevelValue: 'info',
             tempLogLevel: 'info',
+            showLogLevelDialog: false,
         };
 
         this.refIframe = null;
@@ -161,10 +220,6 @@ class Config extends Component {
 
     componentDidMount() {
         // receive messages from IFRAME
-        const eventFunc = window.addEventListener ? 'addEventListener' : 'attachEvent';
-        const emit = window[eventFunc];
-        const eventName = eventFunc === 'attachEvent' ? 'onmessage' : 'message';
-
         if (this.props.tab) {
             this.props.socket.fileExists(`${this.props.adapter}.admin`, 'tab.html')
                 .then(exist => {
@@ -213,16 +268,16 @@ class Config extends Component {
                         checkedExist: true,
                         running: obj?.common?.onlyWWW || obj?.common?.enabled,
                         canStart: !obj?.common?.onlyWWW,
-                        alive: alive?.val || false,
-                        extension: extension ? (extension?.val || false) : null,
-                        connectedToHost: connectedToHost?.val || false,
-                        connected: connected ? (connected.val || false) : null,
+                        alive: !!alive?.val,
+                        extension: extension ? !!extension?.val : null,
+                        connectedToHost: !!connectedToHost?.val,
+                        connected: connected ? !!connected.val : null,
                         logLevel: obj?.common?.loglevel || 'info',
                         logLevelValue: obj?.common?.loglevel || 'info',
                         tempLogLevel: tempLogLevel?.val || obj?.common?.loglevel || 'info',
                         common: obj?.common || {},
                         native: obj?.native || {},
-                        adapterDocLangs: obj?.common?.docs ? Object.keys(obj.common.docs) : ['en'],
+                        adapterDocLangs: obj?.common?.docs ? Object.keys(obj.common.docs) as ioBroker.Languages[] : ['en'],
                     });
                 })
                 .catch(error => {
@@ -236,10 +291,10 @@ class Config extends Component {
             this.props.onRegisterIframeRef(this.refIframe);
         }
 
-        emit(eventName, event => this.closeConfig(event), false);
+        (window.addEventListener || window.attachEvent)(window.addEventListener ? 'message' : 'onmessage', (event: MessageEvent & { message: string }) => this.closeConfig(event), false);
     }
 
-    onObjectChange = (id, obj) => {
+    onObjectChange = (id: string, obj: ioBroker.InstanceObject | null) => {
         if (id === `system.adapter.${this.props.adapter}.${this.props.instance}`) {
             this.setState({
                 running: obj?.common?.onlyWWW || obj?.common?.enabled,
@@ -280,34 +335,31 @@ class Config extends Component {
         return status;
     }
 
-    onStateChange = (id, state) => {
+    onStateChange = (id: string, state?: ioBroker.State | null) => {
         const instanceId = `system.adapter.${this.props.adapter}.${this.props.instance}`;
         if (id === `${instanceId}.alive`) {
-            this.setState({ alive: state ? state.val : false });
+            this.setState({ alive: !!state?.val });
         } else if (id === `${instanceId}.connected`) {
-            this.setState({ connectedToHost: state ? state.val : false });
+            this.setState({ connectedToHost: !!state?.val });
         } else if (id === `${this.props.adapter}.${this.props.instance}.info.connection`) {
-            this.setState({ connected: state ? state.val : null });
+            this.setState({ connected: state ? !!state.val : null });
         } else if (id === `${this.props.adapter}.${this.props.instance}.info.extension`) {
-            this.setState({ extension: state ? state.val : null });
+            this.setState({ extension: state ? !!state.val : null });
         } else if (id === `${instanceId}.logLevel`) {
-            this.setState({ tempLogLevel: state ? state.val : null });
+            this.setState({ tempLogLevel: state ? state.val as ioBroker.LogLevel : null });
         }
     };
 
     componentWillUnmount() {
-        const eventFunc = window.removeEventListener ? 'removeEventListener' : 'detachEvent';
-        const emit = window[eventFunc];
-        const eventName = eventFunc === 'detachEvent' ? 'onmessage' : 'message';
         this.props.socket.unsubscribeObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, this.onObjectChange);
 
-        emit(eventName, event => this.closeConfig(event), false);
+        (window.removeEventListener || window.detachEvent)(window.addEventListener ? 'message' : 'onmessage', (event: MessageEvent & { message: string }) => this.closeConfig(event), false);
 
         this.registered && this.refIframe && this.props.onUnregisterIframeRef(this.refIframe);
         this.refIframe = null;
     }
 
-    closeConfig(event) {
+    closeConfig(event: MessageEvent & { message: string }) {
         if (event.data === 'close' || event.message === 'close') {
             if (this.props.easyMode) {
                 Router.doNavigate('easy');
@@ -323,11 +375,15 @@ class Config extends Component {
 
     renderHelpButton() {
         if (this.props.jsonConfig) {
-            return <div style={{
-                display: 'inline-block', position: 'absolute', right: 0, top: 5,
-            }}
+            return <div
+                style={{
+                    display: 'inline-block',
+                    position: 'absolute',
+                    right: 0,
+                    top: 5,
+                }}
             >
-                <Tooltip size="small" title={this.props.t('Show help for this adapter')}>
+                <Tooltip title={this.props.t('Show help for this adapter')}>
                     <Fab
                         classes={{ root: this.props.classes.button }}
                         onClick={() => {
@@ -346,7 +402,6 @@ class Config extends Component {
     getConfigurator() {
         if (this.props.jsonConfig) {
             return <JsonConfig
-                menuPadding={this.props.menuPadding}
                 theme={this.props.theme}
                 width={this.props.width}
                 adapterName={this.props.adapter}
@@ -358,6 +413,7 @@ class Config extends Component {
                 isFloatComma={this.props.isFloatComma}
                 configStored={this.props.configStored}
                 t={this.props.t}
+                // @ts-expect-error fix later
                 DeviceManager={DeviceManager}
             />;
         }
@@ -377,18 +433,17 @@ class Config extends Component {
         return null;
     }
 
-    extendObject = (id, data) => {
-        this.props.socket.extendObject(id, data)
-            .catch(error => window.alert(error));
-    };
-
     returnStopAdminDialog() {
         return this.state.showStopAdminDialog ? <ConfirmDialog
             title={this.props.t('Please confirm')}
             text={this.props.t('stop_admin', this.props.instance)}
             ok={this.props.t('Stop admin')}
             onClose={result => {
-                result && this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, { common: { enabled: false } });
+                result && this.props.socket.extendObject(
+                    `system.adapter.${this.props.adapter}.${this.props.instance}`,
+                    { common: { enabled: false } },
+                )
+                    .catch(error => window.alert(error));
                 this.setState({ showStopAdminDialog: false });
             }}
         /> : null;
@@ -410,7 +465,7 @@ class Config extends Component {
                         variant="standard"
                         value={this.state.logLevelValue}
                         fullWidth
-                        onChange={el => this.setState({ logLevelValue: el.target.value })}
+                        onChange={el => this.setState({ logLevelValue: el.target.value as ioBroker.LogLevel })}
                     >
                         {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
                             {this.props.t(el)}
@@ -433,7 +488,11 @@ class Config extends Component {
                         if (this.state.logOnTheFlyValue) {
                             this.props.socket.setState(`system.adapter.${this.props.adapter}.${this.props.instance}.logLevel`, this.state.logLevelValue);
                         } else {
-                            this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, { common: { loglevel: this.state.logLevelValue } });
+                            this.props.socket.extendObject(
+                                `system.adapter.${this.props.adapter}.${this.props.instance}`,
+                                { common: { loglevel: this.state.logLevelValue } },
+                            )
+                                .catch(error => window.alert(`Cannot set log level: ${error}`));
                         }
                         this.setState({ showLogLevelDialog: false });
                     }}
@@ -479,7 +538,11 @@ v
                                         if (this.state.running && `${this.props.adapter}.${this.props.instance}` === this.props.adminInstance) {
                                             this.setState({ showStopAdminDialog: true });
                                         } else {
-                                            this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, { common: { enabled: !this.state.running } });
+                                            this.props.socket.extendObject(
+                                                `system.adapter.${this.props.adapter}.${this.props.instance}`,
+                                                { common: { enabled: !this.state.running } },
+                                            )
+                                                .catch(error => window.alert(`Cannot set log level: ${error}`));
                                         }
                                     }}
                                     onFocus={event => event.stopPropagation()}
@@ -496,7 +559,11 @@ v
                                     size="small"
                                     onClick={event => {
                                         event.stopPropagation();
-                                        this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, {});
+                                        this.props.socket.extendObject(
+                                            `system.adapter.${this.props.adapter}.${this.props.instance}`,
+                                            {},
+                                        )
+                                            .catch(error => window.alert(`Cannot set log level: ${error}`));
                                     }}
                                     onFocus={event => event.stopPropagation()}
                                     className={Utils.clsx(classes.buttonControl, !this.state.canStart && classes.hide)}
@@ -562,25 +629,5 @@ v
         </Paper>;
     }
 }
-
-Config.propTypes = {
-    menuPadding: PropTypes.number,
-    adapter: PropTypes.string,
-    instance: PropTypes.number,
-    materialize: PropTypes.bool,
-    tab: PropTypes.bool,
-    jsonConfig: PropTypes.bool,
-    socket: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
-    t: PropTypes.func,
-    isFloatComma: PropTypes.bool,
-    dateFormat: PropTypes.string,
-    className: PropTypes.string,
-    icon: PropTypes.string,
-    lang: PropTypes.string,
-    easyMode: PropTypes.bool,
-    adminInstance: PropTypes.string,
-};
 
 export default withStyles(styles)(Config);

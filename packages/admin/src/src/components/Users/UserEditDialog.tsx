@@ -22,9 +22,11 @@ import {
     Check as IconCheck,
 } from '@mui/icons-material';
 
-import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
+import {
+    Utils, IconPicker,
+    type Translate, type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
-import type { IobTheme, Translate } from '@iobroker/adapter-react-v5/types';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import AdminUtils from '../../Utils';
 
@@ -51,7 +53,6 @@ const styles: Styles<IobTheme, any> = () => ({
 
 interface UserEditDialogProps {
     t: Translate;
-    open: boolean;
     onClose: () => void;
     users: ioBroker.UserObject[];
     user: ioBroker.UserObject;
@@ -78,12 +79,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                     props.onChange(newData);
                 });
         }
-    // eslint-disable-next-line
-    }, [props.open]);
-
-    if (!props.open) {
-        return null;
-    }
+    }, []);
 
     const idExists = props.users.find(user => user._id === props.user._id);
     const idChanged = props.user._id !== originalId;
@@ -119,7 +115,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
 
     return <Dialog
         fullWidth={props.innerWidth < 500}
-        open={props.open}
+        open={!0}
         onClose={(event, reason) => {
             if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
                 props.onClose();
@@ -136,12 +132,12 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         label="Name"
                         t={props.t}
                         value={name}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={value => {
                             const newData = Utils.clone(props.user);
                             if (!props.user.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
-                                newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                                newData._id = changeShortId(newData._id, name2Id(value));
                             }
-                            newData.common.name = e.target.value;
+                            newData.common.name = value;
                             props.onChange(newData);
                         }}
                         autoComplete="new-password"
@@ -155,9 +151,9 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         t={props.t}
                         disabled={props.user.common.dontDelete}
                         value={props.user._id.split('.')[props.user._id.split('.').length - 1]}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={value => {
                             const newData = Utils.clone(props.user);
-                            newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                            newData._id = changeShortId(newData._id, name2Id(value));
                             props.onChange(newData);
                         }}
                         icon={LocalOfferIcon}
@@ -179,9 +175,9 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         label="Description"
                         t={props.t}
                         value={description}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={value => {
                             const newData = Utils.clone(props.user);
-                            newData.common.desc = e.target.value;
+                            newData.common.desc = value;
                             props.onChange(newData);
                         }}
                         icon={DescriptionIcon}
@@ -193,10 +189,10 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         label="Password"
                         t={props.t}
                         value={props.user.common.password}
-                        error={errorPassword ? props.t(errorPassword) : false}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        error={errorPassword ? props.t(errorPassword) : undefined}
+                        onChange={value => {
                             const newData = Utils.clone(props.user);
-                            newData.common.password = e.target.value;
+                            newData.common.password = value;
                             props.onChange(newData);
                         }}
                         type="password"
@@ -210,10 +206,10 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         label="Password repeat"
                         t={props.t}
                         value={(props.user.common as any).passwordRepeat}
-                        error={errorPasswordRepeat ? props.t(errorPasswordRepeat) : false}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        error={errorPasswordRepeat ? props.t(errorPasswordRepeat) : undefined}
+                        onChange={value => {
                             const newData = Utils.clone(props.user);
-                            newData.common.passwordRepeat = e.target.value;
+                            newData.common.passwordRepeat = value;
                             props.onChange(newData);
                         }}
                         type="password"

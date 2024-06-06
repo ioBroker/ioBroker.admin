@@ -1,3 +1,4 @@
+import React from 'react';
 import { useDrop, type DropTargetMonitor } from 'react-dnd';
 import {
     Typography,
@@ -14,9 +15,7 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { Utils, Icon } from '@iobroker/adapter-react-v5';
-import React from 'react';
-import type { Translate } from '@iobroker/adapter-react-v5/types';
+import { Utils, Icon, type Translate } from '@iobroker/adapter-react-v5';
 
 interface GroupBlockProps {
     t: Translate;
@@ -83,15 +82,13 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
         </div>
         <CardContent>
             <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
-                {
-                    props.group.common.icon ?
-                        <Icon
-                            className={props.classes.icon}
-                            src={props.group.common.icon}
-                        />
-                        :
-                        <GroupIcon className={props.classes.icon} />
-                }
+                {props.group.common.icon ?
+                    <Icon
+                        className={props.classes.icon}
+                        src={props.group.common.icon}
+                    />
+                    :
+                    <GroupIcon className={props.classes.icon} />}
                 <div>
                     <div>
                         <span className={props.classes.userGroupUserName}>
@@ -103,56 +100,50 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
 ]
                         </span>
                     </div>
-                    {
-                        props.group.common.desc
-                            ?
-                            <div className={props.classes.description}>
-                                {props.getText(props.group.common.desc)}
-                            </div>
-                            :
-                            null
-                    }
+                    {props.group.common.desc
+                        ?
+                        <div className={props.classes.description}>
+                            {props.getText(props.group.common.desc)}
+                        </div>
+                        :
+                        null}
                 </div>
             </Typography>
-            {
-                props.group.common.members?.length ?
-                    <div>
-                        {props.t('Group members')}
+            {props.group.common.members?.length ?
+                <div>
+                    {props.t('Group members')}
 :
-                    </div> : null
-            }
+                </div> : null}
             <div>
-                {
-                    (props.group.common.members || []).map((member, i) => {
-                        const user = props.users.find(u => u._id === member);
-                        const _textColor = user && user.common?.color ? Utils.getInvertedColor(user.common.color, props.themeType, true) : textColor;
-                        return user
-                            ?
-                            <Card
-                                key={i}
-                                variant="outlined"
-                                className={props.classes.userGroupMember}
-                                style={{ color: _textColor, borderColor: `${_textColor}40`, background: user.common?.color || 'inherit' }}
+                {(props.group.common.members || []).map((member, i) => {
+                    const user = props.users.find(u => u._id === member);
+                    const _textColor = user && user.common?.color ? Utils.getInvertedColor(user.common.color, props.themeType, true) : textColor;
+                    return user
+                        ?
+                        <Card
+                            key={i}
+                            variant="outlined"
+                            className={props.classes.userGroupMember}
+                            style={{ color: _textColor, borderColor: `${_textColor}40`, background: user.common?.color || 'inherit' }}
+                        >
+                            {user.common.icon ?
+                                <Icon
+                                    className={props.classes.icon}
+                                    src={user.common.icon}
+                                />
+                                :
+                                <PersonIcon className={props.classes.icon} />}
+                            {props.getText(user.common.name)}
+                            <IconButton
+                                size="small"
+                                onClick={() => props.removeUserFromGroup(member, props.group._id)}
                             >
-                                {user.common.icon ?
-                                    <Icon
-                                        className={props.classes.icon}
-                                        src={user.common.icon}
-                                    />
-                                    :
-                                    <PersonIcon className={props.classes.icon} />}
-                                {props.getText(user.common.name)}
-                                <IconButton
-                                    size="small"
-                                    onClick={() => props.removeUserFromGroup(member, props.group._id)}
-                                >
-                                    <ClearIcon style={{ color: _textColor }} />
-                                </IconButton>
-                            </Card>
-                            :
-                            null;
-                    })
-                }
+                                <ClearIcon style={{ color: _textColor }} />
+                            </IconButton>
+                        </Card>
+                        :
+                        null;
+                })}
             </div>
         </CardContent>
     </Card>;

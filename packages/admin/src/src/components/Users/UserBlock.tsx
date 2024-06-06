@@ -18,9 +18,10 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
-import { Icon, Utils } from '@iobroker/adapter-react-v5';
-import type { Translate } from '@iobroker/adapter-react-v5/types';
+import {
+    Icon, Utils,
+    type AdminConnection, type Translate,
+} from '@iobroker/adapter-react-v5';
 
 interface UserBlockProps {
     t: Translate;
