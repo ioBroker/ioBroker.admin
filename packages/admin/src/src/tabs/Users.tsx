@@ -3,7 +3,6 @@ import React from 'react';
 import type { AdminConnection, ThemeType, Translate } from '@iobroker/adapter-react-v5';
 
 import UsersList from '../components/Users/UsersList';
-
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 
@@ -16,7 +15,7 @@ interface UsersProps {
     themeType: ThemeType;
 }
 
-function Users(props: UsersProps) {
+export default function Users(props: UsersProps) {
     return <TabContainer>
         <TabContent
             style={{
@@ -36,5 +35,3 @@ function Users(props: UsersProps) {
         </TabContent>
     </TabContainer>;
 }
-
-export default Users;
