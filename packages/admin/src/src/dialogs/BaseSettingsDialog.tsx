@@ -22,6 +22,7 @@ import {
     type AdminConnection,
     Confirm as ConfirmDialog,
     withWidth,
+    type ThemeType,
     type IobTheme, type Translate,
 } from '@iobroker/adapter-react-v5';
 
@@ -54,7 +55,7 @@ interface BaseSettingsDialogProps {
     currentHost: string;
     currentHostName: string;
     socket: AdminConnection;
-    themeType: string;
+    themeType: ThemeType;
     onClose: () => void;
     classes: Record<string, string>;
 }

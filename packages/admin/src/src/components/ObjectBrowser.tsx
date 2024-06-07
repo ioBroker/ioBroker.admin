@@ -2231,8 +2231,8 @@ interface ObjectCustomDialogProps {
     objects: Record<string, ioBroker.Object>;
     socket: Connection;
     theme: IobTheme;
-    themeName: string;
-    themeType: string;
+    themeName: ThemeName;
+    themeType: ThemeType;
     customsInstances: string[];
     objectIDs: string[];
     onClose: () => void;
@@ -2263,7 +2263,7 @@ interface ObjectBrowserValueProps {
         expire: number | undefined;
     }) => void;
     /** Configured theme */
-    themeType: string;
+    themeType: ThemeType;
     socket: Connection;
     defaultHistory: string;
     dateFormat: string;
@@ -2279,7 +2279,7 @@ interface ObjectBrowserEditObjectProps {
     obj: ioBroker.AnyObject;
     roleArray: string[];
     expertMode: boolean;
-    themeType: string;
+    themeType: ThemeType;
     aliasTab: boolean;
     onClose: (obj?: ioBroker.AnyObject) => void;
     dialogName?: string;

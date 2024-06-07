@@ -208,7 +208,7 @@ interface EnumBlockProps {
     updating: boolean;
     id: string;
     children: number;
-    themeType: string;
+    themeType: ThemeType;
     cachedIcons: Record<string, string>;
     classes?: Record<string, string>;
     iconDragRef?: ConnectDragSource;

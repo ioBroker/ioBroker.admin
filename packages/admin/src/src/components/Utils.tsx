@@ -7,7 +7,7 @@
 import React from 'react';
 import {
     Utils as _Utils, I18n,
-    type ThemeType,
+    type ThemeType, type ThemeName,
 } from '@iobroker/adapter-react-v5';
 
 const NAMESPACE = 'material';
@@ -1295,12 +1295,10 @@ class Utils {
 
     /**
      * Get the current theme name (either from local storage or the browser settings).
-     * @param {string} [themeName]
-     * @returns {string}
      */
-    static getThemeName(themeName?: string): string {
+    static getThemeName(themeName?: ThemeName): ThemeName {
         if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
-            return window.vendorPrefix;
+            return window.vendorPrefix as ThemeName;
         }
 
         if (themeName) {
@@ -1317,7 +1315,7 @@ class Utils {
     /**
      * Get the type of theme.
      */
-    static getThemeType(themeName?: string): ThemeType {
+    static getThemeType(themeName?: ThemeName): ThemeType {
         if ((window as any).vendorPrefix && (window as any).vendorPrefix !== '@@vendorPrefix@@') {
             return 'light';
         }
@@ -1328,9 +1326,8 @@ class Utils {
 
     /**
      * Set the theme name and theme type.
-     * @param {string} themeName
      */
-    static setThemeName(themeName: string): void {
+    static setThemeName(themeName: ThemeName): void {
         if ((window as any).vendorPrefix && (window as any).vendorPrefix !== '@@vendorPrefix@@') {
             return; // ignore
         }
@@ -1345,16 +1342,16 @@ class Utils {
      * Toggle the theme name between 'dark' and 'colored'.
      * @returns the new theme name.
      */
-    static toggleTheme(themeName?: string): string {
+    static toggleTheme(themeName?: ThemeName): ThemeName {
         if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
-            return window.vendorPrefix;
+            return window.vendorPrefix as ThemeName;
         }
         themeName = themeName || ((window as any)._localStorage || window.localStorage).getItem('App.themeName');
 
         // dark => blue => colored => light => dark
         const themes = Utils.getThemeNames();
         const pos = themes.indexOf(themeName);
-        let newTheme;
+        let newTheme: ThemeName;
         if (pos !== -1) {
             newTheme = themes[(pos + 1) % themes.length];
         } else {
@@ -1369,9 +1366,9 @@ class Utils {
      * Get the list of themes
      * @returns {array<string>} list of possible themes
      */
-    static getThemeNames(): string[] {
+    static getThemeNames(): ThemeName[] {
         if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
-            return [window.vendorPrefix];
+            return [window.vendorPrefix as ThemeName];
         }
 
         return ['light', 'dark', 'blue', 'colored'];

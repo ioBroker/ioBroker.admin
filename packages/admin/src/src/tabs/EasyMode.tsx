@@ -80,7 +80,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
 });
 
-interface InstanceConfig {
+export interface InstanceConfig {
     id: string;
     title: ioBroker.StringOrTranslated;
     desc: ioBroker.StringOrTranslated;
@@ -106,7 +106,12 @@ interface EasyModeProps {
     t: Translate;
     lang: ioBroker.Languages;
     navigate: (tab: string | undefined | null, dialog?: string | null, id?: string | null, arg?: string | null) => void;
-    location: { id: string };
+    location: {
+        tab: string;
+        dialog?: string;
+        id?: string;
+        arg?: string;
+    };
     socket: AdminConnection;
     themeType: ThemeType;
     theme: IobTheme;
@@ -114,7 +119,12 @@ interface EasyModeProps {
     isFloatComma: boolean;
     dateFormat: string;
     configStored: (changed: boolean) => void;
-    getLocation: () => { dialog: boolean };
+    getLocation: () => {
+        tab: string;
+        dialog: string;
+        id: string;
+        arg: string;
+    };
     onRegisterIframeRef: (ref: HTMLIFrameElement) => void;
     onUnregisterIframeRef: (ref: HTMLIFrameElement) => void;
     configs?: InstanceConfig[];

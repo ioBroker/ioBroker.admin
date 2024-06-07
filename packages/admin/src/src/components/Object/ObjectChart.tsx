@@ -33,6 +33,7 @@ import { SVGRenderer } from 'echarts/renderers';
 import {
     type AdminConnection, Utils,
     withWidth, type IobTheme,
+    type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 // icons
@@ -153,7 +154,7 @@ interface ObjectChartProps {
     objects: Record<string, ioBroker.Object>;
     socket: AdminConnection;
     lang: ioBroker.Languages;
-    themeType: string;
+    themeType: ThemeType;
     // dateFormat: string;
     isFloatComma: boolean;
     noToolbar: boolean;

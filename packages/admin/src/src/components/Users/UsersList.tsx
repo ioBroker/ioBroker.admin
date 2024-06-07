@@ -20,7 +20,7 @@ import {
 
 import {
     Utils, type AdminConnection,
-    type Translate, type IobTheme,
+    type Translate, type IobTheme, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 import UserBlock from './UserBlock';
@@ -300,7 +300,7 @@ interface UsersListProps {
     socket: AdminConnection;
     ready: boolean;
     expertMode: boolean;
-    themeType: string;
+    themeType: ThemeType;
     classes: Record<string, string>;
 }
 

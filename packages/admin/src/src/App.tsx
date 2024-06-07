@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { type RefObject, Suspense } from 'react';
 import { withStyles, StylesProvider, createGenerateClassName } from '@mui/styles';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
@@ -45,7 +45,12 @@ import {
     Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 
-import { AdminConnection as Connection, PROGRESS } from '@iobroker/socket-client';
+import {
+    AdminConnection as Connection,
+    type FilteredNotificationInformation,
+    PROGRESS,
+} from '@iobroker/socket-client';
+
 import {
     LoaderPT,
     LoaderMV,
@@ -54,9 +59,11 @@ import {
     I18n, Router, Confirm as ConfirmDialog,
     Icon, withWidth, Theme,
     IconExpert,
-    ToggleThemeMenu,
+    ToggleThemeMenu, type IobTheme, type ThemeName, type AdminConnection, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
+import type { AdminGuiConfig, CompactAdapterInfo } from '@/types';
+import type { InstanceConfig } from '@/tabs/EasyMode';
 import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
 import CommandDialog from './dialogs/CommandDialog';
@@ -74,15 +81,15 @@ import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import ExpertModeDialog from './dialogs/ExpertModeDialog';
-import NewsAdminDialog, { checkMessages } from './dialogs/NewsAdminDialog';
+import NewsAdminDialog, { checkMessages, type ShowMessage } from './dialogs/NewsAdminDialog';
 import HostWarningDialog from './dialogs/HostWarningDialog';
 import LogsWorker from './Workers/LogsWorker';
 import InstancesWorker from './Workers/InstancesWorker';
-import HostsWorker from './Workers/HostsWorker';
-import AdaptersWorker from './Workers/AdaptersWorker';
+import HostsWorker, { type HostEvent, type NotificationAnswer } from './Workers/HostsWorker';
+import AdaptersWorker, { type AdapterEvent } from './Workers/AdaptersWorker';
 import ObjectsWorker from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
-import SlowConnectionWarningDialog from './dialogs/SlowConnectionWarningDialog';
+import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from './dialogs/SlowConnectionWarningDialog';
 import IsVisible from './components/IsVisible';
 
 // Tabs
@@ -98,7 +105,24 @@ const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
 const Hosts = React.lazy(() => import('./tabs/Hosts'));
 const EasyMode = React.lazy(() => import('./tabs/EasyMode'));
 
-const query = {};
+declare global {
+    interface Window {
+        _localStorage?: Storage;
+        _sessionStorage?: Storage;
+
+        sidebar?: {
+            addPanel: (name: string, icon: string, element: React.ReactNode) => void;
+        };
+        opera: boolean;
+    }
+    interface Navigator {
+        // @deprecated
+        userLanguage: string;
+    }
+}
+
+const query: { login?: boolean } = {};
+
 (window.location.search || '')
     .replace(/^\?/, '')
     .split('&')
@@ -107,14 +131,14 @@ const query = {};
         if (!parts[0]) {
             return;
         }
-        query[parts[0]] = parts[1] === undefined ? true : decodeURIComponent(parts[1]);
+        (query as Record<string, boolean | string>)[parts[0]] = parts[1] === undefined ? true : decodeURIComponent(parts[1]);
     });
 
 const generateClassName = createGenerateClassName({
     productionPrefix: 'iob',
 });
 
-const styles = theme => ({
+const styles: Record<string, any> = (theme: IobTheme) => ({
     root: {
         display: 'flex',
         height: '100%',
@@ -168,9 +192,11 @@ const styles = theme => ({
         overflowY: 'auto',
         marginTop: theme.mixins.toolbar?.minHeight,
         '@media (min-width:0px) and (orientation: landscape)': {
+            // @ts-expect-error must be defined
             marginTop: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight,
         },
         '@media (min-width:600px)': {
+            // @ts-expect-error must be defined
             marginTop: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight,
         },
     },
@@ -307,19 +333,205 @@ const styles = theme => ({
     },
 });
 
-const DEFAULT_GUI_SETTINGS_OBJECT = {
+interface ObjectGuiSettings extends ioBroker.StateObject {
+    common: {
+        name: ioBroker.StringOrTranslated;
+        type: 'boolean';
+        read: true;
+        write: false;
+        role: 'state';
+    };
+    native: {
+        localStorage: Record<string, any>;
+        sessionStorage: Record<string, any>;
+        'App.drawerState'?: string;
+    };
+}
+
+const DEFAULT_GUI_SETTINGS_OBJECT: ObjectGuiSettings = {
+    _id: '',
     type: 'state',
     common: {
+        name: 'Admin settings',
         type: 'boolean',
         read: true,
         write: false,
         role: 'state',
     },
-    native: {},
+    native: {
+        localStorage: {},
+        sessionStorage: {},
+    },
 };
 
-class App extends Router {
-    constructor(props) {
+interface AppProps {
+    classes: Record<string, string>;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}
+
+type CompactHost = {
+    _id: ioBroker.HostObject['_id'];
+    common: {
+        name: ioBroker.HostCommon['name'];
+        icon: ioBroker.HostCommon['icon'];
+        color: string;
+        installedVersion: ioBroker.HostCommon['installedVersion'];
+    };
+    native: {
+        hardware: {
+            networkInterfaces?: ioBroker.HostNative['hardware']['networkInterfaces'];
+        };
+    };
+};
+
+type CompactRepository = Record<string, {
+    icon: ioBroker.AdapterCommon['icon'];
+    version: string;
+}>;
+type CompactInstalledInfo = Record<string, {
+    version: string;
+    ignoreVersion?: string;
+}>;
+
+interface AppState {
+    connected: boolean;
+    progress: number;
+    ready: boolean;
+    lang: ioBroker.Languages;
+    expertMode: boolean;
+    expertModeDialog?: boolean;
+    showGuiSettings?: HTMLButtonElement | null;
+    hosts: CompactHost[];
+    currentHost: string;
+    currentHostName: string;
+    ownHost: string;
+    currentTab: {
+        tab: string;
+        dialog?: string;
+        id?: string;
+        arg?: string;
+    };
+    systemConfig: ioBroker.SystemConfigObject;
+    showHostWarning: { host: string; instances: Record<string, ioBroker.InstanceObject>; result: FilteredNotificationInformation } | null;
+    user: {
+        id: string;
+        name: string;
+        color?: string;
+        icon?: string;
+        invertBackground: boolean;
+    } | null;
+    repository: CompactRepository;
+    installed: CompactInstalledInfo;
+    waitForRestart: boolean;
+    tabs: any;
+    config: Record<string, any>;
+    stateChanged: boolean;
+    theme: IobTheme;
+    themeName: ThemeName;
+    themeType: ThemeType;
+    alert: boolean;
+    alertType: 'error' | 'warning' | 'info' | 'success';
+    alertMessage: string;
+    drawerState: 0 | 1 | 2;
+    editMenuList: boolean;
+    tab: any;
+    allStored: boolean;
+    dataNotStoredDialog: boolean;
+    dataNotStoredTab: string;
+    baseSettingsOpened: boolean;
+    unsavedDataInDialog: boolean;
+    systemSettingsOpened: boolean;
+
+    cmd: string | null;
+    cmdDialog: boolean;
+    commandHost: string | null;
+    callback?: ((exitCode?: number) => void) | null;
+    commandError: boolean;
+    commandRunning: boolean;
+
+    wizard: boolean;
+    performed: boolean;
+    discoveryAlive: boolean;
+    readTimeoutMs: number;
+    showSlowConnectionWarning: boolean;
+    expireWarningMode: boolean;
+    versionAdmin: string;
+    forceUpdateAdapters: number;
+    noTranslation: boolean;
+    cloudNotConnected: boolean;
+    cloudReconnect: number;
+    showRedirect: string;
+    redirectCountDown: number;
+    triggerAdapterUpdate: number;
+    updating: boolean;
+    notificationsDialog: boolean;
+    notifications: Record<string, any>;
+    noNotifications: number;
+    configNotSaved: boolean;
+    login: boolean;
+    protocol: 'http:' | 'https:';
+    hostname: string;
+    port: number;
+    hasGlobalError?: null | Error;
+    guiSettings?: boolean;
+    strictEasyMode?: boolean;
+    easyModeConfigs?: InstanceConfig[];
+    adapters: Record<string, CompactAdapterInfo>;
+    showNews?: {
+        checkNews: ShowMessage[];
+        lastNewsId: string | undefined;
+    } | null;
+}
+
+class App extends Router<AppProps, AppState> {
+    private readonly translations: Record<ioBroker.Languages, Record<string, string>>;
+
+    /** Seconds before logout to show warning */
+    private readonly EXPIRE_WARNING_THRESHOLD: number = 120;
+
+    private refConfigIframe: HTMLIFrameElement | null = null;
+
+    private readonly refUser: RefObject<HTMLDivElement>;
+
+    private readonly refUserDiv: RefObject<HTMLDivElement>;
+
+    private expireInSec: number | null = null;
+
+    private lastExecution: number = 0;
+
+    private pingAuth: ReturnType<typeof setTimeout> | null = null;
+
+    private expireInSecInterval: ReturnType<typeof setTimeout> | null = null;
+
+    private readonly toggleThemePossible: boolean;
+
+    private readonly expireText: string = I18n.t('Session expire in %s', '%s');
+
+    private adminGuiConfig: AdminGuiConfig;
+
+    private logsWorker: LogsWorker | null;
+
+    private instancesWorker: InstancesWorker | null;
+
+    private hostsWorker: HostsWorker | null;
+
+    private adaptersWorker: AdaptersWorker | null;
+
+    private objectsWorker: ObjectsWorker | null;
+
+    private guiSettings: ObjectGuiSettings;
+
+    private localStorageTimer: ReturnType<typeof setTimeout> | null = null;
+
+    private languageSet: boolean;
+
+    private socket: AdminConnection;
+
+    private adminInstance: string = '';
+
+    private newsInstance: number = 0;
+
+    constructor(props: AppProps) {
         super(props);
 
         try {
@@ -351,7 +563,7 @@ class App extends Router {
             'zh-cn': require('@iobroker/adapter-react-v5/i18n/zh-cn'),
         };
 
-        const translations = {
+        const translations: Record<ioBroker.Languages, Record<string, string>> = {
             en: require('./i18n/en'),
             de: require('./i18n/de'),
             ru: require('./i18n/ru'),
@@ -364,23 +576,18 @@ class App extends Router {
             uk: require('./i18n/uk'),
             'zh-cn': require('./i18n/zh-cn'),
         };
+
         // merge together
         Object.keys(translations).forEach(
-            lang => (this.translations[lang] = Object.assign(this.translations[lang], translations[lang])),
+            (lang: ioBroker.Languages) => Object.assign(this.translations[lang], translations[lang]),
         );
 
         // init translations
         I18n.setTranslations(this.translations);
-        I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
+        I18n.setLanguage((window.navigator.language || window.navigator.userLanguage || 'en').substring(0, 2).toLowerCase() as ioBroker.Languages);
 
-        /** Seconds before logout to show warning */
-        this.EXPIRE_WARNING_THRESHOLD = 120;
-        this.refConfigIframe = null;
-        this.refUser = React.createRef();
-        this.refUserDiv = React.createRef();
-        this.expireInSec = null;
-        this.expireInSecInterval = null;
-        this.expireText = I18n.t('Session expire in %s', '%s');
+        this.refUser = React.createRef<HTMLDivElement>();
+        this.refUserDiv = React.createRef<HTMLDivElement>();
         this.adminGuiConfig = {
             admin: {
                 menu: {},
@@ -394,11 +601,12 @@ class App extends Router {
         this.toggleThemePossible = !vendorPrefix || vendorPrefix === '@@vendorPrefix@@' || vendorPrefix === 'MV';
 
         if (!query.login) {
-            let drawerState = (window._localStorage || window.localStorage).getItem('App.drawerState');
-            if (drawerState) {
-                drawerState = parseInt(drawerState, 10);
+            const drawerStateStr = (window._localStorage || window.localStorage).getItem('App.drawerState');
+            let drawerState: 0 | 1 | 2;
+            if (drawerStateStr) {
+                drawerState = parseInt(drawerStateStr, 10) as 0 | 1 | 2;
             } else {
-                drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
+                drawerState = this.props.width === 'xs' ? DrawerStates.closed as 1 : DrawerStates.opened as 0;
             }
 
             const theme = App.createTheme();
@@ -427,28 +635,18 @@ class App extends Router {
                 port: App.getPort(),
                 //---------
 
-                allTabs: null,
-
                 expertMode: false,
 
-                states: {},
                 hosts: [],
                 currentHost: '',
                 currentHostName: '',
                 ownHost: '',
                 currentTab: Router.getLocation(),
-                currentDialog: null,
-                currentUser: '',
-                subscribesStates: {},
-                subscribesObjects: {},
-                subscribesLogs: 0,
                 systemConfig: null,
                 user: null, // Logged in user
 
                 repository: {},
                 installed: {},
-
-                objects: {},
 
                 waitForRestart: false,
                 tabs: null,
@@ -486,7 +684,7 @@ class App extends Router {
 
                 discoveryAlive: false,
 
-                readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
+                readTimeoutMs: SlowConnectionWarningDialogClass.getReadTimeoutMs(),
                 showSlowConnectionWarning: false,
 
                 /** if true, shows the expiry warning (left time and update button) */
@@ -501,18 +699,23 @@ class App extends Router {
                 cloudNotConnected: false,
                 cloudReconnect: 0,
 
-                showRedirect: false,
+                showRedirect: '',
                 redirectCountDown: 0,
 
                 triggerAdapterUpdate: 0,
 
                 updating: false, // js controller updating
-                /** If the notifications dialog should be shown */
+                /** If the notification dialog should be shown */
                 notificationsDialog: false,
                 /** Notifications, excluding the system ones */
                 notifications: {},
                 /** Number of new notifications */
                 noNotifications: 0,
+
+                configNotSaved: false,
+                login: false,
+                showHostWarning: null,
+                adapters: {},
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -524,27 +727,27 @@ class App extends Router {
                 theme,
                 themeName: App.getThemeName(theme),
                 themeType: App.getThemeType(theme),
-            };
+            } as AppState;
         }
     }
 
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError(error: null | { message: string; stack: any }) {
         // Update state so the next render will show the fallback UI.
         return { hasGlobalError: error };
     }
 
-    componentDidCatch(error, info) {
-        this.setState({ hasGlobalError: error, hasGlobalErrorInfo: info });
+    componentDidCatch(error: Error) {
+        this.setState({ hasGlobalError: error });
     }
 
-    setUnsavedData(hasUnsavedData) {
+    setUnsavedData(hasUnsavedData: boolean) {
         if (hasUnsavedData !== this.state.unsavedDataInDialog) {
             this.setState({ unsavedDataInDialog: hasUnsavedData });
         }
     }
 
     // If the background color must be inverted. Depends on the current theme.
-    mustInvertBackground(color) {
+    mustInvertBackground(color: string) {
         if (!color) {
             return false;
         }
@@ -556,9 +759,9 @@ class App extends Router {
         return invertedColor === '#000000' && this.state.themeType === 'light';
     }
 
-    localStorageGetItem = name => this.guiSettings.native.localStorage[name];
+    localStorageGetItem = (name: string): any => this.guiSettings.native.localStorage[name];
 
-    localStorageSetItem = (name, value) => {
+    localStorageSetItem = (name: string, value: any) => {
         if (value === null) {
             value = 'null';
         } else if (value === undefined) {
@@ -566,19 +769,20 @@ class App extends Router {
             return;
         }
         this.guiSettings.native.localStorage[name] = value.toString();
+
         this.localStorageSave();
     };
 
-    localStorageRemoveItem = name => {
+    localStorageRemoveItem = (name: string) => {
         if (Object.prototype.hasOwnProperty.call(this.guiSettings.native.localStorage, name)) {
             delete this.guiSettings.native.localStorage[name];
             this.localStorageSave();
         }
     };
 
-    sessionStorageGetItem = name => this.guiSettings.native.sessionStorage[name];
+    sessionStorageGetItem = (name: string): any => this.guiSettings.native.sessionStorage[name];
 
-    sessionStorageSetItem = (name, value) => {
+    sessionStorageSetItem = (name: string, value: any) => {
         if (value === null) {
             value = 'null';
         } else if (value === undefined) {
@@ -589,7 +793,7 @@ class App extends Router {
         this.localStorageSave();
     };
 
-    sessionStorageRemoveItem = name => {
+    sessionStorageRemoveItem = (name: string) => {
         if (Object.prototype.hasOwnProperty.call(this.guiSettings.native.sessionStorage, name)) {
             delete this.guiSettings.native.sessionStorage[name];
             this.localStorageSave();
@@ -643,23 +847,26 @@ class App extends Router {
                 this.guiSettings.native = { localStorage: this.guiSettings.native, sessionStorage: {} };
             }
 
+            // @ts-expect-error it is not full implementation of storage
             window._localStorage = {
                 getItem: this.localStorageGetItem,
                 setItem: this.localStorageSetItem,
                 removeItem: this.localStorageRemoveItem,
             };
+            // @ts-expect-error it is not full implementation of storage
             window._sessionStorage = {
                 getItem: this.sessionStorageGetItem,
                 setItem: this.sessionStorageSetItem,
                 removeItem: this.sessionStorageRemoveItem,
             };
 
-            // this is only settings that initialized before connection was established
-            let drawerState = this.guiSettings.native['App.drawerState'];
-            if (drawerState) {
-                drawerState = parseInt(drawerState, 10);
+            // this is only settings that initialized before the connection was established
+            const drawerStateStr = (window._localStorage || window.localStorage).getItem('App.drawerState');
+            let drawerState: 0 | 1 | 2;
+            if (drawerStateStr) {
+                drawerState = parseInt(drawerStateStr, 10) as 0 | 1 | 2;
             } else {
-                drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
+                drawerState = this.props.width === 'xs' ? DrawerStates.closed as 1 : DrawerStates.opened as 0;
             }
             const noTranslation =
                     (window._localStorage || window.localStorage).getItem('App.noTranslation') !== 'false';
@@ -677,7 +884,7 @@ class App extends Router {
         }
     }
 
-    enableGuiSettings(enabled, ownSettings) {
+    enableGuiSettings(enabled: boolean, ownSettings?: boolean) {
         if (enabled && !this.guiSettings) {
             this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
                 .then(async obj => {
@@ -777,10 +984,13 @@ class App extends Router {
             }
 
             this.socket = new Connection({
+                protocol: window.location.protocol,
+                host: window.location.hostname,
+
                 name: 'admin',
                 admin5only: true,
                 port: App.getPort(),
-                autoSubscribes: ['system.adapter.*'], // do not subscribe on '*' and really we don't need a 'system.adapter.*' too. Every tab must subscribe itself on everything that it needs
+                autoSubscribes: ['system.adapter.*'], // Do not subscribe on '*' and really we don't need a 'system.adapter.*' too. Every tab must subscribe itself to everything that it needs
                 autoSubscribeLog: true,
                 onProgress: progress => {
                     if (progress === PROGRESS.CONNECTING) {
@@ -789,8 +999,65 @@ class App extends Router {
                         });
                     } else if (progress === PROGRESS.READY) {
                         // BF: (2022.05.09) here must be this.socket.getVersion(true), but I have no Idea, why it does not work :(
-                        this.socket._socket.emit('getVersion', async (err, version) => {
-                            if (err) {
+                        this.socket.getVersion()
+                            .then(async versionInfo => {
+                                console.log(`Stored version: ${this.state.versionAdmin}, new version: ${versionInfo.version}`);
+                                if (this.state.versionAdmin && this.state.versionAdmin !== versionInfo.version) {
+                                    window.alert('New adapter version detected. Reloading...');
+                                    setTimeout(() => window.location.reload(), 500);
+                                }
+
+                                // read settings anew
+                                await this.getGUISettings();
+
+                                const newState: Partial<AppState> = {
+                                    connected: true,
+                                    progress: 100,
+                                    versionAdmin: versionInfo.version,
+                                };
+
+                                if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
+                                    // close the command dialog after reconnecting (maybe admin was restarted, and update is now finished)
+                                    newState.commandRunning = false;
+                                    newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
+
+                                    this.closeCmdDialog(() => {
+                                        this.setState(newState as AppState);
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    try {
+                                        const adminObj = await this.socket.getObject(
+                                            `system.adapter.${this.adminInstance}`,
+                                        );
+                                        // use instance language
+                                        if (adminObj?.native?.language) {
+                                            if (adminObj.native.language !== I18n.getLanguage()) {
+                                                console.log(`Language changed to ${adminObj.native.language}`);
+                                                I18n.setLanguage(adminObj.native.language);
+                                                if (this.languageSet) {
+                                                    window.location.reload();
+                                                } else {
+                                                    this.languageSet = true;
+                                                }
+                                            }
+                                        } else if (this.socket.systemLang !== I18n.getLanguage()) {
+                                            console.log(`Language changed to ${this.socket.systemLang}`);
+                                            I18n.setLanguage(this.socket.systemLang);
+                                            if (this.languageSet) {
+                                                window.location.reload();
+                                            } else {
+                                                this.languageSet = true;
+                                            }
+                                        }
+                                    } catch (e) {
+                                        console.error(`Cannot read admin settings: ${e}`);
+                                    }
+
+                                    this.setState(newState as AppState);
+                                }
+                            })
+                            .catch(err => {
                                 console.error(`Cannot read version: ${err}`);
                                 if (err === 'ioBroker is not connected') {
                                     setInterval(() => {
@@ -805,70 +1072,8 @@ class App extends Router {
                                         cloudNotConnected: true,
                                         cloudReconnect: 10,
                                     });
-                                    return;
                                 }
-                                if (!version) {
-                                    window.alert(err);
-                                    return;
-                                }
-                            }
-
-                            console.log(`Stored version: ${this.state.versionAdmin}, new version: ${version}`);
-                            if (this.state.versionAdmin && this.state.versionAdmin !== version) {
-                                window.alert('New adapter version detected. Reloading...');
-                                setTimeout(() => window.location.reload(), 500);
-                            }
-
-                            // read settings anew
-                            await this.getGUISettings();
-
-                            const newState = {
-                                connected: true,
-                                progress: 100,
-                                versionAdmin: version,
-                            };
-
-                            if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
-                                // close the command dialog after reconnect (maybe admin was restarted, and update is now finished)
-                                newState.commandRunning = false;
-                                newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
-
-                                this.closeCmdDialog(() => {
-                                    this.setState(newState);
-                                    window.location.reload();
-                                });
-                            } else {
-                                try {
-                                    const adminObj = await this.socket.getObject(
-                                        `system.adapter.${this.adminInstance}`,
-                                    );
-                                    // use instance language
-                                    if (adminObj?.native?.language) {
-                                        if (adminObj.native.language !== I18n.getLanguage()) {
-                                            console.log(`Language changed to ${adminObj.native.language}`);
-                                            I18n.setLanguage(adminObj.native.language);
-                                            if (this.languageSet) {
-                                                window.location.reload();
-                                            } else {
-                                                this.languageSet = true;
-                                            }
-                                        }
-                                    } else if (this.socket.systemLang !== I18n.getLanguage()) {
-                                        console.log(`Language changed to ${this.socket.systemLang}`);
-                                        I18n.setLanguage(this.socket.systemLang);
-                                        if (this.languageSet) {
-                                            window.location.reload();
-                                        } else {
-                                            this.languageSet = true;
-                                        }
-                                    }
-                                } catch (e) {
-                                    console.error(`Cannot read admin settings: ${e}`);
-                                }
-
-                                this.setState(newState);
-                            }
-                        });
+                            });
                     } else {
                         this.setState({
                             connected: true,
@@ -876,7 +1081,7 @@ class App extends Router {
                         });
                     }
                 },
-                onReady: async objects => {
+                onReady: async () => {
                     // Combine adminGuiConfig with user settings
                     this.adminGuiConfig = {
                         admin: {
@@ -916,7 +1121,6 @@ class App extends Router {
                                             ready: true,
                                             strictEasyMode: true,
                                             easyModeConfigs: config.configs,
-                                            objects,
                                         });
                                     });
                                 return;
@@ -928,10 +1132,9 @@ class App extends Router {
                             this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
                             this.objectsWorker = this.objectsWorker || new ObjectsWorker(this.socket);
 
-                            const newState = {
+                            const newState: Partial<AppState> = {
                                 lang: this.socket.systemLang,
                                 ready: true,
-                                objects,
                             };
 
                             try {
@@ -994,22 +1197,21 @@ class App extends Router {
                                 }
                             }
 
-                            this.setState(newState, () => this.setCurrentTabTitle());
+                            this.setState(newState as AppState, () => this.setCurrentTabTitle());
 
                             this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
 
                             // Give some time for communication
                             setTimeout(() => this.logsWorkerChanged(this.state.currentHost), 1000);
 
-                            setTimeout(
-                                () =>
-                                    this.findNewsInstance().then(instance =>
-                                        this.socket.subscribeState(
-                                            `admin.${instance}.info.newsFeed`,
-                                            this.getNews(instance),
-                                        )),
-                                5_000,
-                            );
+                            setTimeout(() => this.findNewsInstance()
+                                .then(instance => {
+                                    this.newsInstance = instance;
+                                    this.socket.subscribeState(
+                                        `admin.${instance}.info.newsFeed`,
+                                        this.onNews,
+                                    );
+                                }), 5_000);
 
                             setTimeout(
                                 async () => {
@@ -1029,7 +1231,6 @@ class App extends Router {
                             this.showAlert(error, 'error');
                         });
                 },
-                // onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
                 onError: error => {
                     console.error(error);
                     error = error.message || error.toString();
@@ -1071,64 +1272,57 @@ class App extends Router {
         this.expireInSecInterval = null;
         this.unsubscribeOnHostsStatus();
 
-        // restore localstorage
-        if (this._localStorage) {
+        if (window._localStorage) {
             window._localStorage = null;
             window._sessionStorage = null;
         }
     }
 
-    updateHosts = (hostId, obj) => {
-        const hosts = JSON.parse(JSON.stringify(this.state.hosts));
-
-        if (!Array.isArray(hostId)) {
-            hostId = { id: hostId, obj, type: obj ? 'changed' : 'delete' };
-        }
+    updateHosts = (events: HostEvent[]) => {
+        const hosts: CompactHost[] = JSON.parse(JSON.stringify(this.state.hosts));
 
         Promise.all(
-            hostId.map(async event => {
+            events.map(async event => {
                 const elementFind = hosts.find(host => host._id === event.id);
                 if (elementFind) {
                     const index = hosts.indexOf(elementFind);
                     if (event.obj) {
                         // updated
-                        hosts[index] = event.obj;
+                        hosts[index] = event.obj as CompactHost;
                     } else {
                         // deleted
                         hosts.splice(index, 1);
                     }
                 } else {
                     // new
-                    hosts.push(event.obj);
+                    hosts.push(event.obj as CompactHost);
                 }
             }),
-        ).then(() => {
-            const newState = { hosts };
-            this.setState(newState);
-        });
+        )
+            .then(() => this.setState({ hosts }));
     };
 
     repoChangeHandler = () => {
         this.readRepoAndInstalledInfo(this.state.currentHost, null, true).then(() => console.log('Repo updated!'));
     };
 
-    adaptersChangeHandler = events => {
+    adaptersChangeHandler = (events: AdapterEvent[]) => {
         // update installed
         //
-        const installed = JSON.parse(JSON.stringify(this.state.installed));
+        const installed: CompactInstalledInfo = JSON.parse(JSON.stringify(this.state.installed));
         let changed = false;
         events.forEach(event => {
             const parts = event.id.split('.');
             const adapter = parts[2];
-            if (event.type === 'delete' || !event.obj) {
+            if (event.type === 'deleted' || !event.obj) {
                 if (installed[adapter]) {
                     changed = true;
                     delete installed[adapter];
                 }
             } else if (installed[adapter]) {
                 Object.keys(installed[adapter]).forEach(attr => {
-                    if (installed[adapter][attr] !== event.obj.common[attr]) {
-                        installed[adapter][attr] = event.obj.common[attr];
+                    if ((installed[adapter] as Record<string, any>)[attr] !== (event.obj.common as Record<string, any>)[attr]) {
+                        (installed[adapter] as Record<string, any>)[attr] = (event.obj.common as Record<string, any>)[attr];
                         changed = true;
                     }
                 });
@@ -1141,7 +1335,7 @@ class App extends Router {
         changed && this.setState({ installed });
     };
 
-    async findCurrentHost(newState) {
+    async findCurrentHost(newState: Partial<AppState>) {
         newState.hosts = await this.socket.getCompactHosts();
 
         if (!this.state.currentHost) {
@@ -1171,7 +1365,7 @@ class App extends Router {
         }
 
         if (!alive || !alive.val) {
-            // find first alive host
+            // find first the live host
             for (let h = 0; h < newState.hosts.length; h++) {
                 alive = await this.socket.getState(`${newState.hosts[h]._id}.alive`);
                 if (alive && alive.val) {
@@ -1204,7 +1398,7 @@ class App extends Router {
         if (this.expireInSec <= 0) {
             window.alert('Session expired');
             // reconnect
-            setTimeout(() => window.location.reload(false), 1_000);
+            setTimeout(() => window.location.reload(), 1_000);
         }
 
         this.lastExecution = now;
@@ -1212,8 +1406,6 @@ class App extends Router {
 
     /**
      * Start interval to handle logout after the session expires, this also refreshes the session
-     *
-     * @return {Promise<void>}
      */
     async makePingAuth() {
         this.pingAuth && clearTimeout(this.pingAuth);
@@ -1233,11 +1425,11 @@ class App extends Router {
         } catch (e) {
             window.alert(`Session timeout: ${e}`);
             // reconnect
-            setTimeout(() => window.location.reload(false), 1_000);
+            setTimeout(() => window.location.reload(), 1_000);
         }
     }
 
-    onDiscoveryAlive = (name, value) => {
+    onDiscoveryAlive = (_name: string, value?: ioBroker.State | null) => {
         if (!!value?.val !== this.state.discoveryAlive) {
             this.setState({ discoveryAlive: !!value?.val });
         }
@@ -1256,29 +1448,24 @@ class App extends Router {
         onClose={() => Router.doNavigate(null)}
     />;
 
-    findNewsInstance = () => {
+    async findNewsInstance(): Promise<number> {
         const maxCount = 200;
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async resolve => {
-            for (let instance = 0; instance < maxCount; instance++) {
-                try {
-                    const adminAlive = await this.socket.getState(`system.adapter.admin.${instance}.alive`);
-                    if (adminAlive?.val) {
-                        resolve(instance);
-                        break;
-                    }
-                } catch (error) {
-                    console.error(`Cannot find news instance: ${error}`);
-                    this.showAlert(`Cannot find news instance: ${error}`, 'error');
+        for (let instance = 0; instance < maxCount; instance++) {
+            try {
+                const adminAlive = await this.socket.getState(`system.adapter.admin.${instance}.alive`);
+                if (adminAlive?.val) {
+                    return instance;
                 }
+            } catch (error) {
+                console.error(`Cannot find news instance: ${error}`);
+                this.showAlert(`Cannot find news instance: ${error}`, 'error');
             }
-            resolve(0);
-        });
-    };
+        }
+        return 0;
+    }
 
     /**
-     * Render the notifications dialog
-     * @return {React.ReactNode}
+     * Render the notification dialog
      */
     renderNotificationsDialog() {
         if (!this.state.notificationsDialog) {
@@ -1310,12 +1497,8 @@ class App extends Router {
         />;
     }
 
-    /**
-     * Called when notifications detected, updates the notifications indicator
-     *
-     * @param {Record<string, any>} notifications
-     */
-    handleNewNotifications = async notifications => {
+    /** Called when notifications detected, updates the notifications indicator */
+    handleNewNotifications = async (notifications: Record<string, NotificationAnswer>): Promise<void> => {
         // console.log(`new notifications: ${JSON.stringify(notifications)}`);
         let noNotifications = 0;
 
@@ -1347,42 +1530,39 @@ class App extends Router {
         this.setState({ noNotifications, notifications: { notifications, instances } });
     };
 
-    showAdaptersWarning = (notifications, host) => {
+    showAdaptersWarning = async (notifications: Record<string, NotificationAnswer | null>, host: string) => {
         if (!notifications || !notifications[host] || !notifications[host].result) {
-            return Promise.resolve();
+            return;
         }
 
         const result = notifications[host].result;
 
         if (result?.system && Object.keys(result.system.categories).length) {
-            return this.instancesWorker.getInstances()
-                .then(instances => this.setState({ showHostWarning: { host, instances, result } }));
+            await this.instancesWorker.getInstances()
+                .then(instances => this.setState({ showHostWarning: { host, instances: instances as Record<string, ioBroker.InstanceObject>, result } }));
         }
-        return Promise.resolve();
     };
 
     /**
      * Get news for specific adapter instance
-     *
-     * @param {string} instance e.g. hm-rpc.0
      */
-    getNews = instance => async (name, newsFeed) => {
+    onNews = async (_id: string, newsFeed: ioBroker.State): Promise<void> => {
         try {
             if (!this.state.systemConfig.common.licenseConfirmed) {
                 return;
             }
 
-            const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
+            const lastNewsId = await this.socket.getState(`admin.${this.newsInstance}.info.newsLastId`);
             if (newsFeed?.val) {
                 let news = null;
                 try {
-                    news = JSON.parse(newsFeed.val);
+                    news = JSON.parse(newsFeed.val as string);
                 } catch (error) {
                     console.error(`Cannot parse news: ${newsFeed.val}`);
                 }
 
                 if (news?.length && news[0].id !== lastNewsId?.val) {
-                    const uuid = await this.socket.getUuid();
+                    const uuid: string = await this.socket.getUuid();
                     const info = await this.socket
                         .getHostInfo(this.state.currentHost)
                         .catch(() => null);
@@ -1394,9 +1574,9 @@ class App extends Router {
                     const objectsDbType = (await this.socket.getDiagData(this.state.currentHost, 'normal')).objectsType;
 
                     const objects = await this.objectsWorker.getObjects(true);
-                    const noObjects = Object.keys(objects).length;
+                    const noObjects = Object.keys(objects || {}).length;
 
-                    const checkNews = checkMessages(news, lastNewsId?.val, {
+                    const checkNews = checkMessages(news, lastNewsId?.val as string, {
                         lang: I18n.getLanguage(),
                         adapters: this.state.adapters,
                         instances: instances || [],
@@ -1412,9 +1592,8 @@ class App extends Router {
                     if (checkNews?.length) {
                         this.setState({
                             showNews: {
-                                instance,
                                 checkNews,
-                                lastNewsId: lastNewsId?.val,
+                                lastNewsId: lastNewsId?.val as string,
                             },
                         });
                     }
@@ -1434,7 +1613,7 @@ class App extends Router {
             newsArr={this.state.showNews.checkNews}
             current={this.state.showNews.lastNewsId}
             onSetLastNewsId={async id => {
-                id && (await this.socket.setState(`admin.${this.state.showNews.instance}.info.newsLastId`, { val: id, ack: true }));
+                id && (await this.socket.setState(`admin.${this.newsInstance}.info.newsLastId`, { val: id, ack: true }));
                 this.setState({ showNews: null });
             }}
         />;
@@ -1444,6 +1623,7 @@ class App extends Router {
         if (!this.state.showSlowConnectionWarning) {
             return null;
         }
+
         return <SlowConnectionWarningDialog
             readTimeoutMs={this.state.readTimeoutMs}
             t={I18n.t}
@@ -1458,50 +1638,53 @@ class App extends Router {
         />;
     }
 
-    readRepoAndInstalledInfo = async (currentHost, hosts, update) => {
+    async readRepoAndInstalledInfo(
+        currentHost: string,
+        hosts?: (CompactHost[]) | null,
+        update?: boolean,
+    ) {
         hosts = hosts || this.state.hosts;
-        let repository;
-        let installed;
 
-        return this.socket
+        const repository: CompactRepository = await this.socket
             .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
             .catch(e => {
                 window.alert(`Cannot getRepositoryCompact: ${e}`);
                 e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                 return {};
-            })
-            .then(_repository => {
-                repository = _repository;
-                return this.socket.getCompactInstalled(currentHost, update, this.state.readTimeoutMs).catch(e => {
-                    window.alert(`Cannot getInstalled: ${e}`);
-                    e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
-                    return {};
-                });
-            })
-            .then(_installed => {
-                installed = _installed;
-                return this.socket.getCompactAdapters(update).catch(e => window.alert(`Cannot read adapters: ${e}`));
-            })
-            .then(adapters => {
-                installed &&
-                    adapters &&
-                    Object.keys(adapters).forEach(id => {
-                        if (installed[id] && adapters[id].iv) {
-                            installed[id].ignoreVersion = adapters[id].iv;
-                        }
-                    });
-
-                this.setState({
-                    repository, installed, hosts, adapters,
-                });
             });
-    };
 
-    logsWorkerChanged = currentHost => {
+        const installed: CompactInstalledInfo = await this.socket.getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
+            .catch(e => {
+                window.alert(`Cannot getInstalled: ${e}`);
+                e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+                return {};
+            });
+
+        const adapters: Record<string, CompactAdapterInfo> = await this.socket.getCompactAdapters(update)
+            .catch(e => {
+                window.alert(`Cannot read adapters: ${e}`);
+                return {} as Record<string, CompactAdapterInfo>;
+            });
+
+        installed && adapters && Object.keys(adapters).forEach(id => {
+            if (installed[id] && adapters[id].iv) {
+                installed[id].ignoreVersion = adapters[id].iv;
+            }
+        });
+
+        this.setState({
+            repository,
+            installed,
+            hosts,
+            adapters,
+        });
+    }
+
+    logsWorkerChanged = (currentHost: string) => {
         this.logsWorker && this.logsWorker.setCurrentHost(currentHost);
     };
 
-    onHostStatusChanged = (id, state) => {
+    onHostStatusChanged = (id: string, state?: ioBroker.State | null) => {
         const host = this.state.hosts.find(_id => `${_id}.alive` === id);
         if (host) {
             // TODO!! => update hostSelector
@@ -1509,14 +1692,13 @@ class App extends Router {
         }
     };
 
-    subscribeOnHostsStatus(hosts) {
-        hosts = hosts || this.state.hosts;
-        hosts.forEach(item => this.socket.subscribeState(`${item._id}.alive`, this.onHostStatusChanged));
+    subscribeOnHostsStatus() {
+        this.state.hosts.forEach(item =>
+            this.socket.subscribeState(`${item._id}.alive`, this.onHostStatusChanged));
     }
 
     unsubscribeOnHostsStatus() {
-        this.state.hosts &&
-            this.socket &&
+        this.state.hosts && this.socket &&
             this.state.hosts.forEach(item =>
                 this.socket.unsubscribeState(`${item._id}.alive`, this.onHostStatusChanged));
     }
@@ -1531,7 +1713,7 @@ class App extends Router {
     /**
      * Get the used port
      */
-    static getPort() {
+    static getPort(): number {
         let port = parseInt(window.location.port, 10);
 
         if (Number.isNaN(port)) {
@@ -1557,25 +1739,21 @@ class App extends Router {
     /**
      * Get the used protocol
      */
-    static getProtocol() {
-        return window.location.protocol;
+    private static getProtocol(): 'http:' | 'https:' {
+        return window.location.protocol as 'http:' | 'https:';
     }
 
     /**
      * Get a theme
-     * @param {string} name Theme name
-     * @returns {IobTheme}
      */
-    static createTheme(name) {
+    private static createTheme(name?: ThemeName): IobTheme {
         return Theme(Utils.getThemeName(name));
     }
 
     /**
      * Get the theme name
-     * @param {Theme} theme Theme
-     * @returns {string} Theme name
      */
-    static getThemeName(theme) {
+    private static getThemeName(theme: IobTheme): ThemeName {
         return theme.name;
     }
 
@@ -1584,14 +1762,12 @@ class App extends Router {
      * @param {Theme} theme Theme
      * @returns {string} Theme type
      */
-    static getThemeType(theme) {
+    private static getThemeType(theme: IobTheme): ThemeType {
         return theme.palette.mode;
     }
 
-    /**
-     * Changes the current theme
-     */
-    toggleTheme = currentThemeName => {
+    /** Changes the current theme */
+    toggleTheme = (currentThemeName?: ThemeName): void => {
         const themeName = this.state.themeName;
 
         const newThemeName = currentThemeName || Utils.toggleTheme(themeName);
@@ -1610,30 +1786,11 @@ class App extends Router {
         );
     };
 
-    async onObjectChange(id, obj) {
-        console.log(`OBJECT: ${id}`);
-        if (obj) {
-            this.setState(prevState => {
-                const objects = prevState.objects;
-                objects[id] = obj;
-
-                return { objects };
-            });
-        } else {
-            this.setState(prevState => {
-                const objects = prevState.objects;
-                delete objects[id];
-
-                return { objects };
-            });
-        }
-    }
-
     setCurrentTabTitle() {
         this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
     }
 
-    setTitle(title) {
+    setTitle(title: string) {
         document.title = `${title} - ${this.state.currentHostName || 'ioBroker'}`;
     }
 
@@ -1641,7 +1798,6 @@ class App extends Router {
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 const small = this.props.width === 'xs' || this.props.width === 'sm';
-                const compact = !small && this.state.drawerState === DrawerStates.compact;
                 const opened = !small && this.state.drawerState === DrawerStates.opened;
                 const closed = small || this.state.drawerState === DrawerStates.closed;
 
@@ -1650,13 +1806,11 @@ class App extends Router {
                         triggerUpdate={this.state.triggerAdapterUpdate}
                         key="adapters"
                         forceUpdateAdapters={this.state.forceUpdateAdapters}
-                        theme={this.state.theme}
                         adaptersWorker={this.adaptersWorker}
                         instancesWorker={this.instancesWorker}
                         themeType={this.state.themeType}
                         systemConfig={this.state.systemConfig}
                         socket={this.socket}
-                        hosts={this.state.hosts}
                         adminHost={this.state.ownHost}
                         hostsWorker={this.hostsWorker}
                         currentHost={this.state.currentHost}
@@ -1664,12 +1818,11 @@ class App extends Router {
                         t={I18n.t}
                         lang={I18n.getLanguage()}
                         expertMode={this.state.expertMode}
-                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                        executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) => this.executeCommand(cmd, host, callback)}
                         commandRunning={this.state.commandRunning}
                         onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
                         menuOpened={opened}
                         menuClosed={closed}
-                        menuCompact={compact}
                         adminGuiConfig={this.adminGuiConfig}
                         toggleTranslation={this.toggleTranslation}
                         noTranslation={this.state.noTranslation}
@@ -1677,7 +1830,8 @@ class App extends Router {
                         onUpdating={updating => this.setState({ updating })}
                     />
                 </Suspense>;
-            } if (this.state.currentTab.tab === 'tab-instances') {
+            }
+            if (this.state.currentTab.tab === 'tab-instances') {
                 return <Suspense fallback={<Connecting />}>
                     <Instances
                         key="instances"
@@ -1707,18 +1861,19 @@ class App extends Router {
                         dateFormat={this.state.systemConfig.common.dateFormat}
                         isFloatComma={this.state.systemConfig.common.isFloatComma}
                         width={this.props.width}
-                        configStored={value => this.allStored(value)}
-                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                        configStored={(value: boolean) => this.allStored(value)}
+                        executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) => this.executeCommand(cmd, host, callback)}
                         inBackgroundCommand={this.state.commandError || this.state.performed}
-                        onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
-                        onUnregisterIframeRef={ref => {
+                        onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
+                        onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
                             if (this.refConfigIframe === ref) {
                                 this.refConfigIframe = null;
                             }
                         }}
                     />
                 </Suspense>;
-            } if (this.state.currentTab.tab === 'tab-intro') {
+            }
+            if (this.state.currentTab.tab === 'tab-intro') {
                 return <Suspense fallback={<Connecting />}>
                     <Intro
                         key="intro"
@@ -1728,13 +1883,14 @@ class App extends Router {
                         adminInstance={this.adminInstance}
                         instancesWorker={this.instancesWorker}
                         hostsWorker={this.hostsWorker}
-                        showAlert={(message, type) => this.showAlert(message, type)}
+                        showAlert={(message: string, type?: 'error' | 'warning' | 'info' | 'success') => this.showAlert(message, type)}
                         socket={this.socket}
                         t={I18n.t}
                         lang={I18n.getLanguage()}
                     />
                 </Suspense>;
-            } if (this.state.currentTab.tab === 'tab-logs') {
+            }
+            if (this.state.currentTab.tab === 'tab-logs') {
                 return <Suspense fallback={<Connecting />}>
                     <Logs
                         key="logs"
@@ -1747,10 +1903,11 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         currentHost={this.state.currentHost}
                         hostsWorker={this.hostsWorker}
-                        clearErrors={cb => this.clearLogErrors(cb)}
+                        clearErrors={() => this.clearLogErrors()}
                     />
                 </Suspense>;
-            } if (this.state.currentTab.tab === 'tab-files') {
+            }
+            if (this.state.currentTab.tab === 'tab-files') {
                 return <Suspense fallback={<Connecting />}>
                     <Files
                         key="files"
@@ -1759,11 +1916,11 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
-                        themeName={this.state.themeName}
                         themeType={this.state.themeType}
                     />
                 </Suspense>;
-            } if (this.state.currentTab.tab === 'tab-users') {
+            }
+            if (this.state.currentTab.tab === 'tab-users') {
                 return <Suspense fallback={<Connecting />}>
                     <Users
                         key="users"
@@ -1775,22 +1932,21 @@ class App extends Router {
                         themeType={this.state.themeType}
                     />
                 </Suspense>;
-            } if (this.state.currentTab.tab === 'tab-enums') {
+            }
+            if (this.state.currentTab.tab === 'tab-enums') {
                 return <Suspense fallback={<Connecting />}>
                     <Enums
                         key="enums"
-                        ready={this.state.ready}
                         t={I18n.t}
-                        expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         themeType={this.state.themeType}
                     />
                 </Suspense>;
-            } if (this.state.currentTab.tab === 'tab-objects') {
-                return <Suspense fallback={<Connecting />}>
+            }
+            if (this.state.currentTab.tab === 'tab-objects') {
+                return <Suspense fallback={<Connecting />} key="objects">
                     <Objects
-                        key="objects"
                         t={I18n.t}
                         theme={this.state.theme}
                         themeName={this.state.themeName}
@@ -1817,16 +1973,16 @@ class App extends Router {
                         t={I18n.t}
                         navigate={Router.doNavigate}
                         currentHost={this.state.currentHost}
-                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                        executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) => this.executeCommand(cmd, host, callback)}
                         systemConfig={this.state.systemConfig}
                         showAdaptersWarning={this.showAdaptersWarning}
                         adminInstance={this.adminInstance}
-                        onUpdating={updating => this.setState({ updating })}
+                        onUpdating={(updating: boolean) => this.setState({ updating })}
                         instancesWorker={this.instancesWorker}
                     />
                 </Suspense>;
             }
-            const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
+            const m = this.state.currentTab.tab.match(/^tab-([-\w]+)(-\d+)?$/);
             if (m) {
                 // /adapter/javascript/tab.html
                 return <Suspense fallback={<Connecting />}>
@@ -1843,8 +1999,8 @@ class App extends Router {
                         themeName={this.state.themeName}
                         expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
-                        onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
-                        onUnregisterIframeRef={ref => {
+                        onRegisterIframeRef={(ref: HTMLIFrameElement) => (this.refConfigIframe = ref)}
+                        onUnregisterIframeRef={(ref: HTMLIFrameElement) => {
                             if (this.refConfigIframe === ref) {
                                 this.refConfigIframe = null;
                             }
@@ -1857,19 +2013,21 @@ class App extends Router {
         return null;
     }
 
-    clearLogErrors = async () => {
+    clearLogErrors() {
         this.logsWorker.resetErrors();
         this.logsWorker.resetWarnings();
-    };
+    }
 
     getCurrentDialog() {
         if (this.state && this.state.currentTab && this.state.currentTab.dialog) {
             if (this.state.currentTab.dialog === 'system') {
                 return this.getSystemSettingsDialog();
-            } if (this.state.currentTab.dialog === 'discovery') {
+            }
+            if (this.state.currentTab.dialog === 'discovery') {
                 return this.getDiscoveryModal();
             }
         }
+
         return null;
     }
 
@@ -1882,7 +2040,7 @@ class App extends Router {
             themeType={this.state.themeType}
             theme={this.state.theme}
             key="systemSettings"
-            onClose={async repoChanged => {
+            onClose={async (repoChanged?: boolean) => {
                 Router.doNavigate(null);
                 // read systemConfig anew
                 const systemConfig = await this.socket.getObject('system.config');
@@ -1894,11 +2052,9 @@ class App extends Router {
                 }
             }}
             lang={this.state.lang}
-            showAlert={(message, type) => this.showAlert(message, type)}
             socket={this.socket}
             currentTab={this.state.currentTab}
-            instance={this.state.instance}
-            expertModeFunc={value => {
+            expertModeFunc={(value: boolean) => {
                 (window._sessionStorage || window.sessionStorage).removeItem('App.expertMode');
                 const systemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
                 systemConfig.common.expertMode = value;
@@ -1908,7 +2064,7 @@ class App extends Router {
         />;
     }
 
-    handleAlertClose(event, reason) {
+    handleAlertClose(event?: string, reason?: string) {
         if (reason === 'clickaway') {
             return;
         }
@@ -1916,7 +2072,7 @@ class App extends Router {
         this.setState({ alert: false });
     }
 
-    showAlert(alertMessage, alertType) {
+    showAlert(alertMessage: string, alertType?: 'error' | 'warning' | 'info' | 'success') {
         if (alertType !== 'error' && alertType !== 'warning' && alertType !== 'info' && alertType !== 'success') {
             alertType = 'info';
         }
@@ -1928,8 +2084,8 @@ class App extends Router {
         });
     }
 
-    handleDrawerState(state) {
-        (window._localStorage || window.localStorage).setItem('App.drawerState', state);
+    handleDrawerState(state: 0 | 1 | 2) {
+        (window._localStorage || window.localStorage).setItem('App.drawerState', state.toString());
         this.setState({
             drawerState: state,
         });
@@ -1937,13 +2093,13 @@ class App extends Router {
 
     static logout() {
         if (window.location.port === '3000') {
-            window.location = `${window.location.protocol}//${window.location.hostname}:8081/logout?dev`;
+            window.location.href = `${window.location.protocol}//${window.location.hostname}:8081/logout?dev`;
         } else {
-            window.location = `./logout?origin=${window.location.pathname}`;
+            window.location.href = `./logout?origin=${window.location.pathname}`;
         }
     }
 
-    handleNavigation(tab) {
+    handleNavigation(tab: string) {
         if (tab) {
             if (this.state.allStored) {
                 Router.doNavigate(tab);
@@ -1958,7 +2114,7 @@ class App extends Router {
         }
 
         if (this.props.width === 'xs' || this.props.width === 'sm') {
-            this.handleDrawerState(DrawerStates.closed);
+            this.handleDrawerState(DrawerStates.closed as 1);
         }
 
         tab = tab || (this.state.currentTab && this.state.currentTab.tab) || '';
@@ -1966,7 +2122,7 @@ class App extends Router {
         this.setTitle(tab.replace('tab-', ''));
     }
 
-    allStored(value) {
+    allStored(value: boolean) {
         this.setState({
             allStored: value,
         });
@@ -1986,7 +2142,7 @@ class App extends Router {
         );
     }
 
-    executeCommand(cmd, host, callback) {
+    executeCommand(cmd: string, host?: string, callback?: (exitCode: number) => void): void {
         if (typeof host === 'boolean') {
             callback = host;
             host = null;
@@ -1999,7 +2155,7 @@ class App extends Router {
                     cmdDialog: false,
                     commandError: false,
                     performed: false,
-                    callback: false,
+                    callback: null,
                     commandHost: null,
                 },
                 () =>
@@ -2021,14 +2177,14 @@ class App extends Router {
         });
     }
 
-    closeCmdDialog(cb) {
+    closeCmdDialog(cb?: () => void) {
         this.setState(
             {
                 cmd: null,
                 cmdDialog: false,
                 commandError: false,
                 performed: false,
-                callback: false,
+                callback: null,
                 commandHost: null,
             },
             () => cb && cb(),
@@ -2038,20 +2194,20 @@ class App extends Router {
     renderWizardDialog() {
         if (this.state.wizard) {
             return <WizardDialog
-                executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
+                executeCommand={(cmd: string, host?: string, callback?: (exitCode: number) => void) => this.executeCommand(cmd, host, callback)}
                 host={this.state.currentHost}
                 socket={this.socket}
                 themeName={this.state.themeName}
                 toggleTheme={this.toggleTheme}
                 lang={I18n.getLanguage()}
-                onClose={redirect => {
+                onClose={(redirect?: string) => {
                     this.setState({ wizard: false, showRedirect: redirect, redirectCountDown: 10 }, () => {
                         if (this.state.showRedirect) {
                             setInterval(() => {
                                 if (this.state.redirectCountDown > 0) {
                                     this.setState({ redirectCountDown: this.state.redirectCountDown - 1 });
                                 } else {
-                                    window.location = this.state.showRedirect;
+                                    window.location.href = this.state.showRedirect;
                                 }
                             }, 1_000);
                         }
@@ -2067,7 +2223,7 @@ class App extends Router {
             return <Dialog
                 open={!0}
                 onClose={() => {
-                // ignore. It can be closed only by button
+                    // Ignore. It can be closed only by button
                 }}
             >
                 <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
@@ -2079,30 +2235,31 @@ class App extends Router {
                 <DialogActions>
                     {window.sidebar ||
                     (window.opera && window.print) ||
-                    (document.all && window.external?.AddFavorite) ? (
-                            <Button
-                                onClick={() => {
-                                    if (window.sidebar) {
-                                    // Firefox
-                                        window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
-                                    } else if (window.opera && window.print) {
-                                    // Opera
-                                        const elem = document.createElement('a');
-                                        elem.setAttribute('href', this.state.showRedirect);
-                                        elem.setAttribute('title', 'ioBroker.admin');
-                                        elem.setAttribute('rel', 'sidebar');
-                                        elem.click(); // this.title=document.title;
-                                    } else if (document.all) {
+                    // @ts-expect-error ignore
+                    (window.document.all && window.external?.AddFavorite) ?
+                        <Button
+                            onClick={() => {
+                                if (window.sidebar) {
+                                // Firefox
+                                    window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
+                                } else if (window.opera && window.print) {
+                                // Opera
+                                    const elem = document.createElement('a');
+                                    elem.setAttribute('href', this.state.showRedirect);
+                                    elem.setAttribute('title', 'ioBroker.admin');
+                                    elem.setAttribute('rel', 'sidebar');
+                                    elem.click(); // this.title=document.title;
+                                } else if (document.all) {
                                     // ie
-                                        window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
-                                    }
-                                }}
-                            >
-                                {I18n.t('Bookmark admin')}
-                            </Button>
-                        ) : null}
+                                    // @ts-expect-error ignore
+                                    window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
+                                }
+                            }}
+                        >
+                            {I18n.t('Bookmark admin')}
+                        </Button> : null}
                     {this.state.redirectCountDown ? (
-                        <Button variant="contained" onClick={() => (window.location = this.state.showRedirect)}>
+                        <Button variant="contained" onClick={() => (window.location.href = this.state.showRedirect)}>
                             {I18n.t('Go to admin now')}
                         </Button>
                     ) : null}
@@ -2114,7 +2271,7 @@ class App extends Router {
 
     renderCommandDialog() {
         return this.state.cmd ? <CommandDialog
-            onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
+            onSetCommandRunning={(commandRunning: boolean) => this.setState({ commandRunning })}
             onClose={() => this.closeCmdDialog(() => this.setState({ commandRunning: false }))}
             visible={this.state.cmdDialog}
             callback={this.state.callback}
@@ -2135,7 +2292,9 @@ class App extends Router {
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
             return <div>
+                {/* @ts-expect-error fixed in js-controller */}
                 {this.state.systemConfig.common.siteName ?
+                    /* @ts-expect-error fixed in js-controller */
                     <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div> : null}
 
                 <div
@@ -2172,7 +2331,10 @@ class App extends Router {
                     </IconButton> : null}
                 </div>
             </div>;
-        } if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
+        }
+        // @ts-expect-error fixed in js-controller
+        if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
+            // @ts-expect-error fixed in js-controller
             return <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div>;
         }
         return null;
@@ -2218,7 +2380,7 @@ class App extends Router {
                 } else if (result) {
                     (window._sessionStorage || window.sessionStorage).setItem(
                         'App.expertMode',
-                        !this.state.expertMode,
+                        this.state.expertMode ? 'false' : 'true',
                     );
                     this.refConfigIframe?.contentWindow?.postMessage(
                         'updateExpertMode',
@@ -2231,6 +2393,37 @@ class App extends Router {
             }}
             expertMode={this.state.expertMode}
         />;
+    }
+
+    renderShowGuiSettings() {
+        return this.state.showGuiSettings ? <Menu
+            anchorEl={this.state.showGuiSettings}
+            open={!0}
+            onClose={() => this.setState({ showGuiSettings: null })}
+        >
+            <MenuItem
+                onClick={() => {
+                    this.setState({ showGuiSettings: null });
+                    this.enableGuiSettings(true);
+                }}
+            >
+                {I18n.t('Use settings of other browsers')}
+            </MenuItem>
+            <MenuItem
+                onClick={() => {
+                    this.setState({ showGuiSettings: null });
+                    this.enableGuiSettings(true, true);
+                }}
+            >
+                {I18n.t('Use settings of this browser')}
+            </MenuItem>
+            <MenuItem onClick={() => this.setState({ showGuiSettings: null })}>
+                <ListItemIcon>
+                    <CancelIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{I18n.t('Cancel')}</ListItemText>
+            </MenuItem>
+        </Menu> : null;
     }
 
     render() {
@@ -2299,7 +2492,7 @@ class App extends Router {
                 {' '}
                 <code
                     style={{
-                        style: '#888',
+                        color: '#888',
                         fontFamily: 'monospace',
                         fontSize: 16,
                     }}
@@ -2322,12 +2515,11 @@ class App extends Router {
                         padding: 20,
                     }}
                 >
-                    {(stack || '').split('\n').join((line, i) => (
-                        <div key={i}>
+                    {(stack || '').toString().split('\n')
+                        .map((line: string, i: number) => <div key={i}>
                             {line}
                             <br />
-                        </div>
-                    ))}
+                        </div>)}
                 </pre>
             </div>;
         }
@@ -2345,12 +2537,12 @@ class App extends Router {
             return <StylesProvider generateClassName={generateClassName}>
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
-                        {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType} /> : null}
-                        {window.vendorPrefix === 'MV' ? <LoaderMV theme={this.state.themeType} /> : null}
+                        {window.vendorPrefix === 'PT' ? <LoaderPT themeType={this.state.themeType} /> : null}
+                        {window.vendorPrefix === 'MV' ? <LoaderMV themeType={this.state.themeType} /> : null}
                         {window.vendorPrefix &&
                         window.vendorPrefix !== 'PT' && window.vendorPrefix !== 'MV' &&
-                        window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor theme={this.state.themeType} /> : null}
-                        {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
+                        window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor themeType={this.state.themeType} /> : null}
+                        {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader themeType={this.state.themeType} /> : null}
                         {this.renderAlertSnackbar()}
                     </ThemeProvider>
                 </StyledEngineProvider>
@@ -2377,7 +2569,6 @@ class App extends Router {
                                     configStored={value => this.allStored(value)}
                                     isFloatComma={this.state.systemConfig?.common.isFloatComma}
                                     dateFormat={this.state.systemConfig?.common.dateFormat}
-                                    systemConfig={this.state.systemConfig}
                                     t={I18n.t}
                                     lang={I18n.getLanguage()}
                                     onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
@@ -2420,7 +2611,7 @@ class App extends Router {
                                         classes.menuButton,
                                         !small && this.state.drawerState !== DrawerStates.closed && classes.hide,
                                     )}
-                                    onClick={() => this.handleDrawerState(DrawerStates.opened)}
+                                    onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}
                                 >
                                     <MenuIcon />
                                 </IconButton>
@@ -2462,7 +2653,7 @@ class App extends Router {
                                         <ToggleThemeMenu
                                             size="large"
                                             toggleTheme={this.toggleTheme}
-                                            themeName={this.state.themeName}
+                                            themeName={this.state.themeName as 'dark' | 'light' | 'colored' | 'blue'}
                                             t={I18n.t}
                                         />
                                     </IsVisible> : null}
@@ -2489,7 +2680,7 @@ class App extends Router {
                                                         ) {
                                                             (
                                                                 window._sessionStorage || window.sessionStorage
-                                                            ).setItem('App.expertMode', !this.state.expertMode);
+                                                            ).setItem('App.expertMode', this.state.expertMode ? 'false' : 'true');
                                                             this.setState({ expertMode: !this.state.expertMode });
                                                             this.refConfigIframe?.contentWindow?.postMessage(
                                                                 'updateExpertMode',
@@ -2498,7 +2689,7 @@ class App extends Router {
                                                         } else if (
                                                             (window._sessionStorage || window.sessionStorage).getItem('App.doNotShowExpertDialog') === 'true'
                                                         ) {
-                                                            (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', !this.state.expertMode);
+                                                            (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', this.state.expertMode ? 'false' : 'true');
                                                             this.setState({ expertMode: !this.state.expertMode });
                                                             this.refConfigIframe?.contentWindow?.postMessage(
                                                                 'updateExpertMode',
@@ -2516,9 +2707,8 @@ class App extends Router {
                                                     color="default"
                                                 >
                                                     <IconExpert
-                                                        title={I18n.t('Toggle expert mode')}
-                                                        glowColor={this.state.theme.palette.secondary.main}
-                                                        active={this.state.expertMode}
+                                                        // glowColor={this.state.theme.palette.secondary.main}
+                                                        // active={this.state.expertMode}
                                                         className={Utils.clsx(
                                                             classes.expertIcon,
                                                             this.state.expertMode && classes.expertIconActive,
@@ -2539,7 +2729,7 @@ class App extends Router {
                                                 onClick={e =>
                                                     (this.state.guiSettings
                                                         ? this.enableGuiSettings(false)
-                                                        : this.setState({ showGuiSettings: e.target }))}
+                                                        : this.setState({ showGuiSettings: e.target as HTMLButtonElement }))}
                                                 style={{
                                                     color: this.state.guiSettings
                                                         ? this.state.theme.palette.expert
@@ -2609,13 +2799,13 @@ class App extends Router {
 
                                 {this.renderLoggedUser()}
 
-                                {this.state.drawerState !== 0 &&
+                                {this.state.drawerState !== DrawerStates.opened &&
                                     !this.state.expertMode &&
                                     window.innerWidth > 400 &&
                                     <Grid
                                         container
                                         className={Utils.clsx(
-                                            this.state.drawerState !== 0 && classes.avatarVisible,
+                                            this.state.drawerState !== DrawerStates.opened && classes.avatarVisible,
                                             classes.avatarNotVisible,
                                         )}
                                         spacing={1}
@@ -2647,7 +2837,7 @@ class App extends Router {
                                                 {this.adminGuiConfig.icon ? <div
                                                     style={{
                                                         height: 50,
-                                                        withWidth: 102,
+                                                        width: 102,
                                                         lineHeight: '50px',
                                                         background: 'white',
                                                         borderRadius: 5,
@@ -2681,10 +2871,10 @@ class App extends Router {
                                 adminGuiConfig={this.adminGuiConfig}
                                 state={this.state.drawerState}
                                 editMenuList={this.state.editMenuList}
-                                setEditMenuList={editMenuList => this.setState({ editMenuList })}
+                                setEditMenuList={(editMenuList: boolean) => this.setState({ editMenuList })}
                                 systemConfig={this.state.systemConfig}
-                                handleNavigation={name => this.handleNavigation(name)}
-                                onStateChange={state => this.handleDrawerState(state)}
+                                handleNavigation={(name: string) => this.handleNavigation(name)}
+                                onStateChange={(state: 0 | 1 | 2) => this.handleDrawerState(state)}
                                 onLogout={() => App.logout()}
                                 currentTab={this.state.currentTab && this.state.currentTab.tab}
                                 instancesWorker={this.instancesWorker}
@@ -2737,34 +2927,7 @@ class App extends Router {
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
                         <Connecting />
                     ) : null}
-                    {this.state.showGuiSettings ? <Menu
-                        anchorEl={this.state.showGuiSettings}
-                        open={!0}
-                        onClose={() => this.setState({ showGuiSettings: null })}
-                    >
-                        <MenuItem
-                            onClick={() => {
-                                this.setState({ showGuiSettings: null });
-                                this.enableGuiSettings(true);
-                            }}
-                        >
-                            {I18n.t('Use settings of other browsers')}
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                this.setState({ showGuiSettings: null });
-                                this.enableGuiSettings(true, true);
-                            }}
-                        >
-                            {I18n.t('Use settings of this browser')}
-                        </MenuItem>
-                        <MenuItem onClick={() => this.setState({ showGuiSettings: null })}>
-                            <ListItemIcon>
-                                <CancelIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText>{I18n.t('Cancel')}</ListItemText>
-                        </MenuItem>
-                    </Menu> : null}
+                    {this.renderShowGuiSettings()}
                 </ThemeProvider>
             </StyledEngineProvider>
         </StylesProvider>;

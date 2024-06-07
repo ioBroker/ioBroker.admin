@@ -20,7 +20,7 @@ import {
 
 import {
     Icon, Utils,
-    type AdminConnection, type Translate,
+    type AdminConnection, type Translate, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 interface UserBlockProps {
@@ -34,7 +34,7 @@ interface UserBlockProps {
     addUserToGroup?: (userId: string, groupId: string) => void;
     removeUserFromGroup: (userId: string, groupId: string) => void;
     getText: (text: ioBroker.StringOrTranslated) => string;
-    themeType: string;
+    themeType: ThemeType;
     classes: Record<string, string>;
     socket: AdminConnection;
     isDragging?: boolean;

@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, type Translate,
+    type ThemeType,
+    type ThemeName,
+} from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig } from '@/types';
 
@@ -16,8 +20,8 @@ export interface BaseSystemSettingsDialogProps {
     activeRepo: string[];
     repoInfo: Record<string, ioBroker.RepoInfo>;
     histories: string[];
-    themeName: string;
-    themeType: string;
+    themeName: ThemeName;
+    themeType: ThemeType;
     host: string;
     t: Translate;
     socket: AdminConnection;

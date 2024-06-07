@@ -30,7 +30,7 @@ import {
 import {
     Utils, I18n, Icon, withWidth,
     IconLogout as LogoutIcon, type AdminConnection,
-    type IobTheme, type ThemeType,
+    type IobTheme, type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { getHref } from '@/tabs/CustomTab';
@@ -193,11 +193,11 @@ interface AdminTab {
 }
 
 interface DrawerProps {
-    t: (text: string, ...args: any[]) => string;
+    t: Translate;
     lang: ioBroker.Languages;
-    state: number;
+    state: 0 | 1 | 2;
     adminGuiConfig: Record<string, any>;
-    onStateChange: (state: number) => void;
+    onStateChange: (state: 0 | 1 | 2) => void;
     onLogout: () => void;
     isSecure: boolean;
     currentTab: string;
@@ -571,9 +571,9 @@ v
                 size="large"
                 onClick={() => {
                     if (this.isSwipeable() || this.props.state === STATES.compact) {
-                        this.props.onStateChange(STATES.closed);
+                        this.props.onStateChange(STATES.closed as 1);
                     } else {
-                        this.props.onStateChange(STATES.compact);
+                        this.props.onStateChange(STATES.compact as 2);
                     }
                 }}
             >
@@ -719,8 +719,8 @@ v
                 className={classes.root}
                 anchor="left"
                 open={this.props.state !== STATES.closed}
-                onClose={() => this.props.onStateChange(STATES.closed)}
-                onOpen={() => this.props.onStateChange(STATES.opened)}
+                onClose={() => this.props.onStateChange(STATES.closed as 1)}
+                onOpen={() => this.props.onStateChange(STATES.opened as 0)}
                 classes={{ paper: classes.paper }}
             >
                 <CustomDragLayer />

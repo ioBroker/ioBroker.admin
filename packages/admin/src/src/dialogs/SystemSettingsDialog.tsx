@@ -24,6 +24,8 @@ import {
     Confirm as ConfirmDialog,
     withWidth, type IobTheme, type Translate,
     Router, type AdminConnection,
+    type ThemeType,
+    type ThemeName,
 } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig } from '@/types';
@@ -81,13 +83,13 @@ type SystemLicenseObject = ioBroker.Object & {
 interface SystemSettingsDialogProps {
     t: Translate;
     socket: AdminConnection;
-    themeName: string;
-    themeType: string;
+    themeName: ThemeName;
+    themeType: ThemeType;
     onClose: (repoChanged?: boolean) => void;
     currentTab: { id: string };
     width: string;
     adminGuiConfig: AdminGuiConfig;
-    expertModeFunc: (val: boolean) => void;
+    expertModeFunc: (value: boolean) => void;
     classes: Record<string, string>;
     currentHost: string;
     host: string;

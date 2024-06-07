@@ -100,7 +100,6 @@ interface InstancesProps {
     repository: Record<string, any>;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-    menuPadding: number;
     isFloatComma: boolean;
     dateFormat: string;
 

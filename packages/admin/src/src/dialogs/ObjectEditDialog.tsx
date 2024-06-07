@@ -17,7 +17,11 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import {
+    withWidth, type IobTheme,
+    type Translate,
+    type ThemeName,
+} from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 
 const styles: Styles<IobTheme, any> = theme => ({
@@ -44,7 +48,7 @@ export const EXTENSIONS = {
 
 interface ObjectEditDialogProps {
     t: Translate;
-    themeName: string;
+    themeName: ThemeName;
     obj: ioBrokerObject;
     onClose: () => void;
     classes: Record<string, string>;

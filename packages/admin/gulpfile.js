@@ -138,6 +138,10 @@ function copyFiles() {
     deleteFoldersRecursive(`${__dirname}/../dm-gui-components/build/src`);
     deleteFoldersRecursive(`${__dirname}/../jsonConfig/build/src`);
 
+    let readme = fs.readFileSync(`${__dirname}/../../README.md`).toString('utf8');
+    readme = readme.replaceAll('packages/admin/', '');
+    fs.writeFileSync(`${__dirname}/README.md`, readme);
+
     return Promise.all([
         gulp
             .src([
@@ -181,7 +185,7 @@ function copyFiles() {
                 `!${rootFolder}/node_modules/crypto-js/CONTRIBUTING.md`,
                 `!${rootFolder}/node_modules/crypto-js/README.md`,
             ])
-            .pipe(gulp.dest(dest + 'lib/js/crypto-js')),
+            .pipe(gulp.dest(`${dest}lib/js/crypto-js`)),
 
         gulp
             .src([`${srcRx}build/static/js/*.js`])

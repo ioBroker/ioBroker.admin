@@ -8,7 +8,11 @@ import {
 
 import blueGrey from '@mui/material/colors/blueGrey';
 
-import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
+import {
+    withWidth, type IobTheme,
+    type Translate,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 import Utils from '@/Utils';
 import Editor from '../../components/Editor';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
@@ -53,7 +57,7 @@ interface StatisticsDialogProps {
     t: Translate;
     data: ioBroker.SystemConfigObject;
     dataAux: ioBroker.SystemConfigObject;
-    themeType: string;
+    themeType: ThemeType;
     onChange: (data: ioBroker.SystemConfigObject) => void;
     saving: boolean;
     handle: (type: string) => void;

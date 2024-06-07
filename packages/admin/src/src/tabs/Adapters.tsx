@@ -188,7 +188,7 @@ interface AdaptersProps extends AdapterInstallDialogProps {
     /** Current selected host */
     currentHost: string;
     forceUpdateAdapters: number;
-    triggerUpdate: boolean;
+    triggerUpdate: number;
     /** Like admin.0 */
     adminGuiConfig: AdminGuiConfig;
     adaptersWorker: AdaptersWorker;
@@ -243,7 +243,7 @@ interface AdaptersState extends AdapterInstallDialogState {
     showSlowConnectionWarning: boolean;
     currentHost: string;
     forceUpdateAdapters: number;
-    triggerUpdate: boolean;
+    triggerUpdate: number;
     ratings: Ratings | null;
     categoriesExpanded: { [categoryName: string]: boolean };
 }

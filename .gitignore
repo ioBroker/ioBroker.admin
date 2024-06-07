@@ -33,3 +33,4 @@ lerna-debug.log
 
 packages/admin/build-backend
 /packages/admin/admin/custom/
+packages/admin/README.md

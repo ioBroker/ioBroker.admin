@@ -15,7 +15,10 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { Utils, Icon, type Translate } from '@iobroker/adapter-react-v5';
+import {
+    Utils, Icon, type Translate,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 interface GroupBlockProps {
     t: Translate;
@@ -25,7 +28,7 @@ interface GroupBlockProps {
     showGroupDeleteDialog: (group: ioBroker.GroupObject) => void;
     removeUserFromGroup: (userId: string, groupId: string) => void;
     getText: (text: ioBroker.StringOrTranslated) => string;
-    themeType: string;
+    themeType: ThemeType;
     classes: Record<string, string>;
 }
 
