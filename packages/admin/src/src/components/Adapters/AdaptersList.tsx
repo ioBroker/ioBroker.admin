@@ -22,6 +22,7 @@ import AdapterTile from '@/components/Adapters/AdapterTile';
 import AdapterRow from '@/components/Adapters/AdapterRow';
 import type { AdapterCacheEntry } from '@/components/Adapters/AdapterGeneric';
 
+const BUTTONS_WIDTH = 34 * 7 + 8;
 export const WIDTHS: Record<string, number> = {
     emptyBlock: 50,
     name: 300,
@@ -30,7 +31,7 @@ export const WIDTHS: Record<string, number> = {
     available: 120,
     update: 40,
     license: 80,
-    install: 34 * 7 + 8,
+    install: BUTTONS_WIDTH,
 };
 
 export const SUM = Object.keys(WIDTHS).reduce((s, i) => s + WIDTHS[i], 0);
@@ -156,6 +157,7 @@ interface AdaptersListState {
     sortPopularFirst: boolean;
     sortRecentlyUpdated: boolean;
     renderCounter: number;
+    expertMode: boolean;
 }
 
 class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
@@ -178,6 +180,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             sortRecentlyUpdated: props.sortRecentlyUpdated,
             renderCounter: 0,
             listOfVisibleAdapter: JSON.stringify(props.listOfVisibleAdapter),
+            expertMode: props.context.expertMode,
         };
     }
 
@@ -376,7 +379,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                             <TableCell className={classes.license}>
                                 <Typography>{this.props.context.t('License')}</Typography>
                             </TableCell>
-                            <TableCell className={classes.install}>
+                            <TableCell className={classes.install} style={{ width: this.state.expertMode ? BUTTONS_WIDTH : BUTTONS_WIDTH - (34 * 2) }}>
                                 <Typography>{this.props.context.t('Install')}</Typography>
                             </TableCell>
                         </TableRow>
@@ -436,6 +439,10 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             console.log('Render because of sortRecentlyUpdated');
             changed = true;
         }
+        if (props.context.expertMode !== state.expertMode) {
+            console.log('Render because of expertMode');
+            changed = true;
+        }
         const listOfVisibleAdapter = JSON.stringify(props.listOfVisibleAdapter);
         if (listOfVisibleAdapter !== state.listOfVisibleAdapter) {
             console.log('Render because of listOfVisibleAdapter');
@@ -456,6 +463,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 sortRecentlyUpdated: props.sortRecentlyUpdated,
                 listOfVisibleAdapter,
                 renderCounter: state.renderCounter + 1,
+                expertMode: props.context.expertMode,
             };
         }
 

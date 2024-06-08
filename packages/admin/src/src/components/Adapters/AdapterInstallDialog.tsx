@@ -16,6 +16,7 @@ import LicenseDialog from '@/dialogs/LicenseDialog';
 import type { AdapterInformation } from '@iobroker/js-controller-common-db/build/esm/lib/common/tools';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
+import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 
 export type AdapterRating = {
     rating?:           { r: number; c: number };
@@ -72,6 +73,7 @@ export type AdaptersContext = {
     sortPopularFirst: boolean;
     sortRecentlyUpdated: boolean;
     isTileView: boolean;
+    updateRating: (adapter: string, rating: RatingDialogRepository) => void;
 };
 
 export interface AdapterInstallDialogProps {

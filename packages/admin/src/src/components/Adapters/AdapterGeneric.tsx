@@ -8,8 +8,8 @@ import {
     CardMedia,
     IconButton, Tooltip,
     Typography, Rating, Grid,
-    Link, ListItemText, TextField,
-    InputAdornment, Button,
+    Link, TextField,
+    InputAdornment, Button, Card, CardContent,
 } from '@mui/material';
 
 import {
@@ -31,11 +31,11 @@ import {
     AddToPhotos as AddToPhotosIcon, Build as BuildIcon,
 } from '@mui/icons-material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';
-import RatingDialog from '@/dialogs/RatingDialog';
+import RatingDialog, { type RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdapterDeletionDialog from '@/dialogs/AdapterDeletionDialog';
 import BasicUtils from '@/Utils';
 import AdminUpdater from '@/dialogs/AdminUpdater';
@@ -49,7 +49,7 @@ import AdapterInstallDialog, {
 import sentryIcon from '../../assets/sentry.svg';
 import IsVisible from '../IsVisible';
 
-export const genericStyle: Record<string, any> = {
+export const genericStyle = (theme: IobTheme): Record<string, any> => ({
     hidden: {
         display: 'none',
     },
@@ -104,7 +104,29 @@ export const genericStyle: Record<string, any> = {
     updateAvailable: {
         color: green[700],
     },
-};
+    currentVersion: {
+        cursor: 'pointer',
+        marginBottom: 6,
+        marginRight: 8,
+        marginTop: 4,
+        '&:hover': {
+            background: theme.palette.primary.dark,
+        },
+    },
+    header: {
+        fontWeight: 'bold',
+        background: theme.palette.secondary.main,
+        padding: 10,
+    },
+    modalDialog: {
+        height: 'calc(100% - 64px)',
+        overflowY: 'hidden',
+    },
+    currentVersionText: {
+        color: theme.palette.mode === 'dark' ? '#a3ffa3' : '#009800',
+        fontWeight: 'bold',
+    },
+});
 
 export type Ratings = { [adapterName: string]: AdapterRating } & { uuid: string };
 
@@ -549,11 +571,11 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                     .trim())
             .filter(line => line);
 
-        return <ul>
-            {lines.map((line, index) => (
-                <li key={index}>{line}</li>
-            ))}
-        </ul>;
+        return lines.map((line, index) =>
+            <div style={{ }} key={index}>
+                <span>- </span>
+                {line}
+            </div>);
     }
 
     renderAdapterInstallVersion() {
@@ -564,64 +586,100 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         return <CustomModal
             title={this.props.context.t('Please select specific version of %s', this.props.adapterName)}
             applyButton={false}
-            onClose={() => this.setState({ showInstallVersion: false, adapterInstallSpecificVersion: '', showDialog: false })}
+            onClose={() => this.setState({
+                showInstallVersion: false,
+                adapterInstallSpecificVersion: '',
+                showDialog: false,
+            })}
+            classes={{ modalDialog: this.props.classes.modalDialog }}
             toggleTranslation={this.props.context.toggleTranslation}
             noTranslation={this.props.context.noTranslation}
         >
-            <div className={this.props.classes.containerVersion}>
-                {this.getNews(true).map(({ version, news }) => <div
-                    key={version}
-                    className={this.props.classes.currentVersion}
-                    onClick={() => {
-                        this.update(version);
-                        this.setState({ showInstallVersion: false, showDialog: false });
-                    }}
+            <div style={{ height: '100%', overflowY: 'hidden' }}>
+                <div className={this.props.classes.containerSpecificVersion}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <TextField
+                            variant="standard"
+                            style={{ flexGrow: 1 }}
+                            label={this.props.context.t('Enter version manually')}
+                            value={this.state.adapterInstallSpecificVersion}
+                            onChange={event =>
+                                this.setState({ adapterInstallSpecificVersion: event.target.value })}
+                            InputProps={{
+                                endAdornment: this.state.adapterInstallSpecificVersion ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.setState({ adapterInstallSpecificVersion: '' })}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            }}
+                        />
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            size="small"
+                            disabled={!this.state.adapterInstallSpecificVersion}
+                            onClick={() => {
+                                if (this.state.adapterInstallSpecificVersion) {
+                                    this.update(this.state.adapterInstallSpecificVersion);
+                                    this.setState({
+                                        showInstallVersion: false,
+                                        adapterInstallSpecificVersion: '',
+                                        showDialog: false,
+                                    });
+                                }
+                            }}
+                        >
+                            {this.props.context.t('Install')}
+                        </Button>
+                    </div>
+                    <Tooltip title={this.props.context.t('npmjs.com')} classes={{ popper: this.props.classes.tooltip }}>
+                        <IconButton
+                            size="small"
+                            onClick={() => {
+                                window.open(`https://www.npmjs.com/package/iobroker.${this.props.adapterName}?activeTab=versions`, this.props.adapterName).focus();
+                            }}
+                        >
+                            <LinkIcon />
+                        </IconButton>
+                    </Tooltip>
+                </div>
+                <div className={this.props.classes.header}>{this.props.context.t('Or select from the list')}</div>
+                <div
+                    className={this.props.classes.containerVersion}
+                    style={{ height: 'calc(100% - 122px)', overflowY: 'auto' }}
                 >
-                    <ListItemText primary={version} secondary={AdapterGeneric.formatNews(news)} />
-                </div>)}
-            </div>
-            <div className={this.props.classes.containerSpecificVersion}>
-                <TextField
-                    variant="standard"
-                    fullWidth
-                    label={this.props.context.t('Version')}
-                    value={this.state.adapterInstallSpecificVersion}
-                    onChange={event =>
-                        this.setState({ adapterInstallSpecificVersion: event.target.value })}
-                    InputProps={{
-                        endAdornment: this.state.adapterInstallSpecificVersion ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ adapterInstallSpecificVersion: '' })}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
-                    }}
-                />
-                <Tooltip title={this.props.context.t('npmjs.com')} classes={{ popper: this.props.classes.tooltip }}>
-                    <IconButton
-                        size="small"
+                    {this.getNews(true).map(({ version, news }) => <Card
+                        variant="outlined"
+                        key={version}
+                        className={this.props.classes.currentVersion}
                         onClick={() => {
-                            window.open(`https://www.npmjs.com/package/iobroker.${this.props.adapterName}?activeTab=versions`, this.props.adapterName).focus();
+                            this.update(version);
+                            this.setState({ showInstallVersion: false, showDialog: false });
                         }}
                     >
-                        <LinkIcon />
-                    </IconButton>
-                </Tooltip>
-                <Button
-                    color="primary"
-                    variant="contained"
-                    size="small"
-                    onClick={() => {
-                        if (this.state.adapterInstallSpecificVersion) {
-                            this.update(this.state.adapterInstallSpecificVersion);
-                            this.setState({ showInstallVersion: false, adapterInstallSpecificVersion: '', showDialog: false });
-                        }
-                    }}
-                >
-                    {this.props.context.t('Install')}
-                </Button>
+                        <CardContent>
+                            <Typography
+                                sx={{
+                                    fontSize: 16,
+                                    fontWeight: 'bold',
+                                }}
+                                color="text.secondary"
+                                className={this.installedVersion === version ? this.props.classes.currentVersionText : ''}
+                                gutterBottom
+                            >
+                                {version}
+                                {this.installedVersion === version ?
+                                    <span className={this.props.classes.currentVersionText}>{`(${this.props.context.t('current')})`}</span> : ''}
+                            </Typography>
+                            <Typography variant="body2" style={{ opacity: 0.7 }}>
+                                {AdapterGeneric.formatNews(news)}
+                            </Typography>
+                        </CardContent>
+                    </Card>)}
+                </div>
             </div>
         </CustomModal>;
     }
@@ -635,15 +693,12 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             lang={this.props.context.lang}
             version={this.state.showSetRating.version}
             adapter={this.props.adapterName}
-            repository={this.props.context.repository}
             currentRating={this.state.showSetRating.rating}
-            onClose={() /* repository */ => {
-                // TODO!!!!
-                // if (repository) {
-                //    this.setState({ showSetRating: null, repository, showDialog: false });
-                // } else {
+            onClose={(update: RatingDialogRepository) => {
+                if (update) {
+                    this.props.context.updateRating(this.props.adapterName, update);
+                }
                 this.setState({ showSetRating: null, showDialog: false });
-                // }
             }}
             uuid={this.props.context.uuid}
         />;
@@ -654,7 +709,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
      * This allows showing UI progress even admin is down
      */
     renderWebserverUpgrade() {
-        if (!this.state.adminUpgradeTo)  {
+        if (!this.state.adminUpgradeTo) {
             return null;
         }
 

@@ -19,7 +19,7 @@ import AdapterGeneric, {
 } from '@/components/Adapters/AdapterGeneric';
 
 const styles: Record<string, any> = (theme: IobTheme) => ({
-    ...genericStyle,
+    ...genericStyle(theme),
     smallAvatar: {
         width: theme.spacing(4),
         height: theme.spacing(4),

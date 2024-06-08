@@ -32,7 +32,7 @@ import type { AdminGuiConfig } from '@/types';
 import Utils from '@/Utils';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
-import LicensesDialog, { requestLicensesByHost } from './SystemSettingsTabs/LicensesDialog';
+import LicensesDialog from './SystemSettingsTabs/LicensesDialog';
 import CertificatesDialog from './SystemSettingsTabs/CertificatesDialog';
 import SSLDialog from './SystemSettingsTabs/SSLDialog';
 import ACLDialog from './SystemSettingsTabs/ACLDialog';
@@ -92,7 +92,6 @@ interface SystemSettingsDialogProps {
     expertModeFunc: (value: boolean) => void;
     classes: Record<string, string>;
     currentHost: string;
-    host: string;
 }
 
 interface SystemSettingsDialogState {
@@ -217,7 +216,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             const systemCertificates = await this.props.socket.getObject('system.certificates');
             this.originalCertificates = JSON.stringify(systemCertificates);
             newState.systemCertificates = systemCertificates;
-            let systemLicenses: ioBroker.Object = this.props.socket.getObject('system.licenses') as any as ioBroker.Object;
+            let systemLicenses: ioBroker.Object = (await this.props.socket.getObject('system.licenses'));
             systemLicenses = systemLicenses || {
                 common: {
                     name: 'Licenses from iobroker.net',
@@ -319,7 +318,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     }
                     try {
                         await this.props.socket.setObject('system.licenses', systemLicenses);
-                        requestLicensesByHost(this.props.socket, this.props.host, null, null, this.props.t);
+                        await this.props.socket.updateLicenses(null, null);
                     } catch (error) {
                         window.alert(this.props.t('Cannot update licenses: %s', error));
                     }

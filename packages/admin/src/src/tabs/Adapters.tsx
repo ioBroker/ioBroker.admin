@@ -63,6 +63,7 @@ import AdapterInstallDialog, {
 } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
 import type { AdminGuiConfig } from '@/types';
+import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 
 type DockerInformation = {
     /** If it is a Docker installation */
@@ -1260,6 +1261,11 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             sortPopularFirst: !this.state.tableViewMode && this.state.filterTiles === 'Popular first',
             sortRecentlyUpdated: !this.state.tableViewMode && this.state.filterTiles === 'Recently updated',
             isTileView: !this.state.tableViewMode,
+            updateRating: (adapter: string, rating: RatingDialogRepository) => {
+                const repository = JSON.parse(JSON.stringify(this.state.repository));
+                Object.assign(repository[adapter].rating, rating);
+                this.setState({ repository });
+            },
         } as AdaptersContext;
     }
 

@@ -29,7 +29,6 @@ import {
 } from '@mui/icons-material';
 
 import type { IobTheme, Translate } from '@iobroker/adapter-react-v5';
-import Utils from '@/Utils';
 
 const styles: Styles<IobTheme, any> = theme => ({
     rating: {
@@ -136,15 +135,25 @@ const LANGUAGES = [
         title: '简体中文',
     },
 ];
-
-interface RatingDialogRepository {
-    [adapter: string]: {
-        rating: {
-            [version: string]: {
-                r: number;
-                ts: number;
-            };
-        };
+// {
+//     "adapter": "history",
+//     "rating": {
+//     "r": 3.5,
+//         "c": 20
+//     },
+//     "3.0.1": {
+//         "r": 3.8,
+//         "c": 5
+//     }
+// }
+export interface RatingDialogRepository {
+    rating: {
+        r: number;
+        ts: number;
+    };
+    [version: string]: {
+        r: number;
+        ts: number;
     };
 }
 
@@ -160,8 +169,7 @@ interface RatingDialogProps {
     version: string;
     currentRating: { rating: { r: number; ts: number }; title: string };
     adapter: string;
-    onClose: (repository?: RatingDialogRepository) => void;
-    repository: RatingDialogRepository;
+    onClose: (update?: RatingDialogRepository) => void;
     classes: Record<string, string>;
 }
 
@@ -216,7 +224,13 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
             });
     }
 
-    setAdapterRating(adapter: string, version: string, rating: number, comment: string, lang: string) {
+    setAdapterRating(
+        adapter: string,
+        version: string,
+        rating: number,
+        comment: string,
+        lang: string,
+    ): Promise<RatingDialogRepository> {
         return fetch('https://rating.iobroker.net/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -231,11 +245,10 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
             }),
         })
             .then(res => res.json())
-            .then((update: RatingDialogRepository['adapter']['rating']) => {
+            .then((update: RatingDialogRepository & { adapter: string }) => {
                 window.alert(`${this.props.t('Vote:')} ${adapter}@${version}=${rating}`);
-                const repository = Utils.clone(this.props.repository);
-                repository[adapter].rating = update;
-                return repository;
+                delete update.adapter;
+                return update;
             })
             .catch(e => {
                 window.alert(`Cannot vote: ${e}`);
@@ -392,7 +405,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                     onClick={() => {
                         if (this.state.ratingNumber !== item?.r || this.state.ratingComment) {
                             this.setAdapterRating(this.props.adapter, this.props.version, this.state.ratingNumber, this.state.ratingComment, this.state.ratingLang)
-                                .then((repository: RatingDialogRepository) => this.props.onClose(repository));
+                                .then(update => this.props.onClose(update));
                         } else {
                             this.props.onClose();
                         }

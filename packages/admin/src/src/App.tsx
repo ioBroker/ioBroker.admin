@@ -1151,8 +1151,6 @@ class App extends Router<AppProps, AppState> {
                             this.hostsWorker.registerHandler(this.updateHosts);
                             this.hostsWorker.registerNotificationHandler(this.handleNewNotifications);
 
-                            this.subscribeOnHostsStatus();
-
                             const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem(
                                 'App.expertMode',
                             );
@@ -1270,7 +1268,6 @@ class App extends Router<AppProps, AppState> {
         this.pingAuth = null;
         this.expireInSecInterval && clearInterval(this.expireInSecInterval);
         this.expireInSecInterval = null;
-        this.unsubscribeOnHostsStatus();
 
         if (window._localStorage) {
             window._localStorage = null;
@@ -1683,25 +1680,6 @@ class App extends Router<AppProps, AppState> {
     logsWorkerChanged = (currentHost: string) => {
         this.logsWorker && this.logsWorker.setCurrentHost(currentHost);
     };
-
-    onHostStatusChanged = (id: string, state?: ioBroker.State | null) => {
-        const host = this.state.hosts.find(_id => `${_id}.alive` === id);
-        if (host) {
-            // TODO!! => update hostSelector
-            console.log(`Current status ${id}: ${state?.val}`);
-        }
-    };
-
-    subscribeOnHostsStatus() {
-        this.state.hosts.forEach(item =>
-            this.socket.subscribeState(`${item._id}.alive`, this.onHostStatusChanged));
-    }
-
-    unsubscribeOnHostsStatus() {
-        this.state.hosts && this.socket &&
-            this.state.hosts.forEach(item =>
-                this.socket.unsubscribeState(`${item._id}.alive`, this.onHostStatusChanged));
-    }
 
     /**
      * Updates the current currentTab in the states

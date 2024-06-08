@@ -291,21 +291,4 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
     }
 }
 
-export function requestLicensesByHost(socket: AdminConnection, host: string, login: string, password: string, t: (text: string) => string): Promise<License[]> {
-    return new Promise((resolve, reject) => {
-        // @TODO: Move to iobroker socket
-        socket.getRawSocket().emit('updateLicenses', login, password, (err: string | { error: string }, licenses: License[]) => {
-            if (err === 'permissionError') {
-                reject(t('May not trigger "updateLicenses"'));
-            } else if (err && typeof err === 'object' && err.error) {
-                reject(t(err.error));
-            } else if (err) {
-                reject(t(err as string));
-            } else {
-                resolve(licenses);
-            }
-        });
-    });
-}
-
 export default withWidth()(withStyles(styles)(LicensesDialog));

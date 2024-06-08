@@ -1603,5 +1603,7 @@
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
   "yesterday": "yesterday",
-  "Filter adapters to see others. There is %s more": "Filter adapters to see others. There is %s more"
+  "Filter adapters to see others. There is %s more": "Filter adapters to see others. There is %s more",
+  "Enter version manually": "Enter version manually",
+  "Or select from the list": "Or select from the list"
 }

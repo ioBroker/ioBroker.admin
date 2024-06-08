@@ -1603,5 +1603,7 @@
   "write operation": "Писать",
   "wrongPassword": "Неверные имя пользователя или пароль",
   "yesterday": "вчера",
-  "Filter adapters to see others. There is %s more": "Отфильтруйте адаптеры, чтобы увидеть другие. Есть ещё %s"
+  "Filter adapters to see others. There is %s more": "Отфильтруйте адаптеры, чтобы увидеть другие. Есть ещё %s",
+  "Enter version manually": "Введите версию вручную",
+  "Or select from the list": "Или выберите из списка"
 }

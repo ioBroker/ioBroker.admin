@@ -1603,5 +1603,7 @@
   "write operation": "écrire",
   "wrongPassword": "Nom d'utilisateur ou mot de passe invalide",
   "yesterday": "hier",
-  "Filter adapters to see others. There is %s more": "Filtrez les adaptateurs pour en voir d’autres. Il y a %s de plus"
+  "Filter adapters to see others. There is %s more": "Filtrez les adaptateurs pour en voir d’autres. Il y a %s de plus",
+  "Enter version manually": "Saisir la version manuellement",
+  "Or select from the list": "Ou sélectionnez dans la liste"
 }
