@@ -11,8 +11,7 @@ import {
 import {
     type AdminConnection, I18n, Icon, Utils,
 } from '@iobroker/adapter-react-v5';
-// @ts-expect-error fix socket-client
-import type { CompactHost } from '@iobroker/socket-client';
+import type { CompactHost } from '@/types';
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type HostEvent, type HostAliveEvent } from '@/Workers/HostsWorker';
 
@@ -88,7 +87,7 @@ interface HostSelectorsProps {
 interface HostSelectorsState {
     anchorEl: any;
     alive: Record<string, boolean>;
-    hosts: ioBroker.HostObject[];
+    hosts: CompactHost[];
 }
 
 class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
@@ -107,7 +106,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
             .getCompactHosts(true)
             .then((hosts: CompactHost[]) => {
                 this.setState({ hosts }, async () => {
-                    // request for all host the alive status
+                    // request for all host the "alive" status
                     const alive: Record<string, boolean> = {};
                     for (let h = 0; h < hosts.length; h++) {
                         const state = await this.props.socket.getState(`${hosts[h]._id}.alive`);
@@ -169,7 +168,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
     };
 
     onHostsObjectChange = (events: HostEvent[]) => {
-        const hosts: ioBroker.HostObject[] = JSON.parse(JSON.stringify(this.state.hosts));
+        const hosts: CompactHost[] = JSON.parse(JSON.stringify(this.state.hosts));
         const alive: Record<string, boolean> = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
 
@@ -203,11 +202,16 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                     changed = true;
                     hosts.push({
                         _id: event.id as ioBroker.ObjectIDs.Host,
-                        // @ts-expect-error only a partial host object
                         common: {
                             name: event.obj.common?.name || '',
                             color: event.obj.common?.color || '',
                             icon: event.obj.common?.icon || '',
+                            installedVersion: 'ignored',
+                        },
+                        native: {
+                            hardware: {
+                                networkInterfaces: {},
+                            },
                         },
                     });
                     const state = await this.props.socket.getState(`${event.id}.alive`);
@@ -296,38 +300,36 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                 open={!!this.state.anchorEl}
                 onClose={() => this.setState({ anchorEl: null })}
             >
-                {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) => (
-                    <MenuItem
-                        key={_id}
-                        // button
-                        disabled={!this.state.alive[_id]}
-                        selected={_id === this.props.currentHost}
-                        style={{ background: color || 'inherit' }}
-                        onClick={() => {
-                            if (this.props.currentHost !== this.state.hosts[idx]._id) {
-                                this.props.setCurrentHost(
-                                    this.state.hosts[idx].common.name,
-                                    this.state.hosts[idx]._id,
-                                );
-                            }
-                            this.setState({ anchorEl: null });
+                {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) => <MenuItem
+                    key={_id}
+                    // button
+                    disabled={!this.state.alive[_id]}
+                    selected={_id === this.props.currentHost}
+                    style={{ background: color || 'inherit' }}
+                    onClick={() => {
+                        if (this.props.currentHost !== this.state.hosts[idx]._id) {
+                            this.props.setCurrentHost(
+                                this.state.hosts[idx].common.name,
+                                this.state.hosts[idx]._id,
+                            );
+                        }
+                        this.setState({ anchorEl: null });
+                    }}
+                >
+                    <div
+                        style={{
+                            display: 'flex',
+                            color: (color && Utils.invertColor(color, true)) || 'inherit',
+                            alignItems: 'center',
                         }}
                     >
-                        <div
-                            style={{
-                                display: 'flex',
-                                color: (color && Utils.invertColor(color, true)) || 'inherit',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <div className={this.props.classes.selector}>
-                                {_id === this.props.currentHost ? 'ᐅ' : ''}
-                            </div>
-                            <Icon className={this.props.classes.img} src={icon || 'img/no-image.png'} />
-                            {name}
+                        <div className={this.props.classes.selector}>
+                            {_id === this.props.currentHost ? 'ᐅ' : ''}
                         </div>
-                    </MenuItem>
-                ))}
+                        <Icon className={this.props.classes.img} src={icon || 'img/no-image.png'} />
+                        {name}
+                    </div>
+                </MenuItem>)}
             </Menu>
         </div>;
     }

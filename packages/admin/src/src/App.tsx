@@ -1858,6 +1858,7 @@ class App extends Router<AppProps, AppState> {
                     <Logs
                         key="logs"
                         t={I18n.t}
+                        width={this.props.width}
                         lang={this.state.lang}
                         socket={this.socket}
                         themeType={this.state.themeType}
@@ -2681,27 +2682,26 @@ class App extends Router<AppProps, AppState> {
                                             </Badge>
                                         </Tooltip>
                                     </IsVisible>
-                                    {this.state.expertMode ?
-                                        <Tooltip
-                                            title={I18n.t(
-                                                'Synchronize admin settings between all opened browser windows',
-                                            )}
+                                    {this.state.expertMode ? <Tooltip
+                                        title={I18n.t(
+                                            'Synchronize admin settings between all opened browser windows',
+                                        )}
+                                    >
+                                        <IconButton
+                                            size="large"
+                                            onClick={e =>
+                                                (this.state.guiSettings
+                                                    ? this.enableGuiSettings(false)
+                                                    : this.setState({ showGuiSettings: e.target as HTMLButtonElement }))}
+                                            style={{
+                                                color: this.state.guiSettings
+                                                    ? this.state.theme.palette.expert
+                                                    : undefined,
+                                            }}
                                         >
-                                            <IconButton
-                                                size="large"
-                                                onClick={e =>
-                                                    (this.state.guiSettings
-                                                        ? this.enableGuiSettings(false)
-                                                        : this.setState({ showGuiSettings: e.target as HTMLButtonElement }))}
-                                                style={{
-                                                    color: this.state.guiSettings
-                                                        ? this.state.theme.palette.expert
-                                                        : undefined,
-                                                }}
-                                            >
-                                                {this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled />}
-                                            </IconButton>
-                                        </Tooltip> : null}
+                                            {this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled />}
+                                        </IconButton>
+                                    </Tooltip> : null}
                                     <IsVisible name="admin.appBar.hostSelector" config={this.adminGuiConfig}>
                                         <HostSelectors
                                             tooltip={

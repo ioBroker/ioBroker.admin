@@ -21,7 +21,6 @@ import {
     DialogTitle,
     Badge,
     LinearProgress,
-    InputLabel,
     FormControl,
     Select,
     Tooltip,
@@ -37,7 +36,7 @@ import {
     SaveAlt as SaveAltIcon,
     ErrorOutline as ErrorIcon,
     Warning as WarningIcon,
-    Check as CheckIcon, ArrowUpward, ArrowDownward,
+    Check as CheckIcon, ArrowUpward, ArrowDownward, Clear,
 } from '@mui/icons-material';
 import { FaPalette as ColorsIcon } from 'react-icons/fa';
 
@@ -205,6 +204,7 @@ const styles: Styles<IobTheme, any> = theme => ({
             '& > *': {
                 fontSize: '10px !important',
             },
+            position: 'relative',
         },
         header: {
             '& > *': {
@@ -268,15 +268,15 @@ const COLORS_LIGHT = [
 ];
 
 const COLORS_DARK = [
-    'rgba(255,109,109,0.2)',
-    'rgba(253,173,84,0.2)',
-    'rgba(241,255,88,0.2)',
-    'rgba(115,253,81,0.2)',
-    'rgba(71,235,255,0.2)',
-    'rgba(74,145,255,0.2)',
-    'rgba(108,85,255,0.2)',
-    'rgba(250,77,250,0.2)',
-    'rgba(255,255,105,0.2)',
+    'rgba(255,109,109,0.1)',
+    'rgba(253,173,84,0.1)',
+    'rgba(241,255,88,0.1)',
+    'rgba(115,253,81,0.1)',
+    'rgba(71,235,255,0.1)',
+    'rgba(74,145,255,0.1)',
+    'rgba(108,85,255,0.1)',
+    'rgba(250,77,250,0.1)',
+    'rgba(255,255,105,0.1)',
 ];
 
 // Number prototype is read-only, properties should not be added
@@ -310,6 +310,7 @@ interface LogsProps {
     logsWorker: LogsWorker;
     themeType: ThemeType;
     t: Translate;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface LogsState {
@@ -421,24 +422,16 @@ class Logs extends Component<LogsProps, LogsState> {
                             logWarnings++;
                         }
 
-                        const adapterName = item.from.replace(/\.\d+$/, '');
-                        let icon = this.state.adapters[adapterName]?.icon;
-                        if (icon) {
-                            if (!icon.startsWith('data:image')) {
-                                icon = `./files/${adapterName}.admin/${icon}`;
+                        if (item.from) {
+                            if (!sources[item.from]) {
+                                sources[item.from] = { active: true, icon: this.getSourceIcon(item.from) };
+                            } else {
+                                sources[item.from].active = true;
                             }
-                        } else {
-                            icon = this.state.hosts[`system.${item.from}`]?.common?.icon;
-                        }
-                        item.icon = icon || null;
-
-                        if (!sources[item.from]) {
-                            sources[item.from] = { active: true, icon: item.icon };
-                        } else {
-                            sources[item.from].active = true;
                         }
                     });
 
+                    // define for every source the own color
                     let color = 0;
                     const COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
                     Object.keys(sources).sort().forEach(id => {
@@ -520,7 +513,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     this.setState({ adapters, hosts }, () => resolve());
                 });
                 const logFiles = await this.readLogFiles();
-                await this.readLogs(true, logFiles);
+                this.readLogs(true, logFiles);
             });
     }
 
@@ -528,6 +521,19 @@ class Logs extends Component<LogsProps, LogsState> {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(true);
         this.props.logsWorker.unregisterHandler(this.logHandler);
         this.props.clearErrors();
+    }
+
+    getSourceIcon(from: string) {
+        const adapterName = from.replace(/\.\d+$/, '');
+        let icon = this.state.adapters[adapterName]?.icon;
+        if (icon) {
+            if (!icon.startsWith('data:image')) {
+                icon = `./files/${adapterName}.admin/${icon}`;
+            }
+        } else if (this.state.hosts) {
+            icon = this.state.hosts[`system.${from}`]?.common?.icon || 'img/no-image.png';
+        }
+        return icon || null;
     }
 
     logHandler = (newLogs: LogLineSaved[], size: number) => {
@@ -567,30 +573,20 @@ class Logs extends Component<LogsProps, LogsState> {
             } else if (item.severity === 'warn') {
                 logWarnings++;
             }
-            if (item.icon === undefined) {
-                const adapterName = item.from.replace(/\.\d+$/, '');
-                let icon = this.state.adapters[adapterName]?.icon;
-                if (icon) {
-                    if (!icon.startsWith('data:image')) {
-                        icon = `./files/${adapterName}.admin/${icon}`;
-                    }
-                } else if (this.state.hosts) {
-                    icon = this.state.hosts[`system.${item.from}`]?.common?.icon;
-                }
-                item.icon = icon || null;
-            }
 
-            if (!this.state.sources[item.from]) {
-                sources = sources || JSON.parse(JSON.stringify(this.state.sources));
-                sources[item.from] = {
-                    active: true,
-                    color: COLORS[color % COLORS.length],
-                    icon: item.icon,
-                };
-                color++;
-            } else {
-                sources = sources || JSON.parse(JSON.stringify(this.state.sources));
-                sources[item.from].active = true;
+            if (item.from) {
+                if (!this.state.sources[item.from] && !sources?.[item.from]) {
+                    sources = sources || JSON.parse(JSON.stringify(this.state.sources));
+                    sources[item.from] = {
+                        active: true,
+                        color: COLORS[color % COLORS.length],
+                        icon: this.getSourceIcon(item.from),
+                    };
+                    color++;
+                } else if (!this.state.sources[item.from]?.active && !sources?.[item.from]?.active) {
+                    sources = sources || JSON.parse(JSON.stringify(this.state.sources));
+                    sources[item.from].active = true;
+                }
             }
         });
 
@@ -627,9 +623,9 @@ class Logs extends Component<LogsProps, LogsState> {
         this.setState({ message: event.target.value });
     }
 
-    handleSourceChange(event: SelectChangeEvent<string>) {
-        ((window as any)._localStorage as Storage || window.localStorage).setItem('Log.source', event.target.value);
-        this.setState({ source: event.target.value });
+    handleSourceChange(source: string) {
+        ((window as any)._localStorage as Storage || window.localStorage).setItem('Log.source', source);
+        this.setState({ source });
     }
 
     handleSeverityChange(event: SelectChangeEvent<string>) {
@@ -681,7 +677,7 @@ class Logs extends Component<LogsProps, LogsState> {
         const severities = [];
 
         for (const i in this.severities) {
-            severities.push(<MenuItem value={i} key={i}>{i}</MenuItem>);
+            severities.push(<MenuItem value={i} key={i} className={this.props.classes[`${this.props.themeType}_${i}`]}>{i}</MenuItem>);
         }
 
         return severities;
@@ -695,7 +691,11 @@ class Logs extends Component<LogsProps, LogsState> {
             <MenuItem
                 value={id}
                 key={id}
-                style={{ backgroundColor: id === '1' ? undefined : this.state.sources[id].color }}
+                style={{
+                    backgroundColor: !this.state.colors || id === '1' ? undefined : this.state.sources[id].color,
+                    display: 'flex',
+                    alignItems: 'center',
+                }}
             >
                 {id === '1' ?
                     null :
@@ -758,7 +758,7 @@ class Logs extends Component<LogsProps, LogsState> {
         >
             <TableCell className={UtilsCommon.clsx(classes.cell, classes.cellName)}>
                 <div className={classes.iconAndName}>
-                    <Icon src={row.icon || ''} className={classes.icon} />
+                    <Icon src={this.state.sources[row.from]?.icon || ''} className={classes.icon} />
                     <div className={classes.name}>{row.from}</div>
                 </div>
             </TableCell>
@@ -768,7 +768,7 @@ class Logs extends Component<LogsProps, LogsState> {
             <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
                 {row.time}
             </TableCell>
-            <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+            <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])} style={{ fontWeight: 'bold' }}>
                 {row.severity}
             </TableCell>
             <TableCell
@@ -881,6 +881,245 @@ class Logs extends Component<LogsProps, LogsState> {
         this.setState({ pid });
     }
 
+    renderToolbar(classes: Record<string, string>) {
+        const pauseChild = !this.state.pause ? <PauseIcon /> :
+            <Typography className={classes.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
+
+        const isMobile = this.props.width === 'xs' || this.props.width === 'sm';
+
+        const downloadLogButton = isMobile ? <IconButton
+            color="primary"
+            onClick={event => this.setState({ logDownloadDialog: event.currentTarget })}
+        >
+            <SaveAltIcon />
+        </IconButton> : <Button
+            variant="contained"
+            color="primary"
+            startIcon={<SaveAltIcon />}
+            onClick={event => this.setState({ logDownloadDialog: event.currentTarget })}
+        >
+            {this.t('Download log')}
+        </Button>;
+
+        return <TabHeader>
+            <Tooltip title={this.props.t('Refresh log')}>
+                <IconButton size="large" onClick={() => this.readLogs(true)}>
+                    <RefreshIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={this.props.t('Pause output')}>
+                <IconButton
+                    size="large"
+                    className={classes.pauseButton}
+                    onClick={() => this.handleLogPause()}
+                >
+                    {pauseChild}
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={this.props.t('Clear log')}>
+                <IconButton size="large" onClick={() => this.clearLog()}>
+                    <DeleteIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={this.props.t('Clear on disk permanent')}>
+                <IconButton size="large" onClick={() => this.setState({ logDeleteDialog: true })}>
+                    <DeleteForeverIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={this.props.t('Show/hide PID')}>
+                <IconButton
+                    size="large"
+                    onClick={() => this.changePid()}
+                    color={!this.state.pid ? 'default' : 'primary'}
+                >
+                    <div className={classes.pidSize}>{this.props.t('PID')}</div>
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={this.props.t('Show/hide colors')}>
+                <IconButton
+                    size="large"
+                    onClick={() => {
+                        ((window as any)._localStorage as Storage || window.localStorage).setItem('Logs.colors', this.state.colors ? 'false' : 'true');
+                        this.setState({ colors: !this.state.colors });
+                    }}
+                    color={!this.state.colors ? 'default' : 'primary'}
+                >
+                    <ColorsIcon style={{ width: '0.8em', height: '0.8em' }} />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={this.props.t('Reverse output direction')}>
+                <IconButton
+                    size="large"
+                    onClick={() => {
+                        ((window as any)._localStorage as Storage || window.localStorage).setItem('Log.reverse', this.state.reverse ? 'false' : 'true');
+                        this.setState({ reverse: !this.state.reverse });
+                        setTimeout(() => {
+                            // scroll to endOfLog
+                            const element = document.getElementById('endOfLog');
+                            element && element.scrollIntoView();
+                        }, 500);
+                    }}
+                    color={!this.state.reverse ? 'default' : 'primary'}
+                >
+                    {this.state.reverse ? <ArrowDownward /> : <ArrowUpward />}
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={this.props.t('Show errors')}>
+                <Badge
+                    badgeContent={this.state.logErrors}
+                    color="error"
+                    classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeError) }}
+                >
+                    <IconButton
+                        size="large"
+                        onClick={() => {
+                            if (this.state.severity === 'error') {
+                                this.setState({ severity: 'debug' });
+                            } else {
+                                this.setState({ severity: 'error', logErrors: 0 });
+                            }
+                        }}
+                        color={this.state.severity === 'error' ? 'primary' : 'default'}
+                    >
+                        <ErrorIcon />
+                    </IconButton>
+                </Badge>
+            </Tooltip>
+            <Tooltip title={this.props.t('Show errors and warnings')}>
+                <Badge
+                    badgeContent={this.state.logWarnings}
+                    color="default"
+                    classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeWarn) }}
+                >
+                    <IconButton
+                        size="large"
+                        onClick={() => {
+                            if (this.state.severity === 'warn') {
+                                this.setState({ severity: 'debug' });
+                            } else {
+                                this.setState({ severity: 'warn', logWarnings: 0 });
+                            }
+                        }}
+                        color={this.state.severity === 'warn' ? 'primary' : 'default'}
+                    >
+                        <WarningIcon />
+                    </IconButton>
+                </Badge>
+            </Tooltip>
+            <div className={classes.grow} />
+            {this.state.logFiles?.length ? downloadLogButton : null}
+            {this.state.logDownloadDialog ? <Menu
+                id="simple-menu"
+                anchorEl={this.state.logDownloadDialog}
+                keepMounted
+                open={Boolean(this.state.logDownloadDialog)}
+                onClose={() => this.setState({ logDownloadDialog: null })}
+            >
+                {this.getLogFiles()}
+            </Menu> : null}
+            {isMobile ? null : <div className={classes.grow} />}
+            {isMobile ? null : <Typography
+                variant="body2"
+                title={this.state.estimatedSize ? this.props.t('Estimated size') : ''}
+                className={classes.logSize}
+            >
+                {this.t('Log size:')}
+                {' '}
+                <span className={this.state.estimatedSize ? classes.logEstimated : ''}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
+            </Typography>}
+        </TabHeader>;
+    }
+
+    renderTableHeader(classes: Record<string, string>) {
+        const sources = Object.keys(this.state.sources).sort();
+        sources.unshift('1');
+
+        return <TableHead>
+            <TableRow>
+                <TableCell className={classes.source}>
+                    <FormControl variant="standard" className={classes.formControl}>
+                        <Select
+                            variant="standard"
+                            labelId="source-label"
+                            value={sources.includes(this.state.source) ? this.state.source : '1'}
+                            onChange={event => this.handleSourceChange(event.target.value)}
+                            renderValue={(value: string) => <div
+                                style={{
+                                    backgroundColor: !this.state.colors || value === '1' ? undefined : this.state.sources[value].color,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                {value === '1' ?
+                                    null :
+                                    <Icon src={this.state.sources[value].icon || ''} className={this.props.classes.iconSelect} />}
+                                {value === '1' ?
+                                    this.t('Source') :
+                                    value}
+                            </div>}
+                        >
+                            {this.getSources()}
+                        </Select>
+                        {(sources.includes(this.state.source) ? this.state.source : '1') !== '1' ? <IconButton
+                            sx={{
+                                position: 'absolute',
+                                top: 1,
+                                right: 15,
+                                zIndex: 1,
+                            }}
+                            size="small"
+                            onClick={() => this.handleSourceChange('1')}
+                        >
+                            <Clear />
+                        </IconButton> : null}
+                    </FormControl>
+                </TableCell>
+                {this.state.pid && <TableCell className={classes.pid}>
+                    <div className={classes.header}>{this.t('PID')}</div>
+                </TableCell>}
+                <TableCell className={classes.timestamp}>
+                    <div className={classes.header}>{this.t('Time')}</div>
+                </TableCell>
+                <TableCell className={classes.severity}>
+                    <FormControl variant="standard" className={classes.formControl}>
+                        <Select
+                            variant="standard"
+                            labelId="severity-label"
+                            value={this.state.severity}
+                            onChange={event => this.handleSeverityChange(event)}
+                            renderValue={value => <span className={this.props.classes[`${this.props.themeType}_${value}`]}>{value}</span>}
+                        >
+                            {this.getSeverities()}
+                        </Select>
+                    </FormControl>
+                </TableCell>
+                <TableCell className={classes.message}>
+                    <FormControl variant="standard" className={classes.formControl}>
+                        <TextField
+                            variant="standard"
+                            className={classes.messageText}
+                            placeholder={this.t('Message')}
+                            onChange={event => this.handleMessageChange(event)}
+                            value={this.state.message}
+                            InputProps={{
+                                endAdornment:
+                                    this.state.message ? <IconButton
+                                        size="small"
+                                        onClick={() => {
+                                            ((window as any)._localStorage as Storage || window.localStorage).removeItem('Log.message');
+                                            this.setState({ message: '' });
+                                        }}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton> : null,
+                            }}
+                        />
+                    </FormControl>
+                </TableCell>
+            </TableRow>
+        </TableHead>;
+    }
+
     render() {
         if (!this.state.logs) {
             return <LinearProgress />;
@@ -909,212 +1148,14 @@ class Logs extends Component<LogsProps, LogsState> {
             }, 200);
         }
 
-        const sources = Object.keys(this.state.sources).sort();
-        sources.unshift('1');
-
-        const pauseChild = !this.state.pause ? <PauseIcon /> :
-            <Typography className={classes.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
-
         return <TabContainer>
             <TabHeader>
-                <Tooltip title={this.props.t('Refresh log')}>
-                    <IconButton size="large" onClick={() => this.readLogs(true)}>
-                        <RefreshIcon />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.props.t('Pause output')}>
-                    <IconButton
-                        size="large"
-                        className={classes.pauseButton}
-                        onClick={() => this.handleLogPause()}
-                    >
-                        {pauseChild}
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.props.t('Clear log')}>
-                    <IconButton size="large" onClick={() => this.clearLog()}>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.props.t('Clear on disk permanent')}>
-                    <IconButton size="large" onClick={() => this.setState({ logDeleteDialog: true })}>
-                        <DeleteForeverIcon />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.props.t('Show/hide PID')}>
-                    <IconButton
-                        size="large"
-                        onClick={() => this.changePid()}
-                        color={!this.state.pid ? 'default' : 'primary'}
-                    >
-                        <div className={classes.pidSize}>{this.props.t('PID')}</div>
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.props.t('Show/hide colors')}>
-                    <IconButton
-                        size="large"
-                        onClick={() => {
-                            ((window as any)._localStorage as Storage || window.localStorage).setItem('Logs.colors', this.state.colors ? 'false' : 'true');
-                            this.setState({ colors: !this.state.colors });
-                        }}
-                        color={!this.state.colors ? 'default' : 'primary'}
-                    >
-                        <ColorsIcon style={{ width: '0.8em', height: '0.8em' }} />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.props.t('Reverse output direction')}>
-                    <IconButton
-                        size="large"
-                        onClick={() => {
-                            ((window as any)._localStorage as Storage || window.localStorage).setItem('Log.reverse', this.state.reverse ? 'false' : 'true');
-                            this.setState({ reverse: !this.state.reverse });
-                            setTimeout(() => {
-                                // scroll to endOfLog
-                                const element = document.getElementById('endOfLog');
-                                element && element.scrollIntoView();
-                            }, 500);
-                        }}
-                        color={!this.state.reverse ? 'default' : 'primary'}
-                    >
-                        {this.state.reverse ? <ArrowDownward /> : <ArrowUpward />}
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={this.props.t('Show errors')}>
-                    <Badge
-                        badgeContent={this.state.logErrors}
-                        color="error"
-                        classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeError) }}
-                    >
-                        <IconButton
-                            size="large"
-                            onClick={() => {
-                                if (this.state.severity === 'error') {
-                                    this.setState({ severity: 'debug' });
-                                } else {
-                                    this.setState({ severity: 'error', logErrors: 0 });
-                                }
-                            }}
-                            color={this.state.severity === 'error' ? 'primary' : 'default'}
-                        >
-                            <ErrorIcon />
-                        </IconButton>
-                    </Badge>
-                </Tooltip>
-                <Tooltip title={this.props.t('Show errors and warnings')}>
-                    <Badge
-                        badgeContent={this.state.logWarnings}
-                        color="default"
-                        classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeWarn) }}
-                    >
-                        <IconButton
-                            size="large"
-                            onClick={() => {
-                                if (this.state.severity === 'warn') {
-                                    this.setState({ severity: 'debug' });
-                                } else {
-                                    this.setState({ severity: 'warn', logWarnings: 0 });
-                                }
-                            }}
-                            color={this.state.severity === 'warn' ? 'primary' : 'default'}
-                        >
-                            <WarningIcon />
-                        </IconButton>
-                    </Badge>
-                </Tooltip>
-                <div className={classes.grow} />
-                {this.state.logFiles?.length > 0 &&
-                    <div>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SaveAltIcon />}
-                            onClick={event => this.setState({ logDownloadDialog: event.currentTarget })}
-                        >
-                            {this.t('Download log')}
-                        </Button>
-                        <Menu
-                            id="simple-menu"
-                            anchorEl={this.state.logDownloadDialog}
-                            keepMounted
-                            open={Boolean(this.state.logDownloadDialog)}
-                            onClose={() => this.setState({ logDownloadDialog: null })}
-                        >
-                            {this.getLogFiles()}
-                        </Menu>
-                    </div>}
-                <div className={classes.grow} />
-                <Typography
-                    variant="body2"
-                    title={this.state.estimatedSize ? this.props.t('Estimated size') : ''}
-                    className={classes.logSize}
-                >
-                    {this.t('Log size:')}
-                    {' '}
-                    <span className={this.state.estimatedSize ? classes.logEstimated : ''}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
-                </Typography>
+                {this.renderToolbar(classes)}
             </TabHeader>
             <TabContent>
                 <TableContainer className={classes.container}>
                     <Table stickyHeader size="small" className={classes.table}>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell className={classes.source}>
-                                    <FormControl variant="standard" className={classes.formControl}>
-                                        <InputLabel id="source-label" />
-                                        <Select
-                                            variant="standard"
-                                            labelId="source-label"
-                                            value={sources.includes(this.state.source) ? this.state.source : '1'}
-                                            onChange={event => this.handleSourceChange(event)}
-                                        >
-                                            {this.getSources()}
-                                        </Select>
-                                    </FormControl>
-                                </TableCell>
-                                {this.state.pid && <TableCell className={classes.pid}>
-                                    <TextField disabled label={this.t('PID')} className={classes.header} variant="standard" />
-                                </TableCell>}
-                                <TableCell className={classes.timestamp}>
-                                    <TextField disabled label={this.t('Time')} className={classes.header} variant="standard" />
-                                </TableCell>
-                                <TableCell className={classes.severity}>
-                                    <FormControl variant="standard" className={classes.formControl}>
-                                        <InputLabel id="severity-label" />
-                                        <Select
-                                            variant="standard"
-                                            labelId="severity-label"
-                                            value={this.state.severity}
-                                            onChange={event => this.handleSeverityChange(event)}
-                                        >
-                                            {this.getSeverities()}
-                                        </Select>
-                                    </FormControl>
-                                </TableCell>
-                                <TableCell className={classes.message}>
-                                    <FormControl variant="standard" className={classes.formControl}>
-                                        <TextField
-                                            variant="standard"
-                                            className={classes.messageText}
-                                            label={this.t('Message')}
-                                            onChange={event => this.handleMessageChange(event)}
-                                            value={this.state.message}
-                                            InputProps={{
-                                                endAdornment:
-                                                    this.state.message ? <IconButton
-                                                        size="small"
-                                                        onClick={() => {
-                                                            ((window as any)._localStorage as Storage || window.localStorage).removeItem('Log.message');
-                                                            this.setState({ message: '' });
-                                                        }}
-                                                    >
-                                                        <CloseIcon />
-                                                    </IconButton> : null,
-                                            }}
-                                        />
-                                    </FormControl>
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
+                        {this.renderTableHeader(classes)}
                         <TableBody>
                             {this.getRows()}
                         </TableBody>

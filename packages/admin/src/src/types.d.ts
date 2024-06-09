@@ -63,7 +63,7 @@ export interface CompactAdapterInfo {
 }
 
 export type CompactHost = {
-    _id: ioBroker.HostObject['_id'];
+    _id: ioBroker.ObjectIDs.Host;
     common: {
         name: ioBroker.HostCommon['name'];
         icon: ioBroker.HostCommon['icon'];
