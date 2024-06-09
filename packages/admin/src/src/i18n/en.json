@@ -30,7 +30,7 @@
   "Acknowledge & close": "Acknowledge & close",
   "Acknowledged": "Acknowledged",
   "Acknowledged explanation": "If you want to control a device do not use 'Acknowledged'",
-  "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"",
+  "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "You should enable this option if you plan to allow access to ioBroker from the internet or by untrusted users.",
   "Activated. Click to stop.": "Activated. Click to stop.",
   "Active": "Active",
   "Active instances": "Active instances",
@@ -125,7 +125,7 @@
   "Austria": "Austria",
   "Auth": "Auth",
   "Authentication": "Authentication",
-  "Authentication in Admin": "Authentication in Admin",
+  "Authentication in Admin": "Require authentication for the admin user",
   "Authentication required.": "Authentication required or login, password are invalid",
   "Authentication was deactivated": "Authentication was deactivated",
   "Auto upgrade policy for %s": "Auto upgrade policy for %s",
@@ -565,7 +565,7 @@
   "Is yet in the list": "It's already in the list",
   "Isle of Man": "Isle of Man",
   "Israel": "Israel",
-  "It is suggested to enable the authentication in admin": "It is suggested to enable the authentication in admin",
+  "It is suggested to enable the authentication in admin": "It is recommended that you enable authentication for the admin user.",
   "It will be compressed when the uncompressed size is >= size * sizeFactor AND >= sizeFactorMinimumSize": "It will be compressed when the uncompressed size is >= size * sizeFactor AND >= sizeFactorMinimumSize",
   "Italy": "Italy",
   "Ivory Coast": "Ivory Coast",
@@ -1602,8 +1602,13 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
+<<<<<<< patch-2
+  "yesterday": "yesterday"
+}
+=======
   "yesterday": "yesterday",
   "Filter adapters to see others. There is %s more": "Filter adapters to see others. There is %s more",
   "Enter version manually": "Enter version manually",
   "Or select from the list": "Or select from the list"
 }
+>>>>>>> master
