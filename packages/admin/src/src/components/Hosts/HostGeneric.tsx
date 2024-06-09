@@ -35,7 +35,7 @@ import {
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type NotificationAnswer } from '@/Workers/HostsWorker';
-import AdapterUpdateDialog, { type RepoInstanceObject } from '@/dialogs/AdapterUpdateDialog';
+import AdapterUpdateDialog, { type RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
@@ -227,7 +227,7 @@ export interface HostGenericProps {
     host: ioBroker.HostObject;
     hostsWorker: HostsWorker;
     isCurrentHost: boolean;
-    jsControllerInfo: RepoInstanceObject;
+    jsControllerInfo: RepoAdapterObject;
     lang: ioBroker.Languages;
     noTranslation: boolean;
     onUpdating: (isUpdating: boolean) => void;

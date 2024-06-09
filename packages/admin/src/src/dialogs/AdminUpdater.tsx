@@ -15,7 +15,10 @@ import {
     Refresh as ReloadIcon,
 } from '@mui/icons-material';
 
-import { I18n, type AdminConnection } from '@iobroker/adapter-react-v5';
+import {
+    I18n, type AdminConnection,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 interface WebserverParameters {
     useHttps: boolean;
@@ -38,7 +41,7 @@ interface AdminUpdaterProps {
     version: string;
     adminInstance: string;
     onUpdating: (updating: boolean) => void;
-    themeType: string;
+    themeType: ThemeType;
 }
 
 interface AdminUpdaterState {

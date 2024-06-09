@@ -24,6 +24,7 @@ import {
     Router, ToggleThemeMenu, I18n,
     type AdminConnection,
     type IobTheme,
+    type ThemeName,
 } from '@iobroker/adapter-react-v5';
 
 import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
@@ -114,7 +115,7 @@ interface WizardDialogProps {
     socket: AdminConnection;
     onClose: (redirect?: string) => void;
     toggleTheme: () => void;
-    themeName: string;
+    themeName: ThemeName;
     classes: Record<string, any>;
     /** Active host name */
     host: string;

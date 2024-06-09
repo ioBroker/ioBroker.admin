@@ -1602,5 +1602,8 @@
   "write": "писати",
   "write operation": "писати",
   "wrongPassword": "Неправильне ім'я користувача або пароль",
-  "yesterday": "вчора"
+  "yesterday": "вчора",
+  "Filter adapters to see others. There is %s more": "Фільтруйте адаптери, щоб побачити інші. Є ще %s",
+  "Enter version manually": "Введіть версію вручну",
+  "Or select from the list": "Або виберіть зі списку"
 }

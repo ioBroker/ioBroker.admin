@@ -2168,7 +2168,7 @@ const SCREEN_WIDTHS: ScreenWidth = {
 
 let objectsAlreadyLoaded = false;
 
-interface ObjectBrowserFilter {
+export interface ObjectBrowserFilter {
     id?: string;
     name?: string;
     room?: string;
@@ -2231,8 +2231,8 @@ interface ObjectCustomDialogProps {
     objects: Record<string, ioBroker.Object>;
     socket: Connection;
     theme: IobTheme;
-    themeName: string;
-    themeType: string;
+    themeName: ThemeName;
+    themeType: ThemeType;
     customsInstances: string[];
     objectIDs: string[];
     onClose: () => void;
@@ -2263,7 +2263,7 @@ interface ObjectBrowserValueProps {
         expire: number | undefined;
     }) => void;
     /** Configured theme */
-    themeType: string;
+    themeType: ThemeType;
     socket: Connection;
     defaultHistory: string;
     dateFormat: string;
@@ -2279,7 +2279,7 @@ interface ObjectBrowserEditObjectProps {
     obj: ioBroker.AnyObject;
     roleArray: string[];
     expertMode: boolean;
-    themeType: string;
+    themeType: ThemeType;
     aliasTab: boolean;
     onClose: (obj?: ioBroker.AnyObject) => void;
     dialogName?: string;
@@ -2335,10 +2335,10 @@ interface ObjectBrowserProps {
     objectEditOfAccessControl?: boolean; // Access Control
     /** modal add object */
     // eslint-disable-next-line no-use-before-define
-    modalNewObject?: (oBrowser: ObjectBrowser) => React.JSX.Element;
+    modalNewObject?: (oBrowser: ObjectBrowserClass) => React.JSX.Element;
     /** modal Edit Of Access Control */
     // eslint-disable-next-line no-use-before-define
-    modalEditOfAccessControl: (oBrowser: ObjectBrowser, data: TreeItemData) => React.JSX.Element;
+    modalEditOfAccessControl: (oBrowser: ObjectBrowserClass, data: TreeItemData) => React.JSX.Element;
     onObjectDelete?: (id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) => void;
     /** optional filter
      *   `{common: {custom: true}}` - show only objects with some custom settings
@@ -2437,7 +2437,7 @@ interface ObjectBrowserState {
     updateOpened?: boolean;
 }
 
-class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
+export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrowserState> {
     // do not define the type as null to save the performance, so we must check it every time
     private info: TreeInfo;
 
@@ -2523,7 +2523,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
 
     private systemConfig: ioBroker.SystemConfigObject;
 
-    private objects: Record<string, ioBroker.Object>;
+    public objects: Record<string, ioBroker.Object>;
 
     private defaultHistory: string = '';
 
@@ -2966,7 +2966,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         /** id to test */
         id: string,
     ): boolean {
-        return !!ObjectBrowser.#NON_EXPERT_NAMESPACES.find(saveNamespace => id.startsWith(saveNamespace));
+        return !!ObjectBrowserClass.#NON_EXPERT_NAMESPACES.find(saveNamespace => id.startsWith(saveNamespace));
     }
 
     private expandAllSelected(cb?: () => void): void {
@@ -4022,7 +4022,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
     private onCollapseVisible() {
         if (this.state.depth > 0) {
             const depth = this.state.depth - 1;
-            const expanded = ObjectBrowser.collapseDepth(depth, this.state.expanded);
+            const expanded = ObjectBrowserClass.collapseDepth(depth, this.state.expanded);
             this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectExpanded`, JSON.stringify(expanded));
             this.setState({ depth, expanded });
         }
@@ -4926,7 +4926,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                 ? this.systemConfig.common.defaultNewAcl.state
                 : this.systemConfig.common.defaultNewAcl.object);
 
-        const showEdit = this.state.filter.expertMode || ObjectBrowser.isNonExpertId(item.data.id);
+        const showEdit = this.state.filter.expertMode || ObjectBrowserClass.isNonExpertId(item.data.id);
 
         return [
             this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <Tooltip
@@ -5419,7 +5419,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             this.props.socket
                 .getObject(this.state.columnsEditCustomDialog?.obj?._id || '')
                 .then(obj => {
-                    if (obj && ObjectBrowser.setCustomValue(obj, this.state.columnsEditCustomDialog?.it as AdapterColumn, value)) {
+                    if (obj && ObjectBrowserClass.setCustomValue(obj, this.state.columnsEditCustomDialog?.it as AdapterColumn, value)) {
                         return this.props.socket.setObject(obj._id, obj);
                     }
                     throw new Error(this.props.t('ra_Cannot update attribute, because not found in the object'));
@@ -5437,7 +5437,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
             return null;
         }
         if (!this.customColumnDialog) {
-            const value = ObjectBrowser.getCustomValue(
+            const value = ObjectBrowserClass.getCustomValue(
                 this.state.columnsEditCustomDialog.obj,
                 this.state.columnsEditCustomDialog.it,
             );
@@ -5652,7 +5652,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
         it: AdapterColumn,
         item: TreeItem,
     ): React.JSX.Element | null {
-        const text = ObjectBrowser.getCustomValue(obj, it);
+        const text = ObjectBrowserClass.getCustomValue(obj, it);
         if (text !== null && text !== undefined) {
             if (it.edit && !this.props.notEditable && (!it.objTypes || it.objTypes.includes(obj.type))) {
                 return <div
@@ -7104,7 +7104,7 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
                 visibility:
                     !!(this.props.objectBrowserEditObject &&
                     obj &&
-                    (this.state.filter.expertMode || ObjectBrowser.isNonExpertId(id))),
+                    (this.state.filter.expertMode || ObjectBrowserClass.isNonExpertId(id))),
                 icon: <IconEdit fontSize="small" className={this.props.classes.contextMenuEdit} />,
                 label: this.texts.editObject,
                 onClick: () =>
@@ -7546,4 +7546,4 @@ class ObjectBrowser extends Component<ObjectBrowserProps, ObjectBrowserState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(ObjectBrowser));
+export default withWidth()(withStyles(styles)(ObjectBrowserClass));

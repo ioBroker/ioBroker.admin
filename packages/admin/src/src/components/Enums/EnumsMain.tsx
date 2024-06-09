@@ -29,6 +29,7 @@ import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'r
 import {
     type AdminConnection, Utils,
     type IobTheme, type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import EnumBlock, { isTouchDevice } from './EnumBlock';
@@ -194,7 +195,7 @@ interface TreeItem {
 
 interface EnumsListProps {
     socket: AdminConnection;
-    t: (word: string) => string;
+    t: Translate;
     lang: ioBroker.Languages;
     themeType: ThemeType;
     classes: Record<string, string>;
@@ -235,7 +236,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
     private updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private changeEnums: Record<string, any>;
+    private changeEnums: Record<string, ioBroker.EnumObject>;
 
     private scrollToItem: string | null;
 
@@ -244,19 +245,21 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
     constructor(props: EnumsListProps) {
         super(props);
 
+        const localStorage: Storage = ((window as any)._localStorage as Storage || window.localStorage);
+
         let enumsClosed = {};
         try {
-            enumsClosed = ((window as any)._localStorage || window.localStorage).getItem('enumsClosed') ? JSON.parse(((window as any)._localStorage || window.localStorage).getItem('enumsClosed')) : {};
+            enumsClosed = localStorage.getItem('enumsClosed') ? JSON.parse(localStorage.getItem('enumsClosed')) : {};
         } catch (e) {
             // ignore
         }
         let enumsCollapsed = [];
         try {
-            enumsCollapsed = ((window as any)._localStorage || window.localStorage).getItem('enumsCollapsed') ? JSON.parse(((window as any)._localStorage || window.localStorage).getItem('enumsCollapsed')) : [];
+            enumsCollapsed = localStorage.getItem('enumsCollapsed') ? JSON.parse(localStorage.getItem('enumsCollapsed')) : [];
         } catch (e) {
             // ignore
         }
-        const splitSizesStr = ((window as any)._localStorage || window.localStorage).getItem('enumsSplitSizes');
+        const splitSizesStr = localStorage.getItem('enumsSplitSizes');
         let splitSizes: [number, number] = [50, 50];
         if (splitSizesStr) {
             try {
@@ -272,7 +275,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         this.state = {
             enums: null,
             enumsTree: null,
-            currentCategory: ((window as any)._localStorage || window.localStorage).getItem('enumCurrentCategory') || '',
+            currentCategory: localStorage.getItem('enumCurrentCategory') || '',
             search: '',
             enumEditDialog: null,
             enumTemplateDialog: null,
@@ -368,7 +371,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         this.updateTimeout = null;
     }
 
-    onObjectChange  = (id: string, obj: ioBroker.EnumObject) => {
+    onObjectChange = (id: string, obj: ioBroker.EnumObject) => {
         let changed;
 
         if (this.state.enums && id.startsWith('enum.')) {

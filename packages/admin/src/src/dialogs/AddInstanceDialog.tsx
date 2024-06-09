@@ -32,7 +32,7 @@ import {
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';
-import { checkCondition, type Message } from '@/dialogs/AdapterUpdateDialog';
+import { checkCondition, type CompactInstanceInfo, type Message } from '@/dialogs/AdapterUpdateDialog';
 import HostSelectors from '@/components/HostSelectors';
 
 const styles: Record<string, any> = (theme: IobTheme) => ({
@@ -99,10 +99,10 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
 });
 
-interface AdapterDependencies {
+export interface AdapterDependencies {
     name: string;
     version: string | null;
-    installed: string;
+    installed: boolean;
     installedVersion: string;
     rightVersion: boolean;
 }
@@ -118,7 +118,7 @@ interface AddInstanceDialogProps {
     onClose: () => void;
     onHostChange: (host: string) => void;
     onInstanceChange: (event: SelectChangeEvent<string>) => void;
-    instances: Record<string, any>;
+    instances: Record<string, CompactInstanceInfo>;
     adapterObject: ioBroker.AdapterCommon;
     classes: Record<string, any>;
     dependencies: AdapterDependencies[];

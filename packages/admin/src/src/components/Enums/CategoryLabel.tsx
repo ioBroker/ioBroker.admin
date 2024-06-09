@@ -11,7 +11,7 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { type ThemeType, Utils } from '@iobroker/adapter-react-v5';
 
 interface CategoryLabelProps {
     categoryData: Record<string, any>;
@@ -20,7 +20,7 @@ interface CategoryLabelProps {
     classes: Record<string, any>;
     t: (text: string) => string;
     lang: string;
-    themeType: string;
+    themeType: ThemeType;
 }
 
 const CategoryLabel = (props: CategoryLabelProps) => {

@@ -1602,5 +1602,8 @@
   "write": "escrever",
   "write operation": "escrever",
   "wrongPassword": "nome de usuário ou senha inválidos",
-  "yesterday": "ontem"
+  "yesterday": "ontem",
+  "Filter adapters to see others. There is %s more": "Filtre os adaptadores para ver outros. Há %s mais",
+  "Enter version manually": "Insira a versão manualmente",
+  "Or select from the list": "Ou selecione na lista"
 }

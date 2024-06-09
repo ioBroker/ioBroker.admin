@@ -104,7 +104,7 @@ const formatInfo  = {
 };
 
 interface IntroProps {
-    showAlert: (title: string, msg: string) => void;
+    showAlert: (message: string, type?: 'error' | 'warning' | 'info' | 'success') => void;
     socket: AdminConnection;
     t: Translate;
     lang: ioBroker.Languages;

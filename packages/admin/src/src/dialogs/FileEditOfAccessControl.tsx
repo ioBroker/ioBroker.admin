@@ -7,10 +7,15 @@ import {
     type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 
+import type {
+    FolderOrFileItem, Folders,
+    MetaACL, MetaObject,
+} from '@/components/FileBrowser';
+
 import Utils from '../Utils';
 import CustomModal from '../components/CustomModal';
 
-const readWriteArray: Record<string, { name: string; valueNum: number; title: string }[]>[] = [
+const readWriteArray: Record<string, { name: 'read' | 'write'; valueNum: number; title: string }[]>[] = [
     {
         Owner: [
             { name: 'read', valueNum: 0x400, title: 'read owner' },
@@ -68,13 +73,14 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
 
     let newSelected = value;
 
-    return <div style={{
-        display: 'flex',
-        width: 'fit-content',
-        margin: 20,
-        border: '1px solid',
-        borderLeft: 0,
-    }}
+    return <div
+        style={{
+            display: 'flex',
+            width: 'fit-content',
+            margin: 20,
+            border: '1px solid',
+            borderLeft: 0,
+        }}
     >
         {readWriteArray.map(el => {
             const name = Object.keys(el)[0];
@@ -172,31 +178,8 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
     </div>;
 };
 
-type AccessControlFile = Partial<{
-    id: string;
-    ext: string | null;
-    folder: boolean;
-    name: string;
-    size: number | undefined;
-    modified: number | undefined;
-    acl: ioBroker.EvaluatedFileACL | undefined;
-    level: number;
-}>;
-
-type AccessControlFolder = AccessControlFile[];
-
-interface AccessControlAcl {
-    owner: string;
-    ownerGroup: string;
-    file: number;
-}
-
-interface AccessControlObject extends Omit<ioBroker.Object, 'acl'> {
-    acl: Partial<AccessControlAcl>;
-}
-
-async function loadFolders(folderId: string, folders: Record<string, AccessControlFolder>, socket: AdminConnection) {
-    let files: AccessControlFolder = folders[folderId];
+async function loadFolders(folderId: string, folders: Folders, socket: AdminConnection) {
+    let files = folders[folderId];
     if (!files) {
         const parts = folderId.split('/');
         const level = parts.length;
@@ -206,7 +189,7 @@ async function loadFolders(folderId: string, folders: Record<string, AccessContr
         folders[folderId] = [];
         for (let f = 0; f < dirFiles.length; f++) {
             const file = dirFiles[f];
-            const item: AccessControlFile = {
+            const item: FolderOrFileItem = {
                 id: `${folderId}/${file.file}`,
                 ext: Utils.getFileExtension(file.file),
                 folder: file.isDir,
@@ -229,13 +212,16 @@ async function loadFolders(folderId: string, folders: Record<string, AccessContr
     }
 }
 
-function flatList(folders: Record<string, AccessControlFolder>): Record<string, AccessControlFile> {
-    const list: Record<string, AccessControlFile> = {};
+function flatList(folders: Folders): Record<string, FolderOrFileItem> {
+    const list: Record<string, FolderOrFileItem> = {};
 
     Object.keys(folders)
         .forEach(key => {
             list[key] = {
                 folder: true,
+                id: key, // unused
+                level: 0, // unused
+                name: key, // unused
             };
             folders[key].forEach(item => {
                 list[item.id] = item;
@@ -245,7 +231,14 @@ function flatList(folders: Record<string, AccessControlFolder>): Record<string, 
     return list;
 }
 
-async function loadPath(socket: AdminConnection, folders: Record<string, AccessControlFolder>, path: string | string[], adapter: string = '', part: string = '', level: number = 0) {
+async function loadPath(
+    socket: AdminConnection,
+    folders: Folders,
+    path: string | string[],
+    adapter: string = '',
+    part: string = '',
+    level: number = 0,
+) {
     if (typeof path === 'string') {
         path = path.split('/');
         level = 0;
@@ -296,45 +289,45 @@ async function loadPath(socket: AdminConnection, folders: Record<string, AccessC
 
 const DIFFERENT = 'different';
 
-interface FileEditOfAccessControl2Props {
+interface FileEditOfAccessControlProps {
     onClose: () => void;
     onApply: () => void;
     selected: string;
-    extendObject: (id: string, obj: AccessControlObject | string, acl?: Partial<ioBroker.FileACL>) => Promise<void>;
-    objects: Record<string, AccessControlObject>;
+    applyChangesToObject: (obj: MetaObject) => Promise<void>;
+    applyChangesToFile: (adapter: string, filePath: string, acl?: Partial<ioBroker.FileACL>) => Promise<void>;
+    objects: Record<string, ioBroker.Object>;
     t: Translate;
     themeType: ThemeType;
-    folders: Record<string, AccessControlFolder>;
+    folders: Folders;
     socket: AdminConnection;
 }
 
-const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
-    onClose, onApply, selected, extendObject, objects, t, themeType, folders, socket,
+const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
+    onClose,
+    onApply,
+    selected,
+    applyChangesToObject,
+    applyChangesToFile,
+    objects,
+    t,
+    themeType,
+    folders,
+    socket,
 }) => {
     const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
-    const object: Partial<AccessControlFile> = (selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected)) || {};
+    const object: FolderOrFileItem = (selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected)) || {} as FolderOrFileItem;
     const [stateOwnerUser, setStateOwnerUser] = useState<string | null>(null);
     const [stateOwnerGroup, setStateOwnerGroup] = useState<string | null>(null);
-    const [users, setUsers] = useState<AccessControlObject[]>([]);
-    const [groups, setGroups] = useState<AccessControlObject[]>([]);
+    const [users, setUsers] = useState<ioBroker.UserObject[]>([]);
+    const [groups, setGroups] = useState<ioBroker.GroupObject[]>([]);
     const [applyToChildren, setApplyToChildren] = useState(false);
     const [childrenCount, setChildrenCount] = useState(0);
-    const [valueFileAccessControl, setValueFileAccessControl] = useState<number>(null);
+    const [valueFileAccessControl, setValueFileAccessControl] = useState<number | null>(null);
     const [differentOwner, setDifferentOwner] = useState(false);
     const [differentGroup, setDifferentGroup] = useState(false);
     const [differentObject, setDifferentObject] = useState<number[]>([]);
     const [maskObject, setMaskObject] = useState(0);
-    const [ids, setIds] = useState<{
-        _id: string;
-        acl: Partial<{
-            file: number;
-            owner: string;
-            ownerGroup: string;
-            permissions: number;
-        }>;
-        id: string;
-        folder: boolean;
-    }[]>([]);
+    const [ids, setIds] = useState<(MetaObject | FolderOrFileItem)[]>([]);
     const [disabledButton, setDisabledButton] = useState(true);
     const [progress, setProgress] = useState(false);
 
@@ -350,7 +343,7 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
         let _stateOwnerUser: string | null = null;
         let _stateOwnerGroup: string | null = null;
         let _valueFileAccessControl: number = null;
-        const _ids: any[] = [];
+        const _ids: (MetaObject | FolderOrFileItem)[] = [];
         let count = 0;
 
         loadPath(socket, folders, id)
@@ -365,8 +358,8 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
                     }
 
                     if (key === id || key.startsWith(idWithSlash)) {
-                        if (!key.includes('/') && objects[key]) { // it is object
-                            const objFolder = objects[key];
+                        if (!key.includes('/') && objects[key]) { // it is an object
+                            const objFolder = objects[key] as MetaObject;
                             count++;
                             _ids.push(objFolder);
 
@@ -393,8 +386,8 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
                             count++;
                             const keyFolder = list[key];
                             _ids.push(keyFolder);
-                            if (_valueFileAccessControl === null && keyFolder.acl.permissions !== undefined) {
-                                _valueFileAccessControl = keyFolder.acl.permissions;
+                            if (_valueFileAccessControl === null && (keyFolder.acl as ioBroker.EvaluatedFileACL).permissions !== undefined) {
+                                _valueFileAccessControl = (keyFolder.acl as ioBroker.EvaluatedFileACL).permissions;
                             }
                             if (_stateOwnerUser === null && keyFolder.acl.owner !== undefined) {
                                 _stateOwnerUser = keyFolder.acl.owner;
@@ -409,23 +402,26 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
                             if (!differentGroup && _stateOwnerGroup !== keyFolder.acl.ownerGroup && keyFolder.acl.ownerGroup !== undefined) {
                                 _differentGroup = true;
                             }
-                            if (keyFolder.acl.permissions !== undefined && _valueFileAccessControl !== keyFolder.acl.permissions && !_differentObject.includes(keyFolder.acl.permissions)) {
-                                _differentObject.push(keyFolder.acl.permissions);
+                            if ((keyFolder.acl as ioBroker.EvaluatedFileACL).permissions !== undefined &&
+                                _valueFileAccessControl !== (keyFolder.acl as ioBroker.EvaluatedFileACL).permissions &&
+                                !_differentObject.includes((keyFolder.acl as ioBroker.EvaluatedFileACL).permissions)
+                            ) {
+                                _differentObject.push((keyFolder.acl as ioBroker.EvaluatedFileACL).permissions);
                             }
                         }
                     }
                 });
 
-                const _users: AccessControlObject[] = [];
-                const _groups: AccessControlObject[] = [];
+                const _users: ioBroker.UserObject[] = [];
+                const _groups: ioBroker.GroupObject[] = [];
                 // Get users and groups
                 Object.keys(objects).forEach(_id => {
                     const obj = objects[_id];
                     if (_id.startsWith('system.group.') && obj?.type === 'group') {
-                        _groups.push(obj);
+                        _groups.push(obj as ioBroker.GroupObject);
                     } else
                         if (_id.startsWith('system.user.') && obj?.type === 'user') {
-                            _users.push(obj);
+                            _users.push(obj as ioBroker.UserObject);
                         }
                 });
 
@@ -495,7 +491,7 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
                     const newAcl: Partial<ioBroker.FileACL> = {};
                     let changed = false;
                     if (!object.folder) {
-                        if (object.acl?.permissions !== valueFileAccessControl) {
+                        if ((object.acl as ioBroker.EvaluatedFileACL)?.permissions !== valueFileAccessControl) {
                             newAcl.permissions = valueFileAccessControl;
                             changed = true;
                         }
@@ -507,26 +503,26 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
                             newAcl.ownerGroup = stateOwnerGroup;
                             changed = true;
                         }
-                        changed && (await extendObject(adapter, path, newAcl));
+                        changed && (await applyChangesToFile(adapter, path, newAcl));
                     } else if (!parts.length && objects[object.id]) {
                         // setObject(acl)
-                        const obj = objects[object.id];
+                        const obj = objects[object.id] as MetaObject;
                         if (obj.acl?.file !== valueFileAccessControl) {
-                            obj.acl = obj.acl || {};
+                            obj.acl = obj.acl || {} as MetaACL;
                             obj.acl.file = valueFileAccessControl;
                             changed = true;
                         }
                         if (obj.acl?.owner !== stateOwnerUser) {
-                            obj.acl = obj.acl || {};
+                            obj.acl = obj.acl || {} as MetaACL;
                             obj.acl.owner = stateOwnerUser;
                             changed = true;
                         }
                         if (obj.acl?.ownerGroup !== stateOwnerGroup) {
-                            obj.acl = obj.acl || {};
+                            obj.acl = obj.acl || {} as MetaACL;
                             obj.acl.ownerGroup = stateOwnerGroup;
                             changed = true;
                         }
-                        changed && (await extendObject(obj._id, obj));
+                        changed && (await applyChangesToObject(obj));
                     }
                 } else {
                     // eslint-disable-next-line no-bitwise
@@ -534,56 +530,54 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
                     for (let i = 0; i < ids.length; i++) {
                         const item = ids[i];
                         let changed = false;
+                        const itemAsObject = item as MetaObject;
+                        const itemAsItem = item as FolderOrFileItem;
 
-                        if (item._id) {
+                        if (itemAsObject._id) {
                             // it is an object
-                            const permissions = newValueAccessControl(item.acl?.file || defaultAclFile, valueFileAccessControl, _maskObject);
-                            if (permissions !== item.acl?.file) {
-                                item.acl = item.acl || {};
-                                item.acl.file = permissions;
+                            const permissions = newValueAccessControl(itemAsObject.acl?.file || defaultAclFile, valueFileAccessControl, _maskObject);
+                            if (permissions !== itemAsObject.acl?.file) {
+                                itemAsObject.acl = itemAsObject.acl || {} as MetaACL;
+                                itemAsObject.acl.file = permissions;
                                 changed = true;
                             }
-                            if (stateOwnerUser !== DIFFERENT && stateOwnerUser !== item.acl?.owner) {
-                                item.acl = item.acl || {};
-                                item.acl.owner = stateOwnerUser;
+                            if (stateOwnerUser !== DIFFERENT && stateOwnerUser !== itemAsObject.acl?.owner) {
+                                itemAsObject.acl = itemAsObject.acl || {} as MetaACL;
+                                itemAsObject.acl.owner = stateOwnerUser;
                                 changed = true;
                             }
-                            if (stateOwnerGroup !== DIFFERENT && stateOwnerGroup !== item.acl?.ownerGroup) {
-                                item.acl = item.acl || {};
-                                item.acl.ownerGroup = stateOwnerGroup;
+                            if (stateOwnerGroup !== DIFFERENT && stateOwnerGroup !== itemAsObject.acl?.ownerGroup) {
+                                itemAsObject.acl = itemAsObject.acl || {} as MetaACL;
+                                itemAsObject.acl.ownerGroup = stateOwnerGroup;
                                 changed = true;
                             }
 
                             try {
-                                changed && (await extendObject(item._id, item as unknown as AccessControlObject));
+                                changed && (await applyChangesToObject(itemAsObject));
                             } catch (error) {
                                 console.error(error);
                             }
-                        } else if (item && !item.folder) {
-                            const newAcl: Partial<{
-                                permissions: number;
-                                owner: string;
-                                ownerGroup: string;
-                            }> = {};
-                            const permissions = newValueAccessControl(item.acl?.permissions || defaultAclFile, valueFileAccessControl, _maskObject);
-                            if (permissions !== item.acl?.permissions) {
+                        } else if (itemAsItem && !itemAsItem.folder) {
+                            const newAcl: Partial<ioBroker.FileACL> = {};
+                            const permissions = newValueAccessControl((itemAsItem.acl as ioBroker.EvaluatedFileACL)?.permissions || defaultAclFile, valueFileAccessControl, _maskObject);
+                            if (permissions !== (itemAsItem.acl as ioBroker.EvaluatedFileACL)?.permissions) {
                                 newAcl.permissions = permissions;
                                 changed = true;
                             }
-                            if (stateOwnerUser !== DIFFERENT && stateOwnerUser !== item.acl?.owner) {
+                            if (stateOwnerUser !== DIFFERENT && stateOwnerUser !== itemAsItem.acl?.owner) {
                                 newAcl.owner = stateOwnerUser;
                                 changed = true;
                             }
-                            if (stateOwnerGroup !== DIFFERENT && stateOwnerGroup !== item.acl?.ownerGroup) {
+                            if (stateOwnerGroup !== DIFFERENT && stateOwnerGroup !== itemAsItem.acl?.ownerGroup) {
                                 newAcl.ownerGroup = stateOwnerGroup;
                                 changed = true;
                             }
                             if (changed) {
-                                const parts = item.id.split('/');
+                                const parts = itemAsItem.id.split('/');
                                 const adapter = parts.shift();
                                 const path = parts.join('/');
                                 try {
-                                    changed && (await extendObject(adapter, path, newAcl));
+                                    changed && (await applyChangesToFile(adapter, path, newAcl));
                                 } catch (error) {
                                     console.error(error);
                                 }
@@ -692,4 +686,4 @@ const FileEditOfAccessControl2: React.FC<FileEditOfAccessControl2Props> = ({
     </CustomModal>;
 };
 
-export default FileEditOfAccessControl2;
+export default FileEditOfAccessControl;

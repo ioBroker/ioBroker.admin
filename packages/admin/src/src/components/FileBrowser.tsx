@@ -87,7 +87,17 @@ const TILE_WIDTH   = 64;
 
 const NOT_FOUND = 'Not found';
 
-const FILE_TYPE_ICONS = {
+// Todo: replace with js-controller types
+export interface MetaACL extends ioBroker.ObjectACL {
+    file: number;
+}
+
+// Todo: replace with js-controller types
+export interface MetaObject extends ioBroker.MetaObject {
+    acl: MetaACL;
+}
+
+const FILE_TYPE_ICONS: Record<string, React.FC<{ fontSize?: 'small' }>> = {
     all: FileIcon,
     images: TypeIconImages,
     code: JSIcon,
@@ -494,14 +504,15 @@ export interface FileBrowserProps {
 
     classes: Record<string, string>;
 
-    modalEditOfAccessControl?: (obj: any) => React.JSX.Element | null;
+    // eslint-disable-next-line no-use-before-define
+    modalEditOfAccessControl?: (obj: FileBrowserClass) => React.JSX.Element | null;
 
     allowNonRestricted?: boolean;
 
     showTypeSelector?: boolean;
 }
 
-interface FolderOrFileItem {
+export interface FolderOrFileItem {
     id: string;
     level: number;
     name: string;
@@ -517,10 +528,10 @@ interface FolderOrFileItem {
     ts?: number;
     color?: string;
     icon?: string;
-    acl?:    any;
+    acl?: ioBroker.EvaluatedFileACL | MetaACL;
 }
 
-type Folders = Record<string, FolderOrFileItem[]>;
+export type Folders = Record<string, FolderOrFileItem[]>;
 
 function sortFolders(a: FolderOrFileItem, b: FolderOrFileItem) {
     if (a.folder && b.folder) {
@@ -556,7 +567,7 @@ interface FileBrowserState {
     loadAllFolders: boolean;
     fileErrors: string[];
     filterByType: string;
-    showTypesMenu: any;
+    showTypesMenu: HTMLButtonElement | null;
     restrictToFolder: string;
     pathFocus: boolean;
 }
@@ -564,7 +575,7 @@ interface FileBrowserState {
 /**
  * @extends {React.Component<import('./types').FileBrowserProps>}
  */
-class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
+export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserState> {
     private readonly imagePrefix: string;
 
     private readonly levelPadding: number;
@@ -589,7 +600,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
 
     private supportSubscribes: boolean | null;
 
-    private _tempTimeout: Record<string, any>;
+    private _tempTimeout: Record<string, ReturnType<typeof setTimeout>>;
 
     private readonly limitToObjectID: string | null = null;
 
@@ -605,9 +616,13 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
 
     private cacheFolders: Folders | null = null;
 
+    private readonly localStorage: Storage | null = null;
+
     constructor(props: FileBrowserProps) {
         super(props);
-        const expandedStr = ((window as any)._localStorage || window.localStorage).getItem('files.expanded') || '[]';
+
+        this.localStorage = ((window as any)._localStorage || window.localStorage);
+        const expandedStr = this.localStorage.getItem('files.expanded') || '[]';
 
         if (this.props.limitPath) {
             const parts = this.props.limitPath.split('/');
@@ -631,14 +646,14 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
 
         let viewType;
         if (this.props.showViewTypeButton) {
-            viewType = ((window as any)._localStorage || window.localStorage).getItem('files.viewType') || TABLE;
+            viewType = this.localStorage.getItem('files.viewType') || TABLE;
         } else {
             viewType = TABLE;
         }
 
         let selected =
             this.props.selected ||
-            ((window as any)._localStorage || window.localStorage).getItem('files.selected') ||
+            this.localStorage.getItem('files.selected') ||
             USER_DATA;
 
         let currentDir: string;
@@ -666,12 +681,12 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
             }
         }
         const backgroundImage =
-            ((window as any)._localStorage || window.localStorage).getItem('files.backgroundImage') || null;
+            this.localStorage.getItem('files.backgroundImage') || null;
 
         this.state = {
             viewType,
             folders: {},
-            filterEmpty: ((window as any)._localStorage || window.localStorage).getItem('files.empty') !== 'false',
+            filterEmpty: this.localStorage.getItem('files.empty') !== 'false',
             expanded,
             currentDir,
             expertMode: !!props.expertMode,
@@ -940,7 +955,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
         // if root folder
         if (!folderId || folderId === '/') {
             try {
-                let objs = await this.props.socket.readMetaItems();
+                let objs = (await this.props.socket.readMetaItems()) as MetaObject[];
                 const _folders: FolderOrFileItem[] = [];
                 let userData = null;
 
@@ -1079,7 +1094,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
             expanded.push(item.id);
             expanded.sort();
 
-            ((window as any)._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
+            this.localStorage.setItem('files.expanded', JSON.stringify(expanded));
 
             if (!item.temp) {
                 this.browseFolder(item.id)
@@ -1094,7 +1109,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
             }
         } else {
             expanded.splice(pos, 1);
-            ((window as any)._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
+            this.localStorage.setItem('files.expanded', JSON.stringify(expanded));
             this.setState({ expanded });
         }
     }
@@ -1128,7 +1143,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
             _folder = '';
         }
 
-        ((window as any)._localStorage || window.localStorage).setItem('files.currentDir', _folder);
+        this.localStorage.setItem('files.currentDir', _folder);
 
         if (folder && e && (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey)) {
             return this.setState({ selected: _folder });
@@ -1163,7 +1178,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
         e && e.stopPropagation();
         this.lastSelect = Date.now();
 
-        ((window as any)._localStorage || window.localStorage).setItem('files.selected', id);
+        this.localStorage.setItem('files.selected', id);
 
         this.setState({ selected: id, path: id, pathFocus: false }, () => {
             if (this.props.onSelect) {
@@ -1313,8 +1328,8 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
         </div>;
     }
 
-    formatAcl(acl: { permissions?: number; file: number }) {
-        const access: number = acl && (acl.permissions || acl.file);
+    formatAcl(acl: ioBroker.EvaluatedFileACL | MetaACL) {
+        const access: number = acl && ((acl as ioBroker.EvaluatedFileACL).permissions || (acl as MetaACL).file);
         let accessStr: string;
         if (access) {
             accessStr = access.toString(16).padStart(3, '0');
@@ -1382,13 +1397,13 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
         const array = ['light', 'dark', 'colored', 'delete'];
         this.setState(({ backgroundImage }) => {
             if (array.indexOf(backgroundImage) !== -1 && array.length - 1 !== array.indexOf(backgroundImage)) {
-                ((window as any)._localStorage || window.localStorage).setItem(
+                this.localStorage.setItem(
                     'files.backgroundImage',
                     array[array.indexOf(backgroundImage) + 1],
                 );
                 return { backgroundImage: array[array.indexOf(backgroundImage) + 1] };
             }
-            ((window as any)._localStorage || window.localStorage).setItem('files.backgroundImage', array[0]);
+            this.localStorage.setItem('files.backgroundImage', array[0]);
             return { backgroundImage: array[0] };
         });
     };
@@ -1472,7 +1487,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                 {this.state.viewType === TABLE && this.props.expertMode ? this.formatAcl(item.acl) : null}
             </Hidden>
             <Hidden smDown>
-                {this.state.viewType === TABLE && this.props.expertMode && FileBrowser.getEditFile(ext) ?
+                {this.state.viewType === TABLE && this.props.expertMode && FileBrowserClass.getEditFile(ext) ?
                     <IconButton
                         aria-label="edit"
                         onClick={e => {
@@ -1614,9 +1629,9 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
     }
 
     renderToolbar() {
-        const IconType: any = this.props.showTypeSelector
-            ? (FILE_TYPE_ICONS as Record<string, any>)[this.state.filterByType || 'all'] ||
-              (FILE_TYPE_ICONS as Record<string, any>).all
+        const IconType = this.props.showTypeSelector
+            ? FILE_TYPE_ICONS[this.state.filterByType || 'all'] ||
+              FILE_TYPE_ICONS.all
             : null;
 
         const isInFolder = this.findFirstFolder(this.state.selected);
@@ -1664,7 +1679,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                 aria-label="view mode"
                 onClick={() => {
                     const viewType = this.state.viewType === TABLE ? TILE : TABLE;
-                    ((window as any)._localStorage || window.localStorage).setItem('files.viewType', viewType);
+                    this.localStorage.setItem('files.viewType', viewType);
                     let currentDir = this.state.selected;
                     if (isFile(currentDir)) {
                         currentDir = getParentDir(currentDir);
@@ -1686,9 +1701,9 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                 color={this.state.filterEmpty ? 'secondary' : 'inherit'}
                 aria-label="filter empty"
                 onClick={() => {
-                    ((window as any)._localStorage || window.localStorage).setItem(
+                    this.localStorage.setItem(
                         'file.empty',
-                        !this.state.filterEmpty,
+                        this.state.filterEmpty ? 'false' : 'true',
                     );
                     this.setState({ filterEmpty: !this.state.filterEmpty });
                 }}
@@ -1744,7 +1759,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                 <UploadIcon fontSize="small" />
             </IconButton> : null}
             {this.props.showTypeSelector ? <Tooltip title={this.props.t('ra_Filter files')}>
-                <IconButton size="small" onClick={e => this.setState({ showTypesMenu: e.target })}>
+                <IconButton size="small" onClick={e => this.setState({ showTypesMenu: e.target as HTMLButtonElement })}>
                     <IconType fontSize="small" />
                 </IconButton>
             </Tooltip> : null}
@@ -1754,18 +1769,18 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                 onClose={() => this.setState({ showTypesMenu: null })}
             >
                 {Object.keys(FILE_TYPE_ICONS).map(type => {
-                    const MyIcon: any = (FILE_TYPE_ICONS as Record<string, any>)[type];
+                    const MyIcon = FILE_TYPE_ICONS[type];
                     return <MenuItem
                         key={type}
                         selected={this.state.filterByType === type}
                         onClick={() => {
                             if (type === 'all') {
-                                ((window as any)._localStorage || window.localStorage).removeItem(
+                                this.localStorage.removeItem(
                                     'files.filterByType',
                                 );
                                 this.setState({ filterByType: '', showTypesMenu: null });
                             } else {
-                                ((window as any)._localStorage || window.localStorage).setItem(
+                                this.localStorage.setItem(
                                     'files.filterByType',
                                     type,
                                 );
@@ -1774,7 +1789,6 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                         }}
                     >
                         <ListItemIcon>
-                            {/* @ts-expect-ignore I don't know */}
                             <MyIcon fontSize="small" />
                         </ListItemIcon>
                         <ListItemText>{this.props.t(`ra_fileType_${type}`)}</ListItemText>
@@ -1882,7 +1896,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                             expanded.push(parentFolder);
                             expanded.sort();
                         }
-                        ((window as any)._localStorage || window.localStorage).setItem(
+                        this.localStorage.setItem(
                             'files.expanded',
                             JSON.stringify(expanded),
                         );
@@ -1984,7 +1998,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                                                         if (!expanded.includes(parentFolder)) {
                                                             expanded.push(parentFolder);
                                                             expanded.sort();
-                                                            ((window as any)._localStorage || window.localStorage).setItem(
+                                                            this.localStorage.setItem(
                                                                 'files.expanded',
                                                                 JSON.stringify(expanded),
                                                             );
@@ -2000,10 +2014,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                                                                         if (!expanded.includes(parentFolder)) {
                                                                             expanded.push(parentFolder);
                                                                             expanded.sort();
-                                                                            (
-                                                                                (window as any)._localStorage ||
-                                                                                window.localStorage
-                                                                            ).setItem(
+                                                                            this.localStorage.setItem(
                                                                                 'files.expanded',
                                                                                 JSON.stringify(expanded),
                                                                             );
@@ -2105,7 +2116,7 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
                     if (pos !== -1) {
                         const expanded = [...this.state.expanded];
                         expanded.splice(pos, 1);
-                        ((window as any)._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
+                        this.localStorage.setItem('files.expanded', JSON.stringify(expanded));
                         newState.expanded = expanded;
                     }
 
@@ -2377,4 +2388,4 @@ class FileBrowser extends Component<FileBrowserProps, FileBrowserState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(FileBrowser));
+export default withWidth()(withStyles(styles)(FileBrowserClass));

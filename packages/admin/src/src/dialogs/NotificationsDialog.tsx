@@ -20,7 +20,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, type ThemeType } from '@iobroker/adapter-react-v5';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -259,7 +259,7 @@ interface NotificationDialogOptions {
     onClose: () => void;
     ackCallback: (host: string, name: string) => void;
     dateFormat: string;
-    themeType: string;
+    themeType: ThemeType;
     instances: Record<string, any>;
 }
 

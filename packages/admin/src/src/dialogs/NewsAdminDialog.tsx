@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import type { CompactAdapterInfo } from '@/types';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -96,7 +97,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const Status = ({ name, ...props }: {name: string; className: string}) => {
+const Status = ({ name, ...props }: { name: string; className: string }) => {
     switch (name) {
         case 'warning':
             return <WarningIcon style={{ color: '#ffca00' }} {...props} />;
@@ -147,12 +148,12 @@ function checkConditions(condition: string, installedVersion: string): boolean {
 type DbType = 'file' | 'jsonl' | 'redis'
 
 interface Context {
-    adapters: Record<string, any>;
+    adapters: Record<string, CompactAdapterInfo>;
     instances: ioBroker.InstanceObject[];
     nodeVersion: string;
     npmVersion: string;
     os: string;
-    activeRepo: string;
+    activeRepo: string[] | string;
     uuid?: string;
     lang: ioBroker.Languages;
     /** Current configured database for objects */
@@ -174,7 +175,7 @@ interface Message {
         [adapter: string]: '!installed' | 'active' | '!active';
     };
     title: Record<ioBroker.Languages, string>;
-    content:  Record<ioBroker.Languages, string>;
+    content: Record<ioBroker.Languages, string>;
     class: 'info' | 'warning' | 'danger';
     /** Name of the FA-icon */
     icon: string;
@@ -182,7 +183,7 @@ interface Message {
     /** Link destination */
     link?: string;
     /** Title of the link */
-    linkTitle?: string;
+    linkTitle?: ioBroker.StringOrTranslated;
     /** E.g., a base64 encoded image like, data:image/png;base64,iVBORw0KG... */
     img?: 'string';
     /** e.g. >= 15000 to address installations with more than 15k objects */
@@ -191,8 +192,20 @@ interface Message {
     'objects-db-type'?: (DbType)[];
 }
 
-export const checkMessages = (messages: Message[], lastMessageId: string, context: Context) => {
-    const messagesToShow = [];
+export interface ShowMessage {
+    id: string;
+    title: string;
+    content: string;
+    class: 'info' | 'warning' | 'danger';
+    icon: string;
+    created: string;
+    link?: string;
+    linkTitle: string;
+    img?: string;
+}
+
+export const checkMessages = (messages: Message[], lastMessageId: string, context: Context): ShowMessage[] => {
+    const messagesToShow: ShowMessage[] = [];
 
     try {
         const today = Date.now();
@@ -276,7 +289,7 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                     icon: message.icon,
                     created: message.created,
                     link: message.link,
-                    linkTitle: message.linkTitle,
+                    linkTitle: typeof message.linkTitle === 'object' ? message.linkTitle[context.lang] || message.linkTitle.en : message.linkTitle as string,
                     img: message.img,
                 });
             }
@@ -290,7 +303,7 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
 
 const NewsAdminDialog = ({
     newsArr, current, onSetLastNewsId,
-}: { newsArr: any[]; current: any; onSetLastNewsId: (id?: string) => void }) => {
+}: { newsArr: ShowMessage[]; current: string; onSetLastNewsId: (id?: string) => void }) => {
     const classes = useStyles();
     const [id, setId] = useState(current);
     const [last, setLast] = useState(false);
@@ -321,20 +334,11 @@ const NewsAdminDialog = ({
     };
 
     const lang = I18n.getLanguage();
-    let text = newsArr[indexArr].content;
-    if (typeof text === 'object') {
-        text = (text[lang] || text.en).replace(/='([^']*)'/g, '="$1"');
-    }
-    let title = newsArr[indexArr].title;
-    if (typeof title === 'object') {
-        title = title[lang] || title.en;
-    }
+    const content = newsArr[indexArr].content.replace(/='([^']*)'/g, '="$1"');
+    const title = newsArr[indexArr].title;
 
     const link = newsArr[indexArr].link;
-    let linkTitle = newsArr[indexArr].linkTitle;
-    if (linkTitle && typeof linkTitle === 'object') {
-        linkTitle = linkTitle[lang] || linkTitle.en;
-    }
+    const linkTitle = newsArr[indexArr].linkTitle;
     return <Dialog
         onClose={onClose}
         open={!0}
@@ -355,7 +359,7 @@ const NewsAdminDialog = ({
                         variant="body2"
                         component="p"
                     >
-                        {Utils.renderTextWithA(text.replace(/\n/g, '<br />'))}
+                        {Utils.renderTextWithA(content.replace(/\n/g, '<br />'))}
                     </Typography>
                     {newsArr[indexArr]?.link &&
                         <Button

@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 const { tests } = require('@iobroker/testing');
 
 const jscToolsMock = {
@@ -11,7 +11,7 @@ const jscToolsMock = {
 const jscLEMock = {
     // No https/letsencrypt in unit tests
     createServer(app) {
-        return require('http').createServer(app);
+        return require('node:http').createServer(app);
     },
 };
 

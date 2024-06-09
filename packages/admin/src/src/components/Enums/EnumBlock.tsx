@@ -34,7 +34,7 @@ import {
     IconDevice,
     IconState, type AdminConnection,
     type IobTheme,
-    type ThemeType,
+    type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { type DragItem } from './DragObjectBrowser';
@@ -177,10 +177,15 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
 });
 
+declare global {
+    interface Navigator {
+        msMaxTouchPoints: number;
+    }
+}
+
 export function isTouchDevice(): boolean {
     return (('ontouchstart' in window) ||
         (navigator.maxTouchPoints > 0) ||
-        // @ts-expect-error deprecated attribute
         (navigator.msMaxTouchPoints > 0));
 }
 
@@ -198,12 +203,12 @@ interface EnumBlockProps {
     onCollapse: (id: string) => void;
     showEnumTemplateDialog: (id: string) => void;
     currentCategory: string;
-    t: (text: string, arg1?: any, arg2?: any) => string;
+    t: Translate;
     socket: AdminConnection;
     updating: boolean;
     id: string;
     children: number;
-    themeType: string;
+    themeType: ThemeType;
     cachedIcons: Record<string, string>;
     classes?: Record<string, string>;
     iconDragRef?: ConnectDragSource;

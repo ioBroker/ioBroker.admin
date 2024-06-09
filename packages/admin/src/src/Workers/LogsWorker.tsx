@@ -14,7 +14,7 @@ interface LogLineSaved extends LogLine {
     key?: number;
 }
 
-class LogsWorker {
+export default class LogsWorker {
     private readonly socket: AdminConnection;
 
     private readonly handlers: ((events: LogLineSaved[], messageSize: number) => void)[];
@@ -392,5 +392,3 @@ class LogsWorker {
         }
     }
 }
-
-export default LogsWorker;

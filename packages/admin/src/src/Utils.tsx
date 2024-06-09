@@ -603,27 +603,31 @@ class Utils {
     /** The languages for which docs are generated */
     static SUPPORTED_DOC_LANGUAGES: ioBroker.Languages[] = ['en', 'de', 'ru', 'zh-cn'];
 
-    static checkPassword(password: string, passwordRepeat: string) {
+    static checkPassword(password: string, passwordRepeat?: string) {
         password = password || '';
         passwordRepeat = passwordRepeat || '';
         if (password && passwordRepeat && password !== Utils.PASSWORD_SET && passwordRepeat !== Utils.PASSWORD_SET) {
             if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
                 return Utils.PASSWORD_ERROR_LENGTH;
-            } if (password !== passwordRepeat) {
+            }
+            if (password !== passwordRepeat) {
                 return Utils.PASSWORD_ERROR_NOT_EQUAL;
             }
             return false;
-        } if (password && password !== Utils.PASSWORD_SET) {
+        }
+        if (password && password !== Utils.PASSWORD_SET) {
             if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
                 return Utils.PASSWORD_ERROR_LENGTH;
             }
             return false;
-        } if (passwordRepeat && passwordRepeat !== Utils.PASSWORD_SET) {
+        }
+        if (passwordRepeat && passwordRepeat !== Utils.PASSWORD_SET) {
             if (passwordRepeat.length < 8 || !passwordRepeat.match(/\d/) || !passwordRepeat.match(/[a-z]/) || !passwordRepeat.match(/[A-Z]/)) {
                 return Utils.PASSWORD_ERROR_LENGTH;
             }
             return false;
-        } if (password === Utils.PASSWORD_SET || passwordRepeat === Utils.PASSWORD_SET) {
+        }
+        if (password === Utils.PASSWORD_SET || passwordRepeat === Utils.PASSWORD_SET) {
             return false;
         }
         return Utils.PASSWORD_ERROR_EMPTY;

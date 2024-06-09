@@ -36,7 +36,11 @@ import {
     Info as InfoIcon,
 } from '@mui/icons-material';
 
-import { type AdminConnection, Utils, type IobTheme } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, Utils,
+    type IobTheme,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';
@@ -143,7 +147,7 @@ interface ObjectBrowserValueProps {
     expertMode: boolean;
     onClose: (newValue?: { val: ioBroker.StateValue; ack: boolean; q: number; expire: number | undefined }) => void;
     /** Configured theme */
-    themeType: string;
+    themeType: ThemeType;
     socket: AdminConnection;
     defaultHistory: string;
     dateFormat: string;

@@ -50,7 +50,7 @@ interface DrawerItemProps {
     classes: Record<string, string>;
     compact?: boolean;
     icon: React.JSX.Element;
-    onClick: (e?: React.MouseEvent) => void;
+    onClick?: (e?: React.MouseEvent) => void;
     selected?: boolean;
     text: string;
     editMenuList?: boolean;

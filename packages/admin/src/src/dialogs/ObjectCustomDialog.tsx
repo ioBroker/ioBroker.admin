@@ -18,6 +18,8 @@ import {
     Router,
     type AdminConnection,
     type IobTheme,
+    type ThemeType,
+    type ThemeName,
 } from '@iobroker/adapter-react-v5';
 
 // Icons
@@ -62,8 +64,8 @@ interface ObjectCustomDialogProps {
     objects: Record<string, ioBroker.Object>;
     socket: AdminConnection;
     theme: IobTheme;
-    themeName: string;
-    themeType: string;
+    themeName: ThemeName;
+    themeType: ThemeType;
     customsInstances: string[];
     objectIDs: string[];
     onClose: () => void;

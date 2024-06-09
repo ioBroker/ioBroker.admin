@@ -214,26 +214,27 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                     alive[event.id] = state ? state.val as boolean : false;
                 }
             }),
-        ).then(() => {
-            if (changed) {
-                this.setState({ hosts, alive }, () => {
-                    if (!alive[this.props.currentHost]) {
-                        const aliveHost = Object.keys(alive).find(id => alive[id]);
-                        if (aliveHost) {
-                            const obj = this.state.hosts.find(ob => ob._id === aliveHost);
-                            if (obj) {
-                                this.props.setCurrentHost(
-                                    obj.common?.name || aliveHost.replace('system.host.', ''),
-                                    aliveHost,
-                                );
-                            } else {
-                                this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
+        )
+            .then(() => {
+                if (changed) {
+                    this.setState({ hosts, alive }, () => {
+                        if (!alive[this.props.currentHost]) {
+                            const aliveHost = Object.keys(alive).find(id => alive[id]);
+                            if (aliveHost) {
+                                const obj = this.state.hosts.find(ob => ob._id === aliveHost);
+                                if (obj) {
+                                    this.props.setCurrentHost(
+                                        obj.common?.name || aliveHost.replace('system.host.', ''),
+                                        aliveHost,
+                                    );
+                                } else {
+                                    this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
+                                }
                             }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
     };
 
     render() {
@@ -247,90 +248,88 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
             );
         }
 
-        return (
-            <div>
-                <Tooltip
-                    title={this.props.tooltip || I18n.t('Change current host')}
-                    classes={{ popper: this.props.classes.tooltip }}
-                >
-                    <span>
-                        <Button
-                            color={this.props.themeType === 'dark' ? 'primary' : 'secondary'}
-                            className={this.props.classes.button}
+        return <div>
+            <Tooltip
+                title={this.props.tooltip || I18n.t('Change current host')}
+                classes={{ popper: this.props.classes.tooltip }}
+            >
+                <span>
+                    <Button
+                        color={this.props.themeType === 'dark' ? 'primary' : 'secondary'}
+                        className={this.props.classes.button}
+                        style={{
+                            background: selectedHostObj?.common?.color || 'none',
+                            borderColor: selectedHostObj?.common?.color
+                                ? Utils.invertColor(selectedHostObj.common.color, false)
+                                : 'none',
+                        }}
+                        variant={this.props.disabled || this.state.hosts.length < 2 ? 'text' : 'outlined'}
+                        disabled={!!this.props.disabled || this.state.hosts.length < 2}
+                        aria-haspopup="true"
+                        onClick={e => this.setState({ anchorEl: e.currentTarget })}
+                    >
+                        <div
+                            className={Utils.clsx(
+                                this.props.classes.width,
+                                !this.state.alive[this.props.currentHost] && this.props.classes.notAlive,
+                            )}
                             style={{
-                                background: selectedHostObj?.common?.color || 'none',
-                                borderColor: selectedHostObj?.common?.color
-                                    ? Utils.invertColor(selectedHostObj.common.color, false)
+                                display: 'flex',
+                                color: selectedHostObj?.common?.color
+                                    ? Utils.invertColor(selectedHostObj.common.color, true)
                                     : 'none',
-                            }}
-                            variant={this.props.disabled || this.state.hosts.length < 2 ? 'text' : 'outlined'}
-                            disabled={!!this.props.disabled || this.state.hosts.length < 2}
-                            aria-haspopup="true"
-                            onClick={e => this.setState({ anchorEl: e.currentTarget })}
-                        >
-                            <div
-                                className={Utils.clsx(
-                                    this.props.classes.width,
-                                    !this.state.alive[this.props.currentHost] && this.props.classes.notAlive,
-                                )}
-                                style={{
-                                    display: 'flex',
-                                    color: selectedHostObj?.common?.color
-                                        ? Utils.invertColor(selectedHostObj.common.color, true)
-                                        : 'none',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <Icon
-                                    className={Utils.clsx(this.props.classes.img, this.props.classes.imgButton)}
-                                    src={selectedHostObj?.common?.icon || 'img/no-image.png'}
-                                />
-                                <div className={this.props.classes.name}>{selectedHostObj?.common?.name}</div>
-                            </div>
-                        </Button>
-                    </span>
-                </Tooltip>
-                <Menu
-                    anchorEl={this.state.anchorEl}
-                    keepMounted
-                    open={!!this.state.anchorEl}
-                    onClose={() => this.setState({ anchorEl: null })}
-                >
-                    {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) => (
-                        <MenuItem
-                            key={_id}
-                            // button
-                            disabled={!this.state.alive[_id]}
-                            selected={_id === this.props.currentHost}
-                            style={{ background: color || 'inherit' }}
-                            onClick={() => {
-                                if (this.props.currentHost !== this.state.hosts[idx]._id) {
-                                    this.props.setCurrentHost(
-                                        this.state.hosts[idx].common.name,
-                                        this.state.hosts[idx]._id,
-                                    );
-                                }
-                                this.setState({ anchorEl: null });
+                                alignItems: 'center',
                             }}
                         >
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    color: (color && Utils.invertColor(color, true)) || 'inherit',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <div className={this.props.classes.selector}>
-                                    {_id === this.props.currentHost ? 'ᐅ' : ''}
-                                </div>
-                                <Icon className={this.props.classes.img} src={icon || 'img/no-image.png'} />
-                                {name}
+                            <Icon
+                                className={Utils.clsx(this.props.classes.img, this.props.classes.imgButton)}
+                                src={selectedHostObj?.common?.icon || 'img/no-image.png'}
+                            />
+                            <div className={this.props.classes.name}>{selectedHostObj?.common?.name}</div>
+                        </div>
+                    </Button>
+                </span>
+            </Tooltip>
+            <Menu
+                anchorEl={this.state.anchorEl}
+                keepMounted
+                open={!!this.state.anchorEl}
+                onClose={() => this.setState({ anchorEl: null })}
+            >
+                {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) => (
+                    <MenuItem
+                        key={_id}
+                        // button
+                        disabled={!this.state.alive[_id]}
+                        selected={_id === this.props.currentHost}
+                        style={{ background: color || 'inherit' }}
+                        onClick={() => {
+                            if (this.props.currentHost !== this.state.hosts[idx]._id) {
+                                this.props.setCurrentHost(
+                                    this.state.hosts[idx].common.name,
+                                    this.state.hosts[idx]._id,
+                                );
+                            }
+                            this.setState({ anchorEl: null });
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: 'flex',
+                                color: (color && Utils.invertColor(color, true)) || 'inherit',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <div className={this.props.classes.selector}>
+                                {_id === this.props.currentHost ? 'ᐅ' : ''}
                             </div>
-                        </MenuItem>
-                    ))}
-                </Menu>
-            </div>
-        );
+                            <Icon className={this.props.classes.img} src={icon || 'img/no-image.png'} />
+                            {name}
+                        </div>
+                    </MenuItem>
+                ))}
+            </Menu>
+        </div>;
     }
 }
 

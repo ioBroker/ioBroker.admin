@@ -3,7 +3,11 @@ import { type Styles, withStyles } from '@mui/styles';
 
 import { Paper } from '@mui/material';
 
-import { Utils, withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
+import {
+    Utils, withWidth,
+    type IobTheme,
+    type ThemeType,
+} from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 
@@ -38,7 +42,7 @@ interface BaseSettingsPluginsProps {
     onChange: (settings: PluginsSettings) => void;
     settings: PluginsSettings;
     classes: Record<string, any>;
-    themeType: string;
+    themeType: ThemeType;
 }
 interface BaseSettingsPluginsState {
     settings: string;

@@ -1,18 +1,30 @@
-// This file extends the AdapterConfig type from "@types/iobroker"
-// using the actual properties present in io-package.json
-// in order to provide typings for adapter.config properties
-import { native } from '../../io-package.json';
-
-type _AdapterConfig = typeof native;
-
 // Augment the globally declared type ioBroker.AdapterConfig
 declare global {
     namespace ioBroker {
-        interface AdapterConfig extends _AdapterConfig {
+        interface AdapterConfig {
             // non-primitive types are not inferred correctly
             accessAllowedConfigs: string[];
             accessAllowedTabs: string[];
             reverseProxy: unknown[];
+            language: ioBroker.Languages;
+            autoUpdate: number;
+            defaultUser: string;
+            auth: boolean;
+            accessApplyRights: boolean;
+            accessLimit: boolean;
+            tmpPathAllow: boolean;
+            tmpPath: string;
+            port: number;
+            secure: boolean;
+            loginBackgroundImage: string;
+            loginBackgroundColor: string;
+            loadingBackgroundImage: string;
+            loadingBackgroundColor: string;
+            loginMotto: string;
+            ttl: number;
+            cache: boolean;
+            doNotCheckPublicIP: boolean;
+            bind: string;
         }
     }
 }

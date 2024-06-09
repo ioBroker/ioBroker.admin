@@ -27,7 +27,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Utils, type ThemeType } from '@iobroker/adapter-react-v5';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -265,8 +265,6 @@ const TabPanel = ({
             </Box>}
 </div>;
 
-type Translated = Record<ioBroker.Languages, string>;
-
 interface InstanceMessage {
     messages: {
         message: string;
@@ -275,9 +273,9 @@ interface InstanceMessage {
 }
 
 interface Message {
-    name: Translated;
+    name: ioBroker.Translated;
     severity: Severity;
-    description: Translated;
+    description: ioBroker.Translated;
     instances: Record<string, InstanceMessage>;
 }
 
@@ -286,7 +284,7 @@ interface HostWarningDialogOptions {
     onClose: () => void;
     ackCallback: (name: string) => void;
     dateFormat: string;
-    themeType: string;
+    themeType: ThemeType;
     instances: any;
 }
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 
 import {
@@ -23,6 +23,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<IobTheme, any> = {
     tabPanel: {
@@ -95,6 +96,7 @@ interface License {
     invoice: string;
 }
 
+// Todo: implement license object in js-controller - 'system.licenses'
 type LicenseObject = ioBrokerObject<{
     licenses: License[];
     login: string;
@@ -118,7 +120,7 @@ interface LicensesDialogState {
     // readTime: number;
 }
 
-class LicensesDialog extends Component<LicensesDialogProps, LicensesDialogState> {
+class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, LicensesDialogState> {
     constructor(props: LicensesDialogProps) {
         super(props);
 

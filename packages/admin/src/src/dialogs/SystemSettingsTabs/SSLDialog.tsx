@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { type Styles, withStyles } from '@mui/styles';
 
 import {
@@ -15,6 +15,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { withWidth, type Translate, type IobTheme } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
+import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Styles<IobTheme, any> = theme => ({
     tabPanel: {
@@ -55,7 +56,7 @@ interface SSLDialogProps {
     classes: Record<string, string>;
 }
 
-class SSLDialog extends Component<SSLDialogProps> {
+class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
     render() {
         const { classes, data } = this.props;
         const { letsEncrypt } = data.native || {};

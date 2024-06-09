@@ -36,6 +36,7 @@ import {
     UploadImage,
     type AdminConnection,
     type Translate, type IobTheme,
+    type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
@@ -439,7 +440,7 @@ interface ObjectBrowserEditObjectProps {
     obj: ioBroker.AnyObject;
     roleArray: string[];
     expertMode: boolean;
-    themeType: string;
+    themeType: ThemeType;
     aliasTab: boolean;
     onClose: (obj?: ioBroker.AnyObject) => void;
     dialogName: string;

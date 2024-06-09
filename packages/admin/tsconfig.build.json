@@ -11,8 +11,5 @@
   "include": [
     "src-backend/**/*.ts",
     "src-backend/**/*.js"
-  ],
-  "exclude": [
-    "src-backend/**/*.d.ts"
   ]
 }

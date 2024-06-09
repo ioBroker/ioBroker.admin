@@ -27,18 +27,18 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { I18n, Icon } from '@iobroker/adapter-react-v5';
+import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import npmIcon from '../assets/npm.png';
 
-function a11yProps(index: number): {id: string; 'aria-controls': string} {
+function a11yProps(index: number): { id: string; 'aria-controls': string } {
     return {
         id: `full-width-tab-${index}`,
         'aria-controls': `full-width-tabpanel-${index}`,
     };
 }
 
-const styles = ((theme: Record<string, any>) => ({
+const styles: Record<string, any> = ((theme: IobTheme) => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -106,7 +106,13 @@ if (!Array.prototype.flat) {
 }
 
 interface GitHubInstallDialogProps {
-    categories: Record<string, any>[];
+    categories: {
+        name: string;
+        translation: string;
+        count: number;
+        installed: number;
+        adapters: string[];
+    }[];
     repository: Record<string, any>;
     onClose: () => void;
     t: typeof I18n.t;
@@ -466,7 +472,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
 
                             try {
                                 await this.props.installFromUrl(`iobroker.${adapterName}@latest`, this.state.debug, true);
-                                // on npm installs we want to perform an additional upload
+                                // on npm installations we want to perform an additional upload
                                 this.props.upload(adapterName);
                             } catch (e) {
                                 console.error(`Installation from url failed: ${e.message}`);

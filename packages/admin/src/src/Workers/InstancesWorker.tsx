@@ -10,7 +10,7 @@ export interface InstanceEvent {
     oldObj?: ioBroker.InstanceObject;
 }
 
-class InstancesWorker {
+export default class InstancesWorker {
     private readonly socket: AdminConnection;
 
     private readonly handlers: ((events: InstanceEvent[]) => void)[];
@@ -144,5 +144,3 @@ class InstancesWorker {
         }
     }
 }
-
-export default InstancesWorker;

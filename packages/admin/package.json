@@ -23,13 +23,13 @@
     "setup"
   ],
   "dependencies": {
-    "@iobroker/adapter-core": "^3.1.4",
+    "@iobroker/adapter-core": "^3.1.6",
     "@iobroker/socket-classes": "^1.5.2",
     "@iobroker/types": "^6.0.1-alpha.0-20240530-b38e01746",
     "@iobroker/webserver": "^1.0.3",
     "@iobroker/ws-server": "^2.1.2",
     "@types/leaflet": "^1.9.12",
-    "ajv": "^8.13.0",
+    "ajv": "^8.16.0",
     "archiver": "^7.0.1",
     "axios": "^1.7.2",
     "body-parser": "^1.20.2",

@@ -1602,5 +1602,13 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
+<<<<<<< patch-2
   "yesterday": "yesterday"
 }
+=======
+  "yesterday": "yesterday",
+  "Filter adapters to see others. There is %s more": "Filter adapters to see others. There is %s more",
+  "Enter version manually": "Enter version manually",
+  "Or select from the list": "Or select from the list"
+}
+>>>>>>> master

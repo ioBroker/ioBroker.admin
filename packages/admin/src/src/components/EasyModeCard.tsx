@@ -89,8 +89,7 @@ interface EasyModeCardProps {
     classes: Record<string, string>;
     icon: string;
     id: string;
-    key: string;
-    desc: string;
+    desc: ioBroker.StringOrTranslated;
     lang: ioBroker.Languages;
     navigate: () => void;
 }
@@ -99,11 +98,10 @@ const EasyModeCard = ({
     classes,
     icon,
     id,
-    key,
     desc,
     lang,
     navigate,
-}: EasyModeCardProps) => <Card onClick={navigate} key={key} className={classes.root}>
+}: EasyModeCardProps) => <Card onClick={navigate} className={classes.root}>
     <div className={Utils.clsx(classes.imageBlock, classes.instanceStateNotAlive1)}>
         <CardMedia
             className={classes.img}

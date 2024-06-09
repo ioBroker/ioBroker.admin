@@ -799,7 +799,7 @@
   "Please make sure you know what you are doing!": "Bitte stellen Sie sicher, dass Sie wissen, was Sie tun!",
   "Please read these important notes:": "Bitte lesen Sie diese wichtigen Hinweise:",
   "Please select country": "Bitte Land auswählen",
-  "Please select specific version of %s": "Bitte eine bestimmte Version von %s auswählen",
+  "Please select specific version of %s": "Bitte eine Version von \"%s\" auswählen",
   "Please wait for an official release!": "Bitte bis zu einem offiziellen Release des Adapters gedulden!",
   "Plugins": "Plugins",
   "Poland": "Polen",
@@ -1602,5 +1602,8 @@
   "write": "schreiben",
   "write operation": "schreiben",
   "wrongPassword": "Benutzername oder Passwort sind falsch",
-  "yesterday": "gestern"
+  "yesterday": "gestern",
+  "Filter adapters to see others. There is %s more": "Filtern Sie Adapter, um andere anzuzeigen. Es gibt %s mehr",
+  "Enter version manually": "Version manuell eingeben",
+  "Or select from the list": "Oder aus der Liste wählen"
 }
