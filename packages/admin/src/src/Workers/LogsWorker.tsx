@@ -10,7 +10,7 @@ interface LogLine {
     _id: number;
 }
 
-interface LogLineSaved extends LogLine {
+export interface LogLineSaved extends LogLine {
     key?: number;
 }
 
@@ -19,7 +19,7 @@ export default class LogsWorker {
 
     private readonly handlers: ((events: LogLineSaved[], messageSize: number) => void)[];
 
-    private promise: Promise<void | { logs: LogLineSaved[]; logSize: number }> | null;
+    private promise: Promise<{ logs: LogLineSaved[]; logSize: number }> | null;
 
     private connected: boolean;
 
@@ -316,7 +316,7 @@ export default class LogsWorker {
         return obj;
     }
 
-    getLogs(update?: boolean) {
+    getLogs(update?: boolean): Promise<{ logs: LogLineSaved[]; logSize: number }> {
         if (!this.currentHost) {
             return Promise.resolve({ logs: [], logSize: 0 });
         }
@@ -370,7 +370,10 @@ export default class LogsWorker {
 
                 return { logs: this.logs, logSize };
             })
-            .catch(e => window.alert(`Cannot get logs: ${e}`));
+            .catch(e => {
+                window.alert(`Cannot get logs: ${e}`);
+                return { logs: this.logs, logSize: 0 };
+            });
 
         return this.promise;
     }

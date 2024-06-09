@@ -61,3 +61,18 @@ export interface CompactAdapterInfo {
     v: ioBroker.AdapterCommon['version'];
     iv?: string;
 }
+
+export type CompactHost = {
+    _id: ioBroker.HostObject['_id'];
+    common: {
+        name: ioBroker.HostCommon['name'];
+        icon: ioBroker.HostCommon['icon'];
+        color: string;
+        installedVersion: ioBroker.HostCommon['installedVersion'];
+    };
+    native: {
+        hardware: {
+            networkInterfaces?: ioBroker.HostNative['hardware']['networkInterfaces'];
+        };
+    };
+};

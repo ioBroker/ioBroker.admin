@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -26,6 +25,7 @@ import {
     FormControl,
     Select,
     Tooltip,
+    type SelectChangeEvent,
 } from '@mui/material';
 
 import {
@@ -43,7 +43,14 @@ import { FaPalette as ColorsIcon } from 'react-icons/fa';
 
 import { amber, grey, red } from '@mui/material/colors';
 
-import { Icon, withWidth, Utils as UtilsCommon } from '@iobroker/adapter-react-v5';
+import {
+    Icon, withWidth, Utils as UtilsCommon,
+    type IobTheme, type ThemeType, type Translate, type AdminConnection,
+} from '@iobroker/adapter-react-v5';
+
+import type LogsWorker from '@/Workers/LogsWorker';
+import type { LogLineSaved } from '@/Workers/LogsWorker';
+import type { CompactAdapterInfo, CompactHost } from '@/types';
 
 import Utils from '../Utils';
 import TabContainer from '../components/TabContainer';
@@ -52,7 +59,7 @@ import TabHeader from '../components/TabHeader';
 
 const MAX_LOGS = 3000;
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     container: {
         height: '100%',
     },
@@ -273,14 +280,14 @@ const COLORS_DARK = [
 ];
 
 // Number prototype is read-only, properties should not be added
-function padding2(num) {
+function padding2(num: number) {
     let s = num.toString();
     if (s.length < 2) {
         s = `0${s}`;
     }
     return s;
 }
-function padding3(num) {
+function padding3(num: number) {
     let s = num.toString();
     if (s.length < 2) {
         s = `00${s}`;
@@ -289,16 +296,69 @@ function padding3(num) {
     }
     return s;
 }
+interface LogLineSavedExtended extends LogLineSaved {
+    odd?: boolean;
+    time?: string;
+    icon?: string;
+}
 
-class Logs extends Component {
-    constructor(props) {
+interface LogsProps {
+    classes: Record<string, string>;
+    socket: AdminConnection;
+    currentHost: string;
+    clearErrors: () => void;
+    logsWorker: LogsWorker;
+    themeType: ThemeType;
+    t: Translate;
+}
+
+interface LogsState {
+    source: string;
+    severity: string;
+    message: string;
+    reverse: boolean;
+    logDeleteDialog: boolean;
+    logDownloadDialog: HTMLButtonElement | null;
+    logFiles: { path: { fileName: string; size: number }; name: string }[];
+    logs: LogLineSavedExtended[] | null;
+    logSize: number | null;
+    logErrors: number;
+    logWarnings: number;
+    estimatedSize: boolean;
+    pause: number;
+    pid: boolean;
+    colors: boolean;
+    adapters: Record<string, CompactAdapterInfo>;
+    sources: Record<string, { active: boolean; icon: string; color?: string }>;
+    currentHost: string;
+    hosts: Record<string, CompactHost>;
+}
+
+class Logs extends Component<LogsProps, LogsState> {
+    private readonly severities: Record<string, number>;
+
+    private readonly t: Translate;
+
+    private ignoreNextLogs: boolean;
+
+    private lastRowRender: number;
+
+    private lastRowRenderTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    private readLogsInProcess: boolean;
+
+    private hostsTimer: ReturnType<typeof setTimeout> | null = null;
+
+    private scrollToEnd: boolean;
+
+    constructor(props: LogsProps) {
         super(props);
 
         this.state = {
-            source: (window._localStorage || window.localStorage).getItem('Log.source') || '1',
-            severity: (window._localStorage || window.localStorage).getItem('Log.severity') || 'debug',
-            message: (window._localStorage || window.localStorage).getItem('Log.message') || '',
-            reverse: (window._localStorage || window.localStorage).getItem('Log.reverse') === 'true',
+            source: ((window as any)._localStorage as Storage || window.localStorage).getItem('Log.source') || '1',
+            severity: ((window as any)._localStorage as Storage || window.localStorage).getItem('Log.severity') || 'debug',
+            message: ((window as any)._localStorage as Storage || window.localStorage).getItem('Log.message') || '',
+            reverse: ((window as any)._localStorage as Storage || window.localStorage).getItem('Log.reverse') === 'true',
             logDeleteDialog: false,
             logDownloadDialog: null,
             logFiles: [],
@@ -309,8 +369,8 @@ class Logs extends Component {
             estimatedSize: true,
             pause: 0,
             // pauseCount: 0,
-            pid: (window._localStorage || window.localStorage).getItem('Logs.pid') === 'true',
-            colors: (window._localStorage || window.localStorage).getItem('Logs.colors') === 'true',
+            pid: ((window as any)._localStorage as Storage || window.localStorage).getItem('Logs.pid') === 'true',
+            colors: ((window as any)._localStorage as Storage || window.localStorage).getItem('Logs.colors') === 'true',
             adapters: {},
             sources: {},
             currentHost: this.props.currentHost,
@@ -330,20 +390,20 @@ class Logs extends Component {
         this.t = props.t;
     }
 
-    readLogs(force, logFiles, cb) {
+    readLogs(force: boolean, logFiles?: { path: { fileName: string; size: number }; name: string }[], cb?: () => void) {
         if (this.props.logsWorker && this.state.hosts) {
             this.props.logsWorker.getLogs(force)
                 .then(results => {
                     if (!results) {
                         return;
                     }
-                    const logs = [...results.logs];
+                    const logs: LogLineSavedExtended[] = [...results.logs];
                     const logSize = results.logSize;
 
                     let logWarnings = 0;
                     let logErrors = 0;
                     let lastOdd = true;
-                    const sources = JSON.parse(JSON.stringify(this.state.sources));
+                    const sources: Record<string, { active: boolean; icon: string; color?: string }> = JSON.parse(JSON.stringify(this.state.sources));
                     Object.values(sources).forEach(source => source.active = false);
 
                     logs.forEach(item => {
@@ -389,59 +449,60 @@ class Logs extends Component {
                     // scroll down by reverse direction
                     this.scrollToEnd = this.state.reverse;
 
+                    const newState: Partial<LogsState> = {
+                        logs,
+                        logSize,
+                        estimatedSize: false,
+                        logErrors,
+                        logWarnings,
+                        sources,
+                    };
                     if (logFiles) {
-                        this.setState({
-                            logFiles, logs, logSize, estimatedSize: false, logErrors, logWarnings, sources,
-                        }, () => cb && cb());
-                    } else {
-                        this.setState({
-                            logs, logSize, estimatedSize: false, logErrors, logWarnings, sources,
-                        }, () => cb && cb());
+                        newState.logFiles = logFiles;
                     }
+                    this.setState(newState as LogsState, () => cb && cb());
                 });
         } else if (logFiles) {
             this.setState({ logFiles }, () => cb && cb());
         }
     }
 
-    readLogFiles() {
-        return this.props.socket.getLogsFiles(this.state.currentHost)
-            .then(list => {
-                if (list && list.length) {
-                    const logFiles = [];
+    async readLogFiles(): Promise<{ path: { fileName: string; size: number }; name: string }[]> {
+        const list: { fileName: string; size: number }[] = await this.props.socket.getLogsFiles(this.state.currentHost);
+        if (list?.length) {
+            const logFiles: { path: { fileName: string; size: number }; name: string }[] = [];
 
-                    list.reverse();
-                    // first 2018-01-01
-                    list.forEach(file => {
-                        const parts = file.fileName.split('/');
-                        const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+            list.reverse();
+            // first 2018-01-01
+            list.forEach(file => {
+                const parts = file.fileName.split('/');
+                const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
 
-                        if (name[0] <= '9') {
-                            logFiles.push({
-                                path: file,
-                                name,
-                            });
-                        }
+                if (name[0] <= '9') {
+                    logFiles.push({
+                        path: file,
+                        name,
                     });
-
-                    // then restart.log and so on
-                    list.sort();
-                    list.forEach(file => {
-                        const parts = file.fileName.split('/');
-                        const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
-
-                        if (name[0] > '9') {
-                            logFiles.push({
-                                path: file,
-                                name,
-                            });
-                        }
-                    });
-
-                    return logFiles;
                 }
-                return [];
             });
+
+            // then restart.log and so on
+            list.sort();
+            list.forEach(file => {
+                const parts = file.fileName.split('/');
+                const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+
+                if (name[0] > '9') {
+                    logFiles.push({
+                        path: file,
+                        name,
+                    });
+                }
+            });
+
+            return logFiles;
+        }
+        return [];
     }
 
     componentDidMount() {
@@ -450,17 +511,17 @@ class Logs extends Component {
         this.props.clearErrors();
 
         this.props.socket.getCompactAdapters()
-            .then(adapters =>
-                this.props.socket.getCompactHosts()
-                    .then(_hosts => new Promise(resolve => {
-                        const hosts = {};
-                        _hosts.forEach(item => hosts[item._id] = item);
+            .then(async (adapters: Record<string, CompactAdapterInfo>) => {
+                const _hosts: CompactHost[] = await this.props.socket.getCompactHosts();
+                const hosts: Record<string, CompactHost> = {};
+                _hosts.forEach(item => hosts[item._id] = item);
 
-                        this.setState({ adapters, hosts }, () =>
-                            resolve());
-                    }))
-                    .then(() => this.readLogFiles())
-                    .then(logFiles => this.readLogs(true, logFiles)));
+                await new Promise<void>(resolve => {
+                    this.setState({ adapters, hosts }, () => resolve());
+                });
+                const logFiles = await this.readLogFiles();
+                await this.readLogs(true, logFiles);
+            });
     }
 
     componentWillUnmount() {
@@ -469,7 +530,7 @@ class Logs extends Component {
         this.props.clearErrors();
     }
 
-    logHandler = (newLogs, size) => {
+    logHandler = (newLogs: LogLineSaved[], size: number) => {
         if (this.ignoreNextLogs) {
             this.ignoreNextLogs = false;
             return;
@@ -485,8 +546,8 @@ class Logs extends Component {
         let logWarnings = 0;
         let logErrors = 0;
         let lastOdd = false;
-        let sources;
-        let color = Object.keys(this.state.sources);
+        let sources: Record<string, { active: boolean; icon: string; color?: string }>;
+        let color = Object.keys(this.state.sources).length;
         const COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
 
         logs.forEach(item => {
@@ -533,20 +594,24 @@ class Logs extends Component {
             }
         });
 
-        const newState = {
-            logs, logSize: this.state.logSize + size, estimatedSize: true, logWarnings, logErrors,
+        const newState: Partial<LogsState> = {
+            logs,
+            logSize: this.state.logSize + size,
+            estimatedSize: true,
+            logWarnings,
+            logErrors,
         };
         if (sources) {
             newState.sources = sources;
         }
 
         if (this.state.reverse) {
-            // remember if last element is visible
+            // remember if the last element is visible
             const el = document.getElementById('endOfLog');
             this.scrollToEnd =  el ? el.getBoundingClientRect().top < window.innerHeight : true;
         }
 
-        this.setState(newState);
+        this.setState(newState as LogsState);
     };
 
     clearLog() {
@@ -557,43 +622,27 @@ class Logs extends Component {
         });
     }
 
-    handleMessageChange(event) {
-        (window._localStorage || window.localStorage).setItem('Log.message', event.target.value);
+    handleMessageChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        ((window as any)._localStorage as Storage || window.localStorage).setItem('Log.message', event.target.value);
         this.setState({ message: event.target.value });
     }
 
-    handleSourceChange(event) {
-        (window._localStorage || window.localStorage).setItem('Log.source', event.target.value);
+    handleSourceChange(event: SelectChangeEvent<string>) {
+        ((window as any)._localStorage as Storage || window.localStorage).setItem('Log.source', event.target.value);
         this.setState({ source: event.target.value });
     }
 
-    handleSeverityChange(event) {
-        (window._localStorage || window.localStorage).setItem('Log.severity', event.target.value);
+    handleSeverityChange(event: SelectChangeEvent<string>) {
+        ((window as any)._localStorage as Storage || window.localStorage).setItem('Log.severity', event.target.value);
         this.setState({ severity: event.target.value });
-    }
-
-    openLogDownload(event) {
-        this.setState({ logDownloadDialog: event.currentTarget });
-    }
-
-    closeLogDownload() {
-        this.setState({ logDownloadDialog: null });
-    }
-
-    openLogDelete() {
-        this.setState({ logDeleteDialog: true });
-    }
-
-    closeLogDelete() {
-        this.setState({ logDeleteDialog: false });
     }
 
     handleLogDelete() {
         this.props.socket.delLogs(this.state.currentHost)
             .then(() => this.clearLog())
-            .then(() => this.readLogs(true, null, () => this.closeLogDelete()))
-            .catch(error => {
-                this.closeLogDelete();
+            .then(() => this.readLogs(true, null, () => this.setState({ logDeleteDialog: false })))
+            .catch((error: string) => {
+                this.setState({ logDeleteDialog: false });
                 window.alert(error);
             });
     }
@@ -602,7 +651,7 @@ class Logs extends Component {
         this.setState({ pause: this.state.pause ? 0 : this.state.logs.length });
     }
 
-    static openTab(path) {
+    static openTab(path: string) {
         const tab = window.open(path, '_blank');
         tab.focus();
     }
@@ -615,7 +664,7 @@ class Logs extends Component {
             key={entry.name}
             onClick={() => {
                 Logs.openTab(entry.path.fileName);
-                this.closeLogDownload();
+                this.setState({ logDownloadDialog: null });
             }}
         >
             {entry.name}
@@ -657,7 +706,13 @@ class Logs extends Component {
             </MenuItem>);
     }
 
-    getOneRow(i, rows, options) {
+    getOneRow(i: number, rows: React.JSX.Element[], options: {
+        filterMessage: string;
+        sourceFilter: string;
+        previousKey: number;
+        keyPrefix: 'r' | '';
+        length: number;
+    }) {
         const row = this.state.logs[i];
         if (!row) {
             return;
@@ -726,10 +781,19 @@ class Logs extends Component {
     }
 
     getRows() {
-        const rows = [];
-        const options = {
+        const rows: React.JSX.Element[] = [];
+        const options: {
+            filterMessage: string;
+            sourceFilter: string;
+            previousKey: number;
+            keyPrefix: 'r' | '';
+            length: number;
+        } = {
             filterMessage: this.state.message.toLowerCase(),
             sourceFilter: this.state.source,
+            previousKey: 0,
+            keyPrefix: '',
+            length: 0,
         };
         const sources = Object.keys(this.state.sources).sort();
         sources.unshift('1');
@@ -772,12 +836,15 @@ class Logs extends Component {
     }
 
     renderClearDialog() {
+        if (!this.state.logDeleteDialog) {
+            return null;
+        }
         const { classes } = this.props;
 
-        return <Dialog onClose={() => this.closeLogDelete()} open={this.state.logDeleteDialog}>
+        return <Dialog onClose={() => this.setState({ logDeleteDialog: false })} open={!0}>
             <DialogTitle>
                 {this.t('Please confirm')}
-                <IconButton size="large" className={classes.closeButton} onClick={() => this.closeLogDelete()}>
+                <IconButton size="large" className={classes.closeButton} onClick={() => this.setState({ logDeleteDialog: false })}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
@@ -798,7 +865,7 @@ class Logs extends Component {
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={() => this.closeLogDelete()}
+                    onClick={() => this.setState({ logDeleteDialog: false })}
                     color="grey"
                     startIcon={<CloseIcon />}
                 >
@@ -810,7 +877,7 @@ class Logs extends Component {
 
     changePid() {
         const pid = !this.state.pid;
-        (window._localStorage || window.localStorage).setItem('Logs.pid', pid ? 'true' : 'false');
+        ((window as any)._localStorage as Storage || window.localStorage).setItem('Logs.pid', pid ? 'true' : 'false');
         this.setState({ pid });
     }
 
@@ -870,7 +937,7 @@ class Logs extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Clear on disk permanent')}>
-                    <IconButton size="large" onClick={() => this.openLogDelete()}>
+                    <IconButton size="large" onClick={() => this.setState({ logDeleteDialog: true })}>
                         <DeleteForeverIcon />
                     </IconButton>
                 </Tooltip>
@@ -887,7 +954,7 @@ class Logs extends Component {
                     <IconButton
                         size="large"
                         onClick={() => {
-                            (window._localStorage || window.localStorage).setItem('Logs.colors', this.state.colors ? 'false' : 'true');
+                            ((window as any)._localStorage as Storage || window.localStorage).setItem('Logs.colors', this.state.colors ? 'false' : 'true');
                             this.setState({ colors: !this.state.colors });
                         }}
                         color={!this.state.colors ? 'default' : 'primary'}
@@ -899,7 +966,7 @@ class Logs extends Component {
                     <IconButton
                         size="large"
                         onClick={() => {
-                            (window._localStorage || window.localStorage).setItem('Log.reverse', this.state.reverse ? 'false' : 'true');
+                            ((window as any)._localStorage as Storage || window.localStorage).setItem('Log.reverse', this.state.reverse ? 'false' : 'true');
                             this.setState({ reverse: !this.state.reverse });
                             setTimeout(() => {
                                 // scroll to endOfLog
@@ -961,7 +1028,7 @@ class Logs extends Component {
                             variant="contained"
                             color="primary"
                             startIcon={<SaveAltIcon />}
-                            onClick={event => this.openLogDownload(event)}
+                            onClick={event => this.setState({ logDownloadDialog: event.currentTarget })}
                         >
                             {this.t('Download log')}
                         </Button>
@@ -970,7 +1037,7 @@ class Logs extends Component {
                             anchorEl={this.state.logDownloadDialog}
                             keepMounted
                             open={Boolean(this.state.logDownloadDialog)}
-                            onClose={() => this.closeLogDownload()}
+                            onClose={() => this.setState({ logDownloadDialog: null })}
                         >
                             {this.getLogFiles()}
                         </Menu>
@@ -1036,7 +1103,7 @@ class Logs extends Component {
                                                     this.state.message ? <IconButton
                                                         size="small"
                                                         onClick={() => {
-                                                            (window._localStorage || window.localStorage).removeItem('Log.message');
+                                                            ((window as any)._localStorage as Storage || window.localStorage).removeItem('Log.message');
                                                             this.setState({ message: '' });
                                                         }}
                                                     >
@@ -1058,14 +1125,5 @@ class Logs extends Component {
         </TabContainer>;
     }
 }
-
-Logs.propTypes = {
-    socket: PropTypes.object,
-    currentHost: PropTypes.string,
-    clearErrors: PropTypes.func,
-    logsWorker: PropTypes.object,
-    themeType: PropTypes.string,
-    t: PropTypes.func,
-};
 
 export default withWidth()(withStyles(styles)(Logs));

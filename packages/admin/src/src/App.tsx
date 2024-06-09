@@ -62,7 +62,7 @@ import {
     ToggleThemeMenu, type IobTheme, type ThemeName, type AdminConnection, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
-import type { AdminGuiConfig, CompactAdapterInfo } from '@/types';
+import type { AdminGuiConfig, CompactAdapterInfo, CompactHost } from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
 import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
@@ -368,21 +368,6 @@ interface AppProps {
     classes: Record<string, string>;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
-
-type CompactHost = {
-    _id: ioBroker.HostObject['_id'];
-    common: {
-        name: ioBroker.HostCommon['name'];
-        icon: ioBroker.HostCommon['icon'];
-        color: string;
-        installedVersion: ioBroker.HostCommon['installedVersion'];
-    };
-    native: {
-        hardware: {
-            networkInterfaces?: ioBroker.HostNative['hardware']['networkInterfaces'];
-        };
-    };
-};
 
 type CompactRepository = Record<string, {
     icon: ioBroker.AdapterCommon['icon'];
