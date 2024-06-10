@@ -1,9 +1,9 @@
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import * as Sentry from '@sentry/browser';
-import * as SentryIntegrations from '@sentry/integrations';
 
-import { Utils, Theme } from '@iobroker/adapter-react-v5';
+import { Utils, Theme, type ThemeName } from '@iobroker/adapter-react-v5';
 
 import './index.css';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -12,6 +12,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import version from './version.json';
 import { ContextWrapperProvider } from './components/ContextWrapper';
 import App from './App';
+
+declare global {
+    interface Window {
+        adapterName: string;
+        disableDataReporting: boolean | string;
+    }
+}
 
 window.adapterName = 'admin';
 
@@ -28,7 +35,7 @@ function build() {
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <ContextWrapperProvider>
                         <App
-                            onThemeChange={_themeName => {
+                            onThemeChange={(_themeName: ThemeName) => {
                                 themeName = _themeName;
                                 build();
                             }}
@@ -66,51 +73,47 @@ const ignoreErrors = [
     'has no target',                       // ignore alias errors
 ];
 
-if (!window.disableDataReporting && window.location.port !== '3000') {
+if ((!window.disableDataReporting || window.disableDataReporting === '@@disableDataReporting@@') && window.location.port !== '3000') {
     Sentry.init({
         dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
         release: `iobroker.${window.adapterName}@${version.version}`,
         integrations: [
-            new SentryIntegrations.Dedupe(),
+            Sentry.dedupeIntegration(),
         ],
-        beforeSend(event) {
+        beforeSend(event: Sentry.ErrorEvent) {
             // Modify the event here
-            if (event && event.culprit &&
-                versionChanged.find(error => event.culprit.includes(error))) {
-                window.reload();
-            } else if (event && event.culprit &&
-                ignoreErrors.find(error => event.culprit.includes(error))) {
+            if (event?.message &&
+                versionChanged.find(error => event.message.includes(error))) {
+                window.location.reload();
+            } else if (event?.message &&
+                ignoreErrors.find(error => event.message.includes(error))) {
                 return null;
             }
             return event;
         },
     });
 } else {
-    window.onerror = error => {
+    window.onerror = (event: Event | string, source?: string, lineno?: number, colno?: number, error?: Error) => {
         const errText = error.toString();
-        if (errText && versionChanged.find(e => errText.includes(e))) {
+        if (typeof error === 'object' && errText && versionChanged.find(e => errText.includes(e))) {
             const message = error.message;
             const stack = error.stack;
             console.error('Try to detect admin version change:');
             console.error(message);
             console.error(JSON.stringify(stack, null, 2));
-            window.reload();
+            window.location.reload();
             return;
         }
         throw error;
     };
-    window.onunhandledrejection = error => {
-        const errText = error.toString();
-        if (errText && versionChanged.find(e => errText.includes(e))) {
-            const message = error.message;
-            const stack = error.stack;
-            console.error('Try to detect admin version change:');
-            console.error(message);
-            console.error(JSON.stringify(stack, null, 2));
-            window.reload();
+    window.onunhandledrejection = (event: PromiseRejectionEvent) => {
+        const errText = event.toString();
+        if (typeof event === 'object' && errText && versionChanged.find(e => errText.includes(e))) {
+            console.error(`Try to detect admin version change: ${event.reason}`);
+            window.location.reload();
             return;
         }
-        throw error;
+        throw event;
     };
 }
 
