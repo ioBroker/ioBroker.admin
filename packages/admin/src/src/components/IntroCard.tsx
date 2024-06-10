@@ -1,6 +1,5 @@
 import React, { createRef, Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button, Card, CardActions, CardContent,
@@ -20,14 +19,20 @@ import {
 
 import { blue, grey, red } from '@mui/material/colors';
 
-import { Utils, IconCopy as SaveIcon } from '@iobroker/adapter-react-v5';
+import {
+    Utils,
+    IconCopy as SaveIcon,
+    type IobTheme,
+    type AdminConnection,
+    type Translate,
+} from '@iobroker/adapter-react-v5';
 
 import CameraIntroDialog from '../dialogs/CameraIntroDialog';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     root: {
         padding: '.75rem',
         [theme.breakpoints.up('xl')]: {
@@ -202,8 +207,51 @@ const styles = theme => ({
     },
 });
 
-class IntroCard extends Component {
-    constructor(props) {
+interface IntroCardProps {
+    camera: string;
+    disabled?: boolean;
+    addTs: boolean;
+    interval: number;
+    onEdit: () => void;
+    socket: AdminConnection;
+    offline: boolean;
+    t: Translate;
+    lang: ioBroker.Languages;
+    /** Shows a warning on the card with given text if configured */
+    warning: string;
+    edit: boolean;
+    toggleActivation: () => void;
+    enabled: boolean;
+    onRemove: () => void;
+    action: {
+        text: string;
+        link: string;
+    };
+    color: string;
+    image: string;
+    title: string;
+    children: any;
+    reveal: boolean;
+    getHostDescriptionAll: () => [string, string];
+    openSnackBarFunc: () => void;
+    classes: Record<string, string>;
+}
+
+interface IntroCardState {
+    error: boolean;
+    expanded: boolean;
+    dialog: boolean;
+    loaded: boolean;
+}
+
+class IntroCard extends Component<IntroCardProps, IntroCardState> {
+    private readonly cameraRef: React.RefObject<HTMLImageElement>;
+
+    private cameraUpdateTimer: ReturnType<typeof setTimeout> | null;
+
+    private interval: number;
+
+    constructor(props: IntroCardProps) {
         super(props);
 
         this.state = {
@@ -213,7 +261,7 @@ class IntroCard extends Component {
             loaded: false,
         };
 
-        this.cameraRef = createRef();
+        this.cameraRef = createRef<HTMLImageElement>();
         this.cameraUpdateTimer = null;
 
         this.interval = this.props.interval;
@@ -236,19 +284,19 @@ class IntroCard extends Component {
                 const adapter = parts.shift();
                 const instance = parts.shift();
                 this.props.socket.sendTo(`${adapter}.${instance}`, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
-                    .then(result => {
-                        if (result && result.data && this.cameraRef.current) {
+                    .then((result: { data?: string }) => {
+                        if (result?.data && this.cameraRef.current) {
                             this.cameraRef.current.src = `data:image/jpeg;base64,${result.data}`;
                         }
                     })
-                    .catch(e => window.alert(`Cannot send to instance: ${e}`));
+                    .catch((e: string) => window.alert(`Cannot send to instance: ${e}`));
             }
         }
     }
 
     componentDidMount() {
         if (this.props.camera && this.props.camera !== 'text') {
-            this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
+            this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval as any as string, 10), 500));
             this.updateCamera();
         }
     }
@@ -270,7 +318,7 @@ class IntroCard extends Component {
             onClose={() => {
                 if (this.props.camera && this.props.camera !== 'text') {
                     this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
-                    this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
+                    this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval as any as string, 10), 500));
                     this.updateCamera();
                 }
 
@@ -281,7 +329,7 @@ class IntroCard extends Component {
         </CameraIntroDialog>;
     }
 
-    static getDerivedStateFromProps(props) {
+    static getDerivedStateFromProps(props: IntroCardProps): Partial<IntroCardState> | null {
         if (props.edit) {
             return { expanded: false };
         }
@@ -366,16 +414,16 @@ class IntroCard extends Component {
             if (this.interval !== this.props.interval) {
                 this.interval = this.props.interval;
                 this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
-                this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
+                this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval as any as string, 10), 500));
             }
         } else if (this.cameraUpdateTimer) {
             clearInterval(this.cameraUpdateTimer);
             this.cameraUpdateTimer = null;
         }
 
-        let buttonTitle = this.props.action.text || this.props.t('Link');
+        let buttonTitle: ioBroker.StringOrTranslated = this.props.action.text || this.props.t('Link');
         if (typeof buttonTitle === 'object') {
-            buttonTitle = buttonTitle[this.props.lang] || buttonTitle.en;
+            buttonTitle = (buttonTitle as ioBroker.Translated)[this.props.lang] || (buttonTitle as ioBroker.Translated).en;
         }
 
         return <Grid
@@ -481,9 +529,7 @@ class IntroCard extends Component {
                                         <IconButton
                                             size="small"
                                             onClick={() => {
-                                                Utils.copyToClipboard(this.props.getHostDescriptionAll()[1], {
-                                                    format: 'text/plain',
-                                                });
+                                                Utils.copyToClipboard(this.props.getHostDescriptionAll()[1]);
                                                 this.props.openSnackBarFunc();
                                             }}
                                         >
@@ -525,18 +571,5 @@ class IntroCard extends Component {
         </Grid>;
     }
 }
-
-IntroCard.propTypes = {
-    camera: PropTypes.string,
-    addTs: PropTypes.bool,
-    interval: PropTypes.number,
-    onEdit: PropTypes.func,
-    socket: PropTypes.object,
-    offline: PropTypes.bool,
-    t: PropTypes.func,
-    lang: PropTypes.string,
-    /** Shows a warning on the card with given text if configured */
-    warning: PropTypes.string,
-};
 
 export default withStyles(styles)(IntroCard);

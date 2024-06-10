@@ -10,10 +10,10 @@ import {
     type ThemeType, type ThemeName,
 } from '@iobroker/adapter-react-v5';
 
-const NAMESPACE = 'material';
-const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const QUALITY_BITS: Record<number, string> = {
+const NAMESPACE    = 'material';
+const days         = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const months       = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const QUALITY_BITS: Record<ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY], string> = {
     0x00: '0x00 - good',
 
     0x01: '0x01 - general problem',
@@ -45,6 +45,21 @@ const SIGNATURES: Record<string, string> = {
     Qk1: 'bmp',
     AAABAA: 'ico', // 00 00 01 00 according to https://en.wikipedia.org/wiki/List_of_file_signatures
 };
+
+type SmartName = null
+    | false
+    | string
+    | ({ [lang in ioBroker.Languages]?: string } & {
+    /** Which kind of device it is */
+    smartType?: string | null;
+    /** Which value to set when the ON command is issued */
+    byON?: string | null;
+});
+
+type ClassDictionary = Record<string, any>;
+// eslint-disable-next-line no-use-before-define
+type ClassValue = ClassArray | ClassDictionary | string | number | null | boolean | undefined;
+type ClassArray = ClassValue[];
 
 class Utils {
     static namespace = NAMESPACE;
@@ -103,8 +118,7 @@ class Utils {
         isDesc?: boolean,
     ): string {
         const item = objects[id];
-        let text;
-        const attr = isDesc ? 'desc' : 'name';
+        let text: string | undefined;
 
         if (typeof settings === 'string' && !options) {
             options = { language: settings };
@@ -121,17 +135,30 @@ class Utils {
                 'en';
         }
         if ((settings as { name: ioBroker.StringOrTranslated })?.name) {
-            text = (settings as { name: ioBroker.StringOrTranslated }).name;
-            if (typeof text === 'object') {
-                text = text[options.language] || text.en;
+            const textObj = (settings as { name: ioBroker.StringOrTranslated }).name;
+            if (typeof textObj === 'object') {
+                text = (options.language && textObj[options.language]) || textObj.en;
+            } else {
+                text = textObj as string;
             }
-        } else if (item && item.common && item.common[attr]) {
-            text = item.common[attr];
-            if (attr !== 'desc' && !text && item.common.desc) {
-                text = item.common.desc;
+        } else if (isDesc && item?.common?.desc) {
+            const textObj = item.common.desc;
+            if (typeof textObj === 'object') {
+                text = (options.language && textObj[options.language]) || textObj.en || textObj.de || textObj.ru || '';
+            } else {
+                text = textObj as string;
             }
-            if (typeof text === 'object') {
-                text = text[options.language] || text.en || text.de || text.ru || '';
+            text = (text || '').toString().replace(/[_.]/g, ' ');
+
+            if (text === text.toUpperCase()) {
+                text = text[0] + text.substring(1).toLowerCase();
+            }
+        } else if (!isDesc && item.common) {
+            const textObj = item.common.name || item.common.desc;
+            if (textObj && typeof textObj === 'object') {
+                text = (options.language && textObj[options.language]) || textObj.en || textObj.de || textObj.ru || '';
+            } else {
+                text = textObj as string;
             }
             text = (text || '').toString().replace(/[_.]/g, ' ');
 
@@ -144,23 +171,20 @@ class Utils {
             text = Utils.CapitalWords(text);
         }
 
-        return text.trim();
+        return text?.trim() || '';
     }
 
     /**
      * Get the name of the object from the name or description.
-     * @param {ioBroker.PartialObject} obj
-     * @param {{ name: any; } | ioBroker.Languages | null } settings or language
-     * @param {{ language?: ioBroker.Languages; } } options
-     * @param {boolean} [isDesc] Set to true to get the description.
-     * @param {boolean} [noTrim] Allow to use spaces in name (by edit)
-     * @returns {string}
      */
     static getObjectNameFromObj(
         obj: ioBroker.PartialObject,
-        settings: { name: any } | ioBroker.Languages | null,
+        /** settings or language */
+        settings: { name: ioBroker.StringOrTranslated } | ioBroker.Languages | null,
         options?: { language?: ioBroker.Languages },
+        /** Set to true to get the description. */
         isDesc?: boolean,
+        /** Allow using spaces in name (by edit) */
         noTrim?: boolean,
     ): string {
         const item = obj;
@@ -176,14 +200,14 @@ class Utils {
         if ((settings as { name: ioBroker.StringOrTranslated })?.name) {
             const name = (settings as { name: ioBroker.StringOrTranslated }).name;
             if (typeof name === 'object') {
-                text = name[options.language] || name.en;
+                text = (options.language && name[options.language]) || name.en;
             } else {
                 text = name;
             }
         } else if (isDesc && item?.common?.desc) {
             const desc: ioBroker.StringOrTranslated = item.common.desc;
             if (typeof desc === 'object') {
-                text = desc[options.language] || desc.en;
+                text = (options.language && desc[options.language]) || desc.en;
             } else {
                 text = desc;
             }
@@ -198,7 +222,7 @@ class Utils {
                 name = item.common.desc;
             }
             if (typeof name === 'object') {
-                text = name[options.language] || name.en;
+                text = (options.language && name[options.language]) || name.en;
             } else {
                 text = name;
             }
@@ -212,17 +236,14 @@ class Utils {
     }
 
     /**
-     * @param {ioBroker.PartialObject | ioBroker.ObjectCommon} obj
-     * @param {string} forEnumId
-     * @param {{ user: string; }} options
-     * @returns {string | null}
+     * Extracts from the object material settings, depends on username
      */
     static getSettingsOrder(
-        obj: ioBroker.StateCommon | ioBroker.StateObject,
+        obj: ioBroker.StateObject | ioBroker.StateCommon,
         forEnumId: string,
         options: { user?: string },
-    ) {
-        let common: ioBroker.StateCommon;
+    ): string | null {
+        let common: ioBroker.StateCommon | undefined;
         if (obj && Object.prototype.hasOwnProperty.call(obj, 'common')) {
             common = (obj as ioBroker.StateObject).common;
         } else {
@@ -246,13 +267,14 @@ class Utils {
     }
 
     /**
+        Used in material
      */
     static getSettingsCustomURLs(
-        obj: ioBroker.StateCommon | ioBroker.StateObject,
+        obj: ioBroker.StateObject | ioBroker.StateCommon,
         forEnumId: string,
         options: { user?: string },
-    ) {
-        let common: ioBroker.StateCommon;
+    ): string | null {
+        let common: ioBroker.StateCommon | undefined;
         if (obj && Object.prototype.hasOwnProperty.call(obj, 'common')) {
             common = (obj as ioBroker.StateObject).common;
         } else {
@@ -282,7 +304,7 @@ class Utils {
         list: Iterable<any> | ArrayLike<any>,
         source: number,
         dest: number,
-    ) {
+    ): Iterable<any> | ArrayLike<any> {
         const result = Array.from(list);
         const [removed] = result.splice(source, 1);
         result.splice(dest, 0, removed);
@@ -290,19 +312,27 @@ class Utils {
     }
 
     /**
+        Get smart name settings for the given object.
      */
     static getSettings(
-        obj: ioBroker.StateObject,
-        options: { id?: string; user?: string; name?: ioBroker.StringOrTranslated; icon?: string; color?: string; language: ioBroker.Languages },
+        obj: ioBroker.StateObject | ioBroker.StateCommon,
+        options: {
+            id?: string;
+            user?: string;
+            name?: ioBroker.StringOrTranslated;
+            icon?: string;
+            color?: string;
+            language?: ioBroker.Languages;
+        },
         defaultEnabling?: boolean,
     ) {
         let settings;
-        const id = (obj && obj._id) || (options && options.id);
-        let common: ioBroker.StateCommon;
+        const id = (obj as ioBroker.StateObject)?._id || options?.id;
+        let common: ioBroker.StateCommon | undefined;
         if (obj && Object.prototype.hasOwnProperty.call(obj, 'common')) {
-            common = obj.common;
+            common = (obj as ioBroker.StateObject).common;
         } else {
-            common = obj as any as ioBroker.StateCommon;
+            common = obj as ioBroker.StateCommon;
         }
         if (common?.custom) {
             settings = common.custom;
@@ -341,10 +371,9 @@ class Utils {
                 settings.name = common.name;
             }
         }
-        // }
 
         if (typeof settings.name === 'object') {
-            settings.name = settings.name[options.language] || settings.name.en;
+            settings.name = (options.language && settings.name[options.language]) || settings.name.en;
 
             settings.name = (settings.name || '').toString().replace(/_/g, ' ');
 
@@ -362,14 +391,16 @@ class Utils {
         return settings;
     }
 
+    /**
+        Sets smartName settings for the given object.
+     */
     static setSettings(
         obj: Partial<ioBroker.Object>,
         settings: Record<string, any>,
-        options: { user: string; language: ioBroker.Languages },
-    ) {
+        options: { user?: string; language?: ioBroker.Languages },
+    ): boolean {
         if (obj) {
-            // @ts-expect-error common could be partial
-            obj.common = obj.common || {};
+            obj.common = obj.common || ({} as ioBroker.StateCommon);
             obj.common.custom = obj.common.custom || {};
             obj.common.custom[NAMESPACE] = obj.common.custom[NAMESPACE] || {};
             obj.common.custom[NAMESPACE][options.user || 'admin'] = settings;
@@ -384,11 +415,9 @@ class Utils {
                     delete s.icon;
                 }
                 if (s.name !== undefined) {
-                    if (typeof obj.common.name !== 'object') {
-                        obj.common.name = {} as ioBroker.StringOrTranslated;
-                        // @ts-expect-error to fix
-                        obj.common.name[options.language] = s.name;
-                    } else {
+                    if (typeof obj.common.name !== 'object' && options.language) {
+                        obj.common.name = { [options.language]: s.name } as ioBroker.StringOrTranslated;
+                    } else if (typeof obj.common.name === 'object' && options.language) {
                         obj.common.name[options.language] = s.name;
                     }
                     delete s.name;
@@ -403,9 +432,6 @@ class Utils {
 
     /**
      * Get the icon for the given settings.
-     * @param {{ icon: string | undefined; name: string | undefined; prefix: string | undefined}} settings
-     * @param {any} style
-     * @returns {JSX.Element | null}
      */
     static getIcon(
         settings: { icon?: string; name?: string; prefix?: string },
@@ -420,7 +446,7 @@ class Utils {
                 return <img alt={settings.name} src={settings.icon} style={style || {}} />;
             }
             // maybe later some changes for a second type
-            return <img alt={settings.name} src={(settings.prefix || '') + settings.icon} style={style || {}} />;
+            return <img alt={settings.name} src={(settings.prefix || '') + settings.icon} style={style} />;
         }
         return null;
     }
@@ -428,11 +454,11 @@ class Utils {
     /**
      * Get the icon for the given object.
      */
-    static getObjectIcon(id: string | Partial<ioBroker.Object>, obj?: Partial<ioBroker.Object>): string | null {
+    static getObjectIcon(id: string | ioBroker.PartialObject, obj?: ioBroker.PartialObject): string | null {
         // If id is Object
         if (typeof id === 'object') {
-            obj = id;
-            id = obj._id;
+            obj = id as ioBroker.PartialObject;
+            id = obj?._id as string;
         }
 
         if (obj?.common?.icon) {
@@ -502,16 +528,15 @@ class Utils {
         //         return '';
         //     }).join(' ');
         // }
-        return Utils.CapitalWords(text);
+        return text ? Utils.CapitalWords(text) : '';
     }
 
     /**
      * Check if the given color is bright.
      * https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
-     * @returns {boolean}
      */
-    static isUseBright(color: string, defaultValue?: boolean): boolean {
-        if (color === null || color === undefined || color === '') {
+    static isUseBright(color: string | null | undefined, defaultValue?: boolean): boolean {
+        if (!color) {
             return defaultValue === undefined ? true : defaultValue;
         }
         color = color.toString();
@@ -626,7 +651,7 @@ class Utils {
     }
 
     /**
-     * Pad the given number with a zero if it's not 2 digits long.
+     * Pad the given number with a zero if it's not two digits long.
      */
     static padding(num: string | number): string {
         if (typeof num === 'string') {
@@ -643,7 +668,6 @@ class Utils {
 
     /**
      * Sets the date format.
-     * @param {string} format
      */
     static setDataFormat(format: string): void {
         if (format) {
@@ -669,23 +693,29 @@ class Utils {
             const m = now.match(/(\d{1,4})[-./](\d{1,2})[-./](\d{1,4})/);
             if (m) {
                 const a = [parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10)];
+                // We now have 3 numbers. Let's try to detect where is year, where is day and where is month
                 const year = a.find(y => y > 31);
-                a.splice(a.indexOf(year), 1);
-                const day = a.find(mm => mm > 12);
-                if (day) {
-                    a.splice(a.indexOf(day), 1);
-                    now = new Date(year, a[0] - 1, day);
-                } else if (Utils.dateFormat[0][0] === 'M' && Utils.dateFormat[1][0] === 'D') {
-                    // MM DD
-                    now = new Date(year, a[0] - 1, a[1]);
-                    if (Math.abs(now.getTime() - Date.now()) > 3600000 * 24 * 10) {
-                        now = new Date(year, a[1] - 1, a[0]);
-                    }
-                } else if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
-                    // DD MM
-                    now = new Date(year, a[1] - 1, a[0]);
-                    if (Math.abs(now.getTime() - Date.now()) > 3600000 * 24 * 10) {
+                if (year !== undefined) {
+                    a.splice(a.indexOf(year), 1);
+
+                    const day = a.find(mm => mm > 12);
+                    if (day) {
+                        a.splice(a.indexOf(day), 1);
+                        now = new Date(year, a[0] - 1, day);
+                    } else if (Utils.dateFormat[0][0] === 'M' && Utils.dateFormat[1][0] === 'D') {
+                        // MM DD
                         now = new Date(year, a[0] - 1, a[1]);
+                        if (Math.abs(now.getTime() - Date.now()) > 3600000 * 24 * 10) {
+                            now = new Date(year, a[1] - 1, a[0]);
+                        }
+                    } else if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
+                        // DD MM
+                        now = new Date(year, a[1] - 1, a[0]);
+                        if (Math.abs(now.getTime() - Date.now()) > 3600000 * 24 * 10) {
+                            now = new Date(year, a[0] - 1, a[1]);
+                        }
+                    } else {
+                        now = new Date(now);
                     }
                 } else {
                     now = new Date(now);
@@ -704,17 +734,15 @@ class Utils {
 
     /**
      * Render a text as a link.
-     * @param {string} text
-     * @returns {string | JSX.Element[]}
      */
-    static renderTextWithA(text: string): string | React.JSX.Element[] {
-        let m = text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/);
+    static renderTextWithA(text: string): React.JSX.Element[] | string {
+        let m: RegExpMatchArray | null = text.match(/<a [^<]+<\/a>|<br\s?\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/);
         if (m) {
             const result: React.JSX.Element[] = [];
             let key = 1;
             do {
                 const start = text.substring(0, m.index);
-                text = text.substring(m.index + m[0].length);
+                text = text.substring((m.index || 0) + m[0].length);
                 start && result.push(<span key={`a${key++}`}>{start}</span>);
 
                 if (m[0].startsWith('<b>')) {
@@ -741,7 +769,7 @@ class Utils {
                     </a>);
                 }
 
-                m = text && text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/);
+                m = text ? text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/) : null;
                 if (!m) {
                     text && result.push(<span key={`a${key++}`}>{text}</span>);
                 }
@@ -761,7 +789,7 @@ class Utils {
         id: string,
         instanceId: string,
         noCommon?: boolean,
-    ) {
+    ): SmartName | undefined {
         if (!id) {
             if (!noCommon) {
                 if (!(states as ioBroker.StateObject).common) {
@@ -775,30 +803,27 @@ class Utils {
             if (states && !(states as ioBroker.StateObject).common) {
                 return (states as ioBroker.StateCommon).smartName;
             }
-            return (states as ioBroker.StateObject)?.common?.custom?.[instanceId]
-                ? (states as ioBroker.StateObject).common.custom[instanceId].smartName
-                : undefined;
+            const obj = states as ioBroker.StateObject;
+            return obj?.common?.custom && obj.common.custom[instanceId] ?
+                obj.common.custom[instanceId].smartName : undefined;
         }
         if (!noCommon) {
             return (states as Record<string, ioBroker.StateObject>)[id].common.smartName;
         }
+        const obj = (states as Record<string, ioBroker.StateObject>)[id];
 
-        return (states as Record<string, ioBroker.StateObject>)[id]?.common?.custom?.[instanceId]
-            ? (states as Record<string, ioBroker.StateObject>)[id].common.custom[instanceId].smartName || null
-            : null;
+        return obj?.common?.custom && obj.common.custom[instanceId] ?
+            obj.common.custom[instanceId].smartName || null : null;
     }
 
     /**
      * Get the smart name from a state.
-     * @param {ioBroker.StateObject} obj
-     * @param {string} instanceId
-     * @param {boolean} [noCommon]
      */
     static getSmartNameFromObj(
         obj: ioBroker.StateObject | ioBroker.StateCommon,
         instanceId: string,
         noCommon?: boolean,
-    ) {
+    ): SmartName | undefined {
         if (!noCommon) {
             if (!(obj as ioBroker.StateObject).common) {
                 return (obj as ioBroker.StateCommon).smartName;
@@ -806,15 +831,16 @@ class Utils {
             if (obj && !(obj as ioBroker.StateObject).common) {
                 return (obj as ioBroker.StateCommon).smartName;
             }
+
             return (obj as ioBroker.StateObject).common.smartName;
         }
         if (obj && !(obj as ioBroker.StateObject).common) {
             return (obj as ioBroker.StateCommon).smartName;
         }
 
-        return (obj as ioBroker.StateObject)?.common?.custom?.[instanceId]
-            ? (obj as ioBroker.StateObject).common.custom[instanceId].smartName
-            : undefined;
+        const custom: Record<string, string> | undefined | null = (obj as ioBroker.StateObject)?.common?.custom?.[instanceId];
+
+        return custom ? custom.smartName : undefined;
     }
 
     /**
@@ -824,7 +850,7 @@ class Utils {
         obj: ioBroker.StateObject,
         instanceId: string,
         noCommon?: boolean,
-    ) {
+    ): void {
         if (noCommon) {
             obj.common.custom = obj.common.custom || {};
             obj.common.custom[instanceId] = obj.common.custom[instanceId] || {};
@@ -856,10 +882,10 @@ class Utils {
      */
     static updateSmartName(
         obj: ioBroker.StateObject,
-        newSmartName: string,
-        byON?: string,
-        smartType?: string,
-        instanceId?: string,
+        newSmartName: ioBroker.StringOrTranslated,
+        byON: string | null,
+        smartType: string | null,
+        instanceId: string,
         noCommon?: boolean,
     ) {
         const language = I18n.getLanguage();
@@ -874,12 +900,12 @@ class Utils {
         // convert the old settings
         if (obj.native && obj.native.byON) {
             delete obj.native.byON;
-            let _smartName: false | { [lang in ioBroker.Languages]?: string } = obj.common.smartName;
+            let _smartName: SmartName = obj.common.smartName as SmartName;
 
-            if (!_smartName || typeof _smartName !== 'object') {
+            if (_smartName && typeof _smartName !== 'object') {
                 _smartName = {
-                    en: obj.common.name as string,
-                    [language]: obj.common.name as string,
+                    en: _smartName as string,
+                    [language]: _smartName as string,
                 };
             }
             obj.common.smartName = _smartName;
@@ -897,8 +923,10 @@ class Utils {
             } else {
                 obj.common.smartName = obj.common.smartName || {};
                 if (!smartType) {
+                    // @ts-expect-error fixed in js-controller
                     delete obj.common.smartName.smartType;
                 } else {
+                    // @ts-expect-error fixed in js-controller
                     obj.common.smartName.smartType = smartType;
                 }
             }
@@ -912,6 +940,7 @@ class Utils {
                 obj.common.custom[instanceId].smartName.byON = byON;
             } else {
                 obj.common.smartName = obj.common.smartName || {};
+                // @ts-expect-error fixed in js-controller
                 obj.common.smartName.byON = byON;
             }
         }
@@ -947,7 +976,7 @@ class Utils {
                 }
                 // If empty => delete smartName completely
                 if (empty) {
-                    if (noCommon) {
+                    if (noCommon && obj.common.custom && obj.common.custom[instanceId]) {
                         if (obj.common.custom[instanceId].smartName.byON === undefined) {
                             delete obj.common.custom[instanceId];
                         } else {
@@ -964,7 +993,7 @@ class Utils {
                             delete obj.common.custom[instanceId]['zh-cn'];
                         }
                         // @ts-expect-error fixed in js-controller
-                    } else if (obj.common.smartName.byON !== undefined) {
+                    } else if (obj.common.smartName && (obj.common.smartName as SmartName).byON !== undefined) {
                         const _smartName: { [lang in ioBroker.Languages]?: string } = obj.common.smartName as { [lang in ioBroker.Languages]?: string };
                         delete _smartName.en;
                         delete _smartName.de;
@@ -987,11 +1016,12 @@ class Utils {
 
     /**
      * Disable the smart name of a state.
-     * @param {ioBroker.StateObject} obj
-     * @param {string} instanceId
-     * @param {boolean} [noCommon]
      */
-    static disableSmartName(obj: ioBroker.StateObject, instanceId: string, noCommon?: boolean): void {
+    static disableSmartName(
+        obj: ioBroker.StateObject,
+        instanceId: string,
+        noCommon?: boolean,
+    ): void {
         if (noCommon) {
             obj.common.custom = obj.common.custom || {};
             obj.common.custom[instanceId] = obj.common.custom[instanceId] || {};
@@ -1004,16 +1034,21 @@ class Utils {
     /**
      * Copy text to the clipboard.
      */
-    static copyToClipboard(text: string, e?: React.MouseEvent): boolean {
-        e && e.stopPropagation();
-        e && e.preventDefault();
+    static copyToClipboard(
+        text: string,
+        e?: Event,
+    ): boolean {
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
         return _Utils.copyToClipboard(text);
     }
 
     /**
      * Gets the extension of a file name.
-     * @param {string | null} [fileName] the file name.
-     * @returns {string | null} The extension in lower case.
+     * @param fileName the file name.
+     * @returns The extension in lower case.
      */
     static getFileExtension(fileName: string): string | null {
         const pos = (fileName || '').lastIndexOf('.');
@@ -1075,9 +1110,8 @@ class Utils {
     // Big thanks to: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     /**
      * Invert the given color
-     * @param {string} hex Color in the format '#rrggbb' or '#rgb' (or without hash)
-     * @param {boolean} bw Set to black or white.
-     * @returns {string}
+     * @param hex Color in the format '#rrggbb' or '#rgb' (or without hash)
+     * @param bw Set to black or white.
      */
     static invertColor(hex: string, bw?: boolean): string {
         if (hex === undefined || hex === null || hex === '' || typeof hex !== 'string') {
@@ -1120,22 +1154,24 @@ class Utils {
 
         if (bw) {
             // http://stackoverflow.com/a/3943023/112731
-            return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? `#000000${alfa || ''}` : `#FFFFFF${alfa || ''}`;
+            return r * 0.299 + g * 0.587 + b * 0.114 > 186
+                ? `#000000${alfa || ''}`
+                : `#FFFFFF${alfa || ''}`;
         }
         // invert color components
-        const sr = (255 - r).toString(16);
-        const sg = (255 - g).toString(16);
-        const sb = (255 - b).toString(16);
+        const rs = (255 - r).toString(16);
+        const gs = (255 - g).toString(16);
+        const bd = (255 - b).toString(16);
         // pad each with zeros and return
-        return `#${sr.padStart(2, '0')}${sg.padStart(2, '0')}${sb.padStart(2, '0')}${alfa || ''}`;
+        return `#${rs.padStart(2, '0')}${gs.padStart(2, '0')}${bd.padStart(2, '0')}${alfa || ''}`;
     }
 
     /**
      * Convert RGB to array [r, g, b]
-     * @param {string} hex Color in the format '#rrggbb' or '#rgb' (or without hash) or rgb(r,g,b) or rgba(r,g,b,a)
-     * @returns {Array<number>} Array with 3 elements [r, g, b]
+     * @param hex Color in the format '#rrggbb' or '#rgb' (or without hash) or rgb(r,g,b) or rgba(r,g,b,a)
+     * @returns Array with 3 elements [r, g, b]
      */
-    static color2rgb(hex: string): number[] | false {
+    static color2rgb(hex: string): false | [number, number, number] | '' {
         if (hex === undefined || hex === null || hex === '' || typeof hex !== 'string') {
             return false;
         }
@@ -1167,7 +1203,11 @@ class Utils {
             return false;
         }
 
-        return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
+        return [
+            parseInt(hex.slice(0, 2), 16),
+            parseInt(hex.slice(2, 4), 16),
+            parseInt(hex.slice(4, 6), 16),
+        ];
     }
 
     // Big thanks to: https://github.com/antimatter15/rgb-lab
@@ -1176,7 +1216,7 @@ class Utils {
      * @param {Array<number>} rgb color in format [r,g,b]
      * @returns {Array<number>} lab color in format [l,a,b]
      */
-    static rgb2lab(rgb: number[]): number[] {
+    static rgb2lab(rgb: [number, number, number]): [number, number, number] {
         let r = rgb[0] / 255;
         let g = rgb[1] / 255;
         let b = rgb[2] / 255;
@@ -1199,9 +1239,9 @@ class Utils {
     /**
      * Calculate the distance between two colors in LAB color space in the range 0-100^2
      * If distance is less than 1000, the colors are similar
-     * @param {string} color1 Color in the format '#rrggbb' or '#rgb' (or without hash) or rgb(r,g,b) or rgba(r,g,b,a)
-     * @param {string} color2 Color in the format '#rrggbb' or '#rgb' (or without hash) or rgb(r,g,b) or rgba(r,g,b,a)
-     * @returns {number} distance in the range 0-100^2
+     * @param color1 Color in the format '#rrggbb' or '#rgb' (or without hash) or rgb(r,g,b) or rgba(r,g,b,a)
+     * @param color2 Color in the format '#rrggbb' or '#rgb' (or without hash) or rgb(r,g,b) or rgba(r,g,b,a)
+     * @returns distance in the range 0-100^2
      */
     static colorDistance(color1: string, color2: string): number {
         const rgb1 = Utils.color2rgb(color1);
@@ -1234,11 +1274,9 @@ class Utils {
     // MIT © Luke Edwards
     /**
      * @private
-     * @param {any} mix
-     * @returns {string}
      */
-    static _toVal(mix: any): string {
-        let y: string;
+    static _toVal(mix: ClassValue): string {
+        let y;
         let str = '';
 
         if (typeof mix === 'string' || typeof mix === 'number') {
@@ -1274,14 +1312,14 @@ class Utils {
      * Convert any object to a string with its values.
      * @returns {string}
      */
-    static clsx(...arg: any): string {
+    static clsx(...inputs: ClassValue[]): string {
         let i = 0;
         let tmp;
         let x;
         let str = '';
-        while (i < arg.length) {
+        while (i < inputs.length) {
             // eslint-disable-next-line prefer-rest-params
-            tmp = arguments[i++];
+            tmp = inputs[i++];
             if (tmp) {
                 x = Utils._toVal(tmp);
                 if (x) {
@@ -1296,13 +1334,9 @@ class Utils {
     /**
      * Get the current theme name (either from local storage or the browser settings).
      */
-    static getThemeName(themeName?: ThemeName): ThemeName {
-        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
-            return window.vendorPrefix as ThemeName;
-        }
-
-        if (themeName) {
-            return themeName;
+    static getThemeName(themeName?: ThemeName | null): ThemeName {
+        if ((window as any).vendorPrefix && (window as any).vendorPrefix !== '@@vendorPrefix@@' && (window as any).vendorPrefix !== 'MV') {
+            return (window as any).vendorPrefix;
         }
 
         themeName = ((window as any)._localStorage || window.localStorage).getItem('App.themeName');
@@ -1320,7 +1354,7 @@ class Utils {
             return 'light';
         }
 
-        themeName = themeName || ((window as any)._localStorage || window.localStorage).getItem('App.themeName') || '';
+        themeName = themeName || ((window as any)._localStorage || window.localStorage).getItem('App.themeName');
         return themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
     }
 
@@ -1328,7 +1362,8 @@ class Utils {
      * Set the theme name and theme type.
      */
     static setThemeName(themeName: ThemeName): void {
-        if ((window as any).vendorPrefix && (window as any).vendorPrefix !== '@@vendorPrefix@@') {
+        const vendorPrefix = (window as any).vendorPrefix;
+        if (vendorPrefix && vendorPrefix !== '@@vendorPrefix@@' && vendorPrefix !== 'MV') {
             return; // ignore
         }
         ((window as any)._localStorage || window.localStorage).setItem('App.themeName', themeName);
@@ -1342,15 +1377,15 @@ class Utils {
      * Toggle the theme name between 'dark' and 'colored'.
      * @returns the new theme name.
      */
-    static toggleTheme(themeName?: ThemeName): ThemeName {
-        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
-            return window.vendorPrefix as ThemeName;
+    static toggleTheme(themeName?: ThemeName | null): ThemeName {
+        if ((window as any).vendorPrefix && (window as any).vendorPrefix !== '@@vendorPrefix@@' && (window as any).vendorPrefix !== 'MV') {
+            return (window as any).vendorPrefix as ThemeName;
         }
-        themeName = themeName || ((window as any)._localStorage || window.localStorage).getItem('App.themeName');
+        themeName = themeName || ((window as any)._localStorage || window.localStorage).getItem('App.themeName') || 'light';
 
         // dark => blue => colored => light => dark
         const themes = Utils.getThemeNames();
-        const pos = themes.indexOf(themeName);
+        const pos = themeName ? themes.indexOf(themeName) : -1;
         let newTheme: ThemeName;
         if (pos !== -1) {
             newTheme = themes[(pos + 1) % themes.length];
@@ -1364,11 +1399,11 @@ class Utils {
 
     /**
      * Get the list of themes
-     * @returns {array<string>} list of possible themes
+     * @returns list of possible themes
      */
     static getThemeNames(): ThemeName[] {
-        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
-            return [window.vendorPrefix as ThemeName];
+        if ((window as any).vendorPrefix && (window as any).vendorPrefix !== '@@vendorPrefix@@' && (window as any).vendorPrefix !== 'MV') {
+            return [(window as any).vendorPrefix as ThemeName];
         }
 
         return ['light', 'dark', 'blue', 'colored'];
@@ -1376,8 +1411,6 @@ class Utils {
 
     /**
      * Parse a query string into its parts.
-     * @param {string} query
-     * @returns {Record<string, string | boolean | number>}
      */
     static parseQuery(query: string): Record<string, string | number | boolean> {
         query = (query || '').toString().replace(/^\?/, '');
@@ -1411,10 +1444,9 @@ class Utils {
 
     /**
      * Returns parent ID.
-     * @param {string} id
-     * @returns {string | null} parent ID or null if no parent
+     * @returns parent ID or null if no parent
      */
-    static getParentId(id: string): string {
+    static getParentId(id: string): string | null {
         const p = (id || '').toString().split('.');
         if (p.length > 1) {
             p.pop();
@@ -1456,6 +1488,9 @@ class Utils {
         return text;
     }
 
+    /*
+       Format seconds to string like 'h:mm:ss' or 'd.hh:mm:ss'
+    */
     static formatTime(seconds: number): string {
         if (seconds) {
             seconds = Math.round(seconds);
@@ -1488,7 +1523,10 @@ class Utils {
             .toLowerCase();
     }
 
-    static openLink(url: string, target: string): void {
+    /*
+      Open url link in the new target window
+     */
+    static openLink(url: string, target?: string): void {
         // replace IPv6 Address with [ipv6]:port
         url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//[$1]$2/');
 
@@ -1516,10 +1554,10 @@ class Utils {
             return '';
         }
 
-        return header.title as string;
+        return header.title?.toString() || '';
     }
 
-    static MDextractHeader(text: string): { header: Record<string, string | boolean | number>; body: string} {
+    static MDextractHeader(text: string): { header: Record<string, string | boolean | number>; body: string } {
         const attrs: Record<string, string | boolean | number> = {};
         if (text.substring(0, 3) === '---') {
             const pos = text.substring(3).indexOf('\n---');
@@ -1589,21 +1627,21 @@ class Utils {
      * Convert quality code into text
      * @returns lines that decode quality
      */
-    static quality2text(quality: number): string[] {
+    static quality2text(quality: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY]): string[] {
         // eslint-disable-next-line no-bitwise
-        const custom = quality & 0xffff0000;
-        const text = QUALITY_BITS[quality];
+        const custom = quality & 0xFFFF0000;
+        const text: string = QUALITY_BITS[quality];
         let result;
         if (text) {
             result = [text];
             // eslint-disable-next-line no-bitwise
         } else if (quality & 0x01) {
             // eslint-disable-next-line no-bitwise
-            result = [QUALITY_BITS[0x01], `0x${(quality & (0xffff & ~1)).toString(16)}`];
+            result = [QUALITY_BITS[0x01], `0x${(quality & (0xFFFF & ~1)).toString(16)}`];
             // eslint-disable-next-line no-bitwise
         } else if (quality & 0x02) {
             // eslint-disable-next-line no-bitwise
-            result = [QUALITY_BITS[0x02], `0x${(quality & (0xffff & ~2)).toString(16)}`];
+            result = [QUALITY_BITS[0x02], `0x${(quality & (0xFFFF & ~2)).toString(16)}`];
         } else {
             result = [`0x${quality.toString(16)}`];
         }
@@ -1625,9 +1663,9 @@ class Utils {
      * Get states of object
      * @returns states as an object in form {"value1": "label1", "value2": "label2"} or null
      */
-    static getStates(obj: ioBroker.StateObject): Record<string, string> | null {
-        const states = obj?.common?.states;
-        let result: Record<string, string> | null;
+    static getStates(obj: ioBroker.StateObject | null | undefined): Record<string, string> | null {
+        const states: Record<string, string> | string[] | string | undefined | null = obj?.common?.states;
+        let result: Record<string, string> | null | undefined;
         if (states) {
             if (typeof states === 'string' && states[0] === '{') {
                 try {
@@ -1646,11 +1684,11 @@ class Utils {
                 }
             } else if (Array.isArray(states)) {
                 result = {};
-                if (obj.common.type === 'number') {
-                    states.forEach((value, key) => (result[key] = value));
-                } else if (obj.common.type === 'string') {
-                    states.forEach(value => (result[value] = value));
-                } else if (obj.common.type === 'boolean') {
+                if (obj?.common.type === 'number') {
+                    states.forEach((value, key) => ((result as Record<string, string>)[key] = value));
+                } else if (obj?.common.type === 'string') {
+                    states.forEach(value => ((result as Record<string, string>)[value] = value));
+                } else if (obj?.common.type === 'boolean') {
                     result.false = states[0];
                     result.true = states[1];
                 }
@@ -1674,7 +1712,7 @@ class Utils {
             const reader = new FileReader();
             // eslint-disable-next-line func-names
             reader.onload = function () {
-                resolve(this.result.toString());
+                resolve(this.result?.toString() || '');
             };
             reader.readAsDataURL(blob);
         });
@@ -1687,7 +1725,7 @@ class Utils {
     static detectMimeType(
         /** Base64 encoded binary file */
         base64: string,
-    ): string {
+    ): string | null {
         const signature = Object.keys(SIGNATURES).find(s => base64.startsWith(s));
         return signature ? SIGNATURES[signature] : null;
     }
@@ -1699,10 +1737,16 @@ class Utils {
         /** current configured repository or multi repository */
         activeRepo: string | string[],
     ): boolean {
-        return !!(
-            (typeof activeRepo === 'string' && activeRepo.toLowerCase().startsWith('stable')) ||
-            (activeRepo && typeof activeRepo !== 'string' && activeRepo.find(r => r.toLowerCase().startsWith('stable')))
-        );
+        return !!((
+            typeof activeRepo === 'string' &&
+            activeRepo.toLowerCase().startsWith('stable')
+        )
+            ||
+            (
+                activeRepo &&
+                typeof activeRepo !== 'string' &&
+                activeRepo.find(r => r.toLowerCase().startsWith('stable'))
+            ));
     }
 
     /**

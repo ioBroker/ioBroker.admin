@@ -1,6 +1,9 @@
-import * as React from 'react';
+import { useState } from 'react';
 
-function useStateLocal(defaultValue, key) {
+export default function useStateLocal(
+    defaultValue: any,
+    key: string,
+): [any, (newValue: any) => void, boolean] {
     const data = (window._localStorage || window.localStorage).getItem(key);
     if (data) {
         try {
@@ -10,14 +13,12 @@ function useStateLocal(defaultValue, key) {
         }
     }
 
-    const [state, setState] = React.useState(defaultValue);
+    const [state, setState] = useState(defaultValue);
 
-    const eventsToInstall = newValue => {
+    const eventsToInstall = (newValue: any) => {
         (window._localStorage || window.localStorage).setItem(key, JSON.stringify(newValue));
         setState(newValue);
     };
 
     return [state, eventsToInstall, !!(window._localStorage || window.localStorage).getItem(key)];
 }
-
-export default useStateLocal;

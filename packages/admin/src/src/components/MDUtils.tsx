@@ -1,13 +1,54 @@
 /**
- * Copyright 2018-2021 Denis Haev <dogafox@gmail.com>
+ * Copyright 2018-2024 Denis Haev (bluefox) <dogafox@gmail.com>
  *
  * MIT License
  *
  * */
 import { Utils } from '@iobroker/adapter-react-v5';
 
+export const EXPAND_LANGUAGE = {
+    en: 'english',
+    de: 'german',
+    ru: 'russian',
+    'zh-cn': 'chinese (simplified)',
+};
+
+export interface MarkdownEntry {
+    version: string;
+    date?: string;
+    lines: ({ author?: string; line: string } | string)[];
+}
+
+export interface MarkdownHeader {
+    title?: string;
+    authors?: string;
+    affiliate?: string;
+    translatedFrom?: keyof typeof EXPAND_LANGUAGE;
+    readme?: string;
+    license?: string;
+    logo?: string;
+    description?: string;
+    lastChanged?: string;
+    editLink?: string;
+    adapter?: string;
+}
+
+export interface MarkdownContent {
+    title: string;
+    level: number;
+    external: boolean;
+    link: string;
+    href: string;
+    children?: string[];
+}
+
+export interface MarkdownPart {
+    lines: string[];
+    type: string;
+}
+
 class MDUtils {
-    static text2link(text) {
+    static text2link(text: string): string {
         const m = text.match(/\d+\.\)\s/);
         if (m) {
             text = text.replace(m[0], m[0].replace(/\s/, '&nbsp;'));
@@ -16,22 +57,10 @@ class MDUtils {
         return text.replace(/[^a-zA-Zа-яА-Я0-9]/g, '').trim().replace(/\s/g, '').toLowerCase();
     }
 
-    static openLink(url, target) {
-        // replace IPv6 Address with [ipv6]:port
-        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//[$1]$2/');
-
-        if (target === 'this') {
-            window.location = url;
-        } else {
-            window.open(url, target || '_blank');
-        }
-    }
-
-    static getTitle(text) {
+    static getTitle(text: string): string {
         const result = MDUtils.extractHeader(text);
-        const header = result.header;
         let body = result.body;
-
+        const header = result.header;
         if (!header.title) {
             // remove {docsify-bla}
             body = body.replace(/{[^}]*}/g, '');
@@ -44,11 +73,15 @@ class MDUtils {
             }
             return '';
         }
+
         return header.title;
     }
 
-    static extractHeader(text) {
-        const attrs = {};
+    static extractHeader(text: string): {
+        header: MarkdownHeader;
+        body: string;
+    } {
+        const attrs: MarkdownHeader = {};
         if (text.substring(0, 3) === '---') {
             const pos = text.substring(3).indexOf('\n---');
             if (pos !== -1) {
@@ -61,26 +94,29 @@ class MDUtils {
                     const pos_ = line.indexOf(':');
                     if (pos_ !== -1) {
                         const attr = line.substring(0, pos_).trim();
-                        attrs[attr] = line.substring(pos_ + 1).trim();
-                        attrs[attr] = attrs[attr].replace(/^['"]|['"]$/g, '');
-                        if (attrs[attr] === 'true') {
-                            attrs[attr] = true;
-                        } else if (attrs[attr] === 'false') {
-                            attrs[attr] = false;
-                        } else if (parseFloat(attrs[attr]).toString() === attrs[attr]) {
-                            attrs[attr] = parseFloat(attrs[attr]);
+                        let val: string = line.substring(pos_ + 1).trim();
+                        val = val.replace(/^['"]|['"]$/g, '');
+                        if (val === 'true') {
+                            (attrs as Record<string, string | boolean | number>)[attr] = true;
+                        } else if (val === 'false') {
+                            (attrs as Record<string, string | boolean | number>)[attr] = false;
+                        } else if (parseFloat(val).toString() === val) {
+                            (attrs as Record<string, string | boolean | number>)[attr] = parseFloat(val);
+                        } else {
+                            (attrs as Record<string, string | boolean | number>)[attr] = val;
                         }
                     } else {
-                        attrs[line.trim()] = true;
+                        (attrs as Record<string, string | boolean | number>)[line.trim()] = true;
                     }
                 });
                 text = text.substring(pos + 7);
             }
         }
+
         return { header: attrs, body: text };
     }
 
-    static removeDocsify(text) {
+    static removeDocsify(text: string): string {
         const m = text.match(/{docsify-[^}]*}/g);
         if (m) {
             m.forEach(doc => text = text.replace(doc, ''));
@@ -88,22 +124,27 @@ class MDUtils {
         return text;
     }
 
-    static onCopy(e, text) {
+    static onCopy(e: Event | null, text: string): void {
         Utils.copyToClipboard(text, e);
     }
 
-    static decorateText(text, header, path) {
+    static decorateText(text: string, header: MarkdownHeader, path?: string) {
         path = path || '';
 
         const { body, license, changelog } = MDUtils.extractLicenseAndChangelog(text, true);
 
         const lines = body.split('\n');
-        const content = {};
-        const current = [null, null, null, null];
+        const content: Record<string, MarkdownContent> = {};
+        const current: MarkdownContent[] = [null, null, null, null];
 
-        const parts = [];
-        while (lines.length && !lines[0].trim()) lines.shift();
-        while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+        const parts: { type: 'chapter' | 'table' | '@@@' | 'code' | 'warn' | 'alarm' | 'notice' | 'p'; lines: string[] }[] = [];
+        // delete empty starting and ending lines
+        while (lines.length && !lines[0].trim()) {
+            lines.shift();
+        }
+        while (lines.length && !lines[lines.length - 1].trim()) {
+            lines.pop();
+        }
 
         let title;
 
@@ -113,23 +154,19 @@ class MDUtils {
 
             if (line.startsWith('=========')) {
                 // ignore it
-            } else
-            // <h1><img src="ru/adapterref/iobroker.linkeddevices/admin/linkeddevices.png" width="32" /> ioBroker.linkeddevices</h1>
-            if (line.match(/^<h1>.+<\/h1>/)) {
+            } else if (line.match(/^<h1>.+<\/h1>/)) {
+                // <h1><img src="ru/adapterref/iobroker.linkeddevices/admin/linkeddevices.png" width="32" /> ioBroker.linkeddevices</h1>
                 // skip
-            } else
-            if (line.match(/^# /)) {
+            } else if (line.match(/^# /)) {
                 const cont = MDUtils.findTitle(line, -1, path);
                 title = cont.title;
-            } else
-            if (line.trim().startsWith('|')) {
+            } else if (line.trim().startsWith('|')) {
                 if (!parts[last] || parts[last].type !== 'table') {
                     parts.push({ type: 'table', lines: [line] });
                 } else {
                     parts[last].lines.push(line);
                 }
-            } else
-            if (line.match(/^##+ /)) {
+            } else if (line.match(/^##+ /)) {
                 parts.push({ lines: [line], type: 'chapter' });
                 last++;
                 let level = line.split('#').length - 3;
@@ -137,9 +174,10 @@ class MDUtils {
                 content[cont.href] = cont;
                 current[level] = cont;
                 level++;
-                while (current[level] !== undefined) level = null;
-            } else
-            if (line.startsWith('@@@')) {
+                while (current[level] !== undefined) {
+                    level = null;
+                }
+            } else if (line.startsWith('@@@')) {
                 line = line.substring(3).trim();
                 parts.push({ lines: [line], type: '@@@' });
                 last++;
@@ -197,13 +235,16 @@ class MDUtils {
         };
     }
 
-    static extractLicenseAndChangelog(text, ignoreHeaders) {
+    static extractLicenseAndChangelog(
+        text: string,
+        ignoreHeaders?: boolean,
+    ) {
         const lines = (text || '').trim().split('\n');
-        const changelog = [];
+        const changelog: string[] = [];
         let changelogA = false;
-        const license = [];
+        const license: string[] = [];
         let licenseA = false;
-        const newLines = [];
+        const newLines: string[] = [];
         lines.forEach(line => {
             if (line.match(/#+\sChangelog/i)) {
                 !ignoreHeaders && changelog.push('## Changelog');
@@ -235,14 +276,22 @@ class MDUtils {
         while (license.length && !license[0].trim()) license.shift();
         while (license.length && !license[license.length - 1].trim()) license.pop();
 
-        return { body: newLines.join('\n'), license: license.join('\n'), changelog: changelog.join('\n') };
+        return {
+            body: newLines.join('\n'),
+            license: license.join('\n'),
+            changelog: changelog.join('\n'),
+        };
     }
 
     static findTitleFromH1() {
         throw new Error('not implemented');
     }
 
-    static findTitle(line, level, path) {
+    static findTitle(
+        line: string,
+        level: number,
+        path: string,
+    ): MarkdownContent {
         let name = line.substring(level + 3).trim()
             // remove bold and italic modifier
             .replace(/^\*|\*$/g, '')
@@ -268,7 +317,7 @@ class MDUtils {
         };
     }
 
-    static text2docLink(text, path) {
+    static text2docLink(text: string, path: string): { link: string; name: string } {
         const m = text.match(/\[([^\]]*)]\(([^)]*)\)/);
         if (m) {
             const parts = path.split('/');
@@ -276,70 +325,6 @@ class MDUtils {
             return { link: `${parts.join('/')}/${m[2]}`, name: m[1] };
         }
         return null;
-    }
-
-    // https://github.com/lukeed/clsx/blob/master/src/index.js
-    // License
-    // MIT © Luke Edwards
-    /**
-     * @private
-     * @param {any} mix
-     * @returns {string}
-     */
-    static _toVal(mix) {
-        let k; let y; let
-            str = '';
-
-        if (typeof mix === 'string' || typeof mix === 'number') {
-            str += mix;
-        } else if (typeof mix === 'object') {
-            if (Array.isArray(mix)) {
-                for (k = 0; k < mix.length; k++) {
-                    if (mix[k]) {
-                        y = MDUtils._toVal(mix[k]);
-                        if (y) {
-                            str && (str += ' ');
-                            str += y;
-                        }
-                    }
-                }
-            } else {
-                for (k in mix) {
-                    if (mix[k]) {
-                        str && (str += ' ');
-                        str += k;
-                    }
-                }
-            }
-        }
-
-        return str;
-    }
-
-    // https://github.com/lukeed/clsx/blob/master/src/index.js
-    // License
-    // MIT © Luke Edwards
-    /**
-     * Convert any object to a string with its values.
-     * @returns {string}
-     */
-    static clsx() {
-        let i = 0;
-        let tmp;
-        let x;
-        let str = '';
-        while (i < arguments.length) {
-            // eslint-disable-next-line prefer-rest-params
-            tmp = arguments[i++];
-            if (tmp) {
-                x = MDUtils._toVal(tmp);
-                if (x) {
-                    str && (str += ' ');
-                    str += x;
-                }
-            }
-        }
-        return str;
     }
 }
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Avatar,
@@ -16,11 +15,11 @@ import {
     Typography,
 } from '@mui/material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
 
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 
-const styles = theme => ({
+const styles: Styles<IobTheme, any> = theme => ({
     root: {
         padding: 10,
         margin: 'auto',
@@ -78,8 +77,32 @@ const styles = theme => ({
     },
 });
 
-class Login extends Component {
-    constructor(props) {
+declare global {
+    interface Window {
+        loginBackgroundColor: string;
+        loginBackgroundImage: string;
+        loginLink: string;
+        loginMotto: string;
+        login: string;
+        loginLogo: string;
+        loginHideLogo: string;
+        loginTitle: string;
+    }
+}
+
+interface LoginProps {
+    t: Translate;
+    classes: Record<string, string>;
+}
+
+interface LoginState {
+    inProcess: boolean;
+}
+
+class Login extends Component<LoginProps, LoginState> {
+    private readonly formRef: React.RefObject<HTMLFormElement>;
+
+    constructor(props: LoginProps) {
         super(props);
 
         this.state = {
@@ -105,7 +128,7 @@ class Login extends Component {
         if (window.login !== 'true') {
             // eslint-disable-next-line no-debugger
             debugger;
-            window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+            window.location.href = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
         }
         const style = (window.loginBackgroundColor && window.loginBackgroundColor !== 'inherit') || window.loginBackgroundImage ? { background: '#00000000' } : {};
 
@@ -120,7 +143,7 @@ class Login extends Component {
                         <div
                             style={{
                                 height: 50,
-                                withWidth: 102,
+                                width: 102,
                                 lineHeight: '50px',
                                 background: 'white',
                                 borderRadius: 5,
@@ -236,9 +259,5 @@ class Login extends Component {
         </Paper>;
     }
 }
-
-Login.propTypes = {
-    t: PropTypes.func,
-};
 
 export default withWidth()(withStyles(styles)(Login));

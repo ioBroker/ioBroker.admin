@@ -331,15 +331,11 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         .catch(error => window.alert(`Cannot get notifications: ${error}`));
 
     onErrorsUpdates = (logErrors: number): void => {
-        // if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logErrors)) {
         this.setState({ logErrors });
-        //}
     };
 
     onWarningsUpdates = (logWarnings: number): void => {
-        // if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logWarnings)) {
         this.setState({ logWarnings });
-        // }
     };
 
     calculateWarning = (notifications: Record<string, NotificationAnswer | null >) => {

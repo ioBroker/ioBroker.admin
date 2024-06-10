@@ -30,13 +30,19 @@ import { FaGithub as IconGithub } from 'react-icons/fa';
 
 import {
     type AdminConnection, type IobTheme, type ThemeName,
-    I18n, Loader,
+    I18n, Loader, Utils,
 } from '@iobroker/adapter-react-v5';
 
 import IconGlobe from '../assets/globe.svg';
 import IconLink from '../assets/link.svg';
 
-import Utils from './MDUtils';
+import MDUtils, {
+    EXPAND_LANGUAGE,
+    type MarkdownContent,
+    type MarkdownEntry,
+    type MarkdownHeader,
+    type MarkdownPart,
+} from './MDUtils';
 // import Page404 from '@iobroker/adapter-react-v5/Components/404';
 
 const styles: Styles<IobTheme, any> = theme => ({
@@ -381,45 +387,6 @@ const CONVERTER_OPTIONS = {
 
 const ADAPTER_CARD = ['version', 'authors', 'keywords', 'mode', 'materialize', 'compact'];
 
-const EXPAND_LANGUAGE = {
-    en: 'english',
-    de: 'german',
-    ru: 'russian',
-    'zh-cn': 'chinese (simplified)',
-};
-
-interface MarkdownEntry {
-    version: string;
-    date?: string;
-    lines: ({ author?: string; line: string } | string)[];
-}
-
-interface MarkdownHeader {
-    title: string;
-    affiliate: string;
-    translatedFrom: keyof typeof EXPAND_LANGUAGE;
-    readme: string;
-    logo: string;
-    description: string;
-    lastChanged: string;
-    editLink: string;
-    adapter: string;
-    [key: string]: string;
-}
-
-interface MarkdownContent {
-    title: string;
-    level: number;
-    external: boolean;
-    link: string;
-    children: string[];
-}
-
-interface MarkdownPart {
-    lines: string[];
-    type: string;
-}
-
 interface MarkdownProps {
     path: string;
     text: string;
@@ -440,7 +407,7 @@ interface MarkdownState {
     parts: MarkdownPart[];
     title: string;
     loadTimeout: boolean;
-    header: Partial<MarkdownHeader>;
+    header: MarkdownHeader;
     content: Record<string, MarkdownContent>;
     license: string;
     changeLog: string | Record<string, MarkdownEntry>;
@@ -466,8 +433,6 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
     private readonly meta: () => string;
 
     private readonly link: () => React.JSX.Element;
-
-    private editText: string;
 
     constructor(props: MarkdownProps) {
         super(props);
@@ -507,7 +472,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 onClick={() => {
                     if (link) {
                         if (link.startsWith('#')) {
-                            Markdown.onNavigate(Utils.text2link(link.substring(1)));
+                            Markdown.onNavigate(MDUtils.text2link(link.substring(1)));
                         } else {
                             let href = link;
                             if (!href.match(/^https?:\/\//)) {
@@ -693,7 +658,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                     const author = p[0].replace('(', '');
                     line = line.replace(`(${author})`, '').trim();
                     oneEntry.lines.push({ author, line });
-                } else {
+                } else if (oneEntry) {
                     oneEntry.lines.push(line);
                 }
             }
@@ -716,9 +681,14 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         }
 
         const {
-            header, parts, content, license, changeLog, title,
+            header,
+            parts,
+            content,
+            license,
+            changeLog,
+            title,
         } = this.format(text);
-        const _title = header.title || title || Utils.getTitle(text);
+        const _title = header.title || title || MDUtils.getTitle(text);
         /* if (_title) {
             window.document.title = _title;
         } else if (title) {
@@ -788,7 +758,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         title: string;
     } {
         text = (text || '').trim();
-        const result = Utils.extractHeader(text);
+        const result = MDUtils.extractHeader(text);
         const header = result.header as MarkdownHeader;
         let body = result.body;
 
@@ -811,13 +781,18 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         body = body.replace(/\*\s(.+)\s\*/g, '*$1*');
         body = body.replace(/`` `(.+)```/g, '```$1```');
 
-        body = Utils.removeDocsify(body);
+        body = MDUtils.removeDocsify(body);
         const {
             parts, content, license, changeLog, title,
-        } = Utils.decorateText(body, header, `${this.props.path && (this.props.path[0] === '/' ? this.props.path : `/${this.props.path}`)}`);
+        } = MDUtils.decorateText(body, header, `${this.props.path && (this.props.path[0] === '/' ? this.props.path : `/${this.props.path}`)}`);
 
         return {
-            header, parts, content: content as Record<string, MarkdownContent>, license, changeLog, title,
+            header,
+            parts,
+            content: content as Record<string, MarkdownContent>,
+            license,
+            changeLog,
+            title,
         };
     }
 
@@ -834,7 +809,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                     className={this.props.classes.email}
                     title={I18n.t('Click to copy %s', email)}
                     onClick={e => {
-                        Utils.onCopy(e, email);
+                        Utils.copyToClipboard(email, e as any as Event);
                         this.setState({ tooltip: I18n.t('Copied') });
                     }}
                 >
@@ -899,19 +874,19 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 <AccordionSummary className={this.props.classes.summary} classes={{ expanded: this.props.classes.summaryExpanded }} expandIcon={<IconExpandMore />}>{I18n.t('Information')}</AccordionSummary>
                 <AccordionActions>
                     <List>
-                        {
-                            ADAPTER_CARD
-                                .filter(attr => Object.prototype.hasOwnProperty.call(this.state.header.hasOwnProperty, attr))
-                                .map(attr =>
-                                    <ListItem key={attr} className={this.props.classes.adapterCardListItem}>
-                                        <div className={this.props.classes.adapterCardAttr}>
-                                            {I18n.t(attr)}
+                        {ADAPTER_CARD
+                            .filter(attr => Object.prototype.hasOwnProperty.call(this.state.header.hasOwnProperty, attr))
+                            .map(attr => <ListItem
+                                key={attr}
+                                className={this.props.classes.adapterCardListItem}
+                            >
+                                <div className={this.props.classes.adapterCardAttr}>
+                                    {I18n.t(attr)}
 :
-                                            {' '}
-                                        </div>
-                                        <span>{attr === 'authors' ? this.formatAuthors(this.state.header[attr]) : this.state.header[attr].toString()}</span>
-                                    </ListItem>)
-                        }
+                                    {' '}
+                                </div>
+                                <span>{attr === 'authors' ? this.formatAuthors(this.state.header.authors) : (this.state.header as Record<string, string | number | boolean>)[attr].toString()}</span>
+                            </ListItem>)}
                     </List>
                 </AccordionActions>
             </Accordion>);
@@ -919,15 +894,19 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
         if (Object.keys(this.state.header).find(attr => attr.startsWith('BADGE-'))) {
             data.push(<Accordion key="header_badges" className={this.props.classes.adapterCard}>
-                <AccordionSummary className={this.props.classes.summary} classes={{ expanded: this.props.classes.summaryExpanded }} expandIcon={<IconExpandMore />}>{I18n.t('Badges')}</AccordionSummary>
+                <AccordionSummary
+                    className={this.props.classes.summary}
+                    classes={{ expanded: this.props.classes.summaryExpanded }}
+                    expandIcon={<IconExpandMore />}
+                >
+                    {I18n.t('Badges')}
+                </AccordionSummary>
                 <AccordionActions classes={{ root: this.props.classes.badgesDetails }}>
-                    {
-                        Object.keys(this.state.header).filter(attr => attr.startsWith('BADGE-'))
-                            .map((attr, i) => [
-                                this.state.header[attr].includes('nodei.co') ? (<br key={`br${i}`} />) : null,
-                                <img key={`img${i}`} src={this.state.header[attr]} alt={attr.substring(6)} />,
-                            ])
-                    }
+                    {Object.keys(this.state.header).filter(attr => attr.startsWith('BADGE-'))
+                        .map((attr, i) => [
+                            (this.state.header as Record<string, string>)[attr].toString().includes('nodei.co') ? <br key={`br${i}`} /> : null,
+                            <img key={`img${i}`} src={(this.state.header as Record<string, string>)[attr]} alt={attr.substring(6)} />,
+                        ])}
                 </AccordionActions>
             </Accordion>);
         }
@@ -949,16 +928,14 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
     _renderSubContent(menu: MarkdownContent) {
         return <ul>
-            {
-                menu.children.map(item => {
-                    const ch   = this.state.content[item].children;
-                    const link = this.state.content[item].external && this.state.content[item].link;
-                    return <li>
-                        <span onClick={() => Markdown.onNavigate(item, link)} className={this.props.classes.contentLinks}>{this.state.content[item].title}</span>
-                        {ch ? this._renderSubContent(this.state.content[item]) : null}
-                    </li>;
-                }).filter(e => e)
-            }
+            {menu.children?.map(item => {
+                const ch   = this.state.content[item].children;
+                const link = this.state.content[item].external && this.state.content[item].link;
+                return <li>
+                    <span onClick={() => Markdown.onNavigate(item, link)} className={this.props.classes.contentLinks}>{this.state.content[item].title}</span>
+                    {ch ? this._renderSubContent(this.state.content[item]) : null}
+                </li>;
+            })}
         </ul>;
     }
 
@@ -1234,7 +1211,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             mm.forEach(header => {
                 const level = header.match(/^(#+)\s/)[1].length;
                 const text = header.substring(level + 1);
-                line = line.replace(header, `<CustomH text="${text}" id="${Utils.text2link(text)}" level="${level}" prefix="${prefix}" />`);
+                line = line.replace(header, `<CustomH text="${text}" id="${MDUtils.text2link(text)}" level="${level}" prefix="${prefix}" />`);
             });
         }
         return line;
