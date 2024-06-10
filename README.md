@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.0 (2024-06-10)
 * (bluefox) Because of the breaking change in GUI components, the GUI was updated. Users will see no difference, but developers should check their packages.
 * (bluefox) Rewritten many GUI components to TypeScript
 * (foxriver76) Added support for the adapter's auto-update option. New version of js-controller required.
@@ -109,10 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.17.11 (2024-05-20)
 * (bluefox) Corrected custom configuration dialog
-
-### 6.17.9 (2024-05-17)
-* (bluefox) Corrected style of time picker in JSON config
-* (bluefox) Corrected saving of tab color
 
 ## License
 The MIT License (MIT)
