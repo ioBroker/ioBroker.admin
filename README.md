@@ -93,7 +93,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Because of the breaking change in GUI components, the GUI was updated. Users will see no difference, but developers should check their packages.
 * (bluefox) Rewritten many GUI components to TypeScript
 * (foxriver76) Added support for the adapter's auto-update option. New version of js-controller required.
-* (bluefox) GUI was re-written to typescript to 98%
+* (bluefox) GUI was re-written to typescript to 100%
 * (bluefox) Shows only installed adapters in the adapter tab or first 100 adapters
 
 ### 6.17.14 (2024-05-25)
