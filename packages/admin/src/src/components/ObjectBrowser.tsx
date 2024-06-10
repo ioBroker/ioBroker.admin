@@ -115,6 +115,11 @@ declare global {
         };
     }
 }
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        grey: true;
+    }
+}
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -5093,7 +5098,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
     }
 
-    getTooltipInfo(id: string, cb?: () => void) {
+    private getTooltipInfo(id: string, cb?: () => void) {
         const obj = this.objects[id];
         const state = this.states[id];
         const classes = this.props.classes;
@@ -6671,7 +6676,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
 
         if (event.code === 'Delete' && this.root && selectedId) {
-            const item = this.getItemFromRoot(this.root, selectedId);
+            const item = ObjectBrowserClass.getItemFromRoot(this.root, selectedId);
             if (item) {
                 const { obj } = item.data;
                 if (obj && !obj.common?.dontDelete) {
@@ -6684,7 +6689,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     /**
      * Find the id from the root
      */
-    private getItemFromRoot(
+    private static getItemFromRoot(
         /** The current root */
         root: TreeItem,
         /** the object id to find */

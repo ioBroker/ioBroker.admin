@@ -77,7 +77,6 @@ function IOColorPicker(props: IOColorPickerProps): React.JSX.Element {
             style={{ width: IconCustom ? 'calc(100% - 45px)' : '100%', display: 'inline-block', verticalAlign: 'top' }}
             label={props.t(props.label)}
             onChange={props.onChange}
-            openAbove
             value={props.value || ''}
             className={props.className}
         />

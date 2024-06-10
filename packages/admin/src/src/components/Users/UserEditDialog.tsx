@@ -66,6 +66,7 @@ interface UserEditDialogProps {
 
 const UserEditDialog: React.FC<UserEditDialogProps> = props => {
     const [originalId, setOriginalId] = useState(null);
+    const [passwordRepeat, setPasswordRepeat] = useState(props.user.common.password);
 
     useEffect(() => {
         setOriginalId(props.user._id);
@@ -74,7 +75,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
 
             icon && Utils.getSvg(icon)
                 .then((fileBlob: string) => {
-                    const newData = Utils.clone(props.user);
+                    const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 });
@@ -103,7 +104,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
     const name = props.getText(props.user.common.name);
 
     const errorPassword = AdminUtils.checkPassword((props.user.common as any).password);
-    const errorPasswordRepeat = AdminUtils.checkPassword((props.user.common as any).password, (props.user.common as any).passwordRepeat);
+    const errorPasswordRepeat = AdminUtils.checkPassword((props.user.common as any).password, passwordRepeat);
 
     let canSave = props.user._id !== 'system.user.' && !errorPassword && !errorPasswordRepeat;
 
@@ -133,9 +134,9 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         t={props.t}
                         value={name}
                         onChange={value => {
-                            const newData = Utils.clone(props.user);
+                            const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
                             if (!props.user.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
-                                newData._id = changeShortId(newData._id, name2Id(value));
+                                newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.User;
                             }
                             newData.common.name = value;
                             props.onChange(newData);
@@ -152,8 +153,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         disabled={props.user.common.dontDelete}
                         value={props.user._id.split('.')[props.user._id.split('.').length - 1]}
                         onChange={value => {
-                            const newData = Utils.clone(props.user);
-                            newData._id = changeShortId(newData._id, name2Id(value));
+                            const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
+                            newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.User;
                             props.onChange(newData);
                         }}
                         icon={LocalOfferIcon}
@@ -176,7 +177,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         t={props.t}
                         value={description}
                         onChange={value => {
-                            const newData = Utils.clone(props.user);
+                            const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
                             newData.common.desc = value;
                             props.onChange(newData);
                         }}
@@ -191,7 +192,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         value={props.user.common.password}
                         error={errorPassword ? props.t(errorPassword) : undefined}
                         onChange={value => {
-                            const newData = Utils.clone(props.user);
+                            const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
                             newData.common.password = value;
                             props.onChange(newData);
                         }}
@@ -205,13 +206,9 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                     <IOTextField
                         label="Password repeat"
                         t={props.t}
-                        value={(props.user.common as any).passwordRepeat}
+                        value={passwordRepeat}
                         error={errorPasswordRepeat ? props.t(errorPasswordRepeat) : undefined}
-                        onChange={value => {
-                            const newData = Utils.clone(props.user);
-                            newData.common.passwordRepeat = value;
-                            props.onChange(newData);
-                        }}
+                        onChange={value => setPasswordRepeat(value)}
                         type="password"
                         autoComplete="new-password"
                         icon={VpnKeyIcon}
@@ -226,7 +223,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         // lang={props.lang}
                         value={props.user.common.icon}
                         onChange={fileBlob => {
-                            const newData = Utils.clone(props.user);
+                            const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
                             newData.common.icon = fileBlob;
                             props.onChange(newData);
                         }}
@@ -242,7 +239,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         value={props.user.common.color}
                         previewClassName={props.classes.iconPreview}
                         onChange={color => {
-                            const newData = Utils.clone(props.user);
+                            const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
                             newData.common.color = color;
                             props.onChange(newData);
                         }}

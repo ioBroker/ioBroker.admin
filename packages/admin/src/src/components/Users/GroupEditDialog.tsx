@@ -131,8 +131,8 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
                             disabled={props.group._id === 'system.group.administrator'}
                             checked={perm}
                             onChange={e => {
-                                const newData = Utils.clone(props.group);
-                                newData.common.acl[blockKey][permKey] = e.target.checked;
+                                const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
+                                (newData.common.acl as any as Record<string, Record<string, boolean>>)[blockKey][permKey] = e.target.checked;
                                 props.onChange(newData);
                             }}
                         />}
@@ -149,13 +149,14 @@ const styles: Styles<IobTheme, any> = () => ({
     },
 });
 
-interface GroupEditDialogProps extends PermissionsTabProps{
+interface GroupEditDialogProps extends PermissionsTabProps {
     onClose: () => void;
     groups: ioBroker.GroupObject[];
     isNew: boolean;
     onChange: (group: ioBroker.GroupObject) => void;
     saveData: (originalId: string | null) => void;
     getText: (text: ioBroker.StringOrTranslated) => string;
+    group: ioBroker.GroupObject;
 }
 
 const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
@@ -170,7 +171,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
 
             icon && Utils.getSvg(icon)
                 .then((fileBlob: string) => {
-                    const newData = Utils.clone(props.group);
+                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 });
@@ -213,9 +214,9 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 t={props.t}
                 value={name}
                 onChange={value => {
-                    const newData = Utils.clone(props.group);
+                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
                     if (!props.group.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
-                        newData._id = changeShortId(newData._id, name2Id(value));
+                        newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.Group;
                     }
                     newData.common.name = value;
                     props.onChange(newData);
@@ -232,8 +233,8 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 disabled={props.group.common.dontDelete}
                 value={props.group._id.split('.')[props.group._id.split('.').length - 1]}
                 onChange={value => {
-                    const newData = Utils.clone(props.group);
-                    newData._id = changeShortId(newData._id, name2Id(value));
+                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
+                    newData._id = changeShortId(newData._id, name2Id(value)) as ioBroker.ObjectIDs.Group;
                     props.onChange(newData);
                 }}
                 icon={LocalOfferIcon}
@@ -256,7 +257,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 t={props.t}
                 value={description}
                 onChange={value => {
-                    const newData = Utils.clone(props.group);
+                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
                     newData.common.desc = value;
                     props.onChange(newData);
                 }}
@@ -272,7 +273,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 // lang={props.lang}
                 value={props.group.common.icon}
                 onChange={fileBlob => {
-                    const newData = Utils.clone(props.group);
+                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 }}
@@ -288,7 +289,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 value={props.group.common.color}
                 previewClassName={props.classes.iconPreview}
                 onChange={color => {
-                    const newData = Utils.clone(props.group);
+                    const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
                     newData.common.color = color;
                     props.onChange(newData);
                 }}

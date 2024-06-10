@@ -8,22 +8,31 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle, FormControl, FormControlLabel,
-    Grid, IconButton, Input, InputAdornment, InputLabel,
-    LinearProgress, MenuItem, Select, Slider,
+    DialogTitle, FormControl,
+    FormControlLabel,
+    Grid, IconButton, Input,
+    InputAdornment, InputLabel,
+    LinearProgress, MenuItem,
+    Select, Slider,
     Snackbar, TextField, Typography,
 } from '@mui/material';
 
 import { Close, Check } from '@mui/icons-material';
 
 import type { Connection, AdminConnection, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
-import {type ConfigItemPanel } from '@iobroker/json-config';
+import { type ConfigItemPanel } from '@iobroker/json-config';
 import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
 import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
 import type { DeviceRefresh } from '@iobroker/dm-utils/build/types';
 
 import { getTranslation } from './Utils';
 import JsonConfig from './JsonConfig';
+
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        grey: true;
+    }
+}
 
 export type CommunicationProps = {
     /* socket object */
@@ -357,11 +366,9 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 </Button>
                 <Button
                     variant="contained"
-                    // @ts-expect-error
                     color="grey"
                     onClick={() => this.state.confirm?.handleClose(false)}
                     autoFocus
-                    hideBackdrop
                 >
                     {getTranslation('noButtonText')}
                 </Button>
@@ -415,10 +422,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 </Button>
                 <Button
                     variant="contained"
-                    // @ts-expect-error
                     color="grey"
                     onClick={() => this.state.form?.handleClose && this.state.form.handleClose()}
-                    hideBackdrop
                 >
                     {getTranslation('cancelButtonText')}
                 </Button>
@@ -478,7 +483,6 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 </Button>
                 <Button
                     variant="contained"
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     onClick={() => this.setState({ showConfirmation: null })}
                     startIcon={<Close />}
@@ -603,10 +607,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 </Button>
                 <Button
                     variant="contained"
-                    // @ts-expect-error grey is a valid color
                     color="grey"
                     onClick={() => this.setState({ showInput: null })}
-                    hideBackdrop
                     startIcon={<Close />}
                 >
                     {getTranslation('cancelButtonText')}

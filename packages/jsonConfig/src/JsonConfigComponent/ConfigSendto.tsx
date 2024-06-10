@@ -314,7 +314,6 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
         return <div className={this.props.classes.fullWidth}>
             <Button
                 variant={this.props.schema.variant || undefined}
-                // @ts-expect-error grey is valid color
                 color={this.props.schema.color || 'grey'}
                 className={this.props.classes.fullWidth}
                 disabled={disabled || !this.props.alive}

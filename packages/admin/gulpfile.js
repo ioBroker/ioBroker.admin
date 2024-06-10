@@ -154,17 +154,11 @@ function copyFiles() {
             .pipe(gulp.dest(dest)),
 
         // copy source files of jsonConfig
-        gulp
-            .src([
-                `${__dirname}/../jsonConfig/src/**/*`,
-            ])
-            .pipe(gulp.dest(`${__dirname}/../jsonConfig/build/src`)),
+        gulp.src([`${__dirname}/../jsonConfig/src/**/*`]).pipe(gulp.dest(`${__dirname}/../jsonConfig/build/src`)),
 
         // copy source files of dm-gui-components
         gulp
-            .src([
-                `${__dirname}/../dm-gui-components/src/**/*`,
-            ])
+            .src([`${__dirname}/../dm-gui-components/src/**/*`])
             .pipe(gulp.dest(`${__dirname}/../dm-gui-components/build/src`)),
 
         gulp

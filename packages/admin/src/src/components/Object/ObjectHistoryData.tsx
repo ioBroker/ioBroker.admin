@@ -1448,7 +1448,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             ].join(';')));
 
         element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(lines.join('\n'))}`);
-        element.setAttribute('download', `${Utils.getObjectName({ [this.props.obj._id]: this.props.obj }, this.props.obj._id, { language: this.props.lang })}.csv`);
+        element.setAttribute('download', `${Utils.getObjectName({ [this.props.obj._id]: this.props.obj }, this.props.obj._id, this.props.lang)}.csv`);
 
         element.click();
 

@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 7.0.0 (2024-06-10)
+### **WORK IN PROGRESS**
 * (bluefox) Because of the breaking change in GUI components, the GUI was updated. Users will see no difference, but developers should check their packages.
 * (bluefox) Rewritten many GUI components to TypeScript
 * (foxriver76) Added support for the adapter's auto-update option. New version of js-controller required.

@@ -162,7 +162,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
     }
 
     doChange(name: 'login' | 'password', value: string): void {
-        const newData = Utils.clone(this.props.data);
+        const newData: LicenseObject = Utils.clone(this.props.data) as LicenseObject;
         newData.native[name] = value;
         this.props.onChange(newData);
     }

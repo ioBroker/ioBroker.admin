@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@iobroker/json-config": "file:../jsonConfig",
+    "@iobroker/dm-gui-components": "file:../dm-gui-components",
     "@types/ace": "^0.0.52"
   },
   "bugs": {

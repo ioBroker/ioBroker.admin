@@ -124,7 +124,6 @@ const CustomModal = ({
                 {I18n.t(titleButtonApply)}
             </Button>}
             <Button
-                // @ts-expect-error grey is valid color
                 color="grey"
                 onClick={onClose}
                 disabled={progress}

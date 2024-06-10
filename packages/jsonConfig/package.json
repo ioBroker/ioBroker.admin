@@ -14,7 +14,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@iobroker/adapter-react-v5": "^5.0.2",
+    "@iobroker/adapter-react-v5": "^5.0.5",
     "crypto-js": "^4.2.0",
     "react-ace": "^11.0.1"
   },

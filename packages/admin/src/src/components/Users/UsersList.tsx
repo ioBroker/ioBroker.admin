@@ -229,14 +229,14 @@ function isTouchDevice() {
         (window.navigator.msMaxTouchPoints > 0));
 }
 
-const USER_TEMPLATE = {
+const USER_TEMPLATE: ioBroker.UserObject = {
+    _id: 'system.user.',
     type: 'user',
     common: {
         name: '',
         password: '',
-        dontDelete: false,
         enabled: true,
-        color: false,
+        color: '',
         desc: '',
     },
     native: {},
@@ -348,14 +348,13 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         (name && (typeof name === 'object' ? name[this.props.lang] || name.en || '' : name || '')) || '';
 
     showUserEditDialog = (user: ioBroker.UserObject, isNew: boolean) => {
-        user = Utils.clone(user);
-        user.common.password       = user.common.password ? PASSWORD_SET : '';
-        (user.common as any).passwordRepeat = user.common.password;
+        user = Utils.clone(user) as ioBroker.UserObject;
+        user.common.password = user.common.password ? PASSWORD_SET : '';
         this.setState({ userEditDialog: user, userEditDialogNew: isNew });
     };
 
     showGroupEditDialog = (group: ioBroker.GroupObject, isNew: boolean) => {
-        group = Utils.clone(group);
+        group = Utils.clone(group) as ioBroker.GroupObject;
         this.setState({ groupEditDialog: group, groupEditDialogNew: isNew });
     };
 
@@ -397,7 +396,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         this.setState({ groupEditDialog: group });
 
     saveUser = async (originalId: ioBroker.ObjectIDs.User) => {
-        const user = Utils.clone(this.state.userEditDialog);
+        const user: ioBroker.UserObject = Utils.clone(this.state.userEditDialog as ioBroker.UserObject) as ioBroker.UserObject;
         const originalUser = this.state.users.find(element => element._id === user._id);
         const newPassword = user.common.password && user.common.password !== PASSWORD_SET ? user.common.password : '';
 
@@ -407,8 +406,6 @@ class UsersList extends Component<UsersListProps, UsersListState> {
             user.common.password = '';
         }
 
-        delete user.common.passwordRepeat;
-
         await this.props.socket.setObject(user._id, user);
         if (typeof this.state.userEditDialog === 'object' && originalId && originalId !== this.state.userEditDialog._id) {
             try {
@@ -416,7 +413,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 for (let i = 0; i < this.state.groups.length; i++) {
                     const group = this.state.groups[i];
                     if (group.common.members.includes(originalId)) {
-                        const groupChanged = Utils.clone(group);
+                        const groupChanged: ioBroker.GroupObject = Utils.clone(group) as ioBroker.GroupObject;
                         groupChanged.common.members[groupChanged.common.members.indexOf(originalId)] = user._id;
                         await this.props.socket.setObject(groupChanged._id, groupChanged);
                     }
@@ -460,7 +457,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         this.props.socket.delObject(userId)
             .then(() => Promise.all(this.state.groups.map(group => {
                 if (group.common.members.includes(userId)) {
-                    const groupChanged = Utils.clone(group);
+                    const groupChanged: ioBroker.GroupObject = Utils.clone(group) as ioBroker.GroupObject;
                     groupChanged.common.members.splice(groupChanged.common.members.indexOf(userId), 1);
                     return this.props.socket.setObject(groupChanged._id, groupChanged);
                 }
@@ -533,8 +530,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                             className={this.props.classes.right}
                             onClick={() => {
                                 const { _id, name } = UsersList.findNewUniqueName(true, this.state.groups, this.props.t('Group'));
-                                const template = Utils.clone(GROUP_TEMPLATE);
-                                template._id = _id;
+                                const template: ioBroker.GroupObject = Utils.clone(GROUP_TEMPLATE) as ioBroker.GroupObject;
+                                template._id = _id as ioBroker.ObjectIDs.Group;
                                 template.common.name = name;
                                 this.showGroupEditDialog(template, true);
                             }}
@@ -574,8 +571,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                             className={this.props.classes.right}
                             onClick={() => {
                                 const { _id, name } = UsersList.findNewUniqueName(false,  this.state.users, this.props.t('User'));
-                                const template = Utils.clone(USER_TEMPLATE);
-                                template._id = _id;
+                                const template: ioBroker.UserObject = Utils.clone(USER_TEMPLATE) as ioBroker.UserObject;
+                                template._id = _id as ioBroker.ObjectIDs.User;
                                 template.common.name = name;
                                 this.showUserEditDialog(template, true);
                             }}

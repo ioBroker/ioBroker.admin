@@ -629,7 +629,6 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
 
     renderErrorMessage() {
         return !!this.state.error && <DialogError
-            classes={{ }}
             title={this.props.t('Error')}
             text={this.state.error ? 'Error' : ''}
             onClose={() => this.setState({ error: false })}

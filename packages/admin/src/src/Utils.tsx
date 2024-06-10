@@ -1,6 +1,12 @@
 import semver from 'semver';
 import { type Translate } from '@iobroker/adapter-react-v5';
 
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        grey: true;
+    }
+}
+
 const ANSI_RESET = 0;
 const ANSI_RESET_COLOR = 39;
 const ANSI_RESET_BG_COLOR = 49;
@@ -668,13 +674,6 @@ class Utils {
 
     static clone<T>(obj: T): T {
         return JSON.parse(JSON.stringify(obj));
-    }
-}
-
-declare module '@mui/material/Button' {
-    interface ButtonPropsColorOverrides {
-        grey: true;
-        gray: true;
     }
 }
 

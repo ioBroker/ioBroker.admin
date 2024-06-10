@@ -12,7 +12,6 @@ declare global {
     declare module '@mui/material/Button' {
         interface ButtonPropsColorOverrides {
             grey: true;
-            gray: true;
         }
     }
 }
