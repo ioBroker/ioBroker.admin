@@ -203,10 +203,8 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             src={img}
             onError={e => {
                 if (e.target) {
-                    // @ts-expect-error check later
-                    e.target.onerror = null;
-                    // @ts-expect-error check later
-                    e.target.src = './img/no-image.png';
+                    (e.target as HTMLImageElement).onerror = null;
+                    (e.target as HTMLImageElement).src = './img/no-image.png';
                 }
             }}
         />;

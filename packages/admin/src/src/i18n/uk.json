@@ -1605,5 +1605,6 @@
   "yesterday": "вчора",
   "Filter adapters to see others. There is %s more": "Фільтруйте адаптери, щоб побачити інші. Є ще %s",
   "Enter version manually": "Введіть версію вручну",
-  "Or select from the list": "Або виберіть зі списку"
+  "Or select from the list": "Або виберіть зі списку",
+  "Source (show all)": "Джерело (показати все)"
 }

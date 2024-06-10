@@ -110,10 +110,10 @@ const styles: Styles<IobTheme, any> = theme => ({
         color: amber[200],
     },
     dark_debug: {
-        color: grey[300],
+        color: '#b1b1b1',
     },
     dark_silly: {
-        color: grey[200],
+        color: '#7e7e7e',
     },
     source: {
         width: 200,
@@ -499,7 +499,7 @@ class Logs extends Component<LogsProps, LogsState> {
     }
 
     componentDidMount() {
-        this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
+        // this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
         this.props.logsWorker.registerHandler(this.logHandler);
         this.props.clearErrors();
 
@@ -518,7 +518,7 @@ class Logs extends Component<LogsProps, LogsState> {
     }
 
     componentWillUnmount() {
-        this.props.logsWorker && this.props.logsWorker.enableCountErrors(true);
+        // this.props.logsWorker && this.props.logsWorker.enableCountErrors(true);
         this.props.logsWorker.unregisterHandler(this.logHandler);
         this.props.clearErrors();
     }
@@ -701,7 +701,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     null :
                     <Icon src={this.state.sources[id].icon || ''} className={this.props.classes.iconSelect} />}
                 {id === '1' ?
-                    this.t('Source') :
+                    this.t('Source (show all)') :
                     id}
             </MenuItem>);
     }

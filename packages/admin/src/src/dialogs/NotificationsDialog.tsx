@@ -307,7 +307,7 @@ const NotificationsDialog = ({
 
     return <Dialog
         onClose={() => onClose()}
-        open
+        open={!0}
         classes={{ paper: classes.paper }}
     >
         <h2 className={classes.headingTop}>
@@ -399,7 +399,7 @@ const NotificationsDialog = ({
                                     <AccordionDetails className={classes.column}>
                                         {messages[scope][name].instances[nameInst].messages.map(msg =>
                                             <Typography key={msg.ts} component="div" className={classes.message}>
-                                                <div className={classes.terminal}>{msg.message}</div>
+                                                <div className={classes.terminal}>{Utils.renderTextWithA(msg.message)}</div>
                                                 <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
                                             </Typography>)}
                                     </AccordionDetails>

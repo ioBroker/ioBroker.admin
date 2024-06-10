@@ -1521,7 +1521,8 @@ class App extends Router<AppProps, AppState> {
 
         if (result?.system && Object.keys(result.system.categories).length) {
             await this.instancesWorker.getInstances()
-                .then(instances => this.setState({ showHostWarning: { host, instances: instances as Record<string, ioBroker.InstanceObject>, result } }));
+                .then(instances =>
+                    this.setState({ showHostWarning: { host, instances: instances as Record<string, ioBroker.InstanceObject>, result } }));
         }
     };
 
@@ -2390,6 +2391,377 @@ class App extends Router<AppProps, AppState> {
         </Menu> : null;
     }
 
+    renderToolbar(classes: Record<string, string>, small: boolean) {
+        const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
+        const expertModePermanent =
+            !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
+
+        return <Toolbar>
+            <IconButton
+                size="large"
+                edge="start"
+                className={Utils.clsx(
+                    classes.menuButton,
+                    !small && this.state.drawerState !== DrawerStates.closed && classes.hide,
+                )}
+                onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}
+            >
+                <MenuIcon />
+            </IconButton>
+            <Tooltip title={I18n.t('Notifications')}>
+                <IconButton
+                    size="large"
+                    disableRipple={!this.state.noNotifications}
+                    style={{ opacity: this.state.noNotifications ? 1 : 0.3 }}
+                    onClick={this.state.noNotifications ? () => this.setState({ notificationsDialog: true }) : null}
+                >
+                    <Badge
+                        badgeContent={this.state.noNotifications}
+                        color="secondary"
+                    >
+                        <NotificationsIcon />
+                    </Badge>
+                </IconButton>
+            </Tooltip>
+            <div className={classes.wrapperButtons}>
+                <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
+                    {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
+                        <IconButton
+                            size="large"
+                            onClick={() => Router.doNavigate(null, 'discovery')}
+                        >
+                            <VisibilityIcon />
+                        </IconButton>
+                    </Tooltip>}
+                </IsVisible>
+                <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
+                    <Tooltip title={I18n.t('System settings')}>
+                        <IconButton
+                            size="large"
+                            onClick={() => Router.doNavigate(null, 'system')}
+                        >
+                            <BuildIcon />
+                        </IconButton>
+                    </Tooltip>
+                </IsVisible>
+                {this.toggleThemePossible ? <IsVisible name="admin.appBar.toggleTheme" config={this.adminGuiConfig}>
+                    <ToggleThemeMenu
+                        size="large"
+                        toggleTheme={this.toggleTheme}
+                        themeName={this.state.themeName as 'dark' | 'light' | 'colored' | 'blue'}
+                        t={I18n.t}
+                    />
+                </IsVisible> : null}
+                <IsVisible name="admin.appBar.expertMode" config={this.adminGuiConfig}>
+                    <Tooltip
+                        title={`${I18n.t('Toggle expert mode')} ${
+                            expertModePermanent
+                                ? ''
+                                : ` (${I18n.t('only in this browser session')})`
+                        }`}
+                    >
+                        <Badge
+                            color="secondary"
+                            variant="dot"
+                            classes={{ badge: this.props.classes.expertBadge }}
+                            invisible={expertModePermanent}
+                        >
+                            <IconButton
+                                size="large"
+                                onClick={() => {
+                                    if (
+                                        !!this.state.systemConfig.common.expertMode ===
+                                        !this.state.expertMode
+                                    ) {
+                                        (
+                                            window._sessionStorage || window.sessionStorage
+                                        ).setItem('App.expertMode', this.state.expertMode ? 'false' : 'true');
+                                        this.setState({ expertMode: !this.state.expertMode });
+                                        this.refConfigIframe?.contentWindow?.postMessage(
+                                            'updateExpertMode',
+                                            '*',
+                                        );
+                                    } else if (
+                                        (window._sessionStorage || window.sessionStorage).getItem('App.doNotShowExpertDialog') === 'true'
+                                    ) {
+                                        (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', this.state.expertMode ? 'false' : 'true');
+                                        this.setState({ expertMode: !this.state.expertMode });
+                                        this.refConfigIframe?.contentWindow?.postMessage(
+                                            'updateExpertMode',
+                                            '*',
+                                        );
+                                    } else {
+                                        this.setState({ expertModeDialog: true });
+                                    }
+                                }}
+                                style={{
+                                    color: this.state.expertMode
+                                        ? this.state.theme.palette.expert
+                                        : undefined,
+                                }}
+                                color="default"
+                            >
+                                <IconExpert
+                                    // glowColor={this.state.theme.palette.secondary.main}
+                                    // active={this.state.expertMode}
+                                    className={Utils.clsx(
+                                        classes.expertIcon,
+                                        this.state.expertMode && classes.expertIconActive,
+                                    )}
+                                />
+                            </IconButton>
+                        </Badge>
+                    </Tooltip>
+                </IsVisible>
+                {this.state.expertMode ? <Tooltip
+                    title={I18n.t(
+                        'Synchronize admin settings between all opened browser windows',
+                    )}
+                >
+                    <IconButton
+                        size="large"
+                        onClick={e =>
+                            (this.state.guiSettings
+                                ? this.enableGuiSettings(false)
+                                : this.setState({ showGuiSettings: e.target as HTMLButtonElement }))}
+                        style={{
+                            color: this.state.guiSettings
+                                ? this.state.theme.palette.expert
+                                : undefined,
+                        }}
+                    >
+                        {this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled />}
+                    </IconButton>
+                </Tooltip> : null}
+                <IsVisible name="admin.appBar.hostSelector" config={this.adminGuiConfig}>
+                    <HostSelectors
+                        tooltip={
+                            this.state.currentTab.tab !== 'tab-instances' &&
+                            this.state.currentTab.tab !== 'tab-adapters' &&
+                            this.state.currentTab.tab !== 'tab-logs'
+                                ? I18n.t(
+                                    'You can change host on Instances, Adapters or Logs pages',
+                                )
+                                : undefined
+                        }
+                        themeType={this.state.themeType}
+                        expertMode={this.state.expertMode}
+                        socket={this.socket}
+                        hostsWorker={this.hostsWorker}
+                        currentHost={this.state.currentHost}
+                        setCurrentHost={(hostName, host) => {
+                            this.setState(
+                                {
+                                    currentHostName: hostName,
+                                    currentHost: host,
+                                },
+                                async () => {
+                                    this.logsWorkerChanged(host);
+                                    (window._localStorage || window.localStorage).setItem(
+                                        'App.currentHost',
+                                        host,
+                                    );
+
+                                    await this.readRepoAndInstalledInfo(host, this.state.hosts);
+                                    // read notifications from host
+                                    const notifications = await this.hostsWorker.getNotifications(host);
+                                    this.showAdaptersWarning(
+                                        notifications,
+                                        host,
+                                    );
+                                },
+                            );
+                        }}
+                        disabled={
+                            this.state.currentTab.tab !== 'tab-instances' &&
+                            this.state.currentTab.tab !== 'tab-adapters' &&
+                            this.state.currentTab.tab !== 'tab-logs'
+                        }
+                    />
+                </IsVisible>
+                <div className={classes.flexGrow} />
+                {this.state.cmd && !this.state.cmdDialog &&
+                    <IconButton size="large" onClick={() => this.setState({ cmdDialog: true })}>
+                        <PictureInPictureAltIcon
+                            className={
+                                this.state.commandError
+                                    ? classes.errorCmd : (this.state.performed ? classes.performed : classes.cmd)
+                            }
+                        />
+                    </IconButton>}
+            </div>
+
+            {this.renderLoggedUser()}
+
+            {this.state.drawerState !== DrawerStates.opened &&
+                !this.state.expertMode &&
+                window.innerWidth > 400 &&
+                <Grid
+                    container
+                    className={Utils.clsx(
+                        this.state.drawerState !== DrawerStates.opened && classes.avatarVisible,
+                        classes.avatarNotVisible,
+                    )}
+                    spacing={1}
+                    alignItems="center"
+                >
+                    {(!this.state.user ||
+                            this.props.width === 'xs' ||
+                            this.props.width === 'sm') &&
+                        <Hidden xsDown>
+                            <div className={classes.wrapperName}>
+                                <Typography>admin</Typography>
+                                {!this.adminGuiConfig.icon && this.state.versionAdmin && (
+                                    <Typography
+                                        className={classes.styleVersion}
+                                        style={{ color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080' }}
+                                    >
+                                        v
+                                        {this.state.versionAdmin}
+                                    </Typography>
+                                )}
+                            </div>
+                        </Hidden>}
+                    <Grid item>
+                        <a
+                            href="/#easy"
+                            onClick={event => event.preventDefault()}
+                            style={{ color: 'inherit', textDecoration: 'none' }}
+                        >
+                            {this.adminGuiConfig.icon ? <div
+                                style={{
+                                    height: 50,
+                                    width: 102,
+                                    lineHeight: '50px',
+                                    background: 'white',
+                                    borderRadius: 5,
+                                    padding: 5,
+                                }}
+                            >
+                                <img
+                                    src={this.adminGuiConfig.icon}
+                                    alt="logo"
+                                    style={{ maxWidth: '100%', maxHeight: '100%' }}
+                                />
+                            </div>
+                                :
+                                <Avatar
+                                    onClick={() => this.handleNavigation('easy')}
+                                    className={Utils.clsx(
+                                        (this.state.themeName === 'colored' ||
+                                            this.state.themeName === 'blue') &&
+                                        classes.logoWhite,
+                                    )}
+                                    alt="ioBroker"
+                                    src="img/no-image.png"
+                                />}
+                        </a>
+                    </Grid>
+                </Grid>}
+        </Toolbar>;
+    }
+
+    renderSampleError() {
+        const message = this.state.hasGlobalError.message;
+        const stack = this.state.hasGlobalError.stack;
+
+        return <div
+            style={{
+                textAlign: 'center',
+                fontSize: 22,
+                marginTop: 50,
+                height: 'calc(100% - 50px)',
+                overflow: 'auto',
+            }}
+        >
+            <h1 style={{ color: '#F00' }}>Error in GUI!</h1>
+            Please open the browser console (F12), copy error text from there and create the issue on
+            {' '}
+            <a href="https://github.com/ioBroker/ioBroker.admin/issues" target="_blank" rel="noreferrer">
+                github
+            </a>
+            <br />
+            Without this information it is not possible to analyse the error.
+            <br />
+            It should looks like
+            {' '}
+            <br />
+            <img src="img/browserError.png" alt="error" />
+            <br />
+            If in the second line you will see
+            {' '}
+            <code
+                style={{
+                    color: '#888',
+                    fontFamily: 'monospace',
+                    fontSize: 16,
+                }}
+            >
+                at :3000/static/js/main.chunk.js:36903
+            </code>
+            {' '}
+            and not the normal file name,
+            <br />
+            please try to reproduce an error with opened browser console. In this case the special &quot;map&quot; files
+            will be loaded and the developers can see the real name of functions and files.
+            <div style={{ color: '#F88', fontSize: 14, marginTop: 20 }}>{message}</div>
+            <pre
+                style={{
+                    color: '#F88',
+                    fontSize: 12,
+                    fontFamily: 'monospace',
+                    textAlign: 'left',
+                    marginTop: 20,
+                    padding: 20,
+                }}
+            >
+                {(stack || '').toString().split('\n')
+                    .map((line: string, i: number) => <div key={i}>
+                        {line}
+                        <br />
+                    </div>)}
+            </pre>
+        </div>;
+    }
+
+    renderEasyMode() {
+        return <StylesProvider generateClassName={generateClassName}>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <div style={{ height: '100%' }}>
+                        {!this.state.connected && <Connecting />}
+                        <Suspense fallback={<Connecting />}>
+                            <EasyMode
+                                navigate={Router.doNavigate}
+                                getLocation={Router.getLocation}
+                                location={this.state.currentTab}
+                                toggleTheme={this.toggleTheme}
+                                themeName={this.state.themeName}
+                                themeType={this.state.themeType}
+                                theme={this.state.theme}
+                                width={this.props.width}
+                                adminInstance={this.adminInstance}
+                                configs={this.state.easyModeConfigs}
+                                socket={this.socket}
+                                configStored={value => this.allStored(value)}
+                                isFloatComma={this.state.systemConfig?.common.isFloatComma}
+                                dateFormat={this.state.systemConfig?.common.dateFormat}
+                                t={I18n.t}
+                                lang={I18n.getLanguage()}
+                                onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
+                                onUnregisterIframeRef={ref => {
+                                    if (this.refConfigIframe === ref) {
+                                        this.refConfigIframe = null;
+                                    }
+                                }}
+                            />
+                        </Suspense>
+                    </div>
+                </ThemeProvider>
+            </StyledEngineProvider>
+        </StylesProvider>;
+    }
+
     render() {
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
@@ -2426,66 +2798,7 @@ class App extends Router<AppProps, AppState> {
         }
 
         if (this.state.hasGlobalError) {
-            const message = this.state.hasGlobalError.message;
-            const stack = this.state.hasGlobalError.stack;
-
-            return <div
-                style={{
-                    textAlign: 'center',
-                    fontSize: 22,
-                    marginTop: 50,
-                    height: 'calc(100% - 50px)',
-                    overflow: 'auto',
-                }}
-            >
-                <h1 style={{ color: '#F00' }}>Error in GUI!</h1>
-                Please open the browser console (F12), copy error text from there and create the issue on
-                {' '}
-                <a href="https://github.com/ioBroker/ioBroker.admin/issues" target="_blank" rel="noreferrer">
-                    github
-                </a>
-                <br />
-                Without this information it is not possible to analyse the error.
-                <br />
-                It should looks like
-                {' '}
-                <br />
-                <img src="img/browserError.png" alt="error" />
-                <br />
-                If in the second line you will see
-                {' '}
-                <code
-                    style={{
-                        color: '#888',
-                        fontFamily: 'monospace',
-                        fontSize: 16,
-                    }}
-                >
-                    at :3000/static/js/main.chunk.js:36903
-                </code>
-                {' '}
-                and not the normal file name,
-                <br />
-                please try to reproduce an error with opened browser console. In this case the special &quot;map&quot; files
-                will be loaded and the developers can see the real name of functions and files.
-                <div style={{ color: '#F88', fontSize: 14, marginTop: 20 }}>{message}</div>
-                <pre
-                    style={{
-                        color: '#F88',
-                        fontSize: 12,
-                        fontFamily: 'monospace',
-                        textAlign: 'left',
-                        marginTop: 20,
-                        padding: 20,
-                    }}
-                >
-                    {(stack || '').toString().split('\n')
-                        .map((line: string, i: number) => <div key={i}>
-                            {line}
-                            <br />
-                        </div>)}
-                </pre>
-            </div>;
+            return this.renderSampleError();
         }
 
         if (this.state.login) {
@@ -2512,46 +2825,8 @@ class App extends Router<AppProps, AppState> {
                 </StyledEngineProvider>
             </StylesProvider>;
         } if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
-            return <StylesProvider generateClassName={generateClassName}>
-                <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={this.state.theme}>
-                        <div style={{ height: '100%' }}>
-                            {!this.state.connected && <Connecting />}
-                            <Suspense fallback={<Connecting />}>
-                                <EasyMode
-                                    navigate={Router.doNavigate}
-                                    getLocation={Router.getLocation}
-                                    location={this.state.currentTab}
-                                    toggleTheme={this.toggleTheme}
-                                    themeName={this.state.themeName}
-                                    themeType={this.state.themeType}
-                                    theme={this.state.theme}
-                                    width={this.props.width}
-                                    adminInstance={this.adminInstance}
-                                    configs={this.state.easyModeConfigs}
-                                    socket={this.socket}
-                                    configStored={value => this.allStored(value)}
-                                    isFloatComma={this.state.systemConfig?.common.isFloatComma}
-                                    dateFormat={this.state.systemConfig?.common.dateFormat}
-                                    t={I18n.t}
-                                    lang={I18n.getLanguage()}
-                                    onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
-                                    onUnregisterIframeRef={ref => {
-                                        if (this.refConfigIframe === ref) {
-                                            this.refConfigIframe = null;
-                                        }
-                                    }}
-                                />
-                            </Suspense>
-                        </div>
-                    </ThemeProvider>
-                </StyledEngineProvider>
-            </StylesProvider>;
+            return this.renderEasyMode();
         }
-
-        const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
-        const expertModePermanent =
-            !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
 
         return <StylesProvider generateClassName={generateClassName}>
             <StyledEngineProvider injectFirst>
@@ -2567,267 +2842,7 @@ class App extends Router<AppProps, AppState> {
                                 !small && this.state.drawerState === DrawerStates.compact && classes.appBarShiftCompact,
                             )}
                         >
-                            <Toolbar>
-                                <IconButton
-                                    size="large"
-                                    edge="start"
-                                    className={Utils.clsx(
-                                        classes.menuButton,
-                                        !small && this.state.drawerState !== DrawerStates.closed && classes.hide,
-                                    )}
-                                    onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}
-                                >
-                                    <MenuIcon />
-                                </IconButton>
-                                <IconButton
-                                    size="large"
-                                    onClick={() => this.setState({ notificationsDialog: true })}
-                                >
-                                    <Tooltip title={I18n.t('Notifications')}>
-                                        <Badge
-                                            badgeContent={this.state.noNotifications}
-                                            color="secondary"
-                                        >
-                                            <NotificationsIcon />
-                                        </Badge>
-                                    </Tooltip>
-                                </IconButton>
-                                <div className={classes.wrapperButtons}>
-                                    <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
-                                        {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
-                                            <IconButton
-                                                size="large"
-                                                onClick={() => Router.doNavigate(null, 'discovery')}
-                                            >
-                                                <VisibilityIcon />
-                                            </IconButton>
-                                        </Tooltip>}
-                                    </IsVisible>
-                                    <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
-                                        <Tooltip title={I18n.t('System settings')}>
-                                            <IconButton
-                                                size="large"
-                                                onClick={() => Router.doNavigate(null, 'system')}
-                                            >
-                                                <BuildIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </IsVisible>
-                                    {this.toggleThemePossible ? <IsVisible name="admin.appBar.toggleTheme" config={this.adminGuiConfig}>
-                                        <ToggleThemeMenu
-                                            size="large"
-                                            toggleTheme={this.toggleTheme}
-                                            themeName={this.state.themeName as 'dark' | 'light' | 'colored' | 'blue'}
-                                            t={I18n.t}
-                                        />
-                                    </IsVisible> : null}
-                                    <IsVisible name="admin.appBar.expertMode" config={this.adminGuiConfig}>
-                                        <Tooltip
-                                            title={`${I18n.t('Toggle expert mode')} ${
-                                                expertModePermanent
-                                                    ? ''
-                                                    : ` (${I18n.t('only in this browser session')})`
-                                            }`}
-                                        >
-                                            <Badge
-                                                color="secondary"
-                                                variant="dot"
-                                                classes={{ badge: this.props.classes.expertBadge }}
-                                                invisible={expertModePermanent}
-                                            >
-                                                <IconButton
-                                                    size="large"
-                                                    onClick={() => {
-                                                        if (
-                                                            !!this.state.systemConfig.common.expertMode ===
-                                                            !this.state.expertMode
-                                                        ) {
-                                                            (
-                                                                window._sessionStorage || window.sessionStorage
-                                                            ).setItem('App.expertMode', this.state.expertMode ? 'false' : 'true');
-                                                            this.setState({ expertMode: !this.state.expertMode });
-                                                            this.refConfigIframe?.contentWindow?.postMessage(
-                                                                'updateExpertMode',
-                                                                '*',
-                                                            );
-                                                        } else if (
-                                                            (window._sessionStorage || window.sessionStorage).getItem('App.doNotShowExpertDialog') === 'true'
-                                                        ) {
-                                                            (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', this.state.expertMode ? 'false' : 'true');
-                                                            this.setState({ expertMode: !this.state.expertMode });
-                                                            this.refConfigIframe?.contentWindow?.postMessage(
-                                                                'updateExpertMode',
-                                                                '*',
-                                                            );
-                                                        } else {
-                                                            this.setState({ expertModeDialog: true });
-                                                        }
-                                                    }}
-                                                    style={{
-                                                        color: this.state.expertMode
-                                                            ? this.state.theme.palette.expert
-                                                            : undefined,
-                                                    }}
-                                                    color="default"
-                                                >
-                                                    <IconExpert
-                                                        // glowColor={this.state.theme.palette.secondary.main}
-                                                        // active={this.state.expertMode}
-                                                        className={Utils.clsx(
-                                                            classes.expertIcon,
-                                                            this.state.expertMode && classes.expertIconActive,
-                                                        )}
-                                                    />
-                                                </IconButton>
-                                            </Badge>
-                                        </Tooltip>
-                                    </IsVisible>
-                                    {this.state.expertMode ? <Tooltip
-                                        title={I18n.t(
-                                            'Synchronize admin settings between all opened browser windows',
-                                        )}
-                                    >
-                                        <IconButton
-                                            size="large"
-                                            onClick={e =>
-                                                (this.state.guiSettings
-                                                    ? this.enableGuiSettings(false)
-                                                    : this.setState({ showGuiSettings: e.target as HTMLButtonElement }))}
-                                            style={{
-                                                color: this.state.guiSettings
-                                                    ? this.state.theme.palette.expert
-                                                    : undefined,
-                                            }}
-                                        >
-                                            {this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled />}
-                                        </IconButton>
-                                    </Tooltip> : null}
-                                    <IsVisible name="admin.appBar.hostSelector" config={this.adminGuiConfig}>
-                                        <HostSelectors
-                                            tooltip={
-                                                this.state.currentTab.tab !== 'tab-instances' &&
-                                                this.state.currentTab.tab !== 'tab-adapters' &&
-                                                this.state.currentTab.tab !== 'tab-logs'
-                                                    ? I18n.t(
-                                                        'You can change host on Instances, Adapters or Logs pages',
-                                                    )
-                                                    : undefined
-                                            }
-                                            themeType={this.state.themeType}
-                                            expertMode={this.state.expertMode}
-                                            socket={this.socket}
-                                            hostsWorker={this.hostsWorker}
-                                            currentHost={this.state.currentHost}
-                                            setCurrentHost={(hostName, host) => {
-                                                this.setState(
-                                                    {
-                                                        currentHostName: hostName,
-                                                        currentHost: host,
-                                                    },
-                                                    async () => {
-                                                        this.logsWorkerChanged(host);
-                                                        (window._localStorage || window.localStorage).setItem(
-                                                            'App.currentHost',
-                                                            host,
-                                                        );
-
-                                                        await this.readRepoAndInstalledInfo(host, this.state.hosts);
-                                                        // read notifications from host
-                                                        const notifications = await this.hostsWorker.getNotifications(host);
-                                                        this.showAdaptersWarning(
-                                                            notifications,
-                                                            host,
-                                                        );
-                                                    },
-                                                );
-                                            }}
-                                            disabled={
-                                                this.state.currentTab.tab !== 'tab-instances' &&
-                                                this.state.currentTab.tab !== 'tab-adapters' &&
-                                                this.state.currentTab.tab !== 'tab-logs'
-                                            }
-                                        />
-                                    </IsVisible>
-                                    <div className={classes.flexGrow} />
-                                    {this.state.cmd && !this.state.cmdDialog &&
-                                        <IconButton size="large" onClick={() => this.setState({ cmdDialog: true })}>
-                                            <PictureInPictureAltIcon
-                                                className={
-                                                    this.state.commandError
-                                                        ? classes.errorCmd : (this.state.performed ? classes.performed : classes.cmd)
-                                                }
-                                            />
-                                        </IconButton>}
-                                </div>
-
-                                {this.renderLoggedUser()}
-
-                                {this.state.drawerState !== DrawerStates.opened &&
-                                    !this.state.expertMode &&
-                                    window.innerWidth > 400 &&
-                                    <Grid
-                                        container
-                                        className={Utils.clsx(
-                                            this.state.drawerState !== DrawerStates.opened && classes.avatarVisible,
-                                            classes.avatarNotVisible,
-                                        )}
-                                        spacing={1}
-                                        alignItems="center"
-                                    >
-                                        {(!this.state.user ||
-                                                this.props.width === 'xs' ||
-                                                this.props.width === 'sm') &&
-                                            <Hidden xsDown>
-                                                <div className={classes.wrapperName}>
-                                                    <Typography>admin</Typography>
-                                                    {!this.adminGuiConfig.icon && this.state.versionAdmin && (
-                                                        <Typography
-                                                            className={classes.styleVersion}
-                                                            style={{ color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080' }}
-                                                        >
-                                                            v
-                                                            {this.state.versionAdmin}
-                                                        </Typography>
-                                                    )}
-                                                </div>
-                                            </Hidden>}
-                                        <Grid item>
-                                            <a
-                                                href="/#easy"
-                                                onClick={event => event.preventDefault()}
-                                                style={{ color: 'inherit', textDecoration: 'none' }}
-                                            >
-                                                {this.adminGuiConfig.icon ? <div
-                                                    style={{
-                                                        height: 50,
-                                                        width: 102,
-                                                        lineHeight: '50px',
-                                                        background: 'white',
-                                                        borderRadius: 5,
-                                                        padding: 5,
-                                                    }}
-                                                >
-                                                    <img
-                                                        src={this.adminGuiConfig.icon}
-                                                        alt="logo"
-                                                        style={{ maxWidth: '100%', maxHeight: '100%' }}
-                                                    />
-                                                </div>
-                                                    :
-                                                    <Avatar
-                                                        onClick={() => this.handleNavigation('easy')}
-                                                        className={Utils.clsx(
-                                                            (this.state.themeName === 'colored' ||
-                                                                this.state.themeName === 'blue') &&
-                                                                classes.logoWhite,
-                                                        )}
-                                                        alt="ioBroker"
-                                                        src="img/no-image.png"
-                                                    />}
-                                            </a>
-                                        </Grid>
-                                    </Grid>}
-                            </Toolbar>
+                            {this.renderToolbar(classes, small)}
                         </AppBar>
                         <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
                             <Drawer

@@ -117,14 +117,11 @@ export default class LogsWorker {
     }
 
     logHandler = (line: LogLine | string) => {
-        const obj = this._processLine(line);
+        const result = this._processLine(line);
 
-        if (obj) {
-            const errors = this.errors;
-            const warnings = this.warnings;
-
+        if (result?.objLine) {
             this.newLogs = this.newLogs || [];
-            this.newLogs.push(obj);
+            this.newLogs.push(result.objLine);
 
             if (!this.logTimeout) {
                 this.logTimeout = setTimeout(() => {
@@ -137,12 +134,14 @@ export default class LogsWorker {
                 }, 200);
             }
 
-            if (errors !== this.errors) {
-                this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
-            }
-
-            if (warnings !== this.warnings) {
-                this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+            if (result.isNew) {
+                if (result.objLine.severity === 'error' && this.countErrors) {
+                    this.errors++;
+                    this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
+                } else if (result.objLine.severity === 'warn' && this.countWarnings) {
+                    this.warnings++;
+                    this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+                }
             }
         }
     };
@@ -198,7 +197,7 @@ export default class LogsWorker {
         }
     }
 
-    _processLine(line: LogLine | string, lastKey?: number): LogLineSaved | null {
+    _processLine(line: LogLine | string, lastKey?: number): { objLine: LogLineSaved; isNew: boolean } | null {
         // do not update logs before the first logs from host received
         if (!this.logs) {
             return null;
@@ -214,17 +213,17 @@ export default class LogsWorker {
             "_id": 48358425
         }; */
 
-        let obj: LogLineSaved;
+        let objLine: LogLineSaved;
         let isNew = true;
         const length = this.logs.length;
         lastKey = lastKey || (length && this.logs[this.logs.length - 1].key) || 0;
 
         if (typeof line === 'object') {
-            obj = line as LogLineSaved;
-            if (lastKey && lastKey <= obj.ts) {
-                obj.key = lastKey + 1;
+            objLine = line as LogLineSaved;
+            if (lastKey && lastKey <= objLine.ts) {
+                objLine.key = lastKey + 1;
             } else {
-                obj.key = obj.ts;
+                objLine.key = objLine.ts;
             }
         } else {
             // parse string
@@ -250,7 +249,7 @@ export default class LogsWorker {
                 // detect from
                 const from = line.match(/: (host\..+? |[-\w]+\.\d+ \()/);
 
-                obj = {
+                objLine = {
                     key,
                     from:  from ? from[0].replace(/[ :(]/g, '') : '',
                     message: line.split(/\[\d+m: /)[1],
@@ -261,59 +260,51 @@ export default class LogsWorker {
                 isNew = false;
                 // if no time found
                 if (length) {
-                    obj = this.logs[length - 1];
-                    if (obj) {
-                        if (typeof obj.message === 'object') {
-                            obj.message = Utils.parseColorMessage(obj.message.original + line);
+                    objLine = this.logs[length - 1];
+                    if (objLine) {
+                        if (typeof objLine.message === 'object') {
+                            objLine.message = Utils.parseColorMessage(objLine.message.original + line);
                         } else {
-                            obj.message += line;
+                            objLine.message += line;
                         }
                     }
                 }
             }
         }
 
-        if (!obj) {
+        if (!objLine) {
             return null;
         }
 
-        if (typeof obj.message !== 'object') {
-            obj.message = Utils.parseColorMessage(obj.message);
+        if (typeof objLine.message !== 'object') {
+            objLine.message = Utils.parseColorMessage(objLine.message);
         }
 
         if (isNew) {
             // if new message time is less than last message in log
-            if (length && this.logs[length - 1].key > obj.key) {
+            if (length && this.logs[length - 1].key > objLine.key) {
                 let i;
                 // find the place
                 for (i = length - 1; i >= 0; i--) {
-                    if (this.logs[i].key < obj.key) {
+                    if (this.logs[i].key < objLine.key) {
                         break;
                     }
                 }
                 if (i === -1) {
-                    this.logs.unshift(obj);
+                    this.logs.unshift(objLine);
                 } else {
-                    this.logs.splice(i + 1, 0, obj);
+                    this.logs.splice(i + 1, 0, objLine);
                 }
             } else {
-                this.logs.push(obj);
+                this.logs.push(objLine);
             }
 
             if (length + 1 === this.maxLogs) {
                 this.logs.shift();
             }
-
-            if (isNew && obj.severity === 'error' && this.countErrors) {
-                this.errors++;
-            }
-
-            if (isNew && obj.severity === 'warn' && this.countWarnings) {
-                this.warnings++;
-            }
         }
 
-        return obj;
+        return { objLine, isNew };
     }
 
     getLogs(update?: boolean): Promise<{ logs: LogLineSaved[]; logSize: number }> {
@@ -325,6 +316,8 @@ export default class LogsWorker {
             return this.promise;
         }
 
+        const oldErrors = this.errors;
+        const oldWarnings = this.warnings;
         this.errors = 0;
         this.warnings = 0;
 
@@ -350,9 +343,16 @@ export default class LogsWorker {
                 let lastKey: number;
 
                 (lines as string[]).forEach(line => {
-                    const obj = this._processLine(line, lastKey);
-                    if (obj) {
-                        lastKey = obj.key;
+                    const result = this._processLine(line, lastKey);
+                    if (result?.objLine) {
+                        lastKey = result.objLine.key;
+                        if (result.isNew && result.objLine.severity === 'error' && this.countErrors) {
+                            this.errors++;
+                        }
+
+                        if (result.isNew && result.objLine.severity === 'warn' && this.countWarnings) {
+                            this.warnings++;
+                        }
                     }
                 });
 
@@ -365,8 +365,8 @@ export default class LogsWorker {
                 // inform subscribes about each line
                 this.handlers.forEach(cb => cb && cb(this.logs, logSize));
 
-                this.errors && this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
-                this.warnings && this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+                oldErrors !== this.errors && this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
+                oldWarnings !== this.warnings && this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
 
                 return { logs: this.logs, logSize };
             })
@@ -383,15 +383,13 @@ export default class LogsWorker {
         this.logSize = 0;
 
         if (this.errors) {
-            const errors = this.errors;
             this.errors = 0;
-            this.errorCountHandlers.forEach(handler => handler && handler(errors));
+            this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
         }
 
         if (this.warnings) {
-            const warnings = this.warnings;
             this.warnings = 0;
-            this.warningCountHandlers.forEach(handler => handler && handler(warnings));
+            this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
         }
     }
 }

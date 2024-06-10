@@ -1605,5 +1605,6 @@
   "yesterday": "昨天",
   "Filter adapters to see others. There is %s more": "过滤适配器以查看其他适配器。还有 %s",
   "Enter version manually": "手动输入版本",
-  "Or select from the list": "或从列表中选择"
+  "Or select from the list": "或从列表中选择",
+  "Source (show all)": "来源（显示全部）"
 }

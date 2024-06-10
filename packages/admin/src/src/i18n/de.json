@@ -1605,5 +1605,6 @@
   "yesterday": "gestern",
   "Filter adapters to see others. There is %s more": "Filtern Sie Adapter, um andere anzuzeigen. Es gibt %s mehr",
   "Enter version manually": "Version manuell eingeben",
-  "Or select from the list": "Oder aus der Liste wählen"
+  "Or select from the list": "Oder aus der Liste wählen",
+  "Source (show all)": "Quelle (alle anzeigen)"
 }
