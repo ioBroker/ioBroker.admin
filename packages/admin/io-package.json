@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.0",
+    "version": "7.0.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.1": {
+        "en": "Because of the breaking change in GUI components, the GUI was updated. Users will see no difference, but developers should check their packages.\nRewritten many GUI components to TypeScript\nAdded support for the adapter's auto-update option. New version of js-controller required.\nGUI was re-written to typescript to 100%\nShows only installed adapters in the adapter tab or first 100 adapters",
+        "de": "Aufgrund der brechenden Änderung der GUI-Komponenten wurde die GUI aktualisiert. Benutzer sehen keinen Unterschied, aber Entwickler sollten ihre Pakete überprüfen.\nViele GUI-Komponenten neu geschrieben zu TypeScript\nUnterstützung für die automatische Aktualisierung des Adapters hinzugefügt. Neue Version des js-Controllers erforderlich.\nGUI wurde zu 100 % neu geschrieben\nZeigt nur installierte Adapter in der Adapter-Tab oder erste 100 Adapter",
+        "ru": "Из-за прорыва изменений в компонентах GUI, GUI был обновлен. Пользователи не видят разницы, но разработчики должны проверять свои пакеты.\nПереписать многие компоненты GUI на TypeScript\nДобавлена поддержка варианта автообновления адаптера. Требуется новая версия js-контроллера.\nGUI был переписан на 100%\nПоказать только установленные адаптеры на вкладке адаптера или первые 100 адаптеров",
+        "pt": "Por causa da mudança de ruptura em componentes GUI, a GUI foi atualizada. Os usuários não verão nenhuma diferença, mas os desenvolvedores devem verificar seus pacotes.\nReescrito muitos componentes GUI para TypeScript\nAdicionado suporte para a opção de atualização automática do adaptador. Nova versão do js-controller necessário.\nGUI foi reescrito para digitar 100%\nMostra apenas adaptadores instalados na aba do adaptador ou primeiros 100 adaptadores",
+        "nl": "Vanwege de brekende verandering in GUI-componenten werd de GUI bijgewerkt. Gebruikers zullen geen verschil zien, maar ontwikkelaars moeten hun pakketten controleren.\nVeel GUI-componenten naar TypeScript herschreven\nToegevoegd ondersteuning voor de auto-update optie van de adapter. Nieuwe versie van js-controller vereist.\nGUI werd herschreven naar typescript naar 100%\nToont alleen geïnstalleerde adapters in het tabblad adapter of eerste 100 adapters",
+        "fr": "En raison de la rupture des composantes de l'interface graphique, l'interface graphique a été mise à jour. Les utilisateurs ne verront aucune différence, mais les développeurs devraient vérifier leurs paquets.\nRéécrit plusieurs composants GUI pour TypeScript\nAjout du support pour l'option de mise à jour automatique de l'adaptateur. Nouvelle version de js-controller requise.\nL'interface graphique a été réécrite en dactylographie à 100%\nAffiche uniquement les adaptateurs installés dans l'onglet adaptateur ou les 100 premiers adaptateurs",
+        "it": "A causa della rottura dei componenti GUI, la GUI è stata aggiornata. Gli utenti non vedranno alcuna differenza, ma gli sviluppatori dovrebbero controllare i loro pacchetti.\nRescritto molti componenti GUI a TypeScript\nAggiunto supporto per l'opzione di aggiornamento automatico dell'adattatore. Nuova versione di js-controller richiesto.\nGUI è stato riscritto al 100%\nMostra solo adattatori installati nella scheda adattatore o primi 100 adattatori",
+        "es": "Debido al cambio de ruptura en los componentes de GUI, el GUI fue actualizado. Los usuarios no verán ninguna diferencia, pero los desarrolladores deben revisar sus paquetes.\nReescrito muchos componentes de GUI a TipoScript\nSe agregó soporte para la opción de actualización automática del adaptador. Nueva versión de js-controller requerida.\nGUI fue re-escrito para escribir al 100%\nMuestra sólo adaptadores instalados en la pestaña adaptador o primeros 100 adaptadores",
+        "pl": "Ze względu na przełomową zmianę komponentów GUI, GUI został zaktualizowany. Użytkownicy nie zauważą różnicy, ale deweloperzy powinni sprawdzić swoje pakiety.\nPrzepisz wiele komponentów GUI na TypeScript\nDodano wsparcie dla opcji autoaktualizacji adaptera. Nowa wersja sterownika js-.\nInterfejs graficzny został przepisany na maszynie do 100%\nPokazuje tylko zainstalowane adaptery w zakładce adapter lub pierwszych 100 adapterów",
+        "uk": "У зв'язку з зміною переходів в компонентах GUI було оновлено графічний інтерфейс. Користувачі не мають різниці, але розробники повинні перевірити свої пакети.\nЗапишіть багато компонентів GUI для TypeScript\nДодано підтримку автоматичного оновлення адаптера. Нова версія js-controller обов'язкова.\nГрафічний інтерфейс перезапису до 100%\nПоказати тільки встановлені адаптери в вкладці адаптера або перші 100 адаптерів",
+        "zh-cn": "由于GUI组件的突破变化,GUI得到了更新. 用户不会看到任何区别,但开发者应该检查他们的软件包.\n将许多图形用户界面组件重写为 TypeScript\n添加对适配器自动更新选项的支持. 需要新版本的js控制器.\n图形用户界面被重写为打字到100%\n仅在适配器标签或前100个适配器中显示已安装适配器"
+      },
       "6.17.14": {
         "en": "Only some packages updated",
         "de": "Nur einige Pakete aktualisiert",
