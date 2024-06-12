@@ -175,9 +175,7 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
             const res = await fetch(this.link);
             const response = await res.json();
 
-            // Just for logging purposes
-            const plainBody = await res.text();
-            console.log(`Received status: ${plainBody}`);
+            console.log(`Received status: ${JSON.stringify(response)}`);
 
             // sometimes stderr has only one empty string in it
             if (response?.stderr) {
