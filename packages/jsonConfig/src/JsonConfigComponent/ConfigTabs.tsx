@@ -13,9 +13,14 @@ const styles: Record<string, any> = {
         width: '100%',
     },
     panel: {
-        height: 'calc(100% - 48px)',
         width: '100%',
         display: 'block',
+    },
+    panelWithIcons: {
+        height: 'calc(100% - 72px)',
+    },
+    panelWithoutIcons: {
+        height: 'calc(100% - 48px)',
     },
 };
 
@@ -41,6 +46,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
 
     render() {
         const items = this.props.schema.items;
+        let withIcons = false;
 
         return <div className={this.props.classes.tabs}>
             <Tabs
@@ -94,13 +100,16 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                             this.props.globalData,
                         ) as boolean;
                     }
+                    const icon = this.getIcon(items[name].icon);
+                    withIcons = withIcons || !!icon;
+
                     return <Tab
                         wrapped
                         disabled={disabled}
                         key={name}
                         value={name}
                         iconPosition={this.props.schema.iconPosition || 'start'}
-                        icon={this.getIcon(items[name].icon)}
+                        icon={icon}
                         label={this.getText(items[name].label)}
                     />;
                 })}
@@ -114,7 +123,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 globalData={this.props.globalData}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}
-                className={this.props.classes.panel}
+                className={`${this.props.classes.panel} ${withIcons ? this.props.classes.panelWithIcons : this.props.classes.panelWithoutIcons}`}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}
@@ -141,6 +150,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 custom={this.props.custom}
                 schema={items[this.state.tab]}
                 table={this.props.table}
+                withIcons={withIcons}
             />
         </div>;
     }

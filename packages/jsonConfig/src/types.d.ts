@@ -108,6 +108,18 @@ export interface ConfigItemPanel extends ConfigItem {
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
+export interface ConfigItemPattern extends ConfigItem {
+    type: 'pattern';
+    copyToClipboard?: boolean;
+    pattern: string;
+}
+
+export interface ConfigItemChip extends ConfigItem {
+    type: 'chips';
+    delimiter?: string;
+    pattern: string;
+}
+
 export interface ConfigItemTabs extends ConfigItem {
     type: 'tabs';
     items: Record<string, ConfigItemPanel>;
@@ -384,4 +396,4 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigIt
     ConfigItemDeviceManager | ConfigItemLanguage | ConfigItemPort | ConfigItemSendTo |
     ConfigItemTable | ConfigItemTimePicker | ConfigItemTextSendTo | ConfigItemSelectSendTo |
     ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID |
-    ConfigItemCheckLicense;
+    ConfigItemCheckLicense | ConfigItemPattern | ConfigItemChip;

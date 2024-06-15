@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import {
     IconButton,
@@ -7,10 +6,15 @@ import {
 } from '@mui/material';
 
 import { IconCopy, Utils } from '@iobroker/adapter-react-v5';
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemPattern } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-class ConfigPattern extends ConfigGeneric {
-    renderItem(error, disabled) {
+interface ConfigPatternProps extends ConfigGenericProps {
+    schema: ConfigItemPattern;
+}
+
+class ConfigPattern extends ConfigGeneric<ConfigPatternProps, ConfigGenericState> {
+    renderItem(_error: unknown, disabled: boolean): React.JSX.Element | null {
         return <TextField
             variant="standard"
             fullWidth
@@ -34,17 +38,5 @@ class ConfigPattern extends ConfigGeneric {
         />;
     }
 }
-
-ConfigPattern.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default ConfigPattern;

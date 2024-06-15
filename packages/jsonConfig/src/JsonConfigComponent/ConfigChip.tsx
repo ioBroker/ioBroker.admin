@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import {
@@ -7,16 +6,20 @@ import {
     FormControl,
 } from '@mui/material';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemChip } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ChipInput from './ChipInput';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-});
+};
+interface ConfigChipProps extends ConfigGenericProps {
+    schema: ConfigItemChip;
+}
 
-class ConfigLanguage extends ConfigGeneric {
+class ConfigChip extends ConfigGeneric<ConfigChipProps, ConfigGenericState> {
     componentDidMount() {
         super.componentDidMount();
         const { data, attr } = this.props;
@@ -29,7 +32,7 @@ class ConfigLanguage extends ConfigGeneric {
         }
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean): React.JSX.Element | null {
         const { attr, schema } = this.props;
         const { value } = this.state;
         return <FormControl className={this.props.classes.fullWidth} variant="standard">
@@ -41,7 +44,7 @@ class ConfigLanguage extends ConfigGeneric {
                 onAdd={chip => {
                     const newValue = JSON.parse(JSON.stringify(value));
                     newValue.push(chip);
-                    this.setState({ value: newValue, prevValue: '' }, () => {
+                    this.setState({ value: newValue }, () => {
                         if (this.props.schema.delimiter) {
                             this.onChange(attr, newValue.join(`${this.props.schema.delimiter} `));
                         } else {
@@ -52,7 +55,7 @@ class ConfigLanguage extends ConfigGeneric {
                 onDelete={(chip, index) => {
                     const newValue = JSON.parse(JSON.stringify(value));
                     newValue.splice(index, 1);
-                    this.setState({ value: newValue, prevValue: '' }, () => {
+                    this.setState({ value: newValue }, () => {
                         if (this.props.schema.delimiter) {
                             this.onChange(attr, newValue.join(`${this.props.schema.delimiter} `));
                         } else {
@@ -61,21 +64,12 @@ class ConfigLanguage extends ConfigGeneric {
                     });
                 }}
             />
-            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
+            {this.props.schema.help ?
+                <FormHelperText>
+                    {this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+                </FormHelperText> : null}
         </FormControl>;
     }
 }
 
-ConfigLanguage.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigLanguage);
+export default withStyles(styles)(ConfigChip);

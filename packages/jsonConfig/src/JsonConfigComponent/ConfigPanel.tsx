@@ -129,10 +129,15 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     paper: {
         margin: 10,
-        height: 'calc(100vh - 235px) !important',
         width: 'auto !important',
         overflowY: 'auto',
         paddingBottom: theme.spacing(1),
+    },
+    paperWithIcons: {
+        height: 'calc(100vh - 259px) !important',
+    },
+    paperWithoutIcons: {
+        height: 'calc(100vh - 235px) !important',
     },
     padding: {
         padding: 10,
@@ -151,6 +156,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
 
 interface ConfigPanelProps extends ConfigGenericProps {
     schema: ConfigItemPanel;
+    withIcons?: boolean;
 }
 interface ConfigPanelState extends ConfigGenericState {
     expanded?: boolean;
@@ -316,7 +322,12 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
         } else {
             content = <div
                 key={`${this.props.attr}_${this.props.index}`}
-                className={Utils.clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
+                className={Utils.clsx(
+                    this.props.className,
+                    this.props.isParentTab && classes.paper,
+                    this.props.isParentTab && (this.props.withIcons ? classes.paperWithIcons : classes.paperWithoutIcons),
+                    classes.fullWidth,
+                )}
                 style={style}
             >
                 <Grid

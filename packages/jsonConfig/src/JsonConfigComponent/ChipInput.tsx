@@ -219,9 +219,9 @@ interface ChipInputProps {
     /** If true, the placeholder will always be visible. */
     alwaysShowPlaceholder?: boolean;
     /** Behavior when the chip input is blurred: `'clear'` clears the input, `'add'` creates a chip and `'ignore'` keeps the input. */
-    blurBehavior: 'clear' | 'add' | 'add-or-clear' | 'ignore';
+    blurBehavior?: 'clear' | 'add' | 'add-or-clear' | 'ignore';
     /** A function of the type `({ value, text, chip, isFocused, isDisabled, isReadOnly, handleClick, handleDelete, className }, key) => node` that returns a chip based on the given properties. This can be used to customize chip styles.  Each item in the `dataSource` array will be passed to `chipRenderer` as arguments `chip`, `value` and `text`. If `dataSource` is an array of objects and `dataSourceConfig` is present, then `value` and `text` will instead correspond to the object values defined in `dataSourceConfig`. If `dataSourceConfig` is not set and `dataSource` is an array of objects, then a custom `chipRenderer` must be set. `chip` is always the raw value from `dataSource`, either an object or a string. */
-    chipRenderer: (props: ChipRendererProps) => React.JSX.Element;
+    chipRenderer?: (props: ChipRendererProps) => React.JSX.Element;
     /** Whether the input value should be cleared if the `value` prop is changed. */
     clearInputValueOnChange?: boolean;
     /** Data source for auto complete. This should be an array of strings or objects. */
@@ -235,7 +235,7 @@ interface ChipInputProps {
     /** Disable the input underline. Only valid for 'standard' variant */
     disableUnderline?: boolean;
     /** Props to pass through to the `FormHelperText` component. */
-    FormHelperTextProps: Record<string, any>;
+    FormHelperTextProps?: Record<string, any>;
     /** If true, the chip input will fill the available width. */
     fullWidth?: boolean;
     /** If true, the input field will always be below the chips and fill the available space. By default, it will try to be beside the chips. */
@@ -247,7 +247,7 @@ interface ChipInputProps {
     /** Props to pass through to the `Input`. */
     InputProps?: Record<string, any>;
     /** Use this property to pass a ref callback to the native input component. */
-    inputRef: (el: HTMLInputElement) => void;
+    inputRef?: (el: HTMLInputElement) => void;
     /** The input value (enables controlled mode for the text input if set). */
     inputValue?: string;
     /* The content of the floating label. */
@@ -259,18 +259,18 @@ interface ChipInputProps {
     /** Callback function that is called when a new chip was added (in controlled mode). */
     onAdd?: (chip: string) => void;
     /** Callback function that is called with the chip to be added and should return true to add the chip or false to prevent the chip from being added without clearing the text input. */
-    onBeforeAdd: (chip: string) => boolean;
+    onBeforeAdd?: (chip: string) => boolean;
     onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
     onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
     onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     onKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     /** Callback function that is called when the chips change (in uncontrolled mode). */
-    onChange: (chips: string[]) => void;
+    onChange?: (chips: string[]) => void;
     /** Callback function that is called when a new chip was removed (in controlled mode). */
     onDelete: (chip: string, i: number) => void;
     /** Callback function that is called when the input changes. */
-    onUpdateInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onUpdateInput?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     /** A placeholder that is displayed if the input has no values. */
     placeholder?: string;
     /** Makes the chip input read-only if set to true. */
