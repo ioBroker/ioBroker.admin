@@ -8,7 +8,7 @@ const concat = require('gulp-concat');
 const cleanCSS = require('gulp-clean-css');
 const path = require('node:path');
 
-const srcRx = 'src/';
+const srcRx = 'src-admin/';
 const src = `${__dirname}/${srcRx}`;
 const rootFolder = path.join(__dirname, '..', '..');
 const dest = 'adminWww/';
@@ -269,7 +269,6 @@ gulp.task('react-0-treeTableCSS', () => {
 gulp.task('react-1-clean', done => {
     deleteFoldersRecursive(`${__dirname}/${dest}`, ['404.html', 'oauthError.html', 'oauthSuccess.html']);
     deleteFoldersRecursive(`${__dirname}/${srcRx}/build`);
-    deleteFoldersRecursive(`${__dirname}/src/build`);
     done();
 });
 

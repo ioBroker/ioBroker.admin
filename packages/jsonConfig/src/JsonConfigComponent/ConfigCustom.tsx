@@ -209,9 +209,6 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
 
         // render temporary placeholder
         if (!CustomComponent) {
-            if (this.state.error) {
-                return null;
-            }
             const schema = this.props.schema || {} as ConfigItemCustom;
 
             const item = <Grid

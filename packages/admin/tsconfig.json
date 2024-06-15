@@ -2,7 +2,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    // do not compile anything, this file is just to configure type checking
+    // do not compile anything. This file is just to configure type checking
     "noEmit": true,
     // check JS files
     "allowJs": true,
@@ -31,6 +31,6 @@
   ],
   "exclude": [
     "node_modules/**",
-    "widgets/**"
+    "adminWww/**"
   ]
 }

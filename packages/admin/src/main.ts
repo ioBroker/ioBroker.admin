@@ -27,7 +27,8 @@ const adapterName = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'packa
     .pop();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Web = require('./lib/web');
-const getInstalledInfo = utils.commonTools.getInstalledInfo;
+
+const { getInstalledInfo } = utils.commonTools;
 
 const ONE_HOUR_MS = 3_600_000;
 const ERROR_PERMISSION = 'permissionError';
@@ -79,12 +80,18 @@ interface NewsMessage {
 class Admin extends utils.Adapter {
     /** secret used for the socket connection */
     private secret: string;
+
     /** Timer to update repository */
     private timerRepo: NodeJS.Timeout;
+
     private updaterTimeout: NodeJS.Timeout;
+
     private ratingTimeout: NodeJS.Timeout;
+
     private timerNews: NodeJS.Timeout;
+
     private _running: boolean;
+
     private _tasks: ioBroker.AnyObject[];
 
     constructor(options: Partial<utils.AdapterOptions> = {}) {
@@ -475,7 +482,7 @@ class Admin extends utils.Adapter {
         if (!objects['system.config'] || !objects['system.config'].common) {
             return this.log.warn('Repository cannot be read. Invalid "system.config" object.');
         }
-        const activeRepo = (objects['system.config'] as unknown as ioBroker.SystemConfigObject).common.activeRepo;
+        const { activeRepo } = (objects['system.config'] as unknown as ioBroker.SystemConfigObject).common;
         const systemRepos = objects['system.repositories'];
 
         if (!sources) {
@@ -530,18 +537,16 @@ class Admin extends utils.Adapter {
                                 : 'none'
                         }. Active repo(s): "${activeRepo.join('", "')}"`
                     );
+            } else if (systemRepos?.native?.repositories?.[activeRepo]) {
+                this.log.warn(`Repository cannot be read. Active repo: ${activeRepo}`);
             } else {
-                if (systemRepos?.native?.repositories?.[activeRepo]) {
-                    this.log.warn(`Repository cannot be read. Active repo: ${activeRepo}`);
-                } else {
-                    this.log.warn(
-                        `No repository source configured. Possible values: ${
-                            systemRepos?.native?.repositories
-                                ? Object.keys(systemRepos.native.repositories).join(', ')
-                                : 'none'
-                        }. Active repo: "${activeRepo}"`
-                    );
-                }
+                this.log.warn(
+                    `No repository source configured. Possible values: ${
+                        systemRepos?.native?.repositories
+                            ? Object.keys(systemRepos.native.repositories).join(', ')
+                            : 'none'
+                    }. Active repo: "${activeRepo}"`
+                );
             }
             return;
         }
@@ -941,7 +946,7 @@ class Admin extends utils.Adapter {
                 await this.registerNotification(
                     'admin',
                     `${message.class}News`,
-                    message.title.en + '\n' + message.content.en
+                    `${message.title.en}\n${message.content.en}`
                 );
             }
         }
@@ -1442,14 +1447,12 @@ class Admin extends utils.Adapter {
                         ) {
                             exists = true;
                         }
-                    } else {
-                        if (
-                            !err &&
-                            repos?.native?.repositories?.[active]?.json &&
-                            Date.now() < repos.ts + this.config.autoUpdate * ONE_HOUR_MS
-                        ) {
-                            exists = true;
-                        }
+                    } else if (
+                        !err &&
+                        repos?.native?.repositories?.[active]?.json &&
+                        Date.now() < repos.ts + this.config.autoUpdate * ONE_HOUR_MS
+                    ) {
+                        exists = true;
                     }
                     if (!exists) {
                         this.log.info('Request actual repository...');

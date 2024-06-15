@@ -1,7 +1,7 @@
+const path = require('node:path');
 const { ProvidePlugin } = require('webpack');
 const cracoModuleFederation = require('@iobroker/adapter-react-v5/craco-module-federation');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const path = require('path');
 
 module.exports = {
     plugins: [

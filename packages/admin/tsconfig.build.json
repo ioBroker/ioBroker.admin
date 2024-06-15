@@ -9,7 +9,7 @@
     "module": "commonjs"
   },
   "include": [
-    "src-backend/**/*.ts",
-    "src-backend/**/*.js"
+    "src/**/*.ts",
+    "src/**/*.js"
   ]
 }

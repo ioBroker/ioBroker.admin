@@ -1,5 +1,5 @@
 {
-  "extends": "../admin/src/tsconfig.json",
+  "extends": "../admin/src-admin/tsconfig.json",
   "include": ["./src"],
   "compilerOptions": {
     "baseUrl": "./",
