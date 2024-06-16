@@ -31,7 +31,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     languageButton: {
         position: 'absolute',
-        right: theme.spacing(1),
+        right: 8,
         top: theme.spacing(1),
     },
     languageButtonActive: {

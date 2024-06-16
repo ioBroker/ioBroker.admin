@@ -4,6 +4,7 @@ import {
     Connection,
     type ThemeName,
     type ThemeType,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 import {
     JsonConfigComponent,
@@ -18,6 +19,7 @@ interface JsonConfigProps {
     onChange: (data: Record<string, any>) => void;
     themeName: ThemeName;
     themeType: ThemeType;
+    theme: IobTheme;
     isFloatComma?: boolean;
     dateFormat?: string;
 }
@@ -47,6 +49,7 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
             embedded
             themeName={props.themeName}
             themeType={props.themeType}
+            theme={props.theme}
             isFloatComma={props.isFloatComma === undefined ? props.socket.systemConfig.common.isFloatComma : props.isFloatComma}
             dateFormat={props.dateFormat === undefined ? props.socket.systemConfig.common.dateFormat : props.dateFormat}
         />

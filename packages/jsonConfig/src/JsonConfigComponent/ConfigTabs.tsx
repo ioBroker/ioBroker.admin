@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import { Tabs, Tab } from '@mui/material';
 
@@ -7,7 +6,7 @@ import type { ConfigItemTabs } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     tabs: {
         height: '100%',
         width: '100%',
@@ -48,7 +47,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
         const items = this.props.schema.items;
         let withIcons = false;
 
-        return <div className={this.props.classes.tabs}>
+        return <div style={styles.tabs}>
             <Tabs
                 variant="scrollable"
                 scrollButtons="auto"
@@ -123,7 +122,10 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 globalData={this.props.globalData}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}
-                className={`${this.props.classes.panel} ${withIcons ? this.props.classes.panelWithIcons : this.props.classes.panelWithoutIcons}`}
+                style={{
+                    ...styles.panel,
+                    ...(withIcons ? styles.panelWithIcons : styles.panelWithoutIcons),
+                }}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}
@@ -150,10 +152,11 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 custom={this.props.custom}
                 schema={items[this.state.tab]}
                 table={this.props.table}
+                theme={this.props.theme}
                 withIcons={withIcons}
             />
         </div>;
     }
 }
 
-export default withStyles(styles)(ConfigTabs);
+export default ConfigTabs;

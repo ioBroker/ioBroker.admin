@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -13,25 +11,31 @@ import {
 
 import { Icon, Utils, I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemUser } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
+const styles: Record<string, React.CSSProperties> = {
     icon: {
         width: 16,
         height: 16,
         marginRight: 8,
     },
-});
+};
 
-class ConfigUser extends ConfigGeneric {
+interface ConfigUserProps extends ConfigGenericProps {
+    schema: ConfigItemUser;
+}
+
+interface ConfigUserState extends ConfigGenericState {
+    users: Record<string, { color?: string; icon?: string; name: string }>;
+}
+
+class ConfigUser extends ConfigGeneric<ConfigUserProps, ConfigUserState> {
     componentDidMount() {
         super.componentDidMount();
         this.props.socket.getUsers()
             .then(users => {
-                const _users = {};
+                const _users: Record<string, { color?: string; icon?: string; name: string }> = {};
                 const lang = I18n.getLanguage();
 
                 if (this.props.schema.short) {
@@ -52,10 +56,10 @@ class ConfigUser extends ConfigGeneric {
             });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        return <FormControl variant="standard" className={this.props.classes.fullWidth}>
+        return <FormControl variant="standard" fullWidth>
             {this.state.users && this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             {!this.state.users ?
                 <TextField
@@ -73,32 +77,26 @@ class ConfigUser extends ConfigGeneric {
                     disabled={!!disabled}
                     value={value}
                     renderValue={val => <span>
-                        {this.state.users && this.state.users[val]?.icon ? <Icon src={this.state.users && this.state.users[val]?.icon} className={this.props.classes.icon} /> : null}
+                        {this.state.users && this.state.users[val]?.icon ? <Icon src={this.state.users && this.state.users[val]?.icon} style={styles.icon} /> : null}
                         {(this.state.users && this.state.users[val]?.name) || val || ''}
                     </span>}
                     style={{ color: (this.state.users && this.state.users[value]?.color) || undefined, backgroundColor: Utils.getInvertedColor(this.state.users && this.state.users[value]?.color, this.props.themeType) }}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
                 >
-                    {this.state.users && Object.keys(this.state.users).map(id => <MenuItem style={{ color: this.state.users[id].color || undefined, backgroundColor: Utils.getInvertedColor(this.state.users[id].color, this.props.themeType) }} key={id} value={id}>
-                        {this.state.users[id].icon ? <Icon src={this.state.users[id].icon} className={this.props.classes.icon} /> : null}
+                    {this.state.users && Object.keys(this.state.users).map(id => <MenuItem
+                        style={{ color: this.state.users[id].color || undefined, backgroundColor: Utils.getInvertedColor(this.state.users[id].color, this.props.themeType) }}
+                        key={id}
+                        value={id}
+                    >
+                        {this.state.users[id].icon ? <Icon src={this.state.users[id].icon} style={styles.icon} /> : null}
                         {this.state.users[id].name}
                     </MenuItem>)}
                 </Select>}
-            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
+            {this.props.schema.help ? <FormHelperText>
+                {this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+            </FormHelperText> : null}
         </FormControl>;
     }
 }
 
-ConfigUser.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigUser);
+export default ConfigUser;

@@ -4,7 +4,6 @@
  */
 import React, { type RefObject } from 'react';
 import ReactDOM from 'react-dom';
-import { withStyles } from '@mui/styles';
 
 import {
     Input,
@@ -12,12 +11,12 @@ import {
     InputLabel,
     Chip,
     FormControl,
-    FormHelperText,
+    FormHelperText, Box,
 } from '@mui/material';
 import FilledInput from '@mui/material/FilledInput/FilledInput';
 import blue from '@mui/material/colors/blue';
 
-import { type IobTheme } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
 
 const variantComponent = {
@@ -27,8 +26,7 @@ const variantComponent = {
 };
 
 const styles: Record<string, any> = (theme: IobTheme) => {
-    // @ts-expect-error The type does exist
-    const light = theme.palette.type === 'light';
+    const light = theme.palette.mode === 'light';
     const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)';
 
     return {
@@ -189,7 +187,7 @@ interface ChipRendererProps {
     isReadOnly: boolean;
     handleClick: () => void;
     handleDelete: () => void;
-    className: string;
+    style: React.CSSProperties;
 }
 
 export const defaultChipRenderer = ({
@@ -199,12 +197,12 @@ export const defaultChipRenderer = ({
     isReadOnly,
     handleClick,
     handleDelete,
-    className,
+    style,
 }: ChipRendererProps, key: string) =>
     <Chip
         key={key}
-        className={className}
         style={{
+            ...style,
             pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
             backgroundColor: isFocused ? blue[300] : undefined,
         }}
@@ -286,6 +284,7 @@ interface ChipInputProps {
     required?: boolean;
     rootRef?: RefObject<HTMLDivElement>;
     margin?: 'dense' | 'normal' | 'none';
+    theme: IobTheme;
 }
 
 interface ChipInputState {
@@ -316,6 +315,10 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
     private _keyPressed: boolean;
 
     private _preventChipCreation: boolean;
+
+    private styles: Record<string, any> = {};
+
+    private styleTheme: ThemeType | null = null;
 
     constructor(props: ChipInputProps) {
         super(props);
@@ -617,7 +620,6 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
         const {
             alwaysShowPlaceholder,
             chipRenderer = defaultChipRenderer,
-            classes,
             className,
             disabled,
             disableUnderline,
@@ -640,6 +642,11 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
         } = this.props;
         const variant = this.state.variant;
 
+        if (this.styleTheme !== this.props.theme.palette.mode) {
+            this.styleTheme = this.props.theme.palette.mode;
+            this.styles = Utils.getStyle(this.props.theme, styles);
+        }
+
         let chips = value || this.state.chips || [];
         if (!Array.isArray(chips)) {
             chips = (chips as string || '').toString().split(/[,\s]+/).map((c: string) => c.trim());
@@ -659,7 +666,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
                 isFocused: this.state.focusedChip === i,
                 handleClick: () => this.setState({ focusedChip: i }),
                 handleDelete: () => this.handleDeleteChip(chip, i),
-                className: classes.chip,
+                style: this.styles.chip,
             },
             i.toString(),
         ));
@@ -683,7 +690,8 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
         return <FormControl
             ref={rootRef}
             fullWidth={fullWidth}
-            className={Utils.clsx(className, classes.root, margin === 'dense' && classes.marginDense)}
+            className={className}
+            sx={{ ...this.styles.root, ...(margin === 'dense' ? this.styles.marginDense : {}) }}
             error={error}
             required={chips.length > 0 ? undefined : required}
             onClick={this.focus}
@@ -694,7 +702,10 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
         >
             {label && <InputLabel
                 htmlFor={id}
-                classes={{ root: Utils.clsx(classes[variant], classes.label), shrink: classes.labelShrink }}
+                sx={{
+                    '& .MuiInputLabel-root': { ...this.styles[variant], ...this.styles.label},
+                    '& .MuiInputLabel-shrink': this.styles.labelShrink,
+                }}
                 shrink={!!shrinkFloatingLabel}
                 focused={this.state.isFocused}
                 variant={variant}
@@ -705,23 +716,24 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
             >
                 {label}
             </InputLabel>}
-            <div
-                className={Utils.clsx(
-                    classes[variant],
-                    classes.chipContainer,
-                    this.state.isFocused && classes.focused,
-                    !disableUnderline && variant === 'standard' && classes.underline,
-                    disabled && classes.disabled,
-                    label && classes.labeled,
-                    error && classes.error,
-                )}
+            <Box
+                component="div"
+                sx={{
+                    ...this.styles[variant],
+                    ...this.styles.chipContainer,
+                    ...(this.state.isFocused ? this.styles.focused : undefined),
+                    ...(!disableUnderline && variant === 'standard' ? this.styles.underline : undefined),
+                    ...(disabled ? this.styles.disabled : undefined),
+                    ...(label ? this.styles.labeled : undefined),
+                    ...(error ? this.styles.error : undefined),
+                }}
             >
                 {variant === 'standard' && chipComponents}
                 <InputComponent
                     ref={this.input}
-                    classes={{
-                        input: Utils.clsx(classes.input, classes[variant]),
-                        root: Utils.clsx(classes.inputRoot, classes[variant]),
+                    sx={{
+                        '& .MuiInputComponent-input': { ...this.styles.input, ...this.styles[variant] },
+                        '& .MuiInputComponent-root': { ...this.styles.inputRoot, ...this.styles[variant] },
                     }}
                     id={id}
                     value={actualInputValue}
@@ -739,10 +751,11 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
                     {...InputProps}
                     {...InputMore}
                 />
-            </div>
+            </Box>
             {helperText && <FormHelperText
                 {...FormHelperTextProps}
-                className={FormHelperTextProps ? Utils.clsx(FormHelperTextProps.className, classes.helperText) : classes.helperText}
+                className={FormHelperTextProps?.className}
+                sx={this.styles.helperText}
             >
                 {helperText}
             </FormHelperText>}
@@ -750,4 +763,4 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
     }
 }
 
-export default withStyles(styles, { name: 'WAMuiChipInput' })(ChipInput);
+export default ChipInput;

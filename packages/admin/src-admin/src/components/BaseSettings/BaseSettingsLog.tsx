@@ -40,7 +40,7 @@ const styles: Styles<any, any> = (theme: IobTheme) => ({
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
-        padding: theme.spacing(1),
+        padding: 8,
     },
     gridSettings: {
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
@@ -49,7 +49,7 @@ const styles: Styles<any, any> = (theme: IobTheme) => ({
     },
     controlItem: {
         width: 400,
-        marginBottom: theme.spacing(2),
+        marginBottom: 16,
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
     },

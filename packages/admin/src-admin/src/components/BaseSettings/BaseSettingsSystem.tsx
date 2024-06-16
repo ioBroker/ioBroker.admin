@@ -17,13 +17,13 @@ const styles: Styles<any, any> = (theme: IobTheme) => ({
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'auto',
-        padding: theme.spacing(1),
+        padding: 8,
     },
     controlItem: {
-        width: `calc(100% - ${theme.spacing(2)})`,
-        marginBottom: theme.spacing(2),
-        marginRight: theme.spacing(1),
-        marginLeft: theme.spacing(1),
+        width: 'calc(100% - 16px)',
+        marginBottom: 16,
+        marginRight: 8,
+        marginLeft: 8,
     },
     RAM: {
         width: 400,

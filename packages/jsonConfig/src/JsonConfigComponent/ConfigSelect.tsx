@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import  {
     InputLabel,
@@ -11,11 +9,12 @@ import  {
     ListSubheader,
 } from '@mui/material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemSelect, ConfigItemSelectOption } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
@@ -24,24 +23,58 @@ const styles = () => ({
             marginTop: 0,
         },
     },
-});
+};
 
-class ConfigSelect extends ConfigGeneric {
+interface ConfigInstanceSelectProps extends ConfigGenericProps {
+    schema: ConfigItemSelect;
+}
+
+interface ConfigInstanceSelectState extends ConfigGenericState {
+    selectOptions?: { label: string; value: number | string; group?: boolean; hidden?: string | boolean }[];
+}
+
+class ConfigSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstanceSelectState> {
+    private initialValue: string | string[] = '';
+
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        const selectOptions = [];
+        const selectOptions: {
+            label: string;
+            value: number | string;
+            group?: boolean;
+            hidden?: string | boolean;
+        }[] = [];
 
         (this.props.schema.options || []).forEach(item => {
             // if optgroup
-            if (Array.isArray(item.items)) {
-                selectOptions.push({ label: item.label, value: item.value, group: true });
-                item.items = item.items.forEach(it => selectOptions.push(it));
-                return;
+            const groupItem: {
+                items: ConfigItemSelectOption[];
+                label: ioBroker.StringOrTranslated;
+                value?: number | string;
+                hidden?: string | boolean;
+            } =
+                item as {
+                    items: ConfigItemSelectOption[];
+                    label: ioBroker.StringOrTranslated;
+                    value?: number | string;
+                    hidden?: string | boolean;
+                };
+            if (Array.isArray(groupItem.items)) {
+                selectOptions.push({ label: this.getText(item.label), value: item.value, group: true });
+                groupItem.items.forEach(it => selectOptions.push({
+                    label: this.getText(it.label),
+                    value: it.value,
+                    hidden: it.hidden,
+                }));
+            } else {
+                selectOptions.push({
+                    label: this.getText(item.label),
+                    value: item.value,
+                    hidden: item.hidden,
+                });
             }
-
-            selectOptions.push(item);
         });
 
         // if __different
@@ -54,7 +87,7 @@ class ConfigSelect extends ConfigGeneric {
         }
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
@@ -64,6 +97,7 @@ class ConfigSelect extends ConfigGeneric {
             if (!item.hidden) {
                 return true;
             }
+
             if (this.props.custom) {
                 return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
             }
@@ -75,8 +109,9 @@ class ConfigSelect extends ConfigGeneric {
 
         return <FormControl
             variant="standard"
-            className={Utils.clsx(this.props.classes.fullWidth, this.props.table !== undefined && this.props.classes.noMargin)}
-            id={`jsonSelect_${this.props.schema.attr}_${this.props.index || this.props.index === 0 ? this.props.index : ''}`}
+            fullWidth
+            sx={this.props.table !== undefined && styles.noMargin}
+            id={`jsonSelect_${this.props.attr}_${this.props.index || this.props.index === 0 ? this.props.index : ''}`}
         >
             {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
@@ -99,7 +134,11 @@ class ConfigSelect extends ConfigGeneric {
                     if (it.group) {
                         return <ListSubheader key={i}>{this.getText(it.label, this.props.schema.noTranslation)}</ListSubheader>;
                     }
-                    return <MenuItem key={i} value={it.value} style={it.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}>
+                    return <MenuItem
+                        key={i}
+                        value={it.value}
+                        style={it.value === ConfigGeneric.DIFFERENT_VALUE ? { opacity: 0.5 } : {}}
+                    >
                         {this.getText(it.label, this.props.schema.noTranslation)}
                     </MenuItem>;
                 })}
@@ -109,16 +148,4 @@ class ConfigSelect extends ConfigGeneric {
     }
 }
 
-ConfigSelect.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigSelect);
+export default ConfigSelect;

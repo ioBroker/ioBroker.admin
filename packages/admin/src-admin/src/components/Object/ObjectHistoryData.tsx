@@ -52,7 +52,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         overflow: 'hidden',
     },
     tableDiv: {
-        height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + parseInt(theme.spacing(1), 10)}px)`,
+        height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + 8}px)`,
         overflow: 'hidden',
         width: '100%',
     },
@@ -125,11 +125,11 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         flexGrow: 1,
     },
     editorTimePicker: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         width: 120,
     },
     editorDatePicker: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         width: 150,
     },
     msInput: {
@@ -153,7 +153,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             display: 'none',
         },
         '& input': {
-            padding: `${theme.spacing(1)} 0 0 0`,
+            padding: `8px 0 0 0`,
         },
         '& .MuiInputAdornment-root': {
             marginLeft: 0,
@@ -163,12 +163,12 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     toolbarTime: {
         width: 84,
         marginTop: 9,
-        // marginLeft: theme.spacing(1),
+        // marginLeft: 8,
         '& fieldset': {
             display: 'none',
         },
         '& input': {
-            padding: `${theme.spacing(1)} 0 0 0`,
+            padding: `8px 0 0 0`,
         },
         '& .MuiInputAdornment-root': {
             marginLeft: 0,
@@ -177,18 +177,18 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     toolbarTimeGrid: {
         position: 'relative',
-        marginLeft: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
-        paddingTop: theme.spacing(0.5),
-        paddingBottom: theme.spacing(0.5),
+        marginLeft: 8,
+        paddingLeft: 8,
+        paddingRight: 8,
+        paddingTop: 4,
+        paddingBottom: 4,
         border: '1px dotted #AAAAAA',
-        borderRadius: theme.spacing(1),
+        borderRadius: 8,
         display: 'flex',
     },
     toolbarTimeLabel: {
         position: 'absolute',
-        padding: theme.spacing(1),
+        padding: 8,
         fontSize: '0.8rem',
         left: 2,
         top: -9,
@@ -215,7 +215,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     dateInput: {
         width: 140,
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     timeInput: {
         width: 100,

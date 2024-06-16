@@ -1,5 +1,4 @@
 import React, { createRef, Component, type RefObject } from 'react';
-import { withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 
 import {
@@ -20,21 +19,19 @@ import {
 
 import {
     withWidth,
-    Utils as CommonUtils,
     Error as DialogError,
-    Confirm as ConfirmDialog,
+    Confirm as ConfirmDialog, type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import {
-    ConfigGeneric, type ConfigItemPanel,
-} from '@iobroker/json-config';
-import {
-    JsonConfigComponent, JsonConfigComponentClass,
+    ConfigGeneric,
+    JsonConfigComponent,
+    type ConfigItemPanel,
 } from '@iobroker/json-config';
 import Utils from '@/Utils';
 import type { BasicComponentProps } from '@/types';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -117,9 +114,9 @@ interface ObjectCustomEditorProps extends BasicComponentProps {
     data: Record<string, any>;
     originalData: Record<string, any>;
     systemConfig?: ioBroker.SystemConfigObject;
-    classes: Record<string, string>;
     onChange: (hasChanges?: boolean, update?: boolean) => void;
     reportChangedIds: (changedIds: string[]) => void;
+    theme: IobTheme;
 }
 
 interface ObjectCustomEditorState {
@@ -279,7 +276,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
                 }
 
-                await JsonConfigComponentClass.loadI18n(this.props.socket, jsonSchema.i18n, adapter);
+                await JsonConfigComponent.loadI18n(this.props.socket, jsonSchema.i18n, adapter);
                 return;
             } catch (e1) {
                 console.error(`Cannot load jsonConfig of ${adapter}: ${e1}`);
@@ -517,7 +514,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         return <Accordion
             key={instance}
             id={`Accordion_${instance}`}
-            className={i % 2 ? this.props.classes.accordionOdd : this.props.classes.accordionEven}
+            style={i % 2 ? styles.accordionOdd : styles.accordionEven}
             expanded={this.state.expanded.includes(instance)}
             ref={this.refTemplate[instance]}
             onChange={() => {
@@ -536,21 +533,27 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 data-id={instance}
-                className={i % 2 ?
-                    (enabled ? this.props.classes.accordionHeaderEnabledOdd : this.props.classes.accordionHeaderOdd)
+                style={i % 2 ?
+                    (enabled ? styles.accordionHeaderEnabledOdd : styles.accordionHeaderOdd)
                     :
-                    (enabled ? this.props.classes.accordionHeaderEnabledEven : this.props.classes.accordionHeaderEven)}
+                    (enabled ? styles.accordionHeaderEnabledEven : styles.accordionHeaderEven)}
             >
-                <img src={icon} className={this.props.classes.headingIcon} alt="" />
-                <Typography className={this.props.classes.heading}>{ this.props.t('Settings %s', instance)}</Typography>
-                <div className={CommonUtils.clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible)}>
+                <img src={icon} style={styles.headingIcon} alt="" />
+                <Typography style={styles.heading}>{ this.props.t('Settings %s', instance)}</Typography>
+                <div
+                    className="titleEnabled"
+                    style={{
+                        ...styles.titleEnabled,
+                        ...(enabled ? styles.enabledVisible : styles.enabledInvisible)
+                    }}
+                >
                     {this.props.t('Enabled')}
                 </div>
             </AccordionSummary>
             <AccordionDetails>
-                <div className={this.props.classes.enabledControl}>
+                <div style={styles.enabledControl}>
                     <FormControlLabel
-                        className={this.props.classes.formControl}
+                        style={styles.formControl}
                         control={<Checkbox
                             indeterminate={isIndeterminate}
                             checked={!!enabled}
@@ -581,7 +584,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                         label={this.props.t('Enabled')}
                     />
                 </div>
-                <div className={this.props.classes.customControls}>
+                <div style={styles.customControls}>
                     {!disabled && (enabled || isIndeterminate) && this.state.systemConfig ?
                         <JsonConfigComponent
                             instanceObj={instanceObj}
@@ -592,10 +595,10 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             socket={this.props.socket}
                             themeName={this.props.themeName}
                             themeType={this.props.themeType}
+                            theme={this.props.theme}
                             multiEdit={this.props.objectIDs.length > 1}
                             schema={this.jsonConfigs[adapter].json}
                             data={data}
-                            classes={{}}
                             isFloatComma={this.props.systemConfig.common.isFloatComma}
                             dateFormat={this.props.systemConfig.common.dateFormat}
                             onError={(error: boolean) =>
@@ -817,9 +820,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         }
         let index = 0;
 
-        return <Paper className={this.props.classes.paper}>
+        return <Paper style={styles.paper}>
             {this.state.maxOids > 1 && <LinearProgress color="secondary" variant="determinate" value={this.state.progress} />}
-            <div className={this.props.classes.scrollDiv} ref={this.scrollDivRef}>
+            <div style={styles.scrollDiv} ref={this.scrollDivRef}>
                 {this.state.maxOids === 0 && Object.values(this.jsonConfigs).map(jsonConfig => {
                     if (jsonConfig) {
                         return Object.keys(jsonConfig.instanceObjs)
@@ -835,4 +838,4 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     }
 }
 
-export default withWidth()(withStyles(styles)(ObjectCustomEditor));
+export default withWidth()(ObjectCustomEditor);

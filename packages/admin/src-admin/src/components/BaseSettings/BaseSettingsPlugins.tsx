@@ -17,7 +17,7 @@ const styles: Styles<any, any> = (theme: IobTheme) => ({
         maxHeight: '100%',
         maxWidth:  '100%',
         overflow:  'auto',
-        padding:   theme.spacing(1),
+        padding:   8,
     },
     title: {
         width: '100%',

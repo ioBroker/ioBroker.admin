@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     FormHelperText,
@@ -9,11 +7,12 @@ import {
 } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemJsonEditor } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import CustomModal from './wrapper/Components/CustomModal';
 import Editor from './wrapper/Components/Editor';
 
-const styles = () => ({
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
@@ -29,9 +28,18 @@ const styles = () => ({
         width: 'calc(100vw - 40px)',
         height: 'calc(100vh - 188px)',
     },
-});
+};
 
-class ConfigJsonEditor extends ConfigGeneric {
+interface ConfigJsonEditorProps extends ConfigGenericProps {
+    schema: ConfigItemJsonEditor;
+}
+
+interface ConfigJsonEditorState extends ConfigGenericState {
+    initialized?: boolean;
+    showSelectId?: boolean;
+}
+
+class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEditorState> {
     async componentDidMount() {
         super.componentDidMount();
         const { data, attr } = this.props;
@@ -39,21 +47,21 @@ class ConfigJsonEditor extends ConfigGeneric {
         this.setState({ value, initialized: true });
     }
 
-    renderItem(/* error, disabled, defaultValue */) {
+    renderItem(/* _error: string, _disabled: boolean, defaultValue */) {
         if (!this.state.initialized) {
             return null;
         }
 
         const {
-            classes, schema, data, attr,
+            schema, data, attr,
         } = this.props;
         const { value, showSelectId } = this.state;
 
-        return <FormControl className={classes.fullWidth} variant="standard">
-            <div className={classes.flex}>
+        return <FormControl fullWidth variant="standard">
+            <div style={styles.flex}>
                 <Button
                     color="grey"
-                    className={classes.button}
+                    style={styles.button}
                     size="small"
                     variant="outlined"
                     onClick={() => this.setState({ showSelectId: true })}
@@ -63,13 +71,12 @@ class ConfigJsonEditor extends ConfigGeneric {
             </div>
             {showSelectId ? <CustomModal
                 title={this.getText(schema.label)}
-                open={showSelectId}
                 overflowHidden
                 onClose={() =>
                     this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })}
                 onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
             >
-                <div className={classes.wrapper}>
+                <div style={styles.wrapper}>
                     <Editor
                         value={typeof value === 'object' ? JSON.stringify(value) : value}
                         onChange={newValue => this.setState({ value: newValue })}
@@ -89,15 +96,4 @@ class ConfigJsonEditor extends ConfigGeneric {
     }
 }
 
-ConfigJsonEditor.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigJsonEditor);
+export default ConfigJsonEditor;

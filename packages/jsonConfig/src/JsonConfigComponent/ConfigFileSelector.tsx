@@ -1,7 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
-import Dropzone from 'react-dropzone';
+import Dropzone, { type DropzoneRef } from 'react-dropzone';
 
 import {
     InputLabel,
@@ -28,9 +26,10 @@ import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 
 import { Confirm as ConfirmDialog, Utils, I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemFileSelector } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
@@ -111,7 +110,7 @@ const styles = () => ({
         display: 'inline-block',
         marginRight: 8,
     },
-});
+};
 
 const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp', 'gif', 'apng', 'avif', 'webp'];
 const AUDIO_EXT = ['mp3', 'ogg', 'wav', 'aac'];
@@ -119,8 +118,27 @@ const VIDEO_EXT = ['avi', 'mp4', 'mov'];
 const DOC_EXT = ['txt', 'log', 'html', 'htm'];
 const JS_EXT = ['json', 'js', 'ts'];
 
-class ConfigFileSelector extends ConfigGeneric {
-    constructor(props) {
+interface ConfigFileSelectorProps extends ConfigGenericProps {
+    schema: ConfigItemFileSelector;
+}
+
+interface ConfigFileSelectorState extends ConfigGenericState {
+    uploadFile?: boolean | 'dragging';
+    uploadError?: boolean;
+    files?: { name: string; size: string }[];
+    deleteFile?: string;
+}
+
+class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFileSelectorState> {
+    private readonly dropzoneRef: React.RefObject<DropzoneRef>;
+
+    private readonly imagePrefix: string;
+
+    private objectID: string;
+
+    private path: string;
+
+    constructor(props: ConfigFileSelectorProps) {
         super(props);
         this.dropzoneRef = React.createRef();
         this.imagePrefix = this.props.imagePrefix === undefined ? './files' : this.props.imagePrefix;
@@ -129,7 +147,7 @@ class ConfigFileSelector extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
 
-        this.objectID = (this.props.schema.objectID || '0_userdata.0').replace('%INSTANCE%', this.props.instance);
+        this.objectID = (this.props.schema.objectID || '0_userdata.0').replace('%INSTANCE%', (this.props.instance || 0).toString());
         this.path = this.props.schema.upload;
         if (this.path) {
             if (this.path === '/') {
@@ -152,7 +170,7 @@ class ConfigFileSelector extends ConfigGeneric {
             .then(files => this.setState({ files }));
     }
 
-    async readFolder(folderName, files, filter) {
+    async readFolder(folderName: string, files: { name: string; size: string }[], filter: string) {
         try {
             const dirFiles = await this.props.socket.readDir(this.objectID, folderName.replace(/^\//, '') || null);
             for (let f = 0; f < dirFiles.length; f++) {
@@ -183,8 +201,8 @@ class ConfigFileSelector extends ConfigGeneric {
         return files;
     }
 
-    async readFiles(pattern) {
-        const files = [];
+    async readFiles(pattern: string) {
+        const files: { name: string; size: string }[] = [];
         pattern = pattern || this.props.schema.pattern;
         if (!pattern) {
             pattern = '**/*.*';
@@ -213,7 +231,7 @@ class ConfigFileSelector extends ConfigGeneric {
         return files;
     }
 
-    onDrop(acceptedFiles) {
+    onDrop(acceptedFiles: File[]) {
         const file = acceptedFiles[0];
         const reader = new FileReader();
         const maxSize = this.props.schema.maxSize || (2 * 1024 * 1024);
@@ -232,7 +250,7 @@ class ConfigFileSelector extends ConfigGeneric {
                 return;
             }
             const base64 = `data:${ext};base64,${btoa(
-                new Uint8Array(reader.result)
+                new Uint8Array(reader.result as ArrayBufferLike)
                     .reduce((data, byte) => data + String.fromCharCode(byte), ''),
             )}`;
 
@@ -254,7 +272,7 @@ class ConfigFileSelector extends ConfigGeneric {
             cancel={I18n.t('ra_Cancel')}
             onClose={isOk => {
                 const deleteFile = this.state.deleteFile;
-                this.setState({ deleteFile: false }, () => {
+                this.setState({ deleteFile: '' }, () => {
                     if (isOk) {
                         this.props.socket.deleteFile(this.objectID, deleteFile)
                             .then(() => this.updateFiles())
@@ -265,7 +283,7 @@ class ConfigFileSelector extends ConfigGeneric {
         />;
     }
 
-    static base64ToArrayBuffer(base64) {
+    static base64ToArrayBuffer(base64: string) {
         const binaryString = window.atob(base64);
         const len = binaryString.length;
         const bytes = new Uint8Array(len);
@@ -295,36 +313,40 @@ class ConfigFileSelector extends ConfigGeneric {
             });
     }
 
-    getIcon(item) {
-        if (!item || !item.extension) {
+    getFileIcon(item: { value: string; label: string; extension?: string }) : React.JSX.Element | null {
+        if (!item?.extension) {
             return null;
         }
         if (IMAGE_EXT.includes(item.extension)) {
             return <div
-                className={this.props.classes.selectedImage}
                 style={{
+                    ...styles.selectedImage,
                     backgroundImage: `url(${this.imagePrefix}/${this.objectID}/${item.value})`,
                     backgroundSize: 'contain',
                     backgroundRepeat: 'no-repeat',
                 }}
             />;
-        } if (AUDIO_EXT.includes(item.extension)) {
+        }
+        if (AUDIO_EXT.includes(item.extension)) {
             return <IconAudio />;
-        } if (DOC_EXT.includes(item.extension)) {
+        }
+        if (DOC_EXT.includes(item.extension)) {
             return <IconText />;
-        } if (VIDEO_EXT.includes(item.extension)) {
+        }
+        if (VIDEO_EXT.includes(item.extension)) {
             return <IconVideo />;
-        } if (JS_EXT.includes(item.extension)) {
+        }
+        if (JS_EXT.includes(item.extension)) {
             return <IconCode />;
         }
         return null;
     }
 
-    renderItem(error, disabled) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         if (!this.state.files) {
             return null;
         }
-        const folders = [];
+        const folders: string[] = [];
         if (!this.props.schema.withFolder) {
             this.state.files.forEach(file => {
                 const pos = file.name.lastIndexOf('/');
@@ -341,9 +363,7 @@ class ConfigFileSelector extends ConfigGeneric {
             });
         }
 
-        /** @typedef {{ value: string, label: string, extension?: string }} Item */
-        /** @type {Item[]} */
-        const selectOptions = this.state.files
+        const selectOptions: { value: string; label: string; extension?: string }[] = this.state.files
             .map(file => ({
                 value: file.name,
                 label: !this.props.schema.withFolder && folders.length === 1 ? `${file.name.substring(folders[0].length)}` : `${file.name}${this.props.schema.noSize ? '' : `(${file.size})`}`,
@@ -354,8 +374,7 @@ class ConfigFileSelector extends ConfigGeneric {
             selectOptions.unshift({ label: I18n.t('ra_none'), value: '' });
         }
 
-        /** @type {Item | undefined } */
-        const item = selectOptions.find(_item => _item.value === this.state.value);
+        const item: { value: string; label: string; extension?: string } = selectOptions.find(_item => _item.value === this.state.value);
 
         let buttons = 0;
 
@@ -371,7 +390,7 @@ class ConfigFileSelector extends ConfigGeneric {
             buttons++;
         }
 
-        const element = <div className={this.props.classes.fullWidth}>
+        const element = <div style={styles.fullWidth}>
             <FormControl variant="standard" style={{ width: `calc(100% - ${buttons * 42}px)` }}>
                 {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
                 <Select
@@ -380,7 +399,7 @@ class ConfigFileSelector extends ConfigGeneric {
                     disabled={!!disabled}
                     value={this.state.value || '_'}
                     renderValue={() => <>
-                        {this.getIcon(item)}
+                        {this.getFileIcon(item)}
                         <span>{item?.label || ''}</span>
                     </>}
                     onChange={e => {
@@ -389,11 +408,11 @@ class ConfigFileSelector extends ConfigGeneric {
                     }}
                 >
                     {selectOptions.map(it => <MenuItem key={it.value} value={it.value}>
-                        <ListItemIcon>{this.getIcon(it)}</ListItemIcon>
+                        <ListItemIcon>{this.getFileIcon(it)}</ListItemIcon>
                         <ListItemText>{it.label}</ListItemText>
                         {this.props.schema.delete && item.value ?
                             <IconButton
-                                className={this.props.classes.deleteButton}
+                                style={styles.deleteButton}
                                 size="small"
                                 onClick={() => this.setState({ deleteFile: item.value })}
                             >
@@ -403,9 +422,9 @@ class ConfigFileSelector extends ConfigGeneric {
                 </Select>
                 {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
             </FormControl>
-            { this.props.schema.refresh && <IconButton onClick={() => this.updateFiles()}><IconRefresh /></IconButton> }
-            { this.props.schema.upload && <IconButton onClick={() => this.dropzoneRef.current?.open()}><IconUpload /></IconButton> }
-            { play && <IconButton style={{ color: '#00FF00' }} onClick={() => this.play()}><IconPlay /></IconButton> }
+            {this.props.schema.refresh && <IconButton onClick={() => this.updateFiles()}><IconRefresh /></IconButton>}
+            {this.props.schema.upload && <IconButton onClick={() => this.dropzoneRef.current?.open()}><IconUpload /></IconButton>}
+            {play && <IconButton style={{ color: '#00FF00' }} onClick={() => this.play()}><IconPlay /></IconButton>}
         </div>;
 
         if (!this.props.schema.upload) {
@@ -414,7 +433,7 @@ class ConfigFileSelector extends ConfigGeneric {
                 {this.renderDeleteDialog()}
             </>;
         }
-        let accept = { '*/*': [] };
+        let accept: Record<string, string[]> = { '*/*': [] };
         if (this.props.schema.fileTypes === 'image') {
             accept = {
                 'image/*': ['.png', '.jpg', '.svg', '.gif', '.apng', '.avif', '.webp'],
@@ -478,22 +497,22 @@ class ConfigFileSelector extends ConfigGeneric {
             }}
         >
             {({ getRootProps, getInputProps }) => <div
-                className={Utils.clsx(
-                    this.props.classes.uploadDiv,
-                    this.state.uploadFile === 'dragging' && this.props.classes.uploadDivDragging,
-                    disabled && this.props.classes.disabledOpacity,
-                )}
+                style={{
+                    ...styles.uploadDiv,
+                    ...(this.state.uploadFile === 'dragging' ? styles.uploadDivDragging : undefined),
+                    ...(disabled ? styles.disabledOpacity : undefined),
+                }}
                 {...getRootProps()}
             >
                 <input {...getInputProps()} />
-                {this.state.uploadFile === 'dragging' ? <div className={Utils.clsx(this.props.classes.uploadCenterDiv, this.state.uploadError && this.props.classes.error)}>
-                    <div className={this.props.classes.uploadCenterTextAndIcon}>
-                        <UploadIcon className={this.props.classes.uploadCenterIcon} />
-                        <div className={this.props.classes.uploadCenterText}>
-                            {
-                                this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
-                                    I18n.t('ra_Place your files here or click here to open the browse dialog')
-                            }
+                {this.state.uploadFile === 'dragging' ? <div
+                    style={{ ...styles.uploadCenterDiv, ...(this.state.uploadError ? styles.error : undefined) }}
+                >
+                    <div style={styles.uploadCenterTextAndIcon}>
+                        <UploadIcon style={styles.uploadCenterIcon} />
+                        <div style={styles.uploadCenterText}>
+                            {this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
+                                I18n.t('ra_Place your files here or click here to open the browse dialog')}
                         </div>
                     </div>
                 </div> : null}
@@ -504,17 +523,4 @@ class ConfigFileSelector extends ConfigGeneric {
     }
 }
 
-ConfigFileSelector.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-    imagePrefix: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigFileSelector);
+export default ConfigFileSelector;

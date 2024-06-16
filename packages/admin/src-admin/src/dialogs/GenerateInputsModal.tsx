@@ -165,7 +165,7 @@ const useStyles = makeStyles<IobTheme>(theme => ({
     },
     paperTable: {
         width: '100%',
-        marginBottom: theme.spacing(2),
+        marginBottom: 16,
     },
 }));
 

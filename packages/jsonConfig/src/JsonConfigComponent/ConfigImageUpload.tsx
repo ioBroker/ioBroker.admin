@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -8,21 +6,24 @@ import {
     FormControl,
 } from '@mui/material';
 
-import { UploadImage, I18n } from '@iobroker/adapter-react-v5';
+import { UploadImage } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemImageUpload } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
-    image: {
-        width: 100,
-    },
-});
+interface ConfigImageUploadProps extends ConfigGenericProps {
+    schema: ConfigItemImageUpload;
+}
 
-class ConfigImageUpload extends ConfigGeneric {
-    constructor(props) {
+interface ConfigImageUploadState extends ConfigGenericState {
+    image?: string;
+    context?: string;
+}
+
+class ConfigImageUpload extends ConfigGeneric<ConfigImageUploadProps, ConfigImageUploadState> {
+    private index: number;
+
+    constructor(props: ConfigImageUploadProps) {
         super(props);
         this.index = Date.now();
     }
@@ -39,7 +40,7 @@ class ConfigImageUpload extends ConfigGeneric {
         }
     }
 
-    _getUrl(update) {
+    _getUrl(update?: boolean) {
         if (update) {
             this.index = Date.now();
         }
@@ -64,9 +65,8 @@ class ConfigImageUpload extends ConfigGeneric {
             .catch(e => console.error(e));
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
-        // eslint-disable-next-line
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
+        return <FormControl fullWidth variant="standard">
             {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <UploadImage
                 error={!!error}
@@ -92,23 +92,10 @@ class ConfigImageUpload extends ConfigGeneric {
                     // upload file to /instance/attr
                     this.props.socket.writeFile64(`${this.props.adapterName}.${this.props.instance}`, this.props.attr, base64);
                 })}
-                t={I18n.t}
             />
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }
 
-ConfigImageUpload.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigImageUpload);
+export default ConfigImageUpload;

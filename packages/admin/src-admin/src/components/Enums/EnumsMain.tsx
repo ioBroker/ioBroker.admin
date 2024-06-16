@@ -89,7 +89,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         width: 200,
     },
     toolbarButton: {
-        // marginRight: theme.spacing(1),
+        // marginRight: 8,
         // display: 'inline',
     },
     filter: {

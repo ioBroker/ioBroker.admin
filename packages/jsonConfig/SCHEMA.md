@@ -109,12 +109,12 @@ Possible types:
 
 - `image` - saves image as file of the `adapter.X` object or as base64 in attribute
   - `filename` - name of file is structure name. In the below example `login-bg.png` is file name for `writeFile("myAdapter.INSTANCE", "login-bg.png")`
-  - `accept` - html accept attribute, like `image/*,.pdf`
+  - `accept` - html accept attribute, like `{ 'image/**': [], 'application/pdf': ['.pdf'] }`, default `{ 'image/*': [] }`
   - `maxSize` - maximal size of file to upload
   - `base64` - if true the image will be saved as data-url in attribute, elsewise as binary in file storage
+  - `crop` - if true, allow user to crop the image
   - `!maxWidth`
   - `!maxHeight`
-  - `!crop` - if true, allow user to crop the image
   - `!square` - width must be equal to height, or crop must allow only square as shape
 ```
   "login-bg.png": {
@@ -149,8 +149,8 @@ Possible types:
        - `{type: ['channel', 'device']}` - show only channels and devices
        - `{common: {type: 'number'}` - show only states of type 'number
        - `{common: {type: ['number', 'string']}` - show only states of type 'number and string
-       - `{common: {role: 'switch']}` - show only states with roles starting from switch
-       - `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
+       - `{common: {role: 'switch'}` - show only states with roles starting from switch
+       - `{common: {role: ['switch', 'button']}` - show only states with roles starting from `switch` and `button`
     - `filterFunc` - [optional] Cannot be used together with `type` settings. It is a function that will be called for every object and must return true or false. Example: `obj.common.type === 'number'`
 
 - `password` - password field
@@ -315,13 +315,13 @@ component returns a parseable date string.
     - `disableEdit` - if user can manually enter the file name and not only through select dialog
     - `limitPath` - limit selection to one specific object of type `meta` and following path (not mandatory)
     - `filterFiles` - like `['png', 'svg', 'bmp', 'jpg', 'jpeg', 'gif']`
-    - `filterByType` - `images, code, txt, audio, video`
     - `allowUpload` - allowed upload of files
     - `allowDownload` - allowed download of files (default true)
     - `allowCreateFolder` - allowed creation of folders
     - `allowView` - allowed tile view (default true)
     - `showToolbar` - show toolbar (default true)
     - `selectOnlyFolders` - user can select only folders (e.g. for upload path)
+    - `trim` - trim the file name
 
 - `imageSendTo` - shows image, that was received from backend as base64 string
     - `width` - width of QR code in px

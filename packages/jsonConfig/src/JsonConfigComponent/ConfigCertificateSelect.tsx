@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -11,13 +10,7 @@ import {
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCertificateSelect } from '#JC/types';
-import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
-
-const styles: Record<string, any> = {
-    fullWidth: {
-        width: '100%',
-    },
-};
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigCertificateSelectProps extends ConfigGenericProps {
     schema: ConfigItemCertificateSelect;
@@ -63,7 +56,7 @@ class ConfigCertificateSelect extends ConfigGeneric<ConfigCertificateSelectProps
 
         const item = this.state.selectOptions?.find(item => item.value === this.state.value);
 
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
+        return <FormControl style={{ width: '100%' }} variant="standard">
             {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
@@ -90,4 +83,4 @@ class ConfigCertificateSelect extends ConfigGeneric<ConfigCertificateSelectProps
     }
 }
 
-export default withStyles(styles)(ConfigCertificateSelect);
+export default ConfigCertificateSelect;

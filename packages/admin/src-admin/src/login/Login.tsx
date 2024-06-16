@@ -31,7 +31,7 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
     paper: {
         background: theme.palette.background.paper + (theme.palette.background.paper.length < 7 ? 'd' : 'dd'),
-        padding: theme.spacing(3),
+        padding: 24,
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
@@ -41,7 +41,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         boxShadow,
     },
     avatar: {
-        margin: theme.spacing(1),
+        margin: 8,
         backgroundColor: '#fff',
         width: 100,
         height: 100,
@@ -53,13 +53,13 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
     form: {
         width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(1),
+        marginTop: 8,
     },
     submit: {
-        margin: theme.spacing(1),
+        margin: 8,
     },
     alert: {
-        marginTop: theme.spacing(2),
+        marginTop: 16,
         backgroundColor: '#f44336',
         padding: 8,
         color: '#fff',

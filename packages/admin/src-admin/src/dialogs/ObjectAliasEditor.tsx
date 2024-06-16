@@ -37,14 +37,14 @@ const styles: Styles<IobTheme, any> = theme => ({
         height: 16,
     },
     formControlLabel: {
-        marginBottom: theme.spacing(2),
+        marginBottom: 16,
     },
     color: {
         // display: 'block',
         width: 70,
     },
     typeNameEng: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         opacity: 0.7,
         fontStyle: 'italic',
         fontSize: 'smaller',

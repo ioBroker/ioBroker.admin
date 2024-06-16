@@ -48,12 +48,12 @@ const styles: Record<string, any> = ((theme: IobTheme) => ({
         maxWidth: 1000,
     },
     tabPaper: {
-        padding: theme.spacing(2),
+        padding: 16,
     },
     title: {
         marginTop: 10,
-        padding: theme.spacing(1),
-        marginLeft: theme.spacing(1),
+        padding: 8,
+        marginLeft: 8,
         fontSize: 18,
         color: theme.palette.primary.main,
     },
@@ -61,7 +61,7 @@ const styles: Record<string, any> = ((theme: IobTheme) => ({
         color: '#f53939',
     },
     noteText: {
-        marginTop: theme.spacing(2),
+        marginTop: 16,
     },
     errorTextNoGit: {
         fontSize: 13,

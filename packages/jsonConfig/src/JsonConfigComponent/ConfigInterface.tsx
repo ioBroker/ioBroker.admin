@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -11,25 +9,31 @@ import {
     Select,
 } from '@mui/material';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemInterface } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
+const styles: Record<string, React.CSSProperties> = {
     address: {
         fontSize: 'smaller',
         opacity: 0.5,
         marginLeft: 8,
     },
-});
+};
 
-class ConfigInterface extends ConfigGeneric {
+interface ConfigInterfaceProps extends ConfigGenericProps {
+    schema: ConfigItemInterface;
+}
+
+interface ConfigInterfaceState extends ConfigGenericState {
+    interfaces?: { value: string; address: string }[];
+}
+
+class ConfigInterface extends ConfigGeneric<ConfigInterfaceProps, ConfigInterfaceState> {
     componentDidMount() {
         super.componentDidMount();
         this.props.socket.getObject(`system.host.${this.props.common.host}`)
             .then(obj => {
-                const interfaces = [];
+                const interfaces: { value: string; address: string }[] = [];
                 if (obj?.native?.hardware?.networkInterfaces) {
                     const list = obj.native.hardware.networkInterfaces;
                     Object.keys(list).forEach(inter => {
@@ -52,11 +56,11 @@ class ConfigInterface extends ConfigGeneric {
             .catch(e => window.alert(`Cannot read interfaces: ${e}`));
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const item = this.state.interfaces?.find(it => it.value === value);
 
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
+        return <FormControl fullWidth variant="standard">
             {this.state.interfaces?.length && this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             {!this.state.interfaces?.length ?
                 <TextField
@@ -77,7 +81,7 @@ class ConfigInterface extends ConfigGeneric {
                         if (item) {
                             return <span>
                                 {item.value}
-                                <span className={this.props.classes.address}>{item.address}</span>
+                                <span style={styles.address}>{item.address}</span>
                             </span>;
                         }
                         return val;
@@ -88,7 +92,7 @@ class ConfigInterface extends ConfigGeneric {
                         <MenuItem key={i} value={it.value}>
                             <span>
                                 {it.value}
-                                <span className={this.props.classes.address}>{it.address}</span>
+                                <span style={styles.address}>{it.address}</span>
                             </span>
                         </MenuItem>)}
                 </Select>}
@@ -97,16 +101,4 @@ class ConfigInterface extends ConfigGeneric {
     }
 }
 
-ConfigInterface.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigInterface);
+export default ConfigInterface;

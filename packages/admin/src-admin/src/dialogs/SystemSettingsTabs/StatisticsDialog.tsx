@@ -39,7 +39,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         padding: 15,
     },
     formControl: {
-        margin: theme.spacing(1),
+        margin: 8,
         minWidth: '100%',
     },
     descriptionPanel: {
@@ -49,7 +49,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         overflow: 'auto',
     },
     selectEmpty: {
-        marginTop: theme.spacing(2),
+        marginTop: 16,
     },
 });
 

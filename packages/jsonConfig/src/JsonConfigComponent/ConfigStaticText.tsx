@@ -1,33 +1,36 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemStaticText } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = theme => ({
+const styles: Record<string, any> = {
     fullWidth: {
         height: '100%',
         width: '100%',
     },
-    link: {
+    link: (theme: IobTheme) => ({
         textDecoration: 'underline',
         color: theme.palette.mode === 'dark' ? '#4dabf5' : '#254e72',
         cursor: 'pointer',
-    },
-});
+    }),
+};
 
-class ConfigStaticText extends ConfigGeneric {
-    renderItem(error, disabled) {
+interface ConfigInstanceSelectProps extends ConfigGenericProps {
+    schema: ConfigItemStaticText;
+}
+
+class ConfigStaticText extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         if (this.props.schema.button) {
             const icon = this.getIcon();
             return <Button
                 variant={this.props.schema.variant || undefined}
                 color={this.props.schema.color || 'grey'}
-                className={this.props.classes.fullWidth}
+                style={styles.fullWidth}
                 disabled={disabled}
                 startIcon={icon}
                 onClick={this.props.schema.href ? () => {
@@ -39,13 +42,14 @@ class ConfigStaticText extends ConfigGeneric {
                 {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}
             </Button>;
         }
-        let text = this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation);
+        let text: string | React.JSX.Element | React.JSX.Element[] = this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation);
         if (text && (text.includes('<a ') || text.includes('<br') || text.includes('<b>') || text.includes('<i>'))) {
             text = Utils.renderTextWithA(text);
         }
 
-        return <span
-            className={this.props.schema.href ? this.props.classes.link : ''}
+        return <Box
+            component="span"
+            sx={this.props.schema.href ? styles.link : undefined}
             onClick={this.props.schema.href ? () => {
                 // calculate one more time just before call
                 const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
@@ -53,20 +57,8 @@ class ConfigStaticText extends ConfigGeneric {
             } : null}
         >
             {text}
-        </span>;
+        </Box>;
     }
 }
 
-ConfigStaticText.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigStaticText);
+export default ConfigStaticText;

@@ -135,9 +135,9 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         opacity: 0.5,
     },
     context: {
-        paddingTop: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
+        paddingTop: 8,
+        paddingLeft: 8,
+        paddingRight: 8,
         paddingBottom: '0 !important',
     },
     folderDiv: {

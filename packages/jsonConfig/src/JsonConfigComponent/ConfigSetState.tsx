@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import { Button } from '@mui/material';
 
@@ -11,9 +9,10 @@ import {
 } from '@mui/icons-material';
 
 import { Confirm as ConfirmDialog, Icon, I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemSetState } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
@@ -22,22 +21,26 @@ const styles = () => ({
         height: 24,
         marginRight: 4,
     },
-});
+};
 
-class ConfigSetState extends ConfigGeneric {
+interface ConfigInstanceSelectProps extends ConfigGenericProps {
+    schema: ConfigItemSetState;
+}
+
+class ConfigSetState extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
     async _onClick() {
         let val = this.props.schema.val;
         if (typeof val === 'string' && val.includes('${')) {
             val = this.getPattern(val);
             const obj = await this.props.socket.getObject(this.props.schema.id);
             if (obj?.common?.type === 'number') {
-                val = parseFloat(val);
+                val = parseFloat(val as string);
             } else if (obj?.common?.type === 'boolean') {
                 val = val === 'true' || val === true || val === '1' || val === 1;
             }
         }
 
-        const id = (this.props.schema.id || '').replace(/%INSTANCE%/g, this.props.instance);
+        const id = (this.props.schema.id || '').replace(/%INSTANCE%/g, (this.props.instance || 0).toString());
 
         try {
             await this.props.socket.setState(id, { val, ack: !!this.props.schema.ack });
@@ -77,11 +80,11 @@ class ConfigSetState extends ConfigGeneric {
         />;
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(_error: string, disabled: boolean /* , defaultValue */) {
         return <Button
             variant={this.props.schema.variant || undefined}
             color={this.props.schema.color || 'grey'}
-            className={this.props.classes.fullWidth}
+            style={styles.fullWidth}
             disabled={disabled}
             onClick={async () => {
                 if (this.props.schema.confirm) {
@@ -91,26 +94,10 @@ class ConfigSetState extends ConfigGeneric {
                 }
             }}
         >
-            {this.props.schema.icon ? <Icon src={this.props.schema.icon} className={this.props.classes.icon} /> : null}
+            {this.props.schema.icon ? <Icon src={this.props.schema.icon} style={styles.icon} /> : null}
             {this.getText(this.props.schema.label, this.props.schema.noTranslation)}
         </Button>;
     }
 }
 
-ConfigSetState.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-    commandRunning: PropTypes.bool,
-    onCommandRunning: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigSetState);
+export default ConfigSetState;

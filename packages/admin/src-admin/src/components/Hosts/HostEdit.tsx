@@ -33,7 +33,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     button: {
         marginTop: 20,
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
     },
     funcDivEdit: {
         width: '100%',

@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -12,13 +10,7 @@ import {
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCertCollection } from '#JC/types';
-import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
-
-const styles: Record<string, any> = {
-    fullWidth: {
-        width: '100%',
-    },
-};
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigCertCollectionProps extends ConfigGenericProps {
     schema: ConfigItemCertCollection;
@@ -33,9 +25,9 @@ interface CertCollection {
     from: string;
     key: string;
     cert: string;
-    chain: string[],
-    domains: string[],
-    staging?: boolean,
+    chain: string[];
+    domains: string[];
+    staging?: boolean;
     tsExpires?: number;
 }
 
@@ -59,7 +51,7 @@ class ConfigCertCollection extends ConfigGeneric<ConfigCertCollectionProps, Conf
         }
         const leCollection = (ConfigGeneric.getValue(this.props.data, this.props.schema.leCollectionName || 'leCollection') || 'false').toString();
 
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
+        return <FormControl style={{ width: '100%' }} variant="standard">
             {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
@@ -99,4 +91,4 @@ class ConfigCertCollection extends ConfigGeneric<ConfigCertCollectionProps, Conf
     }
 }
 
-export default withStyles(styles)(ConfigCertCollection);
+export default ConfigCertCollection;

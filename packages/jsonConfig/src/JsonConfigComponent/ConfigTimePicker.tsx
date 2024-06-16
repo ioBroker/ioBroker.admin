@@ -47,7 +47,7 @@ export default class ConfigTimePicker extends ConfigGeneric<ConfigTimePickerProp
             disabled={!!disabled}
             value={value}
             onChange={(newValue: Date) => {
-                let strValue = newValue.toTimeString();
+                let strValue: string;
                 strValue = (newValue as any) instanceof Date ? (newValue as Date).toTimeString().split(' ')[0] : newValue.toTimeString();
                 if (shortFormat) {
                     strValue = strValue.split(':').slice(0, 2).join(':');

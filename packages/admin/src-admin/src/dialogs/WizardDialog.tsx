@@ -80,7 +80,7 @@ const styles = (theme: IobTheme) => ({
         flexGrow: 1,
     },
     playIcon: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
     },
     toolbar: {
         height: TOOLBAR_HEIGHT,
@@ -90,14 +90,14 @@ const styles = (theme: IobTheme) => ({
         height: 32,
         borderRadius: '50%',
         background: 'white',
-        marginRight: theme.spacing(1),
+        marginRight: 8,
         verticalAlign: 'middle',
     },
     themeButton: {
         float: 'right',
         display: 'inline-block',
         marginTop: -1,
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
 
     finalText: {

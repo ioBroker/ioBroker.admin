@@ -1,23 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import { TextField } from '@mui/material';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemTopic } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
-    icon: {
-        width: 16,
-        height: 16,
-        marginRight: 8,
-    },
-});
-
-function convertID2Topic(id, prefix, namespace) {
+function convertID2Topic(id: string, namespace: string): string {
     let topic;
     if (namespace && id.substring(0, namespace.length) === namespace) {
         topic = id.substring(namespace.length + 1);
@@ -28,19 +16,23 @@ function convertID2Topic(id, prefix, namespace) {
     return topic;
 }
 
-class ConfigTopic extends ConfigGeneric {
+interface ConfigTopicProps extends ConfigGenericProps {
+    schema: ConfigItemTopic;
+}
+
+class ConfigTopic extends ConfigGeneric<ConfigTopicProps, ConfigGenericState> {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        if (!value && this.props.customObj && this.props.customObj._id) {
-            const topic = convertID2Topic(this.props.customObj._id, null, `${this.props.adapterName}.${this.props.instance}`);
+        if (!value && this.props.customObj?._id) {
+            const topic = convertID2Topic(this.props.customObj._id, `${this.props.adapterName}.${this.props.instance}`);
             this.setState({ value: topic });
         } else {
             this.setState({ value: value || '' });
         }
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         return <TextField
             variant="standard"
             fullWidth
@@ -60,19 +52,4 @@ class ConfigTopic extends ConfigGeneric {
     }
 }
 
-ConfigTopic.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-    customObj: PropTypes.object,
-};
-
-export default withStyles(styles)(ConfigTopic);
+export default ConfigTopic;

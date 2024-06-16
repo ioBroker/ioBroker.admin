@@ -71,7 +71,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     instanceIcon: {
         width: 42,
         height: 42,
-        marginRight: theme.spacing(2),
+        marginRight: 16,
         verticalAlign: 'middle',
     },
     button: {

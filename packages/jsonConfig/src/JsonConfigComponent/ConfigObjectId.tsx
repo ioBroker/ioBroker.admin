@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -11,12 +9,10 @@ import {
 
 import { SelectID as DialogSelectID } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemObjectId } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
+const styles: Record<string, React.CSSProperties> = {
     flex: {
         display: 'flex',
     },
@@ -25,9 +21,18 @@ const styles = () => ({
         marginLeft: 4,
         minWidth: 48,
     },
-});
+};
 
-class ConfigObjectId extends ConfigGeneric {
+interface ConfigObjectIdProps extends ConfigGenericProps {
+    schema: ConfigItemObjectId;
+}
+
+interface ConfigObjectIdState extends ConfigGenericState {
+    showSelectId?: boolean;
+    initialized?: boolean;
+}
+
+class ConfigObjectId extends ConfigGeneric<ConfigObjectIdProps, ConfigObjectIdState> {
     async componentDidMount() {
         super.componentDidMount();
         const { data, attr } = this.props;
@@ -35,18 +40,18 @@ class ConfigObjectId extends ConfigGeneric {
         this.setState({ value, initialized: true });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         if (!this.state.initialized) {
             return null;
         }
         const {
-            classes, schema, socket, attr,
+            schema, socket, attr,
         } = this.props;
         const { value, showSelectId } = this.state;
 
-        return <FormControl className={classes.fullWidth} variant="standard">
+        return <FormControl fullWidth variant="standard">
             {schema.label ? <InputLabel shrink>{this.getText(schema.label)}</InputLabel> : null}
-            <div className={classes.flex}>
+            <div style={styles.flex}>
                 <TextField
                     variant="standard"
                     fullWidth
@@ -64,7 +69,7 @@ class ConfigObjectId extends ConfigGeneric {
                 />
                 <Button
                     color="grey"
-                    className={this.props.classes.button}
+                    style={styles.button}
                     size="small"
                     variant="outlined"
                     onClick={() => this.setState({ showSelectId: true })}
@@ -74,8 +79,6 @@ class ConfigObjectId extends ConfigGeneric {
             </div>
             {showSelectId ? <DialogSelectID
                 imagePrefix={this.props.imagePrefix === undefined ? '../..' : this.props.imagePrefix}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
                 dialogName={`admin.${this.props.adapterName}`}
                 filterFunc={schema.filterFunc}
                 themeType={this.props.themeType}
@@ -83,7 +86,6 @@ class ConfigObjectId extends ConfigGeneric {
                 customFilter={schema.customFilter}
                 filters={schema.filters}
                 socket={socket}
-                statesOnly={schema.all === undefined ? true : schema.all}
                 selected={value}
                 root={schema.root}
                 onClose={() => this.setState({ showSelectId: false })}
@@ -95,19 +97,4 @@ class ConfigObjectId extends ConfigGeneric {
     }
 }
 
-ConfigObjectId.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-    dateFormat: PropTypes.string,
-    isFloatComma: PropTypes.bool,
-    imagePrefix: PropTypes.string,
-};
-
-export default withStyles(styles)(ConfigObjectId);
+export default ConfigObjectId;

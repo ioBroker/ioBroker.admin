@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField } from '@mui/material';
 
@@ -16,12 +15,6 @@ interface ConfigAutocompleteSendToProps extends ConfigGenericProps {
 interface ConfigAutocompleteSendToState extends ConfigAutocompleteState {
     context: string;
 }
-
-const styles: Record<string, any> = {
-    fullWidth: {
-        width: '100%',
-    },
-};
 
 class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToProps, ConfigAutocompleteSendToState> {
     componentDidMount() {
@@ -147,7 +140,6 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
             options={options}
             // autoComplete
             getOptionLabel={option => option?.label ?? ''}
-            className={this.props.classes.indeterminate}
             onInputChange={e => {
                 if (!e || !this.props.schema.freeSolo) {
                     return;
@@ -180,4 +172,4 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
     }
 }
 
-export default withStyles(styles)(ConfigAutocompleteSendTo);
+export default ConfigAutocompleteSendTo;

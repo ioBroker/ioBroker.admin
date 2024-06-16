@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -13,15 +11,18 @@ import {
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemIP } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
-});
+interface ConfigIPProps extends ConfigGenericProps {
+    schema: ConfigItemIP;
+}
 
-class ConfigIP extends ConfigGeneric {
+interface ConfigIPState extends ConfigGenericState {
+    ips?: { name: string; address: string; family: string; internal?: boolean }[];
+}
+
+class ConfigIP extends ConfigGeneric<ConfigIPProps, ConfigIPState> {
     componentDidMount() {
         super.componentDidMount();
         this.props.socket.getHostByIp(this.props.common.host)
@@ -36,6 +37,7 @@ class ConfigIP extends ConfigGeneric {
                     ips = ips.filter(item => item.family === 'ipv6');
                 }
                 if (this.props.schema.noInternal) {
+                    // @ts-expect-error extended in socket-classes
                     ips = ips.filter(item => !item.internal);
                 }
                 ips.forEach(item => {
@@ -49,11 +51,11 @@ class ConfigIP extends ConfigGeneric {
             });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const item = this.state.ips?.find(it => it.address === value);
 
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
+        return <FormControl fullWidth variant="standard">
             {this.state.ips && this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             {!this.state.ips ?
                 <TextField
@@ -76,21 +78,10 @@ class ConfigIP extends ConfigGeneric {
                     {this.state.ips?.map((it, i) =>
                         <MenuItem key={i} value={it.address}>{it.name}</MenuItem>)}
                 </Select>}
-            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
+            {this.props.schema.help ?
+                <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }
 
-ConfigIP.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigIP);
+export default ConfigIP;

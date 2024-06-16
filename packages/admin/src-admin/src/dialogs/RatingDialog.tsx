@@ -35,7 +35,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         marginBottom: 20,
     },
     listRating: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     listTime: {
         opacity: 0.5,
@@ -68,11 +68,11 @@ const styles: Styles<IobTheme, any> = theme => ({
     noComments: {
         width: '100%',
         textAlign: 'center',
-        marginTop: theme.spacing(2),
+        marginTop: 16,
     },
     commentCount: {
         marginTop: 2,
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         opacity: 0.8,
         fontSize: 10,
         float: 'right',

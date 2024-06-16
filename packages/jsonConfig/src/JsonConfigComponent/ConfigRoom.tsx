@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -12,24 +10,27 @@ import {
 
 import { TextWithIcon, I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemRoom } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
-});
+interface ConfigRoomProps extends ConfigGenericProps {
+    schema: ConfigItemRoom;
+}
 
-class ConfigFunc extends ConfigGeneric {
+interface ConfigRoomState extends ConfigGenericState {
+    selectOptions?: { value: string; label: string; obj?: ioBroker.EnumObject }[];
+}
+
+class ConfigRoom extends ConfigGeneric<ConfigRoomProps, ConfigRoomState> {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        this.props.socket.getEnums('functions')
+        this.props.socket.getEnums('rooms')
             .then(enums => {
-                const selectOptions = Object.keys(enums)
+                const selectOptions: { value: string; label: string; obj?: ioBroker.EnumObject }[] = Object.keys(enums)
                     .map(id => ({
-                        value: this.props.schema.short ? id.replace('enum.functions.', '') : id,
+                        value: this.props.schema.short ? id.replace('enum.rooms.', '') : id,
                         label: this.getText(enums[id].common.name),
                         obj: enums[id],
                     }));
@@ -42,7 +43,7 @@ class ConfigFunc extends ConfigGeneric {
             });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
@@ -51,7 +52,7 @@ class ConfigFunc extends ConfigGeneric {
 
         return <FormControl
             variant="standard"
-            className={this.props.classes.fullWidth}
+            fullWidth
         >
             {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
@@ -75,16 +76,4 @@ class ConfigFunc extends ConfigGeneric {
     }
 }
 
-ConfigFunc.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigFunc);
+export default ConfigRoom;

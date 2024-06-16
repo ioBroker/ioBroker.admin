@@ -48,7 +48,7 @@ const styles: Styles<IobTheme, any> | Record<string, any> = theme => ({
         flexWrap: 'wrap',
         position: 'sticky',
         bottom: -10,
-        paddingLeft: theme.spacing(1),
+        paddingLeft: 8,
         background: theme.name === 'blue' ? '#5d6467' : (theme.name === 'dark' ? '#5b5b5b' : '#FFF'),
     },
     container:{

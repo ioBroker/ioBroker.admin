@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     TextField,
@@ -12,27 +10,38 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemPassword } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = theme => ({
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
         display: 'inline-block',
     },
     halfWidth1: {
-        width: `calc(50% - ${theme.spacing(0.5)})`,
+        width: 'calc(50% - 4px)',
         display: 'inline-block',
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     halfWidth2: {
-        width: `calc(50% - ${theme.spacing(0.5)})`,
+        width: 'calc(50% - 4px)',
         display: 'inline-block',
     },
-});
+};
 
 const PASSWORD_PLACEHOLDER = '____ppp____';
 
-class ConfigPassword extends ConfigGeneric {
+interface ConfigPasswordProps extends ConfigGenericProps {
+    schema: ConfigItemPassword;
+}
+
+interface ConfigPasswordState extends ConfigGenericState {
+    _notEqual?: boolean;
+    _repeat?: string;
+    _visible?: boolean;
+}
+
+class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordState> {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -44,7 +53,7 @@ class ConfigPassword extends ConfigGeneric {
         });
     }
 
-    onChangePassword(password, repeatPassword) {
+    onChangePassword(password?: string, repeatPassword?: string) {
         if (password === undefined) {
             password = this.state.value;
         }
@@ -62,7 +71,7 @@ class ConfigPassword extends ConfigGeneric {
         });
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         if (this.state._notEqual === undefined) {
             return null;
         }
@@ -136,25 +145,13 @@ class ConfigPassword extends ConfigGeneric {
                 }}
             />;
 
-            return <div className={this.props.classes.fullWidth}>
-                <div className={this.props.classes.halfWidth1}>{password}</div>
-                <div className={this.props.classes.halfWidth2}>{passwordRepeat}</div>
+            return <div style={styles.fullWidth}>
+                <div style={styles.halfWidth1}>{password}</div>
+                <div style={styles.halfWidth2}>{passwordRepeat}</div>
             </div>;
         }
         return password;
     }
 }
 
-ConfigPassword.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigPassword);
+export default ConfigPassword;

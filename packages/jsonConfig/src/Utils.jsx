@@ -1678,6 +1678,35 @@ class Utils {
     static isValidDate(date) {
         return date instanceof Date && !isNaN(date);
     }
+
+    static getStyle(theme, ...args) {
+        const result = {};
+
+        for (let a = 0; a < args.length; a++) {
+            if (typeof args[a] === 'function') {
+                Object.assign(result, args[a](theme));
+            } else if (args[a] && typeof args[a] === 'object') {
+                Object.keys(args[a]).forEach(attr => {
+                    if (typeof args[a][attr] === 'function') {
+                        result[attr] = args[a][attr](theme);
+                    } else if (typeof args[a][attr] === 'object') {
+                        const obj = args[a][attr];
+                        Object.keys(obj).forEach(attr1 => {
+                            if (typeof obj[attr1] === 'function') {
+                                result[attr][attr1] = obj(theme);
+                            } else if (obj[attr1] || obj[attr1] === 0) {
+                                result[attr][attr1] = obj[attr1];
+                            }
+                        });
+                    } else if (args[a][attr] || args[a][attr] === 0) {
+                        result[attr] = args[a][attr];
+                    }
+                });
+            }
+        }
+
+        return result;
+    }
 }
 
 export default Utils;

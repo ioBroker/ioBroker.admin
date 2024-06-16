@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -17,10 +15,11 @@ import {
 
 import { SelectFile as SelectFileDialog } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemFile } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ConfigFileSelector from './ConfigFileSelector';
 
-const styles = () => ({
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
@@ -38,7 +37,7 @@ const styles = () => ({
         display: 'inline-block',
         marginRight: 8,
     },
-});
+};
 
 const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp', 'gif', 'apng', 'avif', 'webp'];
 const AUDIO_EXT = ['mp3', 'ogg', 'wav', 'aac'];
@@ -46,7 +45,17 @@ const VIDEO_EXT = ['avi', 'mp4', 'mov'];
 const DOC_EXT = ['txt', 'log', 'html', 'htm'];
 const JS_EXT = ['json', 'js', 'ts'];
 
-class ConfigFile extends ConfigGeneric {
+interface ConfigFileProps extends ConfigGenericProps {
+    schema: ConfigItemFile;
+}
+
+interface ConfigFileState extends ConfigGenericState {
+    showFileBrowser?: boolean;
+}
+
+class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
+    private imagePrefix = '../..';
+
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -54,7 +63,7 @@ class ConfigFile extends ConfigGeneric {
         this.setState({ value: value ?? '' });
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: ConfigFileProps, state: ConfigFileState): Partial<ConfigFileState> | null {
         const value = ConfigGeneric.getValue(props.data, props.attr);
         if (value === null || value === undefined || value.toString().trim() !== (state.value ||  '').toString().trim()) {
             return { value: value ?? '' };
@@ -93,20 +102,24 @@ class ConfigFile extends ConfigGeneric {
         const extension = this.state.value.split('.').pop().toLowerCase();
         if (IMAGE_EXT.includes(extension)) {
             return <div
-                className={this.props.classes.selectedImage}
                 style={{
+                    ...styles.selectedImage,
                     backgroundImage: `url(${this.imagePrefix}/${this.state.value})`,
                     backgroundSize: 'contain',
                     backgroundRepeat: 'no-repeat',
                 }}
             />;
-        } if (AUDIO_EXT.includes(extension)) {
+        }
+        if (AUDIO_EXT.includes(extension)) {
             return <IconButton style={{ color: '#00FF00' }} onClick={() => this.play()}><IconPlay /></IconButton>;
-        } if (DOC_EXT.includes(extension)) {
+        }
+        if (DOC_EXT.includes(extension)) {
             return <IconText />;
-        } if (VIDEO_EXT.includes(extension)) {
+        }
+        if (VIDEO_EXT.includes(extension)) {
             return <IconVideo />;
-        } if (JS_EXT.includes(extension)) {
+        }
+        if (JS_EXT.includes(extension)) {
             return <IconCode />;
         }
         return null;
@@ -121,7 +134,8 @@ class ConfigFile extends ConfigGeneric {
             socket={this.props.socket}
             selected={this.state.value}
             onClose={() => this.setState({ showFileBrowser: false })}
-            onOk={value => {
+            onOk={_value => {
+                const value = Array.isArray(_value) ? _value[0] : _value as string;
                 this.setState({ value }, () =>
                     this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
             }}
@@ -135,14 +149,14 @@ class ConfigFile extends ConfigGeneric {
         />;
     }
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         const icon = this.getIcon();
 
-        return <div className={this.props.classes.fullWidth}>
+        return <div style={styles.fullWidth}>
             {icon}
             <TextField
                 variant="standard"
-                className={icon ? this.props.classes.fullWidthIcon : this.props.classes.fullWidthOneButton}
+                style={icon ? styles.fullWidthIcon : styles.fullWidthOneButton}
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}
                 disabled={!!disabled}
@@ -165,17 +179,4 @@ class ConfigFile extends ConfigGeneric {
     }
 }
 
-ConfigFile.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-    imagePrefix: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigFile);
+export default ConfigFile;

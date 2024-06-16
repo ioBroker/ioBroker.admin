@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Autocomplete,
@@ -16,7 +15,7 @@ import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemText } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     indeterminate: {
         opacity: 0.5,
     },
@@ -96,7 +95,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
             return <Autocomplete
-                className={this.props.classes.indeterminate}
+                style={styles.indeterminate}
                 fullWidth
                 value={arr[0]}
                 // getOptionSelected={(option, value) => option.label === value.label}
@@ -127,7 +126,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
         if (this.props.schema.minRows > 1) {
             const helper = this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation);
             return <div style={{ width: '100%' }}>
-                {this.props.schema.label ? <div className={this.props.classes.label}>{this.getText(this.props.schema.label)}</div> : null}
+                {this.props.schema.label ? <div style={styles.label}>{this.getText(this.props.schema.label)}</div> : null}
                 <TextareaAutosize
                     // variant="standard"
                     style={{
@@ -148,7 +147,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                     }}
                     placeholder={this.getText(this.props.schema.placeholder)}
                 />
-                {helper || error ? <div className={error ? this.props.classes.error : this.props.classes.helper}>{error || helper}</div> : null}
+                {helper || error ? <div style={error ? styles.error : styles.helper}>{error || helper}</div> : null}
             </div>;
         }
         return <TextField
@@ -185,4 +184,4 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
     }
 }
 
-export default withStyles(styles)(ConfigText);
+export default ConfigText;

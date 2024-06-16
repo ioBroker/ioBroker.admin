@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -11,20 +9,26 @@ import {
 } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemInstanceSelect } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
+const styles: Record<string, React.CSSProperties> = {
     icon: {
         width: 20,
         height: 20,
         marginRight: 4,
     },
-});
+};
 
-class ConfigInstanceSelect extends ConfigGeneric {
+interface ConfigInstanceSelectProps extends ConfigGenericProps {
+    schema: ConfigItemInstanceSelect;
+}
+
+interface ConfigInstanceSelectState extends ConfigGenericState {
+    selectOptions?: { label: string; value: string; icon?: string }[];
+}
+
+class ConfigInstanceSelect extends ConfigGeneric<ConfigInstanceSelectProps, ConfigInstanceSelectState> {
     async componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -49,7 +53,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
                     instances = instances.filter(instance => instance?.common?.enabled);
                 }
 
-                const selectOptions = instances.map(instance => ({
+                const selectOptions: { label: string; value: string; icon?: string }[] = instances.map(instance => ({
                     value: this.props.schema.long ? instance._id :
                         (this.props.schema.short ? instance._id.split('.').pop() : instance._id.replace(/^system\.adapter\./, '')),
                     label: `${instance.common.name} [${instance._id.replace(/^system\.adapter\./, '')}]`,
@@ -59,7 +63,8 @@ class ConfigInstanceSelect extends ConfigGeneric {
                 selectOptions.sort((a, b) => {
                     if (a.value > b.value) {
                         return 1;
-                    } if (a.value < b.value) {
+                    }
+                    if (a.value < b.value) {
                         return -1;
                     }
                     return 0;
@@ -84,7 +89,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
         super.componentWillUnmount();
     }
 
-    onInstancesUpdate = (id, obj) => {
+    onInstancesUpdate = (id: string, obj?: ioBroker.Object | null) => {
         if (!id.match(/^system\.adapter\.[-_a-z\d]+\.\d+$/)) {
             return;
         }
@@ -93,16 +98,16 @@ class ConfigInstanceSelect extends ConfigGeneric {
         if (!obj) {
             // deleted
             if (index !== -1) {
-                const selectOptions = JSON.parse(JSON.stringify(this.state.selectOptions));
+                const selectOptions: { label: string; value: string; icon?: string }[] = JSON.parse(JSON.stringify(this.state.selectOptions));
 
-                const newState = {};
+                const newState: Partial<ConfigInstanceSelectState> = {};
                 if (this.state.value === selectOptions[index].value) {
                     newState.value = ConfigGeneric.NONE_VALUE;
                 }
                 selectOptions.splice(index, 1);
                 newState.selectOptions = selectOptions;
 
-                this.setState(newState);
+                this.setState(newState as ConfigInstanceSelectState);
             }
         } else {
             if (this.props.schema.adapter === '_dataSources' && (!obj.common || !obj.common.getHistory)) {
@@ -110,7 +115,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
             }
 
             if (index === -1) {
-                const selectOptions = JSON.parse(JSON.stringify(this.state.selectOptions));
+                const selectOptions: { label: string; value: string; icon?: string }[] = JSON.parse(JSON.stringify(this.state.selectOptions));
                 selectOptions.push({
                     value: this.props.schema.long ? obj._id :
                         (this.props.schema.short ? obj._id.split('.').pop() : obj._id.replace(/^system\.adapter\./, '')),
@@ -123,14 +128,14 @@ class ConfigInstanceSelect extends ConfigGeneric {
         }
     };
 
-    renderItem(error, disabled /* , defaultValue */) {
+    renderItem(error: string, disabled: boolean /* , defaultValue */) {
         if (!this.state.selectOptions) {
             return null;
         }
 
         const item = this.state.selectOptions?.find(it => it.value === this.state.value);
 
-        return <FormControl className={this.props.classes.fullWidth} key={this.props.attr} variant="standard">
+        return <FormControl fullWidth key={this.props.attr} variant="standard">
             {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null }
             <Select
                 variant="standard"
@@ -139,7 +144,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
                 disabled={!!disabled}
                 value={this.state.value}
                 renderValue={() => <span style={{ display: 'flex' }}>
-                    {item?.icon ? <img src={`./${item.icon}`} alt={item.value} className={this.props.classes.icon} /> : null}
+                    {item?.icon ? <img src={`./${item.icon}`} alt={item.value} style={styles.icon} /> : null}
                     {this.getText(item?.label, true)}
                 </span>}
                 onChange={e =>
@@ -148,7 +153,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
             >
                 {this.state.selectOptions.map(it =>
                     <MenuItem key={it.value} value={it.value} style={it.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}>
-                        {it.icon ? <img src={`./${it.icon}`} alt={it.value} className={this.props.classes.icon} /> : null}
+                        {it.icon ? <img src={`./${it.icon}`} alt={it.value} style={styles.icon} /> : null}
                         {this.getText(it.label, true)}
                     </MenuItem>)}
             </Select>
@@ -157,16 +162,4 @@ class ConfigInstanceSelect extends ConfigGeneric {
     }
 }
 
-ConfigInstanceSelect.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
-
-export default withStyles(styles)(ConfigInstanceSelect);
+export default ConfigInstanceSelect;

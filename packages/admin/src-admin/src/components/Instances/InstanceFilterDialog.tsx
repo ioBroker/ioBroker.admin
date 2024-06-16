@@ -153,7 +153,7 @@ const useStyles = makeStyles((theme: IobTheme) => ({
     icon: {
         width: 18,
         height: 18,
-        marginRight: theme.spacing(1),
+        marginRight: 8,
         display: 'inline-block',
     },
     menuValue: {

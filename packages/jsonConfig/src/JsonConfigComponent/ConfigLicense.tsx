@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import {
     Button,
@@ -16,13 +15,28 @@ import { Check, Close } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemLicense } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-class ConfigLicense extends ConfigGeneric {
-    constructor(props) {
+interface ConfigLicenseProps extends ConfigGenericProps {
+    schema: ConfigItemLicense;
+}
+
+interface ConfigLicenseState extends ConfigGenericState {
+    showLicenseDialog?: boolean;
+    licenseChecked?: boolean;
+    license?: string;
+    loading?: boolean;
+    error?: boolean;
+    scrolledDown?: boolean;
+}
+
+class ConfigLicense extends ConfigGeneric<ConfigLicenseProps, ConfigLicenseState> {
+    private readonly scrollRef: React.RefObject<HTMLDivElement | HTMLPreElement>;
+
+    constructor(props: ConfigLicenseProps) {
         super(props);
         this.scrollRef = React.createRef();
-        this.noPlaceRequired = true;
     }
 
     scrolledDown() {
@@ -37,11 +51,15 @@ class ConfigLicense extends ConfigGeneric {
         if (!ConfigGeneric.getValue(this.props.data, this.props.attr)) {
             if (this.props.schema.licenseUrl) {
                 this.setState({ showLicenseDialog: true, loading: true, scrolledDown: false });
+
                 fetch(this.props.schema.licenseUrl)
                     .then(res => res.text())
                     .then(text => this.setState({ license: text, loading: false }))
                     .catch(e => this.setState({
-                        license: e.toString(), loading: false, error: true, scrolledDown: false,
+                        license: e.toString(),
+                        loading: false,
+                        error: true,
+                        scrolledDown: false,
                     }));
             } else {
                 this.setState({ showLicenseDialog: true, scrolledDown: false });
@@ -64,7 +82,7 @@ class ConfigLicense extends ConfigGeneric {
         }
     }
 
-    renderItem(/* error, disabled, defaultValue */) {
+    renderItem(/* error: string, disabled: boolean, defaultValue */) {
         if (!this.state.showLicenseDialog) {
             return null;
         }
@@ -83,7 +101,7 @@ class ConfigLicense extends ConfigGeneric {
                 {this.props.schema.licenseUrl ? <>
                     {this.state.loading ? <LinearProgress /> : null}
                     <pre
-                        ref={this.scrollRef}
+                        ref={this.scrollRef as React.RefObject<HTMLPreElement>}
                         style={{
                             width: '100%', height: '100%', overflowY: 'auto', fontSize: 14,
                         }}
@@ -92,7 +110,7 @@ class ConfigLicense extends ConfigGeneric {
                     </pre>
                 </> : null}
                 {!this.props.schema.licenseUrl && this.props.schema.texts ? <div
-                    ref={this.scrollRef}
+                    ref={this.scrollRef as React.RefObject<HTMLDivElement>}
                     style={{
                         width: '100%', height: '100%', overflowY: 'auto', fontSize: 14,
                     }}
@@ -108,7 +126,7 @@ class ConfigLicense extends ConfigGeneric {
                 <Button
                     disabled={this.state.loading || this.state.error || (this.props.schema.checkBox && !this.state.licenseChecked) || !this.state.scrolledDown}
                     onClick={() => {
-                        this.setState({ showLicenseDialog: null });
+                        this.setState({ showLicenseDialog: false });
                         this.onChange(this.props.attr, true);
                     }}
                     color="primary"
@@ -132,17 +150,5 @@ class ConfigLicense extends ConfigGeneric {
         </Dialog>;
     }
 }
-
-ConfigLicense.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default ConfigLicense;

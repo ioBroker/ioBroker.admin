@@ -45,11 +45,11 @@ const styles: Styles<IobTheme, any> = theme => ({
         // backgroundColor: blueGrey[ 50 ]
     },
     formControl: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
         minWidth: '100%',
     },
     selectEmpty: {
-        marginTop: theme.spacing(2),
+        marginTop: 16,
     },
     map: {
         borderRadius: 5,

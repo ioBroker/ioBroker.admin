@@ -20,8 +20,9 @@ import {
     Utils, type AdminConnection, I18n,
     type Connection,
     type ThemeType, type ThemeName,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import type { ConfigItemAny, ConfigItemConfirmData } from '#JC/types';
+import type {ConfigIconType, ConfigItemAny, ConfigItemConfirmData} from '#JC/types';
 
 // because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
 export function isObject(it: any): it is Record<string, any> {
@@ -66,12 +67,13 @@ export interface ConfigGenericProps {
     changeLanguage?: () => void;
     changed: boolean;
     className?: string;
-    classes: Record<string, any>;
+    style?: Record<string, any>;
     commandRunning?: boolean;
     common: Record<string, any>;
     custom?: boolean;
     customObj?: Record<string, any>;
-    customs?: Record<string, React.Component>;
+    // eslint-disable-next-line no-use-before-define
+    customs?: Record<string, typeof ConfigGeneric>;
     data: Record<string, any>;
     dateFormat: string;
     disabled?: boolean;
@@ -100,6 +102,7 @@ export interface ConfigGenericProps {
     table?: boolean;
     themeName: ThemeName;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 export interface ConfigGenericState {
@@ -390,7 +393,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    getIcon(iconSettings?: string | null): React.JSX.Element | null {
+    getIcon(iconSettings?: ConfigIconType | null): React.JSX.Element | null {
         iconSettings = iconSettings || this.props.schema.icon;
         let icon = null;
         if (iconSettings === 'auth') {
@@ -1029,7 +1032,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                                     : I18n.t('ra_Request data by instance')
                             }
                         >
-                            {this.getText(this.props.schema.button)}
+                            {this.getText(this.props.schema.button as ioBroker.StringOrTranslated)}
                         </Button>
                     </Grid>
                 </Grid> : renderedItem}

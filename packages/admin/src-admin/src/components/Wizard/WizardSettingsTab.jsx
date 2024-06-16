@@ -69,15 +69,15 @@ const styles = theme => ({
     },
     controlItem: {
         width: SETTINGS_WIDTH,
-        marginBottom: theme.spacing(1),
+        marginBottom: 8,
     },
     controlItemAddress: {
         width: SETTINGS_WIDTH - 40,
-        marginBottom: theme.spacing(1),
+        marginBottom: 8,
     },
     gridSettings: {
-        width: SETTINGS_WIDTH + parseInt(theme.spacing(2), 10),
-        margin: theme.spacing(1),
+        width: SETTINGS_WIDTH + 16,
+        margin: 8,
         textAlign: 'left',
         height: '100%',
         overflow: 'auto',

@@ -15,7 +15,7 @@ import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 const useStyles = makeStyles((theme: IobTheme) => ({
     typography: {
-        padding: theme.spacing(2),
+        padding: 16,
     },
 }));
 

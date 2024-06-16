@@ -332,7 +332,7 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
     changeLogDiv: {
         display: 'block',
-        paddingBottom: theme.spacing(2),
+        paddingBottom: 16,
         '&:hover': {
             backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#DDD',
         },
@@ -345,25 +345,25 @@ const styles: Styles<IobTheme, any> = theme => ({
     changeLogDate: {
         fontSize: 16,
         fontStyle: 'italic',
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         opacity: 0.7,
     },
     changeLogLine: {
         display: 'block',
         fontSize: 14,
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         '&:before': {
             content: '"• "',
         },
     },
     changeLogUL: {
-        paddingLeft: theme.spacing(1),
+        paddingLeft: 8,
         marginTop: 4,
     },
     changeLogAuthor: {
         fontStyle: 'italic',
         fontWeight: 'bold',
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     changeLogLineText: {
 

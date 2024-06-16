@@ -56,7 +56,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         overflow: 'hidden',
     },
     chartWithToolbar: {
-        height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + parseInt(theme.spacing(1), 10)}px)`,
+        height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + 8}px)`,
     },
     chartWithoutToolbar: {
         height: '100%',
@@ -75,7 +75,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         color: theme.palette.primary.main,
     },
     splitLineButtonIcon: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     grow: {
         flexGrow: 1,
@@ -121,8 +121,8 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         marginLeft: theme.spacing(1),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
-        paddingTop: theme.spacing(0.5),
-        paddingBottom: theme.spacing(0.5),
+        paddingTop: 4,
+        paddingBottom: 4,
         border: '1px dotted #AAAAAA',
         borderRadius: theme.spacing(1),
         display: 'flex',

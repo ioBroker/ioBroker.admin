@@ -41,8 +41,8 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     button: {
         position: 'absolute',
-        bottom: theme.spacing(2),
-        right: theme.spacing(2),
+        bottom: 16,
+        right: 16,
     },
     saveButton: {
         backgroundColor: theme.palette.success.main,

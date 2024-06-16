@@ -92,7 +92,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         },
     },
     fabButton: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
         width: 44,
     },
 });

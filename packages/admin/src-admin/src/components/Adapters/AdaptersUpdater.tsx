@@ -36,8 +36,8 @@ interface GetNewsResultEntry {
 
 const styles = (theme: Record<string, any>) => ({
     smallAvatar: {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
+        width: 24,
+        height: 24,
     },
     listItem: {
         marginBottom: 2,
@@ -72,14 +72,14 @@ const styles = (theme: Record<string, any>) => ({
     },
     closeButton: {
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: 8,
+        top: 8,
         color: theme.palette.grey[500],
     },
     languageButton: {
         position: 'absolute',
-        right: 52 + parseInt(theme.spacing(1), 10),
-        top: theme.spacing(1),
+        right: 52 + 8,
+        top: 8,
     },
     languageButtonActive: {
         color: theme.palette.primary.main,

@@ -40,7 +40,7 @@ const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
         display: 'flex',
     },
     formControl: {
-        margin: theme.spacing(1),
+        margin: 8,
         minWidth: '100%',
     },
     tableCell: {

@@ -43,7 +43,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     enumTemplateButton: {
         // width: '100%',
         justifyContent: 'end',
-        margin: theme.spacing(0.5),
+        margin: 4,
         padding: '4px 8px',
     },
     enumTemplateLabel: {
@@ -58,7 +58,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         maxHeight: 900,
     },
     filter: {
-        marginLeft: theme.spacing(2),
+        marginLeft: 16,
         marginTop: 0,
         marginBottom: 0,
     },

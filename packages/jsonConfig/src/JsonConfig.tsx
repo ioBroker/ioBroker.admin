@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 import MD5 from 'crypto-js/md5';
 
@@ -27,7 +26,7 @@ import Utils from '#JC/Utils';
 import ConfigGeneric, { type DeviceManagerPropsProps } from './JsonConfigComponent/ConfigGeneric';
 import JsonConfigComponent from './JsonConfigComponent';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     root: {
         width: '100%',
         height: '100%',
@@ -231,7 +230,6 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             .then(obj => this.getConfigFile()
                 .then(schema =>
                     // load language
-                // @ts-expect-error it has the static method
                     JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
                         .then((langFileName: string) => {
                             if (langFileName) {
@@ -300,7 +298,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             <Tooltip title={this.props.t('Import settings from JSON file')}>
                 <Fab
                     size="small"
-                    classes={{ root: this.props.classes.button }}
+                    sx={{ '& .MuiFab-root': styles.button }}
                     onClick={() => {
                         const input = document.createElement('input');
                         input.setAttribute('type', 'file');
@@ -317,7 +315,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             <Tooltip title={this.props.t('Export setting to JSON file')}>
                 <Fab
                     size="small"
-                    classes={{ root: this.props.classes.button }}
+                    sx={{ '& .MuiFab-root': styles.button }}
                     onClick={() => {
                         if (!this.state.data) {
                             return;
@@ -336,7 +334,6 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         if (id === `${this.props.adapterName}.admin` && size) {
             if (fileName === this.fileLangSubscribed)  {
                 try {
-                    // @ts-expect-error needs types
                     await JsonConfigComponent.loadI18n(this.props.socket, this.state.schema?.i18n, this.props.adapterName);
                     this.setState({ hash: `${this.state.hash}1` });
                 } catch {
@@ -654,18 +651,17 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
     }
 
     render(): React.JSX.Element {
-        const { classes } = this.props;
         if (!this.state.data || !this.state.schema) {
             return <LinearProgress />;
         }
 
-        return <div className={this.props.classes.root}>
+        return <div style={styles.root}>
             {this.renderConfirmDialog()}
             {this.getExportImportButtons()}
             {this.renderSaveConfigDialog()}
             <JsonConfigComponent
                 key={this.state.hash as string}
-                className={classes.scroll}
+                style={styles.scroll}
                 socket={this.props.socket}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
@@ -693,6 +689,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                     }
                 }}
                 DeviceManager={this.props.DeviceManager}
+                theme={this.state.theme}
             />
             <SaveCloseButtons
                 isIFrame={false}
@@ -710,4 +707,4 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
     }
 }
 
-export default withStyles(styles)(JsonConfig);
+export default JsonConfig;

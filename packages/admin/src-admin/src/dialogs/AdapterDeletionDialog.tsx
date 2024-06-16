@@ -23,12 +23,12 @@ import type { AdminConnection, IobTheme, Translate } from '@iobroker/adapter-rea
 
 const styles: Record<string, any> = (theme: IobTheme) => ({
     formControl: {
-        marginTop: theme.spacing(3),
+        marginTop: 24,
     },
     closeButton: {
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: 8,
+        top: 8,
         color: theme.palette.grey[500],
     },
     typography: {

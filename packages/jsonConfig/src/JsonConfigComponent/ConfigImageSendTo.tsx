@@ -1,16 +1,18 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 
-import ConfigGeneric from './ConfigGeneric';
+import type { ConfigItemImageSendTo } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles = () => ({
-    fullWidth: {
-        width: '100%',
-    },
-});
+interface ConfigImageSendToProps extends ConfigGenericProps {
+    schema: ConfigItemImageSendTo;
+}
 
-class ConfigImageSendTo extends ConfigGeneric {
+interface ConfigImageSendToState extends ConfigGenericState {
+    image?: string;
+    context?: string;
+}
+
+class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImageSendToState> {
     componentDidMount() {
         super.componentDidMount();
 
@@ -21,11 +23,13 @@ class ConfigImageSendTo extends ConfigGeneric {
         if (this.props.alive) {
             let data = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                data = this.getPattern(this.props.schema.jsonData);
-                try {
-                    data = JSON.parse(data);
-                } catch (e) {
-                    console.error(`Cannot parse json data: ${data}`);
+                const dataStr: string = this.getPattern(this.props.schema.jsonData);
+                if (dataStr) {
+                    try {
+                        data = JSON.parse(dataStr);
+                    } catch (e) {
+                        console.error(`Cannot parse json data: ${data}`);
+                    }
                 }
             }
 
@@ -39,11 +43,13 @@ class ConfigImageSendTo extends ConfigGeneric {
     }
 
     getContext() {
-        const context = {};
+        const context: Record<string, any> = {};
+
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
             this.props.schema.alsoDependsOn.forEach(attr =>
                 context[attr] = ConfigGeneric.getValue(this.props.data, attr));
         }
+
         return JSON.stringify(context);
     }
 
@@ -60,20 +66,11 @@ class ConfigImageSendTo extends ConfigGeneric {
         }
 
         return <img
-            className={this.props.classes.fullWidth}
             alt="dynamic content"
             src={this.state.image}
-            style={{ width: this.props.schema.width, height: this.props.schema.height }}
+            style={{ width: this.props.schema.width || '100%', height: this.props.schema.height }}
         />;
     }
 }
 
-ConfigImageSendTo.propTypes = {
-    socket: PropTypes.object.isRequired,
-    data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
-    adapterName: PropTypes.string,
-    instance: PropTypes.number,
-};
-
-export default withStyles(styles)(ConfigImageSendTo);
+export default ConfigImageSendTo;

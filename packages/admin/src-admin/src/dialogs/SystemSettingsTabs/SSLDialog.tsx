@@ -43,7 +43,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         },
     },
     formControl: {
-        margin: theme.spacing(1),
+        margin: 8,
         minWidth: '100%',
     },
 });

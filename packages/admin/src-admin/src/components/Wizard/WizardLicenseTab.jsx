@@ -42,16 +42,16 @@ const styles = theme => ({
         height: `calc(100% - ${TOOLBAR_HEIGHT}px)`,
         width: '100%',
         overflow: 'hidden',
-        padding: theme.spacing(2),
+        padding: 16,
         textAlign: 'center',
     },
     languageSelect: {
         minWidth: 200,
-        marginRight: theme.spacing(3),
+        marginRight: 24,
     },
     licenseDiv: {
         width: '100%',
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight + parseInt(theme.spacing(1), 10) + 70}px)`,
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight + 8 + 70}px)`,
         overflow: 'auto',
     },
     grow: {
@@ -69,7 +69,7 @@ const styles = theme => ({
         marginLeft: 32,
     },
     greenButton: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
     },
     toolbar: {
         height: TOOLBAR_HEIGHT,

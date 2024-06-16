@@ -14,14 +14,14 @@ const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
     log: {
         height: 400,
         width: 860,
-        padding: theme.spacing(1),
+        padding: 8,
         overflowY: 'auto',
     },
     logNoSpacing: {
         height: '100%',
         width: 'calc(100% - 8px)',
         marginLeft: 8,
-        padding: theme.spacing(1),
+        padding: 8,
         overflowY: 'auto',
     },
     error: {

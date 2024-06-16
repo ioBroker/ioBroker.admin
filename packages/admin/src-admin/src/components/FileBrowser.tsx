@@ -117,10 +117,10 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         position: 'relative',
     },
     filesDiv: {
-        width: `calc(100% - ${theme.spacing(2)})`,
+        width: 'calc(100% - 16px)',
         overflowX: 'hidden',
         overflowY: 'auto',
-        padding: theme.spacing(1),
+        padding: 8,
     },
     filesDivHint: {
         position: 'absolute',
@@ -131,10 +131,10 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         fontSize: 12,
     },
     filesDivTable: {
-        height: `calc(100% - ${48 + parseInt(theme.spacing(1), 10)}px)`,
+        height: `calc(100% - ${48 + 8}px)`,
     },
     filesDivTile: {
-        height: `calc(100% - ${48 * 2 + parseInt(theme.spacing(1), 10)}px)`,
+        height: `calc(100% - ${48 * 2 + 8}px)`,
         display: 'flex',
         alignContent: 'flex-start',
         alignItems: 'stretch',
@@ -387,7 +387,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     pathDiv: {
         display: 'flex',
-        width: `calc(100% - ${theme.spacing(2)})`,
+        width: 'calc(100% - 16px)',
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         textOverflow: 'clip',

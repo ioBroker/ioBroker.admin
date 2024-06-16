@@ -24,8 +24,8 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
     closeButton: {
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: 8,
+        top: 8,
         color: theme.palette.grey[500],
     },
     paper: {

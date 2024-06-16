@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -15,33 +14,13 @@ import {
     Close as IconCancel,
     Check as IconCheck,
 } from '@mui/icons-material';
-import type { AdminConnection, IobTheme, Translate } from '@iobroker/adapter-react-v5';
-
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    input: {
-        marginBottom: theme.spacing(2),
-    },
-    inputText: {
-        width: 400,
-        height: 300,
-        marginBottom: theme.spacing(2),
-    },
-    formControl: {
-        marginBottom: theme.spacing(2),
-        minWidth: 150,
-    },
-    quality: {
-        width: '100%',
-    },
-});
+import type { AdminConnection, Translate } from '@iobroker/adapter-react-v5';
 
 interface ObjectBrowserEditRoleProps {
-    classes: Record<string, string>;
     roles: string[];
     id: string;
     socket: AdminConnection;
     onClose: (obj?: ioBroker.Object) => void;
-
     t: Translate;
 }
 
@@ -130,4 +109,4 @@ class ObjectBrowserEditRole extends Component<ObjectBrowserEditRoleProps, Object
     }
 }
 
-export default withStyles(styles)(ObjectBrowserEditRole);
+export default ObjectBrowserEditRole;

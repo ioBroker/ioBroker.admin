@@ -46,7 +46,7 @@ import 'moment/locale/zh-cn';
 const styles: Record<string, any> = (theme: IobTheme) => ({
     closeButton: {
         position: 'absolute',
-        right: theme.spacing(1),
+        right: 8,
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },

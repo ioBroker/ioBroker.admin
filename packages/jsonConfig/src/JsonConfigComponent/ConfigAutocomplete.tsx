@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField } from '@mui/material';
 
@@ -7,12 +6,6 @@ import { I18n } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemAutocomplete, ConfigItemSelectOption } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
-
-const styles: Record<string, any> = {
-    fullWidth: {
-        width: '100%',
-    },
-};
 
 export interface ConfigAutocompleteProps extends ConfigGenericProps {
     schema: ConfigItemAutocomplete;
@@ -67,7 +60,6 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
         }
 
         return <Autocomplete
-            className={this.props.classes.indeterminate}
             fullWidth
             freeSolo={!!this.props.schema.freeSolo}
             value={item}
@@ -105,4 +97,4 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
     }
 }
 
-export default withStyles(styles)(ConfigAutocomplete);
+export default ConfigAutocomplete;

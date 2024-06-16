@@ -45,8 +45,8 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
     closeButton: {
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: 8,
+        top: 8,
         color: theme.palette.grey[500],
     },
     paper: {
@@ -56,13 +56,13 @@ const styles: Styles<IobTheme, any> = theme => ({
         paddingRight: 30,
     },
     editItem: {
-        marginTop: theme.spacing(1),
+        marginTop: 8,
     },
     editItemSlider: {
-        marginTop: theme.spacing(3),
+        marginTop: 24,
     },
     labelSlider: {
-        marginTop: theme.spacing(2),
+        marginTop: 16,
         fontSize: '1rem',
     },
     editColor: {

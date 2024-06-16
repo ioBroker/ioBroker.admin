@@ -1,17 +1,16 @@
 import React, { type JSXElementConstructor } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Grid,
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    Typography,
+    Typography, Box,
 } from '@mui/material';
 
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
+import { type IobTheme } from '@iobroker/adapter-react-v5';
 import type { ConfigItemPanel } from '#JC/types';
 
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
@@ -67,7 +66,7 @@ import ConfigTopic from './ConfigTopic';
 import ConfigUUID from './ConfigUUID';
 import ConfigUser from './ConfigUser';
 
-const components = {
+const components: Record<string, typeof ConfigGeneric<any, any>> = {
     accordion: ConfigAccordion,
     alive: ConfigAlive,
     autocomplete: ConfigAutocomplete,
@@ -122,7 +121,7 @@ const components = {
     user: ConfigUser,
 };
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
         // height: '100%',
@@ -131,7 +130,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         margin: 10,
         width: 'auto !important',
         overflowY: 'auto',
-        paddingBottom: theme.spacing(1),
+        paddingBottom: 8,
     },
     paperWithIcons: {
         height: 'calc(100vh - 259px) !important',
@@ -145,14 +144,14 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     heading: {
 
     },
-    primary: {
+    primary: (theme: IobTheme) => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.mode === 'dark' ? 'inherit' : '#FFF',
-    },
-    secondary: {
+    }),
+    secondary: (theme: IobTheme) => ({
         backgroundColor: theme.palette.secondary.main,
-    },
-});
+    }),
+};
 
 interface ConfigPanelProps extends ConfigGenericProps {
     schema: ConfigItemPanel;
@@ -171,15 +170,13 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
     }
 
     renderItems(items: Record<string, any>, disabled: boolean) {
-        const classes = this.props.classes || {};
-
         return items ? Object.keys(items).map(attr => {
             if (this.props.multiEdit && items[attr].noMultiEdit) {
                 return null;
             }
 
             const type = items[attr].type || 'panel';
-            let ItemComponent;
+            let ItemComponent: typeof ConfigGeneric<any, any>;
             if (type === 'custom') {
                 // name
                 // url
@@ -193,12 +190,11 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 }
             } else if (type === 'panel') {
                 // eslint-disable-next-line no-use-before-define
-                ItemComponent = ConfigPanelStyled;
+                ItemComponent = ConfigPanel;
             } else {
-                ItemComponent = (components as Record<string, JSXElementConstructor<any>>)[type] || ConfigGeneric;
+                ItemComponent = components[type] || ConfigGeneric;
             }
 
-            // @ts-expect-error how to solve it?
             return <ItemComponent
                 key={`${attr}_${this.props.index === undefined ? '' : this.props.index}`}
                 index={this.props.index}
@@ -207,7 +203,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 globalData={this.props.globalData}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}
-                className={classes.panel}
+                style={styles.panel}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}
@@ -216,6 +212,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 alive={this.props.alive}
                 themeType={this.props.themeType}
                 themeName={this.props.themeName}
+                theme={this.props.theme}
                 data={this.props.data}
                 originalData={this.props.originalData}
                 systemConfig={this.props.systemConfig}
@@ -249,8 +246,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
         const { disabled, hidden } = this.calculate(schema);
 
         const items   = this.props.schema.items;
-        const classes = this.props.classes || {};
-        const style = this.props.schema.style || {};
+        const schemaStyle = this.props.schema.style || {};
 
         if (hidden) {
             if (schema.hideOnlyControl) {
@@ -260,12 +256,12 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     lg={schema.lg || undefined}
                     md={schema.md || undefined}
                     sm={schema.sm || undefined}
-                    style={({
+                    sx={{
                         marginBottom: 0, /* marginRight: 8, */
                         textAlign: 'left',
-                        ...schema.style,
+                        ...schemaStyle,
                         ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
-                    })}
+                    }}
                 />;
 
                 if (schema.newLine) {
@@ -287,9 +283,9 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
             return <Grid
                 key={`${this.props.attr}_${this.props.index}`}
                 container
-                className={classes.fullWidth}
+                style={styles.fullWidth}
                 spacing={2}
-                style={style}
+                sx={schemaStyle}
             >
                 {this.renderItems(items, disabled)}
             </Grid>;
@@ -299,7 +295,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
         if (schema.collapsable) {
             content = <Accordion
                 key={`${this.props.attr}_${this.props.index}`}
-                className={classes.fullWidth}
+                style={styles.fullWidth}
                 expanded={!!this.state.expanded}
                 onChange={() => {
                     ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.props.adapterName}.${this.props.attr}`, this.state.expanded ? 'false' : 'true');
@@ -308,37 +304,50 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
             >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
-                    style={({ ...schema.style, ...(this.props.themeType ? schema.darkStyle : {}) })}
-                    className={Utils.clsx(classes.fullWidth, schema.color === 'primary' && classes.primary, schema.color === 'secondary' && classes.secondary)}
+                    sx={{
+                        ...schemaStyle,
+                        ...(this.props.themeType ? schema.darkStyle : {}),
+                        ...(schema.color === 'primary' ? styles.primary : ( schema.color === 'secondary' ? styles.secondary : undefined)),
+                        width: '100%',
+                    }}
                 >
-                    <Typography className={classes.heading}>{this.getText(schema.label)}</Typography>
+                    <Typography style={styles.heading}>{this.getText(schema.label)}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Grid container className={`${classes.fullWidth} ${classes.padding}`} spacing={2} style={style}>
+                    <Grid
+                        container
+                        spacing={2}
+                        sx={{ ...schemaStyle, width: '100%', padding: 10 }}
+                    >
                         {this.renderItems(items, disabled)}
                     </Grid>
                 </AccordionDetails>
             </Accordion>;
         } else {
-            content = <div
+            content = <Box
+                component="div"
                 key={`${this.props.attr}_${this.props.index}`}
-                className={Utils.clsx(
-                    this.props.className,
-                    this.props.isParentTab && classes.paper,
-                    this.props.isParentTab && (this.props.withIcons ? classes.paperWithIcons : classes.paperWithoutIcons),
-                    classes.fullWidth,
-                )}
-                style={style}
+                className={this.props.className}
+                sx={{
+                    ...(this.props.style || undefined),
+                    ...schemaStyle,
+                    width: '100%',
+                    ...(this.props.isParentTab ? styles.paper : undefined),
+                    ...(this.props.isParentTab ? (this.props.withIcons ? styles.paperWithIcons : styles.paperWithoutIcons) : undefined),
+                }}
             >
                 <Grid
                     container
-                    className={Utils.clsx(classes.fullWidth, this.props.isParentTab && classes.padding)}
                     spacing={2}
-                    style={this.props.schema.innerStyle}
+                    sx={{
+                        width: '100%',
+                        ...(this.props.isParentTab ? styles.padding : undefined),
+                        ...this.props.schema.innerStyle,
+                    }}
                 >
                     {this.renderItems(items, disabled)}
                 </Grid>
-            </div>;
+            </Box>;
         }
 
         if (!this.props.isParentTab) {
@@ -349,7 +358,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 lg={schema.lg || undefined}
                 md={schema.md || undefined}
                 sm={schema.sm || undefined}
-                style={({ marginBottom: 0, /* marginRight: 8, */textAlign: 'left', ...schema.style })}
+                sx={({ marginBottom: 0, /* marginRight: 8, */textAlign: 'left', ...schemaStyle })}
             >
                 {content}
             </Grid>;
@@ -366,6 +375,4 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
     }
 }
 
-const ConfigPanelStyled = withStyles(styles)(ConfigPanel);
-
-export default ConfigPanelStyled;
+export default ConfigPanel;

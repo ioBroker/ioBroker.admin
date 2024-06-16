@@ -1,5 +1,4 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -15,16 +14,17 @@ import {
     TableBody,
     DialogContentText,
     TableContainer,
+    Box,
 } from '@mui/material';
 
 import { Check as IconCheck, Send as IconSend } from '@mui/icons-material';
 
-import { Confirm as ConfirmDialog, I18n, type IobTheme} from '@iobroker/adapter-react-v5';
+import { Confirm as ConfirmDialog, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemCheckLicense } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
@@ -43,17 +43,17 @@ const styles: Styles<IobTheme, any> = theme => ({
     licValue: {
         fontWeight: 'normal',
     },
-    errorTitle: {
+    errorTitle: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#e39191' : '#b62020',
-    },
-    okTitle: {
+    }),
+    okTitle: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#6fd56f' : '#007c00',
-    },
-    errorText: {
+    }),
+    errorText: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#e39191' : '#b62020',
         marginBottom: 30,
-    },
-});
+    }),
+};
 
 export interface License {
     id: string;
@@ -90,10 +90,9 @@ interface ConfigCheckLicenseState extends ConfigGenericState {
     foundSuitableLicense: boolean;
     licenseOfflineCheck: boolean;
     showLinkToProfile: boolean;
-    allLicenses: null | LicenseResult[]
+    allLicenses: null | LicenseResult[];
     askForUpdate: boolean;
 }
-
 
 class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCheckLicenseState> {
     async componentDidMount() {
@@ -149,10 +148,10 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                             </TableHead>
                             <TableBody>
                                 {this.state.allLicenses.map(license => <TableRow key={license.id}>
-                                    <TableCell className={license.validName ? '' : this.props.classes.errorText}>{license.license.product}</TableCell>
-                                    <TableCell className={license.validVersion ? '' : this.props.classes.errorText}>{license.license.version}</TableCell>
-                                    <TableCell className={license.validUuid ? '' : this.props.classes.errorText}>{license.license.uuid || '--'}</TableCell>
-                                    <TableCell className={license.validTill ? '' : this.props.classes.errorText}>{license.license.validTill && license.license.validTill !== '0000-00-00 00:00:00' ? new Date(license.license.validTill).toLocaleDateString() : '--'}</TableCell>
+                                    <TableCell sx={license.validName ? null : styles.errorText}>{license.license.product}</TableCell>
+                                    <TableCell sx={license.validVersion ? null : styles.errorText}>{license.license.version}</TableCell>
+                                    <TableCell sx={license.validUuid ? null : styles.errorText}>{license.license.uuid || '--'}</TableCell>
+                                    <TableCell sx={license.validTill ? null : styles.errorText}>{license.license.validTill && license.license.validTill !== '0000-00-00 00:00:00' ? new Date(license.license.validTill).toLocaleDateString() : '--'}</TableCell>
                                     <TableCell>{license.license.invoice !== 'free' ? (license.license.invoice === 'MANUALLY_CREATED' ? '✓' : license.license.invoice) : '-'}</TableCell>
                                     <TableCell>{license.id}</TableCell>
                                 </TableRow>)}
@@ -207,7 +206,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                         if (obj[key1] !== null && obj[key1] !== undefined) {
                             if (typeof obj[key1] === 'object') {
                                 pre.push(<div key={key1}>
-                                    <div className={this.props.classes.licLabel}>
+                                    <div style={styles.licLabel}>
                                         {key1}
 :
                                     </div>
@@ -215,7 +214,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                                 </div>);
                             } else {
                                 pre.push(<div key={key1}>
-                                    <div className={this.props.classes.licLabel}>
+                                    <div style={styles.licLabel}>
                                         {key}
                                         {' '}
 -
@@ -229,7 +228,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                     });
                 } else {
                     pre.push(<div key={key}>
-                        <div className={this.props.classes.licLabel}>
+                        <div style={styles.licLabel}>
                             {key.replace(/_/g, ' ')}
 :
                         </div>
@@ -238,7 +237,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                 }
             });
             pre.push(<div key="checked">
-                <div className={this.props.classes.licLabel}>
+                <div style={styles.licLabel}>
                     {I18n.t('ra_Checked')}
 :
                 </div>
@@ -247,9 +246,9 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
 
             return <Dialog open={!0} onClose={() => this.setState({ showLicenseData: null })}>
                 <DialogTitle>
-                    <span className={this.state.result ? this.props.classes.okTitle : this.props.classes.errorTitle}>
+                    <Box component="span" sx={this.state.result ? styles.okTitle : styles.errorTitle}>
                         {I18n.t('ra_License %s', this.state.result ? 'OK' : 'INVALID')}
-                    </span>
+                    </Box>
                 </DialogTitle>
                 <DialogContent>
                     {this.state.showLinkToProfile ? <Button
@@ -258,7 +257,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                     >
                         https://iobroker.net
                     </Button> : null}
-                    {this.state._error ? <div className={this.props.classes.errorText}>{this.state._error}</div> : null}
+                    {this.state._error ? <Box component="div" sx={styles.errorText}>{this.state._error}</Box> : null}
                     {pre}
                 </DialogContent>
                 <DialogActions>
@@ -661,11 +660,11 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
     }
 
     renderItem(/* error, disabled, defaultValue */) {
-        return <div className={this.props.classes.fullWidth}>
+        return <div style={styles.fullWidth}>
             <Button
                 variant={this.props.schema.variant || 'outlined'}
                 color={this.props.schema.color || 'primary'}
-                className={this.props.classes.fullWidth}
+                style={styles.fullWidth}
                 disabled={(!this.props.data.license && !this.props.data.useLicenseManager) || this.state.running}
                 startIcon={<IconSend />}
                 onClick={() => this._onClick()}
@@ -680,4 +679,4 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
     }
 }
 
-export default withStyles(styles)(ConfigCheckLicense);
+export default ConfigCheckLicense;

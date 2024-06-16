@@ -226,8 +226,8 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         cursor: 'default',
     },
     smallAvatar: {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
+        width: 24,
+        height: 24,
     },
     statusIndicator: {
         marginTop: 12,

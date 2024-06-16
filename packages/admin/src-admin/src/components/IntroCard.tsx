@@ -131,8 +131,8 @@ const styles: Styles<IobTheme, any> = theme => ({
         color: '#ffffff',
         backgroundColor: blue[500],
         position: 'absolute',
-        top: theme.spacing(1),
-        right: theme.spacing(1),
+        top: 8,
+        right: 8,
         boxShadow,
         '&:hover': {
             backgroundColor: blue[300],
@@ -145,8 +145,8 @@ const styles: Styles<IobTheme, any> = theme => ({
         color: '#ffffff',
         backgroundColor: grey[500],
         position: 'absolute',
-        top: theme.spacing(1),
-        right: theme.spacing(1),
+        top: 8,
+        right: 8,
         boxShadow,
         '&:hover': {
             backgroundColor: grey[300],
@@ -159,8 +159,8 @@ const styles: Styles<IobTheme, any> = theme => ({
         color: '#ffffff',
         backgroundColor: grey[500],
         position: 'absolute',
-        top: parseInt(theme.spacing(2), 10) + 48, // 48 is the height of button
-        right: theme.spacing(1),
+        top: 16 + 48, // 48 is the height of button
+        right: 8,
         boxShadow,
         '&:hover': {
             backgroundColor: grey[300],
@@ -173,8 +173,8 @@ const styles: Styles<IobTheme, any> = theme => ({
         color: '#ffffff',
         backgroundColor: red[500],
         position: 'absolute',
-        top: parseInt(theme.spacing(3), 10) + 48 + 48, // 48 is the height of button
-        right: theme.spacing(1),
+        top: 24 + 48 + 48, // 48 is the height of button
+        right: 8,
         boxShadow,
         '&:hover': {
             backgroundColor: red[300],
