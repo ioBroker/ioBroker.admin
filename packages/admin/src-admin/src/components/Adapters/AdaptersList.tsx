@@ -54,19 +54,19 @@ const styles: Record<string, any> = {
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            paddingTop: 2,
-            paddingBottom: 2,
-            paddingRight: 4,
-            paddingLeft: 4,
+            pt: '2px',
+            pb: '2px',
+            pr: '4px',
+            pl: '4px',
         },
         '& th': {
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            paddingTop: 2,
-            paddingBottom: 2,
-            paddingRight: 4,
-            paddingLeft: 4,
+            pt: '2px',
+            pb: '2px',
+            pr: '4px',
+            pl: '4px',
         },
     },
     name: {
@@ -354,7 +354,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                     ...(!stableRepo ? styles.containerNotFullHeight : styles.containerFullHeight),
                 }}
             >
-                <Table stickyHeader size="small" style={styles.table}>
+                <Table stickyHeader size="small" sx={styles.table}>
                     <TableHead>
                         <TableRow>
                             <TableCell style={styles.emptyBlock}></TableCell>
