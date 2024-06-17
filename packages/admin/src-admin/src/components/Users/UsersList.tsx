@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles, type Styles } from '@mui/styles';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -10,7 +9,7 @@ import {
     LinearProgress,
     Grid,
     Typography,
-    Fab,
+    Fab, Box,
 } from '@mui/material';
 
 import {
@@ -33,7 +32,7 @@ import GroupDeleteDialog from './GroupDeleteDialog';
 const PASSWORD_SET = '***********';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     mainGridCont: {
         height: 'calc(100% - 55px)',
         overflowY:'auto',
@@ -45,9 +44,9 @@ const styles: Styles<IobTheme, any> = theme => ({
     childGridContWide: {
         height: '100%',
     },
-    canDrop: {
-        backgroundColor:theme.palette.background.default,
-    },
+    canDrop: (theme: IobTheme) => ({
+        backgroundColor: theme.palette.background.default,
+    }),
     headContainer: {
         margin: 10,
     },
@@ -55,7 +54,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         overflowY: 'auto',
         overflowX: 'hidden',
     },
-    userGroupCard2: {
+    userGroupCard2: (theme: IobTheme) => ({
         border: '1px solid #FFF',
         borderColor: theme.palette.divider,
         margin:    10,
@@ -63,26 +62,26 @@ const styles: Styles<IobTheme, any> = theme => ({
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         transition: 'all 200ms ease-out',
-        opacity:1,
+        opacity: 1,
         overflow: 'hidden',
         '&:hover': {
             overflowY: 'auto',
             boxShadow: boxShadowHover,
         },
-    },
-    userGroupCardSecondary: {
+    }),
+    userGroupCardSecondary: (theme: IobTheme) => ({
         color: theme.palette.text.primary,
         backgroundColor: theme.palette.success.light,
-    },
-    permHeaders: {
+    }),
+    permHeaders: (theme: IobTheme) => ({
         backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.primary.main,
         padding: 4,
         borderRadius: 2,
         color: '#EEE',
-    },
+    }),
     userCardContent: {
-        height:'100%',
-        opacity:1,
+        height: '100%',
+        opacity: 1,
     },
     userGroupTitle: {
         display: 'inline-flex',
@@ -102,7 +101,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         marginLeft: 5,
         opacity: 0.7,
     },
-    userGroupMember: {
+    userGroupMember: (theme: IobTheme) => ({
         display: 'inline-flex',
         margin: 4,
         padding: 4,
@@ -111,7 +110,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         borderColor: theme.palette.text.primary,
         color: theme.palette.text.primary,
         alignItems: 'center',
-    },
+    }),
     icon: {
         height: 32,
         width: 32,
@@ -152,7 +151,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         margin: 10,
         opacity: 0.6,
     },
-    descriptionPanel: {
+    descriptionPanel: (theme: IobTheme) => ({
         width: '100%',
         backgroundColor: 'transparent',
         marginBottom: 20,
@@ -166,7 +165,7 @@ const styles: Styles<IobTheme, any> = theme => ({
             paddingLeft: 3,
             color: theme.palette.mode === 'dark' ? '#EEE' : '#111',
         },
-    },
+    }),
     dialogTitle: {
         borderBottom: '1px solid #00000020',
         padding : 0,
@@ -206,7 +205,7 @@ const styles: Styles<IobTheme, any> = theme => ({
     narrowContent: {
         padding: '8px 8px 8px 8px',
     },
-});
+};
 
 const DndPreview = () => {
     const preview = usePreview<{ preview: React.ReactNode }>();
@@ -301,7 +300,6 @@ interface UsersListProps {
     ready: boolean;
     expertMode: boolean;
     themeType: ThemeType;
-    classes: Record<string, string>;
 }
 
 interface UsersListState {
@@ -519,15 +517,20 @@ class UsersList extends Component<UsersListProps, UsersListState> {
 
         return <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
             <DndPreview />
-            <div className={this.props.classes.descriptionPanel}>
+            <Box component="div" sx={styles.descriptionPanel}>
                 {this.props.t('You can drag users to groups.')}
-            </div>
-            <Grid container spacing={2} className={this.props.classes.mainGridCont}>
-                <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
-                    <div className={this.props.classes.headContainer}>
+            </Box>
+            <Grid container spacing={2} style={styles.mainGridCont}>
+                <Grid
+                    item
+                    xs={12}
+                    md={6}
+                    style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}
+                >
+                    <div style={styles.headContainer}>
                         <Fab
                             size="small"
-                            className={this.props.classes.right}
+                            style={styles.right}
                             onClick={() => {
                                 const { _id, name } = UsersList.findNewUniqueName(true, this.state.groups, this.props.t('Group'));
                                 const template: ioBroker.GroupObject = Utils.clone(GROUP_TEMPLATE) as ioBroker.GroupObject;
@@ -540,7 +543,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                         </Fab>
                         <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
                     </div>
-                    <div className={this.props.classes.blocksContainer}>
+                    <div style={styles.blocksContainer}>
                         {this.state.groups
                             .sort((a, b) => {
                                 const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
@@ -560,15 +563,21 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                 showGroupDeleteDialog={this.showGroupDeleteDialog}
                                 removeUserFromGroup={this.removeUserFromGroup}
                                 getText={this.getText}
+                                styles={styles}
                                 {...this.props}
                             />)}
                     </div>
                 </Grid>
-                <Grid item xs={12} md={6} className={Utils.clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
-                    <div className={this.props.classes.headContainer}>
+                <Grid
+                    item
+                    xs={12}
+                    md={6}
+                    style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}
+                >
+                    <div style={styles.headContainer}>
                         <Fab
                             size="small"
-                            className={this.props.classes.right}
+                            style={styles.right}
                             onClick={() => {
                                 const { _id, name } = UsersList.findNewUniqueName(false,  this.state.users, this.props.t('User'));
                                 const template: ioBroker.UserObject = Utils.clone(USER_TEMPLATE) as ioBroker.UserObject;
@@ -587,7 +596,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                             {this.props.t('Users')}
                         </Typography>
                     </div>
-                    <div className={this.props.classes.blocksContainer}>
+                    <div style={styles.blocksContainer}>
                         {this.state.users
                             .sort((a, b) => {
                                 const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
@@ -610,6 +619,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                 addUserToGroup={this.addUserToGroup}
                                 removeUserFromGroup={this.removeUserFromGroup}
                                 getText={this.getText}
+                                styles={styles}
                                 {...this.props}
                             />)}
                     </div>
@@ -621,9 +631,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 user={this.state.userEditDialog}
                 isNew={this.state.userEditDialogNew}
                 t={this.props.t}
-                lang={this.props.lang}
                 getText={this.getText}
-                classes={this.props.classes}
+                styles={styles}
                 onChange={this.changeUserFormData}
                 saveData={this.saveUser}
                 innerWidth={this.state.innerWidth}
@@ -635,7 +644,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 isNew={this.state.groupEditDialogNew}
                 t={this.props.t}
                 getText={this.getText}
-                classes={this.props.classes}
+                styles={styles}
                 onChange={this.changeGroupFormData}
                 innerWidth={this.state.innerWidth}
                 saveData={this.saveGroup}
@@ -650,11 +659,11 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                 onClose={() => this.setState({ groupDeleteDialog: false })}
                 group={this.state.groupDeleteDialog}
                 t={this.props.t}
-                classes={this.props.classes}
+                styles={styles}
                 deleteGroup={this.deleteGroup}
             /> : null}
         </DndProvider>;
     }
 }
 
-export default withStyles(styles)(UsersList);
+export default UsersList;

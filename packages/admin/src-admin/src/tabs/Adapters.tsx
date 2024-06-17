@@ -183,6 +183,7 @@ interface AdaptersProps extends AdapterInstallDialogProps {
     systemConfig: ioBroker.SystemConfigObject;
     lang: ioBroker.Languages;
     themeType: ThemeType;
+    theme: IobTheme;
     /** Called when admin updates itself */
     onUpdating: (isUpdating: boolean) => void;
     ready: boolean;
@@ -1396,6 +1397,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             return null;
         }
         return <AdaptersUpdaterDialog
+            theme={this.props.theme}
             onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
             t={this.props.t}
             currentHost={this.state.currentHost}

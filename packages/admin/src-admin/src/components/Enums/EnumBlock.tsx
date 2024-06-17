@@ -4,7 +4,6 @@ import {
     useDrag, useDrop,
 } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { withStyles } from '@mui/styles';
 import type { DropTargetMonitor } from 'react-dnd/src/types';
 
 import {
@@ -41,8 +40,8 @@ import { type DragItem } from './DragObjectBrowser';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    enumGroupCard: {
+const styles: Record<string, any> = {
+    enumGroupCard: (theme: IobTheme) => ({
         border: '1px solid #FFF',
         borderColor: theme.palette.divider,
         margin: 10,
@@ -57,7 +56,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             boxShadow: boxShadowHover,
         },
         minHeight: 70,
-    },
+    }),
     enumGroupCardExpanded:{
         minHeight: 140,
     },
@@ -117,7 +116,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         opacity: 0.7,
         marginTop: -4,
     },
-    enumGroupMember: {
+    enumGroupMember: (theme: IobTheme) => ({
         display: 'inline-flex',
         margin: 4,
         padding: 4,
@@ -127,7 +126,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         color: theme.palette.text.primary,
         alignItems: 'center',
         position: 'relative',
-    },
+    }),
     secondLine: {
         fontSize: 9,
         fontStyle: 'italic',
@@ -175,7 +174,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         top: 46,
         left: 26,
     },
-});
+};
 
 declare global {
     interface Navigator {
@@ -210,7 +209,6 @@ interface EnumBlockProps {
     children: number;
     themeType: ThemeType;
     cachedIcons: Record<string, string>;
-    classes?: Record<string, string>;
     iconDragRef?: ConnectDragSource;
     isDragging?: boolean;
     name?: React.JSX.Element[];
@@ -330,7 +328,6 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
     }
 
     render() {
-        const classes = this.props.classes;
         const props = this.props;
         const common: EnumCommon | null = props.enum?.common as EnumCommon;
         const textColor = Utils.getInvertedColor(common?.color, props.themeType, true);
@@ -343,15 +340,23 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
 
         let icon = common?.icon ?
             <Icon
-                className={Utils.clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded)}
+                style={{
+                    ...styles.icon,
+                    ...(props.children ? styles.folderIcon : undefined),
+                    ...(props.children && !props.closed ? styles.folderIconExpanded : undefined),
+                }}
                 src={props.enum.common.icon}
             /> :
             <ListIcon
-                className={Utils.clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded)}
+                style={{
+                    ...styles.icon,
+                    ...(props.children ? styles.folderIcon : undefined),
+                    ...(props.children && !props.closed ? styles.folderIconExpanded : undefined),
+                }}
             />;
 
-        icon = props.children ? <div className={classes.folderDiv} onClick={() => props.toggleEnum(props.id)}>
-            {props.closed ? [<IconCollapsed className={classes.folder} key={1} />, <div key={2}>{icon}</div>] : [<IconExpanded className={classes.folder} key={1} />, <div key={2}>{icon}</div>]}
+        icon = props.children ? <div style={styles.folderDiv} onClick={() => props.toggleEnum(props.id)}>
+            {props.closed ? [<IconCollapsed style={styles.folder} key={1} />, <div key={2}>{icon}</div>] : [<IconExpanded style={styles.folder} key={1} />, <div key={2}>{icon}</div>]}
         </div> : icon;
 
         if (this.props.iconDragRef) {
@@ -360,11 +365,15 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
 
         return <Card
             style={style}
-            className={Utils.clsx(classes.enumGroupCard, this.props.updating && classes.enumUpdating, !props.collapsed && classes.enumGroupCardExpanded)}
+            sx={{
+                ...styles.enumGroupCard,
+                ...(this.props.updating ? styles.enumUpdating : undefined),
+                ...(!props.collapsed ? styles.enumGroupCardExpanded : undefined),
+            }}
             id={props.id}
         >
-            <div className={classes.enumCardContent}>
-                <div className={classes.right}>
+            <div style={styles.enumCardContent}>
+                <div style={styles.right}>
                     {props.enum ? <IconButton
                         size="small"
                         onClick={() => props.showEnumEditDialog(props.enum, false)}
@@ -391,23 +400,23 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         </Tooltip>
                     </IconButton>
                 </div>
-                <CardContent className={classes.context}>
+                <CardContent style={styles.context}>
                     <Typography
                         gutterBottom={!props.collapsed}
                         component="div"
-                        className={classes.enumGroupTitle}
+                        style={styles.enumGroupTitle}
                         onClick={() => props.onCollapse(props.id)}
                     >
                         {icon}
-                        <div className={classes.enumGroupName}>
-                            <span className={classes.enumGroupEnumName}>
+                        <div style={styles.enumGroupName}>
+                            <span style={styles.enumGroupEnumName}>
                                 {props.name || props.getName(common?.name) || props.id.split('.').pop()}
                             </span>
-                            <span className={classes.enumGroupEnumID}>
+                            <span style={styles.enumGroupEnumID}>
                                 {props.idText || props.id}
                             </span>
                             {common.desc ?
-                                <div className={classes.enumName}>
+                                <div style={styles.enumName}>
                                     {props.getName(common.desc)}
                                 </div> : null}
                         </div>
@@ -425,25 +434,25 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                                 key={member._id}
                                 title={name ? `${props.t('Name: %s', name)}\nID: ${member._id}` : member._id}
                                 variant="outlined"
-                                className={classes.enumGroupMember}
+                                sx={styles.enumGroupMember}
                                 style={{ color: textColor, borderColor: `${textColor}80` }}
                             >
                                 {
                                     this.state.icons[i] ?
-                                        <Icon className={classes.icon} src={this.state.icons[i]} />
+                                        <Icon style={styles.icon} src={this.state.icons[i]} />
                                         :
-                                        (member.type === 'state' ? <IconState className={classes.icon} />
+                                        (member.type === 'state' ? <IconState style={styles.icon} />
                                             : (member.type === 'channel' ?
-                                                <IconChannel className={classes.icon} />
+                                                <IconChannel style={styles.icon} />
                                                 : member.type === 'device' ?
-                                                    <IconDevice className={classes.icon} /> :
-                                                    <ListIcon className={classes.icon} />
+                                                    <IconDevice style={styles.icon} /> :
+                                                    <ListIcon style={styles.icon} />
                                             )
                                         )
                                 }
                                 <div>
                                     {name || member._id}
-                                    {name ? <div className={classes.secondLine}>{member._id}</div> : null}
+                                    {name ? <div style={styles.secondLine}>{member._id}</div> : null}
                                 </div>
                                 <IconButton
                                     size="small"
@@ -454,11 +463,11 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                                     </Tooltip>
                                 </IconButton>
                             </Card>;
-                        }) : (common?.members?.length ? <div className={Utils.clsx(classes.membersNumber, props.children && classes.memberNumberFolder)}>{common?.members?.length}</div> : '')}
+                        }) : (common?.members?.length ? <div style={{ ...styles.membersNumber, ...(props.children ? styles.memberNumberFolder : undefined) }}>{common?.members?.length}</div> : '')}
                     </div>
                 </CardContent>
             </div>
-            <div className={classes.bottomButtons}>
+            <div style={styles.bottomButtons}>
                 <IconButton
                     size="small"
                     onClick={() => {
@@ -483,14 +492,12 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
     }
 }
 
-const StyledEnumBlock = withStyles(styles)(EnumBlock);
-
 interface EnumBlockDragProps {
     id: string;
     enum: ioBroker.EnumObject;
     moveEnum: (id: string, moveTo: string) => void;
     cachedIcons: Record<string, string>;
-    classesParent: Record<string, string>;
+    stylesParent: Record<string, any>;
     closed: boolean;
     collapsed: boolean;
     copyEnum: (enumId: string) => void;
@@ -546,7 +553,7 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
                     width: widthRef.current === undefined ? 50 : widthRef.current.offsetWidth,
                 }}
             >
-                <StyledEnumBlock {...props} />
+                <EnumBlock {...props} />
             </div>,
         }),
 
@@ -572,19 +579,19 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
     }, []);
 
     if (!props.enum) {
-        return <StyledEnumBlock isDragging={isDragging} {...props} />;
+        return <EnumBlock isDragging={isDragging} {...props} />;
     }
 
     return isTouchDevice()
         ? <div ref={drop} style={{ opacity: canDrop && isOver ? 0.5 : 1 }}>
             <div ref={widthRef}>
-                <StyledEnumBlock isDragging={isDragging} iconDragRef={dragRef} {...props} />
+                <EnumBlock isDragging={isDragging} iconDragRef={dragRef} {...props} />
             </div>
         </div>
         : <div ref={drop} style={{ opacity: canDrop && isOver ? 0.5 : 1 }}>
             <div ref={dragRef}>
                 <div ref={widthRef}>
-                    <StyledEnumBlock isDragging={isDragging} {...props} />
+                    <EnumBlock isDragging={isDragging} {...props} />
                 </div>
             </div>
         </div>;

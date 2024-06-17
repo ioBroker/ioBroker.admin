@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 import semver from 'semver';
 
 import {
@@ -16,7 +15,7 @@ import {
     DialogTitle,
     Grid,
     IconButton,
-    Typography,
+    Typography, Box,
 } from '@mui/material';
 
 import {
@@ -25,40 +24,41 @@ import {
     Info as InfoIcon,
 } from '@mui/icons-material';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import { checkCondition } from '@/dialogs/AdapterUpdateDialog';
+import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
+import { checkCondition, type RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
+import LocalUtils from '../Utils';
 
 interface GetNewsResultEntry {
     version: string;
     news: string;
 }
 
-const styles = (theme: Record<string, any>) => ({
+const styles: Record<string, any> = {
     smallAvatar: {
         width: 24,
         height: 24,
     },
-    listItem: {
+    listItem: (theme: IobTheme) => ({
         marginBottom: 2,
         background: theme.palette.background,
-    },
-    toVersion: {
+        '@media screen and (max-width: 400px)': {
+            paddingLeft: 2,
+        },
+    }),
+    toVersion: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#00dc00' : '#008100',
         fontWeight: 'bold',
         marginLeft: 4,
-    },
+    }),
     updateDone: {
         background: '#5ef05e80',
         opacity: 0.7,
     },
-    '@media screen and (max-width: 400px)': {
-        minWidth: {
-            // @ts-expect-error check later
+    minWidthCss: {
+        '@media screen and (max-width: 400px)': {
             minWidth: 32,
-        },
-        listItem:{
-            paddingLeft: 2,
         },
     },
     wrapperButton: {
@@ -70,36 +70,36 @@ const styles = (theme: Record<string, any>) => ({
         minWidth: 110,
         display: 'inline-block',
     },
-    closeButton: {
+    closeButton: (theme: IobTheme) => ({
         position: 'absolute',
         right: 8,
         top: 8,
         color: theme.palette.grey[500],
-    },
+    }),
     languageButton: {
         position: 'absolute',
         right: 52 + 8,
         top: 8,
     },
-    languageButtonActive: {
+    languageButtonActive: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
-    },
-    versionHeader: {
+    }),
+    versionHeader: (theme: IobTheme) => ({
         background: '#4dabf5',
         borderRadius: 3,
         paddingLeft: 10,
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
-} satisfies Styles<any, any>);
+    }),
+};
 
 interface AdaptersUpdaterProps {
     inProcess: boolean;
     lang: ioBroker.Languages;
-    /** if process has been stopped, e.g. due to an error */
+    /** if a process has been stopped, e.g., due to an error */
     stopped: boolean;
-    repository: Record<string, any>;
-    installed: Record<string, any>;
+    repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>;
+    installed: InstalledInfo;
     onUpdateSelected: (adapters: string[], adapters2?: string[]) => void;
     selected: string[];
     current: string;
@@ -107,7 +107,7 @@ interface AdaptersUpdaterProps {
     finished: boolean;
     noTranslation: boolean;
     toggleTranslation: () => void;
-    classes: Record<string, any>;
+    theme: IobTheme;
 }
 
 interface AdaptersUpdaterState {
@@ -233,26 +233,28 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
             <ListItem
                 key={adapter}
                 dense
-                classes={{ root: Utils.clsx(this.props.classes.listItem, this.props.updated.includes(adapter) && this.props.classes.updateDone) }}
+                sx={{
+                    '& .MuiListItem-root': { ...styles.listItem, ...(this.props.updated.includes(adapter) ? styles.updateDone : undefined) },
+                }}
                 ref={this.props.current === adapter ? this.currentRef : null}
             >
-                <ListItemIcon className={this.props.classes.minWidth}>
+                <ListItemIcon sx={styles.minWidthCss}>
                     <Avatar
                         variant="square"
                         alt={adapter}
                         src={image}
-                        className={this.props.classes.smallAvatar}
+                        style={styles.smallAvatar}
                     />
                 </ListItemIcon>
                 <ListItemText
                     primary={adapter}
                     title={this.getNews(adapter).map(item => `${item.version}: ${item.news}`).join('\n')}
                     secondary={<span>
-                        <div className={this.props.classes.versions}>
+                        <div style={styles.versions}>
                             {this.initialVersions[adapter]}
                             {' '}
                             →
-                            <span className={this.props.classes.toVersion}>{this.props.repository[adapter].version}</span>
+                            <Box component="span" sx={styles.toVersion}>{this.props.repository[adapter].version}</Box>
                         </div>
                         <IconButton
                             title={I18n.t('Show change log')}
@@ -322,7 +324,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                             .filter(line => !!line);
 
                         result.push(<Grid item key={version}>
-                            <Typography className={this.props.classes.versionHeader}>
+                            <Typography sx={styles.versionHeader}>
                                 {version}
                             </Typography>
                             {news.map((value, index) => <Typography key={`${version}-${index}`} component="div" variant="body2">
@@ -344,19 +346,23 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         if (this.state.showNews) {
             const news = this.getReactNews(this.state.showNews.adapter, this.state.showNews.fromVersion);
 
+            const closeButton = LocalUtils.getStyle(this.props.theme, styles.closeButton);
+
+            const languageButtonActive = LocalUtils.getStyle(this.props.theme, styles.languageButtonActive);
+
             return <Dialog
                 onClose={() => this.setState({ showNews: null })}
                 open={!0}
             >
                 <DialogTitle>
-                    <Typography component="h2" variant="h6" classes={{ root: this.props.classes.typography }}>
+                    <Typography component="h2" variant="h6" sx={{ '& .MuiTypography-root': styles.typography }}>
                         <div style={{ width: 'calc(100% - 60px)' }}>{I18n.t('Update "%s" to v%s', this.state.showNews.adapter, this.state.showNews.version)}</div>
-                        <IconButton size="large" className={this.props.classes.closeButton} onClick={() => this.setState({ showNews: null })}>
+                        <IconButton size="large" style={closeButton} onClick={() => this.setState({ showNews: null })}>
                             <CloseIcon />
                         </IconButton>
                         {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
                             size="large"
-                            className={Utils.clsx(this.props.classes.languageButton, this.props.noTranslation && this.props.classes.languageButtonActive)}
+                            style={{ ...styles.languageButton, ...(this.props.noTranslation ? languageButtonActive : undefined) }}
                             onClick={this.props.toggleTranslation}
                             title={I18n.t('Disable/Enable translation')}
                         >
@@ -384,7 +390,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                         </Grid> : I18n.t('No change log available')}
                     </Grid>
                 </DialogContent>
-                <DialogActions className={this.props.classes.wrapperButton}>
+                <DialogActions style={styles.wrapperButton}>
                     <Button
                         variant="contained"
                         onClick={() => this.setState({ showNews: null })}
@@ -405,12 +411,11 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
             setTimeout(() => this.currentRef.current?.scrollIntoView(), 200);
         }
 
-        return <List className={this.props.classes.root}>
+        return <List style={styles.root}>
             {this.updateAvailable.map(adapter => this.renderOneAdapter(adapter))}
             {this.renderShowNews()}
         </List>;
     }
 }
 
-// @ts-expect-error investigate why it doesn't like the media screen prop in the style
-export default withStyles(styles)(AdaptersUpdater);
+export default AdaptersUpdater;

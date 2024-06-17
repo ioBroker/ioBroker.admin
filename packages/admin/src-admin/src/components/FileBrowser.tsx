@@ -271,7 +271,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     itemFolderIconTable: {
         marginTop: 1,
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         display: 'inline-block',
         width: 30,
         height: 30,
@@ -388,8 +388,8 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     pathDiv: {
         display: 'flex',
         width: 'calc(100% - 16px)',
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
+        marginLeft: 8,
+        marginRight: 8,
         textOverflow: 'clip',
         overflow: 'hidden',
         whiteSpace: 'nowrap',

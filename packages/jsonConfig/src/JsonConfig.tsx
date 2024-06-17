@@ -184,8 +184,6 @@ interface JsonConfigProps {
     theme: IobTheme;
     themeName: ThemeName;
     themeType: ThemeType;
-    /** CSS classes */
-    classes: Record<string, any>;
     /** Translate method */
     t: typeof I18n.t;
     configStored: (notChanged: boolean) => void;
@@ -294,7 +292,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
     };
 
     getExportImportButtons(): React.JSX.Element {
-        return <div className={this.props.classes.exportImportButtons}>
+        return <div style={styles.exportImportButtons}>
             <Tooltip title={this.props.t('Import settings from JSON file')}>
                 <Fab
                     size="small"

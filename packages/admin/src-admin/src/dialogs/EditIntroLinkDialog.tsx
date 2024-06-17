@@ -38,7 +38,7 @@ import IntroCard from '../components/IntroCard';
 
 const styles: Styles<IobTheme, any> = theme => ({
     formControl: {
-        marginTop: theme.spacing(4),
+        marginTop: 32,
     },
     rootGrid: {
         flexGrow: 1,

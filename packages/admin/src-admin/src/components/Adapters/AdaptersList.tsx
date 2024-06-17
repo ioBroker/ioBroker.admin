@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
+    Box,
     LinearProgress,
     Table,
     TableBody,
@@ -16,7 +16,6 @@ import type { IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { AdaptersContext } from '@/components/Adapters/AdapterInstallDialog';
 import TabContent from '@/components/TabContent';
-import Utils from '@/components/Utils';
 import AdapterCategoryRow from '@/components/Adapters/AdapterCategoryRow';
 import AdapterTile from '@/components/Adapters/AdapterTile';
 import AdapterRow from '@/components/Adapters/AdapterRow';
@@ -36,7 +35,7 @@ export const WIDTHS: Record<string, number> = {
 
 export const SUM = Object.keys(WIDTHS).reduce((s, i) => s + WIDTHS[i], 0);
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     container: {
         height: '100%',
         width: '100%',
@@ -101,23 +100,22 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     install: {
         width: WIDTHS.install,
     },
-    notStableRepo: {
+    notStableRepo: (theme: IobTheme) => ({
         background: theme.palette.mode === 'dark' ? '#8a7e00' : '#fdee20',
         color: '#000',
         fontSize: 14,
         padding: '2px 8px',
         borderRadius: 5,
-    },
+    }),
     viewModeDiv: {
         display: 'flex',
         flexFlow: 'wrap',
         overflow: 'auto',
         justifyContent: 'center',
     },
-});
+};
 
 interface AdaptersListProps {
-    classes: Record<string, string>;
     stableRepo: boolean;
     repoName: string;
     context: AdaptersContext;
@@ -338,48 +336,45 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
 
     renderTileView(stableRepo: boolean, repoName: string, context: AdaptersContext) {
         return <>
-            {!stableRepo ? <div className={this.props.classes.notStableRepo}>
+            {!stableRepo ? <Box component="div" sx={styles.notStableRepo}>
                 {this.props.context.t('Active repo is "%s"', repoName)}
-            </div> : null}
-            <div className={this.props.classes.viewModeDiv}>{this.getTiles(context)}</div>
+            </Box> : null}
+            <div style={styles.viewModeDiv}>{this.getTiles(context)}</div>
         </>;
     }
 
     renderTableView(stableRepo: boolean, repoName: string, context: AdaptersContext) {
-        const classes = this.props.classes;
         return <TabContent>
-            {!stableRepo ? <div className={this.props.classes.notStableRepo}>
+            {!stableRepo ? <Box component="div" sx={styles.notStableRepo}>
                 {this.props.context.t('Active repo is "%s"', repoName)}
-            </div> : null}
+            </Box> : null}
             <TableContainer
-                className={Utils.clsx(
-                    classes.container,
-                    !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight,
-                )}
+                style={{
+                    ...styles.container,
+                    ...(!stableRepo ? styles.containerNotFullHeight : styles.containerFullHeight),
+                }}
             >
-                <Table stickyHeader size="small" className={classes.table}>
+                <Table stickyHeader size="small" style={styles.table}>
                     <TableHead>
                         <TableRow>
-                            <TableCell className={classes.emptyBlock}></TableCell>
-                            <TableCell className={classes.name}>
+                            <TableCell style={styles.emptyBlock}></TableCell>
+                            <TableCell style={styles.name}>
                                 <Typography>{this.props.context.t('Name')}</Typography>
                             </TableCell>
-                            {!context.descHidden && (
-                                <TableCell className={classes.description} style={{ width: this.props.descWidth }}>
-                                    <Typography>{this.props.context.t('Description')}</Typography>
-                                </TableCell>
-                            )}
-                            <TableCell className={classes.connectionType} />
-                            <TableCell className={classes.installed}>
+                            {!context.descHidden && <TableCell style={{ ...styles.description, width: this.props.descWidth }}>
+                                <Typography>{this.props.context.t('Description')}</Typography>
+                            </TableCell>}
+                            <TableCell style={styles.connectionType} />
+                            <TableCell style={styles.installed}>
                                 <Typography>{this.props.context.t('Installed')}</Typography>
                             </TableCell>
-                            <TableCell className={classes.available}>
+                            <TableCell style={styles.available}>
                                 <Typography>{this.props.context.t('Available')}</Typography>
                             </TableCell>
-                            <TableCell className={classes.license}>
+                            <TableCell style={styles.license}>
                                 <Typography>{this.props.context.t('License')}</Typography>
                             </TableCell>
-                            <TableCell className={classes.install} style={{ width: this.state.expertMode ? BUTTONS_WIDTH : BUTTONS_WIDTH - (34 * 2) }}>
+                            <TableCell style={{ ...styles.install, width: this.state.expertMode ? BUTTONS_WIDTH : BUTTONS_WIDTH - (34 * 2) }}>
                                 <Typography>{this.props.context.t('Install')}</Typography>
                             </TableCell>
                         </TableRow>
@@ -491,4 +486,4 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
     }
 }
 
-export default withStyles(styles)(AdaptersList);
+export default AdaptersList;

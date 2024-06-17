@@ -1,5 +1,4 @@
 import React, { createRef, Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -9,9 +8,9 @@ import {
     Paper,
 } from '@mui/material';
 
-import { withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<any, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -27,9 +26,9 @@ const styles: Styles<any, any> = (theme: IobTheme) => ({
     },
     RAM: {
         width: 400,
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
-});
+};
 
 export interface SystemSettings {
     memoryLimitMB?: number;
@@ -49,7 +48,6 @@ interface BaseSettingsSystemProps {
     onChange: (settings: SystemSettings) => void;
     settings: SystemSettings;
     currentHost: string;
-    classes: Record<string, any>;
 }
 
 interface BaseSettingsSystemState {
@@ -109,14 +107,14 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
     }
 
     render() {
-        return <Paper className={this.props.classes.paper}>
-            <Grid item className={this.props.classes.gridSettings}>
+        return <Paper style={styles.paper}>
+            <Grid item style={styles.gridSettings}>
                 <Grid container direction="column">
                     <Grid item>
                         <TextField
                             variant="standard"
                             label={this.props.t('Host name')}
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.hostname || this.props.currentHost.replace('system.host.', '')}
                             onChange={e => this.setState({ hostname: e.target.value }, () => this.onChange())}
                             helperText={this.props.t('You can change the host name, but be aware, that all instances must be assigned anew')}
@@ -126,7 +124,7 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                         <TextField
                             variant="standard"
                             label={this.props.t('Check disk space interval')}
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.checkDiskInterval}
                             type="number"
                             InputProps={{ inputProps: { min: 1000 } }}
@@ -138,7 +136,7 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                         <TextField
                             variant="standard"
                             label={this.props.t('Instance statistics update interval')}
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.statisticsInterval}
                             type="number"
                             InputProps={{ inputProps: { min: 5000 } }}
@@ -146,7 +144,7 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                             helperText={this.props.t('How oft the instance statistics will be updated. Used RAM, CPU and so on. Value is in ms')}
                         />
                     </Grid>
-                    <Grid item className={this.props.classes.controlItem}>
+                    <Grid item style={styles.controlItem}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -158,7 +156,7 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                         />
                         <div>{ this.props.t('When enabled adapter instances can run in one or few processes to save RAM usage.') }</div>
                     </Grid>
-                    <Grid item className={this.props.classes.controlItem}>
+                    <Grid item style={styles.controlItem}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -174,7 +172,7 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                         <TextField
                             variant="standard"
                             label={this.props.t('Limit RAM size for controller')}
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.memoryLimitMB}
                             type="number"
                             onChange={e => this.setState({ memoryLimitMB: parseInt(e.target.value, 10) }, () => this.onChange())}
@@ -182,12 +180,12 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                         />
                     </Grid>
                     <Grid item>
-                        <Grid container direction="row" className={this.props.classes.controlItem}>
+                        <Grid container direction="row" style={styles.controlItem}>
                             <Grid item>
                                 <TextField
                                     variant="standard"
                                     label={this.props.t('Show warning im log if RAM less than')}
-                                    className={this.props.classes.RAM}
+                                    style={styles.RAM}
                                     value={this.state.memLimitWarn}
                                     type="number"
                                     onChange={e => this.setState({ memLimitWarn: parseInt(e.target.value, 10) }, () => this.onChange())}
@@ -198,7 +196,7 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
                                 <TextField
                                     variant="standard"
                                     label={this.props.t('Show error in log if RAM less than')}
-                                    className={this.props.classes.RAM}
+                                    style={styles.RAM}
                                     value={this.state.memLimitError}
                                     type="number"
                                     onChange={e => this.setState({ memLimitError: parseInt(e.target.value, 10) }, () => this.onChange())}
@@ -213,4 +211,4 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
     }
 }
 
-export default withWidth()(withStyles(styles)(BaseSettingsSystem));
+export default withWidth()(BaseSettingsSystem);

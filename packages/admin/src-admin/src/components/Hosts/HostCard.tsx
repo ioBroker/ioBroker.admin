@@ -1,7 +1,7 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
+    Box,
     Card,
     CardContent,
     CardMedia,
@@ -19,14 +19,14 @@ import BasicUtils from '@/Utils';
 import HostGeneric, {
     boxShadow,
     boxShadowHover,
-    genericStyle,
+    genericStyles,
     type HostGenericProps,
     type HostGenericState,
 } from './HostGeneric';
 
-export const style = (theme: IobTheme): Record<string, any> => ({
-    ...genericStyle(theme),
-    root: {
+export const styles: Record<string, any> = {
+    ...genericStyles,
+    root: (theme: IobTheme) => ({
         position: 'relative',
         margin: 10,
         width: 300,
@@ -53,15 +53,7 @@ export const style = (theme: IobTheme): Record<string, any> => ({
             },
             animation: '$warning 2.5s ease-in-out infinite alternate',
         },
-    },
-    '@keyframes warning': {
-        '0%': {
-            opacity: 1,
-        },
-        '100%': {
-            opacity: 0.7,
-        },
-    },
+    }),
     imageBlock: {
         minHeight: 60,
         display: 'flex',
@@ -130,7 +122,7 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         height: 4,
         // borderRadius: 20,
     },
-    adapter: {
+    adapter: (theme: IobTheme) => ({
         width: '100%',
         fontWeight: 'bold',
         fontSize: 16,
@@ -138,17 +130,17 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         paddingLeft: 8,
         paddingTop: 16,
         color: theme.palette.mode === 'dark' ? '#333' : '#555',
-    },
+    }),
     cardContent: {
         marginTop: 16,
         paddingTop: 0,
     },
-    cardContentInfo: {
+    cardContentInfo: (theme: IobTheme) => ({
         overflow: 'auto',
         paddingTop: 0,
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.mode === 'dark' ? '#EEE' : '#111',
-    },
+    }),
     cardContentH5: {
         height: '100%',
         display: 'flex',
@@ -183,14 +175,6 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         // border: '1px solid #440202',,
         // animation: '$red 3s ease-in-out infinite alternate'
     },
-    '@keyframes red': {
-        '0%': {
-            opacity: 1,
-        },
-        '100%': {
-            opacity: 0.85,
-        },
-    },
     dotLine: {
         width: 50,
         height: '100%',
@@ -202,14 +186,7 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         // boxShadow: '12px 29px 81px 0px rgb(0 0 0 / 75%)',
         // animation: '$colors 3s ease-in-out infinite'
     },
-    '@keyframes colors': {
-        '0%': {
-            left: -51,
-        },
-        '100%': {
-            left: '101%',
-        },
-    },
+
     versionDate: {
         alignSelf: 'center',
     },
@@ -237,7 +214,7 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         paddingLeft: 16,
         paddingRight: 8,
     },
-});
+};
 
 interface HostCardProps extends HostGenericProps {
     hidden?: boolean;
@@ -258,15 +235,15 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
         }
 
         if (!this.props.hostData || typeof this.props.hostData !== 'object') {
-            return <ul key="ul" className={this.props.classes.ul}>
+            return <ul key="ul" style={styles.ul}>
                 <Skeleton />
             </ul>;
         }
 
-        return <ul key="ul" className={this.props.classes.ul}>
+        return <ul key="ul" style={styles.ul}>
             {Object.keys(this.props.hostData).map(value => <li key={value}>
-                <span className={this.props.classes.black}>
-                    <span className={this.props.classes.bold}>
+                <span style={styles.black}>
+                    <span style={styles.bold}>
                         {this.props.t(value)}
                         :
                         {' '}
@@ -281,53 +258,54 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
 
     render() {
         const upgradeAvailable = (this.props.isCurrentHost || this.props.alive) && BasicUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
-        const { classes } = this.props;
         const description = this.getHostDescriptionAll();
 
-        return <Card key={this.props.hostId} className={Utils.clsx(classes.root, this.props.hidden ? classes.hidden : '')}>
+        return <Card key={this.props.hostId} sx={{ ...styles.root, ...(this.props.hidden ? styles.hidden : undefined) }}>
             {this.renderDialogs()}
-            {this.state.openCollapse && <div className={Utils.clsx(classes.collapse, !this.state.openCollapse ? classes.collapseOff : '')}>
-                <CardContent className={classes.cardContentInfo}>
+            {this.state.openCollapse && <div style={{ ...styles.collapse, ...(!this.state.openCollapse ? styles.collapseOff : undefined) }}>
+                <CardContent sx={styles.cardContentInfo}>
                     <div
-                        className={classes.cardContentDiv}
+                        style={styles.cardContentDiv}
                         onClick={() => this.setState({ openCollapse: false })}
                     >
-                        <div
-                            className={classes.close}
+                        <Box
+                            component="div"
+                            sx={styles.close}
                             onClick={() => this.setState({ openCollapse: false })}
                         />
                     </div>
                     {description}
                 </CardContent>
-                <div className={classes.footerBlock} />
+                <Box component="div" sx={styles.footerBlock} />
             </div>}
-            <div className={Utils.clsx(classes.onOffLine, this.props.alive ? classes.green : classes.red)}>
-                {this.props.alive && <div className={classes.dotLine} />}
+            <div style={{ ...styles.onOffLine, ...(this.props.alive ? styles.green : styles.red) }}>
+                {this.props.alive && <div style={styles.dotLine} />}
             </div>
             <div
                 ref={this.refWarning}
-                style={{ background: this.props.host.common.color || 'inherit' }}
-                className={Utils.clsx(
-                    classes.imageBlock,
-                    !this.props.alive && classes.instanceStateNotAlive1,
-                )}
+                style={{
+                    ...styles.imageBlock,
+                    ...(!this.props.alive ? styles.instanceStateNotAlive1 : undefined),
+                    background: this.props.host.common.color || 'inherit',
+                }}
             >
                 <CardMedia
-                    className={classes.img}
+                    sx={styles.img}
                     component="img"
                     // @ts-expect-error fixed in js-controller 6
                     image={this.props.host.common.image || 'img/no-image.png'}
                 />
-                <div
+                <Box
+                    component="div"
                     style={{ color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }}
-                    className={classes.adapter}
+                    className={styles.adapter}
                 >
                     {this.renderNotificationsBadge(this.props.host.common.name)}
-                </div>
+                </Box>
                 {!this.state.openCollapse ? <Fab
                     disabled={typeof description === 'string'}
                     onClick={() => this.setState({ openCollapse: true })}
-                    className={classes.fab}
+                    style={styles.fab}
                     color="primary"
                     aria-label="add"
                     title={this.props.t('Click for more')}
@@ -335,41 +313,44 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                     <MoreVertIcon />
                 </Fab> : null}
             </div>
-            <CardContent className={classes.cardContentH5}>
+            <CardContent style={styles.cardContentH5}>
                 <Typography variant="body2" color="textSecondary" component="div">
-                    <div className={classes.displayFlex}>
+                    <div style={styles.displayFlex}>
                         CPU:
-                        <div ref={this.refCpu} className={classes.marginLeft5}>
+                        <div ref={this.refCpu} style={styles.marginLeft5}>
                             - %
                         </div>
                     </div>
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
-                    <div className={classes.displayFlex}>
+                    <div style={styles.displayFlex}>
                         RAM:
-                        <div ref={this.refMem} className={classes.marginLeft5}>
+                        <div ref={this.refMem} style={styles.marginLeft5}>
                             - %
                         </div>
                     </div>
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
-                    <div className={classes.displayFlex}>
+                    <div style={styles.displayFlex}>
                         {this.props.t('Uptime')}
                         :
                         {' '}
-                        <div ref={this.refUptime} className={classes.marginLeft5}>
+                        <div ref={this.refUptime} style={styles.marginLeft5}>
                             -d -h
                         </div>
                     </div>
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="div" className={classes.wrapperAvailable}>
+                <Typography variant="body2" color="textSecondary" component="div" style={styles.wrapperAvailable}>
                     {this.props.t('Available')}
                     {' '}
                     js-controller:
                     {' '}
-                    <div className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}>
+                    <Box
+                        component="div"
+                        sx={{ ...(upgradeAvailable ? styles.greenText : undefined), ...styles.curdContentFlexCenter }}
+                    >
                         {this.renderUpdateButton(upgradeAvailable)}
-                    </div>
+                    </Box>
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
                     {this.props.t('Installed')}
@@ -378,15 +359,15 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                     {this.props.host.common.installedVersion}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
-                    <div className={classes.displayFlex}>
+                    <div style={styles.displayFlex}>
                         {this.props.t('Events')}
                         :
                         {' '}
-                        <div ref={this.refEvents} className={classes.marginLeft5}>- / -</div>
+                        <div ref={this.refEvents} style={styles.marginLeft5}>- / -</div>
                     </div>
                 </Typography>
-                <div className={classes.marginTop10}>
-                    <Typography component="span" className={classes.enableButton}>
+                <div style={styles.marginTop10}>
+                    <Typography component="span" style={styles.enableButton}>
                         {this.renderEditButton()}
                         {this.renderHostBaseEdit()}
                         {this.renderRestartButton()}
@@ -400,4 +381,4 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
     }
 }
 
-export default withStyles(style)(HostCard);
+export default HostCard;

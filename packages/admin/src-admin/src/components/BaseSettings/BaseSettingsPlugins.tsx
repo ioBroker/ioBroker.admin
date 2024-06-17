@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import { Paper } from '@mui/material';
 
 import {
-    Utils, withWidth,
-    type IobTheme,
+    withWidth,
     type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 
-const styles: Styles<any, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     paper: {
         height:    '100%',
         maxHeight: '100%',
@@ -25,13 +23,13 @@ const styles: Styles<any, any> = (theme: IobTheme) => ({
     },
     divWithoutTitle: {
         width: '100%',
-        height: `calc(100% - ${32}px)`,
+        height: 'calc(100% - 32px)',
         border: '2px solid #00000000',
     },
     error: {
         border: '2px solid #FF0000',
     },
-});
+};
 
 export interface PluginsSettings {
     [key: string]: any;
@@ -41,7 +39,6 @@ interface BaseSettingsPluginsProps {
     t: (text: string) => string;
     onChange: (settings: PluginsSettings) => void;
     settings: PluginsSettings;
-    classes: Record<string, any>;
     themeType: ThemeType;
 }
 interface BaseSettingsPluginsState {
@@ -76,9 +73,9 @@ class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettin
     }
 
     render() {
-        return <Paper className={this.props.classes.paper}>
-            <div className={this.props.classes.title}>{this.props.t('For future use')}</div>
-            <div className={Utils.clsx(this.props.classes.divWithoutTitle, this.state.error && this.props.classes.error)}>
+        return <Paper style={styles.paper}>
+            <div style={styles.title}>{this.props.t('For future use')}</div>
+            <div style={{ ...styles.divWithoutTitle, ...(this.state.error ? styles.error : undefined) }}>
                 <Editor
                     // mode="json"
                     themeType={this.props.themeType}
@@ -90,4 +87,4 @@ class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettin
     }
 }
 
-export default withWidth()(withStyles(styles)(BaseSettingsPlugins));
+export default withWidth()(BaseSettingsPlugins);

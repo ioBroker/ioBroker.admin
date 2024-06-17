@@ -820,6 +820,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             states: this.states,
             onToggleExpanded: this.onToggleExpanded,
             getInstanceStatus: this.getInstanceStatus,
+            theme: this.props.theme,
         };
 
         const list = this._cacheList.map((item, idx) => {

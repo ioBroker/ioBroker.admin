@@ -47,13 +47,13 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     closeButton: {
         position: 'absolute',
         right: 8,
-        top: theme.spacing(1),
+        top: 8,
         color: theme.palette.grey[500],
     },
     languageButton: {
         position: 'absolute',
-        right: 52 + parseInt(theme.spacing(1), 10),
-        top: theme.spacing(1),
+        right: 52 + 8,
+        top: 8,
     },
     languageButtonActive: {
         color: theme.palette.primary.main,

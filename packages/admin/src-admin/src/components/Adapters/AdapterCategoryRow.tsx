@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { withStyles } from '@mui/styles';
-
 import {
     Grid,
     IconButton,
@@ -20,11 +18,11 @@ import {
     ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 
-import { type Translate, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { type Translate } from '@iobroker/adapter-react-v5';
 
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, React.CSSProperties> = {
     name: {
         flexWrap: 'nowrap',
         width: 300,
@@ -45,12 +43,12 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         color: blue[700],
     },
     category: {
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: 'background.default',
     },
     marginRight5: {
         marginRight: 5,
     },
-});
+};
 
 interface AdapterCategoryRowProps {
     descHidden: boolean;
@@ -64,12 +62,10 @@ interface AdapterCategoryRowProps {
     /** Number of adapters in category */
     count: number;
     t: Translate;
-    classes: Record<string, string>;
 }
 
 function AdapterCategoryRow(props: AdapterCategoryRowProps) {
     const {
-        classes,
         installedCount,
         name,
         categoryName,
@@ -77,10 +73,10 @@ function AdapterCategoryRow(props: AdapterCategoryRowProps) {
 
     return <TableRow
         hover={false}
-        className={classes.category}
+        sx={styles.category}
     >
         <TableCell>
-            <Grid container spacing={1} alignItems="center" className={classes.name}>
+            <Grid container spacing={1} alignItems="center" style={styles.name}>
                 <Grid item>
                     <IconButton
                         size="small"
@@ -92,17 +88,17 @@ function AdapterCategoryRow(props: AdapterCategoryRowProps) {
             </Grid>
         </TableCell>
         <TableCell onClick={props.onToggle}>
-            <div className={Utils.clsx(classes.nameDiv, classes.categoryName)}>
-                <MaterialDynamicIcon objIconBool iconName={categoryName} className={classes.marginRight5} />
+            <div style={{ ...styles.nameDiv, ...styles.categoryName }}>
+                <MaterialDynamicIcon objIconBool iconName={categoryName} style={styles.marginRight5} />
                 {name}
             </div>
         </TableCell>
         <TableCell colSpan={props.descHidden ? 5 : 6}>
-            <Typography component="span" variant="body2" className={classes.green}>
+            <Typography component="span" variant="body2" style={styles.green}>
                 {installedCount}
             </Typography>
             {` ${props.t('of')} `}
-            <Typography component="span" variant="body2" className={classes.blue}>
+            <Typography component="span" variant="body2" style={styles.blue}>
                 {props.count}
             </Typography>
             {` ${props.t('Adapters from this Group installed')}`}
@@ -110,4 +106,4 @@ function AdapterCategoryRow(props: AdapterCategoryRowProps) {
     </TableRow>;
 }
 
-export default withStyles(styles)(AdapterCategoryRow);
+export default AdapterCategoryRow;

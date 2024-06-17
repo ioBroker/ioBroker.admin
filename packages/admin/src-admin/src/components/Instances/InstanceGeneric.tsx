@@ -367,6 +367,7 @@ export interface InstanceContext {
     setMaxCompactGroupNumber: (maxCompactGroupNumber: number) => void;
     t: (text: string, ...args: any[]) => string;
     themeType: ThemeType;
+    theme: IobTheme;
     getInstanceStatus: (obj: ioBroker.InstanceObject) => InstanceStatusType;
     socket: AdminConnection;
     expertMode: boolean;
@@ -616,6 +617,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditNameDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Enter title for %s', this.props.instance.id)}
             disableApplyIfNotChanged
             textInput
@@ -630,6 +632,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditLogLevelDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Edit log level rule for %s', this.props.instance.id)}
             onApply={() => {
                 this.setLogLevel(this.props.instance, this.state.logLevel, this.state.logOnTheFly);
@@ -666,6 +669,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditMemoryLimitDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Edit memory limit rule for %s', this.props.instance.id)}
             onApply={value => {
                 this.setMemoryLimitMB(this.props.instance, parseFloat(value.toString()) || 0);
@@ -681,6 +685,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditHostDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Edit host for %s', this.props.instance.id)}
             onApply={() => {
                 this.setHost(this.props.instance, this.state.host);
@@ -705,6 +710,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditCompactGroupDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Edit compact groups for %s', this.props.instance.id)}
             onApply={() => {
                 this.setCompactGroup(this.props.instance, parseInt(this.state.compactGroup.toString(), 10) || 0);
@@ -767,6 +773,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditTierDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Set tier for %s', this.props.instance.id)}
             onApply={() => {
                 this.setTier(this.props.instance, this.state.tier);

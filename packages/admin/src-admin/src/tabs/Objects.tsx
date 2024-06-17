@@ -303,6 +303,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                 // eslint-disable-next-line react/no-unstable-nested-components
                 modalEditOfAccessControl={(context: ObjectBrowserClass, objData: TreeItemData) =>
                     <ObjectEditOfAccessControl
+                        theme={this.props.theme}
                         themeType={this.props.themeType}
                         extendObject={async (id: string, data: Partial<ioBroker.Object>) => {
                             this.props.socket.extendObject(id, data)

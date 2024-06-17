@@ -32,6 +32,7 @@ import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
+import { blinkClasses } from '../components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 import ComponentUtils from '../components/Utils';
@@ -385,6 +386,7 @@ class Hosts extends Component<HostsProps, HostsState> {
         }
 
         return <TabContainer>
+            <style>{blinkClasses}</style>
             {this.renderSlowConnectionWarning()}
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>

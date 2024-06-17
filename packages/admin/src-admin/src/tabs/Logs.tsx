@@ -159,7 +159,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         },
     },
     pauseButton: {
-        minWidth: theme.spacing(6),
+        minWidth: 48,
     },
     pauseCount: {
         color: amber[500],

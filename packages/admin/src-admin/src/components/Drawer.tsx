@@ -79,7 +79,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     header: {
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(0, 1),
+        padding: '0 8px 0 8px',
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
         position: 'sticky',

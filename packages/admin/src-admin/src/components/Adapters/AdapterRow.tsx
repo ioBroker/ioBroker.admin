@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { withStyles } from '@mui/styles';
-
 import {
     Avatar,
     Grid,
@@ -10,19 +8,17 @@ import {
     Tooltip,
 } from '@mui/material';
 
-import { type IobTheme } from '@iobroker/adapter-react-v5';
-
 import AdapterGeneric, {
     type AdapterGenericProps,
     type AdapterGenericState,
-    genericStyle,
+    genericStyles,
 } from '@/components/Adapters/AdapterGeneric';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    ...genericStyle(theme),
+const styles: Record<string, any> = {
+    ...genericStyles,
     smallAvatar: {
-        width: theme.spacing(4),
-        height: theme.spacing(4),
+        width: 32,
+        height: 32,
         marginLeft: 4,
     },
     paddingNone: {
@@ -40,11 +36,10 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         paddingTop: '0 !important',
         paddingBottom: '0 !important',
     },
-});
+};
 
 class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState> {
     render() {
-        const classes = this.props.classes;
         const adapter = this.props.context.repository[this.props.adapterName];
 
         const allowAdapterRating = adapter ? adapter.allowAdapterRating : true;
@@ -54,19 +49,19 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
         return <TableRow hover>
             <TableCell />
             <TableCell>
-                <Grid container spacing={1} alignItems="center" className={classes.name}>
+                <Grid container spacing={1} alignItems="center" style={styles.name}>
                     <Tooltip title={this.props.adapterName}>
-                        <Grid item className={classes.paddingNone}>
+                        <Grid item style={styles.paddingNone}>
                             <Avatar
                                 variant="square"
                                 alt={this.props.cached.title}
                                 src={this.props.cached.image}
-                                className={classes.smallAvatar}
+                                style={styles.smallAvatar}
                             />
                         </Grid>
                     </Tooltip>
                     {allowAdapterRating !== false ?
-                        <Grid item className={classes.nameCell}>
+                        <Grid item style={styles.nameCell}>
                             <div>{this.props.cached.title}</div>
                             {this.renderRating()}
                         </Grid>
@@ -77,7 +72,7 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
             {!this.props.context.descHidden &&
                 <TableCell title={this.props.cached.desc} sx={{ width: 20, wordWrap: 'break-word' }}>{this.props.cached.desc}</TableCell>}
             <TableCell>
-                <div className={classes.flex}>
+                <div style={styles.flex}>
                     {this.renderConnectionType()}
                     {this.renderDataSource()}
                     <div>{this.renderLicenseInfo()}</div>
@@ -108,4 +103,4 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
     }
 }
 
-export default withStyles(styles)(AdapterRow);
+export default AdapterRow;

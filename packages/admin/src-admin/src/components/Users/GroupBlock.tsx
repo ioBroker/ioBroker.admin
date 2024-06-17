@@ -29,7 +29,7 @@ interface GroupBlockProps {
     removeUserFromGroup: (userId: string, groupId: string) => void;
     getText: (text: ioBroker.StringOrTranslated) => string;
     themeType: ThemeType;
-    classes: Record<string, string>;
+    styles: Record<string, any>;
 }
 
 function canMeDrop(monitor: DropTargetMonitor<{userId: ioBroker.ObjectIDs.User}>, props: GroupBlockProps) {
@@ -48,12 +48,12 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
     }), [props.group.common.members]);
 
     let opacity =  0.7;
-    let backgroundColor = '';
+    let backgroundColor: any;
     const isActive = CanDrop && isOver;
 
     if (isActive) {
         opacity = CanDrop ? 1 : 0.125;
-        backgroundColor = props.classes.userGroupCardSecondary;
+        backgroundColor = props.styles.userGroupCardSecondary;
     } else if (CanDrop) {
         opacity = CanDrop ? 0.75 : 0.25;
     }
@@ -69,9 +69,9 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
     return <Card
         style={style}
         ref={drop}
-        className={Utils.clsx(props.classes.userGroupCard2, backgroundColor)}
+        sx={{ ...props.styles.userGroupCard2, ...backgroundColor }}
     >
-        <div className={props.classes.right}>
+        <div style={props.styles.right}>
             <IconButton size="small" onClick={() => props.showGroupEditDialog(props.group, false)}>
                 <EditIcon style={{ color: textColor }} />
             </IconButton>
@@ -84,17 +84,17 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
             </IconButton>
         </div>
         <CardContent>
-            <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
+            <Typography gutterBottom component="div" style={props.styles.userGroupTitle}>
                 {props.group.common.icon ?
                     <Icon
-                        className={props.classes.icon}
+                        style={props.styles.icon}
                         src={props.group.common.icon}
                     />
                     :
-                    <GroupIcon className={props.classes.icon} />}
+                    <GroupIcon style={props.styles.icon} />}
                 <div>
                     <div>
-                        <span className={props.classes.userGroupUserName}>
+                        <span style={props.styles.userGroupUserName}>
                             {props.getText(props.group.common.name)}
                         </span>
                         <span>
@@ -105,7 +105,7 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
                     </div>
                     {props.group.common.desc
                         ?
-                        <div className={props.classes.description}>
+                        <div style={props.styles.description}>
                             {props.getText(props.group.common.desc)}
                         </div>
                         :
@@ -126,16 +126,16 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
                         <Card
                             key={i}
                             variant="outlined"
-                            className={props.classes.userGroupMember}
+                            sx={props.styles.userGroupMember}
                             style={{ color: _textColor, borderColor: `${_textColor}40`, background: user.common?.color || 'inherit' }}
                         >
                             {user.common.icon ?
                                 <Icon
-                                    className={props.classes.icon}
+                                    style={props.styles.icon}
                                     src={user.common.icon}
                                 />
                                 :
-                                <PersonIcon className={props.classes.icon} />}
+                                <PersonIcon style={props.styles.icon} />}
                             {props.getText(user.common.name)}
                             <IconButton
                                 size="small"

@@ -1,5 +1,4 @@
 import React, { createRef, Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -15,17 +14,17 @@ import {
     FormControl,
     Paper,
     Switch,
-    LinearProgress,
+    LinearProgress, Box,
 } from '@mui/material';
 
 import {
-    Utils, withWidth,
+    withWidth,
     Confirm as DialogConfirm,
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
 import { type AdminConnection } from '@iobroker/socket-client';
 
-const styles: Styles<any, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -53,12 +52,12 @@ const styles: Styles<any, any> = (theme: IobTheme) => ({
         marginTop: -1,
         marginLeft: -1,
     },
-    warning: {
+    warning: (theme: IobTheme) => ({
         padding: 8,
         fontSize: 14,
         color: theme.palette.mode === 'dark' ? '#ffa500' : '#b17200',
-    },
-});
+    }),
+};
 
 const DEFAULT_JSONL_OPTIONS = {
     autoCompress: {
@@ -112,7 +111,6 @@ interface BaseSettingsObjectsProps {
     settings: SettingsObjects;
     currentHost: string;
     socket: AdminConnection;
-    classes: Record<string, string>;
 }
 
 interface BaseSettingsObjectsState {
@@ -301,16 +299,16 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
     }
 
     render() {
-        return <Paper className={this.props.classes.paper}>
+        return <Paper style={styles.paper}>
             {this.state.loading ? <LinearProgress /> : null}
             {this.renderWarning()}
-            <Grid item className={Utils.clsx(this.props.classes.gridSettings, this.props.classes.dangerZone)}>
-                <h3 className={this.props.classes.dangerZoneHeader} title={this.props.t('Invalid settings in these fields could lead to dead host')}>{this.props.t('Danger zone')}</h3>
-                <p className={this.props.classes.warning}>{this.props.t('base_settings_hint')}</p>
+            <Grid item style={{ ...styles.gridSettings, ...styles.dangerZone }}>
+                <h3 style={styles.dangerZoneHeader} title={this.props.t('Invalid settings in these fields could lead to dead host')}>{this.props.t('Danger zone')}</h3>
+                <Box component="p" sx={styles.warning}>{this.props.t('base_settings_hint')}</Box>
                 <Grid container direction="column">
                     <Grid item>
                         <Tooltip title={this.props.t('switch_db_note')}>
-                            <FormControl className={this.props.classes.controlItem} variant="standard">
+                            <FormControl style={styles.controlItem} variant="standard">
                                 <InputLabel>{this.props.t('Type')}</InputLabel>
                                 <Select
                                     variant="standard"
@@ -357,7 +355,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                         {this.state.textIP ?
                             <TextField
                                 variant="standard"
-                                className={this.props.classes.controlItem}
+                                style={styles.controlItem}
                                 value={this.state.host}
                                 type="text"
                                 onChange={e => this.setState({ host: e.target.value }, () => this.onChange())}
@@ -365,7 +363,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                                 helperText={this.props.t('You can enter more than one address divided by comma')}
                             />
                             :
-                            <FormControl className={this.props.classes.controlItem} variant="standard">
+                            <FormControl style={styles.controlItem} variant="standard">
                                 <InputLabel>{this.props.t('Bind IP address')}</InputLabel>
                                 <Select
                                     variant="standard"
@@ -380,7 +378,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.port}
                             type="number"
                             InputProps={{ inputProps: { min: 1, max: 65535 } }}
@@ -392,7 +390,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.dataDir}
                             helperText={this.props.t('Optional. Always relative to iobroker.js-controller/')}
                             onChange={e => this.setState({ dataDir: e.target.value }, () => this.onChange())}
@@ -403,7 +401,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.options_auth_pass}
                             type="password"
                             helperText={this.props.t('Optional')}
@@ -420,12 +418,12 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item className={this.props.classes.gridSettings}>
+            <Grid item style={styles.gridSettings}>
                 <Grid container direction="column">
                     {this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.connectTimeout}
                             helperText={this.props.t('ms')}
                             type="number"
@@ -436,7 +434,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     </Grid> : null}
 
                     { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
-                        <FormControl component="fieldset" variant="standard" className={this.props.classes.controlItem}>
+                        <FormControl component="fieldset" variant="standard" style={styles.controlItem}>
                             <FormGroup>
                                 <FormControlLabel
                                     control={
@@ -455,7 +453,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {this.state.type === 'file' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.writeFileInterval}
                             helperText={this.props.t('How often the data from RAM will be saved on disk in ms')}
                             type="number"
@@ -468,7 +466,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.options_retry_max_delay}
                             type="number"
                             helperText={this.props.t('Maximum delay between connection attempts')}
@@ -480,7 +478,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.options_retry_max_count}
                             type="number"
                             helperText={this.props.t('Maximum number of connection retries')}
@@ -492,7 +490,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.options_db}
                             type="number"
                             helperText={this.props.t('Used for sentinels')}
@@ -502,7 +500,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     </Grid> : null }
 
                     { this.state.type === 'redis' ? <Grid item>
-                        <FormControl className={this.props.classes.controlItem} variant="standard">
+                        <FormControl style={styles.controlItem} variant="standard">
                             <InputLabel>{this.props.t('Family number')}</InputLabel>
                             <Select
                                 variant="standard"
@@ -520,7 +518,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.jsonlOptions_autoCompress_sizeFactor}
                             type="number"
                             inputProps={{ min: 2 }}
@@ -533,7 +531,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize}
                             type="number"
                             inputProps={{ min: 0 }}
@@ -546,7 +544,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.jsonlOptions_throttleFS_intervalMs}
                             type="number"
                             inputProps={{ min: 0 }}
@@ -559,7 +557,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.jsonlOptions_throttleFS_maxBufferedCommands}
                             type="number"
                             inputProps={{ min: 0 }}
@@ -570,7 +568,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     </Grid> : null}
 
                     {this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
-                        <FormControl component="fieldset" variant="standard" className={this.props.classes.controlItem}>
+                        <FormControl component="fieldset" variant="standard" style={styles.controlItem}>
                             <FormGroup>
                                 <FormControlLabel
                                     control={
@@ -589,7 +587,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.backup_files}
                             type="number"
                             helperText={this.props.t('Minimal number of backup files, after the deletion will be executed according to the backup time settings')}
@@ -601,7 +599,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.backup_hours}
                             type="number"
                             helperText={this.props.t('All backups older than these hours will be deleted, but only if the number of files is greater than of the files number')}
@@ -613,7 +611,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.backup_period}
                             type="number"
                             helperText={this.props.t('By default the backup is every 2 hours. Time is in minutes. To disable backup set the value to 0')}
@@ -625,7 +623,7 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
                     {(this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.backup_path}
                             helperText={this.props.t('Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.')}
                             onChange={e => this.setState({ backup_path: e.target.value }, () => this.onChange())}
@@ -638,4 +636,4 @@ class BaseSettingsObjects extends Component<BaseSettingsObjectsProps, BaseSettin
     }
 }
 
-export default withWidth()(withStyles(styles)(BaseSettingsObjects));
+export default withWidth()(BaseSettingsObjects);

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -18,7 +17,7 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Icon, type IobTheme } from '@iobroker/adapter-react-v5';
+import { Icon, type Translate } from '@iobroker/adapter-react-v5';
 
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
@@ -32,7 +31,7 @@ interface EnumIcon {
     icon: string;
 }
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, React.CSSProperties> = {
     icon: {
         width: 32,
         height: 32,
@@ -72,18 +71,17 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         verticalAlign: 'middle',
         display: 'inline-block',
     },
-});
+};
 
 interface EnumTemplateDialogProps {
     prefix: string;
-    t: (text: string) => string;
+    t: Translate;
     lang: ioBroker.Languages;
     enums: Record<string, ioBroker.EnumObject>;
     onClose: () => void;
     createEnumTemplate: (prefix: string, template: ioBroker.EnumObject) => void;
     showEnumEditDialog: (template: ioBroker.EnumObject, isNew: boolean) => void;
     getEnumTemplate: (prefix: string) => ioBroker.EnumObject;
-    classes: Record<string, string>;
 }
 
 interface EnumTemplateDialogState {
@@ -133,7 +131,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
         return <Dialog
             maxWidth="md"
             fullWidth
-            classes={{ root: this.props.classes.fullHeight }}
+            sx={{ '& .MuiDialog-root': styles.fullHeight }}
             open={!0}
             onClose={this.props.onClose}
         >
@@ -141,7 +139,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                 {this.props.t(this.props.prefix.startsWith('enum.functions') ? 'Create new function' : 'Create new room')}
                 <TextField
                     variant="standard"
-                    className={this.props.classes.filter}
+                    style={styles.filter}
                     value={this.state.filter}
                     onChange={e => this.setState({ filter: e.target.value.toLowerCase() })}
                     placeholder={this.props.t('Filter')}
@@ -158,7 +156,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
             </DialogTitle>
             <DialogContent style={{ textAlign: 'center' }}>
                 {this.state.loading && <LinearProgress />}
-                <div className={this.props.classes.content}>
+                <div style={styles.content}>
                     {templates.map((template, i) => {
                         const name = BasicUtils.getText(template.name, this.props.lang) || template._id;
 
@@ -181,11 +179,11 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                                         native: {},
                                     });
                                 }}
-                                // startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
-                                className={this.props.classes.enumTemplateButton}
-                                startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon} />}
+                                // startIcon={<Icon src={this.state.icons[i]} style={styles.icon}/>}
+                                style={styles.enumTemplateButton}
+                                startIcon={<Icon src={this.state.icons[i]} style={styles.icon} />}
                             >
-                                <span className={this.props.classes.enumTemplateLabel}>{BasicUtils.getText(template.name, this.props.lang) || template._id}</span>
+                                <span style={styles.enumTemplateLabel}>{BasicUtils.getText(template.name, this.props.lang) || template._id}</span>
                             </Button>;
                         }
                         return null;
@@ -196,7 +194,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                 <Button
                     variant="contained"
                     color="primary"
-                    className={this.props.classes.customGroupButton}
+                    style={styles.customGroupButton}
                     onClick={() => {
                         this.props.onClose();
                         this.props.showEnumEditDialog(this.props.getEnumTemplate(this.props.prefix), true);
@@ -218,4 +216,4 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
     }
 }
 
-export default withStyles(styles)(EnumTemplateDialog);
+export default EnumTemplateDialog;

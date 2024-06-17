@@ -277,7 +277,6 @@ interface ChipInputProps {
     value?: string[];
     /** The variant of the Input component */
     variant?: 'outlined' | 'standard' | 'filled';
-    classes?: Record<string, string>;
     className?: string;
     error?: boolean;
     id?: string;

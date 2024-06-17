@@ -46,14 +46,14 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     saveButton: {
         backgroundColor: theme.palette.success.main,
-        right: theme.spacing(10),
+        right: 80,
         '&:hover': {
             backgroundColor: theme.palette.success.dark,
         },
     },
     addButton: {
         backgroundColor: theme.palette.secondary.main,
-        right: theme.spacing(18),
+        right: 144,
         '&:hover': {
             backgroundColor: theme.palette.secondary.dark,
         },

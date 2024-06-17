@@ -4,7 +4,10 @@ import {
     LinearProgress,
 } from '@mui/material';
 
-import type { AdminConnection, ThemeType, Translate } from '@iobroker/adapter-react-v5';
+import type {
+    AdminConnection, IobTheme,
+    ThemeType, Translate,
+} from '@iobroker/adapter-react-v5';
 
 import FileBrowser, { type FileBrowserClass, type MetaObject } from '../components/FileBrowser';
 
@@ -19,6 +22,7 @@ interface FilesProps {
     ready: boolean;
     expertMode: boolean;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 class Files extends Component<FilesProps> {
@@ -55,6 +59,7 @@ class Files extends Component<FilesProps> {
 
     renderAclDialog(context: FileBrowserClass) {
         return <FileEditOfAccessControl
+            theme={this.props.theme}
             themeType={this.props.themeType}
             applyChangesToObject={async (fileObj: MetaObject) => {
                 // it is setObject

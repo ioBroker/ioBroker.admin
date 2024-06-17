@@ -1767,6 +1767,7 @@ class App extends Router<AppProps, AppState> {
 
                 return <Suspense fallback={<Connecting />}>
                     <Adapters
+                        theme={this.state.theme}
                         triggerUpdate={this.state.triggerAdapterUpdate}
                         key="adapters"
                         forceUpdateAdapters={this.state.forceUpdateAdapters}
@@ -1882,6 +1883,7 @@ class App extends Router<AppProps, AppState> {
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         themeType={this.state.themeType}
+                        theme={this.state.theme}
                     />
                 </Suspense>;
             }
@@ -2902,9 +2904,8 @@ class App extends Router<AppProps, AppState> {
                     {this.renderNewsDialog()}
                     {this.renderHostWarningDialog()}
                     {this.renderNotificationsDialog()}
-                    {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
-                        <Connecting />
-                    ) : null}
+                    {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ?
+                        <Connecting /> : null}
                     {this.renderShowGuiSettings()}
                 </ThemeProvider>
             </StyledEngineProvider>

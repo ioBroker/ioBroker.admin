@@ -87,7 +87,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             display: 'none',
         },
         '& input': {
-            padding: `${theme.spacing(1)} 0 0 0`,
+            padding: `8px 0 0 0`,
         },
         '& .MuiInputAdornment-root': {
             marginLeft: 0,
@@ -97,12 +97,12 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     toolbarTime: {
         width: 84,
         marginTop: 9,
-        // marginLeft: theme.spacing(1),
+        // marginLeft: 8,
         '& fieldset': {
             display: 'none',
         },
         '& input': {
-            padding: `${theme.spacing(1)} 0 0 0`,
+            padding: `8px 0 0 0`,
         },
         '& .MuiInputAdornment-root': {
             marginLeft: 0,
@@ -111,20 +111,20 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     toolbarTimeLabel: {
         position: 'absolute',
-        padding: theme.spacing(1),
+        padding: 8,
         fontSize: '0.8rem',
         left: 2,
         top: -9,
     },
     toolbarTimeGrid: {
         position: 'relative',
-        marginLeft: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
+        marginLeft: 8,
+        paddingLeft: 8,
+        paddingRight: 8,
         paddingTop: 4,
         paddingBottom: 4,
         border: '1px dotted #AAAAAA',
-        borderRadius: theme.spacing(1),
+        borderRadius: 8,
         display: 'flex',
     },
     buttonIcon: {
@@ -132,13 +132,13 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         height: 24,
     },
     echartsButton: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
         height: 34,
         width: 34,
     },
     dateInput: {
         width: 140,
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     timeInput: {
         width: 80,

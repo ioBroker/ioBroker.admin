@@ -3,7 +3,7 @@ import semver from 'semver';
 
 import {
     type Translate, type AdminConnection,
-    type ThemeType,
+    type ThemeType, type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import {
@@ -41,6 +41,7 @@ export type AdaptersContext = {
     lang: ioBroker.Languages;
     uuid: string;
     themeType: ThemeType;
+    theme: IobTheme;
     onUpdating: (isUpdating: boolean) => void;
     /** Information about ALL KNOWN adapters in the ioBroker infrastructure. Repo */
     repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>;

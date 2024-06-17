@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles, type Styles } from '@mui/styles';
 
 import {
     Dialog,
@@ -45,11 +44,11 @@ import User12 from '../../assets/users/user12.svg';
 
 const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User9, User10, User11, User12];
 
-const styles: Styles<IobTheme, any> = () => ({
+const styles: Record<string, React.CSSProperties> = {
     contentRoot:{
         padding: '16px 24px',
     },
-});
+};
 
 interface UserEditDialogProps {
     t: Translate;
@@ -61,7 +60,7 @@ interface UserEditDialogProps {
     saveData: (originalId: string) => void;
     innerWidth: number;
     getText: (text: ioBroker.StringOrTranslated) => string;
-    classes: Record<string, string>;
+    styles: Record<string, React.CSSProperties>;
 }
 
 const UserEditDialog: React.FC<UserEditDialogProps> = props => {
@@ -117,17 +116,21 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
     return <Dialog
         fullWidth={props.innerWidth < 500}
         open={!0}
-        onClose={(event, reason) => {
+        onClose={(_event, reason) => {
             if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
                 props.onClose();
             }
         }}
     >
-        <DialogTitle className={props.classes.dialogTitle} style={{ padding: 12 }}>
+        <DialogTitle style={{ ...props.styles.dialogTitle, padding: 12 }}>
             { props.t('User parameters') }
         </DialogTitle>
-        <DialogContent classes={{ root: Utils.clsx(props.innerWidth < 500 && props.classes.narrowContent, props.classes.contentRoot) }}>
-            <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
+        <DialogContent
+            sx={{
+                '& .MuiDialogContent-root': { ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined), ...styles.contentRoot },
+            }}
+        >
+            <Grid container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
                 <Grid item xs={12} md={6}>
                     <IOTextField
                         label="Name"
@@ -143,7 +146,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         }}
                         autoComplete="new-password"
                         icon={TextFieldsIcon}
-                        classes={props.classes}
+                        styles={props.styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -158,7 +161,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                             props.onChange(newData);
                         }}
                         icon={LocalOfferIcon}
-                        classes={props.classes}
+                        styles={props.styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -168,7 +171,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         disabled
                         value={props.user._id}
                         icon={PageviewIcon}
-                        classes={props.classes}
+                        styles={props.styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -182,7 +185,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                             props.onChange(newData);
                         }}
                         icon={DescriptionIcon}
-                        classes={props.classes}
+                        styles={props.styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -199,7 +202,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         type="password"
                         autoComplete="new-password"
                         icon={VpnKeyIcon}
-                        classes={props.classes}
+                        styles={props.styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -212,7 +215,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         type="password"
                         autoComplete="new-password"
                         icon={VpnKeyIcon}
-                        classes={props.classes}
+                        styles={props.styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -227,7 +230,8 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                             newData.common.icon = fileBlob;
                             props.onChange(newData);
                         }}
-                        previewClassName={props.classes.iconPreview}
+                        // @ts-expect-error fixed in adapter-react-v5
+                        previewStyle={props.styles.iconPreview}
                         icon={ImageIcon}
                         // classes={props.classes}
                     />
@@ -237,20 +241,20 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                         label="Color"
                         t={props.t}
                         value={props.user.common.color}
-                        previewClassName={props.classes.iconPreview}
+                        previewStyle={props.styles.iconPreview}
                         onChange={color => {
                             const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
                             newData.common.color = color;
                             props.onChange(newData);
                         }}
                         icon={ColorLensIcon}
-                        className={props.classes.colorPicker}
-                        classes={props.classes}
+                        style={props.styles.colorPicker}
+                        styles={props.styles}
                     />
                 </Grid>
             </Grid>
         </DialogContent>
-        <DialogActions className={props.classes.dialogActions}>
+        <DialogActions style={props.styles.dialogActions}>
             <Button
                 variant="contained"
                 color="primary"
@@ -273,4 +277,4 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
     </Dialog>;
 };
 
-export default withStyles(styles)(UserEditDialog);
+export default UserEditDialog;

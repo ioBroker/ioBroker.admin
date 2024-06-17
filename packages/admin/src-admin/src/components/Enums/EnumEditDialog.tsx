@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -21,11 +20,11 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { Utils, IconPicker } from '@iobroker/adapter-react-v5';
+import { Utils, IconPicker, type Translate } from '@iobroker/adapter-react-v5';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import type { EnumCommon } from './EnumBlock';
 
-const styles = () => ({
+const styles: Record<string, React.CSSProperties> = {
     contentRoot:{
         padding: '16px 24px',
     },
@@ -60,7 +59,7 @@ const styles = () => ({
         padding: '0 0 24px 0',
         flexGrow: 1000,
     },
-});
+};
 
 interface EnumEditDialogProps {
     enum: ioBroker.EnumObject;
@@ -70,9 +69,8 @@ interface EnumEditDialogProps {
     saveData: () => Promise<void>;
     onClose: () => void;
     changed: boolean;
-    t: (text: string, arg1?: any, arg2?: any) => string;
+    t: Translate;
     lang: ioBroker.Languages;
-    classes: Record<string, string>;
     getName: (text: ioBroker.StringOrTranslated) => string;
     innerWidth: number;
 }
@@ -111,11 +109,11 @@ function EnumEditDialog(props: EnumEditDialogProps) {
             }
         }}
     >
-        <DialogTitle className={props.classes.dialogTitle} style={{ padding: 12 }}>
+        <DialogTitle style={{ ...styles.dialogTitle, padding: 12 }}>
             {props.t('Enum parameters')}
         </DialogTitle>
-        <DialogContent classes={{ root: props.classes.contentRoot }}>
-            <Grid container spacing={2} className={props.classes.dialog}>
+        <DialogContent sx={{ '& .MuiDialogContent-root': styles.contentRoot }}>
+            <Grid container spacing={2} style={styles.dialog}>
                 <Grid item xs={12} md={6}>
                     <IOTextField
                         label="Name"
@@ -134,7 +132,7 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         }}
                         autoComplete="off"
                         icon={TextFieldsIcon}
-                        classes={props.classes}
+                        styles={styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -149,7 +147,7 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                             props.onChange(newData);
                         }}
                         icon={LocalOfferIcon}
-                        classes={props.classes}
+                        styles={styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -159,7 +157,7 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                         disabled
                         value={props.enum._id}
                         icon={PageviewIcon}
-                        classes={props.classes}
+                        styles={styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -173,7 +171,7 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                             props.onChange(newData);
                         }}
                         icon={DescriptionIcon}
-                        classes={props.classes}
+                        styles={styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -187,30 +185,31 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                             newData.common.icon = fileBlob;
                             props.onChange(newData);
                         }}
-                        previewClassName={props.classes.iconPreview}
+                        // @ts-expect-error fixed in adapter-react-v5
+                        previewStyle={styles.iconPreview}
                         icon={ImageIcon}
-                        customClasses={props.classes}
+                        customStyles={styles}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <IOColorPicker
                         label="Color"
                         value={props.enum.common.color}
-                        previewClassName={props.classes.iconPreview}
+                        previewStyle={styles.iconPreview}
                         onChange={(color: string) => {
                             const newData = props.enum;
                             newData.common.color = color;
                             props.onChange(newData);
                         }}
                         icon={ColorLensIcon}
-                        className={props.classes.colorPicker}
-                        classes={props.classes}
+                        style={styles.colorPicker}
+                        styles={styles}
                         t={props.t}
                     />
                 </Grid>
             </Grid>
         </DialogContent>
-        <DialogActions className={props.classes.dialogActions}>
+        <DialogActions style={styles.dialogActions}>
             <Button
                 variant="contained"
                 color="primary"
@@ -233,4 +232,4 @@ function EnumEditDialog(props: EnumEditDialogProps) {
     </Dialog>;
 }
 
-export default withStyles(styles)(EnumEditDialog);
+export default EnumEditDialog;

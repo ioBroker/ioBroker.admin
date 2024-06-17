@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     DialogActions,
@@ -25,15 +24,17 @@ import {
 import {
     type AdminConnection,
     I18n,
-    Utils,
     type IobTheme,
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
+import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
+import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
+import Utils from '../components/Utils';
 
-const styles: Styles<IobTheme, any> | Record<string, any> = theme => ({
+const styles: Record<string, any> = {
     dialogRoot: {
         height: 'calc(100% - 64px)',
     },
@@ -44,24 +45,22 @@ const styles: Styles<IobTheme, any> | Record<string, any> = theme => ({
     checkbox: {
         marginRight: 10,
     },
-    appBar: {
+    appBar: (theme: IobTheme) => ({
         flexWrap: 'wrap',
         position: 'sticky',
         bottom: -10,
         paddingLeft: 8,
         background: theme.name === 'blue' ? '#5d6467' : (theme.name === 'dark' ? '#5b5b5b' : '#FFF'),
-    },
+    }),
     container:{
         overflow: 'hidden',
         height: 'calc(100% - 48px)',
-    },
-    '@media screen and (max-width: 602px)': {
-        container: {
+        '@media screen and (max-width: 602px)': {
             height: 'auto',
         },
     },
-    '@media screen and (max-width: 500px)': {
-        content: {
+    content: {
+        '@media screen and (max-width: 500px)': {
             padding: 8,
         },
     },
@@ -70,23 +69,23 @@ const styles: Styles<IobTheme, any> | Record<string, any> = theme => ({
         right: 73,
         top: 11,
     },
-    languageButtonActive: {
+    languageButtonActive: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
-    },
-});
+    }),
+};
 
 interface AdaptersUpdaterDialogProps {
     currentHost: string;
-    lang: string;
+    lang: ioBroker.Languages;
     t: Translate;
     socket: AdminConnection;
     onClose: (updated: boolean) => void;
-    repository: Record<string, any>;
-    installed: Record<string, any>;
+    repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>;
+    installed: InstalledInfo;
     onSetCommandRunning: (running: boolean) => void;
     noTranslation?: boolean;
     toggleTranslation?: () => void;
-    classes: Record<string, string>;
+    theme: IobTheme;
 }
 
 interface AdaptersUpdaterDialogState {
@@ -168,6 +167,8 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
     }
 
     render() {
+        const languageButtonActive = this.props.noTranslation ? Utils.getStyle(this.props.theme, styles.languageButtonActive) : undefined;
+
         return <Dialog
             open={!0}
             maxWidth="lg"
@@ -175,16 +176,16 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             onClose={() => this.props.onClose(!!this.state.updated.length)}
             aria-labelledby="update-dialog-title"
             aria-describedby="update-dialog-description"
-            classes={{ paper: this.props.classes.dialogRoot }}
+            sx={{ '& .MuiDialog-paper': styles.dialogRoot }}
             scroll="paper"
         >
             <DialogTitle id="update-dialog-title">
-                <div className={this.props.classes.wrapperHead}>
+                <div style={styles.wrapperHead}>
                     {this.props.t('Update %s adapter(s)', this.state.selected.length)}
                     {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')}>
                         <Checkbox
                             checked={this.state.selected.length === this.updateAvailable.length}
-                            className={this.props.classes.checkbox}
+                            style={styles.checkbox}
                             tabIndex={-1}
                             indeterminate={this.state.selected.length !== this.updateAvailable.length && this.state.selected.length !== 0}
                             disableRipple
@@ -199,7 +200,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                     </Tooltip>}
                     {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
                         size="large"
-                        className={Utils.clsx(this.props.classes.languageButton, this.props.noTranslation && this.props.classes.languageButtonActive)}
+                        style={{ ...styles.languageButton, ...languageButtonActive }}
                         onClick={() => this.props.toggleTranslation()}
                         title={I18n.t('Disable/Enable translation')}
                     >
@@ -207,12 +208,11 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                     </IconButton> : null}
                 </div>
             </DialogTitle>
-            <DialogContent classes={{ root: this.props.classes.content }} style={{ height: '100%' }}>
-                <Grid container direction="row" className={this.props.classes.container}>
+            <DialogContent sx={{ '& .MuiDialogContent-root': styles.content }} style={{ height: '100%' }}>
+                <Grid container direction="row" sx={styles.container}>
                     <Grid item style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
                         <div style={{ height: '100%', overflow: 'auto' }}>
                             <AdaptersUpdater
-                                t={this.props.t}
                                 finished={this.state.finished}
                                 inProcess={this.state.inProcess}
                                 selected={this.state.selected}
@@ -220,7 +220,6 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                 stopped={this.state.stopped}
                                 updated={this.state.updated}
                                 lang={this.props.lang}
-                                socket={this.props.socket}
                                 installed={this.props.installed}
                                 repository={this.props.repository}
                                 noTranslation={this.props.noTranslation}
@@ -231,6 +230,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                     }
                                     this.setState({ selected });
                                 }}
+                                theme={this.props.theme}
                             />
                         </div>
                     </Grid>
@@ -264,7 +264,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                         />
                     </Grid>}
                 </Grid>
-                <Toolbar variant="dense" disableGutters className={this.props.classes.appBar}>
+                <Toolbar variant="dense" disableGutters sx={styles.appBar}>
                     <FormControlLabel
                         control={<Checkbox
                             disabled={this.state.finished}
@@ -337,4 +337,4 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
     }
 }
 
-export default withStyles(styles)(AdaptersUpdaterDialog);
+export default AdaptersUpdaterDialog;
