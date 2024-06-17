@@ -194,6 +194,9 @@ const styles: Record<string, any> = {
         color: amber[500],
         marginRight: 5,
     },
+    rating: {
+        marginTop: 20,
+    },
 };
 
 interface AdapterTileState extends AdapterGenericState {

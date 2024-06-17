@@ -127,24 +127,14 @@ export const genericStyles: Record<string, any> = {
         color: theme.palette.mode === 'dark' ? '#a3ffa3' : '#009800',
         fontWeight: 'bold',
     }),
-    rating: {
-        marginTop: 20,
-    },
-    containerVersion: {
-
-    },
-    containerSpecificVersion: {
-
-    },
+    rating: {},
+    containerVersion: {},
+    containerSpecificVersion: {},
     versionWarn: {
         color: amber[500],
     },
-    cardContentFlexBetween: {
-
-    },
-    cardContentFlex: {
-
-    },
+    cardContentFlexBetween: {},
+    cardContentFlex: {},
 };
 
 export type Ratings = { [adapterName: string]: AdapterRating } & { uuid: string };
@@ -405,7 +395,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
     renderVersion() {
         const allowAdapterUpdate = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate : true;
 
-        return !this.props.context.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate ? <Tooltip title={this.props.context.t('Update')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+        return !this.props.context.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate !== false ? <Tooltip title={this.props.context.t('Update')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <div
                 onClick={() => this.setState({ showUpdateDialog: true, showDialog: true })}
                 style={{ ...this.styles.buttonUpdate, ...(this.props.cached.rightDependencies ? this.styles.updateAvailable : undefined) }}

@@ -29,6 +29,7 @@ import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import { checkCondition, type RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
 import LocalUtils from '../Utils';
+import Utils from "../Utils";
 
 interface GetNewsResultEntry {
     version: string;
@@ -41,10 +42,10 @@ const styles: Record<string, any> = {
         height: 24,
     },
     listItem: (theme: IobTheme) => ({
-        marginBottom: 2,
+        mb: '2px',
         background: theme.palette.background,
         '@media screen and (max-width: 400px)': {
-            paddingLeft: 2,
+            pl: '2px',
         },
     }),
     toVersion: (theme: IobTheme) => ({
@@ -234,7 +235,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                 key={adapter}
                 dense
                 sx={{
-                    '& .MuiListItem-root': { ...styles.listItem, ...(this.props.updated.includes(adapter) ? styles.updateDone : undefined) },
+                    '& .MuiListItem-root': Utils.getStyle(styles.listItem, this.props.updated.includes(adapter) && styles.updateDone),
                 }}
                 ref={this.props.current === adapter ? this.currentRef : null}
             >
@@ -355,7 +356,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                 open={!0}
             >
                 <DialogTitle>
-                    <Typography component="h2" variant="h6" sx={{ '& .MuiTypography-root': styles.typography }}>
+                    <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
                         <div style={{ width: 'calc(100% - 60px)' }}>{I18n.t('Update "%s" to v%s', this.state.showNews.adapter, this.state.showNews.version)}</div>
                         <IconButton size="large" style={closeButton} onClick={() => this.setState({ showNews: null })}>
                             <CloseIcon />
