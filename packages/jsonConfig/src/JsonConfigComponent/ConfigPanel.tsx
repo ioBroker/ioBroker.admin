@@ -65,6 +65,7 @@ import ConfigTimePicker from './ConfigTimePicker';
 import ConfigTopic from './ConfigTopic';
 import ConfigUUID from './ConfigUUID';
 import ConfigUser from './ConfigUser';
+import Utils from "#JC/Utils";
 
 const components: Record<string, typeof ConfigGeneric<any, any>> = {
     accordion: ConfigAccordion,
@@ -127,10 +128,10 @@ const styles: Record<string, any> = {
         // height: '100%',
     },
     paper: {
-        margin: 10,
+        margin: 1,
         width: 'auto !important',
         overflowY: 'auto',
-        paddingBottom: 8,
+        paddingBottom: 1,
     },
     paperWithIcons: {
         height: 'calc(100vh - 259px) !important',
@@ -139,7 +140,7 @@ const styles: Record<string, any> = {
         height: 'calc(100vh - 235px) !important',
     },
     padding: {
-        padding: 10,
+        padding: '10px',
     },
     heading: {
 
@@ -256,12 +257,12 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     lg={schema.lg || undefined}
                     md={schema.md || undefined}
                     sm={schema.sm || undefined}
-                    sx={{
-                        marginBottom: 0, /* marginRight: 8, */
-                        textAlign: 'left',
-                        ...schemaStyle,
-                        ...(this.props.themeType === 'dark' ? schema.darkStyle : {}),
-                    }}
+                    sx={Utils.getStyle(
+                        this.props.theme,
+                        { marginBottom: 0, textAlign: 'left' /* marginRight: 8, */ },
+                        schemaStyle,
+                        this.props.themeType === 'dark' && schema.darkStyle,
+                    )}
                 />;
 
                 if (schema.newLine) {
@@ -304,12 +305,13 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
             >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
-                    sx={{
-                        ...schemaStyle,
-                        ...(this.props.themeType ? schema.darkStyle : {}),
-                        ...(schema.color === 'primary' ? styles.primary : ( schema.color === 'secondary' ? styles.secondary : undefined)),
-                        width: '100%',
-                    }}
+                    sx={Utils.getStyle(
+                        this.props.theme,
+                        schemaStyle,
+                        this.props.themeType && schema.darkStyle,
+                        schema.color === 'primary' ? styles.primary : (schema.color === 'secondary' && styles.secondary),
+                        { width: '100%' },
+                    )}
                 >
                     <Typography style={styles.heading}>{this.getText(schema.label)}</Typography>
                 </AccordionSummary>
@@ -317,7 +319,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                     <Grid
                         container
                         spacing={2}
-                        sx={{ ...schemaStyle, width: '100%', padding: 10 }}
+                        sx={{ ...schemaStyle, width: '100%', padding: '10px' }}
                     >
                         {this.renderItems(items, disabled)}
                     </Grid>
@@ -328,22 +330,24 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 component="div"
                 key={`${this.props.attr}_${this.props.index}`}
                 className={this.props.className}
-                sx={{
-                    ...(this.props.style || undefined),
-                    ...schemaStyle,
-                    width: '100%',
-                    ...(this.props.isParentTab ? styles.paper : undefined),
-                    ...(this.props.isParentTab ? (this.props.withIcons ? styles.paperWithIcons : styles.paperWithoutIcons) : undefined),
-                }}
+                sx={Utils.getStyle(
+                    this.props.theme,
+                    this.props.style,
+                    schemaStyle,
+                    { width: '100%' },
+                    this.props.isParentTab && styles.paper,
+                    this.props.isParentTab && (this.props.withIcons ? styles.paperWithIcons : styles.paperWithoutIcons),
+                )}
             >
                 <Grid
                     container
                     spacing={2}
-                    sx={{
-                        width: '100%',
-                        ...(this.props.isParentTab ? styles.padding : undefined),
-                        ...this.props.schema.innerStyle,
-                    }}
+                    sx={Utils.getStyle(
+                        this.props.theme,
+                        { width: '100%' },
+                        this.props.isParentTab && styles.padding,
+                        this.props.schema.innerStyle,
+                    )}
                 >
                     {this.renderItems(items, disabled)}
                 </Grid>
@@ -358,7 +362,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 lg={schema.lg || undefined}
                 md={schema.md || undefined}
                 sm={schema.sm || undefined}
-                sx={({ marginBottom: 0, /* marginRight: 8, */textAlign: 'left', ...schemaStyle })}
+                sx={({ marginBottom: 0, /* marginRight: 8, */ textAlign: 'left', ...schemaStyle })}
             >
                 {content}
             </Grid>;

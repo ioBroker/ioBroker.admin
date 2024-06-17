@@ -373,12 +373,12 @@ const styles: Record<string, any> = {
     tableDiv: {
         paddingTop: 0,
         paddingLeft: 0,
-        width: `calc(100% - 8px)`,
+        width: 'calc(100% - 8px)',
         height: 'calc(100% - 38px)',
         overflow: 'auto',
     },
     tableRow: (theme: IobTheme) => ({
-        paddingLeft: 8,
+        pl: 1,
         height: ROW_HEIGHT,
         lineHeight: `${ROW_HEIGHT}px`,
         verticalAlign: 'top',
@@ -428,7 +428,7 @@ const styles: Record<string, any> = {
             display: 'block',
             width: ROW_HEIGHT - 4,
             height: ROW_HEIGHT - 4,
-            marginTop: 2,
+            mt: '2px',
             float: 'right',
         },
         '&:hover .iconOwn': {
@@ -481,9 +481,6 @@ const styles: Record<string, any> = {
         height: SMALL_BUTTON_SIZE,
         top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
         opacity: 0.8,
-        '&:hover': {
-            opacity: 1,
-        },
         position: 'absolute',
         right: 3,
     },
@@ -503,7 +500,7 @@ const styles: Record<string, any> = {
         display: 'inline-block',
         verticalAlign: 'top',
         fontSize: 14,
-        marginLeft: 5,
+        ml: '5px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         position: 'relative',
@@ -651,22 +648,6 @@ const styles: Record<string, any> = {
         marginLeft: 4,
         opacity: 0.8,
     },
-    // todo
-    newValue: {
-        animation: '$newValueAnimation 2s ease-in-out',
-    },
-    // todo
-    '@keyframes newValueAnimation': {
-        '0%': {
-            color: '#00f900',
-        },
-        '80%': {
-            color: '#008000',
-        },
-        '100%': {
-            color: (theme: IobTheme) => theme.palette.mode === 'dark' ? '#fff' : '#000',
-        },
-    },
     cellValueTextState: {
         opacity: 0.7,
     },
@@ -715,7 +696,6 @@ const styles: Record<string, any> = {
     },
     cellButtonsValueButton: (theme: IobTheme) => ({
         position: 'absolute',
-        display: 'inline-block',
         top: SMALL_BUTTON_SIZE / 2 - 2,
         opacity: 0.7,
         width: SMALL_BUTTON_SIZE - 2,
@@ -730,7 +710,7 @@ const styles: Record<string, any> = {
         cursor: 'pointer',
     },
     cellButtonsValueButtonEdit: {
-        right: SMALL_BUTTON_SIZE / 2 + 16,
+        right: (SMALL_BUTTON_SIZE / 2) + 16,
     },
 
     filteredOut: {
@@ -740,8 +720,8 @@ const styles: Record<string, any> = {
         opacity: 0.3,
     },
     filterInput: {
-        marginTop: 0,
-        marginBottom: 0,
+        mt: 0,
+        mb: 0,
     },
     selectIcon: {
         width: 24,
@@ -770,7 +750,7 @@ const styles: Record<string, any> = {
     headerCellInput: {
         width: 'calc(100% - 5px)',
         height: ROW_HEIGHT,
-        paddingTop: 0,
+        pt: 0,
         '& .itemIcon': {
             verticalAlign: 'middle',
             width: ICON_SIZE,
@@ -782,7 +762,7 @@ const styles: Record<string, any> = {
         '& .itemIcon': {
             width: ICON_SIZE,
             height: ICON_SIZE,
-            marginRight: 5,
+            mr: '5px',
             display: 'inline-block',
         },
     },
@@ -861,7 +841,7 @@ const styles: Record<string, any> = {
         position: 'absolute',
         top: 0,
         right: 0,
-        borderRadius: 20,
+        borderRadius: 5,
         backgroundColor: 'background.default',
     },
     iconDeviceConnected: (theme: IobTheme) => ({
@@ -964,6 +944,7 @@ function getStyle(theme: IobTheme, ...args: any): Record<string, any> {
                     result[attr] = args[a][attr](theme);
                 } else if (typeof args[a][attr] === 'object') {
                     const obj = args[a][attr];
+                    result[attr] = {};
                     Object.keys(obj).forEach((attr1: string) => {
                         if (typeof obj[attr1] === 'function') {
                             result[attr][attr1] = obj(theme);
@@ -2325,7 +2306,6 @@ interface ObjectAliasEditorProps {
 interface ObjectBrowserProps {
     /** where to store settings in localStorage */
     dialogName?: string;
-    classes: Record<string, string>;
     defaultFilters?: ObjectBrowserFilter;
     selected?: string | string[];
     onSelect?: (selected: string | string[], name: string, isDouble?: boolean) => void;
@@ -2592,6 +2572,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         contextMenuRoom?: React.CSSProperties;
         contextMenuRole?: React.CSSProperties;
         contextMenuDelete?: React.CSSProperties;
+        filterInput?: React.CSSProperties;
+        iconCopy?: React.CSSProperties;
+        aliasReadWrite?: React.CSSProperties;
+        aliasAlone?: React.CSSProperties;
     } = {};
 
     private customColumnDialog: null | {
@@ -3341,13 +3325,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             onClose={() => this.setState({ columnsSelectorShow: false })}
             open={!0}
             sx={{
-                '& .MuiDialog-root': { ...styles.dialogColumns, ...styles[`transparent_${this.state.columnsDialogTransparent}`] }
+                '& .MuiPaper-root': getStyle(this.props.theme, styles.dialogColumns, styles[`transparent_${this.state.columnsDialogTransparent}`]),
             }}
         >
             <DialogTitle sx={styles.fontSizeTitle}>{this.props.t('ra_Configure')}</DialogTitle>
             <DialogContent sx={styles.fontSizeTitle}>
                 <FormControlLabel
-                    sx={styles.switchColumnAuto}
+                    style={styles.switchColumnAuto}
                     control={
                         <Switch
                             checked={this.state.foldersFirst}
@@ -3363,7 +3347,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     label={this.props.t('ra_Folders always first')}
                 />
                 <FormControlLabel
-                    sx={styles.switchColumnAuto}
+                    style={styles.switchColumnAuto}
                     control={
                         <Switch
                             checked={this.state.linesEnabled}
@@ -3379,7 +3363,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     label={this.props.t('ra_Show lines between rows')}
                 />
                 <FormControlLabel
-                    sx={styles.switchColumnAuto}
+                    style={styles.switchColumnAuto}
                     control={
                         <Switch
                             checked={this.state.columnsAuto}
@@ -3842,7 +3826,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private getFilterInput(filterName: string) {
         return <FormControl
-            sx={{ ...styles.headerCellInput, ...styles.filterInput }}
+            sx={this.styles.filterInput}
             key={`${filterName}_${this.state.filterKey}`}
             // style={{ marginTop: 0, marginBottom: 0 }}
             margin="dense"
@@ -4597,7 +4581,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     alignItems: 'center',
                 }}
             >
-                <Tooltip title={this.props.t('ra_Refresh tree')} sx={{ '& .MuiTooltip-popper': styles.tooltip }}>
+                <Tooltip
+                    title={this.props.t('ra_Refresh tree')}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                >
                     <div>
                         <IconButton
                             onClick={() => this.refreshComponent()}
@@ -4609,7 +4596,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </div>
                 </Tooltip>
                 {this.props.showExpertButton && !this.props.expertMode && (
-                    <Tooltip title={this.props.t('ra_expertMode')} sx={{ '& .MuiTooltip-popper': styles.tooltip }}>
+                    <Tooltip
+                        title={this.props.t('ra_expertMode')}
+                        componentsProps={{ popper: { sx: styles.tooltip } }}
+                    >
                         <IconButton
                             key="expertMode"
                             color={this.state.filter.expertMode ? 'secondary' : 'default'}
@@ -4621,7 +4611,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </Tooltip>
                 )}
                 {!this.props.disableColumnSelector && (
-                    <Tooltip title={this.props.t('ra_Configure')} sx={{ '& .MuiTooltip-popper': styles.tooltip }}>
+                    <Tooltip
+                        title={this.props.t('ra_Configure')}
+                        componentsProps={{ popper: { sx: styles.tooltip } }}
+                    >
                         <IconButton
                             key="columnSelector"
                             color={this.state.columnsAuto ? 'primary' : 'default'}
@@ -4635,7 +4628,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 {this.state.expandAllVisible && (
                     <Tooltip
                         title={this.props.t('ra_Expand all nodes')}
-                        sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                        componentsProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <IconButton key="expandAll" onClick={() => this.onExpandAll()} size="large">
                             <IconOpen />
@@ -4644,7 +4637,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 )}
                 <Tooltip
                     title={this.props.t('ra_Collapse all nodes')}
-                    sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton key="collapseAll" onClick={() => this.onCollapseAll()} size="large">
                         <IconClosed />
@@ -4652,7 +4645,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>
                 <Tooltip
                     title={this.props.t('ra_Expand one step node')}
-                    sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         key="expandVisible"
@@ -4678,7 +4671,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Tooltip>
                 <Tooltip
                     title={this.props.t('ra_Collapse one step node')}
-                    sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         key="collapseVisible"
@@ -4705,7 +4698,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 {this.props.objectStatesView && (
                     <Tooltip
                         title={this.props.t('ra_Toggle the states view')}
-                        sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                        componentsProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <IconButton onClick={() => this.onStatesViewVisible()} size="large">
                             <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
@@ -4715,7 +4708,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                 <Tooltip
                     title={this.props.t('ra_Show/Hide object descriptions')}
-                    sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         onClick={() => {
@@ -4733,7 +4726,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                 {this.props.objectAddBoolean ? <Tooltip
                     title={this.toolTipObjectCreating()}
-                    sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <div>
                         <IconButton
@@ -4752,7 +4745,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                 {this.props.objectImportExport && <Tooltip
                     title={this.props.t('ra_Add objects tree from JSON file')}
-                    sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         onClick={() => {
@@ -4772,7 +4765,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     (!!this.state.selected.length || this.state.selectedNonObject) &&
                     <Tooltip
                         title={this.props.t('ra_Save objects tree as JSON file')}
-                        sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                        componentsProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <IconButton
                             onClick={() =>
@@ -4794,7 +4787,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             )}
             {this.props.objectEditBoolean && <Tooltip
                 title={this.props.t('ra_Edit custom config')}
-                sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                componentsProps={{ popper: { sx: styles.tooltip } }}
             >
                 <IconButton
                     onClick={() => {
@@ -4937,12 +4930,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (!item.data.obj) {
             return this.props.onObjectDelete || this.props.objectEditOfAccessControl ? <div style={styles.buttonDiv}>
                 {this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <IconButton
-                    style={Object.assign(
-                        {},
-                        styles.cellButtonsButton,
-                        styles.cellButtonsEmptyButton,
-                        styles.cellButtonMinWidth,
-                    )}
+                    style={{
+                        ...styles.cellButtonsButton,
+                        ...styles.cellButtonsEmptyButton,
+                        ...styles.cellButtonMinWidth,
+                    }}
                     onClick={() =>
                         this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
                     size="large"
@@ -4995,7 +4987,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <Tooltip
                 key="acl"
                 title={item.data.aclTooltip}
-                sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                componentsProps={{ popper: { sx: styles.tooltip } }}
             >
                 <IconButton
                     style={styles.cellButtonMinWidth}
@@ -5213,7 +5205,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
 
         if (obj.common?.type === 'file') {
-            return <div style={{ ...styles.cellValueText, ...styles.cellValueFile }}>[file]</div>;
+            return <Box component="div" sx={{ ...styles.cellValueText, ...styles.cellValueFile }}>[file]</Box>;
         }
         if (!this.states[id]) {
             if (obj.type === 'state') {
@@ -5241,32 +5233,28 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             item.data.state = { valTextRx };
 
             const copyText = valText.v || '';
-            valTextRx.push(<Box component="span" sx={styles.newValue} key={`${valText.v.toString()}valText`}>
+            valTextRx.push(<span className={`newValueBrowser-${this.props.themeType || 'light'}`} key={`${valText.v.toString()}valText`}>
                 {valText.v.toString()}
-            </Box>);
-            valText.u && valTextRx.push(<Box
-                component="span"
-                sx={{ ...styles.cellValueTextUnit, ...styles.newValue }}
+            </span>);
+            valText.u && valTextRx.push(<span
+                className={`newValueBrowser-${this.props.themeType || 'light'}`}
+                style={styles.cellValueTextUnit}
                 key={`${valText.v.toString()}unit`}
             >
                 {valText.u}
-            </Box>);
-            valText.s !== undefined && valTextRx.push(<Box
-                component="span"
-                sx={Object.assign(
-                    {},
-                    styles.cellValueTextState,
-                    styles.newValue,
-                )}
+            </span>);
+            valText.s !== undefined && valTextRx.push(<span
+                style={styles.cellValueTextState}
+                className={`newValueBrowser-${this.props.themeType || 'light'}`}
                 key={`${valText.v.toString()}states`}
             >
                 (
                 {valText.s}
                 )
-            </Box>);
+            </span>);
             valTextRx.push(<IconCopy
                 className="copyButton"
-                style={{ ...styles.cellButtonsValueButton, ...styles.cellButtonsValueButtonCopy }}
+                style={this.styles.iconCopy}
                 onClick={e => this.onCopy(e, copyText)}
                 key="cc"
             />);
@@ -5285,9 +5273,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         return <Tooltip
             key="value"
             title={this.state.tooltipInfo?.el || 'Calculating...'}
-            sx={{
-                '& .MuiTooltip-tooltip': styles.cellValueTooltip,
-                '& .MuiTooltip-popper': styles.cellValueTooltipBox,
+            componentsProps={{
+                popper: { sx: styles.cellValueTooltipBox },
+                tooltip: { sx: styles.cellValueTooltip },
             }}
             onOpen={() => this.getTooltipInfo(id, () => this.readHistory(id))}
             onClose={() => this.state.tooltipInfo?.id === id && this.setState({ tooltipInfo: null })}
@@ -5382,7 +5370,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         enums.forEach(_item => {
             if (_item.icon && typeof _item.icon === 'string') {
-                _item.icon = <Box sx={styles.enumIconDiv}>
+                _item.icon = <Box style={styles.enumIconDiv}>
                     <img src={_item.icon} style={styles.enumIcon} alt={_item.name} />
                 </Box>;
             }
@@ -5391,7 +5379,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         // const hasIcons = !!enums.find(item => item.icon);
 
         return <Dialog
-            sx={styles.enumDialog}
+            sx={{ '& .MuiPaper-root': styles.enumDialog }}
             onClose={() => this.setState({ enumDialog: null })}
             aria-labelledby="enum-dialog-title"
             open={!0} // true
@@ -5409,7 +5397,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     <IconCheck />
                 </Fab>
             </DialogTitle>
-            <List sx={{ '& .MuiList-root': styles.enumList }}>
+            <List sx={{ '&.MuiList-root': styles.enumList }}>
                 {enums.map(_item => {
                     let id;
                     let name;
@@ -5440,7 +5428,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             this.setState({ enumDialogEnums });
                         }}
                     >
-                        <ListItemIcon sx={{ '& .MuiListItemIcon-root': styles.enumCheckbox }}>
+                        <ListItemIcon sx={{ '&.MuiListItemIcon-root': styles.enumCheckbox }}>
                             <Checkbox
                                 edge="start"
                                 checked={itemEnums.includes(id)}
@@ -5743,12 +5731,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (it.edit && !this.props.notEditable && (!it.objTypes || it.objTypes.includes(obj.type))) {
                 return <Box
                     component="div"
-                    sx={Object.assign(
-                        {},
-                        styles.columnCustom,
-                        styles.columnCustomEditable,
-                        styles[`columnCustom_${it.align}`],
-                    )}
+                    style={{
+                        ...styles.columnCustom,
+                        ...styles.columnCustomEditable,
+                        ...styles[`columnCustom_${it.align}`],
+                    }}
                     onClick={() => this.setState({
                         columnsEditCustomDialog: { item, it, obj },
                         customColumnDialogValueChanged: false,
@@ -5759,11 +5746,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
             return <Box
                 component="div"
-                sx={Object.assign(
-                    {},
-                    styles.columnCustom,
-                    styles[`columnCustom_${it.align}`],
-                )}
+                style={{
+                    ...styles.columnCustom,
+                    ...styles[`columnCustom_${it.align}`],
+                }}
             >
                 {text}
             </Box>;
@@ -5843,7 +5829,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             this.props.multiSelect &&
             this.objects[id] &&
             (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
-                <Checkbox sx={styles.checkBox} checked={this.state.selected.includes(id)} /> : null;
+                <Checkbox style={styles.checkBox} checked={this.state.selected.includes(id)} /> : null;
 
         let valueEditable =
             !this.props.notEditable &&
@@ -5903,7 +5889,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     100,
                                 );
                             }}
-                            sx={{ ...styles.cellIdAlias, ...styles.cellIdAliasReadWrite }}
+                            sx={this.styles.aliasReadWrite}
                         >
                             ←
                             {common.alias.id.read}
@@ -5919,7 +5905,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                     100,
                                 );
                             }}
-                            sx={{ ...styles.cellIdAlias, ...styles.cellIdAliasReadWrite }}
+                            sx={this.styles.aliasReadWrite}
                         >
                             →
                             {common.alias.id.write}
@@ -5934,7 +5920,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             this.onSelect(common.alias.id);
                             setTimeout(() => this.expandAllSelected(() => this.scrollToItem(common.alias.id)), 100);
                         }}
-                        sx={{ ...styles.cellIdAlias, ...styles.cellIdAliasAlone }}
+                        sx={this.styles.aliasAlone}
                     >
                         →
                         {common.alias.id}
@@ -6099,20 +6085,21 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             container
             direction="row"
             wrap="nowrap"
-            sx={{
-                ...styles.tableRow,
-                ...(this.state.linesEnabled ? styles.tableRowLines : {}),
-                ...(!this.props.dragEnabled ? styles.tableRowNoDragging : {}),
-                ...(alias ? styles.tableRowAlias : {}),
-                ...(readWriteAlias ? styles.tableRowAliasReadWrite : {}),
-                ...(!item.data.visible ? styles.filteredOut : {}),
-                ...(item.data.hasVisibleParent &&
+            sx={getStyle(
+                this.props.theme,
+                styles.tableRow,
+                this.state.linesEnabled && styles.tableRowLines,
+                !this.props.dragEnabled && styles.tableRowNoDragging,
+                alias && styles.tableRowAlias,
+                readWriteAlias && styles.tableRowAliasReadWrite,
+                !item.data.visible && styles.filteredOut,
+                item.data.hasVisibleParent &&
                     !item.data.visible &&
-                    !item.data.hasVisibleChildren ?
-                    styles.filteredParentOut : {}),
-                ...(this.state.selected.includes(id) ? styles.itemSelected : {}),
-                ...(this.state.selectedNonObject === id ? styles.itemSelected : {}),
-            }}
+                    !item.data.hasVisibleChildren &&
+                    styles.filteredParentOut,
+                this.state.selected.includes(id) && styles.itemSelected,
+                this.state.selectedNonObject === id && styles.itemSelected,
+            )}
             key={id}
             id={id}
             onMouseDown={e => {
@@ -6155,19 +6142,18 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Grid>
                 <Grid
                     item
-                    style={{ color: checkColor, fontWeight: bold ? 'bold' : undefined }}
-                    sx={{ ...styles.cellIdSpan, ...(invertBackground ? this.styles.invertedBackground : {}) }}
+                    style={{ ...styles.cellIdSpan, ...(invertBackground ? this.styles.invertedBackground : undefined), color: checkColor, fontWeight: bold ? 'bold' : undefined }}
                 >
                     <Tooltip
                         title={getIdFieldTooltip(item.data, this.props.lang)}
-                        sx={{ '& .MuiTooltip-popper': styles.tooltip }}
+                        componentsProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <div>{item.data.name}</div>
                     </Tooltip>
                     {alias}
                     {icons}
                 </Grid>
-                <Box component="div" sx={{ ...styles.grow, ...(invertBackground ? styles.invertedBackgroundFlex : {}) }} />
+                <div style={{ ...styles.grow, ...(invertBackground ? this.styles.invertedBackgroundFlex : {}) }} />
                 <Grid item container alignItems="center">
                     {iconItem}
                 </Grid>
@@ -6180,18 +6166,25 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </div>
             </Grid>
 
-            {this.columnsVisibility.name ? <div
-                style={{ ...styles.cellName, ...(useDesc ? styles.cellNameWithDesc : {}), width: this.columnsVisibility.name }}
+            {this.columnsVisibility.name ? <Box
+                component="div"
+                sx={{
+                    ...styles.cellName,
+                    ...(useDesc ? styles.cellNameWithDesc : undefined),
+                    width: this.columnsVisibility.name,
+                }}
             >
                 {name}
-                {item.data?.title ? <div style={{ color: checkColor }}>
+                {item.data?.title ? <Box
+                    style={{ color: checkColor }}
+                >
                     <IconCopy
                         className="copyButton"
                         style={styles.cellCopyButton}
                         onClick={e => this.onCopy(e, item.data?.title as string)}
                     />
-                </div> : null}
-            </div> : null}
+                </Box> : null}
+            </Box> : null}
 
             {!this.state.statesView ? <>
                 {this.columnsVisibility.type ? <div
@@ -6788,7 +6781,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             </IconButton>;
         }
 
-        return <Box component="div" sx={styles.headerRow}>
+        return <div style={styles.headerRow}>
             <div
                 style={{ ...styles.headerCell, width: this.columnsVisibility.id, position: 'relative' }}
                 data-min={240}
@@ -6897,7 +6890,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 {' '}
                 {this.getFilterSelectCustoms()}
             </div> : null}
-        </Box>;
+        </div>;
     }
 
     private renderToast(): React.JSX.Element {
@@ -7424,8 +7417,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                                 style={subItem.style}
                             >
                                 <ListItemIcon
-                                    style={subItem.iconStyle}
-                                    sx={subItem.listItemIconStyle}
+                                    style={{ ...subItem.iconStyle, ...(subItem.listItemIconStyle || undefined) }}
                                 >
                                     {subItem.icon}
                                 </ListItemIcon>
@@ -7550,6 +7542,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 contextMenuRoom: getStyle(this.props.theme, styles.contextMenuRoom),
                 contextMenuRole: getStyle(this.props.theme, styles.contextMenuRole),
                 contextMenuDelete: getStyle(this.props.theme, styles.contextMenuDelete),
+                filterInput: getStyle(this.props.theme, styles.headerCellInput, styles.filterInput),
+                iconCopy: getStyle(this.props.theme, styles.cellButtonsValueButton, styles.cellButtonsValueButtonCopy),
+                aliasReadWrite: getStyle(styles.cellIdAlias, styles.cellIdAliasReadWrite),
+                aliasAlone: getStyle(styles.cellIdAlias, styles.cellIdAliasAlone),
             };
             this.styleTheme = this.props.themeType;
         }
@@ -7591,18 +7587,49 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const items = this.root ? this.renderItem(this.root, undefined) : null;
 
         return <TabContainer key={this.props.dialogName}>
+            <style>
+                {`
+@keyframes newValueAnimation-light {
+    0% {
+        color: #00f900;
+    }
+    80% {
+        color: #008000;
+    }
+    100% {
+        color: #000;
+    }
+}
+@keyframes newValueAnimation-dark {
+    0% {
+        color: #00f900;
+    }
+    80% {
+        color: #008000;
+    }
+    100% {
+        color: #fff;
+    }
+}
+.newValueBrowser-dark {
+    animation: newValueAnimation-dark 2s ease-in-out;
+}
+.newValueBrowser-light {
+    animation: newValueAnimation-light 2s ease-in-out;
+}
+`}
+            </style>
             <TabHeader>{this.getToolbar()}</TabHeader>
             <TabContent>
                 {this.renderHeader()}
                 {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
-                <Box
-                    component="div"
-                    sx={styles.tableDiv}
+                <div
+                    style={styles.tableDiv}
                     ref={this.tableRef}
                     onKeyDown={event => this.navigateKeyPress(event)}
                 >
                     {items}
-                </Box>
+                </div>
             </TabContent>
             {this.renderContextMenu()}
             {this.renderToast()}

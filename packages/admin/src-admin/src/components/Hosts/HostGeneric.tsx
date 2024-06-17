@@ -69,10 +69,10 @@ export const blinkClasses = `
             color: #fff;
         }
     }
-    newValueHost-dark {
+    .newValueHost-dark {
         animation: newValueAnimationHostDark 2s ease-in-out;
     }
-    newValueHost-light {
+    .newValueHost-light {
         animation: newValueAnimationHostLight 2s ease-in-out;
     }
     @keyframes colors {
@@ -121,13 +121,13 @@ export const blinkClasses = `
             color: #000;
         }
     }
-    onBlick-light {
+    .onBlick-light {
         animation: onBlink-keys-light 2s ease-in-out;
         animationIterationCount: 2;
         fontSize: 12px;
         marginLeft: 4px;
     }
-    onBlick-dark {
+    .onBlick-dark {
         animation: onBlink-keys-dark 2s ease-in-out;
         animationIterationCount: 2;
         fontSize: 12px;

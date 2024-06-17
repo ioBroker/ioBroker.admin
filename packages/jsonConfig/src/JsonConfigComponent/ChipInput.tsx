@@ -41,10 +41,10 @@ const styles: Record<string, any> = (theme: IobTheme) => {
                 boxSizing: 'border-box',
             },
             '&$outlined': {
-                paddingTop: 14,
+                paddingTop: '14px',
             },
             '&$filled': {
-                paddingTop: 28,
+                paddingTop: '28px',
             },
         },
         input: {
@@ -61,27 +61,27 @@ const styles: Record<string, any> = (theme: IobTheme) => {
             display: 'flex',
             flexFlow: 'row wrap',
             cursor: 'text',
-            marginBottom: -2,
+            marginBottom: '-2px',
             minHeight: 40,
             '&$labeled&$standard': {
-                marginTop: 18,
+                marginTop: '18px',
             },
         },
         outlined: {
             '& input': {
                 height: 16,
-                paddingTop: 4,
-                paddingBottom: 12,
-                marginTop: 4,
-                marginBottom: 4,
+                paddingTop: '4px',
+                paddingBottom: '12px',
+                marginTop: '4px',
+                marginBottom: '4px',
             },
         },
         standard: {},
         filled: {
             '& input': {
                 height: 22,
-                marginBottom: 4,
-                marginTop: 4,
+                marginBottom: '4px',
+                marginTop: '4px',
                 paddingTop: 0,
             },
             '$marginDense & input': {
@@ -702,7 +702,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
             {label && <InputLabel
                 htmlFor={id}
                 sx={{
-                    '& .MuiInputLabel-root': { ...this.styles[variant], ...this.styles.label},
+                    '& .MuiInputLabel-root': { ...this.styles[variant], ...this.styles.label },
                     '& .MuiInputLabel-shrink': this.styles.labelShrink,
                 }}
                 shrink={!!shrinkFloatingLabel}
@@ -754,7 +754,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
             {helperText && <FormHelperText
                 {...FormHelperTextProps}
                 className={FormHelperTextProps?.className}
-                sx={this.styles.helperText}
+                style={this.styles.helperText}
             >
                 {helperText}
             </FormHelperText>}

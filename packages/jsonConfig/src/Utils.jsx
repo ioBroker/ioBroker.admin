@@ -1691,6 +1691,7 @@ class Utils {
                         result[attr] = args[a][attr](theme);
                     } else if (typeof args[a][attr] === 'object') {
                         const obj = args[a][attr];
+                        result[attr] = result[attr] || {};
                         Object.keys(obj).forEach(attr1 => {
                             if (typeof obj[attr1] === 'function') {
                                 result[attr][attr1] = obj(theme);

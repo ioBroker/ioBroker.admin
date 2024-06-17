@@ -131,7 +131,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
         return <Dialog
             maxWidth="md"
             fullWidth
-            sx={{ '& .MuiDialog-root': styles.fullHeight }}
+            sx={{ '& .MuiPaper-root': styles.fullHeight }}
             open={!0}
             onClose={this.props.onClose}
         >

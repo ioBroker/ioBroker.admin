@@ -44,7 +44,10 @@ const styles: Record<string, React.CSSProperties> = {
         zIndex: 3,
     },
     button: {
-        marginRight: 5,
+        marginRight: '5px',
+    },
+    tooltip: {
+        pointerEvents: 'none',
     },
 };
 
@@ -293,10 +296,10 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
     getExportImportButtons(): React.JSX.Element {
         return <div style={styles.exportImportButtons}>
-            <Tooltip title={this.props.t('Import settings from JSON file')}>
+            <Tooltip title={this.props.t('Import settings from JSON file')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <Fab
                     size="small"
-                    sx={{ '& .MuiFab-root': styles.button }}
+                    sx={{ '&.MuiFab-root': styles.button }}
                     onClick={() => {
                         const input = document.createElement('input');
                         input.setAttribute('type', 'file');
@@ -310,10 +313,10 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                     <PublishIcon />
                 </Fab>
             </Tooltip>
-            <Tooltip title={this.props.t('Export setting to JSON file')}>
+            <Tooltip title={this.props.t('Export setting to JSON file')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <Fab
                     size="small"
-                    sx={{ '& .MuiFab-root': styles.button }}
+                    sx={{ '&.MuiFab-root': styles.button }}
                     onClick={() => {
                         if (!this.state.data) {
                             return;
