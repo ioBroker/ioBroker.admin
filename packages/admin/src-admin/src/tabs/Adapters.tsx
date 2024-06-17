@@ -1236,6 +1236,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             lang: this.props.lang,
             uuid: this.uuid,
             themeType: this.props.themeType,
+            theme: this.props.theme,
             onUpdating: this.props.onUpdating,
             /** Information about ALL KNOWN adapters in the ioBroker infrastructure. Repo */
             repository: this.state.repository,

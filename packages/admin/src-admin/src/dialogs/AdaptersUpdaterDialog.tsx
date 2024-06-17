@@ -49,7 +49,7 @@ const styles: Record<string, any> = {
         flexWrap: 'wrap',
         position: 'sticky',
         bottom: -10,
-        paddingLeft: 8,
+        pl: 1,
         background: theme.name === 'blue' ? '#5d6467' : (theme.name === 'dark' ? '#5b5b5b' : '#FFF'),
     }),
     container:{
@@ -61,7 +61,7 @@ const styles: Record<string, any> = {
     },
     content: {
         '@media screen and (max-width: 500px)': {
-            padding: 8,
+            p: 1,
         },
     },
     languageButton: {
@@ -119,9 +119,9 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             updated: [],
             /** If an upgrade process has been stopped, e.g., due to an error */
             stopped: false,
-            debug: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.debug') === 'true',
-            stopOnError: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.stopOnError') !== 'false',
-            closeOnFinished: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.closeOnFinished') === 'true',
+            debug: ((window as any)._localStorage as Storage || window.localStorage).getItem('AdaptersUpdaterDialog.debug') === 'true',
+            stopOnError: ((window as any)._localStorage as Storage || window.localStorage).getItem('AdaptersUpdaterDialog.stopOnError') !== 'false',
+            closeOnFinished: ((window as any)._localStorage as Storage || window.localStorage).getItem('AdaptersUpdaterDialog.closeOnFinished') === 'true',
             currentVersion: '',
         };
 
@@ -176,7 +176,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             onClose={() => this.props.onClose(!!this.state.updated.length)}
             aria-labelledby="update-dialog-title"
             aria-describedby="update-dialog-description"
-            sx={{ '& .MuiDialog-paper': styles.dialogRoot }}
+            sx={{ '& .MuiPaper-root': styles.dialogRoot }}
             scroll="paper"
         >
             <DialogTitle id="update-dialog-title">
@@ -270,7 +270,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                             disabled={this.state.finished}
                             checked={this.state.stopOnError}
                             onChange={() => {
-                                (window._localStorage || window.localStorage).setItem('AdaptersUpdaterDialog.stopOnError', this.state.stopOnError ? 'false' : 'true');
+                                ((window as any)._localStorage as Storage || window.localStorage).setItem('AdaptersUpdaterDialog.stopOnError', this.state.stopOnError ? 'false' : 'true');
                                 this.setState({ stopOnError: !this.state.stopOnError });
                             }}
                         />}
@@ -281,7 +281,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                             disabled={this.state.finished}
                             checked={this.state.closeOnFinished}
                             onChange={() => {
-                                (window._localStorage || window.localStorage).setItem('AdaptersUpdaterDialog.closeOnFinished', this.state.closeOnFinished ? 'false' : 'true');
+                                ((window as any)._localStorage as Storage || window.localStorage).setItem('AdaptersUpdaterDialog.closeOnFinished', this.state.closeOnFinished ? 'false' : 'true');
                                 this.setState({ closeOnFinished: !this.state.closeOnFinished });
                             }}
                         />}
@@ -292,7 +292,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                             disabled={this.state.finished || this.state.inProcess}
                             checked={this.state.debug}
                             onChange={() => {
-                                (window._localStorage || window.localStorage).setItem('AdaptersUpdaterDialog.debug', this.state.debug ? 'false' : 'true');
+                                ((window as any)._localStorage as Storage || window.localStorage).setItem('AdaptersUpdaterDialog.debug', this.state.debug ? 'false' : 'true');
                                 this.setState({ debug: !this.state.debug });
                             }}
                         />}

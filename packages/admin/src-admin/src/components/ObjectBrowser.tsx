@@ -4930,7 +4930,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (!item.data.obj) {
             return this.props.onObjectDelete || this.props.objectEditOfAccessControl ? <div style={styles.buttonDiv}>
                 {this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <IconButton
-                    style={{
+                    sx={{
                         ...styles.cellButtonsButton,
                         ...styles.cellButtonsEmptyButton,
                         ...styles.cellButtonMinWidth,
@@ -5052,13 +5052,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 item.data.obj.type === 'state' &&
                 // @ts-expect-error deprecated from js-controller 6
                 item.data.obj.common?.type !== 'file' ? <IconButton
-                    xs={Object.assign(
-                        {},
-                        styles.cellButtonsButton,
-                        item.data.hasCustoms
+                    xs={{
+                        ...styles.cellButtonsButton,
+                        ...(item.data.hasCustoms
                             ? this.styles.cellButtonsButtonWithCustoms
-                            : styles.cellButtonsButtonWithoutCustoms,
-                    )}
+                            : styles.cellButtonsButtonWithoutCustoms),
+                    }}
                     key="custom"
                     size="small"
                     aria-label="config"
@@ -6142,7 +6141,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 </Grid>
                 <Grid
                     item
-                    style={{ ...styles.cellIdSpan, ...(invertBackground ? this.styles.invertedBackground : undefined), color: checkColor, fontWeight: bold ? 'bold' : undefined }}
+                    style={{
+                        ...styles.cellIdSpan,
+                        ...(invertBackground ? this.styles.invertedBackground : undefined),
+                        color: checkColor,
+                        fontWeight: bold ? 'bold' : undefined,
+                    }}
                 >
                     <Tooltip
                         title={getIdFieldTooltip(item.data, this.props.lang)}
@@ -6195,7 +6199,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     {obj && obj.type}
                 </div> : null}
                 {this.columnsVisibility.role ? <div
-                    style={{ ...styles.cellRole,
+                    style={{
+                        ...styles.cellRole,
                         width: this.columnsVisibility.role,
                         cursor:
                             this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
@@ -6834,7 +6839,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             </>}
             {this.state.statesView && <>
                 <div
-                    style={{ ...styles.headerCell, ...styles.headerCellValue, width: this.columnsVisibility.changedFrom, position: 'relative' }}
+                    style={{
+                        ...styles.headerCell,
+                        ...styles.headerCellValue,
+                        width: this.columnsVisibility.changedFrom,
+                        position: 'relative',
+                    }}
                     data-min={100}
                     data-name="changedFrom"
                 >
@@ -6842,7 +6852,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     {this.renderHandleRight()}
                 </div>
                 <div
-                    style={{ ...styles.headerCell, ...styles.headerCellValue, width: this.columnsVisibility.qualityCode, position: 'relative' }}
+                    style={{
+                        ...styles.headerCell,
+                        ...styles.headerCellValue,
+                        width: this.columnsVisibility.qualityCode,
+                        position: 'relative',
+                    }}
                     data-min={100}
                     data-name="qualityCode"
                 >
@@ -6850,7 +6865,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     {this.renderHandleRight()}
                 </div>
                 <div
-                    style={{ ...styles.headerCell, ...styles.headerCellValue, width: this.columnsVisibility.timestamp, position: 'relative' }}
+                    style={{
+                        ...styles.headerCell,
+                        ...styles.headerCellValue,
+                        width: this.columnsVisibility.timestamp,
+                        position: 'relative',
+                    }}
                     data-min={100}
                     data-name="timestamp"
                 >
@@ -6858,7 +6878,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     {this.renderHandleRight()}
                 </div>
                 <div
-                    style={{ ...styles.headerCell, ...styles.headerCellValue, width: this.columnsVisibility.lastChange, position: 'relative' }}
+                    style={{
+                        ...styles.headerCell,
+                        ...styles.headerCellValue,
+                        width: this.columnsVisibility.lastChange,
+                        position: 'relative',
+                    }}
                     data-min={100}
                     data-name="lastChange"
                 >
@@ -6876,7 +6901,12 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 {item.name}
             </div>)}
             {this.columnsVisibility.val ? <div
-                style={{ ...styles.headerCell, ...styles.headerCellValue, width: this.columnsVisibility.val, position: 'relative' }}
+                style={{
+                    ...styles.headerCell,
+                    ...styles.headerCellValue,
+                    width: this.columnsVisibility.val,
+                    position: 'relative',
+                }}
                 data-min={120}
                 data-name="val"
             >

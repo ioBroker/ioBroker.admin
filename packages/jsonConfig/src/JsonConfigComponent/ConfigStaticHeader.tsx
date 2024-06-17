@@ -13,7 +13,7 @@ const styles: Record<string, any> = {
         background: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         padding: '4px !important',
-        borderRadius: 3,
+        borderRadius: '3px',
         marginBlockEnd: 0,
         marginBlockStart: 0,
     }),

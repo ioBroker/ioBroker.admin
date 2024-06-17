@@ -37,13 +37,13 @@ const styles: Record<string, any> = (theme: IobTheme) => {
             flex: 1,
             marginTop: 0,
             minWidth: 70,
-            '&$outlined,&$filled': {
+            '&.mui-variant-outlined,&.mui-variant-filled': {
                 boxSizing: 'border-box',
             },
-            '&$outlined': {
+            '&.mui-variant-outlined': {
                 paddingTop: '14px',
             },
-            '&$filled': {
+            '&.mui-variant-filled': {
                 paddingTop: '28px',
             },
         },
@@ -60,12 +60,10 @@ const styles: Record<string, any> = (theme: IobTheme) => {
         chipContainer: {
             display: 'flex',
             flexFlow: 'row wrap',
+            alignItems: 'center',
             cursor: 'text',
             marginBottom: '-2px',
             minHeight: 40,
-            '&$labeled&$standard': {
-                marginTop: '18px',
-            },
         },
         outlined: {
             '& input': {
@@ -76,7 +74,9 @@ const styles: Record<string, any> = (theme: IobTheme) => {
                 marginBottom: '4px',
             },
         },
-        standard: {},
+        standard: {
+            marginTop: '18px',
+        },
         filled: {
             '& input': {
                 height: 22,
@@ -702,8 +702,8 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
             {label && <InputLabel
                 htmlFor={id}
                 sx={{
-                    '& .MuiInputLabel-root': { ...this.styles[variant], ...this.styles.label },
-                    '& .MuiInputLabel-shrink': this.styles.labelShrink,
+                    '&.MuiInputLabel-root': this.styles.label,
+                    '&.MuiInputLabel-shrink': this.styles.labelShrink,
                 }}
                 shrink={!!shrinkFloatingLabel}
                 focused={this.state.isFocused}
@@ -717,6 +717,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
             </InputLabel>}
             <Box
                 component="div"
+                id="input-chip-container"
                 sx={{
                     ...this.styles[variant],
                     ...this.styles.chipContainer,
@@ -730,9 +731,10 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
                 {variant === 'standard' && chipComponents}
                 <InputComponent
                     ref={this.input}
+                    className={`mui-variant-${this.styles[variant]} ${label ? 'mui-chip-with-label' : 'mui-chip-no-label'}`}
                     sx={{
-                        '& .MuiInputComponent-input': { ...this.styles.input, ...this.styles[variant] },
-                        '& .MuiInputComponent-root': { ...this.styles.inputRoot, ...this.styles[variant] },
+                        '&.MuiInputBase-input': { ...this.styles.input, ...this.styles[variant] },
+                        '&.MuiInputBase-root': { ...this.styles.inputRoot },
                     }}
                     id={id}
                     value={actualInputValue}

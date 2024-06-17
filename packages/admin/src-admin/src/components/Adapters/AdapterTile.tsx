@@ -12,6 +12,7 @@ import {
 import { amber } from '@mui/material/colors';
 
 import { type IobTheme } from '@iobroker/adapter-react-v5';
+import Utils from '@/components/Utils';
 
 import IsVisible from '../IsVisible';
 import AdapterGeneric, {
@@ -26,9 +27,12 @@ const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0
 
 const styles: Record<string, any> = {
     ...genericStyles,
+    type: {
+        color: 'tile',
+    },
     root: (theme: IobTheme) => ({
         position: 'relative',
-        margin: 10,
+        m: '10px',
         width: 300,
         minHeight: 200,
         background: theme.palette.background.default,
@@ -97,39 +101,39 @@ const styles: Record<string, any> = {
         flexDirection: 'column',
     },
     close: {
-        width: '20px',
-        height: '20px',
-        opacity: '0.9',
+        width: 20,
+        height: 20,
+        opacity: 0.9,
         cursor: 'pointer',
         position: 'relative',
         marginLeft: 'auto',
-        marginBottom: 10,
+        mb: '10px',
         transition: 'all 0.6s ease',
         '&:hover': {
             transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: 'rgba(0, 0, 0, 0.54)',
             transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: 'rgba(0, 0, 0, 0.54)',
             transform: 'rotate(-45deg)',
         },
     },
     footerBlock: (theme: IobTheme) => ({
         background: theme.palette.background.default,
-        padding: 10,
+        p: '10px',
         display: 'flex',
         justifyContent: 'space-between',
     }),
@@ -141,8 +145,8 @@ const styles: Record<string, any> = {
         fontWeight: 'bold',
         fontSize: 16,
         verticalAlign: 'middle',
-        paddingLeft: 8,
-        paddingTop: 16,
+        pl: 1,
+        pt: 2,
         color: theme.palette.mode === 'dark' ? '#333' : '#333',
     }),
     adapterWithAgo: {
@@ -186,9 +190,6 @@ const styles: Record<string, any> = {
         alignItems: 'center',
     },
 
-    rating: {
-        marginTop: 20,
-    },
     versionWarn: {
         color: amber[500],
         marginRight: 5,
@@ -200,6 +201,8 @@ interface AdapterTileState extends AdapterGenericState {
 }
 
 class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> {
+    protected styles: Record<string, any> = styles;
+
     constructor(props: AdapterGenericProps) {
         super(props);
 
@@ -209,22 +212,22 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
     }
 
     renderInfoCard() {
-        return <div style={styles.collapse}>
-            <CardContent style={styles.cardContent}>
-                <div style={styles.cardContentDiv}>
+        return <div style={this.styles.collapse}>
+            <CardContent style={this.styles.cardContent}>
+                <div style={this.styles.cardContentDiv}>
                     <Box
                         component="div"
-                        sx={styles.close}
+                        sx={this.styles.close}
                         onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
                     />
                 </div>
-                <Typography gutterBottom component="span" variant="body2" sx={styles.description}>
+                <Typography gutterBottom component="span" variant="body2" sx={this.styles.description}>
                     {this.props.cached.desc}
                 </Typography>
             </CardContent>
-            <Box component="div" sx={styles.footerBlock}>
+            <Box component="div" sx={this.styles.footerBlock}>
                 {this.renderAddInstanceButton()}
-                <div style={styles.cardContentFlex}>
+                <div style={this.styles.cardContentFlex}>
                     {this.renderAutoUpgradeButton()}
                     {this.renderReadmeButton()}
                     {this.renderUploadButton()}
@@ -239,36 +242,39 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
         const available = this.props.context.repository[this.props.adapterName];
         const availableVersion = available?.version;
 
+
         return <Box
             component="div"
-            sx={{
-                ...styles.imageBlock,
-                ...(this.installedVersion ? styles.installed : undefined),
-                ...(this.installedVersion && availableVersion && this.installedVersion !== availableVersion && this.props.cached.updateAvailable ? styles.update : undefined),
-            }}
+            sx={Utils.getStyle(
+                this.props.context.theme,
+                this.styles.imageBlock,
+                this.installedVersion && this.styles.installed,
+                this.installedVersion && availableVersion && this.installedVersion !== availableVersion && this.props.cached.updateAvailable && this.styles.update,
+            )}
         >
             <CardMedia
-                sx={styles.img}
+                sx={this.styles.img}
                 component={(props: ImageProps) => this.renderImage(props)}
                 src={this.props.cached.image || 'img/no-image.png'}
                 image={this.props.cached.image || 'img/no-image.png'}
             />
             <Box
                 component="div"
-                sx={{
-                    ...styles.adapter,
-                    ...((available.stat || this.props.context.sortRecentlyUpdated) ? styles.adapterWithAgo : undefined),
-                }}
+                sx={Utils.getStyle(
+                    this.props.context.theme,
+                    this.styles.adapter,
+                    (available.stat || this.props.context.sortRecentlyUpdated) && this.styles.adapterWithAgo,
+                )}
             >
                 {this.props.adapterName}
             </Box>
-            {this.props.context.sortPopularFirst ? <div style={styles.versionDate}>{available.stat}</div> : null}
-            {this.props.context.sortRecentlyUpdated ? <div style={styles.versionDate}>{this.props.cached.daysAgoText}</div> : null}
+            {this.props.context.sortPopularFirst ? <div style={this.styles.versionDate}>{available.stat}</div> : null}
+            {this.props.context.sortRecentlyUpdated ? <div style={this.styles.versionDate}>{this.props.cached.daysAgoText}</div> : null}
             {!this.props.context.sortPopularFirst && !this.props.context.sortRecentlyUpdated ? this.renderRating() : null}
             {!this.state.openCollapse ? <Tooltip title={this.props.context.t('Info')}>
                 <Fab
                     onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
-                    style={styles.fab}
+                    style={this.styles.fab}
                     color="primary"
                     aria-label="add"
                 >
@@ -282,16 +288,16 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
         const allowAdapterUpdate = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate : true;
         const installed = this.props.context.installed[this.props.adapterName];
 
-        return <CardContent style={styles.cardContent2}>
+        return <CardContent style={this.styles.cardContent2}>
             <Typography gutterBottom variant="h5" component="h5">{this.props.cached.title}</Typography>
-            <div style={styles.cardContentFlex}>
+            <div style={this.styles.cardContentFlex}>
                 {this.renderConnectionType()}
                 {this.renderDataSource()}
                 <div>{this.renderLicenseInfo()}</div>
                 {this.renderSentryInfo()}
             </div>
-            <div style={styles.cardMargin10}>
-                {installed?.count ? <Typography component="span" style={styles.cardContentFlexBetween}>
+            <div style={this.styles.cardMargin10}>
+                {installed?.count ? <Typography component="span" style={this.styles.cardContentFlexBetween}>
                     <div>
                         {this.props.context.t('Installed instances')}
                         :
@@ -299,14 +305,15 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
                     <div>{installed.count}</div>
                 </Typography> : null}
                 <IsVisible value={allowAdapterUpdate}>
-                    <Typography component="span" style={styles.availableVersion}>
+                    <Typography component="span" style={this.styles.availableVersion}>
                         <div>{this.props.context.t('Available version:')}</div>
                         <Box
                             component="div"
-                            sx={{
-                                ...(this.props.cached.updateAvailable ? styles.greenText : undefined),
-                                ...styles.curdContentFlexCenter,
-                            }}
+                            sx={Utils.getStyle(
+                                this.props.context.theme,
+                                this.props.cached.updateAvailable && this.styles.greenText,
+                                this.styles.curdContentFlexCenter,
+                            )}
                         >
                             {this.renderVersion()}
                         </Box>
@@ -320,7 +327,7 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
     render(): React.JSX.Element {
         this.installedVersion = this.props.context.installed[this.props.adapterName]?.version;
 
-        return <Card sx={styles.root}>
+        return <Card sx={this.styles.root}>
             {this.state.openCollapse ? this.renderInfoCard() : null}
             {this.renderCardMedia()}
             {this.renderCardContent()}

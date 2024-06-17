@@ -199,7 +199,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                 disabled={!!disabled}
                 // MenuProps={this.props.schema.multiple ? { classes: { paper: this.props.classes.menuPaper } } : undefined}
                 sx={{
-                    '& .MuiSelect-paper': this.props.schema.multiple ? styles.menuPaper : undefined,
+                    '&.MuiSelect-paper': this.props.schema.multiple ? styles.menuPaper : undefined,
                 }}
                 value={value}
                 renderValue={val =>

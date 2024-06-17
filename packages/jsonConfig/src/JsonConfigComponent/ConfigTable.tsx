@@ -171,6 +171,9 @@ const styles: Record<string, React.CSSProperties> = {
         border: '2px solid red',
         boxSizing: 'border-box',
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 };
 
 function objectToArray(object: Record<string, any>, nameOfFirstAttr: string, nameOfSecondAttr?: string) {
@@ -460,7 +463,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         sortDirection={orderBy === headCell.attr ? order : false}
                     >
                         <div style={{ ...styles.flex, ...(schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined) }}>
-                            {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
+                            {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <span>
                                     <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
                                         <AddIcon />
@@ -973,22 +976,22 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                         {this.itemTable(headCell.attr, this.state.value[idx], idx)}
                                     </TableCell>)}
                                 {!schema.noDelete && <TableCell align="left" style={styles.buttonCell}>
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')}>
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
                                             <UpIcon />
                                         </IconButton>
                                     </Tooltip> : <div style={styles.buttonEmpty} />) : null}
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')}>
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={() => this.onMoveDown(idx)}>
                                             <DownIcon />
                                         </IconButton>
                                     </Tooltip> : <div style={styles.buttonEmpty} />) : null}
-                                    <Tooltip title={I18n.t('ra_Delete current row')}>
+                                    <Tooltip title={I18n.t('ra_Delete current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={this.onDelete(idx)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </Tooltip>
-                                    {this.props.schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')}>
+                                    {this.props.schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={this.onClone(idx)}>
                                             <CopyContentIcon />
                                         </IconButton>
@@ -998,7 +1001,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         {!schema.noDelete && visibleValue.length >= (schema.showSecondAddAt || 5) ?
                             <TableRow>
                                 <TableCell colSpan={schema.items.length + 1}>
-                                    <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
+                                    <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <span>
                                             <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
                                                 <AddIcon />

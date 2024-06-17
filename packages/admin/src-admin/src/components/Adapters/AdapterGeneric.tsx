@@ -1,7 +1,7 @@
 import React from 'react';
 import semver from 'semver';
 
-import { green, red } from '@mui/material/colors';
+import { amber, green, red } from '@mui/material/colors';
 
 import {
     CardMedia,
@@ -45,11 +45,12 @@ import AdapterInstallDialog, {
     type AdapterRatingInfo,
     type AdaptersContext,
 } from '@/components/Adapters/AdapterInstallDialog';
+import Utils from '@/components/Utils';
 import AutoUpgradeConfigDialog from '@/dialogs/AutoUpgradeConfigDialog';
 import sentryIcon from '../../assets/sentry.svg';
 import IsVisible from '../IsVisible';
 
-export const genericStyles = {
+export const genericStyles: Record<string, any> = {
     hidden: {
         display: 'none',
     },
@@ -106,9 +107,9 @@ export const genericStyles = {
     },
     currentVersion: (theme: IobTheme) => ({
         cursor: 'pointer',
-        marginBottom: 6,
-        marginRight: 8,
-        marginTop: 4,
+        mb: '6px',
+        mr: '8px',
+        mt: '4px',
         '&:hover': {
             background: theme.palette.primary.dark,
         },
@@ -116,7 +117,7 @@ export const genericStyles = {
     header: (theme: IobTheme) => ({
         fontWeight: 'bold',
         background: theme.palette.secondary.main,
-        padding: 10,
+        p: '10px',
     }),
     modalDialog: {
         height: 'calc(100% - 64px)',
@@ -126,6 +127,9 @@ export const genericStyles = {
         color: theme.palette.mode === 'dark' ? '#a3ffa3' : '#009800',
         fontWeight: 'bold',
     }),
+    rating: {
+        marginTop: 20,
+    },
     containerVersion: {
 
     },
@@ -133,7 +137,7 @@ export const genericStyles = {
 
     },
     versionWarn: {
-
+        color: amber[500],
     },
     cardContentFlexBetween: {
 
@@ -189,6 +193,8 @@ export interface ImageProps {
 export default abstract class AdapterGeneric<TProps extends AdapterGenericProps, TState extends AdapterGenericState> extends AdapterInstallDialog<TProps, TState> {
     protected installedVersion: string = '';
 
+    protected abstract styles: Record<string, any>;
+
     public constructor(props: TProps) {
         super(props);
 
@@ -229,11 +235,11 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         const allowAdapterInstall = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterInstall : true;
 
         return <IsVisible value={allowAdapterInstall}>
-            <Tooltip title={this.props.context.t('Add instance')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+            <Tooltip title={this.props.context.t('Add instance')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
                     disabled={this.props.context.commandRunning}
-                    style={!this.props.cached.rightOs ? genericStyles.hidden : undefined}
+                    style={!this.props.cached.rightOs ? this.styles.hidden : undefined}
                     onClick={this.props.cached.rightOs ? () => this.onAddInstance(this.props.adapterName, this.props.context) : undefined}
                 >
                     <AddIcon />
@@ -247,7 +253,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         if (!this.installedVersion) {
             return null;
         }
-        return <Tooltip title={this.props.context.t('Automatic Upgrade Policy')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return <Tooltip title={this.props.context.t('Automatic Upgrade Policy')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
                 onClick={() => this.setState({ autoUpgradeDialogOpen: true, showDialog: true })}
@@ -262,7 +268,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         const allowAdapterReadme = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterReadme : true;
 
         return <IsVisible value={allowAdapterReadme}>
-            <Tooltip title={this.props.context.t('Readme')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+            <Tooltip title={this.props.context.t('Readme')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
                     onClick={() => this.openInfoDialog()}
@@ -294,7 +300,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                 },
                 showDialog: true,
             })}
-            style={genericStyles.ratingSet}
+            style={{ ...this.styles.rating, ...this.styles.ratingSet }}
             title={this.props.context.repository[this.props.adapterName].rating?.title}
         >
             <Rating
@@ -313,14 +319,14 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         return connectionType === 'cloud' ?
             <Tooltip
                 title={this.props.context.t('Adapter requires the specific cloud access for these devices/service')}
-                sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
+                componentsProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <CloudIcon />
             </Tooltip> :
             (connectionType === 'local' ?
                 <Tooltip
                     title={this.props.context.t('Adapter does not use the cloud for these devices/service')}
-                    sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
+                    componentsProps={{ popper: { sx: this.styles.tooltip } }}
                 >
                     <CloudOffIcon />
                 </Tooltip> : <CloudOffIcon opacity={0} />);
@@ -329,21 +335,21 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderDataSource() {
         const dataSource = this.props.context.repository[this.props.adapterName]?.dataSource;
-        return dataSource ? <div style={genericStyles.marginLeft5}>
+        return dataSource ? <div style={this.styles.marginLeft5}>
             {(dataSource === 'poll' ?
-                <Tooltip title={this.props.context.t('The device or service will be periodically asked')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
-                    <ArrowUpwardIcon style={genericStyles.classPoll} />
+                <Tooltip title={this.props.context.t('The device or service will be periodically asked')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+                    <ArrowUpwardIcon style={this.styles.classPoll} />
                 </Tooltip> :
                 dataSource === 'push' ?
-                    <Tooltip title={this.props.context.t('The device or service delivers the new state actively')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
-                        <ArrowDownwardIcon style={genericStyles.classPush} />
+                    <Tooltip title={this.props.context.t('The device or service delivers the new state actively')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+                        <ArrowDownwardIcon style={this.styles.classPush} />
                     </Tooltip> :
                     dataSource === 'assumption' ?
                         <Tooltip
-                            sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
+                            componentsProps={{ popper: { sx: this.styles.tooltip } }}
                             title={this.props.context.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}
                         >
-                            <RemoveIcon style={genericStyles.classAssumption} />
+                            <RemoveIcon style={this.styles.classAssumption} />
                         </Tooltip> : null)}
         </div> : null;
     }
@@ -359,19 +365,19 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             sx={{ color: 'black', '&:hover': { color: 'black' } }}
         >
             {adapter.licenseInformation?.type === 'paid' ?
-                <Tooltip title={this.props.context.t('The adapter requires a paid license.')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+                <Tooltip title={this.props.context.t('The adapter requires a paid license.')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                     <MonetizationOn />
                 </Tooltip>
                 : adapter.licenseInformation?.type === 'commercial' ?
                     <Tooltip
-                        sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
+                        componentsProps={{ popper: { sx: this.styles.tooltip } }}
                         title={this.props.context.t('The adapter requires a paid license for commercial use.')}
                     >
                         <MonetizationOn opacity={0.5} />
                     </Tooltip>
                     : adapter.licenseInformation?.type === 'limited' ?
                         <Tooltip
-                            sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
+                            componentsProps={{ popper: { sx: this.styles.tooltip } }}
                             title={this.props.context.t('The adapter has a limited functionality without a paid license.')}
                         >
                             <MonetizationOn opacity={0.5} />
@@ -384,10 +390,10 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
     renderSentryInfo() {
         const sentry = this.props.context.repository[this.props.adapterName]?.plugins?.sentry;
 
-        return sentry ? <div style={genericStyles.marginLeft5}>
-            <Tooltip title="sentry" sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return sentry ? <div style={this.styles.marginLeft5}>
+            <Tooltip title="sentry" componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <CardMedia
-                    sx={genericStyles.sentry}
+                    style={this.styles.sentry}
                     component="img"
                     image={sentryIcon}
                 />
@@ -399,20 +405,20 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
     renderVersion() {
         const allowAdapterUpdate = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate : true;
 
-        return !this.props.context.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate ? <Tooltip title={this.props.context.t('Update')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return !this.props.context.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate ? <Tooltip title={this.props.context.t('Update')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <div
                 onClick={() => this.setState({ showUpdateDialog: true, showDialog: true })}
-                style={{ ...genericStyles.buttonUpdate, ...(this.props.cached.rightDependencies ? genericStyles.updateAvailable : undefined) }}
+                style={{ ...this.styles.buttonUpdate, ...(this.props.cached.rightDependencies ? this.styles.updateAvailable : undefined) }}
             >
                 <IconButton
-                    style={genericStyles.buttonUpdateIcon}
+                    style={this.styles.buttonUpdateIcon}
                     size="small"
                 >
                     <RefreshIcon />
                 </IconButton>
                 {this.props.context.repository[this.props.adapterName].version}
             </div>
-        </Tooltip> : <span style={this.props.cached.rightDependencies ? undefined : genericStyles.wrongDependencies}>
+        </Tooltip> : <span style={this.props.cached.rightDependencies ? undefined : this.styles.wrongDependencies}>
             {this.props.context.repository[this.props.adapterName].version}
         </span>;
     }
@@ -439,27 +445,27 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                     {this.installedVersion + (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')}
                 </Grid> : null}
                 {installedFrom && !installedFrom.startsWith(`iobroker.${adapterName}@`) && <Grid item container>
-                    <Tooltip title={this.props.context.t('Non-NPM-Version: ') + installedFrom} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+                    <Tooltip title={this.props.context.t('Non-NPM-Version: ') + installedFrom} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                         <GitHubIcon
                             fontSize="small"
-                            style={genericStyles.versionWarn}
+                            style={this.styles.versionWarn}
                         />
                     </Tooltip>
                 </Grid>}
             </Grid>;
         }
 
-        return this.installedVersion ? <Typography component="span" style={genericStyles.cardContentFlexBetween}>
+        return this.installedVersion ? <Typography component="span" style={this.styles.cardContentFlexBetween}>
             <div>
                 {this.props.context.t('Installed version')}
                 :
             </div>
-            <div style={genericStyles.cardContentFlex}>
+            <div style={this.styles.cardContentFlex}>
                 {installedFrom && !installedFrom.startsWith(`iobroker.${adapterName}@`) &&
-                    <Tooltip title={this.props.context.t('Non-NPM-Version: ') + installedFrom} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+                    <Tooltip title={this.props.context.t('Non-NPM-Version: ') + installedFrom} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                         <GitHubIcon
                             fontSize="small"
-                            style={genericStyles.versionWarn}
+                            style={this.styles.versionWarn}
                         />
                     </Tooltip>}
                 {this.installedVersion}
@@ -469,7 +475,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderUploadButton() {
-        return this.props.context.expertMode && this.installedVersion && <Tooltip title={this.props.context.t('Upload')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return this.props.context.expertMode && this.installedVersion && <Tooltip title={this.props.context.t('Upload')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
                 disabled={this.props.context.commandRunning}
@@ -485,7 +491,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         const allowAdapterDelete = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterDelete : true;
 
         return <IsVisible value={!!this.installedVersion && allowAdapterDelete}>
-            <Tooltip title={this.props.context.t('Delete adapter')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+            <Tooltip title={this.props.context.t('Delete adapter')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
                     disabled={this.props.context.commandRunning}
@@ -501,7 +507,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
     renderInstallSpecificVersionButton() {
         const allowAdapterUpdate = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate : true;
 
-        return this.props.context.expertMode && allowAdapterUpdate !== false && this.installedVersion && <Tooltip title={this.props.context.t('Install a specific version')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return this.props.context.expertMode && allowAdapterUpdate !== false && this.installedVersion && <Tooltip title={this.props.context.t('Install a specific version')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 disabled={this.props.context.commandRunning}
                 size="small"
@@ -609,7 +615,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             noTranslation={this.props.context.noTranslation}
         >
             <div style={{ height: '100%', overflowY: 'hidden' }}>
-                <div style={genericStyles.containerSpecificVersion}>
+                <div style={this.styles.containerSpecificVersion}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <TextField
                             variant="standard"
@@ -648,7 +654,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                             {this.props.context.t('Install')}
                         </Button>
                     </div>
-                    <Tooltip title={this.props.context.t('npmjs.com')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+                    <Tooltip title={this.props.context.t('npmjs.com')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                         <IconButton
                             size="small"
                             onClick={() => {
@@ -659,14 +665,14 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                         </IconButton>
                     </Tooltip>
                 </div>
-                <Box component="div" sx={genericStyles.header}>{this.props.context.t('Or select from the list')}</Box>
+                <Box component="div" sx={this.styles.header}>{this.props.context.t('Or select from the list')}</Box>
                 <div
-                    style={{ ...genericStyles.containerVersion, height: 'calc(100% - 122px)', overflowY: 'auto' }}
+                    style={{ ...this.styles.containerVersion, height: 'calc(100% - 122px)', overflowY: 'auto' }}
                 >
                     {this.getNews(true).map(({ version, news }) => <Card
                         variant="outlined"
                         key={version}
-                        sx={genericStyles.currentVersion}
+                        sx={this.styles.currentVersion}
                         onClick={() => {
                             this.update(version);
                             this.setState({ showInstallVersion: false, showDialog: false });
@@ -674,17 +680,17 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                     >
                         <CardContent>
                             <Typography
-                                sx={{
-                                    ...(this.installedVersion === version ? genericStyles.currentVersionText : undefined),
-                                    fontSize: 16,
-                                    fontWeight: 'bold',
-                                }}
+                                sx={Utils.getStyle(
+                                    this.props.context.theme,
+                                    this.installedVersion === version && this.styles.currentVersionText,
+                                    { fontSize: 16, fontWeight: 'bold' },
+                                )}
                                 color="text.secondary"
                                 gutterBottom
                             >
                                 {version}
                                 {this.installedVersion === version ?
-                                    <Box component="span" sx={genericStyles.currentVersionText}>{`(${this.props.context.t('current')})`}</Box> : ''}
+                                    <Box component="span" sx={this.styles.currentVersionText}>{`(${this.props.context.t('current')})`}</Box> : ''}
                             </Typography>
                             <Typography variant="body2" style={{ opacity: 0.7 }}>
                                 {AdapterGeneric.formatNews(news)}

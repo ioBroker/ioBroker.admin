@@ -1334,7 +1334,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         const fullWidth = obj.type !== 'state' || (obj.common.type !== 'number' && obj.common.type !== 'boolean');
 
         return <Dialog
-            sx={{ '& .MuiDialog-paper': styles.dialog }}
+            sx={{ '& .MuiPaper-root': styles.dialog }}
             open={!0}
             maxWidth="lg"
             fullWidth={fullWidth}

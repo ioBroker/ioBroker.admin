@@ -51,7 +51,7 @@ const styles: Record<string, any> = {
     }),
     errorText: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#e39191' : '#b62020',
-        marginBottom: 30,
+        mb: '30px',
     }),
 };
 

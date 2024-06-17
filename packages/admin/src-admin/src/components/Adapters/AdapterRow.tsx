@@ -16,6 +16,9 @@ import AdapterGeneric, {
 
 const styles: Record<string, any> = {
     ...genericStyles,
+    type: {
+        color: 'line',
+    },
     smallAvatar: {
         width: 32,
         height: 32,
@@ -39,6 +42,8 @@ const styles: Record<string, any> = {
 };
 
 class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState> {
+    protected styles: Record<string, any> = styles;
+
     render() {
         const adapter = this.props.context.repository[this.props.adapterName];
 
@@ -49,19 +54,19 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
         return <TableRow hover>
             <TableCell />
             <TableCell>
-                <Grid container spacing={1} alignItems="center" style={styles.name}>
+                <Grid container spacing={1} alignItems="center" style={this.styles.name}>
                     <Tooltip title={this.props.adapterName}>
-                        <Grid item style={styles.paddingNone}>
+                        <Grid item style={this.styles.paddingNone}>
                             <Avatar
                                 variant="square"
                                 alt={this.props.cached.title}
                                 src={this.props.cached.image}
-                                style={styles.smallAvatar}
+                                style={this.styles.smallAvatar}
                             />
                         </Grid>
                     </Tooltip>
                     {allowAdapterRating !== false ?
-                        <Grid item style={styles.nameCell}>
+                        <Grid item style={this.styles.nameCell}>
                             <div>{this.props.cached.title}</div>
                             {this.renderRating()}
                         </Grid>
@@ -70,9 +75,9 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
                 </Grid>
             </TableCell>
             {!this.props.context.descHidden &&
-                <TableCell title={this.props.cached.desc} sx={{ width: 20, wordWrap: 'break-word' }}>{this.props.cached.desc}</TableCell>}
+                <TableCell title={this.props.cached.desc} style={{ width: 20, wordWrap: 'break-word' }}>{this.props.cached.desc}</TableCell>}
             <TableCell>
-                <div style={styles.flex}>
+                <div style={this.styles.flex}>
                     {this.renderConnectionType()}
                     {this.renderDataSource()}
                     <div>{this.renderLicenseInfo()}</div>

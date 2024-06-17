@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import { type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemStaticDivider } from '#JC/types';
+import Utils from '#JC/Utils';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, any> = {
@@ -29,14 +30,14 @@ class ConfigStaticDivider extends ConfigGeneric<ConfigInstanceSelectProps, Confi
     renderItem(/* error: string, disabled: boolean , defaultValue */) {
         return <Box
             component="hr"
-            sx={{
-                ...styles.fullWidth,
-                ...(this.props.schema.color === 'primary' ? styles.primary : (this.props.schema.color === 'secondary' ? styles.secondary : undefined)),
-                height: this.props.schema.color ? this.props.schema.height || 2 : this.props.schema.height || 1,
-            }}
-            style={{
-                backgroundColor: this.props.schema.color !== 'primary' && this.props.schema.color !== 'secondary' && this.props.schema.color ? this.props.schema.color : undefined,
-            }}
+            sx={Utils.getStyle(
+                styles.fullWidth,
+                this.props.schema.color === 'primary' ? styles.primary : (this.props.schema.color === 'secondary' && styles.secondary),
+                {
+                    height: this.props.schema.color ? this.props.schema.height || 2 : this.props.schema.height || 1,
+                    backgroundColor: this.props.schema.color !== 'primary' && this.props.schema.color !== 'secondary' && this.props.schema.color ? this.props.schema.color : undefined,
+                },
+            )}
         />;
     }
 }

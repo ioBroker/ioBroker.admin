@@ -91,7 +91,7 @@ const CustomModal = ({
         fullWidth={!!fullWidth}
         disableEscapeKeyDown={false}
         onClose={onClose}
-        sx={{ '& .MuiDialog-paper': styles.modalDialog /* paper: classes.background */ }}
+        sx={{ '& .MuiPaper-root': styles.modalDialog /* paper: classes.background */ }}
     >
         {title && <DialogTitle>
             {icon ?

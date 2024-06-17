@@ -50,7 +50,7 @@ const styles: Record<string, any> = {
     toVersion: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#00dc00' : '#008100',
         fontWeight: 'bold',
-        marginLeft: 4,
+        ml: '4px',
     }),
     updateDone: {
         background: '#5ef05e80',
@@ -86,8 +86,8 @@ const styles: Record<string, any> = {
     }),
     versionHeader: (theme: IobTheme) => ({
         background: '#4dabf5',
-        borderRadius: 3,
-        paddingLeft: 10,
+        borderRadius: '3px',
+        pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),

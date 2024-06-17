@@ -105,7 +105,7 @@ const styles: Record<string, any> = {
         color: '#000',
         fontSize: 14,
         padding: '2px 8px',
-        borderRadius: 5,
+        borderRadius: '5px',
     }),
     viewModeDiv: {
         display: 'flex',

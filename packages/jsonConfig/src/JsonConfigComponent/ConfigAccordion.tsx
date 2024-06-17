@@ -20,6 +20,7 @@ import {
 import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemAccordion, ConfigItemIndexed, ConfigItemPanel } from '#JC/types';
+import Utils from '#JC/Utils';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 // eslint-disable-next-line import/no-cycle
@@ -239,29 +240,29 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                 <Accordion key={`${idx}_${i}`} expanded={this.state.activeIndex === i} onChange={(e, expanded) => { this.setState({ activeIndex: expanded ? i : -1 }); }}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
-                        sx={{ ...styles.fullWidth, ...styles.accordionSummary }}
+                        sx={Utils.getStyle(styles.fullWidth, styles.accordionSummary)}
                     >
-                        <Typography sx={styles.accordionTitle}>{idx[schema.titleAttr]}</Typography>
+                        <Typography style={styles.accordionTitle}>{idx[schema.titleAttr]}</Typography>
                     </AccordionSummary>
                     <AccordionDetails style={({ ...schema.style, ...(this.props.themeType ? schema.darkStyle : {}) })}>
                         {this.itemAccordion(value[i], i)}
                         <Toolbar sx={styles.toolbar}>
-                            {i ? <Tooltip title={I18n.t('ra_Move up')} sx={{ '& .Tooltip-popper': styles.tooltip }}>
+                            {i ? <Tooltip title={I18n.t('ra_Move up')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={() => this.onMoveUp(i)}>
                                     <UpIcon />
                                 </IconButton>
                             </Tooltip> : <div style={styles.buttonEmpty} />}
-                            {i < value.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} sx={{ '& .Tooltip-popper': styles.tooltip }}>
+                            {i < value.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={() => this.onMoveDown(i)}>
                                     <DownIcon />
                                 </IconButton>
                             </Tooltip> : <div style={styles.buttonEmpty} />}
-                            {!schema.noDelete ? <Tooltip title={I18n.t('ra_Delete current row')} sx={{ '& .Tooltip-popper': styles.tooltip }}>
+                            {!schema.noDelete ? <Tooltip title={I18n.t('ra_Delete current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={this.onDelete(i)}>
                                     <DeleteIcon />
                                 </IconButton>
                             </Tooltip> : null}
-                            {schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} sx={{ '& .Tooltip-popper': styles.tooltip }}>
+                            {schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={this.onClone(i)}>
                                     <CopyContentIcon />
                                 </IconButton>

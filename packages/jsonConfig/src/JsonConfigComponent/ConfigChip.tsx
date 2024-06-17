@@ -34,7 +34,7 @@ class ConfigChip extends ConfigGeneric<ConfigChipProps, ConfigGenericState> {
     renderItem(error: string, disabled: boolean): React.JSX.Element | null {
         const { attr, schema } = this.props;
         const { value } = this.state;
-        return <FormControl style={styles.fullWidth} variant="standard">
+        return <FormControl fullWidth variant="standard">
             <ChipInput
                 value={value}
                 disabled={!!disabled}
