@@ -17,8 +17,10 @@ import {
 
 import {
     Utils, Icon, type Translate,
-    type ThemeType,
+    type ThemeType, type IobTheme,
 } from '@iobroker/adapter-react-v5';
+
+import LocalUtils from '../Utils';
 
 interface GroupBlockProps {
     t: Translate;
@@ -30,6 +32,7 @@ interface GroupBlockProps {
     getText: (text: ioBroker.StringOrTranslated) => string;
     themeType: ThemeType;
     styles: Record<string, any>;
+    theme: IobTheme;
 }
 
 function canMeDrop(monitor: DropTargetMonitor<{userId: ioBroker.ObjectIDs.User}>, props: GroupBlockProps) {
@@ -69,7 +72,7 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
     return <Card
         style={style}
         ref={drop}
-        sx={{ ...props.styles.userGroupCard2, ...backgroundColor }}
+        sx={LocalUtils.getStyle(props.theme, props.styles.userGroupCard2, backgroundColor)}
     >
         <div style={props.styles.right}>
             <IconButton size="small" onClick={() => props.showGroupEditDialog(props.group, false)}>

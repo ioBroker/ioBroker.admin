@@ -7,7 +7,10 @@ import { Box, Card } from '@mui/material';
 
 import { List as ListIcon } from '@mui/icons-material';
 
-import { type AdminConnection, Icon, type Translate } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, Icon,
+    type IobTheme, type Translate,
+} from '@iobroker/adapter-react-v5';
 
 import ObjectBrowser, {
     type TreeItemData,
@@ -44,6 +47,7 @@ interface DragObjectBrowserProps {
     addItemToEnum: (id: string, enumId: string) => void;
     stylesParent: Record<string, React.CSSProperties>;
     getName: (name: string | Record<string, string>) => string;
+    theme: IobTheme;
 }
 
 const DragObjectBrowser = (props: DragObjectBrowserProps) => {
@@ -126,6 +130,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps) => {
         columns={['name', 'type', 'role', 'room', 'func']}
         lang={props.lang}
         dragEnabled
+        theme={props.theme}
         DragWrapper={wrapperState.DragWrapper}
         setObjectsReference={(objects: Record<string, ioBroker.Object>) => objectRef.current = objects}
         levelPadding={10}

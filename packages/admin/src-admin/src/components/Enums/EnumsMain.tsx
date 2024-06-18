@@ -197,6 +197,7 @@ interface EnumsListProps {
     t: Translate;
     lang: ioBroker.Languages;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 interface EnumEditDialog {
@@ -624,6 +625,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                 socket={this.props.socket}
                 t={this.props.t}
                 themeType={this.props.themeType}
+                theme={this.props.theme}
                 toggleEnum={this.toggleEnum}
                 updating={this.state.updating.includes(container.id)}
             >
@@ -770,6 +772,45 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             this.searchTimer = null;
             this.setState({ search: _text.toLowerCase() });
         }, isClear ? 0 : 300, filter);
+    }
+
+    renderEditDialog() {
+        return this.state.enumEditDialog ? <EnumEditDialog
+            onClose={() => this.setState({ enumEditDialog: null })}
+            enums={Object.values(this.state.enums)}
+            enum={this.state.enumEditDialog.newItem}
+            getName={this.getName}
+            isNew={this.state.enumEditDialog.isNew}
+            t={this.props.t}
+            lang={this.props.lang}
+            changed={this.state.enumEditDialog.changed}
+            onChange={this.changeEnumFormData}
+            saveData={this.saveEnum}
+            innerWidth={this.state.innerWidth}
+        /> : null;
+    }
+
+    renderDeleteDialog() {
+        return this.state.enumDeleteDialog ? <EnumDeleteDialog
+            onClose={() => this.setState({ enumDeleteDialog: null })}
+            enum={this.state.enumDeleteDialog}
+            getName={this.getName}
+            t={this.props.t}
+            deleteEnum={this.deleteEnum}
+        /> : null;
+    }
+
+    renderTemplateDialog() {
+        return !!this.state.enumTemplateDialog ? <EnumTemplateDialog
+            prefix={this.state.enumTemplateDialog}
+            onClose={() => this.setState({ enumTemplateDialog: null })}
+            t={this.props.t}
+            lang={this.props.lang}
+            createEnumTemplate={this.createEnumTemplate}
+            showEnumEditDialog={this.showEnumEditDialog}
+            enums={this.state.enums}
+            getEnumTemplate={this.getEnumTemplate}
+        /> : null;
     }
 
     render() {
@@ -963,41 +1004,15 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 t={this.props.t}
                                 socket={this.props.socket}
                                 lang={this.props.lang}
+                                theme={this.props.theme}
                             />
                         </div>
                     </div>
                 </ReactSplit>
             </DndProvider>
-            {this.state.enumEditDialog ? <EnumEditDialog
-                onClose={() => this.setState({ enumEditDialog: null })}
-                enums={Object.values(this.state.enums)}
-                enum={this.state.enumEditDialog.newItem}
-                getName={this.getName}
-                isNew={this.state.enumEditDialog.isNew}
-                t={this.props.t}
-                lang={this.props.lang}
-                changed={this.state.enumEditDialog.changed}
-                onChange={this.changeEnumFormData}
-                saveData={this.saveEnum}
-                innerWidth={this.state.innerWidth}
-            /> : null}
-            {this.state.enumDeleteDialog ? <EnumDeleteDialog
-                onClose={() => this.setState({ enumDeleteDialog: null })}
-                enum={this.state.enumDeleteDialog}
-                getName={this.getName}
-                t={this.props.t}
-                deleteEnum={this.deleteEnum}
-            /> : null}
-            {!!this.state.enumTemplateDialog && <EnumTemplateDialog
-                prefix={this.state.enumTemplateDialog}
-                onClose={() => this.setState({ enumTemplateDialog: null })}
-                t={this.props.t}
-                lang={this.props.lang}
-                createEnumTemplate={this.createEnumTemplate}
-                showEnumEditDialog={this.showEnumEditDialog}
-                enums={this.state.enums}
-                getEnumTemplate={this.getEnumTemplate}
-            />}
+            {this.renderEditDialog()}
+            {this.renderDeleteDialog()}
+            {this.renderTemplateDialog()}
         </>;
     }
 }

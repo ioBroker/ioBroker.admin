@@ -24,7 +24,10 @@ import {
     KeyboardArrowUp as UpIcon,
     Add as AddIcon,
 } from '@mui/icons-material';
-import { FaRegFolder as IconCollapsed, FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
+import {
+    FaRegFolder as IconCollapsed,
+    FaRegFolderOpen as IconExpanded,
+} from 'react-icons/fa';
 
 import {
     Utils,
@@ -37,6 +40,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { type DragItem } from './DragObjectBrowser';
+import LocalUtils from '../Utils';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
@@ -44,7 +48,7 @@ const styles: Record<string, any> = {
     enumGroupCard: (theme: IobTheme) => ({
         border: '1px solid #FFF',
         borderColor: theme.palette.divider,
-        margin: 10,
+        m: '10px',
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         transition: 'all 200ms ease-out',
@@ -118,8 +122,8 @@ const styles: Record<string, any> = {
     },
     enumGroupMember: (theme: IobTheme) => ({
         display: 'inline-flex',
-        margin: 4,
-        padding: 4,
+        m: '4px',
+        p: '4px',
         backgroundColor: '#00000010',
         border: '1px solid #FFF',
         borderColor: theme.palette.text.primary, // it was hint...
@@ -196,6 +200,7 @@ interface EnumBlockProps {
     showEnumDeleteDialog: (category: ioBroker.EnumObject) => void;
     copyEnum: (id: string) => void;
     getName: (name: ioBroker.StringOrTranslated) => string;
+    theme: IobTheme;
     closed: boolean;
     collapsed: boolean;
     toggleEnum: (id: string) => void;
@@ -365,11 +370,12 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
 
         return <Card
             style={style}
-            sx={{
-                ...styles.enumGroupCard,
-                ...(this.props.updating ? styles.enumUpdating : undefined),
-                ...(!props.collapsed ? styles.enumGroupCardExpanded : undefined),
-            }}
+            sx={LocalUtils.getStyle(
+                this.props.theme,
+                styles.enumGroupCard,
+                this.props.updating && styles.enumUpdating,
+                !props.collapsed && styles.enumGroupCardExpanded,
+            )}
             id={props.id}
         >
             <div style={styles.enumCardContent}>
@@ -515,6 +521,7 @@ interface EnumBlockDragProps {
     socket: AdminConnection;
     t: (text: string, arg1?: any, arg2?: any) => string;
     themeType: ThemeType;
+    theme: IobTheme;
     toggleEnum: (enumId: string) => void;
     updating: boolean;
     children: number;
@@ -549,8 +556,7 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
             enumId: props.id,
             preview: <div
                 style={{
-                    // @ts-expect-error I do not understand, why this error here
-                    width: widthRef.current === undefined ? 50 : widthRef.current.offsetWidth,
+                    width: widthRef.current === undefined ? 50 : (widthRef.current?.offsetWidth || 50),
                 }}
             >
                 <EnumBlock {...props} />

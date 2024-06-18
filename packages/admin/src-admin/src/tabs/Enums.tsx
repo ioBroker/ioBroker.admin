@@ -1,7 +1,7 @@
 import React from 'react';
 
 import type {
-    AdminConnection, ThemeType, Translate,
+    AdminConnection, IobTheme, ThemeType, Translate,
 } from '@iobroker/adapter-react-v5';
 
 import EnumsMain from '../components/Enums/EnumsMain';
@@ -13,6 +13,7 @@ interface EnumsProps {
     lang: ioBroker.Languages;
     socket: AdminConnection;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 function Enums(props: EnumsProps): React.JSX.Element {
@@ -23,6 +24,7 @@ function Enums(props: EnumsProps): React.JSX.Element {
                 t={props.t}
                 lang={props.lang}
                 themeType={props.themeType}
+                theme={props.theme}
             />
         </TabContent>
     </TabContainer>;

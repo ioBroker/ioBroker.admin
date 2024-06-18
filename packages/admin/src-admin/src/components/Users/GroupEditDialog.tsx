@@ -143,7 +143,7 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-    contentRoot:{
+    contentRoot: {
         padding: '16px 24px',
     },
 };
@@ -320,7 +320,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
         </DialogTitle>
         <DialogContent
             sx={{
-                '& .MuiDialogContent-root': {
+                '&.MuiDialogContent-root': {
                     ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined),
                     ...styles.contentRoot,
                 },

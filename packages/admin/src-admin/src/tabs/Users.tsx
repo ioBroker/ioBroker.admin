@@ -1,6 +1,9 @@
 import React from 'react';
 
-import type { AdminConnection, ThemeType, Translate } from '@iobroker/adapter-react-v5';
+import type {
+    AdminConnection, IobTheme,
+    ThemeType, Translate,
+} from '@iobroker/adapter-react-v5';
 
 import UsersList from '../components/Users/UsersList';
 import TabContainer from '../components/TabContainer';
@@ -13,6 +16,7 @@ interface UsersProps {
     ready: boolean;
     expertMode: boolean;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 export default function Users(props: UsersProps) {
@@ -31,6 +35,7 @@ export default function Users(props: UsersProps) {
                 ready={props.ready}
                 expertMode={props.expertMode}
                 themeType={props.themeType}
+                theme={props.theme}
             />
         </TabContent>
     </TabContainer>;

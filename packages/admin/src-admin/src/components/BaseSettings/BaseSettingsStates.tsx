@@ -54,7 +54,7 @@ const styles: Record<string, any> = {
         marginLeft: -1,
     },
     warning: (theme: IobTheme) => ({
-        padding: 8,
+        p: 1,
         fontSize: 14,
         color: theme.palette.mode === 'dark' ? '#ffa500' : '#b17200',
     }),

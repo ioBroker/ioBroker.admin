@@ -57,7 +57,7 @@ const styles: Record<string, any> = {
     userGroupCard2: (theme: IobTheme) => ({
         border: '1px solid #FFF',
         borderColor: theme.palette.divider,
-        margin:    10,
+        m: '10px',
         minHeight: 150,
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
@@ -75,8 +75,8 @@ const styles: Record<string, any> = {
     }),
     permHeaders: (theme: IobTheme) => ({
         backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.primary.main,
-        padding: 4,
-        borderRadius: 2,
+        p: '4px',
+        borderRadius: '2px',
         color: '#EEE',
     }),
     userCardContent: {
@@ -103,8 +103,8 @@ const styles: Record<string, any> = {
     },
     userGroupMember: (theme: IobTheme) => ({
         display: 'inline-flex',
-        margin: 4,
-        padding: 4,
+        m: '4px',
+        p: '4px',
         backgroundColor: '#00000010',
         border: '1px solid #FFF',
         borderColor: theme.palette.text.primary,
@@ -154,15 +154,15 @@ const styles: Record<string, any> = {
     descriptionPanel: (theme: IobTheme) => ({
         width: '100%',
         backgroundColor: 'transparent',
-        marginBottom: 20,
-        marginTop: 20,
-        marginLeft: 20,
+        mb: '20px',
+        mt: '20px',
+        ml: '20px',
         opacity: 0.75,
         border: 'none',
         display: 'flex',
         alignItems: 'center',
         '& a': {
-            paddingLeft: 3,
+            pl: '3px',
             color: theme.palette.mode === 'dark' ? '#EEE' : '#111',
         },
     }),
@@ -300,6 +300,7 @@ interface UsersListProps {
     ready: boolean;
     expertMode: boolean;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 interface UsersListState {

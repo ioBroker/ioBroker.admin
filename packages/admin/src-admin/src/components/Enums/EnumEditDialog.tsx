@@ -25,7 +25,8 @@ import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 import type { EnumCommon } from './EnumBlock';
 
 const styles: Record<string, React.CSSProperties> = {
-    contentRoot:{
+    contentRoot: {
+        // it is sx
         padding: '16px 24px',
     },
     dialogTitle: {
@@ -112,7 +113,7 @@ function EnumEditDialog(props: EnumEditDialogProps) {
         <DialogTitle style={{ ...styles.dialogTitle, padding: 12 }}>
             {props.t('Enum parameters')}
         </DialogTitle>
-        <DialogContent sx={{ '& .MuiDialogContent-root': styles.contentRoot }}>
+        <DialogContent sx={{ '&.MuiDialogContent-root': styles.contentRoot }}>
             <Grid container spacing={2} style={styles.dialog}>
                 <Grid item xs={12} md={6}>
                     <IOTextField

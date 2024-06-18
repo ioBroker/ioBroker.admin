@@ -1871,6 +1871,7 @@ class App extends Router<AppProps, AppState> {
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         themeType={this.state.themeType}
+                        theme={this.state.theme}
                     />
                 </Suspense>;
             }
@@ -1882,6 +1883,7 @@ class App extends Router<AppProps, AppState> {
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         themeType={this.state.themeType}
+                        theme={this.state.theme}
                     />
                 </Suspense>;
             }

@@ -127,7 +127,7 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
         </DialogTitle>
         <DialogContent
             sx={{
-                '& .MuiDialogContent-root': { ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined), ...styles.contentRoot },
+                '&.MuiDialogContent-root': { ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined), ...styles.contentRoot },
             }}
         >
             <Grid container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
