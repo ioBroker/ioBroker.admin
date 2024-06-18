@@ -95,8 +95,7 @@ class Files extends Component<FilesProps> {
                         if (item && item.file && item.acl) {
                             context.updateItemsAcl([{
                                 id: `${adapter}/${item.path ? `${item.path}/` : ''}${item.file}`,
-                                // @ts-expect-error fix later
-                                acl: item.acl,
+                                acl: item.acl as ioBroker.EvaluatedFileACL,
                                 level: 0,         // not used
                                 name: '', // not used
                                 folder: false,    // not used
@@ -136,6 +135,7 @@ class Files extends Component<FilesProps> {
                     ready={this.props.ready}
                     socket={this.props.socket}
                     themeType={this.props.themeType}
+                    theme={this.props.theme}
                     lang={this.props.lang}
                     t={this.props.t}
                     showToolbar

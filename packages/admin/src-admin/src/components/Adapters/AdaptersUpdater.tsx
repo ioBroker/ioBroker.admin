@@ -28,8 +28,7 @@ import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import { checkCondition, type RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
-import LocalUtils from '../Utils';
-import Utils from "../Utils";
+import Utils from '../Utils';
 
 interface GetNewsResultEntry {
     version: string;
@@ -347,9 +346,9 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         if (this.state.showNews) {
             const news = this.getReactNews(this.state.showNews.adapter, this.state.showNews.fromVersion);
 
-            const closeButton = LocalUtils.getStyle(this.props.theme, styles.closeButton);
+            const closeButton = Utils.getStyle(this.props.theme, styles.closeButton);
 
-            const languageButtonActive = LocalUtils.getStyle(this.props.theme, styles.languageButtonActive);
+            const languageButtonActive = Utils.getStyle(this.props.theme, styles.languageButtonActive);
 
             return <Dialog
                 onClose={() => this.setState({ showNews: null })}

@@ -548,7 +548,7 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
         }),
     }), [props.enum?.common?.members]);
 
-    const widthRef = useRef();
+    const widthRef = useRef(null);
 
     const [{ isDragging }, dragRef, preview] = useDrag({
         type: 'enum',
@@ -556,7 +556,7 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
             enumId: props.id,
             preview: <div
                 style={{
-                    width: widthRef.current === undefined ? 50 : (widthRef.current?.offsetWidth || 50),
+                    width: widthRef.current?.offsetWidth || 50,
                 }}
             >
                 <EnumBlock {...props} />

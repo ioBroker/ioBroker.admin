@@ -245,7 +245,6 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
         const available = this.props.context.repository[this.props.adapterName];
         const availableVersion = available?.version;
 
-
         return <Box
             component="div"
             sx={Utils.getStyle(

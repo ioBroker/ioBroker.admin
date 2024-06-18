@@ -240,7 +240,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                 <Accordion key={`${idx}_${i}`} expanded={this.state.activeIndex === i} onChange={(e, expanded) => { this.setState({ activeIndex: expanded ? i : -1 }); }}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
-                        sx={Utils.getStyle(styles.fullWidth, styles.accordionSummary)}
+                        sx={Utils.getStyle(this.props.theme, styles.fullWidth, styles.accordionSummary)}
                     >
                         <Typography style={styles.accordionTitle}>{idx[schema.titleAttr]}</Typography>
                     </AccordionSummary>
