@@ -91,6 +91,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (bluefox) Working on Json-Custom-Components
+* (foxriver76) on js-controller updater correctly determine the ip of slave hosts
+* (foxriver76) removed "@iobroker/types" from production dependencies
 
 ### 7.0.1 (2024-06-10)
 * (bluefox) Because of the breaking change in GUI components, the GUI was updated. Users will see no difference, but developers should check their packages.

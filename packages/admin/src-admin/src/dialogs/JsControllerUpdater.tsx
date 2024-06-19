@@ -49,7 +49,7 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
 
     private link: string;
 
-    private intervall: ReturnType<typeof setTimeout> | null;
+    private interval: ReturnType<typeof setTimeout> | null;
 
     private startTimeout: ReturnType<typeof setTimeout> | null;
 
@@ -86,7 +86,7 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
         }
 
         // we are updating some slave => try to find the common ip address
-        const host = await this.props.socket.getObject(`system.host.${this.props.hostId}`);
+        const host = await this.props.socket.getObject(this.props.hostId);
         const settings = await this.props.socket.readBaseSettings(this.props.hostId);
         let hostIp = settings?.config?.objects?.host;
 
@@ -140,7 +140,7 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
             ))
             .then(() => {
                 this.setUpdating(true);
-                this.intervall = setInterval(() => this.checkStatus(), 1_000); // poll every second
+                this.interval = setInterval(() => this.checkStatus(), 1_000); // poll every second
 
                 this.startTimeout = setTimeout(() => {
                     this.startTimeout = null;
@@ -155,8 +155,8 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
     }
 
     componentWillUnmount() {
-        this.intervall && clearInterval(this.intervall);
-        this.intervall = null;
+        this.interval && clearInterval(this.interval);
+        this.interval = null;
 
         this.startTimeout && clearTimeout(this.startTimeout);
         this.startTimeout = null;
@@ -195,8 +195,8 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
             this.setState({ response, error: null }, () => {
                 if (response && !response.running) {
                     this.setUpdating(false);
-                    this.intervall && clearInterval(this.intervall);
-                    this.intervall = null;
+                    this.interval && clearInterval(this.interval);
+                    this.interval = null;
                 } else if (response?.running) {
                     this.setUpdating(true);
                 }
