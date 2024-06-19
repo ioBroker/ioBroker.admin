@@ -43,16 +43,16 @@ jobs:
           npm i -f
 
       - name: 'Lint Backend'
-        run: npm run -w packages/admin lint
+        run: npm run lint-backend -w packages/admin
 
       - name: 'Build backend'
         run: npm run build:ts -w packages/admin
 
       - name: 'Build JsonConfig'
-        run: npm run build -w packages/jsonConfig/
+        run: npm run build -w packages/jsonConfig
 
       - name: 'Build dm-gui-components'
-        run: npm run build -w packages/dm-gui-components/
+        run: npm run build -w packages/dm-gui-components
 
       - name: Check TypeScript files
         run: |
