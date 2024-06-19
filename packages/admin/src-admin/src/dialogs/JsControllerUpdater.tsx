@@ -26,6 +26,15 @@ interface NetworkInterface {
     cidr: string;
 }
 
+interface ServerResponse {
+    /** If the update is still running */
+    running: boolean;
+    stderr: string[];
+    stdout: string[];
+    /** if installation process succeeded */
+    success?: boolean;
+ }
+
 interface JsControllerUpdaterProps {
     socket: AdminConnection;
     hostId: `system.host.${string}`;
@@ -42,15 +51,20 @@ interface JsControllerUpdaterState {
     starting: boolean;
 }
 
-class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControllerUpdaterState> {
-    private updating: boolean;
+export default class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControllerUpdaterState> {
+    /** If update is currently in progress */
+    private updating = false;
 
-    private readonly textareaRef: React.RefObject<HTMLTextAreaElement>;
+    /** Ref to the textarea element where the update information is shown to the user */
+    private readonly textareaRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
 
-    private link: string;
+    /** The address of the server to get update information from with protocol and port */
+    private link = `${window.location.protocol}//${window.location.host}/`;
 
+    /** Interval to poll update status from server */
     private interval: ReturnType<typeof setTimeout> | null;
 
+    /** Initial timeout to give server time to start without showing an error */
     private startTimeout: ReturnType<typeof setTimeout> | null;
 
     constructor(props: JsControllerUpdaterProps) {
@@ -61,14 +75,13 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
             error: null,
             starting: true,
         };
-
-        this.updating = false;
-
-        this.textareaRef = React.createRef();
-
-        this.link = `${window.location.protocol}//${window.location.host}/`;
     }
 
+    /**
+     * Calls props.onUpdating if the updating state has changed
+     *
+     * @param updating target value true if update is in progress
+     */
     setUpdating(updating: boolean) {
         if (this.updating !== updating) {
             this.updating = updating;
@@ -76,6 +89,10 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
         }
     }
 
+    /**
+     * Determine the correct ip address of the server
+     * If the current admin instance is running on the host to be updated, we take it from browser, else we try to get information from the host object
+     */
     async findIpAddress() {
         // Controller to update: this.props.hostId
         // Current admin instance: this.props.adminInstance = 'admin.X'
@@ -126,34 +143,44 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
         }
     }
 
-    componentDidMount() {
-        // send update command to js-controller
-        this.findIpAddress()
-            .catch(e => {
-                // cannot find ip address
-                console.error(`Cannot find ip address: ${e}`);
-            })
-            .then(() => this.props.socket.upgradeController(
+    /**
+     * Lifecycle hook called if component mounts
+     * We try to get the correct ip address on mount and start the update immediately
+     */
+    async componentDidMount(): Promise<void> {
+        try {
+            await this.findIpAddress();
+        } catch (e) {
+            console.error(`Cannot find ip address: ${e.message}`);
+        }
+
+        try {
+            // send update command to js-controller
+            await this.props.socket.upgradeController(
                 this.props.hostId,
                 this.props.version,
                 parseInt(this.props.adminInstance.split('.').pop(), 10),
-            ))
-            .then(() => {
-                this.setUpdating(true);
-                this.interval = setInterval(() => this.checkStatus(), 1_000); // poll every second
+            );
+        } catch (e) {
+            console.error(`Cannot update controller: ${e.message}`);
+            this.setState({ error: I18n.t('Not updatable'), starting: false });
+            this.setUpdating(false);
+            return;
+        }
 
-                this.startTimeout = setTimeout(() => {
-                    this.startTimeout = null;
-                    this.setState({ starting: false });
-                }, 10_000); // give 10 seconds to controller to start update
-            })
-            .catch(error => {
-                console.error(`Cannot update controller: ${error}`);
-                this.setState({ error: I18n.t('Not updatable'), starting: false });
-                this.setUpdating(false);
-            });
+        this.setUpdating(true);
+        this.interval = setInterval(() => this.checkStatus(), 1_000); // poll every second
+
+        this.startTimeout = setTimeout(() => {
+            this.startTimeout = null;
+            this.setState({ starting: false });
+        }, 10_000); // give 10 seconds to controller to start update
     }
 
+    /**
+     * Lifecycle hook called if component will unmount
+     * Clearing intervals and timers here
+     */
     componentWillUnmount() {
         this.interval && clearInterval(this.interval);
         this.interval = null;
@@ -162,13 +189,10 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
         this.startTimeout = null;
     }
 
-    async checkStatus() {
-        // interface ServerResponse {
-        //     running: boolean; // If the update is still running
-        //     stderr: string[];
-        //     stdout: string[];
-        //     success?: boolean; // if installation process succeeded
-        // }
+    /**
+     * Request the current status from the server and show it in the textarea
+     */
+    async checkStatus(): Promise<void> {
         console.log(`Request update status from: ${this.link}`);
 
         try {
@@ -177,7 +201,7 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
             const plainBody = await res.text();
             console.log(`Received status: ${plainBody}`);
 
-            const response = JSON.parse(plainBody);
+            const response: ServerResponse = JSON.parse(plainBody);
 
             // sometimes stderr has only one empty string in it
             if (response?.stderr) {
@@ -213,7 +237,10 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
         }
     }
 
-    render() {
+    /**
+     * Render the UI
+     */
+    render(): React.JSX.Element {
         return (
             <Dialog
                 onClose={(e, reason) => {
@@ -282,5 +309,3 @@ class JsControllerUpdater extends Component<JsControllerUpdaterProps, JsControll
         );
     }
 }
-
-export default JsControllerUpdater;
