@@ -42,6 +42,9 @@ jobs:
           cd packages/admin/src-admin
           npm i -f
 
+      - name: 'Lint Backend'
+        run: npm run -w packages/admin lint
+
       - name: 'Build backend'
         run: npm run build:ts -w packages/admin
 

@@ -65,7 +65,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "start": "cd src && npm run start",
+    "start": "cd src-admin && npm run start",
     "test": "npm run test:package && npm run test:unit",
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
@@ -75,7 +75,8 @@
     "prepublishOnly": "npm run build && npm run build:ts",
     "build": "gulp && npm run build:ts",
     "build:ts": "tsc -p tsconfig.build.json",
-    "clean": "rimraf src/build"
+    "clean": "rimraf src-admin/build",
+    "lint-backend": "eslint src"
   },
   "author": "bluefox <dogafox@gmail.com>"
 }
