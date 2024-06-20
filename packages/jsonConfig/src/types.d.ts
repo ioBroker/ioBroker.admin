@@ -1,6 +1,12 @@
 import React from 'react';
 import type { ObjectBrowserCustomFilter, ObjectBrowserType } from '@iobroker/adapter-react-v5';
 
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        grey: true;
+    }
+}
+
 export type ConfigItemType = 'tabs' | 'panel' | 'text' | 'number' | 'color' | 'checkbox' | 'slider' | 'ip' | 'user' | 'room' | 'func' | 'select' |
     'autocomplete' | 'image' | 'objectId' | 'password' | 'instance' | 'chips' | 'alive' | 'pattern' | 'sendto' | 'setState' |
     'staticText' | 'staticLink' | 'staticImage' | 'table' | 'accordion' | 'jsonEditor' | 'language' | 'certificate' |

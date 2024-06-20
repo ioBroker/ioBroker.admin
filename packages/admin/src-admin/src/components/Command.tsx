@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import { amber, blue, red } from '@mui/material/colors';
 
@@ -7,10 +6,10 @@ import {
     Grid, LinearProgress, Paper, Switch, Typography,
 } from '@mui/material';
 
-import { Router, type AdminConnection, type IobTheme } from '@iobroker/adapter-react-v5';
+import { Router, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 import Utils from '../Utils';
 
-const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
+const styles: Record<string, React.CSSProperties> = {
     log: {
         height: 400,
         width: 860,
@@ -33,24 +32,23 @@ const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
     warn: {
         color: amber[500],
     },
-});
+};
 
 interface CommandProps {
     noSpacing?: boolean;
     host: string;
-    callback: (exitCode: number) => void;
+    callback?: (exitCode: number) => void;
     socket: AdminConnection;
     onFinished: (exitCode: number, log: string[]) => void;
     ready: boolean;
-    t: (text: string) => string;
+    t: Translate;
     inBackground?: boolean;
     commandError?: boolean;
     errorFunc?: (exitCode: number, log: string[]) => void;
     performed?: () => void;
     cmd: string;
-    onSetCommandRunning: (running: boolean) => void;
+    onSetCommandRunning?: (running: boolean) => void;
     showElement?: boolean;
-    classes: Record<string, string>;
     logsRead?: string[];
 }
 
@@ -225,7 +223,6 @@ class Command extends Component<CommandProps, CommandState> {
 
         if (text.search(this.regExp) !== -1) {
             const result = [];
-            const { classes } = this.props;
 
             while (text.search(this.regExp) >= 0) {
                 const [match] = text.match(this.regExp);
@@ -241,7 +238,7 @@ class Command extends Component<CommandProps, CommandState> {
                 const part = text.substring(0, match.length);
                 if (part) {
                     const message = Utils.parseColorMessage(part);
-                    result.push(<span key={result.length} className={classes[match.toLowerCase()]}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
+                    result.push(<span key={result.length} style={styles[match.toLowerCase()]}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
                     text = text.replace(part, '');
                 }
             }
@@ -269,8 +266,6 @@ class Command extends Component<CommandProps, CommandState> {
     }
 
     render() {
-        const classes = this.props.classes;
-
         return <Grid
             style={this.props.noSpacing ? { height: '100%', width: '100%' } : {}}
             container
@@ -317,7 +312,7 @@ class Command extends Component<CommandProps, CommandState> {
                 </Typography> : null}
             </div>
             <Grid item style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
-                {this.state.moreChecked && <Paper className={this.props.noSpacing ? classes.logNoSpacing : classes.log}>
+                {this.state.moreChecked && <Paper style={this.props.noSpacing ? styles.logNoSpacing : styles.log}>
                     {this.getLog()}
                 </Paper>}
             </Grid>
@@ -325,4 +320,4 @@ class Command extends Component<CommandProps, CommandState> {
     }
 }
 
-export default withStyles(styles)(Command);
+export default Command;

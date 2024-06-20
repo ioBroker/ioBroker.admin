@@ -1,8 +1,6 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 
-import { type Styles, withStyles } from '@mui/styles';
-
 import {
     Fab,
     IconButton,
@@ -26,9 +24,7 @@ import {
 import {
     withWidth,
     I18n,
-    Utils as UtilsCommon,
     type Translate,
-    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
@@ -37,7 +33,7 @@ import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 // icons
 
-const styles: Styles<IobTheme, any> = {
+const styles: Record<string, React.CSSProperties> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -55,7 +51,7 @@ const styles: Styles<IobTheme, any> = {
         width: '100%',
     },
     buttonPanel: {
-        paddingBottom: 40,
+        paddingBottom: 20,
         display: 'flex',
     },
     descriptionPanel: {
@@ -86,7 +82,6 @@ type Certificate = Record<string, string>;
 
 interface CertificatesDialogProps {
     t: Translate;
-    classes: Record<string, string>;
     // TODO: implement certificates in js-controller - 'system.certificates'
     data: ioBrokerObject<CertificateArray>;
     onChange: (data: ioBrokerObject<CertificateArray>) => void;
@@ -137,23 +132,23 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
     }
 
     render() {
-        const { classes } = this.props;
         const arr = CertificatesDialog.certToArray(this.props.data.native.certificates);
 
         const rows = arr.map((e, i) => {
             const type = CertificatesDialog.detectType(e.title);
 
             return <TableRow key={i} className="float_row">
-                <TableCell className={`${this.props.classes.littleRow} float_cell`}>
+                <TableCell style={styles.littleRow} className="float_cell">
                     {i + 1}
                 </TableCell>
-                <TableCell className={`${this.props.classes.nameRow} float_cell`}>
+                <TableCell style={styles.nameRow} className="float_cell">
                     <TextField
                         disabled={this.props.saving}
                         variant="standard"
                         value={e.title}
                         InputLabelProps={{ shrink: true }}
-                        className={`${this.props.classes.input} xs-centered`}
+                        style={styles.input}
+                        className="xs-centered"
                         onChange={evt => this.onChangeText(evt.target.value, e.title, 'title')}
                         error={!type}
                         helperText={type || I18n.t('Unknown type: use in name "private", "public" or "chained" to define the certificate type')}
@@ -177,7 +172,8 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                         id={`default_${i}`}
                         value={e.data}
                         InputLabelProps={{ shrink: true }}
-                        className={`${this.props.classes.input} xs-centered`}
+                        style={styles.input}
+                        className="xs-centered"
                         onChange={evt => {
                             let value = evt.target.value.replace(/\r/g, '').replace(/\n/g, '');
                             if (value.startsWith('--')) {
@@ -201,7 +197,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                         }}
                     />
                 </TableCell>
-                <TableCell className={`${this.props.classes.littleRow} float_cell`}>
+                <TableCell style={styles.littleRow} className="float_cell">
                     <Fab
                         disabled={this.props.saving}
                         size="small"
@@ -214,7 +210,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                 </TableCell>
             </TableRow>;
         });
-        return <div className={classes.tabPanel}>
+        return <div style={styles.tabPanel}>
             <Dropzone noClick>
                 {({
                     getRootProps, getInputProps, acceptedFiles, fileRejections,
@@ -259,7 +255,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                     <input {...getInputProps()} />
                 </div>}
             </Dropzone>
-            <div className={classes.buttonPanel}>
+            <div style={styles.buttonPanel}>
                 <Fab
                     disabled={this.props.saving}
                     size="small"
@@ -270,22 +266,22 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
                 >
                     <AddIcon />
                 </Fab>
-                <Paper variant="outlined" className={classes.descriptionPanel}>
+                <Paper variant="outlined" style={styles.descriptionPanel}>
                     {this.props.t('certs_hint')}
                 </Paper>
             </div>
-            <TableContainer className={classes.tableContainer}>
-                <Table className={classes.table} aria-label="customized table">
+            <TableContainer style={styles.tableContainer}>
+                <Table style={styles.table} aria-label="customized table">
                     <TableHead>
                         <TableRow className="float_row">
-                            <TableCell className={UtilsCommon.clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
-                            <TableCell className={UtilsCommon.clsx(this.props.classes.nameRow, 'float_cell')}>
+                            <TableCell style={styles.littleRow} className="float_cell"> </TableCell>
+                            <TableCell style={styles.nameRow} className="float_cell">
                                 {this.props.t('name')}
                             </TableCell>
-                            <TableCell className={UtilsCommon.clsx('grow_cell', 'float_cell')}>
+                            <TableCell className="grow_cell float_cell">
                                 {this.props.t('Certificate')}
                             </TableCell>
-                            <TableCell className={UtilsCommon.clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
+                            <TableCell style={styles.littleRow} className="float_cell"> </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -334,4 +330,4 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
     };
 }
 
-export default withWidth()(withStyles(styles)(CertificatesDialog));
+export default withWidth()(CertificatesDialog);

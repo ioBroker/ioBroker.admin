@@ -23,7 +23,7 @@ import {
 
 import {
     Utils, IconPicker,
-    type Translate, type IobTheme,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
@@ -230,7 +230,6 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
                             newData.common.icon = fileBlob;
                             props.onChange(newData);
                         }}
-                        // @ts-expect-error fixed in adapter-react-v5
                         previewStyle={props.styles.iconPreview}
                         icon={ImageIcon}
                         // classes={props.classes}

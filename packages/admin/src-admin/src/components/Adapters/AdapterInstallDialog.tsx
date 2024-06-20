@@ -78,7 +78,6 @@ export type AdaptersContext = {
 };
 
 export interface AdapterInstallDialogProps {
-
 }
 
 export interface AdapterInstallDialogState {
@@ -96,7 +95,7 @@ export interface AdapterInstallDialogState {
 export default abstract class AdapterInstallDialog<TProps extends AdapterInstallDialogProps, TState extends AdapterInstallDialogState> extends Component<TProps, TState> {
     protected installedVersion: string = '';
 
-    public constructor(props: TProps) {
+    protected constructor(props: TProps) {
         super(props);
 
         this.state = {
@@ -313,6 +312,7 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
             toggleTranslation={context.toggleTranslation}
             noTranslation={context.noTranslation}
             expertMode={context.expertMode}
+            theme={context.theme}
         />;
     }
 

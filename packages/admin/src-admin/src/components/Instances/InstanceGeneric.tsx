@@ -53,6 +53,7 @@ import {
     type AdminConnection, Utils as UtilsCommon, Utils, TextWithIcon, Router,
     type IobTheme,
     type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 import {
     amber, blue, green,
@@ -365,7 +366,7 @@ export interface InstanceContext {
     hosts: ioBroker.HostObject[];
     lang: ioBroker.Languages;
     setMaxCompactGroupNumber: (maxCompactGroupNumber: number) => void;
-    t: (text: string, ...args: any[]) => string;
+    t: Translate;
     themeType: ThemeType;
     theme: IobTheme;
     getInstanceStatus: (obj: ioBroker.InstanceObject) => InstanceStatusType;

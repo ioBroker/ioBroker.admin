@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -20,10 +19,9 @@ import {
 } from '@mui/icons-material';
 
 import {
-    withWidth, Utils,
+    withWidth,
     Router, ToggleThemeMenu, I18n,
     type AdminConnection,
-    type IobTheme,
     type ThemeName,
 } from '@iobroker/adapter-react-v5';
 
@@ -31,16 +29,16 @@ import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
 import WizardLicenseTab from '@/components/Wizard/WizardLicenseTab';
 import WizardFinishImage from '@/assets/wizard-finish.jpg';
 import WizardWelcomeImage from '@/assets/wizard-welcome.jpg';
+import Logo from '@/assets/logo.png';
+import LongLogo from '@/assets/longLogo.svg';
 import WizardSettingsTab from '@/components/Wizard/WizardSettingsTab';
 import WizardAuthSSLTab from '@/components/Wizard/WizardAuthSSLTab';
 import WizardPortForwarding from '@/components/Wizard/WizardPortForwarding';
 import WizardAdaptersTab from '@/components/Wizard/WizardAdaptersTab';
-import Logo from '@/assets/logo.png';
-import LongLogo from '@/assets/longLogo.svg';
 
 const TOOLBAR_HEIGHT = 64;
 
-const styles = (theme: IobTheme) => ({
+const styles: Record<string, React.CSSProperties> = {
     dialog: {
         height: '100%',
         maxHeight: '100%',
@@ -109,14 +107,13 @@ const styles = (theme: IobTheme) => ({
     finalLongLogo: {
         width: 500,
     },
-}) satisfies Styles<any, any>;
+};
 
 interface WizardDialogProps {
     socket: AdminConnection;
     onClose: (redirect?: string) => void;
     toggleTheme: () => void;
     themeName: ThemeName;
-    classes: Record<string, any>;
     /** Active host name */
     host: string;
     /** Execute command on given host */
@@ -154,12 +151,12 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
 
     renderWelcome() {
         // shutterstock Standard commercial license on ioBroker GmbH: https://www.shutterstock.com/de/image-vector/welcome-neon-text-vector-sign-design-1186433386
-        return <div className={Utils.clsx(this.props.classes.paper, this.props.classes.welcomeBackground)}>
-            <div className={this.props.classes.fullHeightWithoutToolbar}>
+        return <div style={{ ...styles.paper, ...styles.welcomeBackground }}>
+            <div style={styles.fullHeightWithoutToolbar}>
 
             </div>
-            <Toolbar className={this.props.classes.toolbar}>
-                <div className={this.props.classes.grow} />
+            <Toolbar style={styles.toolbar}>
+                <div style={styles.grow} />
                 <Button
                     variant="contained"
                     color="primary"
@@ -170,9 +167,9 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                 >
                     {I18n.t('Start wizard')}
                     {' '}
-                    <PlayArrowIcon className={this.props.classes.playIcon} />
+                    <PlayArrowIcon style={styles.playIcon} />
                 </Button>
-                <div className={this.props.classes.grow} />
+                <div style={styles.grow} />
             </Toolbar>
         </div>;
     }
@@ -320,13 +317,13 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
 
     renderFinish() {
         // Free Image license: https://pixabay.com/illustrations/road-sky-mountains-clouds-black-908176/
-        return <div className={Utils.clsx(this.props.classes.paper, this.props.classes.finishBackground)}>
-            <div className={this.props.classes.fullHeightWithoutToolbar}>
-                <div className={this.props.classes.finalText}>{I18n.t('Have fun automating your home with')}</div>
-                <img src={LongLogo} alt="ioBroker" className={this.props.classes.finalLongLogo} />
+        return <div style={{ ...styles.paper, ...styles.finishBackground }}>
+            <div style={styles.fullHeightWithoutToolbar}>
+                <div style={styles.finalText}>{I18n.t('Have fun automating your home with')}</div>
+                <img src={LongLogo} alt="ioBroker" style={styles.finalLongLogo} />
             </div>
-            <Toolbar className={this.props.classes.toolbar}>
-                <div className={this.props.classes.grow} />
+            <Toolbar style={styles.toolbar}>
+                <div style={styles.grow} />
                 <Button
                     variant="contained"
                     color="primary"
@@ -335,14 +332,14 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                 >
                     {I18n.t('Finish')}
                 </Button>
-                <div className={this.props.classes.grow} />
+                <div style={styles.grow} />
             </Toolbar>
         </div>;
     }
 
     render() {
         return <Dialog
-            className={this.props.classes.dialog}
+            style={styles.dialog}
             open={!0}
             onClose={() => {
                 // ignore
@@ -353,12 +350,12 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
             aria-labelledby="wizard-dialog-title"
         >
             <DialogTitle id="wizard-dialog-title">
-                <img src={Logo} className={this.props.classes.logo} alt="logo" />
+                <img src={Logo} style={styles.logo} alt="logo" />
                 {I18n.t('Initial ioBroker setup')}
                 {' '}
-                <ToggleThemeMenu className={this.props.classes.themeButton} t={I18n.t} toggleTheme={this.props.toggleTheme} themeName={this.props.themeName as any} size="small" />
+                <ToggleThemeMenu style={styles.themeButton} t={I18n.t} toggleTheme={this.props.toggleTheme} themeName={this.props.themeName as any} size="small" />
             </DialogTitle>
-            <DialogContent className={this.props.classes.content}>
+            <DialogContent style={styles.content}>
                 <AppBar position="static">
                     <Toolbar>
                         <Stepper activeStep={this.state.activeStep}>
@@ -373,17 +370,17 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
                         </Stepper>
                     </Toolbar>
                 </AppBar>
-                {this.state.activeStep === 0 ? <div className={this.props.classes.tabPanel}>{this.renderWelcome()}</div> : null}
-                {this.state.activeStep === 1 ? <div className={this.props.classes.tabPanel}>{this.renderLicense()}</div> : null}
-                {this.state.activeStep === 2 ? <div className={this.props.classes.tabPanel}>{this.renderPassword()}</div> : null}
-                {this.state.activeStep === 3 ? <div className={this.props.classes.tabPanel}>{this.renderAuthentication()}</div> : null}
-                {this.state.activeStep === 4 ? <div className={this.props.classes.tabPanel}>{this.renderPortForwarding()}</div> : null}
-                {this.state.activeStep === 5 ? <div className={this.props.classes.tabPanel}>{this.renderSettings()}</div> : null}
-                {this.state.activeStep === 6 ? <div className={this.props.classes.tabPanel}>{this.renderAdapters()}</div> : null}
-                {this.state.activeStep === 7 ? <div className={this.props.classes.tabPanel}>{this.renderFinish()}</div> : null}
+                {this.state.activeStep === 0 ? <div style={styles.tabPanel}>{this.renderWelcome()}</div> : null}
+                {this.state.activeStep === 1 ? <div style={styles.tabPanel}>{this.renderLicense()}</div> : null}
+                {this.state.activeStep === 2 ? <div style={styles.tabPanel}>{this.renderPassword()}</div> : null}
+                {this.state.activeStep === 3 ? <div style={styles.tabPanel}>{this.renderAuthentication()}</div> : null}
+                {this.state.activeStep === 4 ? <div style={styles.tabPanel}>{this.renderPortForwarding()}</div> : null}
+                {this.state.activeStep === 5 ? <div style={styles.tabPanel}>{this.renderSettings()}</div> : null}
+                {this.state.activeStep === 6 ? <div style={styles.tabPanel}>{this.renderAdapters()}</div> : null}
+                {this.state.activeStep === 7 ? <div style={styles.tabPanel}>{this.renderFinish()}</div> : null}
             </DialogContent>
         </Dialog>;
     }
 }
 
-export default withWidth()(withStyles(styles)(WizardDialog));
+export default withWidth()(WizardDialog);

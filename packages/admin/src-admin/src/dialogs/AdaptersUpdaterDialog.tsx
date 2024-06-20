@@ -24,6 +24,7 @@ import {
 import {
     type AdminConnection,
     I18n,
+    Utils,
     type IobTheme,
     type Translate,
 } from '@iobroker/adapter-react-v5';
@@ -32,7 +33,6 @@ import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
-import Utils from '../components/Utils';
 
 const styles: Record<string, any> = {
     dialogRoot: {
@@ -208,7 +208,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                     </IconButton> : null}
                 </div>
             </DialogTitle>
-            <DialogContent sx={{ '& .MuiDialogContent-root': styles.content }} style={{ height: '100%' }}>
+            <DialogContent sx={{ '&.MuiDialogContent-root': styles.content }} style={{ height: '100%' }}>
                 <Grid container direction="row" sx={styles.container}>
                     <Grid item style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
                         <div style={{ height: '100%', overflow: 'auto' }}>

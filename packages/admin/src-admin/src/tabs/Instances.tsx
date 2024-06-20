@@ -1025,7 +1025,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     <Config
                         adapter={instance.id.split('.')[0]}
                         adminInstance={this.props.adminInstance}
-                        className={classes.iframe}
+                        style={styles.iframe}
                         configStored={this.props.configStored}
                         dateFormat={this.props.dateFormat}
                         icon={instance.image}

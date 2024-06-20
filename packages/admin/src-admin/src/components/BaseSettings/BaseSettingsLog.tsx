@@ -30,7 +30,7 @@ import {
     Computer as IconSyslog,
     Send as IconStream,
 } from '@mui/icons-material';
-import { withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
+import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 import IconSeq from '../../assets/seq.png';
 
 const styles: Record<string, any> = {
@@ -102,7 +102,7 @@ export interface SettingsLog {
 }
 
 interface BaseSettingsLogProps {
-    t: (text: string) => string;
+    t: Translate;
     onChange: (settings: SettingsLog) => void;
     settings: SettingsLog;
 }

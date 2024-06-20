@@ -36,11 +36,11 @@ import {
     IconDevice,
     IconState, type AdminConnection,
     type IobTheme,
-    type ThemeType, type Translate,
+    type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { type DragItem } from './DragObjectBrowser';
-import LocalUtils from '../Utils';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
@@ -370,7 +370,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
 
         return <Card
             style={style}
-            sx={LocalUtils.getStyle(
+            sx={Utils.getStyle(
                 this.props.theme,
                 styles.enumGroupCard,
                 this.props.updating && styles.enumUpdating,
@@ -519,7 +519,7 @@ interface EnumBlockDragProps {
     showEnumEditDialog: (enumItem: ioBroker.EnumObject, isNew?: boolean) => void;
     showEnumTemplateDialog: (prefix: string) => void;
     socket: AdminConnection;
-    t: (text: string, arg1?: any, arg2?: any) => string;
+    t: Translate;
     themeType: ThemeType;
     theme: IobTheme;
     toggleEnum: (enumId: string) => void;

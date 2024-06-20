@@ -97,7 +97,7 @@ const DrawerItem = (props: DrawerItemProps) => {
             className={Utils.clsx(selected && classes.selected, compact && classes.compactBadge)}
             onClick={onClick}
         >
-            <Tooltip title={compact ? content : ''}>
+            <Tooltip title={compact ? content : ''} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                 <Grid
                     container
                     spacing={1}

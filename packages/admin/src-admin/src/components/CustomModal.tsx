@@ -12,9 +12,7 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
-
-import LocalUtils from './Utils';
+import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     modalDialog: {
@@ -82,8 +80,7 @@ const CustomModal = ({
         Icon = icon;
     }
 
-    // todo: replace later LocalUtils with Utils
-    const languageButtonActive = LocalUtils.getStyle(theme, styles.languageButtonActive);
+    const languageButtonActive = Utils.getStyle(theme, styles.languageButtonActive);
 
     return <Dialog
         open={!0}
@@ -108,7 +105,7 @@ const CustomModal = ({
             </IconButton> : null}
         </DialogTitle>}
         <DialogContent
-            style={{ ...styles.overflowHidden, ...styles.content, paddingTop: 8 }}
+            style={{ ...(overflowHidden ? styles.overflowHidden : undefined), ...styles.content, paddingTop: 8 }}
         >
             {textInput && <TextField
                 // className={className}

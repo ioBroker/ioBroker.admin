@@ -97,6 +97,7 @@ import {
     IconState,
     withWidth,
     Connection,
+    Utils,
     type Router,
     type IobTheme,
     type ThemeType,
@@ -104,7 +105,6 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 // own
-import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
@@ -931,36 +931,6 @@ const styles: Record<string, any> = {
         display: 'flex',
     },
 };
-
-function getStyle(theme: IobTheme, ...args: any): Record<string, any> {
-    const result: Record<string, any> = {};
-
-    for (let a = 0; a < args.length; a++) {
-        if (typeof args[a] === 'function') {
-            Object.assign(result, args[a](theme));
-        } else if (args[a] && typeof args[a] === 'object') {
-            Object.keys(args[a]).forEach((attr: string) => {
-                if (typeof args[a][attr] === 'function') {
-                    result[attr] = args[a][attr](theme);
-                } else if (typeof args[a][attr] === 'object') {
-                    const obj = args[a][attr];
-                    result[attr] = {};
-                    Object.keys(obj).forEach((attr1: string) => {
-                        if (typeof obj[attr1] === 'function') {
-                            result[attr][attr1] = obj(theme);
-                        } else if (obj[attr1] || obj[attr1] === 0) {
-                            result[attr][attr1] = obj[attr1];
-                        }
-                    });
-                } else if (args[a][attr] || args[a][attr] === 0) {
-                    result[attr] = args[a][attr];
-                }
-            });
-        }
-    }
-
-    return result;
-}
 
 /**
  * Function that walks through all keys of an object or array and applies a function to each key.
@@ -3325,7 +3295,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             onClose={() => this.setState({ columnsSelectorShow: false })}
             open={!0}
             sx={{
-                '& .MuiPaper-root': getStyle(this.props.theme, styles.dialogColumns, styles[`transparent_${this.state.columnsDialogTransparent}`]),
+                '& .MuiPaper-root': Utils.getStyle(
+                    this.props.theme,
+                    styles.dialogColumns,
+                    styles[`transparent_${this.state.columnsDialogTransparent}`],
+                ),
             }}
         >
             <DialogTitle sx={styles.fontSizeTitle}>{this.props.t('ra_Configure')}</DialogTitle>
@@ -3584,7 +3558,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         if (item.objTypes && typeof item.objTypes !== 'object') {
                             item.objTypes = [item.objTypes];
                         } else if (!item.objTypes) {
-                            item.objTypes = null;
+                            item.objTypes = undefined;
                         }
 
                         if (!item.name && item.path) {
@@ -6084,7 +6058,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             container
             direction="row"
             wrap="nowrap"
-            sx={getStyle(
+            sx={Utils.getStyle(
                 this.props.theme,
                 styles.tableRow,
                 this.state.linesEnabled && styles.tableRowLines,
@@ -7556,26 +7530,26 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         if (this.styleTheme !== this.props.themeType) {
             this.styles = {
-                cellIdIconFolder: getStyle(this.props.theme, styles.cellIdIconFolder),
-                cellIdIconDocument: getStyle(this.props.theme, styles.cellIdIconDocument),
-                iconDeviceError: getStyle(this.props.theme, styles.iconDeviceError),
-                iconDeviceConnected: getStyle(this.props.theme, styles.iconDeviceConnected),
-                iconDeviceDisconnected: getStyle(this.props.theme, styles.iconDeviceDisconnected),
-                cellButtonsButtonWithCustoms: getStyle(this.props.theme, styles.cellButtonsButtonWithCustoms),
-                invertedBackground: getStyle(this.props.theme, styles.invertedBackground),
-                invertedBackgroundFlex: getStyle(this.props.theme, styles.invertedBackgroundFlex),
-                contextMenuEdit: getStyle(this.props.theme, styles.contextMenuEdit),
-                contextMenuEditValue: getStyle(this.props.theme, styles.contextMenuEditValue),
-                contextMenuView: getStyle(this.props.theme, styles.contextMenuView),
-                contextMenuCustom: getStyle(this.props.theme, styles.contextMenuCustom),
-                contextMenuACL: getStyle(this.props.theme, styles.contextMenuACL),
-                contextMenuRoom: getStyle(this.props.theme, styles.contextMenuRoom),
-                contextMenuRole: getStyle(this.props.theme, styles.contextMenuRole),
-                contextMenuDelete: getStyle(this.props.theme, styles.contextMenuDelete),
-                filterInput: getStyle(this.props.theme, styles.headerCellInput, styles.filterInput),
-                iconCopy: getStyle(this.props.theme, styles.cellButtonsValueButton, styles.cellButtonsValueButtonCopy),
-                aliasReadWrite: getStyle(styles.cellIdAlias, styles.cellIdAliasReadWrite),
-                aliasAlone: getStyle(styles.cellIdAlias, styles.cellIdAliasAlone),
+                cellIdIconFolder: Utils.getStyle(this.props.theme, styles.cellIdIconFolder),
+                cellIdIconDocument: Utils.getStyle(this.props.theme, styles.cellIdIconDocument),
+                iconDeviceError: Utils.getStyle(this.props.theme, styles.iconDeviceError),
+                iconDeviceConnected: Utils.getStyle(this.props.theme, styles.iconDeviceConnected),
+                iconDeviceDisconnected: Utils.getStyle(this.props.theme, styles.iconDeviceDisconnected),
+                cellButtonsButtonWithCustoms: Utils.getStyle(this.props.theme, styles.cellButtonsButtonWithCustoms),
+                invertedBackground: Utils.getStyle(this.props.theme, styles.invertedBackground),
+                invertedBackgroundFlex: Utils.getStyle(this.props.theme, styles.invertedBackgroundFlex),
+                contextMenuEdit: Utils.getStyle(this.props.theme, styles.contextMenuEdit),
+                contextMenuEditValue: Utils.getStyle(this.props.theme, styles.contextMenuEditValue),
+                contextMenuView: Utils.getStyle(this.props.theme, styles.contextMenuView),
+                contextMenuCustom: Utils.getStyle(this.props.theme, styles.contextMenuCustom),
+                contextMenuACL: Utils.getStyle(this.props.theme, styles.contextMenuACL),
+                contextMenuRoom: Utils.getStyle(this.props.theme, styles.contextMenuRoom),
+                contextMenuRole: Utils.getStyle(this.props.theme, styles.contextMenuRole),
+                contextMenuDelete: Utils.getStyle(this.props.theme, styles.contextMenuDelete),
+                filterInput: Utils.getStyle(this.props.theme, styles.headerCellInput, styles.filterInput),
+                iconCopy: Utils.getStyle(this.props.theme, styles.cellButtonsValueButton, styles.cellButtonsValueButtonCopy),
+                aliasReadWrite: Utils.getStyle(this.props.theme, styles.cellIdAlias, styles.cellIdAliasReadWrite),
+                aliasAlone: Utils.getStyle(this.props.theme, styles.cellIdAlias, styles.cellIdAliasAlone),
             };
             this.styleTheme = this.props.themeType;
         }

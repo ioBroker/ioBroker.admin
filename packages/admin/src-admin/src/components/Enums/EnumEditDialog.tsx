@@ -186,7 +186,6 @@ function EnumEditDialog(props: EnumEditDialogProps) {
                             newData.common.icon = fileBlob;
                             props.onChange(newData);
                         }}
-                        // @ts-expect-error fixed in adapter-react-v5
                         previewStyle={styles.iconPreview}
                         icon={ImageIcon}
                         customStyles={styles}

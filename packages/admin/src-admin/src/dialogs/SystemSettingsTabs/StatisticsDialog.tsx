@@ -1,5 +1,4 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid, Paper, Card, Typography, MenuItem,
@@ -9,7 +8,7 @@ import {
 import blueGrey from '@mui/material/colors/blueGrey';
 
 import {
-    withWidth, type IobTheme,
+    withWidth,
     type Translate,
     type ThemeType,
 } from '@iobroker/adapter-react-v5';
@@ -20,7 +19,7 @@ import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 // eslint-disable-next-line no-undef
 (window as any).ace.config.set('basePath', 'lib/js/ace');
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, React.CSSProperties> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -51,7 +50,7 @@ const styles: Styles<IobTheme, any> = theme => ({
     selectEmpty: {
         marginTop: 16,
     },
-});
+};
 
 interface StatisticsDialogProps {
     t: Translate;
@@ -61,7 +60,6 @@ interface StatisticsDialogProps {
     onChange: (data: ioBroker.SystemConfigObject) => void;
     saving: boolean;
     handle: (type: string) => void;
-    classes: Record<string, string>;
 }
 
 class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
@@ -87,21 +85,20 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     }
 
     getTypesSelector() {
-        const { classes } = this.props;
         const { common } = this.props.data;
         const items = StatisticsDialog.getTypes().map((elem, index) =>
             <MenuItem value={elem.title} key={index}>
                 {this.props.t(elem.title)}
             </MenuItem>);
 
-        return <FormControl variant="standard" className={classes.formControl}>
+        return <FormControl variant="standard" style={styles.formControl}>
             <InputLabel shrink id="statistics-label">
                 {this.props.t('Statistics')}
             </InputLabel>
             <Select
                 disabled={this.props.saving}
                 variant="standard"
-                className={classes.formControl}
+                style={styles.formControl}
                 id="statistics"
                 value={common.diag}
                 displayEmpty
@@ -126,11 +123,10 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     };
 
     render() {
-        const { classes } = this.props;
-        return <div className={classes.tabPanel} style={{ height: '100%' }}>
+        return <div style={{ ...styles.tabPanel, height: '100%' }}>
             <Grid container spacing={3} className="sendData-grid" style={{ height: '100%' }}>
                 <Grid item lg={4} md={4} xs={12} style={{ display: 'flex', flexDirection: 'column' }}>
-                    <Card className={classes.note}>
+                    <Card style={styles.note}>
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t('Note:')}
                         </Typography>
@@ -144,7 +140,7 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
                     {this.getTypesSelector()}
                     {this.props.dataAux ? <Paper
                         variant="outlined"
-                        className={classes.descriptionPanel}
+                        style={styles.descriptionPanel}
                     >
                         <ul>
                             {Object.keys(this.props.dataAux).map(key => <li key={key}>{key}</li>)}
@@ -159,7 +155,7 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
                     className="sendData-grid"
                     style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
-                    <Paper className={classes.sentData}>
+                    <Paper style={styles.sentData}>
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t('Sent data:')}
                         </Typography>
@@ -175,4 +171,4 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     }
 }
 
-export default withWidth()(withStyles(styles)(StatisticsDialog));
+export default withWidth()(StatisticsDialog);

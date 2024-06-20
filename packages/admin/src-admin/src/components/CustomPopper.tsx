@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@mui/styles';
 
 import {
     Popper,
@@ -11,13 +10,7 @@ import {
 
 import { Edit as EditIcon } from '@mui/icons-material';
 
-import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
-
-const useStyles = makeStyles((theme: IobTheme) => ({
-    typography: {
-        padding: 16,
-    },
-}));
+import { I18n } from '@iobroker/adapter-react-v5';
 
 let timer: ReturnType<typeof setTimeout>;
 
@@ -30,7 +23,6 @@ const CustomPopper = ({ editMenuList, onClick }: CustomPopperProps) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const [placement, setPlacement] = React.useState<'right' | null>(null);
-    const classes = useStyles();
 
     return <>
         <IconButton
@@ -57,7 +49,13 @@ const CustomPopper = ({ editMenuList, onClick }: CustomPopperProps) => {
             {({ TransitionProps }) => (
                 <Fade {...TransitionProps} timeout={350}>
                     <Paper>
-                        <Typography className={classes.typography}>{I18n.t('You can drag and drop list items for reorder')}</Typography>
+                        <Typography
+                            style={{
+                                padding: 16,
+                            }}
+                        >
+                            {I18n.t('You can drag and drop list items for reorder')}
+                        </Typography>
                     </Paper>
                 </Fade>
             )}

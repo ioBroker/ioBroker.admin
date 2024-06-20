@@ -58,12 +58,14 @@ import {
     I18n, Router, Confirm as ConfirmDialog,
     Icon, withWidth, Theme,
     IconExpert,
-    ToggleThemeMenu, type IobTheme, type ThemeName, type AdminConnection, type ThemeType,
+    ToggleThemeMenu,
+    type IobTheme, type ThemeName,
+    type AdminConnection, type ThemeType,
+    Utils,
 } from '@iobroker/adapter-react-v5';
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
 import type { AdminGuiConfig, CompactAdapterInfo, CompactHost } from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
-import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer, {
@@ -305,6 +307,9 @@ const styles: Record<string, any> = {
         marginRight: 10,
         display: 'inline-block',
         verticalAlign: 'middle',
+    },
+    tooltip: {
+        pointerEvents: 'none',
     },
 };
 
@@ -2384,7 +2389,7 @@ class App extends Router<AppProps, AppState> {
             >
                 <MenuIcon />
             </IconButton>
-            <Tooltip title={I18n.t('Notifications')}>
+            <Tooltip title={I18n.t('Notifications')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton
                     size="large"
                     disableRipple={!this.state.noNotifications}
@@ -2401,7 +2406,7 @@ class App extends Router<AppProps, AppState> {
             </Tooltip>
             <div style={styles.wrapperButtons}>
                 <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
-                    {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
+                    {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => Router.doNavigate(null, 'discovery')}
@@ -2411,7 +2416,7 @@ class App extends Router<AppProps, AppState> {
                     </Tooltip>}
                 </IsVisible>
                 <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
-                    <Tooltip title={I18n.t('System settings')}>
+                    <Tooltip title={I18n.t('System settings')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => Router.doNavigate(null, 'system')}
@@ -2435,6 +2440,7 @@ class App extends Router<AppProps, AppState> {
                                 ? ''
                                 : ` (${I18n.t('only in this browser session')})`
                         }`}
+                        componentsProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <Badge
                             color="secondary"
@@ -2493,6 +2499,7 @@ class App extends Router<AppProps, AppState> {
                     title={I18n.t(
                         'Synchronize admin settings between all opened browser windows',
                     )}
+                    componentsProps={{ popper: { sx: styles.c } }}
                 >
                     <IconButton
                         size="large"

@@ -544,7 +544,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     className="titleEnabled"
                     style={{
                         ...styles.titleEnabled,
-                        ...(enabled ? styles.enabledVisible : styles.enabledInvisible)
+                        ...(enabled ? styles.enabledVisible : styles.enabledInvisible),
                     }}
                 >
                     {this.props.t('Enabled')}

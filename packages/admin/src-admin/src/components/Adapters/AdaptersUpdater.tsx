@@ -24,11 +24,10 @@ import {
     Info as InfoIcon,
 } from '@mui/icons-material';
 
-import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import { checkCondition, type RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
-import Utils from '../Utils';
 
 interface GetNewsResultEntry {
     version: string;
@@ -229,75 +228,72 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         }
         const image = `.${this.props.installed[adapter].localIcon}`;
 
-        return <React.Fragment key={adapter}>
-            <ListItem
-                key={adapter}
-                dense
-                sx={{
-                    '& .MuiListItem-root': Utils.getStyle(styles.listItem, this.props.updated.includes(adapter) && styles.updateDone),
-                }}
-                ref={this.props.current === adapter ? this.currentRef : null}
-            >
-                <ListItemIcon sx={styles.minWidthCss}>
-                    <Avatar
-                        variant="square"
-                        alt={adapter}
-                        src={image}
-                        style={styles.smallAvatar}
-                    />
-                </ListItemIcon>
-                <ListItemText
-                    primary={adapter}
-                    title={this.getNews(adapter).map(item => `${item.version}: ${item.news}`).join('\n')}
-                    secondary={<span>
-                        <div style={styles.versions}>
-                            {this.initialVersions[adapter]}
-                            {' '}
-                            →
-                            <Box component="span" sx={styles.toVersion}>{this.props.repository[adapter].version}</Box>
-                        </div>
-                        <IconButton
-                            title={I18n.t('Show change log')}
-                            onClick={() =>
-                                this.setState({
-                                    showNews: {
-                                        adapter,
-                                        version: this.props.repository[adapter].version,
-                                        fromVersion: this.initialVersions[adapter],
-                                    },
-                                })}
-                            size="small"
-                        >
-                            <InfoIcon />
-                        </IconButton>
-                    </span>}
+        return <ListItem
+            key={adapter}
+            dense
+            sx={{
+                '&.MuiListItem-root': Utils.getStyle(this.props.theme, styles.listItem, this.props.updated.includes(adapter) && styles.updateDone),
+            }}
+            ref={this.props.current === adapter ? this.currentRef : null}
+        >
+            <ListItemIcon sx={styles.minWidthCss}>
+                <Avatar
+                    variant="square"
+                    alt={adapter}
+                    src={image}
+                    style={styles.smallAvatar}
                 />
-                {!this.props.finished && !this.props.inProcess && <ListItemSecondaryAction>
-                    <Checkbox
-                        edge="end"
-                        checked={checked}
-                        tabIndex={-1}
-                        disableRipple
-                        disabled={this.props.inProcess}
-                        onClick={() => {
-                            const selected = [...this.props.selected];
-                            const pos = selected.indexOf(adapter);
-                            if (pos !== -1) {
-                                selected.splice(pos, 1);
-                            } else {
-                                selected.push(adapter);
-                                selected.sort();
-                            }
-                            this.props.onUpdateSelected(selected);
-                        }}
-                    />
-                </ListItemSecondaryAction>}
-                {this.props.current === adapter && !this.props.stopped && !this.props.finished && <ListItemSecondaryAction>
-                    <CircularProgress />
-                </ListItemSecondaryAction>}
-            </ListItem>
-
-        </React.Fragment>;
+            </ListItemIcon>
+            <ListItemText
+                primary={adapter}
+                title={this.getNews(adapter).map(item => `${item.version}: ${item.news}`).join('\n')}
+                secondary={<span>
+                    <div style={styles.versions}>
+                        {this.initialVersions[adapter]}
+                        {' '}
+                        →
+                        <Box component="span" sx={styles.toVersion}>{this.props.repository[adapter].version}</Box>
+                    </div>
+                    <IconButton
+                        title={I18n.t('Show change log')}
+                        onClick={() =>
+                            this.setState({
+                                showNews: {
+                                    adapter,
+                                    version: this.props.repository[adapter].version,
+                                    fromVersion: this.initialVersions[adapter],
+                                },
+                            })}
+                        size="small"
+                    >
+                        <InfoIcon />
+                    </IconButton>
+                </span>}
+            />
+            {!this.props.finished && !this.props.inProcess && <ListItemSecondaryAction>
+                <Checkbox
+                    edge="end"
+                    checked={checked}
+                    tabIndex={-1}
+                    disableRipple
+                    disabled={this.props.inProcess}
+                    onClick={() => {
+                        const selected = [...this.props.selected];
+                        const pos = selected.indexOf(adapter);
+                        if (pos !== -1) {
+                            selected.splice(pos, 1);
+                        } else {
+                            selected.push(adapter);
+                            selected.sort();
+                        }
+                        this.props.onUpdateSelected(selected);
+                    }}
+                />
+            </ListItemSecondaryAction>}
+            {this.props.current === adapter && !this.props.stopped && !this.props.finished && <ListItemSecondaryAction>
+                <CircularProgress />
+            </ListItemSecondaryAction>}
+        </ListItem>;
     }
 
     getReactNews(adapter: string, fromVersion: string): React.JSX.Element[] {

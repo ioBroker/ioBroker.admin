@@ -1,5 +1,4 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -17,7 +16,7 @@ import type { ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -30,7 +29,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         paddingBottom: 50,
         display: 'flex',
     },
-    descriptionPanel: {
+    descriptionPanel: (theme: IobTheme) => ({
         width: '100%',
         backgroundColor: 'transparent',
         marginLeft: 40,
@@ -41,26 +40,25 @@ const styles: Styles<IobTheme, any> = theme => ({
             paddingLeft: 3,
             color: theme.palette.mode === 'dark' ? '#EEE' : '#111',
         },
-    },
+    }),
     formControl: {
         margin: 8,
         minWidth: '100%',
     },
-});
+};
 
 interface SSLDialogProps {
     t: Translate;
     data: ioBrokerObject<{ letsEncrypt: { email?: string; domains?: string; path?: string } }>;
     onChange: (data: Record<string, any>) => void;
     saving: boolean;
-    classes: Record<string, string>;
 }
 
 class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
     render() {
-        const { classes, data } = this.props;
+        const { data } = this.props;
         const { letsEncrypt } = data.native || {};
-        return <div className={classes.tabPanel}>
+        return <div style={styles.tabPanel}>
             <div
                 style={{
                     width: '100%',
@@ -74,16 +72,16 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
             >
                 {this.props.t('ra_Use iobroker.acme adapter for letsencrypt certificates')}
             </div>
-            <div className={classes.buttonPanel}>
+            <div style={styles.buttonPanel}>
                 <Paper
                     variant="outlined"
-                    className={classes.descriptionPanel}
+                    sx={styles.descriptionPanel}
                     dangerouslySetInnerHTML={{ __html: this.props.t('letsnecrypt_help') }}
                 />
             </div>
             <Grid container spacing={6}>
                 <Grid item md={3} xs={12}>
-                    <FormControl variant="standard" className={classes.formControl}>
+                    <FormControl variant="standard" style={styles.formControl}>
                         <TextField
                             variant="standard"
                             id="email"
@@ -109,7 +107,7 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                     </FormControl>
                 </Grid>
                 <Grid item md={3} xs={12}>
-                    <FormControl variant="standard" className={classes.formControl}>
+                    <FormControl variant="standard" style={styles.formControl}>
                         <TextField
                             disabled={this.props.saving}
                             variant="standard"
@@ -135,7 +133,7 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
                     </FormControl>
                 </Grid>
                 <Grid item md={3} xs={12}>
-                    <FormControl variant="standard" className={classes.formControl}>
+                    <FormControl variant="standard" style={styles.formControl}>
                         <TextField
                             variant="standard"
                             id="path"
@@ -177,4 +175,4 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
     }
 }
 
-export default withWidth()(withStyles(styles)(SSLDialog));
+export default withWidth()(SSLDialog);

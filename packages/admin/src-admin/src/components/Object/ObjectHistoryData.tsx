@@ -153,7 +153,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             display: 'none',
         },
         '& input': {
-            padding: `8px 0 0 0`,
+            padding: '8px 0 0 0',
         },
         '& .MuiInputAdornment-root': {
             marginLeft: 0,
@@ -168,7 +168,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             display: 'none',
         },
         '& input': {
-            padding: `8px 0 0 0`,
+            padding: '8px 0 0 0',
         },
         '& .MuiInputAdornment-root': {
             marginLeft: 0,

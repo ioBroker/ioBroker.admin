@@ -30,7 +30,7 @@ import {
     AddToPhotos as AddToPhotosIcon, Build as BuildIcon,
 } from '@mui/icons-material';
 
-import { type IobTheme } from '@iobroker/adapter-react-v5';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';
@@ -45,7 +45,6 @@ import AdapterInstallDialog, {
     type AdapterRatingInfo,
     type AdaptersContext,
 } from '@/components/Adapters/AdapterInstallDialog';
-import Utils from '@/components/Utils';
 import AutoUpgradeConfigDialog from '@/dialogs/AutoUpgradeConfigDialog';
 import sentryIcon from '../../assets/sentry.svg';
 import IsVisible from '../IsVisible';
@@ -567,6 +566,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                     .then(() => this.props.context.removeUpdateAvailable(this.props.adapterName)))}
             onClose={() => this.setState({ showUpdateDialog: false, showDialog: false })}
             instances={this.props.context.compactInstances}
+            theme={this.props.context.theme}
         />;
     }
 

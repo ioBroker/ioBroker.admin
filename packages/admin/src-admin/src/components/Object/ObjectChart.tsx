@@ -1,5 +1,4 @@
 import React, { Component, createRef } from 'react';
-import { withStyles } from '@mui/styles';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
@@ -34,6 +33,7 @@ import {
     type AdminConnection, Utils,
     withWidth, type IobTheme,
     type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 // icons
@@ -43,7 +43,7 @@ import { localeMap } from './utils';
 
 echarts.use([TimelineComponent, ToolboxComponent, TitleComponent, TooltipComponent, GridComponent, LineChart, SVGRenderer]);
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -55,9 +55,9 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         width: '100%',
         overflow: 'hidden',
     },
-    chartWithToolbar: {
+    chartWithToolbar: (theme: IobTheme) => ({
         height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + 8}px)`,
-    },
+    }),
     chartWithoutToolbar: {
         height: '100%',
     },
@@ -71,9 +71,9 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     notAliveInstance: {
         opacity: 0.5,
     },
-    customRange: {
+    customRange: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
-    },
+    }),
     splitLineButtonIcon: {
         marginRight: 8,
     },
@@ -87,7 +87,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             display: 'none',
         },
         '& input': {
-            padding: `8px 0 0 0`,
+            padding: '8px 0 0 0',
         },
         '& .MuiInputAdornment-root': {
             marginLeft: 0,
@@ -102,7 +102,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             display: 'none',
         },
         '& input': {
-            padding: `8px 0 0 0`,
+            padding: '8px 0 0 0',
         },
         '& .MuiInputAdornment-root': {
             marginLeft: 0,
@@ -143,7 +143,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     timeInput: {
         width: 80,
     },
-});
+};
 
 const GRID_PADDING_LEFT = 80;
 const GRID_PADDING_RIGHT = 25;
@@ -163,8 +163,8 @@ interface ObjectChartProps {
     historyInstance: string;
     from: number;
     end: number;
-    t: (text: string) => string;
-    classes: Record<string, string>;
+    t: Translate;
+    theme: IobTheme;
 }
 
 interface ObjectChartState {
@@ -1302,12 +1302,10 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             return null;
         }
 
-        const classes = this.props.classes;
-
         return (
             <Toolbar>
                 {!this.props.historyInstance && (
-                    <FormControl variant="standard" className={classes.selectHistoryControl}>
+                    <FormControl variant="standard" style={styles.selectHistoryControl}>
                         <InputLabel>{this.props.t('History instance')}</InputLabel>
                         <Select
                             variant="standard"
@@ -1321,7 +1319,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                                 <MenuItem
                                     key={it.id}
                                     value={it.id}
-                                    className={Utils.clsx(!it.alive && classes.notAliveInstance)}
+                                    style={!it.alive ? styles.notAliveInstance : undefined}
                                 >
                                     {it.id}
                                 </MenuItem>
@@ -1329,7 +1327,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                         </Select>
                     </FormControl>
                 )}
-                <FormControl variant="standard" className={classes.selectRelativeTime}>
+                <FormControl variant="standard" style={styles.selectRelativeTime}>
                     <InputLabel>{this.props.t('Relative')}</InputLabel>
                     <Select
                         variant="standard"
@@ -1337,7 +1335,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                         value={this.state.relativeRange}
                         onChange={e => this.setRelativeInterval(e.target.value)}
                     >
-                        <MenuItem key="custom" value="absolute" className={classes.customRange}>
+                        <MenuItem key="custom" value="absolute" sx={styles.customRange}>
                             {this.props.t('custom range')}
                         </MenuItem>
                         <MenuItem key="1" value={10}>
@@ -1382,50 +1380,48 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     </Select>
                 </FormControl>
                 <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                    <div className={classes.toolbarTimeGrid}>
+                    <div style={styles.toolbarTimeGrid}>
                         <div
-                            className={classes.toolbarTimeLabel}
-                            style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
+                            style={{ ...styles.toolbarTimeLabel, opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined }}
                         >
                             {this.props.t('Start time')}
                         </div>
                         <DatePicker
-                            className={classes.toolbarDate}
+                            sx={styles.toolbarDate}
                             disabled={this.state.relativeRange !== 'absolute'}
                             value={new Date(this.state.min)}
                             onChange={date => this.setStartDate(date)}
                         />
                         <TimePicker
                             disabled={this.state.relativeRange !== 'absolute'}
-                            className={classes.toolbarTime}
+                            sx={styles.toolbarTime}
                             ampm={this.state.ampm}
                             value={new Date(this.state.min)}
                             onChange={date => this.setStartDate(date)}
                         />
                     </div>
-                    <div className={classes.toolbarTimeGrid}>
+                    <div style={styles.toolbarTimeGrid}>
                         <div
-                            className={classes.toolbarTimeLabel}
-                            style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
+                            style={{ ...styles.toolbarTimeLabel, opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined }}
                         >
                             {this.props.t('End time')}
                         </div>
                         <DatePicker
                             disabled={this.state.relativeRange !== 'absolute'}
-                            className={classes.toolbarDate}
+                            sx={styles.toolbarDate}
                             value={new Date(this.state.max)}
                             onChange={date => this.setEndDate(date)}
                         />
                         <TimePicker
                             disabled={this.state.relativeRange !== 'absolute'}
-                            className={classes.toolbarTime}
+                            sx={styles.toolbarTime}
                             ampm={this.state.ampm}
                             value={new Date(this.state.max)}
                             onChange={date => this.setEndDate(date)}
                         />
                     </div>
                 </LocalizationProvider>
-                <div className={classes.grow} />
+                <div style={styles.grow} />
                 <Button
                     style={{ marginRight: 10 }}
                     variant="outlined"
@@ -1449,12 +1445,12 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                     </MenuItem>
                 </Menu> : null}
                 {this.props.showJumpToEchart && this.state.echartsJump && <Fab
-                    className={classes.echartsButton}
+                    style={styles.echartsButton}
                     size="small"
                     onClick={() => this.openEcharts()}
                     title={this.props.t('Open charts in new window')}
                 >
-                    <img src={EchartsIcon} alt="echarts" className={classes.buttonIcon} />
+                    <img src={EchartsIcon} alt="echarts" style={styles.buttonIcon} />
                 </Fab>}
                 <Fab
                     variant="extended"
@@ -1466,7 +1462,7 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
                         this.setState({ splitLine: !this.state.splitLine });
                     }}
                 >
-                    <SplitLineIcon className={classes.splitLineButtonIcon} />
+                    <SplitLineIcon style={styles.splitLineButtonIcon} />
                     {this.props.t('Show lines')}
                 </Fab>
             </Toolbar>
@@ -1478,15 +1474,14 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
             return <LinearProgress />;
         }
 
-        return <Paper className={this.props.classes.paper}>
+        return <Paper style={styles.paper}>
             {this.renderToolbar()}
             <div
                 ref={this.divRef}
-                className={Utils.clsx(
-                    this.props.classes.chart,
-                    this.props.noToolbar
-                        ? this.props.classes.chartWithoutToolbar
-                        : this.props.classes.chartWithToolbar,
+                style={Utils.getStyle(
+                    this.props.theme,
+                    styles.chart,
+                    this.props.noToolbar ? styles.chartWithoutToolbar : styles.chartWithToolbar,
                 )}
             >
                 {this.renderChart()}
@@ -1495,4 +1490,4 @@ class ObjectChart extends Component<ObjectChartProps, ObjectChartState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(ObjectChart));
+export default withWidth()(ObjectChart);

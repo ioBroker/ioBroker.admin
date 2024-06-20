@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@mui/styles';
 
 import {
     Button,
@@ -19,14 +18,14 @@ import {
 } from '@mui/icons-material';
 
 import {
-    I18n, Utils,
-    type AdminConnection, type IobTheme,
+    I18n,
+    type AdminConnection,
     type ThemeName, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 import { ConfigPanel } from '@iobroker/json-config';
 
-const useStyles = makeStyles<IobTheme>(theme => ({
+const styles: Record<string, React.CSSProperties> = {
     root: {
         // backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -47,94 +46,6 @@ const useStyles = makeStyles<IobTheme>(theme => ({
     overflowHidden: {
         overflow: 'hidden',
     },
-    overflowAuto: {
-        overflowY: 'auto',
-    },
-    pre: {
-        overflow: 'auto',
-        margin: 20,
-        '& p': {
-            fontSize: 18,
-        },
-    },
-    blockInfo: {
-        right: 20,
-        top: 10,
-        position: 'absolute',
-        display: 'flex',
-        alignItems: 'center',
-        color: 'silver',
-    },
-    img: {
-        marginLeft: 10,
-        width: 45,
-        height: 45,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
-        },
-    },
-    message: {
-        justifyContent: 'space-between',
-        display: 'flex',
-        width: '100%',
-        alignItems: 'center',
-    },
-    column: {
-        flexDirection: 'column',
-    },
-    headerText: {
-        fontWeight: 'bold',
-        fontSize: 15,
-    },
-    descriptionHeaderText: {
-        margin: '10px 0',
-    },
-    silver: {
-        color: 'silver',
-    },
-    button: {
-        paddingTop: 18,
-        paddingBottom: 5,
-        position: 'sticky',
-        bottom: 0,
-        background: 'white',
-        zIndex: 3,
-    },
-    terminal: {
-        fontFamily: 'monospace',
-        fontSize: 14,
-        marginLeft: 20,
-    },
-    img2: {
-        width: 25,
-        height: 25,
-        marginRight: 10,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
-        },
-    },
     heading: {
         display: 'flex',
         alignItems: 'center',
@@ -144,33 +55,13 @@ const useStyles = makeStyles<IobTheme>(theme => ({
         padding: 13,
         fontSize: 16,
     },
-    headerBlockDisplay: {
-        backgroundColor: '#272727',
-        padding: 13,
-        fontSize: 16,
-        display: 'flex',
-    },
-    headerBlockDisplayItem: {
-        padding: 13,
-        fontSize: 16,
-        display: 'flex',
-    },
-    width200: {
-        width: 200,
-    },
-    table: {
-        // '& *': {
-        //     color: 'black'
-        // }
-    },
     paperTable: {
         width: '100%',
         marginBottom: 16,
     },
-}));
+};
 
 interface TabPanelProps {
-    classes: Record<string, string>;
     children: React.JSX.Element;
     value: number;
     index: number;
@@ -179,7 +70,7 @@ interface TabPanelProps {
 }
 
 const TabPanel: React.FC<TabPanelProps> = ({
-    classes, children, value, index, title, custom, ...props
+    children, value, index, title, custom, ...props
 }) => {
     if (custom) {
         return <div
@@ -189,23 +80,21 @@ const TabPanel: React.FC<TabPanelProps> = ({
         </div>;
     }
 
-    return (
-        <div
-            {...props}
-        >
-            {value === index &&
-            <>
-                <AppBar position="static" color="default">
-                    <div className={classes.headerBlock}>
-                        {title}
-                    </div>
-                </AppBar>
-                <Box p={3}>
-                    <Typography component="div">{children}</Typography>
-                </Box>
-            </>}
-        </div>
-    );
+    return <div
+        {...props}
+    >
+        {value === index &&
+        <>
+            <AppBar position="static" color="default">
+                <div style={styles.headerBlock}>
+                    {title}
+                </div>
+            </AppBar>
+            <Box p={3}>
+                <Typography component="div">{children}</Typography>
+            </Box>
+        </>}
+    </div>;
 };
 
 const types = {
@@ -268,7 +157,6 @@ interface GenerateInputsModalProps {
 const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
     themeType, themeName, socket, newInstances, onClose,
 }) => {
-    const classes = useStyles();
     const [error, setError] = useState<Record<string, string>>({});
 
     const [schema, setSchema] = useState<{items:
@@ -333,9 +221,9 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
     return <Dialog
         onClose={onClose}
         open={!0}
-        classes={{ paper: classes.paper }}
+        sx={{ '& .MuiDialog-paper': styles.paper }}
     >
-        <h2 className={classes.heading}>
+        <h2 style={styles.heading}>
             <SettingsIcon style={{
                 color: 'rgb(77 171 245)',
                 fontSize: 36,
@@ -345,16 +233,15 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
             />
             {I18n.t('Instance parameters for %s', newInstances._id.replace('system.adapter.', ''))}
         </h2>
-        <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
-            <div className={classes.root}>
+        <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
+            <div style={styles.root}>
                 <TabPanel
                     value={1}
                     index={1}
                     custom
                     title={I18n.t('Test')}
-                    classes={classes}
                 >
-                    <Paper className={classes.paperTable}>
+                    <Paper style={styles.paperTable}>
                         {/*
                             @ts-expect-error missing param */}
                         <ConfigPanel

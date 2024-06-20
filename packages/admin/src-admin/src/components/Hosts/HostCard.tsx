@@ -28,7 +28,7 @@ export const styles: Record<string, any> = {
     ...genericStyles,
     root: (theme: IobTheme) => ({
         position: 'relative',
-        margin: 10,
+        m: '10px',
         width: 300,
         minHeight: 200,
         background: theme.palette.background.default,
@@ -91,8 +91,8 @@ export const styles: Record<string, any> = {
         opacity: 0.9,
         cursor: 'pointer',
         position: 'relative',
-        marginLeft: 'auto',
-        marginBottom: 10,
+        ml: 'auto',
+        mb: '10px',
         transition: 'all 0.6s ease',
         '&:hover': {
             transform: 'rotate(90deg)',
@@ -127,14 +127,10 @@ export const styles: Record<string, any> = {
         fontWeight: 'bold',
         fontSize: 16,
         verticalAlign: 'middle',
-        paddingLeft: 8,
-        paddingTop: 16,
+        pl: 1,
+        pt: 2,
         color: theme.palette.mode === 'dark' ? '#333' : '#555',
     }),
-    cardContent: {
-        marginTop: 16,
-        paddingTop: 0,
-    },
     cardContentInfo: (theme: IobTheme) => ({
         overflow: 'auto',
         paddingTop: 0,
@@ -203,7 +199,7 @@ export const styles: Record<string, any> = {
     curdContentFlexCenter: {
         display: 'flex',
         alignItems: 'center',
-        marginLeft: 4,
+        ml: '4px',
     },
     marginRight: {
         marginRight: 'auto',
@@ -213,6 +209,12 @@ export const styles: Record<string, any> = {
         paddingBottom: 0,
         paddingLeft: 16,
         paddingRight: 8,
+    },
+    value: {
+        marginLeft: 5,
+    },
+    label: {
+        fontWeight: 'bold',
     },
 };
 
@@ -243,14 +245,16 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
         return <ul key="ul" style={styles.ul}>
             {Object.keys(this.props.hostData).map(value => <li key={value}>
                 <span style={styles.black}>
-                    <span style={styles.bold}>
+                    <span style={styles.label}>
                         {this.props.t(value)}
                         :
                         {' '}
                     </span>
-                    {HostGeneric.formatInfo[value] ?
-                        HostGeneric.formatInfo[value]((this.props.hostData as Record<string, any>)[value], this.props.t) :
-                        ((this.props.hostData as Record<string, any>)[value] || '--')}
+                    <span style={styles.value}>
+                        {HostGeneric.formatInfo[value] ?
+                            HostGeneric.formatInfo[value]((this.props.hostData as Record<string, any>)[value], this.props.t) :
+                            ((this.props.hostData as Record<string, any>)[value] || '--')}
+                    </span>
                 </span>
             </li>)}
         </ul>;
@@ -260,7 +264,7 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
         const upgradeAvailable = (this.props.isCurrentHost || this.props.alive) && BasicUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
         const description = this.getHostDescriptionAll();
 
-        return <Card key={this.props.hostId} sx={{ ...styles.root, ...(this.props.hidden ? styles.hidden : undefined) }}>
+        return <Card key={this.props.hostId} sx={Utils.getStyle(this.props.theme, styles.root, this.props.hidden && styles.hidden)}>
             {this.renderDialogs()}
             {this.state.openCollapse && <div style={{ ...styles.collapse, ...(!this.state.openCollapse ? styles.collapseOff : undefined) }}>
                 <CardContent sx={styles.cardContentInfo}>
@@ -292,15 +296,17 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                 <CardMedia
                     sx={styles.img}
                     component="img"
-                    // @ts-expect-error fixed in js-controller 6
-                    image={this.props.host.common.image || 'img/no-image.png'}
+                    image={this.props.host.common.icon || 'img/no-image.png'}
                 />
                 <Box
                     component="div"
-                    style={{ color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }}
-                    className={styles.adapter}
+                    style={Utils.getStyle(
+                        this.props.theme,
+                        styles.adapter,
+                        { color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }
+                    )}
                 >
-                    {this.renderNotificationsBadge(this.props.host.common.name)}
+                    {this.renderNotificationsBadge(this.props.host.common.name, true)}
                 </Box>
                 {!this.state.openCollapse ? <Fab
                     disabled={typeof description === 'string'}
@@ -316,35 +322,37 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
             <CardContent style={styles.cardContentH5}>
                 <Typography variant="body2" color="textSecondary" component="div">
                     <div style={styles.displayFlex}>
-                        CPU:
-                        <div ref={this.refCpu} style={styles.marginLeft5}>
+                        <span style={styles.label}>CPU:</span>
+                        <div ref={this.refCpu} style={styles.value}>
                             - %
                         </div>
                     </div>
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
                     <div style={styles.displayFlex}>
-                        RAM:
-                        <div ref={this.refMem} style={styles.marginLeft5}>
+                        <span style={styles.label}>RAM:</span>
+                        <div ref={this.refMem} style={styles.value}>
                             - %
                         </div>
                     </div>
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
                     <div style={styles.displayFlex}>
-                        {this.props.t('Uptime')}
-                        :
-                        {' '}
-                        <div ref={this.refUptime} style={styles.marginLeft5}>
+                        <span style={styles.label}>
+                            {this.props.t('Uptime')}
+                            :
+                        </span>
+                        <div ref={this.refUptime} style={styles.value}>
                             -d -h
                         </div>
                     </div>
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div" style={styles.wrapperAvailable}>
-                    {this.props.t('Available')}
-                    {' '}
-                    js-controller:
-                    {' '}
+                    <span style={styles.label}>
+                        {this.props.t('Available')}
+                        {' '}
+                        js-controller:
+                    </span>
                     <Box
                         component="div"
                         sx={{ ...(upgradeAvailable ? styles.greenText : undefined), ...styles.curdContentFlexCenter }}
@@ -353,17 +361,20 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                     </Box>
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    {this.props.t('Installed')}
-                    {' '}
-                    js-controller:
-                    {this.props.host.common.installedVersion}
+                    <span style={styles.label}>
+                        {this.props.t('Installed')}
+                        {' '}
+                        js-controller:
+                    </span>
+                    <span style={styles.value}>{this.props.host.common.installedVersion}</span>
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="div">
                     <div style={styles.displayFlex}>
-                        {this.props.t('Events')}
-                        :
-                        {' '}
-                        <div ref={this.refEvents} style={styles.marginLeft5}>- / -</div>
+                        <span style={styles.label}>
+                            {this.props.t('Events')}
+                            :
+                        </span>
+                        <div ref={this.refEvents} style={styles.value}>- / -</div>
                     </div>
                 </Typography>
                 <div style={styles.marginTop10}>

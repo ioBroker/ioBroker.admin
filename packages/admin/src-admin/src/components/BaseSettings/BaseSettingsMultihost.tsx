@@ -8,7 +8,7 @@ import {
     Paper,
 } from '@mui/material';
 
-import { type AdminConnection, withWidth } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, withWidth, type Translate } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, React.CSSProperties> = {
     paper: {
@@ -37,7 +37,7 @@ export interface MultihostSettings {
 }
 
 interface BaseSettingsMultihostProps {
-    t: (text: string) => string;
+    t: Translate;
     onChange: (settings: MultihostSettings) => void;
     settings: MultihostSettings;
     socket: AdminConnection;

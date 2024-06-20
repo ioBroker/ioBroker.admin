@@ -1,7 +1,5 @@
 import React, { createRef, Component } from 'react';
 
-import { withStyles, type Styles } from '@mui/styles';
-
 import {
     Button,
     Dialog,
@@ -18,16 +16,16 @@ import {
 
 import type { IobTheme, Translate, AdminConnection } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     rootGrid: {
         flexGrow: 1,
     },
-    closeButton: {
+    closeButton: (theme: IobTheme) => ({
         position: 'absolute',
         right: 8,
         top: 8,
         color: theme.palette.grey[500],
-    },
+    }),
     paper: {
         // minWidth: 600
     },
@@ -39,7 +37,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         height: '100%',
         objectFit: 'contain',
     },
-});
+};
 
 interface CameraIntroLinkDialogProps {
     t: Translate;
@@ -50,7 +48,6 @@ interface CameraIntroLinkDialogProps {
     name: string;
     addTs: boolean;
     children: string;
-    classes: Record<string, string>;
 }
 
 class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
@@ -104,26 +101,24 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
     }
 
     render() {
-        const { classes } = this.props;
-
         return <Dialog
             onClose={() => this.props.onClose()}
             open={!0}
             maxWidth="xl"
             fullWidth
             fullScreen
-            classes={{ paper: classes.paper }}
+            sx={{ '& .MuiDialog-paper': styles.paper }}
         >
             <DialogTitle>
-                <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
+                <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
                     {this.props.name}
-                    <IconButton size="large" className={classes.closeButton} onClick={() => this.props.onClose()}>
+                    <IconButton size="large" sx={styles.closeButton} onClick={() => this.props.onClose()}>
                         <CloseIcon />
                     </IconButton>
                 </Typography>
             </DialogTitle>
             <DialogContent dividers>
-                <img className={this.props.classes.img} src="" alt="camera" ref={this.cameraRef} />
+                <img style={styles.img} src="" alt="camera" ref={this.cameraRef} />
             </DialogContent>
             <DialogActions>
                 <Button
@@ -143,4 +138,4 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
     }
 }
 
-export default withStyles(styles)(CameraIntroLinkDialog);
+export default CameraIntroLinkDialog;

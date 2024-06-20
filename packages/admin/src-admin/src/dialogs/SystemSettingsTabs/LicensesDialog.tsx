@@ -1,5 +1,4 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -19,13 +18,12 @@ import {
     Utils,
     type AdminConnection,
     type Translate,
-    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
-const styles: Styles<IobTheme, any> = {
+const styles: Record<string, React.CSSProperties> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -105,7 +103,6 @@ type LicenseObject = ioBrokerObject<{
 
 interface LicensesDialogProps {
     t: Translate;
-    classes: Record<string, string>;
     data: LicenseObject;
     host: string;
     saving: boolean;
@@ -206,32 +203,32 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
     }
 
     renderLicenses() {
-        return <div className={this.props.classes.tableDiv}>
+        return <div style={styles.tableDiv}>
             <TableContainer>
                 <Table stickyHeader size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell className={this.props.classes.tableName}>{this.props.t('Product')}</TableCell>
-                            <TableCell className={this.props.classes.tableDate}>{this.props.t('Ordered at')}</TableCell>
-                            <TableCell className={this.props.classes.tableUuid}>{this.props.t('UUID')}</TableCell>
-                            <TableCell className={this.props.classes.tableValid}>{this.props.t('Valid till')}</TableCell>
-                            <TableCell className={this.props.classes.tableVersion}>{this.props.t('V')}</TableCell>
-                            <TableCell className={this.props.classes.tableUsedIn}>{this.props.t('Used by')}</TableCell>
-                            <TableCell className={this.props.classes.tableCommercial}>{this.props.t('ra_Commercial')}</TableCell>
+                            <TableCell style={styles.tableName}>{this.props.t('Product')}</TableCell>
+                            <TableCell style={styles.tableDate}>{this.props.t('Ordered at')}</TableCell>
+                            <TableCell style={styles.tableUuid}>{this.props.t('UUID')}</TableCell>
+                            <TableCell style={styles.tableValid}>{this.props.t('Valid till')}</TableCell>
+                            <TableCell style={styles.tableVersion}>{this.props.t('V')}</TableCell>
+                            <TableCell style={styles.tableUsedIn}>{this.props.t('Used by')}</TableCell>
+                            <TableCell style={styles.tableCommercial}>{this.props.t('ra_Commercial')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {this.state.licenses && this.state.licenses.map(license => <TableRow key={license.id}>
-                            <TableCell className={this.props.classes.tableName}>
+                            <TableCell style={styles.tableName}>
                                 <div>{license.product}</div>
-                                <div className={this.props.classes.licenseId}>{license.id}</div>
+                                <div style={styles.licenseId}>{license.id}</div>
                             </TableCell>
-                            <TableCell className={this.props.classes.tableDate}>{new Date(license.time).toLocaleDateString()}</TableCell>
-                            <TableCell className={Utils.clsx(this.props.classes.tableUuid, license.uuid && this.state.uuid === license.uuid ? this.props.classes.uuidGreen : (license.uuid ? this.props.classes.uuidGrey : ''))}>{license.uuid || ''}</TableCell>
-                            <TableCell className={this.props.classes.tableValid}>{license.validTill === '0000-00-00 00:00:00' ? '' : license.validTill || ''}</TableCell>
-                            <TableCell className={this.props.classes.tableVersion}>{license.version || ''}</TableCell>
-                            <TableCell className={this.props.classes.tableUsedIn}>{license.usedBy || ''}</TableCell>
-                            <TableCell className={this.props.classes.tableCommercial}>{license.invoice !== 'free' ? (license.invoice === 'MANUALLY_CREATED' ? '✓' : license.invoice) : '-'}</TableCell>
+                            <TableCell style={styles.tableDate}>{new Date(license.time).toLocaleDateString()}</TableCell>
+                            <TableCell style={{ ...styles.tableUuid, ...(license.uuid && this.state.uuid === license.uuid ? styles.uuidGreen : (license.uuid ? styles.uuidGrey : undefined)) }}>{license.uuid || ''}</TableCell>
+                            <TableCell style={styles.tableValid}>{license.validTill === '0000-00-00 00:00:00' ? '' : license.validTill || ''}</TableCell>
+                            <TableCell style={styles.tableVersion}>{license.version || ''}</TableCell>
+                            <TableCell style={styles.tableUsedIn}>{license.usedBy || ''}</TableCell>
+                            <TableCell style={styles.tableCommercial}>{license.invoice !== 'free' ? (license.invoice === 'MANUALLY_CREATED' ? '✓' : license.invoice) : '-'}</TableCell>
                         </TableRow>)}
                     </TableBody>
                 </Table>
@@ -240,12 +237,10 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
     }
 
     render() {
-        const { classes } = this.props;
-
-        return <div className={classes.tabPanel}>
+        return <div style={styles.tabPanel}>
             <TextField
                 variant="standard"
-                className={this.props.classes.input}
+                style={styles.input}
                 disabled={this.props.saving || this.state.requesting}
                 value={this.props.data.native.login}
                 helperText={this.props.t('for ioBroker.net portal')}
@@ -259,7 +254,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
             <TextField
                 variant="standard"
                 disabled={this.props.saving || this.state.requesting}
-                className={this.props.classes.input}
+                style={styles.input}
                 type="password"
                 value={this.props.data.native.password}
                 helperText={this.props.t('for ioBroker.net portal')}
@@ -281,7 +276,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
                     !this.props.data.native.login
                 }
                 onClick={() => this.requestLicenses()}
-                className={this.props.classes.button}
+                style={styles.button}
                 color="grey"
             >
                 {this.props.t('Check')}
@@ -291,4 +286,4 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
     }
 }
 
-export default withWidth()(withStyles(styles)(LicensesDialog));
+export default withWidth()(LicensesDialog);

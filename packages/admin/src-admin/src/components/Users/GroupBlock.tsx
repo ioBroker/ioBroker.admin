@@ -20,8 +20,6 @@ import {
     type ThemeType, type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
-import LocalUtils from '../Utils';
-
 interface GroupBlockProps {
     t: Translate;
     group: ioBroker.GroupObject;
@@ -72,7 +70,7 @@ const GroupBlock: React.FC<GroupBlockProps> = props => {
     return <Card
         style={style}
         ref={drop}
-        sx={LocalUtils.getStyle(props.theme, props.styles.userGroupCard2, backgroundColor)}
+        sx={Utils.getStyle(props.theme, props.styles.userGroupCard2, backgroundColor)}
     >
         <div style={props.styles.right}>
             <IconButton size="small" onClick={() => props.showGroupEditDialog(props.group, false)}>

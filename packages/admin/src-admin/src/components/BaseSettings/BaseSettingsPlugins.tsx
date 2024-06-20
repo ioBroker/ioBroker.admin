@@ -5,6 +5,7 @@ import { Paper } from '@mui/material';
 import {
     withWidth,
     type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
@@ -36,7 +37,7 @@ export interface PluginsSettings {
 }
 
 interface BaseSettingsPluginsProps {
-    t: (text: string) => string;
+    t: Translate;
     onChange: (settings: PluginsSettings) => void;
     settings: PluginsSettings;
     themeType: ThemeType;

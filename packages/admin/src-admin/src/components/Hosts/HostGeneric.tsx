@@ -123,15 +123,15 @@ export const blinkClasses = `
     }
     .onBlick-light {
         animation: onBlink-keys-light 2s ease-in-out;
-        animationIterationCount: 2;
-        fontSize: 12px;
-        marginLeft: 4px;
+        animation-iteration-count: 2;
+        font-size: 12px;
+        margin-left: 4px;
     }
     .onBlick-dark {
         animation: onBlink-keys-dark 2s ease-in-out;
-        animationIterationCount: 2;
-        fontSize: 12px;
-        marginLeft: 4px;
+        animation-iteration-count: 2;
+        font-size: 12px;
+        margin-left: 4px;
     }
     @keyframes height {
         0% {
@@ -167,7 +167,7 @@ export const genericStyles: Record<string, any> = {
     },
     footerBlock: (theme: IobTheme) => ({
         background: theme.palette.background.default,
-        padding: 10,
+        p: '10px',
         display: 'flex',
         justifyContent: 'space-between',
     }),
@@ -188,7 +188,7 @@ export const genericStyles: Record<string, any> = {
     buttonUpdate: {
         border: '1px solid',
         padding: '0px 7px',
-        borderRadius: 5,
+        borderRadius: '5px',
         display: 'flex',
         alignItems: 'center',
         cursor: 'pointer',
@@ -298,7 +298,7 @@ export interface HostGenericState {
 }
 
 export default abstract class HostGeneric<TProps extends HostGenericProps, TState extends HostGenericState> extends Component<TProps, TState> {
-    static formatInfo: Record<string, (value: any, t: (text: string, ...args: any) => string) => string> = {
+    static formatInfo: Record<string, (value: any, t: Translate) => string> = {
         Uptime: BasicUtils.formatSeconds,
         'System uptime': BasicUtils.formatSeconds,
         RAM: BasicUtils.formatRam,
@@ -568,7 +568,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderUpdateButton(upgradeAvailable: boolean) {
+    renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties) {
         return upgradeAvailable ? <Tooltip title={this.props.t('Update')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
             <Box
                 component="div"
@@ -576,7 +576,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                     event.stopPropagation();
                     this.openHostUpdateDialog();
                 }}
-                className={genericStyles.buttonUpdate}
+                sx={genericStyles.buttonUpdate}
             >
                 <IconButton style={genericStyles.buttonUpdateIcon} size="small">
                     <RefreshIcon />
@@ -585,7 +585,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             </Box>
         </Tooltip>
             :
-            this.props.available;
+            <span style={style}>{this.props.available}</span>;
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
@@ -743,6 +743,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                     this.setState({ hostUpdateDialog: false, hostUpdate: null, instructionDialog: true });
                 }
             }}
+            theme={this.props.theme}
             installedVersion={this.props.host.common.installedVersion}
             onInstruction={() =>
                 this.setState({ hostUpdateDialog: false, hostUpdate: null, instructionDialog: true })}

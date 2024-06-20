@@ -11,8 +11,7 @@ import {
 } from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
-import { type IobTheme } from '@iobroker/adapter-react-v5';
-import Utils from '@/components/Utils';
+import { type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import IsVisible from '../IsVisible';
 import AdapterGeneric, {

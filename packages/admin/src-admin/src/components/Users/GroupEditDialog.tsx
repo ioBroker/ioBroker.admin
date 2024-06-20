@@ -277,7 +277,6 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 }}
-                // @ts-expect-error fixed in adapter-react
                 previewStyle={props.styles.iconPreview}
                 icon={ImageIcon}
                 // classes={props.classes}

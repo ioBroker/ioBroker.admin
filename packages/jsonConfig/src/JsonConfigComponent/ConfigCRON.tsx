@@ -81,6 +81,7 @@ class ConfigCRON extends ConfigGeneric<ConfigCRONProps, ConfigCRONState> {
                 onClose={() => this.setState({ showDialog: false })}
                 cancel={I18n.t('ra_Cancel')}
                 ok={I18n.t('ra_Ok')}
+                theme={this.props.theme}
                 onOk={value_ => this.setState({ showDialog: false, value: value_ }, () => this.onChange(attr, value_))}
             /> : null}
         </FormControl>;

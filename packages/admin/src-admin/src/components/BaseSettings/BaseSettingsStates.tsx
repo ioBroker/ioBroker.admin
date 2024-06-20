@@ -21,6 +21,7 @@ import {
     Confirm as DialogConfirm,
     withWidth,
     type IobTheme,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { type AdminConnection } from '@iobroker/socket-client';
@@ -107,7 +108,7 @@ export interface SettingsStates {
 }
 
 interface BaseSettingsStatesProps {
-    t: (text: string) => string;
+    t: Translate;
     onChange: (settings: SettingsStates) => void;
     settings: SettingsStates;
     currentHost: string;

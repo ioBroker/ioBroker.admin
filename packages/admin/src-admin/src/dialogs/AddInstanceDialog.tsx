@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import { withStyles } from '@mui/styles';
-
 import {
     Button,
     Dialog,
@@ -16,6 +14,7 @@ import {
     Select,
     Typography,
     type SelectChangeEvent,
+    Box,
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -28,6 +27,7 @@ import {
     type AdminConnection,
     I18n, Utils,
     type IobTheme,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
@@ -35,24 +35,24 @@ import type InstancesWorker from '@/Workers/InstancesWorker';
 import { checkCondition, type CompactInstanceInfo, type Message } from '@/dialogs/AdapterUpdateDialog';
 import HostSelectors from '@/components/HostSelectors';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     formControl: {
         marginTop: 24,
     },
-    closeButton: {
+    closeButton: (theme: IobTheme) => ({
         position: 'absolute',
         right: 8,
         top: 8,
         color: theme.palette.grey[500],
-    },
+    }),
     languageButton: {
         position: 'absolute',
         right: 52 + 8,
         top: 8,
     },
-    languageButtonActive: {
+    languageButtonActive: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
-    },
+    }),
     paper: {
         // minWidth: 600
     },
@@ -71,33 +71,33 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     messageColor_info: {
         color: '#5abd29',
     },
-    messageTitle_warn: {
+    messageTitle_warn: (theme: IobTheme) => ({
         background: '#cb7642',
-        borderRadius: 3,
-        paddingLeft: 10,
+        borderRadius: '3px',
+        pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
-    messageTitle_error: {
+    }),
+    messageTitle_error: (theme: IobTheme) => ({
         background: '#f5614d',
-        borderRadius: 3,
-        paddingLeft: 10,
+        borderRadius: '3px',
+        pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
-    messageTitle_info: {
+    }),
+    messageTitle_info: (theme: IobTheme) => ({
         background: '#5abd29',
-        borderRadius: 3,
-        paddingLeft: 10,
+        borderRadius: '3px',
+        pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
-    deps: {
-        margin: 10,
+    }),
+    deps: (theme: IobTheme) => ({
+        m: '10px',
         fontSize: 16,
         color: theme.palette.mode === 'dark' ? '#e70000' : '#840101',
-    },
-});
+    }),
+};
 
 export interface AdapterDependencies {
     name: string;
@@ -113,19 +113,19 @@ interface AddInstanceDialogProps {
     socket: AdminConnection;
     currentHost: string;
     currentInstance: string;
-    t: (text: string, arg1?: any, arg?: any) => string;
+    t: Translate;
     onClick: () => void;
     onClose: () => void;
     onHostChange: (host: string) => void;
     onInstanceChange: (event: SelectChangeEvent<string>) => void;
     instances: Record<string, CompactInstanceInfo>;
     adapterObject: ioBroker.AdapterCommon;
-    classes: Record<string, any>;
     dependencies: AdapterDependencies[];
     hostsWorker: InstanceType<typeof HostsWorker>;
     noTranslation: boolean;
     toggleTranslation: () => void;
     expertMode: boolean;
+    theme: IobTheme;
 }
 
 interface AddInstanceDialogState {
@@ -133,7 +133,7 @@ interface AddInstanceDialogState {
 }
 
 class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDialogState> {
-    private readonly t: (text: string, arg1?: any, arg?: any) => string;
+    private readonly t: Translate;
 
     private readonly messages: Message[] | null = null;
 
@@ -206,10 +206,10 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
 
     renderOneMessage(message: Message, index: number) {
         return <Grid item key={index}>
-            <Typography className={this.props.classes[`messageTitle_${message.level || 'warn'}`]}>
+            <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
                 {this.getText(message.title, this.props.noTranslation) || ''}
             </Typography>
-            <Typography component="div" variant="body2" className={this.props.classes.messageText}>
+            <Typography component="div" variant="body2" style={styles.messageText}>
                 {this.getText(message.text, this.props.noTranslation) || ''}
             </Typography>
             {message.link ?
@@ -244,26 +244,24 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
     }
 
     render() {
-        const { classes } = this.props;
-
         const checkDeps = this.checkDependencies();
 
         return <Dialog
             onClose={this.props.onClose}
             open={!0}
-            classes={{ paper: classes.paper }}
+            sx={{ '& .MuiDialog-paper': styles.paper }}
         >
             <DialogTitle>
-                <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
+                <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
                     {this.t('You are going to add new instance:')}
                     {' '}
                     {this.props.adapter}
-                    <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
+                    <IconButton size="large" sx={styles.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
                     {this.messages && this.lang !== 'en' && this.props.toggleTranslation ? <IconButton
                         size="large"
-                        className={Utils.clsx(classes.languageButton, this.props.noTranslation && classes.languageButtonActive)}
+                        style={Utils.getStyle(this.props.theme, styles.languageButton, this.props.noTranslation && styles.languageButtonActive)}
                         onClick={this.props.toggleTranslation}
                         title={I18n.t('Disable/Enable translation')}
                     >
@@ -286,7 +284,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                         setCurrentHost={(hostName, hostId) =>
                             this.props.onHostChange(hostId.replace(/^system\.host\./, ''))}
                     />
-                    <FormControl variant="standard" className={classes.formControl}>
+                    <FormControl variant="standard" style={styles.formControl}>
                         <InputLabel id="instance-label">{this.t('Instance')}</InputLabel>
                         <Select
                             variant="standard"
@@ -298,9 +296,9 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                         </Select>
                     </FormControl>
                 </Grid> : null}
-                <div className={classes.deps}>
+                <Box component="div" sx={styles.deps}>
                     {checkDeps}
-                </div>
+                </Box>
             </DialogContent>
             <DialogActions>
                 <Button
@@ -329,4 +327,4 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
     }
 }
 
-export default withStyles(styles)(AddInstanceDialog);
+export default AddInstanceDialog;

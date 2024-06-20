@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 
-import { withStyles, type Styles } from '@mui/styles';
 import {
     Grid,
     Typography,
@@ -19,14 +18,14 @@ import {
 
 import {
     I18n, withWidth,
-    type IobTheme, type Translate,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
 import Utils from '@/Utils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
-const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
+const styles: Record<string, React.CSSProperties> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -49,7 +48,7 @@ const styles: Styles<IobTheme, any> = (theme: IobTheme) => ({
         paddingLeft: 0,
         paddingRight: 0,
     },
-});
+};
 
 type ACLOwners = {
     owner: ioBroker.ObjectIDs.User;
@@ -66,7 +65,6 @@ type ACLObject = ioBrokerObject<object, { defaultNewAcl: ACLOwners & ACLRights }
 
 type ACLObjectProps = {
     t: Translate;
-    classes: Record<string, string>;
     data: ACLObject;
     users: ioBroker.Object[];
     groups: ioBroker.Object[];
@@ -102,10 +100,9 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
 
     getTable(owner: keyof ACLRights): React.JSX.Element {
         const checks = this.getRights(owner);
-        const { classes } = this.props;
         const checkboxes = checks.map((elem, index) =>
             <Fragment key={index}>
-                <TableCell className={classes.tableCell}>
+                <TableCell style={styles.tableCell}>
                     <Checkbox
                         disabled={this.props.saving}
                         checked={!!elem[0]}
@@ -113,7 +110,7 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
                         onChange={() => this.handleCheck(owner, index, 0)}
                     />
                 </TableCell>
-                <TableCell className={classes.tableCell}>
+                <TableCell style={styles.tableCell}>
                     <Checkbox
                         disabled={this.props.saving}
                         checked={!!elem[1]}
@@ -124,38 +121,38 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
             </Fragment>);
 
         return <TableContainer>
-            <Table className={classes.table} aria-label="customized table">
+            <Table style={styles.table} aria-label="customized table">
                 <TableHead>
                     <TableRow>
-                        <TableCell colSpan={2} className={classes.tableCell}>
+                        <TableCell colSpan={2} style={styles.tableCell}>
                             {this.props.t('Owner')}
                         </TableCell>
-                        <TableCell colSpan={2} className={classes.tableCell}>
+                        <TableCell colSpan={2} style={styles.tableCell}>
                             {this.props.t('Group')}
                         </TableCell>
-                        <TableCell colSpan={2} className={classes.tableCell}>
+                        <TableCell colSpan={2} style={styles.tableCell}>
                             {this.props.t('Everyone')}
                         </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     <TableRow>
-                        <TableCell className={classes.tableCell}>
+                        <TableCell style={styles.tableCell}>
                             {this.props.t('read')}
                         </TableCell>
-                        <TableCell className={classes.tableCell}>
+                        <TableCell style={styles.tableCell}>
                             {this.props.t('write')}
                         </TableCell>
-                        <TableCell className={classes.tableCell}>
+                        <TableCell style={styles.tableCell}>
                             {this.props.t('read')}
                         </TableCell>
-                        <TableCell className={classes.tableCell}>
+                        <TableCell style={styles.tableCell}>
                             {this.props.t('write')}
                         </TableCell>
-                        <TableCell className={classes.tableCell}>
+                        <TableCell style={styles.tableCell}>
                             {this.props.t('read')}
                         </TableCell>
-                        <TableCell className={classes.tableCell}>
+                        <TableCell style={styles.tableCell}>
                             {this.props.t('write')}
                         </TableCell>
                     </TableRow>
@@ -190,7 +187,6 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
 
     render() {
         const lang = I18n.getLanguage();
-        const { classes } = this.props;
         const users = this.props.users.map((elem, index) =>
             <MenuItem value={elem._id} key={index}>
                 {typeof elem.common.name === 'object' ? elem.common.name[lang] || elem.common.name.en : elem.common.name}
@@ -209,20 +205,20 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
                 {this.getTable(ee.type)}
             </Grid>);
 
-        return <div className={classes.tabPanel}>
+        return <div style={styles.tabPanel}>
             <Typography variant="h5" component="div">
                 {this.props.t('Access control list')}
             </Typography>
             <Grid container spacing={3}>
                 <Grid item lg={3} md={6} xs={12}>
-                    <FormControl variant="standard" className={classes.formControl}>
+                    <FormControl variant="standard" style={styles.formControl}>
                         <InputLabel shrink id="owner-label">
                             {this.props.t('Owner user')}
                         </InputLabel>
                         <Select
                             disabled={this.props.saving}
                             variant="standard"
-                            className={classes.formControl}
+                            style={styles.formControl}
                             id="owner"
                             value={this.props.data.common.defaultNewAcl.owner}
                             onChange={evt => this.doChange('owner', evt.target.value)}
@@ -234,14 +230,14 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
                     </FormControl>
                 </Grid>
                 <Grid item lg={3} md={6} xs={12}>
-                    <FormControl variant="standard" className={classes.formControl}>
+                    <FormControl variant="standard" style={styles.formControl}>
                         <InputLabel shrink id="ownerGroup-label">
                             {this.props.t('Owner group')}
                         </InputLabel>
                         <Select
                             disabled={this.props.saving}
                             variant="standard"
-                            className={classes.formControl}
+                            style={styles.formControl}
                             id="ownerGroup"
                             value={this.props.data.common.defaultNewAcl.ownerGroup}
                             onChange={evt => this.doChange('ownerGroup', evt.target.value)}
@@ -260,4 +256,4 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
     }
 }
 
-export default withWidth()(withStyles(styles)(ACLDialog));
+export default withWidth()(ACLDialog);

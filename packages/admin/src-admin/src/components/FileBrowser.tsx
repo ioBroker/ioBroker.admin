@@ -70,6 +70,7 @@ import {
     IconNoIcon,
     withWidth,
     Icon,
+    Utils,
     type Connection,
     type ThemeName,
     type ThemeType,
@@ -77,7 +78,6 @@ import {
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
-import Utils from './Utils';
 import FileViewer, { EXTENSIONS } from './FileViewer';
 
 const ROW_HEIGHT   = 32;
@@ -425,6 +425,9 @@ const styles: Record<string, any> = {
     specialFolder: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#229b0f' : '#5dd300',
     }),
+    tooltip: {
+        pointerEvents: 'none',
+    },
 };
 
 const USER_DATA = '0_userdata.0';
@@ -560,7 +563,7 @@ interface FileBrowserState {
     selected: string;
     errorText: string;
     modalEditOfAccess: boolean;
-    backgroundImage: string;
+    backgroundImage: string | null;
     queueLength: number;
     loadAllFolders: boolean;
     fileErrors: string[];
@@ -611,7 +614,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
 
     private cacheFolders: Folders | null = null;
 
-    private readonly localStorage: Storage | null = null;
+    private readonly localStorage: Storage;
 
     constructor(props: FileBrowserProps) {
         super(props);
@@ -1081,8 +1084,8 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         return newFoldersNotNull;
     }
 
-    toggleFolder(item: FolderOrFileItem, e: React.MouseEvent<HTMLDivElement>) {
-        e && e.stopPropagation();
+    toggleFolder(item: FolderOrFileItem, e: React.MouseEvent<Element>) {
+        e?.stopPropagation();
         const expanded = [...this.state.expanded];
         const pos = expanded.indexOf(item.id);
         if (pos === -1) {
@@ -1236,7 +1239,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         >
             <IconEl
                 style={Utils.getStyle(this.props.theme, styles[`itemFolderIcon${this.state.viewType}`], isSpecialData && styles.specialFolder)}
-                onClick={this.state.viewType === TABLE ? (e: React.MouseEvent<HTMLDivElement>) => this.toggleFolder(item, e) : undefined}
+                onClick={this.state.viewType === TABLE ? (e: React.MouseEvent<Element>) => this.toggleFolder(item, e) : undefined}
             />
 
             <Box
@@ -1328,8 +1331,8 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         </div>;
     }
 
-    formatAcl(acl: ioBroker.EvaluatedFileACL | MetaACL) {
-        const access: number = acl && ((acl as ioBroker.EvaluatedFileACL).permissions || (acl as MetaACL).file);
+    formatAcl(acl: ioBroker.EvaluatedFileACL | MetaACL | undefined) {
+        const access: number = acl ? ((acl as ioBroker.EvaluatedFileACL).permissions || (acl as MetaACL).file) : 0;
         let accessStr: string;
         if (access) {
             accessStr = access.toString(16).padStart(3, '0');
@@ -1396,7 +1399,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     setStateBackgroundImage = () => {
         const array = ['light', 'dark', 'colored', 'delete'];
         this.setState(({ backgroundImage }) => {
-            if (array.indexOf(backgroundImage) !== -1 && array.length - 1 !== array.indexOf(backgroundImage)) {
+            if (backgroundImage && array.indexOf(backgroundImage) !== -1 && array.length - 1 !== array.indexOf(backgroundImage)) {
                 this.localStorage.setItem(
                     'files.backgroundImage',
                     array[array.indexOf(backgroundImage) + 1],
@@ -1622,7 +1625,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     }
 
     renderToolbar() {
-        const IconType = this.props.showTypeSelector
+        const IconType: React.FC< { fontSize?: 'small' }> | null = this.props.showTypeSelector
             ? FILE_TYPE_ICONS[this.state.filterByType || 'all'] ||
               FILE_TYPE_ICONS.all
             : null;
@@ -1751,7 +1754,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             >
                 <UploadIcon fontSize="small" />
             </IconButton> : null}
-            {this.props.showTypeSelector ? <Tooltip title={this.props.t('ra_Filter files')}>
+            {this.props.showTypeSelector && IconType ? <Tooltip title={this.props.t('ra_Filter files')}>
                 <IconButton size="small" onClick={e => this.setState({ showTypesMenu: e.target as HTMLButtonElement })}>
                     <IconType fontSize="small" />
                 </IconButton>
@@ -1762,7 +1765,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 onClose={() => this.setState({ showTypesMenu: null })}
             >
                 {Object.keys(FILE_TYPE_ICONS).map(type => {
-                    const MyIcon: React.FC<{ fontSize: 'small' }> = FILE_TYPE_ICONS[type];
+                    const MyIcon: React.FC<{ fontSize?: 'small' }> = FILE_TYPE_ICONS[type];
                     return <MenuItem
                         key={type}
                         selected={this.state.filterByType === type}
@@ -1788,7 +1791,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     </MenuItem>;
                 })}
             </Menu> : null}
-            <Tooltip title={this.props.t('ra_Background image')}>
+            <Tooltip title={this.props.t('ra_Background image')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton
                     color="inherit"
                     edge="start"
@@ -1799,7 +1802,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     <Brightness5Icon fontSize="small" />
                 </IconButton>
             </Tooltip>
-            {this.state.viewType !== TABLE && this.props.allowDelete ? <Tooltip title={this.props.t('ra_Delete')}>
+            {this.state.viewType !== TABLE && this.props.allowDelete ? <Tooltip title={this.props.t('ra_Delete')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <span>
                     <IconButton
                         aria-label="delete"
@@ -1829,7 +1832,10 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         </Toolbar>;
     }
 
-    findItem(id: string, folders?: Folders | null) {
+    findItem(
+        id: string,
+        folders?: Folders | null,
+    ) {
         folders = folders || this.state.folders;
         if (!folders) {
             return null;
@@ -1915,16 +1921,6 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         }, 100);
     }
 
-    async uploadFile(fileName: string, data: string): Promise<void> {
-        const parts = fileName.split('/');
-        const adapter = parts.shift();
-        try {
-            return await this.props.socket.writeFile64(adapter || '', parts.join('/'), data);
-        } catch (e) {
-            return window.alert(`Cannot write file: ${e}`);
-        }
-    }
-
     findFirstFolder(id: string) {
         let parentFolder = id;
         const item = this.findItem(parentFolder);
@@ -1947,6 +1943,16 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
         }
 
         return parentFolder;
+    }
+
+    async uploadFile(fileName: string, data: string): Promise<void> {
+        const parts: string[] = fileName.split('/');
+        const adapterName = parts.shift();
+        try {
+            await this.props.socket.writeFile64(adapterName || '', parts.join('/'), data);
+        } catch (e) {
+            window.alert(`Cannot write file: ${e}`);
+        }
     }
 
     renderUpload() {

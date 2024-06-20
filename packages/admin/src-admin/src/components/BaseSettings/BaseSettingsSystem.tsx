@@ -8,7 +8,7 @@ import {
     Paper,
 } from '@mui/material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
+import { withWidth, type Translate } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     paper: {
@@ -44,7 +44,7 @@ export interface SystemSettings {
 }
 
 interface BaseSettingsSystemProps {
-    t: (text: string) => string;
+    t: Translate;
     onChange: (settings: SystemSettings) => void;
     settings: SystemSettings;
     currentHost: string;

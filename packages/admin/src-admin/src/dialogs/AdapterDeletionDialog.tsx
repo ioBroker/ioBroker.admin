@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import { withStyles } from '@mui/styles';
-
 import {
     Button,
     Dialog,
@@ -21,20 +19,20 @@ import {
 
 import type { AdminConnection, IobTheme, Translate } from '@iobroker/adapter-react-v5';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     formControl: {
         marginTop: 24,
     },
-    closeButton: {
+    closeButton: (theme: IobTheme) => ({
         position: 'absolute',
         right: 8,
         top: 8,
         color: theme.palette.grey[500],
-    },
+    }),
     typography: {
         paddingRight: 30,
     },
-});
+};
 
 interface AdapterDeletionDialogProps {
     adapter: string;
@@ -42,7 +40,6 @@ interface AdapterDeletionDialogProps {
     t: Translate;
     onClose: () => void;
     onClick: (deleteCustom: boolean) => void;
-    classes: Record<string, string>;
 }
 
 interface AdapterDeletionDialogState {
@@ -78,16 +75,14 @@ class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, Adapte
     }
 
     render() {
-        const { classes } = this.props;
-
         return <Dialog
             onClose={this.props.onClose}
             open={!0}
         >
             <DialogTitle>
-                <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
+                <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
                     {this.t('Please confirm')}
-                    <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
+                    <IconButton size="large" sx={styles.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
                 </Typography>
@@ -131,4 +126,4 @@ class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, Adapte
     }
 }
 
-export default withStyles(styles)(AdapterDeletionDialog);
+export default AdapterDeletionDialog;

@@ -19,7 +19,7 @@ const styles: Record<string, any> = {
     ...genericStyles,
     root: (theme: IobTheme) => ({
         position: 'relative',
-        margin: 7,
+        m: '7px',
         background: theme.palette.background.default,
         boxShadow,
         // display: 'flex',
@@ -70,7 +70,7 @@ const styles: Record<string, any> = {
         width: '100%',
         fontWeight: 'bold',
         fontSize: 16,
-        paddingLeft: 8,
+        paddingLeft: '8px',
         alignSelf: 'center',
         color: theme.palette.mode === 'dark' ? '#ddd' : '#222',
         whiteSpace: 'nowrap',
@@ -258,13 +258,17 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
         const upgradeAvailable = (this.props.isCurrentHost || this.props.alive) && BasicUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
         const description = this.getHostDescriptionAll();
 
-        return <div
-            style={{
-                ...styles.root,
-                ...(this.props.hidden ? styles.hidden : undefined),
-                border: `2px solid ${this.props.host.common.color || 'inherit'}`,
-                borderRadius: 5,
-            }}
+        return <Box
+            component="div"
+            sx={Utils.getStyle(
+                this.props.theme,
+                styles.root,
+                this.props.hidden && styles.hidden,
+                {
+                    border: `2px solid ${this.props.host.common.color || 'inherit'}`,
+                    borderRadius: '5px',
+                },
+            )}
             key={this.props.hostId}
         >
             {this.renderDialogs()}
@@ -274,7 +278,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                 onClick={this.state.openDialogLogLevel ? null : () => this.setState({ openCollapse: !this.state.openCollapse })}
             >
                 <div style={styles.wrapperColor}>
-                    <div style={{ ...styles.onOff, ...(this.props.alive ? styles.green : styles.red ) }} />
+                    <div style={{ ...styles.onOff, ...(this.props.alive ? styles.green : styles.red) }} />
                     {this.props.alive && <div style={styles.dotLine} />}
                 </div>
                 <div
@@ -284,11 +288,14 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                     {this.renderNotificationsBadge(<CardMedia
                         sx={styles.img}
                         component="img"
-                        // @ts-expect-error will be fixed in js-controller
-                        image={this.props.host.common.image || 'img/no-image.png'}
+                        image={this.props.host.common.icon || 'img/no-image.png'}
                     />, true)}
                     <div
-                        style={{ ...styles.host, color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }}
+                        style={Utils.getStyle(
+                            this.props.theme,
+                            styles.host,
+                            { color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' },
+                        )}
                     >
                         {this.props.host.common.name}
                         {!this.state.openCollapse && typeof description === 'object' ? <span className={`onBlick-${this.props.themeType || 'light'}`}>
@@ -298,7 +305,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         </span> : null}
                     </div>
                 </div>
-                <CardContent style={styles.cardContentH5}>
+                <CardContent sx={{ '&.MuiCardContent-root': styles.cardContentH5 }}>
                     <Typography
                         sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
                         variant="body2"
@@ -363,7 +370,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                     </div>
                 </CardContent>
             </Box>
-            {this.state.openCollapse && typeof description === 'object' && <div
+            {typeof description === 'object' && <div
                 style={{
                     ...styles.collapse,
                     ...(!this.state.openCollapse ? styles.collapseOff : styles.collapseOn),
@@ -372,11 +379,11 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
             >
                 <CardContent style={styles.cardContentInfo}>
                     {description}
-                    {this.renderCopyButton()}
+                    {this.renderCopyButton({ height: 44, width: 44 })}
                 </CardContent>
                 <Box component="div" sx={styles.footerBlock} />
             </div>}
-        </div>;
+        </Box>;
     }
 }
 
