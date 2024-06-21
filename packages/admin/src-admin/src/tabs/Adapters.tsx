@@ -30,7 +30,6 @@ import {
 } from '@mui/icons-material';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
-import TabContainer from '@/components/TabContainer';
 import CustomSelectButton from '@/components/CustomSelectButton';
 import AdaptersUpdaterDialog from '@/dialogs/AdaptersUpdaterDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
@@ -41,6 +40,7 @@ import {
     TabHeader,
     type AdminConnection, type IobTheme,
     type ThemeType, type Translate,
+    TabContainer,
 } from '@iobroker/adapter-react-v5';
 import type AdaptersWorker from '@/Workers/AdaptersWorker';
 import { type AdapterEvent } from '@/Workers/AdaptersWorker';

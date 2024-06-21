@@ -77,6 +77,7 @@ const styles: Record<string, any> = {
     },
     header: (theme: IobTheme) => ({
         display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
         padding: '0 8px 0 8px',
         ...theme.mixins.toolbar,
@@ -209,6 +210,7 @@ interface DrawerProps {
     hosts: ioBroker.HostObject[];
     repository: Record<string, { icon: string; version: string }>;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    theme: IobTheme;
 }
 
 interface DrawerState {
@@ -528,12 +530,19 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         return <Box
             component="div"
             sx={Utils.getStyle(
+                this.props.theme,
                 styles.header,
                 this.props.state === STATES.opened && this.props.isSecure && styles.headerLogout,
                 !this.isSwipeable() && this.props.state !== STATES.opened && styles.headerCompact,
             )}
         >
-            <div style={{ ...styles.avatarBlock, ...styles.avatarNotVisible, ...(state === 0 ? styles.avatarVisible : undefined) }}>
+            <div
+                style={{
+                    ...styles.avatarBlock,
+                    ...styles.avatarNotVisible,
+                    ...(state === 0 ? styles.avatarVisible : { display: 'none' }),
+                }}
+            >
                 <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                     {this.props.adminGuiConfig.icon ?
                         <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
@@ -574,7 +583,7 @@ v
     tabsEditSystemConfig = async (idx?: number, isVisibility?: boolean, newColor?: string) => {
         const { tabs } = this.state;
         const { socket } = this.props;
-        const newTabs = JSON.parse(JSON.stringify(tabs));
+        const newTabs: AdminTab[] = JSON.parse(JSON.stringify(tabs)) as AdminTab[];
         if (isVisibility) {
             newTabs[idx].visible = !newTabs[idx].visible;
         }
@@ -663,6 +672,7 @@ v
                     badgeColor={this.badge(tab).color}
                     badgeAdditionalContent={this.badge(tab)?.additionalContent}
                     badgeAdditionalColor={this.badge(tab)?.additionalColor}
+                    theme={this.props.theme}
                 />
             </DragWrapper>;
         });
@@ -698,7 +708,7 @@ v
     render() {
         if (this.isSwipeable()) {
             return <SwipeableDrawer
-                sx={Utils.getStyle(styles.root, { '&.MuiSwipeableDrawer-paper': styles.paper })}
+                sx={Utils.getStyle(this.props.theme, styles.root, { '&.MuiSwipeableDrawer-paper': styles.paper })}
                 anchor="left"
                 open={this.props.state !== STATES.closed}
                 onClose={() => this.props.onStateChange(STATES.closed as 1)}
@@ -713,6 +723,7 @@ v
                 </List>
                 {this.props.isSecure &&
                     <DrawerItem
+                        theme={this.props.theme}
                         compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                         onClick={this.props.onLogout}
                         text={this.props.t('Logout')}
@@ -729,6 +740,7 @@ v
 
         return <MaterialDrawer
             sx={Utils.getStyle(
+                this.props.theme,
                 styles.root,
                 this.props.state !== STATES.opened ? styles.rootCompactWidth : (this.props.editMenuList ? styles.rootEditWidth : styles.rootFullWidth),
                 { '&.MuiDrawer-paper': styles.paper },
@@ -746,6 +758,7 @@ v
             </List>
             {this.props.isSecure &&
                 <DrawerItem
+                    theme={this.props.theme}
                     style={{ flexShrink: 0 }}
                     compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                     onClick={this.props.onLogout}

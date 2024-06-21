@@ -2870,6 +2870,7 @@ class App extends Router<AppProps, AppState> {
                             hosts={this.state.hosts}
                             repository={this.state.repository}
                             installed={this.state.installed}
+                            theme={this.state.theme}
                         />
                     </DndProvider>
                     <Paper

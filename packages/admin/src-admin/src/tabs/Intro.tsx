@@ -518,6 +518,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 isNew={this.state.editLinkIndex === -1}
                 t={this.props.t}
                 lang={this.props.lang}
+                theme={this.props.theme}
                 onClose={link => {
                     if (link) {
                         const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));

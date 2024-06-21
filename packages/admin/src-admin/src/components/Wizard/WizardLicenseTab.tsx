@@ -1,6 +1,4 @@
-import { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { createRef, Component } from 'react';
 
 import {
     Toolbar,
@@ -26,12 +24,15 @@ import {
     Check as IconCheck,
 } from '@mui/icons-material';
 
-import { I18n, withWidth } from '@iobroker/adapter-react-v5';
+import {
+    I18n, type IobTheme,
+    type Translate, withWidth,
+} from '@iobroker/adapter-react-v5';
 import LicenseTexts from '../LicenseTexts';
 
 const TOOLBAR_HEIGHT = 64;
 
-const styles = theme => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
@@ -49,11 +50,11 @@ const styles = theme => ({
         minWidth: 200,
         marginRight: 24,
     },
-    licenseDiv: {
+    licenseDiv: (theme: IobTheme) => ({
         width: '100%',
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight + 8 + 70}px)`,
+        height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + 8 + 70}px)`,
         overflow: 'auto',
-    },
+    }),
     grow: {
         flexGrow: 1,
     },
@@ -84,10 +85,24 @@ const styles = theme => ({
     licenseText: {
         marginBottom: 15,
     },
-});
+};
 
-class WizardLicenseTab extends Component {
-    constructor(props) {
+interface WizardLicenseTabProps {
+    t: Translate;
+    onDone: (config: { lang: string }) => void;
+    lang?: string;
+}
+
+interface WizardLicenseTabState {
+    statisticsAccepted: boolean;
+    lang: string;
+    notAgree: boolean;
+}
+
+class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTabState> {
+    private readonly focusRef: React.RefObject<HTMLButtonElement>;
+
+    constructor(props: WizardLicenseTabProps) {
         super(props);
 
         this.state = {
@@ -132,19 +147,19 @@ class WizardLicenseTab extends Component {
     }
 
     renderLicenseText() {
-        let lines = LicenseTexts[I18n.getLanguage()] || LicenseTexts.en;
-        lines = lines.split('\n');
-        return <div className={this.props.classes.licenseTextDiv}>
+        const text = LicenseTexts[I18n.getLanguage()] || LicenseTexts.en;
+        const lines = text.split('\n');
+        return <div style={styles.licenseTextDiv}>
             {lines.map((line, i) =>
-                <div className={this.props.classes.licenseText} key={i}>{line}</div>)}
+                <div style={styles.licenseText} key={i}>{line}</div>)}
         </div>;
     }
 
     render() {
-        return <Paper className={this.props.classes.paper}>
-            <Grid container className={this.props.classes.gridDiv} direction="column">
+        return <Paper style={styles.paper}>
+            <Grid container style={styles.gridDiv} direction="column">
                 <Grid item>
-                    <FormControl variant="standard" className={this.props.classes.languageSelect}>
+                    <FormControl variant="standard" style={styles.languageSelect}>
                         <InputLabel>
                             <IconWorld />
                             {this.props.t('Language')}
@@ -153,7 +168,7 @@ class WizardLicenseTab extends Component {
                             variant="standard"
                             value={I18n.getLanguage()}
                             onChange={e => {
-                                I18n.setLanguage(e.target.value);
+                                I18n.setLanguage(e.target.value as ioBroker.Languages);
                                 this.setState({ lang: e.target.value });
                             }}
                         >
@@ -169,24 +184,24 @@ class WizardLicenseTab extends Component {
                             <MenuItem value="zh-cn">简体中文</MenuItem>
                         </Select>
                     </FormControl>
-                    <div className={this.props.classes.statAcceptDiv}>
+                    <div style={styles.statAcceptDiv}>
                         <FormControlLabel
-                            className={this.props.classes.statAccept}
+                            style={styles.statAccept}
                             control={<Checkbox ref={this.focusRef} checked={this.state.statisticsAccepted} onChange={e => this.setState({ statisticsAccepted: e.target.checked })} />}
                             label={this.props.t('I agree with the collection of anonymous statistics.')}
                         />
-                        <div className={this.props.classes.statAcceptNote}>{this.props.t('(This can be disabled later in settings)')}</div>
+                        <div style={styles.statAcceptNote}>{this.props.t('(This can be disabled later in settings)')}</div>
                     </div>
                 </Grid>
                 <Grid item>
                     <h1>{this.props.t('License terms')}</h1>
                 </Grid>
-                <Grid item className={this.props.classes.licenseDiv}>
+                <Grid item sx={styles.licenseDiv}>
                     {this.renderLicenseText()}
                 </Grid>
             </Grid>
-            <Toolbar className={this.props.classes.toolbar}>
-                <div className={this.props.classes.grow} />
+            <Toolbar style={styles.toolbar}>
+                <div style={styles.grow} />
                 <Button
                     variant="contained"
                     color="grey"
@@ -198,23 +213,19 @@ class WizardLicenseTab extends Component {
                 <Button
                     variant="contained"
                     color="primary"
-                    className={this.props.classes.greenButton}
+                    style={styles.greenButton}
                     disabled={!this.state.statisticsAccepted}
                     onClick={() => this.props.onDone({ lang: this.state.lang })}
                     startIcon={<IconCheck />}
                 >
                     {this.props.t('Agree')}
                 </Button>
-                <div className={this.props.classes.grow} />
+                <div style={styles.grow} />
             </Toolbar>
             { this.renderNotAgree() }
         </Paper>;
     }
 }
 
-WizardLicenseTab.propTypes = {
-    t: PropTypes.func,
-    onDone: PropTypes.func.isRequired,
-};
 
-export default withWidth()(withStyles(styles)(WizardLicenseTab));
+export default withWidth()(WizardLicenseTab);

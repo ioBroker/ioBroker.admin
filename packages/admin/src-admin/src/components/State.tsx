@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { withStyles } from '@mui/styles';
-
 import { Grid, Typography } from '@mui/material';
 
 import {
@@ -27,7 +25,6 @@ const styles: Record<string, any> = {
 
 interface StateProps {
     state: boolean;
-    classes: Record<string, any>;
     children: React.JSX.Element | React.JSX.Element[] | string | string [];
 }
 
@@ -35,14 +32,14 @@ function State(props: StateProps) {
     return <Grid
         item
         container
-        className={props.classes.wrapperContent}
+        style={styles.wrapperContent}
         alignItems="center"
         direction="row"
         spacing={1}
     >
         <Grid item>
-            {props.state ? <CheckCircleIcon className={props.classes.checkIcon} /> :
-                <CancelIcon className={props.classes.cancelIcon} />}
+            {props.state ? <CheckCircleIcon style={styles.checkIcon} /> :
+                <CancelIcon style={styles.cancelIcon} />}
         </Grid>
         <Grid item>
             <Typography>{props.children}</Typography>
@@ -50,4 +47,4 @@ function State(props: StateProps) {
     </Grid>;
 }
 
-export default withStyles(styles)(State);
+export default State;

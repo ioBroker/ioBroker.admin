@@ -1,6 +1,4 @@
-import { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
 import {
     Grid,
@@ -14,25 +12,25 @@ import {
     FormHelperText,
     FormControl,
     Select,
-    FormGroup,
+    FormGroup, Box,
 } from '@mui/material';
 
 import { Check as IconCheck } from '@mui/icons-material';
 
-import { withWidth } from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
 
 const TOOLBAR_HEIGHT = 64;
 
-const styles = theme => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
     },
-    title: {
+    title: (theme: IobTheme) => ({
         color: theme.palette.secondary.main,
-    },
+    }),
     form: {
         height: `calc(100% - ${TOOLBAR_HEIGHT + 8}px)`,
         overflow: 'auto',
@@ -50,38 +48,44 @@ const styles = theme => ({
         flexGrow: 1,
     },
     toolbar: {
-        height:     TOOLBAR_HEIGHT,
+        height: TOOLBAR_HEIGHT,
         lineHeight: `${TOOLBAR_HEIGHT}px`,
     },
-});
+};
 
-class WizardAuthSSLTab extends Component {
-    constructor(props) {
+interface WizardAuthSSLTabProps {
+    auth: boolean;
+    secure: boolean;
+    t: Translate;
+    onDone: (config: { auth: boolean; secure: boolean }) => void;
+}
+
+interface WizardAuthSSLTabState {
+    auth: boolean;
+    secure: boolean;
+}
+
+class WizardAuthSSLTab extends Component<WizardAuthSSLTabProps, WizardAuthSSLTabState> {
+    constructor(props: WizardAuthSSLTabProps) {
         super(props);
 
         this.state = {
             auth: !!this.props.auth,
             secure: !!this.props.secure,
         };
-
-        this.focusRef = createRef();
-    }
-
-    componentDidMount() {
-        this.focusRef.current && this.focusRef.current.focus();
     }
 
     render() {
-        return <Paper className={this.props.classes.paper}>
-            <form className={this.props.classes.form} noValidate autoComplete="off">
+        return <Paper style={styles.paper}>
+            <form style={styles.form} noValidate autoComplete="off">
                 <Grid container direction="column">
                     <Grid item>
-                        <h2 className={this.props.classes.title}>{this.props.t('It is suggested to enable the authentication in admin')}</h2>
+                        <Box component="h2" sx={styles.title}>{this.props.t('It is suggested to enable the authentication in admin')}</Box>
                     </Grid>
-                    <Grid item className={this.props.classes.inputLine}>
+                    <Grid item style={styles.inputLine}>
                         <FormGroup>
                             <FormControlLabel
-                                className={this.props.classes.input}
+                                style={styles.input}
                                 control={
                                     <Checkbox
                                         checked={this.state.auth}
@@ -94,15 +98,15 @@ class WizardAuthSSLTab extends Component {
                         </FormGroup>
                     </Grid>
                     <Grid item>
-                        <FormControl variant="standard" className={this.props.classes.input}>
+                        <FormControl variant="standard" style={styles.input}>
                             <InputLabel>{this.props.t('Certificates')}</InputLabel>
                             <Select
                                 variant="standard"
-                                value={this.state.secure}
-                                onChange={e => this.setState({ secure: e.target.value })}
+                                value={this.state.secure ? 'true' : 'false'}
+                                onChange={e => this.setState({ secure: e.target.value === 'true' })}
                             >
-                                <MenuItem value={false}>{this.props.t('No SSL')}</MenuItem>
-                                <MenuItem value>{this.props.t('Use self signed certificates')}</MenuItem>
+                                <MenuItem value="false">{this.props.t('No SSL')}</MenuItem>
+                                <MenuItem value="true">{this.props.t('Use self signed certificates')}</MenuItem>
                             </Select>
                             <FormHelperText>
                                 {this.state.secure ?
@@ -113,8 +117,8 @@ class WizardAuthSSLTab extends Component {
                     </Grid>
                 </Grid>
             </form>
-            <Toolbar className={this.props.classes.toolbar}>
-                <div className={this.props.classes.grow} />
+            <Toolbar style={styles.toolbar}>
+                <div style={styles.grow} />
                 <Button
                     color="primary"
                     variant="contained"
@@ -128,11 +132,4 @@ class WizardAuthSSLTab extends Component {
     }
 }
 
-WizardAuthSSLTab.propTypes = {
-    auth: PropTypes.bool,
-    secure: PropTypes.bool,
-    t: PropTypes.func,
-    onDone: PropTypes.func.isRequired,
-};
-
-export default withWidth()(withStyles(styles)(WizardAuthSSLTab));
+export default withWidth()(WizardAuthSSLTab);

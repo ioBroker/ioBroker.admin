@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
@@ -26,7 +25,7 @@ import {
     TableCell,
     TextField,
     TableBody,
-    TableContainer,
+    TableContainer, Box,
 } from '@mui/material';
 
 // icons
@@ -44,22 +43,22 @@ import {
 
 import { localeMap } from './utils';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
     },
-    tableDiv: {
+    tableDiv: (theme: IobTheme) => ({
         height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + 8}px)`,
         overflow: 'hidden',
         width: '100%',
-    },
+    }),
     container: {
         height: '100%',
     },
-    table: {
+    table: (theme: IobTheme) => ({
         // tableLayout: 'fixed',
         minWidth: 960,
         width: '100%',
@@ -70,7 +69,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         '& tr:nth-child(even)': {
             backgroundColor: theme.palette.mode === 'dark' ? '#383838' : '#b2b2b2',
         },
-    },
+    }),
     row: {
         userSelect: 'none',
         /* '&:nth-of-type(odd)': {
@@ -100,18 +99,18 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     notAliveInstance: {
         opacity: 0.5,
     },
-    customRange: {
+    customRange: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
-    },
-    rowSelected: {
+    }),
+    rowSelected: (theme: IobTheme) => ({
         background: theme.palette.secondary.main,
         color: theme.palette.secondary.contrastText,
         '& td': {
             color: theme.palette.secondary.contrastText,
             background: theme.palette.secondary.main,
         },
-    },
-    rowFocused: {
+    }),
+    rowFocused: (theme: IobTheme) => ({
         position: 'absolute',
         pointerEvents: 'none',
         top: 0,
@@ -120,7 +119,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         right: 0,
         margin: 3,
         border: `1px dotted ${theme.palette.action.active}`,
-    },
+    }),
     grow: {
         flexGrow: 1,
     },
@@ -140,9 +139,9 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             marginTop: 15,
         },
     },
-    cellAckTrue: {
+    cellAckTrue: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#66ff7f' : '#04a821',
-    },
+    }),
     cellAckFalse: {
         color: '#FF6666',
     },
@@ -220,7 +219,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     timeInput: {
         width: 100,
     },
-});
+};
 
 type SupportedFeatures = ('insert' | 'update' | 'delete')[];
 
@@ -233,7 +232,6 @@ interface ObjectHistoryDataProps {
     customsInstances: string[];
     objects: Record<string, ioBroker.Object>;
     isFloatComma: boolean;
-    classes: Record<string, string>;
 }
 
 interface HistoryItem {
@@ -700,14 +698,14 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         this.setState({ selected, lastSelected: ts, lastSelectedColumn: column });
     }
 
-    getTableRows(classes: Record<string, string>) {
+    getTableRows() {
         const rows = [];
         for (let r = this.state.values.length - 1; r >= 0; r--) {
             const state = this.state.values[r];
             const ts = state.ts;
             if (state.e) {
                 rows.push(<TableRow
-                    className={Utils.clsx(classes.row, classes.updatedRow, classes.rowInterpolated)}
+                    sx={{ ...styles.row, ...styles.updatedRow, ...styles.rowInterpolated }}
                     key={ts}
                     hover
                 >
@@ -720,7 +718,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             } else
                 if (state.noData || state.noDataForPeriod) {
                     rows.push(<TableRow
-                        className={Utils.clsx(classes.row, classes.updatedRow, classes.rowNoData)}
+                        sx={{ ...styles.row, ...styles.updatedRow, ...styles.rowNoData }}
                         key={state.noData ? 'nodata' : ''}
                         hover
                     >
@@ -746,33 +744,33 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     const selectedClass = this.state.selected.includes(ts);
 
                     rows.push(<TableRow
-                        className={Utils.clsx(
-                            classes.row,
-                            classes.updatedRow,
-                            interpolated && classes.rowInterpolated,
-                            selectedClass && classes.rowSelected,
-                        )}
+                        sx={{
+                            ...styles.row,
+                            ...styles.updatedRow,
+                            ...(interpolated ? styles.rowInterpolated : undefined),
+                            ...(selectedClass ? styles.rowSelected : undefined),
+                        }}
                         key={ts.toString() + (state.val || '').toString()}
                     >
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
                             {`${this.formatTimestamp(state.ts)}`}
-                            {selected && this.state.lastSelectedColumn === 'ts' ? <div className={classes.rowFocused} /> : ''}
+                            {selected && this.state.lastSelectedColumn === 'ts' ? <Box component="div" sx={styles.rowFocused} /> : ''}
                         </TableCell>
                         <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'val')}>
                             {val + this.unit}
-                            {selected && this.state.lastSelectedColumn === 'val' ? <div className={classes.rowFocused} /> : ''}
+                            {selected && this.state.lastSelectedColumn === 'val' ? <Box component="div" sx={styles.rowFocused} /> : ''}
                         </TableCell>
-                        {this.state.ackVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')} className={state.ack ? classes.cellAckTrue : classes.cellAckFalse}>
+                        {this.state.ackVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')} sx={state.ack ? styles.cellAckTrue : styles.cellAckFalse}>
                             {state.ack ? 'true' : 'false' }
-                            {selected && this.state.lastSelectedColumn === 'ack' ? <div className={classes.rowFocused} /> : ''}
+                            {selected && this.state.lastSelectedColumn === 'ack' ? <Box component="div" sx={styles.rowFocused} /> : ''}
                         </TableCell> : null}
                         {this.state.fromVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'from')}>
                             {state.from || ''}
-                            {selected && this.state.lastSelectedColumn === 'from' ? <div className={classes.rowFocused} /> : ''}
+                            {selected && this.state.lastSelectedColumn === 'from' ? <Box component="div" sx={styles.rowFocused} /> : ''}
                         </TableCell> : null}
                         {this.state.lcVisible ? <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
                             {state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${(state.ts % 1000).toString().padStart(3, '0')}` : ''}
-                            {selected && this.state.lastSelectedColumn === 'lc' ? <div className={classes.rowFocused} /> : ''}
+                            {selected && this.state.lastSelectedColumn === 'lc' ? <Box component="div" sx={styles.rowFocused} /> : ''}
                         </TableCell> : null}
                     </TableRow>);
                 }
@@ -952,8 +950,6 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         }
 
         if (this.state.values) {
-            const { classes } = this.props;
-
             const initialWidths: (number | 'auto')[] = [200, 'auto'];
             const minWidths = [190, 100];
             if (this.state.ackVisible) {
@@ -969,34 +965,34 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                 minWidths.push(190);
             }
 
-            return <TableContainer className={classes.container}>
+            return <TableContainer style={styles.container}>
                 <TableResize
                     stickyHeader
-                    className={classes.table}
+                    sx={styles.table}
                     initialWidths={initialWidths}
                     minWidths={minWidths}
                     dblTitle={this.props.t('ra_Double click to reset table layout')}
                 >
                     <TableHead>
                         <TableRow>
-                            <TableCell className={classes.colTs}>
+                            <TableCell style={styles.colTs}>
                                 {this.props.t('Timestamp')}
                             </TableCell>
-                            <TableCell className={classes.colValue}>
+                            <TableCell style={styles.colValue}>
                                 {this.props.t('Value')}
                             </TableCell>
-                            {this.state.ackVisible  ? <TableCell className={classes.colAck}>
+                            {this.state.ackVisible  ? <TableCell style={styles.colAck}>
                                 {this.props.t('Ack')}
                             </TableCell> : null}
-                            {this.state.fromVisible ? <TableCell className={classes.colFrom}>
+                            {this.state.fromVisible ? <TableCell style={styles.colFrom}>
                                 {this.props.t('From')}
                             </TableCell> : null}
-                            {this.state.lcVisible   ? <TableCell className={classes.colLastChange}>
+                            {this.state.lcVisible   ? <TableCell style={styles.colLastChange}>
                                 {this.props.t('lc')}
                             </TableCell> : null}
                         </TableRow>
                     </TableHead>
-                    <TableBody>{this.getTableRows(classes)}</TableBody>
+                    <TableBody>{this.getTableRows()}</TableBody>
                 </TableResize>
             </TableContainer>;
         }
@@ -1130,7 +1126,6 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     }
 
     renderEditDialog(): React.JSX.Element {
-        const classes = this.props.classes;
         return <Dialog
             open={this.state.updateOpened || this.state.insertOpened}
             onClose={() => this.setState({ updateOpened: false, insertOpened: false })}
@@ -1139,7 +1134,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         >
             <DialogTitle id="edit-dialog-title">{this.state.updateOpened ? this.props.t('Update entry') : this.props.t('Insert entry')}</DialogTitle>
             <DialogContent>
-                <form className={classes.dialogForm} noValidate autoComplete="off">
+                <form noValidate autoComplete="off">
                     {typeof this.state.edit.val === 'boolean' ?
                         <FormControlLabel
                             control={<Checkbox
@@ -1166,17 +1161,17 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
                     {this.state.insertOpened ?
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                            <div className={classes.toolbarTimeGrid}>
-                                <div className={classes.toolbarTimeLabel}>
+                            <Box component="div" sx={styles.toolbarTimeGrid}>
+                                <div style={styles.toolbarTimeLabel}>
                                     {this.props.t('Time')}
                                 </div>
                                 <DatePicker
-                                    className={classes.toolbarDate}
+                                    sx={styles.toolbarDate}
                                     value={this.state.edit.date}
                                     onChange={date => this.updateEdit('date', date)}
                                 />
                                 <TimePicker
-                                    className={classes.toolbarTime}
+                                    sx={styles.toolbarTime}
                                     ampm={this.state.ampm}
                                     views={['hours', 'minutes', 'seconds']}
                                     value={this.state.edit.time}
@@ -1184,14 +1179,14 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                                 />
                                 <TextField
                                     variant="standard"
-                                    classes={{ root: classes.msInput }}
+                                    sx={styles.msInput}
                                     helperText={this.props.t('ms')}
                                     type="number"
                                     inputProps={{ max: 999, min: 0 }}
                                     value={this.state.edit.ms}
                                     onChange={e => this.updateEdit('ms', e.target.value)}
                                 />
-                            </div>
+                            </Box>
                         </LocalizationProvider> : null}
                 </form>
             </DialogContent>
@@ -1239,9 +1234,8 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     }
 
     renderToolbar() {
-        const classes = this.props.classes;
         return <Toolbar>
-            <FormControl variant="standard" className={classes.selectHistoryControl}>
+            <FormControl variant="standard" style={styles.selectHistoryControl}>
                 <InputLabel>{this.props.t('History instance')}</InputLabel>
                 <Select
                     variant="standard"
@@ -1261,13 +1255,13 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     {this.state.historyInstances?.map(it => <MenuItem
                         key={it.id}
                         value={it.id}
-                        className={Utils.clsx(!it.alive && classes.notAliveInstance)}
+                        style={!it.alive ? styles.notAliveInstance : undefined}
                     >
                         {it.id}
                     </MenuItem>)}
                 </Select>
             </FormControl>
-            <FormControl variant="standard" className={classes.selectRelativeTime}>
+            <FormControl variant="standard" style={styles.selectRelativeTime}>
                 <InputLabel>{this.props.t('Relative')}</InputLabel>
                 <Select
                     variant="standard"
@@ -1275,7 +1269,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                     value={this.state.relativeRange}
                     onChange={e => this.setRelativeInterval(e.target.value)}
                 >
-                    <MenuItem key="custom" value="absolute" className={classes.customRange}>
+                    <MenuItem key="custom" value="absolute" sx={styles.customRange}>
                         {this.props.t('custom range')}
                     </MenuItem>
                     <MenuItem key="1" value={10}>
@@ -1321,50 +1315,54 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             </FormControl>
 
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                <div className={classes.toolbarTimeGrid}>
+                <Box component="div" sx={styles.toolbarTimeGrid}>
                     <div
-                        className={classes.toolbarTimeLabel}
-                        style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
+                        style={{
+                            ...styles.toolbarTimeLabel,
+                            opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined,
+                        }}
                     >
                         {this.props.t('Start time')}
                     </div>
                     <DatePicker
-                        className={classes.toolbarDate}
+                        sx={styles.toolbarDate}
                         disabled={this.state.relativeRange !== 'absolute'}
                         value={new Date(this.state.start)}
                         onChange={date => this.setStartDate(date)}
                     />
                     <TimePicker
                         disabled={this.state.relativeRange !== 'absolute'}
-                        className={classes.toolbarTime}
+                        sx={styles.toolbarTime}
                         ampm={this.state.ampm}
                         value={new Date(this.state.start)}
                         onChange={date => this.setStartDate(date)}
                     />
-                </div>
-                <div className={classes.toolbarTimeGrid}>
+                </Box>
+                <Box component="div" sx={styles.toolbarTimeGrid}>
                     <div
-                        className={classes.toolbarTimeLabel}
-                        style={this.state.relativeRange !== 'absolute' ? { opacity: 0.5 } : undefined}
+                        style={{
+                            ...styles.toolbarTimeLabel,
+                            opacity: this.state.relativeRange !== 'absolute' ? 0.5 : undefined,
+                        }}
                     >
                         {this.props.t('End time')}
                     </div>
                     <DatePicker
                         disabled={this.state.relativeRange !== 'absolute'}
-                        className={classes.toolbarDate}
+                        sx={styles.toolbarDate}
                         value={new Date(this.state.end)}
                         onChange={date => this.setEndDate(date)}
                     />
                     <TimePicker
                         disabled={this.state.relativeRange !== 'absolute'}
-                        className={classes.toolbarTime}
+                        sx={styles.toolbarTime}
                         ampm={this.state.ampm}
                         value={new Date(this.state.end)}
                         onChange={date => this.setEndDate(date)}
                     />
-                </div>
+                </Box>
             </LocalizationProvider>
-            <div className={classes.grow} />
+            <Box component="div" sx={styles.grow} />
 
             {this.state.values?.length ? <IconButton size="large" onClick={() => this.exportData()} title={this.props.t('Save data as csv')}>
                 <ExportIcon />
@@ -1460,12 +1458,12 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             return <LinearProgress />;
         }
 
-        return <Paper className={this.props.classes.paper}>
-            {this.state.loading ? <LinearProgress /> : <div className={this.props.classes.noLoadingProgress} />}
+        return <Paper style={styles.paper}>
+            {this.state.loading ? <LinearProgress /> : <div style={styles.noLoadingProgress} />}
             {this.renderToolbar()}
-            <div className={this.props.classes.tableDiv}>
+            <Box component="div" sx={styles.tableDiv}>
                 {this.renderTable()}
-            </div>
+            </Box>
             {this.renderConfirmDialog()}
             {this.renderEditDialog()}
         </Paper>;
@@ -1481,4 +1479,4 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     }
 }
 
-export default withWidth()(withStyles(styles)(ObjectHistoryData));
+export default withWidth()(ObjectHistoryData);

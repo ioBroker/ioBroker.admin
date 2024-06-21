@@ -1,30 +1,32 @@
-import { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
-import PropTypes from 'prop-types';
+import React, { createRef, Component } from 'react';
 
-import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
-import Paper from  '@mui/material/Paper';
+import {
+    Grid,
+    Toolbar,
+    Button,
+    Paper, Box,
+} from '@mui/material';
 
-import IconCloud from '@mui/icons-material/Public';
-import IconCloudPro from '@mui/icons-material/Language';
-import IconCheck from '@mui/icons-material/Check';
+import {
+    Public as IconCloud,
+    Language as IconCloudPro,
+    Check as IconCheck,
+} from '@mui/icons-material';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 
 const TOOLBAR_HEIGHT = 64;
 
-const styles = theme => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
     },
-    title: {
+    title: (theme: IobTheme) => ({
         color: theme.palette.secondary.main,
-    },
+    }),
     form: {
         height: `calc(100% - ${TOOLBAR_HEIGHT + 8}px)`,
         overflow: 'auto',
@@ -59,10 +61,25 @@ const styles = theme => ({
     button: {
         marginRight: 16,
     },
-});
+};
 
-class WizardPortForwarding extends Component {
-    constructor(props) {
+interface WizardPortForwardingProps {
+    auth: boolean;
+    secure: boolean;
+    t: Translate;
+    onDone: () => void;
+}
+
+interface WizardPortForwardingState {
+    auth: boolean;
+    secure: boolean;
+
+}
+
+class WizardPortForwarding extends Component<WizardPortForwardingProps, WizardPortForwardingState> {
+    private readonly focusRef: React.RefObject<HTMLInputElement>;
+
+    constructor(props: WizardPortForwardingProps) {
         super(props);
 
         this.focusRef = createRef();
@@ -73,25 +90,25 @@ class WizardPortForwarding extends Component {
     }
 
     render() {
-        return <Paper className={this.props.classes.paper}>
-            <form className={this.props.classes.form} noValidate autoComplete="off">
+        return <Paper style={styles.paper}>
+            <form style={styles.form} noValidate autoComplete="off">
                 <Grid container direction="column">
                     <Grid item>
-                        <h2 className={this.props.classes.title}>{this.props.t('Important information about port forwarding')}</h2>
+                        <Box component="h2" sx={styles.title}>{this.props.t('Important information about port forwarding')}</Box>
                     </Grid>
                     <Grid item>
-                        {!this.props.auth ? <div className={this.props.classes.error}>{this.props.t('Warning!')}</div> : null}
-                        {this.props.auth && !this.props.secure ? <div className={this.props.classes.warning}>{this.props.t('Be aware!')}</div> : null}
-                        {this.props.auth && this.props.secure ? <div className={this.props.classes.information}>{this.props.t('Information')}</div> : null}
+                        {!this.props.auth ? <div style={styles.error}>{this.props.t('Warning!')}</div> : null}
+                        {this.props.auth && !this.props.secure ? <div style={styles.warning}>{this.props.t('Be aware!')}</div> : null}
+                        {this.props.auth && this.props.secure ? <div style={styles.information}>{this.props.t('Information')}</div> : null}
 
-                        <div className={this.props.classes.text}>{this.props.t('Do not expose iobroker Admin or Web interfaces to the internet directly via the port forwarding!')}</div>
+                        <div style={styles.text}>{this.props.t('Do not expose iobroker Admin or Web interfaces to the internet directly via the port forwarding!')}</div>
                     </Grid>
                     <Grid item style={{ marginTop: 16 }}>
-                        <div className={this.props.classes.text}>{this.props.t('The Cloud services from iobroker.net/pro can help here to do that securely:')}</div>
+                        <div style={styles.text}>{this.props.t('The Cloud services from iobroker.net/pro can help here to do that securely:')}</div>
                     </Grid>
                     <Grid item style={{ marginTop: 16 }}>
                         <Button
-                            className={this.props.classes.button}
+                            style={styles.button}
                             color="secondary"
                             variant="contained"
                             onClick={() => window.open('https://iobroker.pro', 'help')}
@@ -110,8 +127,8 @@ ioBroker.net
                     </Grid>
                 </Grid>
             </form>
-            <Toolbar className={this.props.classes.toolbar}>
-                <div className={this.props.classes.grow} />
+            <Toolbar style={styles.toolbar}>
+                <div style={styles.grow} />
                 <Button
                     color="primary"
                     variant="contained"
@@ -125,11 +142,4 @@ ioBroker.net
     }
 }
 
-WizardPortForwarding.propTypes = {
-    auth: PropTypes.bool,
-    secure: PropTypes.bool,
-    t: PropTypes.func,
-    onDone: PropTypes.func.isRequired,
-};
-
-export default withWidth()(withStyles(styles)(WizardPortForwarding));
+export default withWidth()(WizardPortForwarding);

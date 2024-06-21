@@ -123,6 +123,7 @@ interface EditIntroLinkDialogProps {
     link: Record<string, any>;
     onClose: (link?: Record<string, any>) => void;
     isNew: boolean;
+    theme: IobTheme;
 }
 
 interface EditIntroLinkDialogState {
@@ -380,6 +381,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                             style={{ width: '100% !important', maxWidth: '100% !important', marginLeft: '8px' }}
                             color={this.state.color}
                             enabled
+                            theme={this.props.theme}
                         >
                             {this.state.desc}
                         </IntroCard> :
@@ -387,6 +389,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 interval={this.state.interval}
                                 camera={this.state.camera}
                                 addTs={this.state.addTs}
+                                style={{ width: '100% !important', maxWidth: '100% !important', marginLeft: '8px' }}
                                 image={this.state.image}
                                 title={this.state.name}
                                 socket={this.props.socket}
@@ -396,6 +399,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 color={this.state.color}
                                 enabled
                                 cameraUrl={this.state.desc}
+                                theme={this.props.theme}
                             />}
                     </Grid>
                 </Grid>
