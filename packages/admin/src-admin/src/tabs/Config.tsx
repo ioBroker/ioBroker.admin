@@ -136,6 +136,9 @@ const styles: Record<string, any> = {
     orangeDevice: {
         color: orange[300],
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 };
 
 interface ConfigProps {

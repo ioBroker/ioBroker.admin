@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -24,7 +23,7 @@ import {
     Typography,
     Switch,
     Autocomplete,
-    Tooltip,
+    Tooltip, type Theme,
 } from '@mui/material';
 
 import {
@@ -37,9 +36,8 @@ import {
 } from '@mui/icons-material';
 
 import {
-    type AdminConnection, Utils,
-    type IobTheme,
-    type ThemeType,
+    type AdminConnection,
+    type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import ObjectChart from './ObjectChart';
@@ -60,10 +58,9 @@ const styles: Record<string, any> = {
         width: 'calc(100% - 88px)',
     },
     expire: {
-        marginLeft: 8,
+        ml: 1,
         width: 80,
     },
-    wrapperButton: {},
     readOnly: {
         backgroundColor: '#b74848',
     },
@@ -71,15 +68,13 @@ const styles: Record<string, any> = {
         color: '#b74848',
         marginLeft: 8,
     },
-    '@media screen and (max-width: 465px)': {
-        wrapperButton: {
+    wrapperButton: {
+        '@media screen and (max-width: 465px)': {
             '& *': {
                 fontSize: 12,
             },
         },
-    },
-    '@media screen and (max-width: 380px)': {
-        wrapperButton: {
+        '@media screen and (max-width: 380px)': {
             '& *': {
                 fontSize: 11,
             },
@@ -91,17 +86,20 @@ const styles: Record<string, any> = {
     dialog: {
         minHeight: (window as any).clientHeight - 50 > 500 ? 500 : (window as any).clientHeight - 50,
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 };
 
-const AntSwitch = withStyles((theme: IobTheme) => ({
-    root: {
+const switchStyles = {
+    '&.MuiSwitch-root': {
         width: 28,
         height: 16,
         padding: 0,
         display: 'flex',
     },
-    switchBase: {
-        padding: 2,
+    '&.MuiSwitch-switchBase': (theme: Theme) => ({
+        p: '2px',
         color: theme.palette.grey[500],
         '&$checked': {
             transform: 'translateX(12px)',
@@ -112,20 +110,36 @@ const AntSwitch = withStyles((theme: IobTheme) => ({
                 borderColor: theme.palette.primary.main,
             },
         },
-    },
-    thumb: {
+    }),
+    '&.MuiSwitch-thumb': {
         width: 12,
         height: 12,
         boxShadow: 'none',
     },
-    track: {
+    '&.MuiSwitch-track': (theme: Theme) => ({
         border: `1px solid ${theme.palette.grey[500]}`,
-        borderRadius: 16 / 2,
+        borderRadius: `${16 / 2}px`,
         opacity: 1,
         backgroundColor: theme.palette.common.white,
-    },
-    checked: {},
-}))(Switch);
+    }),
+};
+
+interface AntSwitchProps {
+    autoFocus: boolean;
+    defaultChecked: boolean;
+    onKeyUp: (e: React.KeyboardEvent) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
+}
+
+function AntSwitch(props: AntSwitchProps) {
+    return <Switch
+        autoFocus={props.autoFocus}
+        defaultChecked={props.defaultChecked}
+        onKeyUp={props.onKeyUp}
+        onChange={props.onChange}
+        sx={switchStyles}
+    />;
+}
 
 interface NumberValidationOptions {
     value: unknown;
@@ -133,8 +147,6 @@ interface NumberValidationOptions {
 }
 
 interface ObjectBrowserValueProps {
-    /** Css classes */
-    classes: Record<string, string>;
     /** State type */
     type: 'states' | 'string' | 'number' | 'boolean' | 'json';
     /** State role */
@@ -153,7 +165,7 @@ interface ObjectBrowserValueProps {
     dateFormat: string;
     object: ioBroker.StateObject;
     isFloatComma: boolean;
-    t: (...args: string[]) => string;
+    t: Translate;
     lang: ioBroker.Languages;
 }
 
@@ -431,7 +443,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             }));
 
             return <Autocomplete
-                className={this.props.classes.formControl}
+                style={styles.formControl}
                 disablePortal
                 defaultValue={
                     this.props.states[this.propsValue] !== undefined
@@ -451,7 +463,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 )}
             />;
         }
-        return <FormControl variant="standard" className={this.props.classes.formControl}>
+        return <FormControl variant="standard" style={styles.formControl}>
             <InputLabel>{this.props.t('Value')}</InputLabel>
             <Select
                 variant="standard"
@@ -470,14 +482,14 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     render() {
         const ackCheckbox = <div style={{ display: 'flex', alignItems: 'center' }}>
             <FormControlLabel
-                className={Utils.clsx(
-                    this.props.classes.formControl,
-                    !this.props.expertMode ? this.props.classes.ackCheckbox : '',
-                )}
+                style={{
+                    ...styles.formControl,
+                    ...(!this.props.expertMode ? styles.ackCheckbox : undefined),
+                }}
                 control={<Checkbox defaultChecked={false} onChange={e => (this.ack = e.target.checked)} />}
                 label={this.props.t('Acknowledged')}
             />
-            <Tooltip title={this.props.t('Acknowledged explanation')}>
+            <Tooltip title={this.props.t('Acknowledged explanation')} componentsProps={{ popper: { sx: styles.c } }}>
                 <InfoIcon color="primary" />
             </Tooltip>
         </div>;
@@ -500,11 +512,11 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             onClose={() => this.props.onClose()}
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
-            classes={{ root: this.state.type === 'json' ? this.props.classes.dialog : '' }}
+            sx={{ '&. MuiDialog-paper': this.state.type === 'json' ? styles.dialog : undefined }}
         >
             <DialogTitle id="edit-value-dialog-title">
                 {this.props.t('Write value')}
-                {this.props.object.common?.write === false ? <span className={this.props.classes.readOnlyText}>
+                {this.props.object.common?.write === false ? <span style={styles.readOnlyText}>
 (
                     {this.props.t('read only')}
 )
@@ -539,11 +551,10 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             </DialogTitle>
             <DialogContent>
                 <form
-                    className={this.props.classes.dialogForm}
                     noValidate
                     autoComplete="off"
                     onSubmit={() => false}
-                    style={{ height: '100%' }}
+                    style={{ ...styles.dialogForm, height: '100%' }}
                 >
                     <Grid container direction="row" spacing={2} style={{ height: '100%' }}>
                         <Grid
@@ -555,7 +566,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                 {this.props.expertMode ? <Grid item>
                                     <Grid container direction="row" spacing={2} style={{ marginTop: 0 }}>
                                         {this.props.expertMode ? <Grid item>
-                                            <FormControl className={this.props.classes.formControl}>
+                                            <FormControl style={styles.formControl}>
                                                 <InputLabel>{this.props.t('Value type')}</InputLabel>
                                                 <Select
                                                     variant="standard"
@@ -615,7 +626,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                         </Grid>
                                     </Typography> : (this.state.type === 'number' ? <TextField
                                         variant="standard"
-                                        classes={{ root: this.props.classes.textInput }}
+                                        style={styles.textInput}
                                         autoFocus
                                         error={!this.state.valid}
                                         type="number"
@@ -639,7 +650,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                             this.renderStates()
                                             : <TextField
                                                 variant="standard"
-                                                classes={{ root: this.props.classes.textInput }}
+                                                style={styles.textInput}
                                                 inputRef={this.inputRef}
                                                 autoFocus
                                                 helperText={this.props.t(
@@ -659,7 +670,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                 {this.props.expertMode ? <Grid item>{ackCheckbox}</Grid> : null}
 
                                 {this.props.expertMode ? <Grid item>
-                                    <FormControl variant="standard" className={this.props.classes.quality}>
+                                    <FormControl variant="standard" style={styles.quality}>
                                         <InputLabel>{this.props.t('Quality')}</InputLabel>
                                         <Select
                                             variant="standard"
@@ -697,7 +708,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                     <TextField
                                         variant="standard"
                                         title={this.props.t('0 - no expiration')}
-                                        classes={{ root: this.props.classes.expire }}
+                                        sx={{ '&.MuiTextField-root': styles.expire }}
                                         label={this.props.t('Expire')}
                                         type="number"
                                         inputProps={{ min: 0 }}
@@ -716,7 +727,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                     </Grid>
                 </form>
             </DialogContent>
-            <DialogActions className={this.props.classes.wrapperButton}>
+            <DialogActions sx={styles.wrapperButton}>
                 {!this.props.expertMode ? ackCheckbox : null}
                 {!this.props.expertMode ? <div style={{ flexGrow: 1 }} /> : null}
                 <Button
@@ -725,7 +736,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                     onClick={e => this.onUpdate(e)}
                     color="primary"
                     startIcon={<IconCheck />}
-                    className={this.props.object.common?.write === false ? this.props.classes.readOnly : ''}
+                    style={this.props.object.common?.write === false ? styles.readOnly : undefined}
                 >
                     {this.props.t('Set value')}
                 </Button>
@@ -742,4 +753,4 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     }
 }
 
-export default withStyles(styles)(ObjectBrowserValue);
+export default ObjectBrowserValue;

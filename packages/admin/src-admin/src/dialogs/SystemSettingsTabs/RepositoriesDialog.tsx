@@ -94,6 +94,9 @@ const styles: Record<string, any> = {
         marginRight: 8,
         width: 44,
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 };
 
 type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;

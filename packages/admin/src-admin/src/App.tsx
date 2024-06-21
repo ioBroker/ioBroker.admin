@@ -2223,7 +2223,6 @@ class App extends Router<AppProps, AppState> {
             onClose={() => this.closeCmdDialog(() => this.setState({ commandRunning: false }))}
             visible={this.state.cmdDialog}
             callback={this.state.callback}
-            header={I18n.t('Command')}
             onInBackground={() => this.setState({ cmdDialog: false })}
             cmd={this.state.cmd}
             errorFunc={() => this.setState({ commandError: true })}

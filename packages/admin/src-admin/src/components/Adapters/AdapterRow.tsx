@@ -55,7 +55,7 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
             <TableCell />
             <TableCell>
                 <Grid container spacing={1} alignItems="center" style={this.styles.name}>
-                    <Tooltip title={this.props.adapterName}>
+                    <Tooltip title={this.props.adapterName} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                         <Grid item style={this.styles.paddingNone}>
                             <Avatar
                                 variant="square"

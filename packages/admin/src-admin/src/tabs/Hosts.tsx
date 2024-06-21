@@ -91,18 +91,18 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         padding: '2px 8px',
         borderRadius: 5,
     },
-    '@media screen and (max-width: 1100px)': {
-        hidden1100: {
+    hidden1100: {
+        '@media screen and (max-width: 1100px)': {
             display: 'none !important',
         },
     },
-    '@media screen and (max-width: 800px)': {
-        hidden800: {
+    hidden800: {
+        '@media screen and (max-width: 800px)': {
             display: 'none !important',
         },
     },
-    '@media screen and (max-width: 600px)': {
-        hidden600: {
+    hidden600: {
+        '@media screen and (max-width: 600px)': {
             display: 'none !important',
         },
     },
@@ -110,6 +110,9 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         fontSize: 12,
         opacity: 0.4,
         display: 'block',
+    },
+    tooltip: {
+        pointerEvents: 'none',
     },
 });
 

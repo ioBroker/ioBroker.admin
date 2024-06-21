@@ -253,6 +253,9 @@ const styles: Styles<IobTheme, any> = theme => ({
         whiteSpace: 'nowrap',
         display: 'flex',
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 });
 
 const COLORS_LIGHT = [

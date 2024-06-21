@@ -36,7 +36,7 @@ const styles: Record<string, any> = {
 
 interface CommandDialogProps {
     t: Translate;
-    confirmText: string;
+    confirmText?: string;
     onClose: () => void;
     callback: () => void;
     onInBackground: () => void;

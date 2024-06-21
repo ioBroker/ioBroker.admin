@@ -120,6 +120,7 @@ const styles: Styles<IobTheme, any> = theme => ({
 
 interface EditIntroLinkDialogProps {
     t: Translate;
+    lang: ioBroker.Languages;
     socket: AdminConnection;
     link: Record<string, any>;
     onClose: (link?: Record<string, any>) => void;
@@ -378,6 +379,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                         socket={this.props.socket}
                         action={{ link: this.state.link, text: this.state.linkName }}
                         t={this.props.t}
+                        lang={this.props.lang}
                         color={this.state.color}
                         enabled
                     >

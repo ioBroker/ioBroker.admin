@@ -92,9 +92,12 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         cursor: 'pointer',
         fontSize: 16,
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 });
 
-const formatInfo  = {
+const formatInfo: Record<string, (seconds: number, t?: Translate) => string>  = {
     Uptime:        Utils.formatSeconds,
     'System uptime': Utils.formatSeconds,
     RAM:           Utils.formatRam,
@@ -380,7 +383,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     color={instance.color}
                     reveal={instance.info}
                     edit={this.state.edit}
-                    reverseProxy={this.state.reverseProxy}
                     offline={hostData && hostData.alive === false}
                     warning={timeDiff > this.#THRESHOLD_TIME_DIFF_MS ? this.t('Backend time differs by %s minutes', Math.round(timeDiff / this.#ONE_MINUTE_MS).toString()) : null}
                     enabled={enabled}
@@ -437,6 +439,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     this.setState({ introLinks, hasUnsavedChanges });
                 }}
                 enabled={item.enabled}
+                lang={this.props.lang}
                 toggleActivation={() => this.toggleLinkCard(i)}
             >
                 {item.desc || ''}
@@ -1017,12 +1020,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
             </ul>;
     }
 
-    getHostDescriptionAll(id: string) {
+    getHostDescriptionAll(id: string): { el: React.JSX.Element; text: string } {
         const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
-        return [
-            <ul style={{ textTransform: 'none' }}>
+        return {
+            el: <ul style={{ textTransform: 'none' }}>
                 {hostData && typeof hostData === 'object' && Object.keys(hostData)
                     .filter(_id => !_id.startsWith('_'))
                     .map(value => <li key={value}>
@@ -1030,19 +1033,19 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             <span>
                                 <span className={classes.bold}>
                                     {this.t(value)}
-:
+                                    :
                                     {' '}
                                 </span>
-                                {/** @ts-expect-error check later */}
                                 {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
                             </span>
                             :
                             <Skeleton />}
                     </li>)}
             </ul>,
-            /** @ts-expect-error check later */
-            hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => `${acom}${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`),
-        ];
+
+            text: hostData && typeof hostData === 'object' ? Object.keys(hostData)
+                .reduce((acom, item) => `${acom}${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`) : '',
+        };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

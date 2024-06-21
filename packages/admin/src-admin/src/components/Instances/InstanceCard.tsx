@@ -1,7 +1,7 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
+    Box,
     Card,
     CardContent,
     CardMedia,
@@ -21,14 +21,14 @@ import {
 
 import InstanceGeneric, {
     type InstanceGenericProps,
-    style as genericStyles,
+    styles as genericStyles,
     type InstanceGenericState,
 } from './InstanceGeneric';
 import IsVisible from '../IsVisible';
 import BasicUtils from '../../Utils';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    ...genericStyles(theme),
+const styles: Record<string, any> = {
+    ...genericStyles,
     fab: {
         position: 'absolute',
         bottom: -20,
@@ -36,7 +36,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         height: 40,
         right: 20,
     },
-    collapse: {
+    collapse: (theme: IobTheme) => ({
         height: '100%',
         backgroundColor: theme.palette.mode === 'dark' ? '#4a4a4a' : '#d4d4d4',
         position: 'absolute',
@@ -48,47 +48,47 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         justifyContent: 'space-between',
         display: 'flex',
         flexDirection: 'column',
-    },
+    }),
     collapseOff: {
         height: 0,
     },
     close: {
-        width: '20px',
-        height: '20px',
-        opacity: '0.9',
+        width: 20,
+        height: 20,
+        opacity: 0.9,
         cursor: 'pointer',
         position: 'relative',
         marginLeft: 'auto',
-        marginBottom: 10,
+        mb: '10px',
         transition: 'all 0.6s ease',
         '&:hover': {
             transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: '#ff4f4f',
             transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: '#ff4f4f',
             transform: 'rotate(-45deg)',
         },
     },
-    footerBlock: {
+    footerBlock: (theme: IobTheme) => ({
         background: theme.palette.background.default,
-        padding: 10,
+        p: '10px',
         display: 'flex',
         justifyContent: 'space-between',
-    },
+    }),
     versionDate: {
         alignSelf: 'center',
     },
@@ -103,7 +103,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
 
     cardContent: {
-        marginTop: 16,
+        mt: 2,
         paddingTop: 0,
     },
     cardContentH5: {
@@ -119,13 +119,13 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     overflowAuto: {
         overflow: 'auto',
     },
-    collapseIcon: {
+    collapseIcon: (theme: IobTheme) => ({
         position: 'sticky',
         right: 0,
         top: 0,
         background: theme.palette.mode === 'dark' ? '#4a4a4a' : '#d4d4d4',
         zIndex: 2,
-    },
+    }),
     enableButton: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -154,55 +154,65 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             backgroundColor: '#fff',
         },
     },
-    instanceStateNotEnabled1: {
+    instanceStateNotEnabled1: (theme: IobTheme) => ({
         backgroundColor: 'rgba(192, 192, 192, 0.2)',
         color: theme.palette.mode === 'dark' ? '#CCC' : '#333',
-    },
-    instanceStateNotAlive1: {
+    }),
+    instanceStateNotAlive1: (theme: IobTheme) => ({
         backgroundColor: 'rgba(192, 192, 192, 0.7)',
         color: theme.palette.mode === 'dark' ? '#CCC' : '#333',
-    },
-    instanceStateAliveNotConnected1: {
+    }),
+    instanceStateAliveNotConnected1: (theme: IobTheme) => ({
         backgroundColor: 'rgba(255, 177, 0, 0.4)',
         color: theme.palette.mode === 'dark' ? '#CCC' : '#333',
-    },
-    instanceStateAliveAndConnected1: {
+    }),
+    instanceStateAliveAndConnected1: (theme: IobTheme) => ({
         backgroundColor: 'rgba(0, 255, 0, 0.4)',
         color: theme.palette.mode === 'dark' ? '#CCC' : '#333',
-    },
-});
-
-interface InstanceCardProps extends InstanceGenericProps {
-
-}
+    }),
+};
 
 interface InstanceCardState extends InstanceGenericState {
     mouseOver: boolean;
 }
 
-class InstanceCard extends InstanceGeneric<InstanceCardProps, InstanceCardState> {
-    constructor(props: InstanceCardProps) {
+class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardState> {
+    protected styles: Record<string, any> = styles;
+
+    constructor(props: InstanceGenericProps) {
         super(props);
 
         this.state = Object.assign(this.getDefaultState(props), { mouseOver: false });
     }
 
     renderSecondCardInfo() {
-        if (this.props.deleting || (!this.props.expanded && !this.state.mouseOver)) {
+        if (this.props.deleting || !this.state.expanded) {
             return null;
         }
-        const { classes, item, instance } = this.props;
-        return <div
-            className={Utils.clsx(
-                classes.collapse,
-                !this.props.expanded ? classes.collapseOff : '',
-                this.props.deleting && classes.deleting,
+        const { item, instance } = this.props;
+        return <Box
+            component="div"
+            sx={Utils.getStyle(
+                this.props.context.theme,
+                styles.collapse,
+                !this.state.expanded ? styles.collapseOff : '',
+                this.props.deleting && styles.deleting,
             )}
         >
-            <CardContent classes={{ root: classes.cardContent }} className={classes.overflowAuto}>
-                <div className={classes.collapseIcon}>
-                    <div className={classes.close} onClick={() => this.props.context.onToggleExpanded(instance.id)} />
-                </div>
+            <CardContent sx={{ '&.MuiCardContent-root': { ...styles.cardContent, ...styles.overflowAuto } }}>
+                <Box component="div" sx={styles.collapseIcon}>
+                    <Box
+                        component="div"
+                        sx={styles.close}
+                        onClick={() => {
+                            if (this.state.openDialog) {
+                                return;
+                            }
+                            this.setState({ expanded: false }, () =>
+                                this.props.context.onToggleExpanded(this.props.id, false));
+                        }}
+                    />
+                </Box>
                 <Typography gutterBottom component="span" variant="body2">
                     {this.renderInfo()}
 
@@ -211,38 +221,38 @@ class InstanceCard extends InstanceGeneric<InstanceCardProps, InstanceCardState>
                     {this.renderMemoryUsage()}
 
                     {item.running && this.props.context.expertMode &&
-                        <div className={classes.displayFlex}>
+                        <div style={styles.displayFlex}>
                             {this.renderInputOutput()}
                         </div>}
 
-                    {this.props.context.expertMode && <div className={classes.displayFlex}>
+                    {this.props.context.expertMode && <div style={styles.displayFlex}>
                         {this.renderRamLimit()}
                     </div>}
 
-                    {this.props.context.expertMode && <div className={classes.displayFlex}>
+                    {this.props.context.expertMode && <div style={styles.displayFlex}>
                         {this.renderLogLevel()}
                     </div>}
 
-                    {item.modeSchedule && <div className={classes.displayFlex}>
+                    {item.modeSchedule && <div style={styles.displayFlex}>
                         {this.renderSchedule()}
                     </div>}
 
                     {this.props.context.expertMode && (instance.mode === 'daemon') &&
-                        <div className={classes.displayFlex}>
+                        <div style={styles.displayFlex}>
                             {this.renderRestartSchedule()}
                         </div>}
 
                     {this.props.context.expertMode && item.checkCompact && item.compact && item.supportCompact &&
-                        <div className={classes.displayFlex}>
+                        <div style={styles.displayFlex}>
                             {this.renderCompactGroup()}
                         </div>}
 
-                    {this.props.context.expertMode && <div className={classes.displayFlex}>
+                    {this.props.context.expertMode && <div style={styles.displayFlex}>
                         {this.renderTier()}
                     </div>}
 
                     {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ?
-                        <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
+                        <div style={styles.displayFlex}>
                             {this.renderHostWithButton()}
                         </div> : null}
 
@@ -254,73 +264,76 @@ class InstanceCard extends InstanceGeneric<InstanceCardProps, InstanceCardState>
                 </Typography>
             </CardContent>
 
-            <div className={classes.footerBlock}>
+            <Box component="div" sx={styles.footerBlock}>
                 <IsVisible config={item} name="allowInstanceDelete">
-                    <div className={classes.displayFlex}>
+                    <div style={styles.displayFlex}>
                         {this.renderDeleteButton()}
                     </div>
                 </IsVisible>
 
-                {this.props.context.expertMode && item.checkSentry && <div className={classes.displayFlex}>
+                {this.props.context.expertMode && item.checkSentry && <div style={styles.displayFlex}>
                     {this.renderSentry()}
                 </div>}
 
-                {item.supportCompact && this.props.context.expertMode && item.checkCompact && <div className={classes.displayFlex}>
+                {item.supportCompact && this.props.context.expertMode && item.checkCompact && <div style={styles.displayFlex}>
                     {this.renderCompactGroupEnabled()}
                 </div>}
-            </div>
-        </div>;
+            </Box>
+        </Box>;
     }
 
     render() {
-        const { item, classes, instance } = this.props;
+        const { item, instance } = this.props;
 
-        return <Card className={Utils.clsx(classes.root, this.props.hidden ? classes.hidden : '')}>
+        return <Card sx={Utils.getStyle(this.props.context.theme, styles.root, this.props.hidden && styles.hidden)}>
             {this.state.openDialog && this.renderDialogs()}
             {this.renderSecondCardInfo()}
-            <div
-                className={Utils.clsx(
-                    this.props.classes.imageBlock,
-                    (!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) && classes.instanceStateNotEnabled1,
-                    item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && (!item.connectedToHost || !item.alive) && classes.instanceStateNotAlive1,
-                    item.running && item.connectedToHost && item.alive && item.connected === false && classes.instanceStateAliveNotConnected1,
-                    item.running && item.connectedToHost && item.alive && item.connected !== false && classes.instanceStateAliveAndConnected1,
+            <Box
+                component="div"
+                sx={Utils.getStyle(
+                    this.props.context.theme,
+                    styles.imageBlock,
+                    (!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) && styles.instanceStateNotEnabled1,
+                    item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && (!item.connectedToHost || !item.alive) && styles.instanceStateNotAlive1,
+                    item.running && item.connectedToHost && item.alive && item.connected === false && styles.instanceStateAliveNotConnected1,
+                    item.running && item.connectedToHost && item.alive && item.connected !== false && styles.instanceStateAliveAndConnected1,
                 )}
             >
-                <CardMedia className={classes.img} component="img" image={instance.image || 'img/no-image.png'} />
-                <div className={classes.adapter}>{instance.id}</div>
-                <div className={classes.versionDate}>
+                <CardMedia sx={styles.img} component="img" image={instance.image || 'img/no-image.png'} />
+                <div style={styles.adapter}>{instance.id}</div>
+                <div style={styles.versionDate}>
                     {/* {expertMode && item.checkCompact && <Tooltip title={t('compact groups')}>
                     <ViewCompactIcon color="action" style={{ margin: 10 }} />
                 </Tooltip>} */}
                 </div>
-                {!this.props.expanded ? <Fab
+                {!this.state.expanded ? <Fab
                     onMouseOver={() => this.setState({ mouseOver: true })}
                     onMouseOut={() => this.setState({ mouseOver: false })}
-                    onClick={() => this.props.context.onToggleExpanded(instance.id)}
-                    className={classes.fab}
+                    onClick={() => this.setState({ expanded: true }, () =>
+                        this.props.context.onToggleExpanded(this.props.id, true))}
+                    style={styles.fab}
                     color="primary"
                     aria-label="add"
                 >
                     <MoreVertIcon />
                 </Fab> : null}
-            </div>
+            </Box>
 
-            <CardContent className={classes.cardContentH5}>
+            <CardContent style={styles.cardContentH5}>
                 <Typography gutterBottom variant="h5" component="h5">
                     <div
                         // onMouseMove={() => this.setState({ visibleEdit: true })}
                         onMouseEnter={() => this.setState({ visibleEdit: true })}
                         onMouseLeave={() => this.setState({ visibleEdit: false })}
-                        className={classes.displayFlex}
+                        style={styles.displayFlex}
                     >
                         {BasicUtils.getText(item.name, this.props.context.lang)}
                         {this.renderEditNameButton()}
                     </div>
                 </Typography>
 
-                <div className={classes.marginTop10}>
-                    <Typography component="span" className={classes.enableButton}>
+                <div style={styles.marginTop10}>
+                    <Typography component="span" style={styles.enableButton}>
                         {this.renderPlayPause()}
                         <Hidden xsDown>
                             {this.renderSettingsButton()}
@@ -336,4 +349,4 @@ class InstanceCard extends InstanceGeneric<InstanceCardProps, InstanceCardState>
     }
 }
 
-export default withStyles(styles)(InstanceCard);
+export default InstanceCard;

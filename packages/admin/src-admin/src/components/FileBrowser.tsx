@@ -1754,7 +1754,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             >
                 <UploadIcon fontSize="small" />
             </IconButton> : null}
-            {this.props.showTypeSelector && IconType ? <Tooltip title={this.props.t('ra_Filter files')}>
+            {this.props.showTypeSelector && IconType ? <Tooltip title={this.props.t('ra_Filter files')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="small" onClick={e => this.setState({ showTypesMenu: e.target as HTMLButtonElement })}>
                     <IconType fontSize="small" />
                 </IconButton>
@@ -1802,7 +1802,10 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     <Brightness5Icon fontSize="small" />
                 </IconButton>
             </Tooltip>
-            {this.state.viewType !== TABLE && this.props.allowDelete ? <Tooltip title={this.props.t('ra_Delete')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            {this.state.viewType !== TABLE && this.props.allowDelete ? <Tooltip
+                title={this.props.t('ra_Delete')}
+                componentsProps={{ popper: { sx: styles.tooltip } }}
+            >
                 <span>
                     <IconButton
                         aria-label="delete"

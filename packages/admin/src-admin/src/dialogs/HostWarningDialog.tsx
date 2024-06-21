@@ -9,7 +9,6 @@ import {
     AppBar, Box, CardMedia,
     Tab, Tabs, Typography,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 
 import {
     Update as UpdateIcon,
@@ -27,18 +26,21 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, type ThemeType } from '@iobroker/adapter-react-v5';
+import {
+    I18n, Utils,
+    type ThemeType,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        // @ts-expect-error probably needs better types
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
         display: 'flex',
-        borderRadius: 4,
+        borderRadius: '4px',
         flexDirection: 'column',
-    },
+    }),
     paper: {
         maxWidth: 1000,
         width: '100%',
@@ -52,62 +54,32 @@ const useStyles = makeStyles(theme => ({
     overflowAuto: {
         overflowY: 'auto',
     },
-    pre: {
-        overflow: 'auto',
-        margin: 20,
-        '& p': {
-            fontSize: 18,
-        },
-    },
-    blockInfo: {
-        right: 20,
-        top: 10,
-        position: 'absolute',
-        display: 'flex',
-        alignItems: 'center',
-        color: 'silver',
-    },
-    img: {
-        marginLeft: 10,
-        width: 45,
-        height: 45,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
-        },
-    },
     message: {
         justifyContent: 'space-between',
         display: 'flex',
         width: '100%',
         alignItems: 'center',
+        '@media screen and (max-width: 550px)': {
+            flexWrap: 'wrap',
+        },
     },
     column: {
         flexDirection: 'column',
     },
-    headerText: {
+    headerText: (theme: IobTheme) => ({
         fontWeight: 'bold',
         fontSize: 20,
-        // @ts-expect-error probably needs better types
         color: theme.palette.mode === 'dark' ? '#DDD' : '#111',
-    },
-    descriptionHeaderText: {
+    }),
+    descriptionHeaderText: (theme: IobTheme) => ({
         margin: '18px 0',
-        // @ts-expect-error probably needs better types
         color: theme.palette.mode === 'dark' ? '#CCC' : '#222',
-    },
+    }),
     silver: {
         color: 'silver',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+        },
     },
     button: {
         paddingTop: 18,
@@ -122,6 +94,10 @@ const useStyles = makeStyles(theme => ({
         fontSize: 14,
         marginLeft: 20,
         whiteSpace: 'pre-wrap',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+            marginLeft: 0,
+        },
     },
     img2: {
         width: 25,
@@ -153,40 +129,28 @@ const useStyles = makeStyles(theme => ({
     },
     classNameBox: {
         padding: 24,
+        '@media screen and (max-width: 550px)': {
+            padding: 10,
+        },
     },
     textStyle: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+        },
     },
     content: {
         overflow: 'hidden',
     },
     buttonStyle: {
         margin: 3,
-    },
-    '@media screen and (max-width: 550px)': {
-        classNameBox: {
-            padding: 10,
-        },
-        message: {
-            flexWrap: 'wrap',
-        },
-        textStyle: {
-            fontSize: '2.9vw',
-        },
-        terminal: {
-            fontSize: '2.9vw',
-            marginLeft: 0,
-        },
-        silver: {
-            fontSize: '2.9vw',
-        },
-        buttonStyle: {
+        '@media screen and (max-width: 550px)': {
             fontSize: '2.9vw',
         },
     },
-}));
+};
 
 /** Possible message severities */
 type Severity = 'notify' | 'info' | 'alert';
@@ -246,23 +210,25 @@ const a11yProps = (index: number) => ({
 interface TabPanelOptions {
     value: number;
     index: number;
-    classNameBox: string;
+    styleDiv: React.CSSProperties;
+    sxBox: Record<string, any>;
     children: React.JSX.Element;
 }
 
 const TabPanel = ({
-    children, value, index, classNameBox, ...other
+    children, value, index, styleDiv, sxBox, ...other
 }: TabPanelOptions) => <div
     role="tabpanel"
     hidden={value !== index}
     id={`scrollable-force-tabpanel-${index}`}
     aria-labelledby={`scrollable-force-tab-${index}`}
+    style={styleDiv}
     {...other}
 >
-    { value === index &&
-            <Box className={classNameBox}>
-                <Typography component="div">{children}</Typography>
-            </Box>}
+    {value === index &&
+        <Box style={sxBox}>
+            <Typography component="div">{children}</Typography>
+        </Box>}
 </div>;
 
 interface InstanceMessage {
@@ -291,8 +257,6 @@ interface HostWarningDialogOptions {
 const HostWarningDialog = ({
     messages, onClose, ackCallback, dateFormat, themeType, instances,
 }: HostWarningDialogOptions) => {
-    const classes = useStyles();
-
     const [value, setValue] = useState(0);
     const [disabled, setDisabled] = useState<string[]>([]);
     const [expanded, setExpanded] = useState('');
@@ -312,14 +276,14 @@ const HostWarningDialog = ({
     return <Dialog
         onClose={() => onClose()}
         open={!0}
-        classes={{ paper: classes.paper }}
+        sx={{ '& .MuiDialog-paper': styles.paper }}
     >
-        <h2 className={classes.headingTop}>
+        <h2 style={styles.headingTop}>
             <Status name="heading" />
             {I18n.t('Adapter warnings')}
         </h2>
-        <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
-            <div className={classes.root}>
+        <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
+            <Box component="div" sx={styles.root}>
                 <AppBar position="static" color="default">
                     <Tabs
                         value={value}
@@ -340,21 +304,19 @@ const HostWarningDialog = ({
                     </Tabs>
                 </AppBar>
                 {Object.keys(messages).map((name, idx) => <TabPanel
-                    // @ts-expect-error probably needs better types
-                    classes={{ root: classes.overflowAuto }}
-                    classNameBox={classes.classNameBox}
+                    sxBox={styles.classNameBox}
                     key={`tabPanel-${name}`}
-                    style={dark ? { color: 'black' } : null}
+                    styleDiv={{ ...styles.overflowAuto, color: dark ? 'black' : undefined }}
                     value={value}
                     index={idx}
                 >
                     <div>
-                        <div className={classes.headerText} style={{ fontWeight: 'bold' }}>
+                        <Box component="div" sx={styles.headerText} style={{ fontWeight: 'bold' }}>
                             {messages[name].name[I18n.getLanguage()]}
-                        </div>
-                        <div className={classes.descriptionHeaderText}>
+                        </Box>
+                        <Box component="div" sx={styles.descriptionHeaderText}>
                             {messages[name].description[I18n.getLanguage()]}
-                        </div>
+                        </Box>
                         <div>
                             {messages[name].instances ? Object.keys(messages[name].instances).map(nameInst => {
                                 const index = Object.keys(messages).indexOf(name);
@@ -377,34 +339,34 @@ const HostWarningDialog = ({
                                 >
                                     <AccordionSummary
                                         expandIcon={<ExpandMoreIcon />}
-                                        classes={{ content: classes.content }}
+                                        sx={{ '& .MuiAccordionSummary-content': styles.content }}
                                         aria-controls="panel1bh-content"
                                         id="panel1bh-header"
                                     >
-                                        <Typography className={classes.heading}>
-                                            <CardMedia className={classes.img2} component="img" image={icon} />
-                                            <div className={classes.textStyle}>
+                                        <Typography style={styles.heading}>
+                                            <CardMedia sx={styles.img2} component="img" image={icon} />
+                                            <Box component="div" sx={styles.textStyle}>
                                                 {nameInst.replace(/^system\.adapter\./, '')}
-                                            </div>
+                                            </Box>
                                         </Typography>
                                     </AccordionSummary>
-                                    <AccordionDetails className={classes.column}>
+                                    <AccordionDetails style={styles.column}>
                                         {messages[name].instances[nameInst].messages.map(msg =>
-                                            <Typography key={msg.ts} component="div" className={classes.message}>
-                                                <div className={classes.terminal}>{Utils.renderTextWithA(msg.message)}</div>
-                                                <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
+                                            <Typography key={msg.ts} component="div" sx={styles.message}>
+                                                <Box component="div" sx={styles.terminal}>{Utils.renderTextWithA(msg.message)}</Box>
+                                                <Box component="div" sx={styles.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</Box>
                                             </Typography>)}
                                     </AccordionDetails>
                                 </Accordion>;
                             }) : null}
                         </div>
-                        <div className={classes.button}>
+                        <div style={styles.button}>
                             <Button
                                 variant="contained"
                                 autoFocus={Object.keys(messages).length !== 1}
                                 disabled={disabled.includes(name)}
                                 style={disabled.includes(name) ? { background: 'silver' } : undefined}
-                                className={classes.buttonStyle}
+                                sx={styles.buttonStyle}
                                 onClick={() => {
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
@@ -417,7 +379,7 @@ const HostWarningDialog = ({
                             {Object.keys(messages).length === 1 && <Button
                                 variant="contained"
                                 disabled={disabled.includes(name)}
-                                className={classes.buttonStyle}
+                                sx={styles.buttonStyle}
                                 style={disabled.includes(name) ? { background: 'silver' } : undefined}
                                 onClick={() => {
                                     setDisabled([...disabled, name]);
@@ -435,7 +397,7 @@ const HostWarningDialog = ({
                         </div>
                     </div>
                 </TabPanel>)}
-            </div>
+            </Box>
         </DialogContent>
         <DialogActions>
             <Button

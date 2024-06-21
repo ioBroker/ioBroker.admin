@@ -1,11 +1,10 @@
 import React, { createRef, Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button, Card, CardActions, CardContent,
     CardMedia, Collapse, Divider,
     Grid, IconButton, Link, Typography, Skeleton,
-    Tooltip,
+    Tooltip, Box,
 } from '@mui/material';
 
 import {
@@ -32,13 +31,13 @@ import CameraIntroDialog from '../dialogs/CameraIntroDialog';
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-const styles: Styles<IobTheme, any> = theme => ({
-    root: {
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         padding: '.75rem',
         [theme.breakpoints.up('xl')]: {
             flex: '0 1 20%',
         },
-    },
+    }),
     card: {
         display: 'flex',
         minHeight: '235px',
@@ -62,7 +61,7 @@ const styles: Styles<IobTheme, any> = theme => ({
             boxShadow: boxShadowHover,
         },
     },
-    cardInfoHead: {
+    cardInfoHead: (theme: IobTheme) => ({
         position: 'sticky',
         top: 0,
         background: theme.palette.background.default,
@@ -71,9 +70,9 @@ const styles: Styles<IobTheme, any> = theme => ({
         justifyContent: 'space-between',
         borderBottom: '1px solid',
         padding: '5px 5px 0px 5px',
-    },
+    }),
     edit: {
-        opacity: '.6',
+        opacity: 0.6,
         userSelect: 'none',
         pointerEvents: 'none',
     },
@@ -82,7 +81,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         maxWidth: '30%',
     },
     img: {
-        width: '120px',
+        width: 120,
         height: 'auto',
         padding: '2rem .5rem',
         maxWidth: '100%',
@@ -205,36 +204,38 @@ const styles: Styles<IobTheme, any> = theme => ({
     colorOrange: {
         color: '#ffcc80',
     },
-});
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 interface IntroCardProps {
-    camera: string;
+    camera?: string;
     disabled?: boolean;
-    addTs: boolean;
-    interval: number;
-    onEdit: () => void;
+    addTs?: boolean;
+    interval?: number;
+    onEdit?: () => void;
     socket: AdminConnection;
-    offline: boolean;
+    offline?: boolean;
     t: Translate;
     lang: ioBroker.Languages;
     /** Shows a warning on the card with given text if configured */
-    warning: string;
-    edit: boolean;
-    toggleActivation: () => void;
+    warning?: string;
+    edit?: boolean;
+    toggleActivation?: () => void;
     enabled: boolean;
-    onRemove: () => void;
+    onRemove?: () => void;
     action: {
         text: string;
         link: string;
     };
     color: string;
     image: string;
-    title: string;
+    title: string | React.JSX.Element;
     children: any;
-    reveal: boolean;
-    getHostDescriptionAll: () => [string, string];
-    openSnackBarFunc: () => void;
-    classes: Record<string, string>;
+    reveal?: boolean;
+    getHostDescriptionAll?: () => { el: React.JSX.Element; text: string };
+    openSnackBarFunc?: () => void;
 }
 
 interface IntroCardState {
@@ -359,8 +360,6 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
     }
 
     renderContent() {
-        const { classes } = this.props;
-
         if (!this.props.camera || this.props.camera === 'text') {
             return this.props.children;
         } if (this.props.camera === 'custom') {
@@ -377,7 +376,7 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
             return <Grid
                 item
                 container
-                className={classes.imgContainer}
+                style={styles.imgContainer}
                 justifyContent="center"
                 alignItems="center"
             >
@@ -385,7 +384,7 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                     ref={this.cameraRef}
                     src={url}
                     alt="Camera"
-                    className={this.state.loaded && !this.state.error ? classes.cameraImg : classes.hidden}
+                    style={this.state.loaded && !this.state.error ? styles.cameraImg : styles.hidden}
                     onLoad={() => this.handleImageLoad()}
                     onError={() => this.handleImageError()}
                 />
@@ -394,21 +393,20 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                         height="100%"
                         width="100%"
                         animation="wave"
-                        className={classes.imgSkeleton}
+                        style={styles.imgSkeleton}
                     />}
                 {this.state.error &&
                     <ErrorIcon fontSize="large" />}
             </Grid>;
         }
         if (this.props.camera.startsWith('cameras.')) {
-            return <img ref={this.cameraRef} src="" alt="camera" className={this.props.classes.cameraImg} />;
+            return <img ref={this.cameraRef} src="" alt="camera" style={styles.cameraImg} />;
         }
         return null;
     }
 
     render() {
-        const { classes } = this.props;
-        const editClass = this.props.edit ? ` ${classes.edit}` : '';
+        const editClass = this.props.edit ? styles.edit : undefined;
 
         if (this.props.camera && this.props.camera !== 'text') {
             if (this.interval !== this.props.interval) {
@@ -432,7 +430,7 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
             sm={6}
             md={4}
             lg={3}
-            className={classes.root}
+            sx={styles.root}
         >
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <Link
@@ -442,7 +440,7 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                 rel="noopener noreferrer"
             >
                 <Card
-                    className={classes.card}
+                    sx={styles.card}
                     onClick={e => {
                         e.stopPropagation();
                         if (!this.props.edit && this.props.camera && this.props.camera !== 'text') {
@@ -455,7 +453,7 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                     {
                         this.props.reveal && !this.props.offline &&
                         <Button
-                            className={classes.expand + editClass}
+                            style={{ ...styles.expand, ...editClass }}
                             variant="contained"
                             size="small"
                             disabled={this.props.disabled}
@@ -465,9 +463,17 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                             {this.props.t('Info')}
                         </Button>
                     }
-                    <div className={classes.media + editClass} style={{ backgroundColor: this.props.color, display: 'flex', flexDirection: 'column' }}>
+                    <div
+                        style={{
+                            ...styles.media,
+                            ...editClass,
+                            backgroundColor: this.props.color,
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
                         <CardMedia
-                            className={classes.img}
+                            style={styles.img}
                             component="img"
                             image={this.props.image}
                         >
@@ -476,7 +482,7 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                             flex: 1, display: 'flex', paddingBottom: '5px', paddingLeft: '5px',
                         }}
                         >
-                            {this.props.warning ? <Tooltip title={this.props.warning}>
+                            {this.props.warning ? <Tooltip title={this.props.warning} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <WarningIcon style={{
                                     alignSelf: 'end',
                                     fontSize: 36,
@@ -485,13 +491,13 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                             </Tooltip> : null}
                         </div>
                     </div>
-                    <div className={classes.contentContainer + editClass}>
-                        <CardContent className={classes.content}>
+                    <div style={{ ...styles.contentContainer, ...editClass }}>
+                        <CardContent style={styles.content}>
                             <Grid
                                 container
                                 direction="column"
                                 wrap="nowrap"
-                                className={classes.contentGrid}
+                                style={styles.contentGrid}
                             >
                                 <Typography gutterBottom variant="h5" component="h5">
                                     {this.props.title}
@@ -499,29 +505,23 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                                 {this.renderContent()}
                             </Grid>
                         </CardContent>
-                        {
-                            this.props.action && this.props.action.link &&
-                            <Divider />
-                        }
-                        {
-                            this.props.action && this.props.action.link &&
-                            <CardActions className={classes.action}>
-                                <div className={classes.colorOrange}>
-                                    {buttonTitle}
-                                </div>
-                            </CardActions>
-                        }
+                        {this.props.action && this.props.action.link && <Divider />}
+                        {this.props.action && this.props.action.link && <CardActions style={styles.action}>
+                            <div style={styles.colorOrange}>
+                                {buttonTitle}
+                            </div>
+                        </CardActions>}
                     </div>
                     {
                         this.props.reveal &&
                         <Collapse
-                            className={classes.collapse}
+                            style={styles.collapse}
                             in={this.state.expanded}
                             timeout="auto"
                             unmountOnExit
                         >
-                            <Card className={classes.cardInfo}>
-                                <div className={classes.cardInfoHead}>
+                            <Card sx={styles.cardInfo}>
+                                <Box component="div" sx={styles.cardInfoHead}>
                                     <Typography gutterBottom variant="h5" component="h5">
                                         {this.props.t('Info')}
                                     </Typography>
@@ -529,8 +529,8 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                                         <IconButton
                                             size="small"
                                             onClick={() => {
-                                                Utils.copyToClipboard(this.props.getHostDescriptionAll()[1]);
-                                                this.props.openSnackBarFunc();
+                                                this.props.getHostDescriptionAll && Utils.copyToClipboard(this.props.getHostDescriptionAll().text);
+                                                this.props.openSnackBarFunc && this.props.openSnackBarFunc();
                                             }}
                                         >
                                             <SaveIcon />
@@ -539,9 +539,9 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                                             <CloseIcon />
                                         </IconButton>
                                     </div>
-                                </div>
+                                </Box>
                                 <CardContent>
-                                    {this.props.getHostDescriptionAll()[0]}
+                                    {this.props.getHostDescriptionAll().el}
                                     {/* { this.props.reveal } */}
                                 </CardContent>
                             </Card>
@@ -549,19 +549,19 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
                     }
                     {
                         this.props.edit && this.props.toggleActivation &&
-                        <IconButton size="large" className={this.props.enabled ? classes.enabled : classes.disabled} onClick={() => this.props.toggleActivation()}>
+                        <IconButton size="large" sx={this.props.enabled ? styles.enabled : styles.disabled} onClick={() => this.props.toggleActivation()}>
                             <CheckIcon />
                         </IconButton>
                     }
                     {
                         this.props.edit && this.props.onEdit &&
-                        <IconButton size="large" className={classes.editButton} onClick={() => this.props.onEdit()}>
+                        <IconButton size="large" sx={styles.editButton} onClick={() => this.props.onEdit()}>
                             <EditIcon />
                         </IconButton>
                     }
                     {
                         this.props.edit && this.props.onRemove &&
-                        <IconButton size="large" className={classes.deleteButton} onClick={() => this.props.onRemove()}>
+                        <IconButton size="large" sx={styles.deleteButton} onClick={() => this.props.onRemove()}>
                             <DeleteIcon />
                         </IconButton>
                     }
@@ -572,4 +572,4 @@ class IntroCard extends Component<IntroCardProps, IntroCardState> {
     }
 }
 
-export default withStyles(styles)(IntroCard);
+export default IntroCard;

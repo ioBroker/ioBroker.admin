@@ -303,7 +303,7 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                     style={Utils.getStyle(
                         this.props.theme,
                         styles.adapter,
-                        { color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }
+                        { color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' },
                     )}
                 >
                     {this.renderNotificationsBadge(this.props.host.common.name, true)}

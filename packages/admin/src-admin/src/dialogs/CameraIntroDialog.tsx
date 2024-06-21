@@ -43,10 +43,10 @@ interface CameraIntroLinkDialogProps {
     t: Translate;
     camera: string;
     socket: AdminConnection;
-    interval: string;
+    interval?: string;
     onClose: () => void;
-    name: string;
-    addTs: boolean;
+    name: string | React.JSX.Element;
+    addTs?: boolean;
     children: string;
 }
 
