@@ -98,6 +98,9 @@ import {
     withWidth,
     Connection,
     Utils,
+    TabHeader,
+    TabContent,
+    TabContainer,
     type Router,
     type IobTheme,
     type ThemeType,
@@ -105,9 +108,6 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 // own
-import TabContainer from './TabContainer';
-import TabContent from './TabContent';
-import TabHeader from './TabHeader';
 
 declare global {
     interface Window {

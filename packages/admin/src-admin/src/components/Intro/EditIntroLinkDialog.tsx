@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 
-import type { Styles } from '@mui/styles';
-import { withStyles } from '@mui/styles';
-
 import {
     Button,
     Dialog,
@@ -34,21 +31,22 @@ import {
     type IobTheme, type Translate,
 } from '@iobroker/adapter-react-v5';
 
-import IntroCard from '../components/IntroCard';
+import IntroCardCamera from '@/components/Intro/IntroCardCamera';
+import IntroCard from './IntroCard';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     formControl: {
         marginTop: 32,
     },
     rootGrid: {
         flexGrow: 1,
     },
-    closeButton: {
+    closeButton: (theme: IobTheme) => ({
         position: 'absolute',
         right: 8,
         top: 8,
         color: theme.palette.grey[500],
-    },
+    }),
     paper: {
         // minWidth: 600
     },
@@ -116,7 +114,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         left: 0,
         right: 0,
     },
-});
+};
 
 interface EditIntroLinkDialogProps {
     t: Translate;
@@ -125,7 +123,6 @@ interface EditIntroLinkDialogProps {
     link: Record<string, any>;
     onClose: (link?: Record<string, any>) => void;
     isNew: boolean;
-    classes: Record<string, string>;
 }
 
 interface EditIntroLinkDialogState {
@@ -200,27 +197,24 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
     }
 
     render() {
-        const { classes } = this.props;
-
         return <Dialog
             onClose={() => this.props.onClose()}
             open={!0}
             maxWidth="md"
             fullWidth
-            classes={{ paper: classes.paper }}
+            sx={{ '& .MuiDialog-paper': styles.paper }}
         >
             <DialogTitle>
-                <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
+                <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
                     {this.props.isNew ? this.props.t('Add new link: ') : this.props.t('Edit link')}
-                    <IconButton size="large" className={classes.closeButton} onClick={() => this.props.onClose()}>
+                    <IconButton size="large" sx={styles.closeButton} onClick={() => this.props.onClose()}>
                         <CloseIcon />
                     </IconButton>
                 </Typography>
             </DialogTitle>
             <DialogContent dividers>
-
                 <Grid
-                    className={this.props.classes.rootGrid}
+                    style={styles.rootGrid}
                     container
                     direction="row"
                 >
@@ -235,7 +229,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                             container
                             direction="column"
                         >
-                            <FormControl variant="standard" className={classes.formControl}>
+                            <FormControl variant="standard" style={styles.formControl}>
                                 <InputLabel id="select-helper-label">{this.props.t('Link type')}</InputLabel>
                                 <Select
                                     variant="standard"
@@ -253,7 +247,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 variant="standard"
                                 label={this.props.t('URL')}
                                 value={this.state.link}
-                                className={this.props.classes.editItem}
+                                style={styles.editItem}
                                 onChange={e => {
                                     const oldLinkName = EditIntroLinkDialog.getLinkNameFromLink(this.state.link);
                                     if (oldLinkName && (!this.state.linkName || oldLinkName === this.state.linkName)) {
@@ -276,7 +270,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
 
                             <TextField
                                 variant="standard"
-                                className={this.props.classes.editItem}
+                                style={styles.editItem}
                                 label={this.props.t('Name')}
                                 value={this.state.name || ''}
                                 onChange={e => this.setState({ name: e.target.value })}
@@ -294,7 +288,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
 
                             {this.state.link ? <TextField
                                 variant="standard"
-                                className={this.props.classes.editItem}
+                                style={styles.editItem}
                                 label={this.props.t('Link name')}
                                 value={this.state.linkName || ''}
                                 onChange={e => this.setState({ linkName: e.target.value })}
@@ -312,7 +306,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
 
                             {this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField
                                 variant="standard"
-                                className={this.props.classes.editItem}
+                                style={styles.editItem}
                                 label={this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description')}
                                 value={this.state.desc || ''}
                                 onChange={e => this.setState({ desc: e.target.value })}
@@ -329,16 +323,16 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                             /> : null}
 
                             {this.state.camera === 'custom' ? <FormControlLabel
-                                className={this.props.classes.editItem}
+                                style={styles.editItem}
                                 control={<Checkbox checked={this.state.addTs} onChange={e => this.setState({ addTs: e.target.checked })} />}
                                 label={this.props.t('Add timestamp to URL')}
                             /> : null}
 
-                            {this.state.camera !== 'text' ? <Typography className={this.props.classes.labelSlider} gutterBottom>
+                            {this.state.camera !== 'text' ? <Typography style={styles.labelSlider} gutterBottom>
                                 Polling interval in ms
                             </Typography> : null}
                             {this.state.camera !== 'text' ? <Slider
-                                className={this.props.classes.editItemSlider}
+                                style={styles.editItemSlider}
                                 value={this.state.interval}
                                 getAriaValueText={() => `${this.state.interval}ms`}
                                 onChange={(e, interval) => this.setState({ interval: interval as number })}
@@ -348,12 +342,12 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                                 valueLabelDisplay="on"
                             /> : null}
 
-                            <div style={{ width: 50 }} className={this.props.classes.editItem}>
+                            <div style={{ ...styles.editItem, width: 50 }}>
                                 <TextField
                                     variant="standard"
                                     fullWidth
                                     label={this.props.t('Color')}
-                                    className={this.props.classes.editColor}
+                                    style={styles.editColor}
                                     type="color"
                                     value={this.state.color}
                                     onChange={e => this.setState({ color: e.target.value })}
@@ -370,21 +364,40 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                             />
                         </Grid>
                     </Grid>
-                    <IntroCard
-                        interval={this.state.interval}
-                        camera={this.state.camera}
-                        addTs={this.state.addTs}
-                        image={this.state.image}
-                        title={this.state.name}
-                        socket={this.props.socket}
-                        action={{ link: this.state.link, text: this.state.linkName }}
-                        t={this.props.t}
-                        lang={this.props.lang}
-                        color={this.state.color}
-                        enabled
+                    <Grid
+                        item
+                        xs={12}
+                        sm={6}
+                        md={4}
+                        lg={3}
                     >
-                        {this.state.desc || ''}
-                    </IntroCard>
+                        {this.state.camera === 'text' ? <IntroCard
+                            image={this.state.image}
+                            title={this.state.name}
+                            action={{ link: this.state.link, text: this.state.linkName }}
+                            t={this.props.t}
+                            lang={this.props.lang}
+                            style={{ width: '100% !important', maxWidth: '100% !important', marginLeft: '8px' }}
+                            color={this.state.color}
+                            enabled
+                        >
+                            {this.state.desc}
+                        </IntroCard> :
+                            <IntroCardCamera
+                                interval={this.state.interval}
+                                camera={this.state.camera}
+                                addTs={this.state.addTs}
+                                image={this.state.image}
+                                title={this.state.name}
+                                socket={this.props.socket}
+                                action={{ link: this.state.link, text: this.state.linkName }}
+                                t={this.props.t}
+                                lang={this.props.lang}
+                                color={this.state.color}
+                                enabled
+                                cameraUrl={this.state.desc}
+                            />}
+                    </Grid>
                 </Grid>
             </DialogContent>
             <DialogActions>
@@ -422,4 +435,4 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
     }
 }
 
-export default withStyles(styles)(EditIntroLinkDialog);
+export default EditIntroLinkDialog;

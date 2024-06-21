@@ -2,8 +2,6 @@ import React from 'react';
 
 import semver from 'semver';
 
-import { withStyles } from '@mui/styles';
-
 import {
     Fab, Snackbar, Tooltip, Grid, LinearProgress,
     Skeleton,
@@ -20,21 +18,22 @@ import {
 import {
     type AdminConnection, Utils as UtilsCommon,
     type IobTheme, type Translate,
+    TabContainer,
+    TabContent,
 } from '@iobroker/adapter-react-v5';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import Utils from '@/Utils';
-import IntroCard from '@/components/IntroCard';
-import TabContainer from '@/components/TabContainer';
-import TabContent from '@/components/TabContent';
-import EditIntroLinkDialog from '@/dialogs/EditIntroLinkDialog';
+import IntroCard from '@/components/Intro/IntroCard';
+import EditIntroLinkDialog from '@/components/Intro/EditIntroLinkDialog';
 
 import { type InstanceEvent } from '@/Workers/InstancesWorker';
 import { type HostEvent } from '@/Workers/HostsWorker';
 import NodeUpdateDialog from '@/dialogs/NodeUpdateDialog';
+import IntroCardCamera from '@/components/Intro/IntroCardCamera';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     root: {
         width: '100%',
         height: '100%',
@@ -44,26 +43,26 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         bottom: 16,
         right: 16,
     },
-    saveButton: {
+    saveButton: (theme: IobTheme) => ({
         backgroundColor: theme.palette.success.main,
         right: 80,
         '&:hover': {
             backgroundColor: theme.palette.success.dark,
         },
-    },
-    addButton: {
+    }),
+    addButton: (theme: IobTheme) => ({
         backgroundColor: theme.palette.secondary.main,
         right: 144,
         '&:hover': {
             backgroundColor: theme.palette.secondary.dark,
         },
-    },
-    closeButton: {
+    }),
+    closeButton: (theme: IobTheme) => ({
         backgroundColor: theme.palette.error.main,
         '&:hover': {
             backgroundColor: theme.palette.error.dark,
         },
-    },
+    }),
     bold: {
         fontWeight: 'bold',
     },
@@ -95,7 +94,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     tooltip: {
         pointerEvents: 'none',
     },
-});
+};
 
 const formatInfo: Record<string, (seconds: number, t?: Translate) => string>  = {
     Uptime:        Utils.formatSeconds,
@@ -117,8 +116,7 @@ interface IntroProps {
     protocol: string;
     port: number;
     adminInstance: string;
-    /** Additional css styling */
-    classes: Record<string, any>;
+    theme: IobTheme;
 }
 
 interface NodeUpdateDialogInfo {
@@ -127,6 +125,40 @@ interface NodeUpdateDialogInfo {
     /** The node.js version to upgrade to */
     version: string;
 }
+
+type ItemCamera = {
+    camera: 'custom';
+    enabled: boolean;
+    link: string;
+    name: string;
+    /** Title of the link */
+    linkName: string;
+    /** Camera URL */
+    desc: string;
+    /** Add timestamp on the image */
+    addTs: boolean;
+    /** Polling interval in milliseconds */
+    interval: number;
+    color: string;
+    /** base64 image */
+    image: string;
+}
+
+type ItemLink = {
+    camera: 'text';
+    enabled: boolean;
+    link: string;
+    name: string;
+    /** Title of the link */
+    linkName: string;
+    /** Camera URL */
+    desc: string;
+    color: string;
+    /** base64 image */
+    image: string;
+}
+
+type ItemElement = ItemCamera | ItemLink;
 
 interface IntroState {
     /** Difference between client and host time in ms */
@@ -139,7 +171,7 @@ interface IntroState {
     editLinkIndex: number;
     editLink: boolean;
     link: null | Record<string, any>;
-    introLinks: Record<string, any>[] | null;
+    introLinks: ItemElement[] | null;
     edit: boolean;
     deactivated: string[] | null;
     instances: null | any[];
@@ -159,7 +191,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     /** // e.g. /admin/; */
     private readonly currentProxyPath = window.location.pathname;
 
-    private introLinksOriginal?: Record<string, any>[];
+    private introLinksOriginal?: string;
 
     private deactivatedOriginal?: string[];
 
@@ -290,9 +322,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 return this.getInstances(true, null, systemConfig);
             })
             .then((data: Record<string, any>) => {
-                const introLinks = systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [];
+                const introLinks = systemConfig?.native?.introLinks ? systemConfig.native.introLinks as ItemElement[] : [];
 
-                this.introLinksOriginal = JSON.parse(JSON.stringify(introLinks));
+                this.introLinksOriginal = JSON.stringify(introLinks);
                 this.deactivatedOriginal  = JSON.parse(JSON.stringify(data.deactivated));
 
                 this.setState({
@@ -313,7 +345,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         // restore old state
         this.setState({
             deactivated: this.deactivatedOriginal,
-            introLinks: this.introLinksOriginal,
+            introLinks: JSON.parse(this.introLinksOriginal),
             hasUnsavedChanges: false,
             edit: false,
         }, () => {
@@ -339,7 +371,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
 
         const hasUnsavedChanges = JSON.stringify(deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
-            JSON.stringify(this.state.introLinks) !== JSON.stringify(this.introLinksOriginal);
+            JSON.stringify(this.state.introLinks) !== this.introLinksOriginal;
 
         this.setState({ deactivated, hasUnsavedChanges });
     }
@@ -366,13 +398,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 const timeDiff = this.state.hostTimeDiffMap.get(instance.id) ?? 0;
                 return <IntroCard
                     key={`${instance.id}_${instance.link}`}
-                    socket={this.props.socket}
                     image={instance.image}
                     title={<>
                         <span style={instance.name && instance.name.length > 12 ? { fontSize: '1rem' } : undefined}>
                             {instance.name}
                         </span>
-                        {isShowInstance ? <span className={this.props.classes.instanceNumber}>
+                        {isShowInstance ? <span style={styles.instanceNumber}>
                             .
                             {instance.id.split('.').pop()}
                         </span> : null}
@@ -381,7 +412,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     t={this.props.t}
                     lang={this.props.lang}
                     color={instance.color}
-                    reveal={instance.info}
+                    showInfo={!!instance.info}
                     edit={this.state.edit}
                     offline={hostData && hostData.alive === false}
                     warning={timeDiff > this.#THRESHOLD_TIME_DIFF_MS ? this.t('Backend time differs by %s minutes', Math.round(timeDiff / this.#ONE_MINUTE_MS).toString()) : null}
@@ -390,6 +421,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
                     toggleActivation={() => this.toggleCard(instance.id, instance.linkName)}
                     openSnackBarFunc={() => this.setState({ openSnackBar: true })}
+                    theme={this.props.theme}
                 >
                     {instance.description || this.getHostDescription(instance.id)}
                 </IntroCard>;
@@ -404,7 +436,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         introLinks[i].enabled = !introLinks[i].enabled;
 
         const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
-            JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
+            JSON.stringify(introLinks) !== this.introLinksOriginal;
 
         this.setState({ introLinks, hasUnsavedChanges });
     }
@@ -414,18 +446,48 @@ class Intro extends React.Component<IntroProps, IntroState> {
             if (!item.enabled && !this.state.edit) {
                 return null;
             }
+
+            if (item.camera === 'custom') {
+                return <IntroCardCamera
+                    key={`link${i}`}
+                    image={item.image}
+                    title={item.name}
+                    action={{ link: item.link, text: item.linkName }}
+                    t={this.props.t}
+                    socket={this.props.socket}
+                    color={item.color}
+                    edit={this.state.edit}
+                    interval={item.interval}
+                    camera={item.camera}
+                    addTs={item.addTs}
+                    onEdit={() => this.setState({
+                        editLink: true,
+                        editLinkIndex: i,
+                        link: JSON.parse(JSON.stringify(this.state.introLinks?.[i])),
+                    })}
+                    onRemove={() => {
+                        const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
+                        introLinks.splice(i, 1);
+                        const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
+                            JSON.stringify(introLinks) !== this.introLinksOriginal;
+                        this.setState({ introLinks, hasUnsavedChanges });
+                    }}
+                    enabled={item.enabled}
+                    lang={this.props.lang}
+                    toggleActivation={() => this.toggleLinkCard(i)}
+                    cameraUrl={item.desc}
+                    theme={this.props.theme}
+                />;
+            }
+
             return <IntroCard
                 key={`link${i}`}
                 image={item.image}
                 title={item.name}
                 action={{ link: item.link, text: item.linkName }}
                 t={this.props.t}
-                socket={this.props.socket}
                 color={item.color}
                 edit={this.state.edit}
-                interval={item.interval}
-                camera={item.camera}
-                addTs={item.addTs}
                 onEdit={() => this.setState({
                     editLink: true,
                     editLinkIndex: i,
@@ -435,12 +497,13 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
                     introLinks.splice(i, 1);
                     const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
-                            JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
+                            JSON.stringify(introLinks) !== this.introLinksOriginal;
                     this.setState({ introLinks, hasUnsavedChanges });
                 }}
                 enabled={item.enabled}
                 lang={this.props.lang}
                 toggleActivation={() => this.toggleLinkCard(i)}
+                theme={this.props.theme}
             >
                 {item.desc || ''}
             </IntroCard>;
@@ -455,7 +518,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 isNew={this.state.editLinkIndex === -1}
                 t={this.props.t}
                 lang={this.props.lang}
-                // @ts-expect-error wait until component ported
                 onClose={link => {
                     if (link) {
                         const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
@@ -467,7 +529,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             introLinks[this.state.editLinkIndex] = link;
                         }
                         const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
-                            JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
+                            JSON.stringify(introLinks) !== this.introLinksOriginal;
 
                         this.setState({
                             introLinks, editLink: false, hasUnsavedChanges, link: null,
@@ -482,14 +544,14 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return null;
     }
 
-    getButtons(classes: Record<string, any>): React.JSX.Element[] {
+    getButtons(): React.JSX.Element[] {
         const buttons = [];
 
         if (this.state.edit) {
             buttons.push(<Fab
                 key="add"
                 color="primary"
-                className={`${classes.button} ${classes.addButton}`}
+                sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.addButton)}
                 onClick={() =>
                     this.setState({
                         editLink: true,
@@ -504,7 +566,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 key="save"
                 color="primary"
                 disabled={!this.state.hasUnsavedChanges}
-                className={`${classes.button} ${classes.saveButton}`}
+                sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.saveButton)}
                 onClick={() => this.saveCards()}
             >
                 <CheckIcon />
@@ -513,7 +575,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             buttons.push(<Fab
                 key="close"
                 color="primary"
-                className={`${classes.button} ${classes.closeButton}`}
+                sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.closeButton)}
                 onClick={() => this.deactivateEditMode()}
             >
                 <CloseIcon />
@@ -522,7 +584,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             buttons.push(<Fab
                 color="primary"
                 key="edit"
-                className={classes.button}
+                style={styles.button}
                 onClick={() => this.activateEditMode()}
             >
                 <CreateIcon />
@@ -890,11 +952,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 
     getHostDescription(id: string): React.JSX.Element {
-        const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
         if (hostData && hostData.alive === false) {
-            return <div className={this.props.classes.hostOffline}>{this.props.t('Offline')}</div>;
+            return <div style={styles.hostOffline}>{this.props.t('Offline')}</div>;
         }
 
         let nodeUpdate: string | React.JSX.Element = '';
@@ -926,11 +987,11 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
                 nodeUpdate =
                     <Tooltip title={this.props.t('Some updates available')}>
-                        <span className={this.props.classes.nodeUpdate} style={{ display: 'inline-flex' }}>
+                        <span style={{ ...styles.nodeUpdate, display: 'inline-flex' }}>
 (
                             {nodeUpdate}
 )
-                            {updateSupported ? <RefreshIcon className={this.props.classes.updateIcon} onClick={() => this.setState({ nodeUpdateDialog: { hostId: id, version: hostData._nodeNewestNext } })} /> : null}
+                            {updateSupported ? <RefreshIcon style={styles.updateIcon} onClick={() => this.setState({ nodeUpdateDialog: { hostId: id, version: hostData._nodeNewestNext } })} /> : null}
                         </span>
                     </Tooltip>;
             }
@@ -957,7 +1018,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             }
             if (npmUpdate) {
                 npmUpdate = <Tooltip title={this.props.t('Some updates available')}>
-                    <span className={this.props.classes.nodeUpdate}>
+                    <span style={styles.nodeUpdate}>
 (
                         {npmUpdate}
 )
@@ -970,7 +1031,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             <ul style={{ textTransform: 'none' }}>
                 <li>
                     <span>
-                        <span className={classes.bold}>
+                        <span style={styles.bold}>
                             {this.t('Platform')}
 :
                             {' '}
@@ -980,7 +1041,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 </li>
                 <li>
                     <span>
-                        <span className={classes.bold}>
+                        <span style={styles.bold}>
                             {this.t('RAM')}
 :
                             {' '}
@@ -990,23 +1051,23 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 </li>
                 <li>
                     <span>
-                        <span className={classes.bold}>
+                        <span style={styles.bold}>
                             {this.t('Node.js')}
 :
                             {' '}
                         </span>
-                        <span className={UtilsCommon.clsx(nodeUpdate ? this.props.classes.updateExists : this.props.classes.updateNo)}>{hostData['Node.js'] || '--'}</span>
+                        <span style={nodeUpdate ? styles.updateExists : styles.updateNo}>{hostData['Node.js'] || '--'}</span>
                         {nodeUpdate}
                     </span>
                 </li>
                 <li>
                     <span>
-                        <span className={classes.bold}>
+                        <span style={styles.bold}>
                             {this.t('NPM')}
 :
                             {' '}
                         </span>
-                        <span className={UtilsCommon.clsx(npmUpdate ? this.props.classes.updateExists : this.props.classes.updateNo)}>{hostData.NPM || '--'}</span>
+                        <span className={npmUpdate ? styles.updateExists : styles.updateNo}>{hostData.NPM || '--'}</span>
                         {npmUpdate}
                     </span>
                 </li>
@@ -1021,7 +1082,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 
     getHostDescriptionAll(id: string): { el: React.JSX.Element; text: string } {
-        const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
         return {
@@ -1031,7 +1091,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     .map(value => <li key={value}>
                         {hostData && typeof hostData === 'object' ?
                             <span>
-                                <span className={classes.bold}>
+                                <span style={styles.bold}>
                                     {this.t(value)}
                                     :
                                     {' '}
@@ -1109,20 +1169,18 @@ class Intro extends React.Component<IntroProps, IntroState> {
             return <LinearProgress />;
         }
 
-        const { classes } = this.props;
-
         return <TabContainer
             elevation={0}
             overflow="visible"
         >
             {this.renderCopiedToast()}
             {this.state.nodeUpdateDialog ? <NodeUpdateDialog onClose={() => this.setState({ nodeUpdateDialog: null })} socket={this.props.socket} {...this.state.nodeUpdateDialog} /> : null}
-            <TabContent classes={{ root: classes.container }}>
+            <TabContent style={styles.container}>
                 <Grid container spacing={2}>
                     {this.getInstancesCards()}
                     {this.getLinkCards()}
                 </Grid>
-                {this.getButtons(classes)}
+                {this.getButtons()}
                 {this.editLinkCard()}
             </TabContent>
         </TabContainer>;
@@ -1149,4 +1207,4 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 }
 
-export default withStyles(styles)(Intro);
+export default Intro;

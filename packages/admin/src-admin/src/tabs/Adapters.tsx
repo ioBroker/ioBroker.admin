@@ -31,16 +31,16 @@ import {
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import TabContainer from '@/components/TabContainer';
-import TabHeader from '@/components/TabHeader';
 import CustomSelectButton from '@/components/CustomSelectButton';
 import AdaptersUpdaterDialog from '@/dialogs/AdaptersUpdaterDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import IsVisible from '@/components/IsVisible';
 import Utils from '@/components/Utils';
 import BasicUtils from '@/Utils';
-import type {
-    AdminConnection, IobTheme,
-    ThemeType, Translate,
+import {
+    TabHeader,
+    type AdminConnection, type IobTheme,
+    type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 import type AdaptersWorker from '@/Workers/AdaptersWorker';
 import { type AdapterEvent } from '@/Workers/AdaptersWorker';

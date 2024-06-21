@@ -32,18 +32,18 @@ import {
     type AdminConnection,
     Router,
     withWidth,
+    TabContent,
+    TabContainer,
     type IobTheme,
     type ThemeName,
     type ThemeType,
+    TabHeader,
 } from '@iobroker/adapter-react-v5';
 
 import BasicUtils from '@/Utils';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type { InstanceLink } from '@/components/Instances/LinksDialog';
 import Config from './Config';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import TabHeader from '../components/TabHeader';
 import InstanceGeneric, {
     type InstanceEntry,
     type InstanceItem,

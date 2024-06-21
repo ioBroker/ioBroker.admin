@@ -44,7 +44,11 @@ import { amber, grey, red } from '@mui/material/colors';
 
 import {
     Icon, withWidth, Utils as UtilsCommon,
-    type IobTheme, type ThemeType, type Translate, type AdminConnection,
+    TabHeader,
+    type IobTheme, type ThemeType,
+    type Translate, type AdminConnection,
+    TabContainer,
+    TabContent,
 } from '@iobroker/adapter-react-v5';
 
 import type LogsWorker from '@/Workers/LogsWorker';
@@ -52,9 +56,6 @@ import type { LogLineSaved } from '@/Workers/LogsWorker';
 import type { CompactAdapterInfo, CompactHost } from '@/types';
 
 import Utils from '../Utils';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import TabHeader from '../components/TabHeader';
 
 const MAX_LOGS = 3000;
 

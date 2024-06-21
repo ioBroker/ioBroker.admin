@@ -20,6 +20,9 @@ import {
 import {
     withWidth,
     Utils as UtilsCommon,
+    TabHeader,
+    TabContent,
+    TabContainer,
     type AdminConnection,
     type IobTheme,
     type ThemeType,
@@ -29,9 +32,6 @@ import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@
 import type HostsWorker from '@/Workers/HostsWorker';
 import type { NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import TabHeader from '../components/TabHeader';
 import { blinkClasses } from '../components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';

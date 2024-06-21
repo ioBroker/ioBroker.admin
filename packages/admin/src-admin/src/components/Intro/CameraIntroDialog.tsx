@@ -47,7 +47,7 @@ interface CameraIntroLinkDialogProps {
     onClose: () => void;
     name: string | React.JSX.Element;
     addTs?: boolean;
-    children: string;
+    cameraUrl: string;
 }
 
 class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
@@ -77,7 +77,7 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
     updateCamera() {
         if (this.cameraRef.current) {
             if (this.props.camera === 'custom') {
-                let url = this.props.children;
+                let url = this.props.cameraUrl;
                 if (this.props.addTs) {
                     if (url.includes('?')) {
                         url += `&ts=${Date.now()}`;

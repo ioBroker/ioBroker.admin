@@ -1,12 +1,12 @@
 import React from 'react';
 
-import type {
-    AdminConnection, IobTheme, ThemeType, Translate,
+import {
+    type AdminConnection, type IobTheme,
+    type ThemeType, type Translate,
+    TabContainer, TabContent,
 } from '@iobroker/adapter-react-v5';
 
 import EnumsMain from '../components/Enums/EnumsMain';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
 
 interface EnumsProps {
     t: Translate;

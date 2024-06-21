@@ -4,15 +4,14 @@ import {
     LinearProgress,
 } from '@mui/material';
 
-import type {
-    AdminConnection, IobTheme,
-    ThemeType, Translate,
+import {
+    type AdminConnection, type IobTheme,
+    type ThemeType, type Translate,
+    TabContainer, TabContent,
 } from '@iobroker/adapter-react-v5';
 
 import FileBrowser, { type FileBrowserClass, type MetaObject } from '../components/FileBrowser';
 
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
 
 interface FilesProps {
