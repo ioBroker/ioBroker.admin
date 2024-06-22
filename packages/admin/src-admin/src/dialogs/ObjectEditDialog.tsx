@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 import MonacoEditor from 'react-monaco-editor';
 import type { editor as MonacoEditorType } from 'monaco-editor';
 
@@ -24,7 +23,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     dialog: {
         height: '100%',
         maxHeight: '100%',
@@ -33,12 +32,12 @@ const styles: Styles<IobTheme, any> = theme => ({
     content: {
         textAlign: 'center',
     },
-    tabPanel: {
+    tabPanel: (theme: IobTheme) => ({
         width: '100%',
         overflow: 'hidden',
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
-    },
-});
+    }),
+};
 
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg'],

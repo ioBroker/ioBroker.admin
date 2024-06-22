@@ -1,6 +1,5 @@
 import React, { createRef } from 'react';
 import semver from 'semver';
-import { withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -14,7 +13,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Dialog,
+    Dialog, Box,
 } from '@mui/material';
 
 import {
@@ -132,40 +131,40 @@ export type CompactSystemRepository = {
     };
 };
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     grow: {
         flexGrow: 1,
     },
-    updateAllButton: {
+    updateAllButton: (theme: IobTheme) => ({
         position: 'relative',
-    },
-    updateAllIcon: {
-        position: 'absolute',
-        top: 15,
-        left: 15,
-        opacity: 0.4,
-        color: theme.palette.mode === 'dark' ? '#aad5ff' : '#007fff',
-    },
+        '& .admin-update-second-icon': {
+            position: 'absolute',
+            top: 15,
+            left: 15,
+            opacity: 0.4,
+            color: theme.palette.mode === 'dark' ? '#aad5ff' : '#007fff',
+        },
+    }),
     counters: {
-        marginRight: 10,
+        mr: '10px',
         minWidth: 120,
         display: 'flex',
         '& div': {
-            marginLeft: 3,
+            ml: '3px',
         },
     },
-    infoAdapters: {
+    infoAdapters: (theme: IobTheme) => ({
         fontSize: 10,
         color: theme.palette.mode === 'dark' ? '#9c9c9c' : '#333',
         cursor: 'pointer',
-    },
+    }),
     greenText: {
         color: '#00a005d1',
     },
     tooltip: {
         pointerEvents: 'none',
     },
-});
+};
 
 const FILTERS: { name: string; notByList?: boolean }[] = [
     { name: 'Description A-Z' },
@@ -1429,24 +1428,24 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             return <Dialog open={!0} onClose={() => this.setState({ showStatistics: false })}>
                 <DialogTitle>{this.t('Statistics')}</DialogTitle>
                 <DialogContent style={{ fontSize: 16 }}>
-                    <div className={this.props.classes.counters}>
+                    <Box component="div" sx={styles.counters}>
                         {this.t('Total adapters')}
 :
                         {' '}
                         <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.allAdapters}</span>
-                    </div>
-                    <div className={this.props.classes.counters}>
+                    </Box>
+                    <Box component="div" sx={styles.counters}>
                         {this.t('Installed adapters')}
 :
                         {' '}
                         <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.installedAdapters}</span>
-                    </div>
-                    <div className={this.props.classes.counters}>
+                    </Box>
+                    <Box component="div" sx={styles.counters}>
                         {this.t('Last month updated adapters')}
 :
                         {' '}
                         <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span>
-                    </div>
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -1575,7 +1574,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     className={classes.updateAllButton}
                 >
                     <UpdateIcon />
-                    <UpdateIcon className={classes.updateAllIcon} />
+                    <UpdateIcon className="admin-update-second-icon" />
                 </IconButton>
             </Tooltip>}
 
@@ -1628,30 +1627,31 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             <div className={classes.grow} />
             <IsVisible config={this.props.adminGuiConfig.admin} name="admin.adapters.statistics">
                 <Hidden only={['xs', 'sm']}>
-                    <div
-                        className={classes.infoAdapters}
+                    <Box
+                        component="div"
+                        sx={styles.infoAdapters}
                         onClick={() => this.setState({ showStatistics: true })}
                     >
-                        <div className={Utils.clsx(classes.counters, classes.greenText)}>
+                        <Box component="div" sx={{ ...styles.counters, ...styles.greenText }}>
                             {this.t('Selected adapters')}
                             <div ref={this.countRef} />
-                        </div>
-                        <div className={classes.counters}>
+                        </Box>
+                        <Box component="div" sx={styles.counters}>
                             {this.t('Total adapters')}
                             :
                             <div>{this.allAdapters}</div>
-                        </div>
-                        <div className={classes.counters}>
+                        </Box>
+                        <Box component="div" sx={styles.counters}>
                             {this.t('Installed adapters')}
                             :
                             <div>{this.installedAdapters}</div>
-                        </div>
-                        <div className={classes.counters}>
+                        </Box>
+                        <Box component="div" sx={styles.counters}>
                             {this.t('Last month updated adapters')}
                             :
                             <div>{this.recentUpdatedAdapters}</div>
-                        </div>
-                    </div>
+                        </Box>
+                    </Box>
                 </Hidden>
             </IsVisible>
         </TabHeader>;
@@ -1789,4 +1789,4 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     }
 }
 
-export default withStyles(styles)(Adapters);
+export default Adapters;

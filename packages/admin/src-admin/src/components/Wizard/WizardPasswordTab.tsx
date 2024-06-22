@@ -1,5 +1,4 @@
 import React, { createRef, Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     TextField,
@@ -13,7 +12,7 @@ import {
     Check as IconCheck,
 } from '@mui/icons-material';
 
-import {type IobTheme, type Translate, withWidth} from '@iobroker/adapter-react-v5';
+import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '../../Utils';
 
@@ -179,4 +178,4 @@ class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPassword
     }
 }
 
-export default withWidth()(withStyles(styles)(WizardPasswordTab));
+export default withWidth()(WizardPasswordTab);

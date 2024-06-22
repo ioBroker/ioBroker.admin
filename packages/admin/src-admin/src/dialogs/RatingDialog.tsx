@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -30,7 +29,7 @@ import {
 
 import type { IobTheme, Translate } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     rating: {
         marginBottom: 20,
     },
@@ -44,17 +43,17 @@ const styles: Styles<IobTheme, any> = theme => ({
     list: {
         // maxHeight: 200,
     },
-    listOwn: {
+    listOwn: (theme: IobTheme) => ({
         backgroundColor: theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark,
-    },
-    listTitle: {
+    }),
+    listTitle: (theme: IobTheme) => ({
         backgroundColor: theme.palette.primary.dark,
         paddingTop: 4,
         paddingBottom: 4,
         marginBottom: 4,
         color: '#ffffff',
         textAlign: 'center',
-    },
+    }),
     languageFilter: {
         width: 300,
     },
@@ -87,7 +86,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         alignItems: 'center',
         gap: '10px',
     },
-});
+};
 
 const LANGUAGES = [
     {
