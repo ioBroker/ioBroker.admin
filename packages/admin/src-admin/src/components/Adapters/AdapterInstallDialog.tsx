@@ -212,7 +212,7 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
                         const installed = context.installed[entry.name];
 
                         entry.installed = !!installed;
-                        entry.installedVersion = installed ? this.installedVersion : null;
+                        entry.installedVersion = installed ? installed.version : null;
                         try {
                             entry.rightVersion = installed
                                 ? checkVersion
@@ -251,7 +251,7 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
                         try {
                             entry.rightVersion = installed
                                 ? checkVersion
-                                    ? semver.satisfies(entry.installedVersion, entry.version, { includePrerelease: true })
+                                    ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
                                     : true
                                 : false;
                         } catch (e) {

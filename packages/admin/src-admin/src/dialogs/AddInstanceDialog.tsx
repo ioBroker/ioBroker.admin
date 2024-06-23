@@ -58,7 +58,7 @@ const styles: Record<string, any> = {
         // minWidth: 600
     },
     typography: {
-        paddingRight: 30,
+        pr: '30px',
     },
     messageText: {
 

@@ -129,6 +129,25 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                             alive[hosts[h]._id] = false;
                         }
                     }
+
+                    // if the current host is not alive, find the first alive host and set it as current
+                    if (!alive[this.props.currentHost]) {
+                        const aliveHost = Object.keys(alive).find(id => alive[id]);
+                        if (aliveHost) {
+                            setTimeout(() => {
+                                const obj = this.state.hosts.find(ob => ob._id === aliveHost);
+                                if (obj) {
+                                    this.props.setCurrentHost(
+                                        obj.common?.name || aliveHost.replace('system.host.', ''),
+                                        aliveHost,
+                                    );
+                                } else {
+                                    this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
+                                }
+                            }, 100);
+                        }
+                    }
+
                     this.setState({ alive }, () => {
                         this.props.hostsWorker.registerHandler(this.onHostsObjectChange);
                         this.props.hostsWorker.registerAliveHandler(this.onAliveChanged);
@@ -212,6 +231,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                         changed = true;
                     }
                 } else {
+                    // new host detected
                     changed = true;
                     hosts.push({
                         _id: event.id as ioBroker.ObjectIDs.Host,
@@ -227,8 +247,9 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                             },
                         },
                     });
+
                     const state = await this.props.socket.getState(`${event.id}.alive`);
-                    alive[event.id] = state ? state.val as boolean : false;
+                    alive[event.id] = !!state?.val;
                 }
             }),
         )

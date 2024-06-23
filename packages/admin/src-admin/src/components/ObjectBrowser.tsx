@@ -683,9 +683,9 @@ const styles: Record<string, any> = {
         minWidth: 40,
     },
     cellButtonsButtonAlone: {
-        marginLeft: SMALL_BUTTON_SIZE + 4,
-        paddingTop: 0,
-        marginTop: -2,
+        ml: `${SMALL_BUTTON_SIZE + 20}px`,
+        pt: 0,
+        mt: '-2px',
     },
     cellButtonsButtonWithCustoms: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? theme.palette.primary.main : theme.palette.secondary.main,
@@ -2239,6 +2239,7 @@ interface ObjectBrowserValueProps {
     }) => void;
     /** Configured theme */
     themeType: ThemeType;
+    theme: IobTheme;
     socket: Connection;
     defaultHistory: string;
     dateFormat: string;
@@ -3003,11 +3004,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 JSON.stringify(this.lastSelectedItems),
             );
 
-            const name =
-                this.lastSelectedItems.length === 1
-                    ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.props.lang })
-                    : '';
-            this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
+            if (this.lastSelectedItems.length === 1 && this.objects[this.lastSelectedItems[0]]) {
+                const name =
+                    this.lastSelectedItems.length === 1
+                        ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.props.lang })
+                        : '';
+                this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
+            }
         } else {
             this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, '');
             if (this.state.selected.length) {

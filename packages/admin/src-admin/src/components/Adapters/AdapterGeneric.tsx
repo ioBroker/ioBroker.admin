@@ -180,8 +180,6 @@ export interface ImageProps {
 }
 
 export default abstract class AdapterGeneric<TProps extends AdapterGenericProps, TState extends AdapterGenericState> extends AdapterInstallDialog<TProps, TState> {
-    protected installedVersion: string = '';
-
     protected abstract styles: Record<string, any>;
 
     public constructor(props: TProps) {
@@ -539,6 +537,8 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         if (!this.state.showUpdateDialog) {
             return null;
         }
+
+        this.installedVersion = this.props.context.installed[this.props.adapterName]?.version;
 
         return <AdapterUpdateDialog
             adapter={this.props.adapterName}
