@@ -12,6 +12,23 @@ import {
 import type { ConfigItemInterface } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
+interface NetworkInterfaceBase {
+    address: string;
+    netmask: string;
+    mac: string;
+    internal: boolean;
+    cidr: string | null;
+}
+interface NetworkInterfaceInfoIPv4 extends NetworkInterfaceBase {
+    family: 'IPv4';
+    scopeid?: undefined;
+}
+interface NetworkInterfaceInfoIPv6 extends NetworkInterfaceBase {
+    family: 'IPv6';
+    scopeid: number;
+}
+type NetworkInterfaceInfo = NetworkInterfaceInfoIPv4 | NetworkInterfaceInfoIPv6;
+
 const styles: Record<string, React.CSSProperties> = {
     address: {
         fontSize: 'smaller',
@@ -45,7 +62,7 @@ class ConfigInterface extends ConfigGeneric<ConfigInterfaceProps, ConfigInterfac
                         }
 
                         // find ipv4 address
-                        let ip = list[inter].find(_ip => _ip.family === 'IPv4');
+                        let ip: NetworkInterfaceInfo = list[inter].find(_ip => _ip.family === 'IPv4');
                         ip = ip || list[inter].find(_ip => _ip.family === 'IPv6');
                         interfaces.push({ value: inter, address: ip.address });
                     });
