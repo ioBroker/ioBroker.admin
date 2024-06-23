@@ -363,14 +363,12 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         />;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         if (this.props.ready) {
-            this.updateAll()
-                .then(() => {
-                    this.state.search && this.filterAdapters();
-                    this.props.adaptersWorker.registerHandler(this.onAdaptersChanged);
-                    this.props.instancesWorker.registerHandler(this.onAdaptersChanged);
-                });
+            await this.updateAll();
+            this.state.search && (await this.filterAdapters());
+            this.props.adaptersWorker.registerHandler(this.onAdaptersChanged);
+            this.props.instancesWorker.registerHandler(this.onAdaptersChanged);
         }
     }
 
@@ -1150,7 +1148,6 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     }
 
     filterAdapters(search?: string) {
-        this.cache.listOfVisibleAdapter = null;
         search = search === undefined ? this.state.search : search;
         search = (search || '').toLowerCase().trim();
         let filteredList: string[] = [];
@@ -1192,7 +1189,11 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         } else {
             filteredList = null;
         }
-        this.setState({ filteredList, search });
+
+        this.setState({ filteredList, search }, () => {
+            this.cache.listOfVisibleAdapter = null;
+            this.forceUpdate();
+        });
     }
 
     clearAllFilters() {
