@@ -25,7 +25,6 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.1.6",
     "@iobroker/socket-classes": "^1.5.2",
-    "@iobroker/types": "^6.0.5",
     "@iobroker/webserver": "^1.0.3",
     "@iobroker/ws-server": "^2.1.2",
     "@types/leaflet": "^1.9.12",
@@ -49,6 +48,7 @@
   "devDependencies": {
     "@iobroker/dm-gui-components": "file:../dm-gui-components",
     "@iobroker/json-config": "file:../jsonConfig",
+    "@iobroker/types": "^6.0.5",
     "@types/ace": "^0.0.52"
   },
   "bugs": {
@@ -65,7 +65,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "start": "cd src && npm run start",
+    "start": "cd src-admin && npm run start",
     "test": "npm run test:package && npm run test:unit",
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
@@ -75,7 +75,8 @@
     "prepublishOnly": "npm run build && npm run build:ts",
     "build": "gulp && npm run build:ts",
     "build:ts": "tsc -p tsconfig.build.json",
-    "clean": "rimraf src/build"
+    "clean": "rimraf src-admin/build",
+    "lint-backend": "eslint src"
   },
   "author": "bluefox <dogafox@gmail.com>"
 }

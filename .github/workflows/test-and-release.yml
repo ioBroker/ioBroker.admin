@@ -42,14 +42,17 @@ jobs:
           cd packages/admin/src-admin
           npm i -f
 
+      - name: 'Lint Backend'
+        run: npm run lint-backend -w packages/admin
+
       - name: 'Build backend'
         run: npm run build:ts -w packages/admin
 
       - name: 'Build JsonConfig'
-        run: npm run build -w packages/jsonConfig/
+        run: npm run build -w packages/jsonConfig
 
       - name: 'Build dm-gui-components'
-        run: npm run build -w packages/dm-gui-components/
+        run: npm run build -w packages/dm-gui-components
 
       - name: Check TypeScript files
         run: |
@@ -70,7 +73,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x, 20.x, 22.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:

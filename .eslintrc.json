@@ -59,7 +59,6 @@
       ],
       "extends": [
         "plugin:@typescript-eslint/recommended",
-        "airbnb",
         "plugin:prettier/recommended"
       ],
       "parser": "@typescript-eslint/parser",
