@@ -180,6 +180,8 @@ export interface ImageProps {
 }
 
 export default abstract class AdapterGeneric<TProps extends AdapterGenericProps, TState extends AdapterGenericState> extends AdapterInstallDialog<TProps, TState> {
+    protected installedVersion: string = '';
+
     protected abstract styles: Record<string, any>;
 
     public constructor(props: TProps) {

@@ -93,7 +93,7 @@ export interface AdapterInstallDialogState {
 }
 
 export default abstract class AdapterInstallDialog<TProps extends AdapterInstallDialogProps, TState extends AdapterInstallDialogState> extends Component<TProps, TState> {
-    protected installedVersion: string = '';
+    protected abstract installedVersion: string;
 
     protected constructor(props: TProps) {
         super(props);
