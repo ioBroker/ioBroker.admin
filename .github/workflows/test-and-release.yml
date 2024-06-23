@@ -39,7 +39,7 @@ jobs:
 
       - name: 'Install FE'
         run: | 
-          cd packages/admin/src
+          cd packages/admin/src-admin
           npm i -f
 
       - name: 'Build backend'
@@ -53,7 +53,7 @@ jobs:
 
       - name: Check TypeScript files
         run: |
-          cd packages/admin/src
+          cd packages/admin/src-admin
           npm run check-ts
 
       - name: 'Build'
@@ -70,7 +70,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [18.x, 20.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -145,7 +145,7 @@ jobs:
 
       - name: Extract the version and commit body from the tag
         id: extract_release
-        # The body may be multiline, therefore, we need to escape some characters
+        # The body may be multi-line; therefore, we need to escape some characters
         run: |
           VERSION="${{ github.ref }}"
           VERSION=${VERSION##*/}
