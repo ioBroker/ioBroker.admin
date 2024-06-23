@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -17,7 +16,7 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 
-import { AdminConnection } from '@iobroker/adapter-react-v5';
+import { AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 
 const styles: Record<string, any> = {
@@ -30,10 +29,9 @@ const styles: Record<string, any> = {
 };
 
 interface SlowConnectionWarningDialogProps {
-    t: (text: string) => string;
+    t: Translate;
     readTimeoutMs: number;
     onClose: (readTimeoutMs?: number) => void;
-    classes: Record<string, string>;
 }
 
 interface SlowConnectionWarningDialogState {
@@ -78,7 +76,7 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
                 </DialogContentText>
                 <TextField
                     variant="standard"
-                    classes={{ root: this.props.classes.input }}
+                    style={styles.input}
                     label={this.props.t('Read timeout')}
                     value={this.state.readTimeoutSec}
                     onChange={e => this.setState({ readTimeoutSec: e.target.value })}
@@ -89,7 +87,7 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
             </DialogContent>
             <DialogActions>
                 <Button
-                    className={this.props.classes.buttonLabel}
+                    style={styles.buttonLabel}
                     variant="contained"
                     onClick={() => {
                         SlowConnectionWarningDialogClass.saveReadTimeoutMs(60000);
@@ -127,4 +125,4 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
     }
 }
 
-export default withStyles(styles)(SlowConnectionWarningDialogClass);
+export default SlowConnectionWarningDialogClass;

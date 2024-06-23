@@ -1,7 +1,6 @@
 // File viewer in adapter-react does not support write
 import { Buffer } from 'buffer';
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     // TextField,
@@ -40,7 +39,7 @@ import Editor from './Editor';
 
 const modelist = ace.require('ace/ext/modelist');
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     dialog: {
         height: '100%',
     },
@@ -94,8 +93,7 @@ interface FileViewerProps {
     socket: Connection;
     setStateBackgroundImage: () => void;
     themeType: ThemeType;
-    getClassBackgroundImage: () => string | null;
-    classes: Record<string, string>;
+    getStyleBackgroundImage: () => React.CSSProperties | null;
     /** Flag is the js-controller support subscribe on file */
     supportSubscribes?: boolean;
 }
@@ -253,15 +251,14 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
     getContent() {
         if (this.state.ext && EXTENSIONS.images.includes(this.state.ext)) {
             if (this.state.imgError) {
-                return <IconNoIcon className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())} />;
+                return <IconNoIcon style={{ ...styles.img, ...this.props.getStyleBackgroundImage() }} />;
             }
             return <Icon
                 onError={e => {
-                    // @ts-expect-error to check
-                    e.target.onerror = null;
+                    (e.target as HTMLImageElement).onerror = null;
                     this.setState({ imgError: true });
                 }}
-                className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
+                style={{ ...styles.img, ...this.props.getStyleBackgroundImage() }}
                 src={`${this.props.href}?ts=${this.state.forceUpdate}`}
                 alt={this.props.href}
             />;
@@ -280,7 +277,10 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
 
     render() {
         return <Dialog
-            classes={{ scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper }}
+            sx={{
+                '&.MuiDialog-scrollPaper': styles.dialog,
+                '& .MuiDialog-paper': styles.paper,
+            }}
             scroll="paper"
             open={!!this.props.href}
             onClose={() => this.props.onClose()}
@@ -288,7 +288,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
             maxWidth="xl"
             aria-labelledby="ar_dialog_file_view_title"
         >
-            <div className={this.props.classes.dialogTitle}>
+            <div style={styles.dialogTitle}>
                 <DialogTitle id="ar_dialog_file_view_title">{`${this.props.t(this.state.editing ? 'Edit' : 'View')}: ${this.props.href}`}</DialogTitle>
                 {this.state.ext && EXTENSIONS.images.includes(this.state.ext) && <div>
                     <IconButton
@@ -300,7 +300,7 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                     </IconButton>
                 </div>}
             </div>
-            <DialogContent className={this.props.classes.content}>
+            <DialogContent style={styles.content}>
                 {this.getContent()}
             </DialogContent>
             <DialogActions>
@@ -339,4 +339,4 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(FileViewer));
+export default withWidth()(FileViewer);

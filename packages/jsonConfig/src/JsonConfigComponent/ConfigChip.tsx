@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     FormHelperText,
@@ -10,7 +9,7 @@ import type { ConfigItemChip } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ChipInput from './ChipInput';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
@@ -35,7 +34,7 @@ class ConfigChip extends ConfigGeneric<ConfigChipProps, ConfigGenericState> {
     renderItem(error: string, disabled: boolean): React.JSX.Element | null {
         const { attr, schema } = this.props;
         const { value } = this.state;
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
+        return <FormControl fullWidth variant="standard">
             <ChipInput
                 value={value}
                 disabled={!!disabled}
@@ -52,6 +51,7 @@ class ConfigChip extends ConfigGeneric<ConfigChipProps, ConfigGenericState> {
                         }
                     });
                 }}
+                theme={this.props.theme}
                 onDelete={(chip, index) => {
                     const newValue = JSON.parse(JSON.stringify(value));
                     newValue.splice(index, 1);
@@ -72,4 +72,4 @@ class ConfigChip extends ConfigGeneric<ConfigChipProps, ConfigGenericState> {
     }
 }
 
-export default withStyles(styles)(ConfigChip);
+export default ConfigChip;

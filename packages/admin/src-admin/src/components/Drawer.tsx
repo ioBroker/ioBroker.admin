@@ -1,5 +1,4 @@
 import React, { Component, type RefObject } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Avatar,
@@ -7,7 +6,7 @@ import {
     IconButton,
     List,
     Typography,
-    SwipeableDrawer,
+    SwipeableDrawer, Box,
 } from '@mui/material';
 
 import {
@@ -53,8 +52,8 @@ function ucFirst(str: string): string {
     return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
 }
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    root: {
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         flexShrink: 0,
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.easeOut,
@@ -62,7 +61,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         }),
         display: 'flex',
         flexDirection: 'column',
-    },
+    }),
     rootFullWidth: {
         width: DRAWER_FULL_WIDTH,
     },
@@ -76,17 +75,18 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         width: 'inherit',
         overflowX: 'hidden',
     },
-    header: {
+    header: (theme: IobTheme) => ({
         display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
-        padding: theme.spacing(0, 1),
+        padding: '0 8px 0 8px',
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
         position: 'sticky',
         top: 0,
         zIndex: 2,
         background: theme.palette.background.default,
-    },
+    }),
     headerCompact: {
         padding: 0,
     },
@@ -97,15 +97,9 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         paddingTop: 0,
         flex: '1 0 auto',
     },
-    logout: {
-        color: theme.palette.primary.main,
-    },
     icon: {
         width: 20,
         height: 20,
-    },
-    logoWhite: {
-        background: '#FFFFFF',
     },
     logoSize: {
         width: 50,
@@ -126,16 +120,12 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     avatarVisible: {
         opacity: 1,
     },
-    expand: {
-        marginBottom: 5,
-        marginLeft: 5,
-    },
-    styleVersion: {
+    styleVersion: (theme: IobTheme) => ({
         fontSize: 10,
         color: theme.palette.mode === 'dark' ? '#ffffff5e' : '#0000005e',
         alignSelf: 'center',
-        marginLeft: 5,
-    },
+        ml: '5px',
+    }),
     editButton: {
         position: 'sticky',
         bottom: 0,
@@ -145,7 +135,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         marginTop: 'auto',
         transition: 'opacity 0.5s',
     },
-});
+};
 
 export const STATES = {
     opened: 0,
@@ -219,8 +209,8 @@ interface DrawerProps {
     installed: Record<string, { version: string; ignoreVersion?: string }>;
     hosts: ioBroker.HostObject[];
     repository: Record<string, { icon: string; version: string }>;
-    classes: Record<string, string>;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    theme: IobTheme;
 }
 
 interface DrawerState {
@@ -381,7 +371,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     async getTabs(update?: boolean) {
         try {
             const _instances = await this.props.socket.getCompactInstances(update);
-            const instances = _instances as any as Record<string, ioBroker.InstanceCommon>;
+            const instances = _instances as any as Record<string, ioBroker.AdapterCommon>;
             const dynamicTabs: AdminTab[] = [];
             if (instances) {
                 Object.keys(instances).forEach(id => {
@@ -535,16 +525,24 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     }
 
     getHeader() {
-        const { classes, state, handleNavigation } = this.props;
+        const { state, handleNavigation } = this.props;
 
-        return <div
-            className={Utils.clsx(
-                classes.header,
-                this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
-                !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact,
+        return <Box
+            component="div"
+            sx={Utils.getStyle(
+                this.props.theme,
+                styles.header,
+                this.props.state === STATES.opened && this.props.isSecure && styles.headerLogout,
+                !this.isSwipeable() && this.props.state !== STATES.opened && styles.headerCompact,
             )}
         >
-            <div className={Utils.clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
+            <div
+                style={{
+                    ...styles.avatarBlock,
+                    ...styles.avatarNotVisible,
+                    ...(state === 0 ? styles.avatarVisible : { display: 'none' }),
+                }}
+            >
                 <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                     {this.props.adminGuiConfig.icon ?
                         <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
@@ -553,12 +551,12 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         :
                         <Avatar
                             onClick={() => handleNavigation('easy')}
-                            className={classes.logoSize}
+                            style={styles.logoSize}
                             alt="ioBroker"
                             src="img/no-image.png"
                         />}
                 </a>
-                {!this.props.adminGuiConfig.icon && this.props.versionAdmin && <Typography className={classes.styleVersion}>
+                {!this.props.adminGuiConfig.icon && this.props.versionAdmin && <Typography sx={styles.styleVersion}>
 v
                     {this.props.versionAdmin}
                 </Typography>}
@@ -575,7 +573,7 @@ v
             >
                 <ChevronLeftIcon />
             </IconButton>
-        </div>;
+        </Box>;
     }
 
     isSwipeable() {
@@ -585,7 +583,7 @@ v
     tabsEditSystemConfig = async (idx?: number, isVisibility?: boolean, newColor?: string) => {
         const { tabs } = this.state;
         const { socket } = this.props;
-        const newTabs = JSON.parse(JSON.stringify(tabs));
+        const newTabs: AdminTab[] = JSON.parse(JSON.stringify(tabs)) as AdminTab[];
         if (isVisibility) {
             newTabs[idx].visible = !newTabs[idx].visible;
         }
@@ -597,7 +595,6 @@ v
             }
         }
         const newObjCopy = await this.props.socket.getSystemConfig(true);
-        // @ts-expect-error will be fixed in js-controller
         newObjCopy.common.tabsVisible = newTabs.map(({ name, visible, color }) => ({ name, visible, color }));
 
         if (isVisibility || newColor !== undefined) {
@@ -618,7 +615,7 @@ v
             tabs, logErrors, logWarnings,
         } = this.state;
         const {
-            currentTab, state, classes, handleNavigation,
+            currentTab, state, handleNavigation,
         } = this.props;
 
         return tabs.map((tab, idx) => {
@@ -634,7 +631,7 @@ v
                 key={tab.name}
                 canDrag={this.props.editMenuList}
                 name={tab.name}
-                iconJSX={tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon className={classes.icon} src={tab.icon} />}
+                iconJSX={tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon style={styles.icon} src={tab.icon} />}
                 _id={tab.name}
                 selected={currentTab === tab.name}
                 tab={tab}
@@ -668,13 +665,14 @@ v
                             handleNavigation(tab.name);
                         }
                     }}
-                    icon={tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon src={tab.icon} className={classes.icon} />}
+                    icon={tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon src={tab.icon} style={styles.icon} />}
                     text={tab.title}
                     selected={currentTab === tab.name}
                     badgeContent={this.badge(tab).content}
                     badgeColor={this.badge(tab).color}
                     badgeAdditionalContent={this.badge(tab)?.additionalContent}
                     badgeAdditionalColor={this.badge(tab)?.additionalColor}
+                    theme={this.props.theme}
                 />
             </DragWrapper>;
         });
@@ -708,18 +706,15 @@ v
     };
 
     render() {
-        const { classes } = this.props;
-
         if (this.isSwipeable()) {
             return <SwipeableDrawer
-                className={classes.root}
+                sx={Utils.getStyle(this.props.theme, styles.root, { '&.MuiSwipeableDrawer-paper': styles.paper })}
                 anchor="left"
                 open={this.props.state !== STATES.closed}
                 onClose={() => this.props.onStateChange(STATES.closed as 1)}
                 onOpen={() => this.props.onStateChange(STATES.opened as 0)}
-                classes={{ paper: classes.paper }}
             >
-                <CustomDragLayer />
+                <CustomDragLayer theme={this.props.theme} />
 
                 {this.getHeader()}
 
@@ -728,12 +723,13 @@ v
                 </List>
                 {this.props.isSecure &&
                     <DrawerItem
+                        theme={this.props.theme}
                         compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                         onClick={this.props.onLogout}
                         text={this.props.t('Logout')}
                         icon={<LogoutIcon />}
                     />}
-                {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div className={this.props.classes.editButton}>
+                {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div style={styles.editButton}>
                     <CustomPopper
                         editMenuList={this.props.editMenuList}
                         onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
@@ -743,21 +739,26 @@ v
         }
 
         return <MaterialDrawer
-            className={Utils.clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : (this.props.editMenuList ? classes.rootEditWidth : classes.rootFullWidth))}
+            sx={Utils.getStyle(
+                this.props.theme,
+                styles.root,
+                this.props.state !== STATES.opened ? styles.rootCompactWidth : (this.props.editMenuList ? styles.rootEditWidth : styles.rootFullWidth),
+                { '&.MuiDrawer-paper': styles.paper },
+            )}
             variant="persistent"
             anchor="left"
             open={this.props.state !== STATES.closed}
-            classes={{ paper: classes.paper }}
             onMouseEnter={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '1')}
             onMouseLeave={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '0')}
         >
-            <CustomDragLayer />
+            <CustomDragLayer theme={this.props.theme} />
             {this.getHeader()}
-            <List className={classes.list}>
+            <List style={styles.list}>
                 {this.getNavigationItems()}
             </List>
             {this.props.isSecure &&
                 <DrawerItem
+                    theme={this.props.theme}
                     style={{ flexShrink: 0 }}
                     compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                     onClick={this.props.onLogout}
@@ -765,8 +766,7 @@ v
                     icon={<LogoutIcon />}
                 />}
             {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div
-                className={this.props.classes.editButton}
-                style={{ opacity: 0 }}
+                style={{ ...styles.editButton, opacity: 0 }}
                 ref={this.refEditButton}
             >
                 <CustomPopper
@@ -779,4 +779,4 @@ v
 }
 
 Drawer.contextType = ContextWrapper;
-export default withWidth()(withStyles(styles)(Drawer));
+export default withWidth()(Drawer);

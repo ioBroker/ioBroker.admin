@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { withStyles } from '@mui/styles';
-
 import {
     Badge,
     Grid,
@@ -18,8 +16,8 @@ import { amber } from '@mui/material/colors';
 import { Utils, ColorPicker, type IobTheme } from '@iobroker/adapter-react-v5';
 import CommonUtils from '../Utils';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    selected: {
+const styles: Record<string, any> = {
+    selected: (theme: IobTheme) => ({
         background: theme.palette.primary.main,
         color: theme.palette.mode === 'light' ? 'white' : CommonUtils.invertColor(theme.palette.primary.main, true),
         '&:hover': {
@@ -28,12 +26,12 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
                 color: theme.palette.primary.main,
             },
         },
-    },
-    selectedIcon: {
+    }),
+    selectedIcon: (theme: IobTheme) => ({
         color: theme.palette.mode === 'light' ? 'white' : CommonUtils.invertColor(theme.palette.primary.main, true),
-    },
+    }),
     compactBadge: {
-        paddingLeft: 12,
+        pl: '12px',
     },
     noWrap: {
         flexWrap: 'nowrap',
@@ -42,12 +40,11 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     warn: {
         backgroundColor: amber[500],
     },
-});
+};
 
 interface DrawerItemProps {
     badgeColor?:  'error' | 'warn' | 'primary' | '';
     badgeContent?: number;
-    classes: Record<string, string>;
     compact?: boolean;
     icon: React.JSX.Element;
     onClick?: (e?: React.MouseEvent) => void;
@@ -60,13 +57,13 @@ interface DrawerItemProps {
     badgeAdditionalContent?: number;
     badgeAdditionalColor?:  'error' | '' | 'warn';
     style?: Record<string, any>;
+    theme: IobTheme;
 }
 
 const DrawerItem = (props: DrawerItemProps) => {
     const {
         badgeColor,
         badgeContent,
-        classes,
         compact,
         icon,
         onClick,
@@ -94,22 +91,22 @@ const DrawerItem = (props: DrawerItemProps) => {
         {!!editMenuList && <Checkbox checked={visible} onClick={() => editListFunc(true)} />}
         {!!editMenuList && <ColorPicker value={color} noInputField onChange={value => editListFunc(false, value || null)} />}
         <ListItemButton
-            className={Utils.clsx(selected && classes.selected, compact && classes.compactBadge)}
+            sx={Utils.getStyle(props.theme, selected && styles.selected, compact && styles.compactBadge)}
             onClick={onClick}
         >
-            <Tooltip title={compact ? content : ''}>
+            <Tooltip title={compact ? content : ''} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                 <Grid
                     container
                     spacing={1}
                     alignItems="center"
-                    className={classes.noWrap}
+                    style={styles.noWrap}
                 >
                     <Grid item>
-                        <ListItemIcon style={{ minWidth: 0, color }} classes={{ root: selected ? classes.selectedIcon : undefined }}>
+                        <ListItemIcon style={{ minWidth: 0, color }} sx={selected ? styles.selectedIcon : undefined}>
                             <Badge
                                 badgeContent={badgeContent || 0}
                                 color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
-                                classes={badgeColor === 'warn' ? { badge: classes.warn } : {}}
+                                sx={badgeColor === 'warn' ? { '& .MuiBadge-badge': styles.warn } : undefined}
                             >
                                 {icon}
                             </Badge>
@@ -121,7 +118,7 @@ const DrawerItem = (props: DrawerItemProps) => {
                                 <Badge
                                     badgeContent={badgeAdditionalContent || 0}
                                     color={(badgeAdditionalColor === 'warn' ? 'default' : badgeAdditionalColor) || 'primary'}
-                                    classes={badgeAdditionalColor === 'warn' ? { badge: classes.warn } : {}}
+                                    sx={badgeAdditionalColor === 'warn' ? {  '& .MuiBadge-badge': styles.warn } : undefined}
                                 >
                                     {content}
                                 </Badge>
@@ -133,4 +130,4 @@ const DrawerItem = (props: DrawerItemProps) => {
     </div>;
 };
 
-export default withStyles(styles)(DrawerItem);
+export default DrawerItem;

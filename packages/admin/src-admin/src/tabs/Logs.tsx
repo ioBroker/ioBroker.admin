@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import { type Styles, withStyles } from '@mui/styles';
-
 import {
     Button,
     IconButton,
@@ -25,6 +23,7 @@ import {
     Select,
     Tooltip,
     type SelectChangeEvent,
+    Box,
 } from '@mui/material';
 
 import {
@@ -44,7 +43,11 @@ import { amber, grey, red } from '@mui/material/colors';
 
 import {
     Icon, withWidth, Utils as UtilsCommon,
-    type IobTheme, type ThemeType, type Translate, type AdminConnection,
+    TabHeader,
+    type IobTheme, type ThemeType,
+    type Translate, type AdminConnection,
+    TabContainer,
+    TabContent,
 } from '@iobroker/adapter-react-v5';
 
 import type LogsWorker from '@/Workers/LogsWorker';
@@ -52,13 +55,10 @@ import type { LogLineSaved } from '@/Workers/LogsWorker';
 import type { CompactAdapterInfo, CompactHost } from '@/types';
 
 import Utils from '../Utils';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import TabHeader from '../components/TabHeader';
 
 const MAX_LOGS = 3000;
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     container: {
         height: '100%',
     },
@@ -75,10 +75,15 @@ const styles: Styles<IobTheme, any> = theme => ({
         },
     },
     row: {
+        '@media screen and (max-width: 450px)': {
+            '& > *': {
+                fontSize: 8,
+            },
+        },
     },
-    rowOdd: {
+    rowOdd: (theme: IobTheme) => ({
         backgroundColor: theme.palette.background.default,
-    },
+    }),
     cell: {
         verticalAlign: 'top',
     },
@@ -90,6 +95,12 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
     formControl: {
         width: '100%',
+        '@media screen and (max-width: 450px)': {
+            '& > *': {
+                fontSize: '10px !important',
+            },
+            position: 'relative',
+        },
     },
     light_error: {
         color: red[800],
@@ -117,18 +128,33 @@ const styles: Styles<IobTheme, any> = theme => ({
     },
     source: {
         width: 200,
+        '@media screen and (max-width: 450px)': {
+            width: 120,
+        },
     },
     pid: {
         width: 55,
+        '@media screen and (max-width: 450px)': {
+            width: 40,
+        },
     },
     timestamp: {
         width: 175,
+        '@media screen and (max-width: 450px)': {
+            width: 100,
+        },
     },
     severity: {
         width: 80,
+        '@media screen and (max-width: 450px)': {
+            width: 61,
+        },
     },
     message: {
         minWidth: 300,
+        '@media screen and (max-width: 450px)': {
+            minWidth: 150,
+        },
     },
     hidden: {
         display: 'none',
@@ -143,30 +169,35 @@ const styles: Styles<IobTheme, any> = theme => ({
     logEstimated: {
         fontStyle: 'italic',
     },
-    closeButton: {
+    closeButton: (theme: IobTheme) => ({
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: 8,
+        top: 8,
         color: theme.palette.grey[500],
-    },
-    header: {
+    }),
+    header: (theme: IobTheme) => ({
         '& .MuiFormLabel-root.Mui-disabled': {
             color: theme.palette.text.primary,
         },
         '& .MuiInput-underline::before': {
-            content: '',
+            content: '""',
             borderBottom: 'none',
         },
-    },
+        '@media screen and (max-width: 450px)': {
+            '& > *': {
+                fontSize: '10px !important',
+            },
+        },
+    }),
     pauseButton: {
-        minWidth: theme.spacing(6),
+        minWidth: 48,
     },
     pauseCount: {
         color: amber[500],
     },
     downloadLogSize: {
         color: grey[500],
-        marginLeft: theme.spacing(2),
+        marginLeft: 16,
     },
     downloadEntry: {
         display: 'flex',
@@ -179,39 +210,8 @@ const styles: Styles<IobTheme, any> = theme => ({
         display: 'flex',
         alignItems: 'center',
     },
-    '@media screen and (max-width: 450px)': {
-        row: {
-            '& > *': {
-                fontSize: 8,
-            },
-        },
-        source: {
-            width: 120,
-        },
-        pid: {
-            width: 40,
-        },
-        timestamp: {
-            width: 100,
-        },
-        severity: {
-            width: 61,
-        },
-        message: {
-            minWidth: 150,
-        },
-        formControl: {
-            '& > *': {
-                fontSize: '10px !important',
-            },
-            position: 'relative',
-        },
-        header: {
-            '& > *': {
-                fontSize: '10px !important',
-            },
-        },
-        messageText: {
+    messageText: {
+        '@media screen and (max-width: 450px)': {
             '& > *': {
                 fontSize: '10px !important',
             },
@@ -253,7 +253,10 @@ const styles: Styles<IobTheme, any> = theme => ({
         whiteSpace: 'nowrap',
         display: 'flex',
     },
-});
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 const COLORS_LIGHT = [
     '#ffadad30',
@@ -296,6 +299,7 @@ function padding3(num: number) {
     }
     return s;
 }
+
 interface LogLineSavedExtended extends LogLineSaved {
     odd?: boolean;
     time?: string;
@@ -303,7 +307,6 @@ interface LogLineSavedExtended extends LogLineSaved {
 }
 
 interface LogsProps {
-    classes: Record<string, string>;
     socket: AdminConnection;
     currentHost: string;
     clearErrors: () => void;
@@ -311,6 +314,7 @@ interface LogsProps {
     themeType: ThemeType;
     t: Translate;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    theme: IobTheme;
 }
 
 interface LogsState {
@@ -653,10 +657,8 @@ class Logs extends Component<LogsProps, LogsState> {
     }
 
     getLogFiles() {
-        const { classes } = this.props;
-
         return this.state.logFiles.map(entry => <MenuItem
-            className={classes.downloadEntry}
+            style={styles.downloadEntry}
             key={entry.name}
             onClick={() => {
                 Logs.openTab(entry.path.fileName);
@@ -665,7 +667,7 @@ class Logs extends Component<LogsProps, LogsState> {
         >
             {entry.name}
             <Typography
-                className={classes.downloadLogSize}
+                style={styles.downloadLogSize}
                 variant="caption"
             >
                 {Utils.formatBytes(entry.path.size) || '-'}
@@ -677,7 +679,7 @@ class Logs extends Component<LogsProps, LogsState> {
         const severities = [];
 
         for (const i in this.severities) {
-            severities.push(<MenuItem value={i} key={i} className={this.props.classes[`${this.props.themeType}_${i}`]}>{i}</MenuItem>);
+            severities.push(<MenuItem value={i} key={i} style={styles[`${this.props.themeType}_${i}`]}>{i}</MenuItem>);
         }
 
         return severities;
@@ -699,7 +701,7 @@ class Logs extends Component<LogsProps, LogsState> {
             >
                 {id === '1' ?
                     null :
-                    <Icon src={this.state.sources[id].icon || ''} className={this.props.classes.iconSelect} />}
+                    <Icon src={this.state.sources[id].icon || ''} style={styles.iconSelect} />}
                 {id === '1' ?
                     this.t('Source (show all)') :
                     id}
@@ -717,7 +719,6 @@ class Logs extends Component<LogsProps, LogsState> {
         if (!row) {
             return;
         }
-        const { classes } = this.props;
         const severity = row.severity;
 
         let message = row.message || '';
@@ -751,28 +752,34 @@ class Logs extends Component<LogsProps, LogsState> {
 
         rows.push(<TableRow
             id={options.length === i ? 'endOfLog' : undefined}
-            className={UtilsCommon.clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
+            sx={UtilsCommon.getStyle(
+                this.props.theme,
+                styles.row,
+                row.odd && styles.rowOdd,
+                isHidden && styles.hidden,
+                this.lastRowRender && row.ts > this.lastRowRender && styles.updatedRow,
+            )}
             style={this.state.colors ? { backgroundColor: this.state.sources[row.from]?.color || undefined } : {}}
             key={options.keyPrefix + key}
             hover
         >
-            <TableCell className={UtilsCommon.clsx(classes.cell, classes.cellName)}>
-                <div className={classes.iconAndName}>
-                    <Icon src={this.state.sources[row.from]?.icon || ''} className={classes.icon} />
-                    <div className={classes.name}>{row.from}</div>
+            <TableCell style={{ ...styles.cell, ...styles.cellName }}>
+                <div style={styles.iconAndName}>
+                    <Icon src={this.state.sources[row.from]?.icon || ''} style={styles.icon} />
+                    <div style={styles.name}>{row.from}</div>
                 </div>
             </TableCell>
-            {this.state.pid && <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+            {this.state.pid && <TableCell style={{ ...styles.cell, ...styles[`${this.props.themeType}_${severity}`] }}>
                 {id}
             </TableCell>}
-            <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}>
+            <TableCell style={{ ...styles.cell, ...styles[`${this.props.themeType}_${severity}`] }}>
                 {row.time}
             </TableCell>
-            <TableCell className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])} style={{ fontWeight: 'bold' }}>
+            <TableCell style={{ ...styles.cell, ...styles[`${this.props.themeType}_${severity}`], fontWeight: 'bold' }}>
                 {row.severity}
             </TableCell>
             <TableCell
-                className={UtilsCommon.clsx(classes.cell, classes[`${this.props.themeType}_${severity}`])}
+                style={{ ...styles.cell, ...styles[`${this.props.themeType}_${severity}`] }}
                 title={typeof message === 'object' ? message.original : message}
             >
                 {typeof message === 'object' ? message.parts.map((item, idx) => <span key={idx} style={item.style}>{item.text}</span>) : message}
@@ -839,12 +846,11 @@ class Logs extends Component<LogsProps, LogsState> {
         if (!this.state.logDeleteDialog) {
             return null;
         }
-        const { classes } = this.props;
 
         return <Dialog onClose={() => this.setState({ logDeleteDialog: false })} open={!0}>
             <DialogTitle>
                 {this.t('Please confirm')}
-                <IconButton size="large" className={classes.closeButton} onClick={() => this.setState({ logDeleteDialog: false })}>
+                <IconButton size="large" sx={styles.closeButton} onClick={() => this.setState({ logDeleteDialog: false })}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
@@ -881,9 +887,9 @@ class Logs extends Component<LogsProps, LogsState> {
         this.setState({ pid });
     }
 
-    renderToolbar(classes: Record<string, string>) {
+    renderToolbar() {
         const pauseChild = !this.state.pause ? <PauseIcon /> :
-            <Typography className={classes.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
+            <Typography style={styles.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
 
         const isMobile = this.props.width === 'xs' || this.props.width === 'sm';
 
@@ -910,7 +916,7 @@ class Logs extends Component<LogsProps, LogsState> {
             <Tooltip title={this.props.t('Pause output')}>
                 <IconButton
                     size="large"
-                    className={classes.pauseButton}
+                    style={styles.pauseButton}
                     onClick={() => this.handleLogPause()}
                 >
                     {pauseChild}
@@ -932,7 +938,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     onClick={() => this.changePid()}
                     color={!this.state.pid ? 'default' : 'primary'}
                 >
-                    <div className={classes.pidSize}>{this.props.t('PID')}</div>
+                    <div style={styles.pidSize}>{this.props.t('PID')}</div>
                 </IconButton>
             </Tooltip>
             <Tooltip title={this.props.t('Show/hide colors')}>
@@ -968,7 +974,7 @@ class Logs extends Component<LogsProps, LogsState> {
                 <Badge
                     badgeContent={this.state.logErrors}
                     color="error"
-                    classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeError) }}
+                    sx={{ '&. MuiBadge-badge': { ...styles.badge, ...styles.badgeError } }}
                 >
                     <IconButton
                         size="large"
@@ -989,7 +995,7 @@ class Logs extends Component<LogsProps, LogsState> {
                 <Badge
                     badgeContent={this.state.logWarnings}
                     color="default"
-                    classes={{ badge: UtilsCommon.clsx(classes.badge, classes.badgeWarn) }}
+                    sx={{ '& .MuiBadge-badge': { ...styles.badge, ...styles.badgeWarn } }}
                 >
                     <IconButton
                         size="large"
@@ -1006,7 +1012,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     </IconButton>
                 </Badge>
             </Tooltip>
-            <div className={classes.grow} />
+            <div style={styles.grow} />
             {this.state.logFiles?.length ? downloadLogButton : null}
             {this.state.logDownloadDialog ? <Menu
                 id="simple-menu"
@@ -1017,27 +1023,29 @@ class Logs extends Component<LogsProps, LogsState> {
             >
                 {this.getLogFiles()}
             </Menu> : null}
-            {isMobile ? null : <div className={classes.grow} />}
+            {isMobile ? null : <div style={styles.grow} />}
             {isMobile ? null : <Typography
                 variant="body2"
                 title={this.state.estimatedSize ? this.props.t('Estimated size') : ''}
-                className={classes.logSize}
+                style={styles.logSize}
             >
                 {this.t('Log size:')}
                 {' '}
-                <span className={this.state.estimatedSize ? classes.logEstimated : ''}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
+                <span style={this.state.estimatedSize ? styles.logEstimated : undefined}>
+                    {this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}
+                </span>
             </Typography>}
         </TabHeader>;
     }
 
-    renderTableHeader(classes: Record<string, string>) {
+    renderTableHeader() {
         const sources = Object.keys(this.state.sources).sort();
         sources.unshift('1');
 
         return <TableHead>
             <TableRow>
-                <TableCell className={classes.source}>
-                    <FormControl variant="standard" className={classes.formControl}>
+                <TableCell sx={styles.source}>
+                    <FormControl variant="standard" sx={styles.formControl}>
                         <Select
                             variant="standard"
                             labelId="source-label"
@@ -1052,7 +1060,7 @@ class Logs extends Component<LogsProps, LogsState> {
                             >
                                 {value === '1' ?
                                     null :
-                                    <Icon src={this.state.sources[value].icon || ''} className={this.props.classes.iconSelect} />}
+                                    <Icon src={this.state.sources[value].icon || ''} style={styles.iconSelect} />}
                                 {value === '1' ?
                                     this.t('Source') :
                                     value}
@@ -1074,30 +1082,30 @@ class Logs extends Component<LogsProps, LogsState> {
                         </IconButton> : null}
                     </FormControl>
                 </TableCell>
-                {this.state.pid && <TableCell className={classes.pid}>
-                    <div className={classes.header}>{this.t('PID')}</div>
+                {this.state.pid && <TableCell sx={styles.pid}>
+                    <Box component="div" sx={styles.header}>{this.t('PID')}</Box>
                 </TableCell>}
-                <TableCell className={classes.timestamp}>
-                    <div className={classes.header}>{this.t('Time')}</div>
+                <TableCell sx={styles.timestamp}>
+                    <Box component="div" sx={styles.header}>{this.t('Time')}</Box>
                 </TableCell>
-                <TableCell className={classes.severity}>
-                    <FormControl variant="standard" className={classes.formControl}>
+                <TableCell sx={styles.severity}>
+                    <FormControl variant="standard" style={styles.formControl}>
                         <Select
                             variant="standard"
                             labelId="severity-label"
                             value={this.state.severity}
                             onChange={event => this.handleSeverityChange(event)}
-                            renderValue={value => <span className={this.props.classes[`${this.props.themeType}_${value}`]}>{value}</span>}
+                            renderValue={value => <span style={styles[`${this.props.themeType}_${value}`]}>{value}</span>}
                         >
                             {this.getSeverities()}
                         </Select>
                     </FormControl>
                 </TableCell>
-                <TableCell className={classes.message}>
-                    <FormControl variant="standard" className={classes.formControl}>
+                <TableCell sx={styles.message}>
+                    <FormControl variant="standard" style={styles.formControl}>
                         <TextField
                             variant="standard"
-                            className={classes.messageText}
+                            sx={styles.messageText}
                             placeholder={this.t('Message')}
                             onChange={event => this.handleMessageChange(event)}
                             value={this.state.message}
@@ -1125,8 +1133,6 @@ class Logs extends Component<LogsProps, LogsState> {
             return <LinearProgress />;
         }
 
-        const { classes } = this.props;
-
         if (this.state.logFiles === null && !this.readLogsInProcess) {
             this.readLogsInProcess = true;
             setTimeout(() =>
@@ -1149,13 +1155,11 @@ class Logs extends Component<LogsProps, LogsState> {
         }
 
         return <TabContainer>
-            <TabHeader>
-                {this.renderToolbar(classes)}
-            </TabHeader>
+            {this.renderToolbar()}
             <TabContent>
-                <TableContainer className={classes.container}>
-                    <Table stickyHeader size="small" className={classes.table}>
-                        {this.renderTableHeader(classes)}
+                <TableContainer style={styles.container}>
+                    <Table stickyHeader size="small" sx={styles.table}>
+                        {this.renderTableHeader()}
                         <TableBody>
                             {this.getRows()}
                         </TableBody>
@@ -1167,4 +1171,4 @@ class Logs extends Component<LogsProps, LogsState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(Logs));
+export default withWidth()(Logs);

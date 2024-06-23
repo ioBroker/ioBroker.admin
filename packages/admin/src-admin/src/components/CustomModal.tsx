@@ -1,9 +1,9 @@
-import React, { type Component, useEffect, useState } from 'react';
-import { withStyles } from '@mui/styles';
+import React, { useEffect, useState } from 'react';
 
 import {
     Dialog, DialogActions, DialogContent,
-    DialogTitle, IconButton, TextField, Button, InputAdornment, type Breakpoint,
+    DialogTitle, IconButton, TextField,
+    Button, InputAdornment, type Breakpoint,
 } from '@mui/material';
 
 import {
@@ -12,9 +12,9 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { Utils, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     modalDialog: {
         minWidth: 400,
         maxWidth: 800,
@@ -31,16 +31,16 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     languageButton: {
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: 8,
+        top: 8,
     },
-    languageButtonActive: {
+    languageButtonActive: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
-    },
-});
+    }),
+};
 
 interface CustomModalProps {
-    icon?: Component;
+    icon?: React.FC<{ style?: React.CSSProperties }>;
     onClose: () => void;
     children?: React.JSX.Element | React.JSX.Element [];
     title?: string;
@@ -55,29 +55,32 @@ interface CustomModalProps {
     help?: string;
     noTranslation?: boolean;
     toggleTranslation?: () => void;
-    classes: Record<string, string>;
     textInput?: boolean;
     defaultValue?: string | number;
     progress?: boolean;
     disableApply?: boolean;
+    theme: IobTheme;
 }
 
 const CustomModal = ({
     toggleTranslation, noTranslation, title, fullWidth,
     help, maxWidth, progress, icon, disableApplyIfNotChanged, applyButton,
-    classes, onClose, children, titleButtonApply, titleButtonClose,
+    onClose, children, titleButtonApply, titleButtonClose,
     onApply, textInput, defaultValue, overflowHidden, disableApply,
+    theme,
 }: CustomModalProps) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
     }, [defaultValue]);
 
-    let Icon = null;
+    let Icon: React.FC<{ style?: React.CSSProperties }> | null = null;
 
     if (icon) {
         Icon = icon;
     }
+
+    const languageButtonActive = Utils.getStyle(theme, styles.languageButtonActive);
 
     return <Dialog
         open={!0}
@@ -85,17 +88,16 @@ const CustomModal = ({
         fullWidth={!!fullWidth}
         disableEscapeKeyDown={false}
         onClose={onClose}
-        classes={{ paper: classes.modalDialog /* paper: classes.background */ }}
+        sx={{ '& .MuiPaper-root': styles.modalDialog /* paper: classes.background */ }}
     >
         {title && <DialogTitle>
             {icon ?
-                // @ts-expect-error How to solve it?
-                <Icon className={classes.titleIcon} />
+                <Icon style={styles.titleIcon} />
                 : null}
             {title}
             {I18n.getLanguage() !== 'en' && toggleTranslation ? <IconButton
                 size="large"
-                className={Utils.clsx(classes.languageButton, noTranslation && classes.languageButtonActive)}
+                style={{ ...styles.languageButton, ...(noTranslation ? languageButtonActive : undefined) }}
                 onClick={() => toggleTranslation()}
                 title={I18n.t('Disable/Enable translation')}
             >
@@ -103,8 +105,7 @@ const CustomModal = ({
             </IconButton> : null}
         </DialogTitle>}
         <DialogContent
-            className={Utils.clsx(overflowHidden ? classes.overflowHidden : null, classes.content)}
-            style={{ paddingTop: 8 }}
+            style={{ ...(overflowHidden ? styles.overflowHidden : undefined), ...styles.content, paddingTop: 8 }}
         >
             {textInput && <TextField
                 // className={className}
@@ -155,4 +156,4 @@ const CustomModal = ({
     </Dialog>;
 };
 
-export default withStyles(styles)(CustomModal);
+export default CustomModal;

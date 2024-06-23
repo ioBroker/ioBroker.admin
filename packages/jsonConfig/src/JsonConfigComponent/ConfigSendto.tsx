@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import { Button, CircularProgress } from '@mui/material';
 
@@ -16,14 +15,9 @@ import {
 import type { ConfigItemSendTo } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
-    },
-    icon: {
-        width: 24,
-        height: 24,
-        marginRight: 4,
     },
 };
 
@@ -311,11 +305,11 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
     renderItem(error: Error | undefined, disabled: boolean) {
         const icon = this.getIcon();
 
-        return <div className={this.props.classes.fullWidth}>
+        return <div style={styles.fullWidth}>
             <Button
                 variant={this.props.schema.variant || undefined}
                 color={this.props.schema.color || 'grey'}
-                className={this.props.classes.fullWidth}
+                style={styles.fullWidth}
                 disabled={disabled || !this.props.alive}
                 startIcon={icon}
                 title={this.props.alive ? this.getText(this.props.schema.title) || '' : I18n.t('ra_Instance is not alive')}
@@ -336,4 +330,4 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
     }
 }
 
-export default withStyles(styles)(ConfigSendto);
+export default ConfigSendto;

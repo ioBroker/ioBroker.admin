@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -71,7 +70,6 @@ interface ObjectsProps {
     dateFormat: string;
     objectsWorker: ObjectsWorker;
     statesOnly: boolean;
-    classes: Record<string, string>;
     prefix: string;
 }
 
@@ -180,7 +178,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                 {this.state.deleteObjectShow.hasChildren ? this.t('Delete object(s)') : this.t('Delete object')}
 :
                 {' '}
-                <span className={this.props.classes.id}>{this.state.deleteObjectShow.id}</span>
+                <span style={styles.id}>{this.state.deleteObjectShow.id}</span>
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
@@ -203,16 +201,16 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                     <Button
                         variant="contained"
                         color="grey"
-                        classes={{ text: this.props.classes.buttonText }}
+                        sx={{ '& .MuiButton-text': styles.buttonText }}
                         onClick={() => this.onDelete(true)}
-                        startIcon={<IconDeleteAll className={this.props.classes.buttonAll} />}
+                        startIcon={<IconDeleteAll style={styles.buttonAll} />}
                     >
                         {this.t('Delete with children', this.state.deleteObjectShow.childrenCount)}
                     </Button> : null}
                 {this.state.deleteObjectShow.exists ?
                     <Button
                         variant="contained"
-                        classes={{ text: this.props.classes.buttonText }}
+                        sx={{ '& .MuiButton-text': styles.buttonText }}
                         onClick={() => this.onDelete(false)}
                         color="primary"
                         startIcon={<IconDeleteOne />}
@@ -303,6 +301,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
                 // eslint-disable-next-line react/no-unstable-nested-components
                 modalEditOfAccessControl={(context: ObjectBrowserClass, objData: TreeItemData) =>
                     <ObjectEditOfAccessControl
+                        theme={this.props.theme}
                         themeType={this.props.themeType}
                         extendObject={async (id: string, data: Partial<ioBroker.Object>) => {
                             this.props.socket.extendObject(id, data)
@@ -324,4 +323,4 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(Objects));
+export default withWidth()(Objects);

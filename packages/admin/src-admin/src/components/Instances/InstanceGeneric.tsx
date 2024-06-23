@@ -50,9 +50,10 @@ import {
     Confirm as ConfirmDialog,
     SelectWithIcon,
     ComplexCronDialog as ComplexCron,
-    type AdminConnection, Utils as UtilsCommon, Utils, TextWithIcon, Router,
+    type AdminConnection, TextWithIcon, Router,
     type IobTheme,
     type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 import {
     amber, blue, green,
@@ -77,10 +78,10 @@ export const arrayTier = [
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-export const style = (theme: IobTheme): Record<string, any> => ({
-    root: {
+export const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         position: 'relative',
-        margin: 10,
+        m: '10px',
         width: 300,
         minHeight: 200,
         background: theme.palette.background.default,
@@ -91,7 +92,7 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         '&:hover': {
             boxShadow: boxShadowHover,
         },
-    },
+    }),
     imageBlock: {
         background: 'silver',
         minHeight: 60,
@@ -217,7 +218,8 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         color: orange[300],
     },
     button: {
-        padding: 5,
+        // used in sx too and in this.styles
+        padding: '5px',
         transition: 'opacity 0.2s',
         height: 34,
     },
@@ -226,8 +228,8 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         cursor: 'default',
     },
     smallAvatar: {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
+        width: 24,
+        height: 24,
     },
     statusIndicator: {
         marginTop: 12,
@@ -298,7 +300,7 @@ export const style = (theme: IobTheme): Record<string, any> => ({
         margin: 1,
         backgroundColor: '#66bb6a',
     },
-});
+};
 
 export interface InstanceEntry {
     id: string;
@@ -365,25 +367,25 @@ export interface InstanceContext {
     hosts: ioBroker.HostObject[];
     lang: ioBroker.Languages;
     setMaxCompactGroupNumber: (maxCompactGroupNumber: number) => void;
-    t: (text: string, ...args: any[]) => string;
+    t: Translate;
     themeType: ThemeType;
+    theme: IobTheme;
     getInstanceStatus: (obj: ioBroker.InstanceObject) => InstanceStatusType;
     socket: AdminConnection;
     expertMode: boolean;
     maxCompactGroupNumber: number;
     states: Record<string, ioBroker.State>;
-    onToggleExpanded: (inst: string) => void;
+    onToggleExpanded: (inst: string, expanded: boolean) => void;
+    onRegisterClose: (inst: string, close: (() => void) | null) => void;
 }
 
 export interface InstanceGenericProps {
-    classes: Record<string, string>;
     hidden?: boolean;
     id: string;
     instance: InstanceEntry;
     deleting: boolean;
     item: InstanceItem;
     context: InstanceContext;
-    expanded: boolean;
     idx: number;
 }
 
@@ -411,9 +413,24 @@ export interface InstanceGenericState {
     host: string;
     deleteCustom: boolean;
     visibleEdit: boolean;
+
+    expanded: boolean;
 }
 
-export default abstract class InstanceGeneric<TProps extends InstanceGenericProps, TState extends InstanceGenericState> extends Component<TProps, TState> {
+export default abstract class InstanceGeneric<
+    TProps extends InstanceGenericProps,
+    TState extends InstanceGenericState,
+> extends Component<TProps, TState> {
+    protected abstract styles: Record<string, any>;
+
+    componentDidMount() {
+        this.props.context.onRegisterClose(this.props.id, this.commandClose);
+    }
+
+    componentWillUnmount() {
+        this.props.context.onRegisterClose(this.props.id, null);
+    }
+
     // eslint-disable-next-line react/no-unused-class-component-methods
     getDefaultState(props: TProps): InstanceGenericState {
         return {
@@ -438,6 +455,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
             host: props.instance.host,
             deleteCustom: false,
             visibleEdit: false,
+            expanded: false,
         };
     }
 
@@ -485,9 +503,12 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         }
     }
 
+    commandClose = () => this.setState({ expanded: false });
+
     toggleSentry(): void {
         const sentryEnabled = !this.isSentry();
-        this.props.context.socket.setState(`system.adapter.${this.props.instance.id}.plugins.sentry.enabled`, sentryEnabled, true)
+        this.props.context.socket
+            .setState(`system.adapter.${this.props.instance.id}.plugins.sentry.enabled`, sentryEnabled, true)
             .catch(e => window.alert(`Cannot set sentry: ${e}`));
     }
 
@@ -511,11 +532,13 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         if (schedule) {
             this.setCommonValue(`system.adapter.${instance.id}`, { schedule });
         } else {
-            this.props.context.socket.getObject(`system.adapter.${instance.id}`)
+            this.props.context.socket
+                .getObject(`system.adapter.${instance.id}`)
                 .then(obj => {
                     if (obj.common.schedule !== '') {
                         obj.common.schedule = '';
-                        this.props.context.socket.setObject(obj._id, obj)
+                        this.props.context.socket
+                            .setObject(obj._id, obj)
                             .catch(e => window.alert(`Cannot set schedule: ${e}`));
                     }
                 })
@@ -528,20 +551,21 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     }
 
     toggleCompactMode() {
-        this.setCommonValue(`system.adapter.${this.props.instance.id}`, { runAsCompactMode: !InstanceGeneric.isCompact(this.props.instance.obj) });
+        this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
+            runAsCompactMode: !InstanceGeneric.isCompact(this.props.instance.obj),
+        });
     }
 
     setRestartSchedule(instance: InstanceEntry, restartSchedule: string) {
         if (restartSchedule) {
             this.setCommonValue(`system.adapter.${instance.id}`, { restartSchedule });
         } else {
-            this.props.context.socket.getObject(`system.adapter.${instance.id}`)
-                .then(obj => {
-                    if (obj.common.restartSchedule !== '') {
-                        obj.common.restartSchedule = '';
-                        this.props.context.socket.setObject(obj._id, obj);
-                    }
-                });
+            this.props.context.socket.getObject(`system.adapter.${instance.id}`).then(obj => {
+                if (obj.common.restartSchedule !== '') {
+                    obj.common.restartSchedule = '';
+                    this.props.context.socket.setObject(obj._id, obj);
+                }
+            });
         }
     }
 
@@ -550,7 +574,8 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     }
 
     setCompactGroup(instance: InstanceEntry, compactGroup: string | number) {
-        compactGroup = compactGroup === 'controller' ? 0 : compactGroup === 'default' ? 1 : parseInt(compactGroup as string, 10);
+        compactGroup =
+            compactGroup === 'controller' ? 0 : compactGroup === 'default' ? 1 : parseInt(compactGroup as string, 10);
 
         this.setCommonValue(`system.adapter.${instance.id}`, { compactGroup });
         if (this.props.context.maxCompactGroupNumber < compactGroup) {
@@ -564,18 +589,27 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     }
 
     renderDeleteDialog() {
-        return <Dialog
-            onClose={() => this.setState({ openDialogDelete: false, openDialog: false })}
-            open={!0}
-        >
+        return <Dialog onClose={() => this.setState({ openDialogDelete: false, openDialog: false })} open={!0}>
             <DialogTitle>{this.props.context.t('Please confirm')}</DialogTitle>
             <DialogContent>
-                {this.state.openDialogDelete === 1 ?
-                    this.props.context.t('Are you sure you want to delete the instance "%s" or whole adapter "%s"?', this.props.instance.id, this.props.instance.id.split('.')[0]) :
-                    this.props.context.t('Are you sure you want to delete the instance %s?', this.props.instance.id)}
+                {this.state.openDialogDelete === 1
+                    ? this.props.context.t(
+                        'Are you sure you want to delete the instance "%s" or whole adapter "%s"?',
+                        this.props.instance.id,
+                        this.props.instance.id.split('.')[0],
+                    )
+                    : this.props.context.t(
+                        'Are you sure you want to delete the instance %s?',
+                        this.props.instance.id,
+                    )}
                 {this.props.context.deleteCustomSupported && this.props.instance.obj.common.supportCustoms && <br />}
                 {this.props.context.deleteCustomSupported && this.props.instance.obj.common.supportCustoms && <FormControlLabel
-                    control={<Checkbox checked={this.state.deleteCustom} onChange={e => this.setState({ deleteCustom: e.target.checked })} />}
+                    control={
+                        <Checkbox
+                            checked={this.state.deleteCustom}
+                            onChange={e => this.setState({ deleteCustom: e.target.checked })}
+                        />
+                    }
                     label={this.props.context.t('Delete all custom object settings of this adapter too')}
                 />}
             </DialogContent>
@@ -616,6 +650,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditNameDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Enter title for %s', this.props.instance.id)}
             disableApplyIfNotChanged
             textInput
@@ -630,15 +665,17 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditLogLevelDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Edit log level rule for %s', this.props.instance.id)}
             onApply={() => {
                 this.setLogLevel(this.props.instance, this.state.logLevel, this.state.logOnTheFly);
                 this.setState({ openDialogLogLevel: false, openDialog: false });
             }}
             disableApply={this.state.logLevel === this.props.item.logLevel}
-            onClose={() => this.setState({ openDialogLogLevel: false, logLevel: this.props.item.logLevel, openDialog: false })}
+            onClose={() =>
+                this.setState({ openDialogLogLevel: false, logLevel: this.props.item.logLevel, openDialog: false })}
         >
-            <FormControl className={this.props.classes.logLevel} variant="standard">
+            <FormControl style={this.styles.logLevel} variant="standard">
                 <InputLabel>{this.props.context.t('log level')}</InputLabel>
                 <Select
                     variant="standard"
@@ -646,26 +683,35 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                     fullWidth
                     onChange={el => this.setState({ logLevel: el.target.value as ioBroker.LogLevel })}
                 >
-                    {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                        {this.props.context.t(el)}
-                    </MenuItem>)}
+                    {arrayLogLevel.map(el => (
+                        <MenuItem key={el} value={el}>
+                            {this.props.context.t(el)}
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
-            <FormControl className={this.props.classes.formControl} variant="outlined">
+            <FormControl variant="outlined">
                 <FormControlLabel
-                    control={<Checkbox
-                        checked={this.state.logOnTheFly}
-                        onChange={e => this.setState({ logOnTheFly: e.target.checked })}
-                    />}
+                    control={
+                        <Checkbox
+                            checked={this.state.logOnTheFly}
+                            onChange={e => this.setState({ logOnTheFly: e.target.checked })}
+                        />
+                    }
                     label={this.props.context.t('Without restart')}
                 />
-                <FormHelperText>{this.state.logOnTheFly ? this.props.context.t('Will be reset to the saved log level after restart of adapter') : this.props.context.t('Log level will be saved permanently')}</FormHelperText>
+                <FormHelperText>
+                    {this.state.logOnTheFly
+                        ? this.props.context.t('Will be reset to the saved log level after restart of adapter')
+                        : this.props.context.t('Log level will be saved permanently')}
+                </FormHelperText>
             </FormControl>
         </CustomModal>;
     }
 
     renderEditMemoryLimitDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Edit memory limit rule for %s', this.props.instance.id)}
             onApply={value => {
                 this.setMemoryLimitMB(this.props.instance, parseFloat(value.toString()) || 0);
@@ -674,20 +720,24 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
             disableApplyIfNotChanged
             textInput
             defaultValue={this.props.item.memoryLimitMB}
-            help={this.props.context.t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)')}
+            help={this.props.context.t(
+                'Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)',
+            )}
             onClose={() => this.setState({ openDialogMemoryLimit: false, openDialog: false })}
         />;
     }
 
     renderEditHostDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Edit host for %s', this.props.instance.id)}
             onApply={() => {
                 this.setHost(this.props.instance, this.state.host);
                 this.setState({ openDialogHost: false, openDialog: false });
             }}
             disableApply={this.state.host === this.props.instance.host}
-            onClose={() => this.setState({ openDialogHost: false, host: this.props.instance.host, openDialog: false })}
+            onClose={() =>
+                this.setState({ openDialogHost: false, host: this.props.instance.host, openDialog: false })}
         >
             <SelectWithIcon
                 themeType={this.props.context.themeType}
@@ -695,7 +745,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                 list={this.props.context.hosts}
                 removePrefix="system.host."
                 fullWidth
-                className={this.props.classes.hostInfo}
+                style={this.styles.hostInfo}
                 onChange={(host: string) => this.setState({ host })}
                 lang={this.props.context.lang}
                 t={this.props.context.t}
@@ -705,6 +755,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditCompactGroupDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Edit compact groups for %s', this.props.instance.id)}
             onApply={() => {
                 this.setCompactGroup(this.props.instance, parseInt(this.state.compactGroup.toString(), 10) || 0);
@@ -718,7 +769,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                 maxCompactGroupNumber: this.props.context.maxCompactGroupNumber,
             })}
         >
-            <FormControl className={this.props.classes.addCompact} variant="standard">
+            <FormControl style={this.styles.addCompact} variant="standard">
                 <InputLabel>{this.props.context.t('compact groups')}</InputLabel>
                 <Select
                     variant="standard"
@@ -726,7 +777,15 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                     onClose={() => this.setState({ openSelectCompactGroup: false })}
                     onOpen={() => this.setState({ openSelectCompactGroup: true })}
                     open={this.state.openSelectCompactGroup}
-                    value={(this.state.compactGroup === 1 ? 'default' : ((this.state.compactGroup || '').toString() === '0' ? 'controller' : (!this.state.compactGroup ? 'default' : this.state.compactGroup))) || 'default'}
+                    value={
+                        (this.state.compactGroup === 1
+                            ? 'default'
+                            : (this.state.compactGroup || '').toString() === '0'
+                                ? 'controller'
+                                : !this.state.compactGroup
+                                    ? 'default'
+                                    : this.state.compactGroup) || 'default'
+                    }
                     onChange={el => this.setState({ compactGroup: parseInt(el.target.value as string, 10) })}
                 >
                     <div
@@ -734,7 +793,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                             e.preventDefault();
                             e.stopPropagation();
                         }}
-                        className={this.props.classes.selectStyle}
+                        style={this.styles.selectStyle}
                     >
                         <Button
                             color="grey"
@@ -744,22 +803,19 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                                 maxCompactGroupNumber: this.state.maxCompactGroupNumber + 1,
                             })}
                             variant="outlined"
-                            // stylevariable="outlined"
                         >
                             {this.props.context.t('Add compact group')}
                         </Button>
                     </div>
-                    <MenuItem value="controller">
-                        {this.props.context.t('with controller')}
-                    </MenuItem>
-                    <MenuItem value="default">
-                        {this.props.context.t('default group')}
-                    </MenuItem>
+                    <MenuItem value="controller">{this.props.context.t('with controller')}</MenuItem>
+                    <MenuItem value="default">{this.props.context.t('default group')}</MenuItem>
                     {Array(this.state.maxCompactGroupNumber - 1)
                         .fill(0)
-                        .map((_, idx) => <MenuItem key={idx} value={(idx + 2).toString()}>
-                            {idx + 2}
-                        </MenuItem>)}
+                        .map((_, idx) => (
+                            <MenuItem key={idx} value={(idx + 2).toString()}>
+                                {idx + 2}
+                            </MenuItem>
+                        ))}
                 </Select>
             </FormControl>
         </CustomModal>;
@@ -767,6 +823,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     renderEditTierDialog() {
         return <CustomModal
+            theme={this.props.context.theme}
             title={this.props.context.t('Set tier for %s', this.props.instance.id)}
             onApply={() => {
                 this.setTier(this.props.instance, this.state.tier);
@@ -776,17 +833,19 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
             disableApply={this.state.tier === this.props.item.tier}
             onClose={() => this.setState({ openDialogTier: false, tier: this.props.item.tier, openDialog: false })}
         >
-            <FormControl className={this.props.classes.logLevel} variant="standard">
+            <FormControl style={this.styles.logLevel} variant="standard">
                 <InputLabel>{this.props.context.t('Tiers')}</InputLabel>
                 <Select
                     variant="standard"
                     value={this.state.tier}
                     fullWidth
-                    onChange={el => this.setState({ tier: parseInt(el.target.value as string, 10) as (1 | 2 | 3) })}
+                    onChange={el => this.setState({ tier: parseInt(el.target.value as string, 10) as 1 | 2 | 3 })}
                 >
-                    {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
-                        {this.props.context.t(el.desc)}
-                    </MenuItem>)}
+                    {arrayTier.map(el => (
+                        <MenuItem key={el.value} value={el.value}>
+                            {this.props.context.t(el.desc)}
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
         </CustomModal>;
@@ -886,46 +945,57 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderModeIcon(status: InstanceStatusType) {
         return <div
-            className={UtilsCommon.clsx(
-                this.props.classes.smallAvatar,
-                this.props.classes.statusIndicator,
-                this.props.instance.mode === 'daemon' || this.props.instance.mode === 'schedule' ? this.props.classes[status] : this.props.classes.transparent,
-                this.props.item.connectedToHost && this.props.item.alive && this.props.item.connected === false && this.props.classes.orangeDevice,
-            )}
+            style={{
+                ...this.styles.smallAvatar,
+                ...this.styles.statusIndicator,
+                ...(this.props.instance.mode === 'daemon' || this.props.instance.mode === 'schedule'
+                    ? this.styles[status]
+                    : this.styles.transparent),
+                ...(this.props.item.connectedToHost && this.props.item.alive && this.props.item.connected === false
+                    ? this.styles.orangeDevice
+                    : undefined),
+            }}
         >
-            {this.getModeIcon(this.props.instance.mode, status, this.props.classes[`statusIcon_${status}`], this.props.item.stoppedWhenWebExtension)}
+            {this.getModeIcon(
+                this.props.instance.mode,
+                status,
+                this.styles[`statusIcon_${status}`],
+                this.props.item.stoppedWhenWebExtension,
+            )}
         </div>;
     }
 
     getModeIcon(
         mode: ioBroker.InstanceMode,
         status: InstanceStatusType,
-        className: string,
+        style: React.CSSProperties,
         stoppedWhenWebExtension: boolean | undefined,
     ): React.JSX.Element | null {
         if (mode === 'daemon') {
             if (stoppedWhenWebExtension) {
-                return <div className={UtilsCommon.clsx(className, this.props.classes.okSymbol)}>
-                    <div className={this.props.classes.okSymbolInner} />
-                </div>;
-            } if (status === 'orange') {
-                return <WarningIcon className={className} />;
-            } if (status === 'green') {
-                return <div className={UtilsCommon.clsx(className, this.props.classes.okSymbol)}>
-                    <div className={this.props.classes.okSymbolInner} />
+                return <div style={{ ...style, ...this.styles.okSymbol }}>
+                    <div style={this.styles.okSymbolInner} />
                 </div>;
             }
-            return <SettingsIcon className={className} />;
+            if (status === 'orange') {
+                return <WarningIcon style={style} />;
+            }
+            if (status === 'green') {
+                return <div style={{ ...style, ...this.styles.okSymbol }}>
+                    <div style={this.styles.okSymbolInner} />
+                </div>;
+            }
+            return <SettingsIcon style={style} />;
         }
         if (mode === 'schedule') {
-            return <ScheduleIcon className={className} />;
+            return <ScheduleIcon style={style} />;
         }
         return null;
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderTooltip() {
-        const { instance,  item } = this.props;
+        const { instance, item } = this.props;
         let next;
         let prev;
         let cronText;
@@ -949,49 +1019,78 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         }
 
         return [
-            item.stoppedWhenWebExtension !== undefined ? <State key={1} state>{this.props.context.t('Runs as web-extension')}</State> : '',
-            instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.connectedToHost}>{this.props.context.t('Connected to host')}</State> : '',
-            instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined ? <State key={3} state={item.alive}>{this.props.context.t('Heartbeat')}</State> : '',
+            item.stoppedWhenWebExtension !== undefined ? <State key={1} state>
+                {this.props.context.t('Runs as web-extension')}
+            </State> : '',
+            instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.connectedToHost}>
+                {this.props.context.t('Connected to host')}
+            </State> : '',
+            instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined ? <State key={3} state={item.alive}>
+                {this.props.context.t('Heartbeat')}
+            </State> : '',
             this.props.item.connected !== null && this.props.item.stoppedWhenWebExtension === undefined ? <State key={4} state={!!item.connected}>
-                {typeof item.connected === 'string' ? `${this.props.context.t('Connected:')} ${item.connected || '-'}` : this.props.context.t('Connected to device or service')}
+                {typeof item.connected === 'string'
+                    ? `${this.props.context.t('Connected:')} ${item.connected || '-'}`
+                    : this.props.context.t('Connected to device or service')}
             </State> : '',
             cronText ? <State key={5} state={instance.enabled}>
                 CRON:
                 {cronText}
             </State> : null,
-            next ? <State key={6} state>{this.props.context.t('Next start: %s', `${next.toLocaleDateString(this.props.context.lang)} ${next.toLocaleTimeString(this.props.context.lang)}`)}</State> : null,
-            prev ? <State key={7} state>{this.props.context.t('Last start: %s', `${prev.toLocaleDateString(this.props.context.lang)} ${prev.toLocaleTimeString(this.props.context.lang)}`)}</State> : null,
+            next ? <State key={6} state>
+                {this.props.context.t(
+                    'Next start: %s',
+                    `${next.toLocaleDateString(this.props.context.lang)} ${next.toLocaleTimeString(this.props.context.lang)}`,
+                )}
+            </State> : null,
+            prev ? <State key={7} state>
+                {this.props.context.t(
+                    'Last start: %s',
+                    `${prev.toLocaleDateString(this.props.context.lang)} ${prev.toLocaleTimeString(this.props.context.lang)}`,
+                )}
+            </State> : null,
         ].filter(el => el);
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderMemoryUsage() {
-        return this.props.item.running && <InstanceInfo
-            icon={<MemoryIcon />}
-            tooltip={this.props.context.t('RAM usage')}
-        >
+        return this.props.item.running && <InstanceInfo icon={<MemoryIcon />} tooltip={this.props.context.t('RAM usage')}>
             {`${this.props.instance.mode === 'daemon' ? this.getMemory() : '-.--'} MB`}
         </InstanceInfo>;
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderPlayPause() {
-        return <Tooltip title={this.props.context.t('Start/stop')} classes={{ popper: this.props.classes.tooltip }}>
+        return <Tooltip
+            title={this.props.context.t('Start/stop')}
+            componentsProps={{ popper: { sx: this.styles.tooltip } }}
+        >
             <div>
                 <IconButton
                     size="small"
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        if (this.props.item.running && this.props.instance.id === this.props.context.adminInstance) {
+                        if (
+                            this.props.item.running &&
+                            this.props.instance.id === this.props.context.adminInstance
+                        ) {
                             this.setState({ showStopAdminDialog: `system.adapter.${this.props.instance.id}` });
                         } else {
-                            this.setCommonValue(`system.adapter.${this.props.instance.id}`, { enabled: !this.props.item.running });
+                            this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
+                                enabled: !this.props.item.running,
+                            });
                         }
                     }}
                     onFocus={event => event.stopPropagation()}
-                    className={Utils.clsx(this.props.classes.button, this.props.instance.canStart ?
-                        (this.props.item.running ? this.props.classes.enabled : this.props.classes.disabled) : this.props.classes.hide)}
+                    sx={{
+                        ...this.styles.button,
+                        ...(this.props.instance.canStart
+                            ? this.props.item.running
+                                ? this.styles.enabled
+                                : this.styles.disabled
+                            : this.styles.hide),
+                    }}
                 >
                     {this.props.item.running ? <PauseIcon /> : <PlayArrowIcon />}
                 </IconButton>
@@ -1003,13 +1102,16 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     renderSettingsButton() {
         return <Tooltip
             title={this.props.instance.config ? this.props.context.t('Settings') : ''}
-            classes={{ popper: this.props.classes.tooltip }}
+            componentsProps={{ popper: { sx: this.styles.tooltip } }}
         >
             <div>
                 <IconButton
                     disabled={!this.props.instance.config}
                     size="small"
-                    className={Utils.clsx(this.props.classes.button, !this.props.instance.config && this.props.classes.hiddenOpacity)}
+                    style={{
+                        ...this.styles.button,
+                        ...(!this.props.instance.config ? this.styles.hiddenOpacity : undefined),
+                    }}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -1024,7 +1126,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderRestartButton() {
-        return <Tooltip title={this.props.context.t('Restart')} classes={{ popper: this.props.classes.tooltip }}>
+        return <Tooltip title={this.props.context.t('Restart')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <div>
                 <IconButton
                     size="small"
@@ -1034,7 +1136,10 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                         this.props.context.socket.extendObject(`system.adapter.${this.props.instance.id}`, {});
                     }}
                     onFocus={event => event.stopPropagation()}
-                    className={Utils.clsx(this.props.classes.button, !this.props.instance.canStart && this.props.classes.hide)}
+                    style={{
+                        ...this.styles.button,
+                        ...(!this.props.instance.canStart ? this.styles.hide : undefined),
+                    }}
                     disabled={!this.props.item.running}
                 >
                     <RefreshIcon />
@@ -1045,11 +1150,19 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderLink() {
-        return <Tooltip title={this.props.context.t('Instance link %s', this.props.instance.id)} classes={{ popper: this.props.classes.tooltip }}>
+        return <Tooltip
+            title={this.props.context.t('Instance link %s', this.props.instance.id)}
+            componentsProps={{ popper: { sx: this.styles.tooltip } }}
+        >
             <div>
                 <IconButton
                     size="small"
-                    className={Utils.clsx(this.props.classes.button, (!this.props.instance.links || !this.props.instance.links[0]) && this.props.classes.hide)}
+                    style={{
+                        ...this.styles.button,
+                        ...(!this.props.instance.links || !this.props.instance.links[0]
+                            ? this.styles.hide
+                            : undefined),
+                    }}
                     disabled={!this.props.item.running}
                     onClick={event => {
                         event.stopPropagation();
@@ -1057,7 +1170,10 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                         if (this.props.instance.links.length === 1) {
                             // replace http://fe80::ed18:8dyy:f65:cexx:8087/get/ with http://[fe80::ed18:8dyy:f65:cexx]:8087/get/
                             let url = this.props.instance.links[0].link;
-                            url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//$1$2/');
+                            url = url.replace(
+                                /\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i,
+                                '//$1$2/',
+                            );
                             window.open(url, this.props.instance.id);
                         } else {
                             this.setState({ showLinks: true });
@@ -1073,10 +1189,13 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderEditNameButton() {
-        return <Tooltip title={this.props.context.t('Edit')} classes={{ popper: this.props.classes.tooltip }}>
+        return <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
-                className={Utils.clsx(this.props.classes.button, !this.state.visibleEdit && this.props.classes.hiddenOpacity)}
+                style={{
+                    ...this.styles.button,
+                    ...(!this.state.visibleEdit ? this.styles.hiddenOpacity : undefined),
+                }}
                 onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
@@ -1090,20 +1209,23 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderInputOutput() {
-        return <InstanceInfo
-            icon={<ImportExportIcon />}
-            tooltip={this.props.context.t('events')}
-        >
-            <div className={this.props.classes.displayFlex}>
-                <Tooltip title={this.props.context.t('input events')} classes={{ popper: this.props.classes.tooltip }}>
-                    <div className={this.props.classes.marginRight5}>
+        return <InstanceInfo icon={<ImportExportIcon />} tooltip={this.props.context.t('events')}>
+            <div style={this.styles.displayFlex}>
+                <Tooltip
+                    title={this.props.context.t('input events')}
+                    componentsProps={{ popper: { sx: this.styles.tooltip } }}
+                >
+                    <div style={this.styles.marginRight5}>
                         ⇥
                         {this.props.item.inputOutput.stateInput}
                     </div>
                 </Tooltip>
                 /
-                <Tooltip title={this.props.context.t('output events')} classes={{ popper: this.props.classes.tooltip }}>
-                    <div className={this.props.classes.marginLeft5}>
+                <Tooltip
+                    title={this.props.context.t('output events')}
+                    componentsProps={{ popper: { sx: this.styles.tooltip } }}
+                >
+                    <div style={this.styles.marginLeft5}>
                         ↦
                         {this.props.item.inputOutput.stateOutput}
                     </div>
@@ -1123,10 +1245,10 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     }
 
     renderEditHostButton() {
-        return <Tooltip title={this.props.context.t('Edit')} classes={{ popper: this.props.classes.tooltip }}>
+        return <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
-                className={this.props.classes.button}
+                style={this.styles.button}
                 onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
@@ -1140,13 +1262,10 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderSentry() {
-        return <Tooltip
-            title="sentry"
-            classes={{ popper: this.props.classes.tooltip }}
-        >
+        return <Tooltip title="sentry" componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
-                className={this.props.classes.button}
+                style={this.styles.button}
                 onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
@@ -1154,7 +1273,10 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
                 }}
             >
                 <CardMedia
-                    className={Utils.clsx(this.props.classes.sentry, !this.props.item.sentry && this.props.classes.contrast0)}
+                    style={{
+                        ...this.styles.sentry,
+                        ...(!this.props.item.sentry ? this.styles.contrast0 : undefined),
+                    }}
                     component="img"
                     image={this.props.item.sentry ? sentry : noSentry}
                 />
@@ -1164,10 +1286,18 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderCompactGroupEnabled() {
-        return <Tooltip title={this.props.context.t('compact groups')} classes={{ popper: this.props.classes.tooltip }}>
+        return <Tooltip
+            title={this.props.context.t('compact groups')}
+            componentsProps={{ popper: { sx: this.styles.tooltip } }}
+        >
             <IconButton
                 size="small"
-                className={Utils.clsx(this.props.classes.button, this.props.context.expertMode && this.props.item.checkCompact ? null : this.props.classes.hide)}
+                style={{
+                    ...this.styles.button,
+                    ...(this.props.context.expertMode && this.props.item.checkCompact
+                        ? undefined
+                        : this.styles.hide),
+                }}
                 onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
@@ -1188,19 +1318,31 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderInfo() {
+    renderInfo(hideName?: boolean) {
         return <>
-            <span className={this.props.classes.instanceName}>{this.props.instance.id}</span>
+            {!hideName ? <span style={this.styles.instanceName}>{this.props.instance.id}</span> : undefined}
             {this.props.item.stoppedWhenWebExtension !== undefined &&
-                <State state={this.props.item.stoppedWhenWebExtension}>{this.props.context.t('Runs as web-extension')}</State>}
-            {this.props.item.running && this.props.instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined &&
-                <State state={this.props.item.connectedToHost}>{this.props.context.t('Connected to host')}</State>}
-            {this.props.item.running && this.props.instance.mode === 'daemon' && this.props.item.stoppedWhenWebExtension === undefined &&
-                <State state={this.props.item.alive}>{this.props.context.t('Heartbeat')}</State>}
-            {this.props.item.running && this.props.item.connected !== null  && this.props.item.stoppedWhenWebExtension === undefined &&
-                <State state={!!this.props.item.connected}>
-                    {typeof this.props.item.connected === 'string' ? `${this.props.context.t('Connected:')} ${this.props.item.connected || '-'}` : this.props.context.t('Connected to device or service')}
+                <State state={this.props.item.stoppedWhenWebExtension}>
+                    {this.props.context.t('Runs as web-extension')}
                 </State>}
+            {this.props.item.running &&
+                this.props.instance.mode === 'daemon' &&
+                this.props.item.stoppedWhenWebExtension === undefined &&
+                    <State state={this.props.item.connectedToHost}>
+                        {this.props.context.t('Connected to host')}
+                    </State>}
+            {this.props.item.running &&
+                this.props.instance.mode === 'daemon' &&
+                this.props.item.stoppedWhenWebExtension === undefined &&
+                    <State state={this.props.item.alive}>{this.props.context.t('Heartbeat')}</State>}
+            {this.props.item.running &&
+                this.props.item.connected !== null &&
+                this.props.item.stoppedWhenWebExtension === undefined &&
+                    <State state={!!this.props.item.connected}>
+                        {typeof this.props.item.connected === 'string'
+                            ? `${this.props.context.t('Connected:')} ${this.props.item.connected || '-'}`
+                            : this.props.context.t('Connected to device or service')}
+                    </State>}
         </>;
     }
 
@@ -1209,15 +1351,21 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         return <>
             <InstanceInfo
                 icon={this.props.item.loglevelIcon}
-                tooltip={this.props.item.logLevelObject === this.props.item.logLevel ? `${this.props.context.t('loglevel')} ${this.props.item.logLevel}` : `${this.props.context.t('saved:')} ${this.props.item.logLevelObject} / ${this.props.context.t('actual:')} ${this.props.item.logLevel}`}
+                tooltip={
+                    this.props.item.logLevelObject === this.props.item.logLevel
+                        ? `${this.props.context.t('loglevel')} ${this.props.item.logLevel}`
+                        : `${this.props.context.t('saved:')} ${this.props.item.logLevelObject} / ${this.props.context.t('actual:')} ${this.props.item.logLevel}`
+                }
                 // className={this.props.classes[ this.props.item.logLevel]}
             >
-                {this.props.item.logLevelObject === this.props.item.logLevel ? this.props.item.logLevel : `${this.props.item.logLevelObject} / ${this.props.item.logLevel}`}
+                {this.props.item.logLevelObject === this.props.item.logLevel
+                    ? this.props.item.logLevel
+                    : `${this.props.item.logLevelObject} / ${this.props.item.logLevel}`}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} classes={{ popper: this.props.classes.tooltip }}>
+            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
-                    className={this.props.classes.button}
+                    style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -1236,10 +1384,10 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
             <InstanceInfo icon={<ScheduleIcon />} tooltip={this.props.context.t('schedule_group')}>
                 {InstanceGeneric.getSchedule(this.props.instance.obj) || '-'}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} classes={{ popper: this.props.classes.tooltip }}>
+            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
-                    className={this.props.classes.button}
+                    style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -1256,15 +1404,15 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     renderRestartSchedule() {
         return <>
             <InstanceInfo
-                icon={<ScheduleIcon className={this.props.classes.scheduleIcon} />}
+                icon={<ScheduleIcon style={this.styles.scheduleIcon} />}
                 tooltip={this.props.context.t('restart')}
             >
                 {InstanceGeneric.getRestartSchedule(this.props.instance.obj) || '-'}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} classes={{ popper: this.props.classes.tooltip }}>
+            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
-                    className={this.props.classes.button}
+                    style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -1281,15 +1429,15 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     renderRamLimit() {
         return <>
             <InstanceInfo
-                icon={<MemoryIcon className={this.props.classes.memoryIcon} />}
+                icon={<MemoryIcon style={this.styles.memoryIcon} />}
                 tooltip={this.props.context.t('RAM limit')}
             >
                 {`${this.props.item.memoryLimitMB ? this.props.item.memoryLimitMB : '-.--'} MB`}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} classes={{ popper: this.props.classes.tooltip }}>
+            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
-                    className={this.props.classes.button}
+                    style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -1306,17 +1454,22 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     renderCompactGroup() {
         return <>
             <InstanceInfo
-                icon={<ViewCompactIcon className={this.props.classes.marginRight5} color="inherit" />}
+                icon={<ViewCompactIcon style={this.styles.marginRight5} color="inherit" />}
                 tooltip={this.props.context.t('compact groups')}
             >
-                {(this.props.item.compactGroup === 1 ?
-                    'default' :
-                    ((this.props.item.compactGroup || '').toString() === '0' ? 'controller' : (!this.props.item.compactGroup ? 'default' : this.props.item.compactGroup))).toString() || 'default'}
+                {(this.props.item.compactGroup === 1
+                    ? 'default'
+                    : (this.props.item.compactGroup || '').toString() === '0'
+                        ? 'controller'
+                        : !this.props.item.compactGroup
+                            ? 'default'
+                            : this.props.item.compactGroup
+                ).toString() || 'default'}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} classes={{ popper: this.props.classes.tooltip }}>
+            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
-                    className={this.props.classes.button}
+                    style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -1333,15 +1486,22 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     renderTier() {
         return <>
             <InstanceInfo
-                icon={<LowPriorityIcon className={this.props.classes.marginRight5} color="inherit" />}
+                icon={<LowPriorityIcon style={this.styles.marginRight5} color="inherit" />}
                 tooltip={this.props.context.t('Start order (tier)')}
             >
-                {this.props.instance.adapter === 'admin' ? this.props.context.t('Always first') : this.props.context.t(arrayTier.find(el => el.value === this.props.item.tier)?.desc || arrayTier[2].desc)}
+                {this.props.instance.adapter === 'admin'
+                    ? this.props.context.t('Always first')
+                    : this.props.context.t(
+                        arrayTier.find(el => el.value === this.props.item.tier)?.desc || arrayTier[2].desc,
+                    )}
             </InstanceInfo>
-            {this.props.instance.adapter !== 'admin' ? <Tooltip title={this.props.context.t('Edit start order (tier)')} classes={{ popper: this.props.classes.tooltip }}>
+            {this.props.instance.adapter !== 'admin' ? <Tooltip
+                title={this.props.context.t('Edit start order (tier)')}
+                componentsProps={{ popper: { sx: this.styles.tooltip } }}
+            >
                 <IconButton
                     size="small"
-                    className={this.props.classes.button}
+                    style={this.styles.button}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -1358,7 +1518,7 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
     renderHostWithButton() {
         return <>
             <InstanceInfo
-                icon={<HostIcon className={this.props.classes.marginRight5} />}
+                icon={<HostIcon style={this.styles.marginRight5} />}
                 tooltip={this.props.context.t('Host for this instance')}
             >
                 {this.renderHost()}
@@ -1372,17 +1532,24 @@ export default abstract class InstanceGeneric<TProps extends InstanceGenericProp
         return <Tooltip title={this.props.context.t('Delete')}>
             <IconButton
                 size="small"
-                className={this.props.classes.button}
+                style={this.styles.button}
                 onClick={async event => {
                     event.stopPropagation();
                     event.preventDefault();
                     // Count the number of instances
-                    const instances = await this.props.context.socket.getAdapterInstances(this.props.instance.id.split('.')[0]);
+                    const instances = await this.props.context.socket.getAdapterInstances(
+                        this.props.instance.id.split('.')[0],
+                    );
                     this.setState({ openDialogDelete: instances.length || true, openDialog: true });
                 }}
             >
                 <DeleteIcon />
             </IconButton>
         </Tooltip>;
+    }
+
+    render() {
+        // this method will be overwritten by the generated class
+        return <div>{this.state.expanded}</div>;
     }
 }

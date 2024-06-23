@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -24,10 +23,7 @@ import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemSelectSendTo } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
-    fullWidth: {
-        width: '100%',
-    },
+const styles: Record<string, React.CSSProperties> = {
     menuPaper: {
         maxHeight: 800,
     },
@@ -75,7 +71,7 @@ interface ConfigSelectSendToProps extends ConfigGenericProps {
 }
 
 interface ConfigSelectSendToState extends ConfigGenericState {
-    list?: { label: string; value: string, hidden?: boolean }[];
+    list?: { label: string; value: string; hidden?: boolean }[];
     context?: string;
 }
 
@@ -194,15 +190,18 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
 
         const item = selectOptions.find(it => it.value === value);
 
-        return <FormControl variant="standard" className={this.props.classes.fullWidth}>
+        return <FormControl variant="standard" fullWidth>
             {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
                 error={!!error}
                 multiple={this.props.schema.multiple}
                 disabled={!!disabled}
+                // MenuProps={this.props.schema.multiple ? { classes: { paper: this.props.classes.menuPaper } } : undefined}
+                sx={{
+                    '&.MuiSelect-paper': this.props.schema.multiple ? styles.menuPaper : undefined,
+                }}
                 value={value}
-                MenuProps={this.props.schema.multiple ? { classes: { paper: this.props.classes.menuPaper } } : undefined}
                 renderValue={val =>
                     (this.props.schema.multiple ?
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -248,4 +247,4 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
     }
 }
 
-export default withStyles(styles)(ConfigSelectSendTo);
+export default ConfigSelectSendTo;

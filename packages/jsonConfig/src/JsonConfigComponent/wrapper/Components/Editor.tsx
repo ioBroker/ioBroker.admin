@@ -1,5 +1,4 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-min-noconflict/mode-json';
@@ -7,9 +6,8 @@ import 'ace-builds/src-min-noconflict/worker-json';
 import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-min-noconflict/theme-chrome';
 import 'ace-builds/src-min-noconflict/ext-language_tools';
-import type { IobTheme } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<IobTheme, any> = {
+const styles: Record<string, React.CSSProperties> = {
     jsonError: {
         border: '1px solid red',
         minHeight: 200,
@@ -21,21 +19,20 @@ const styles: Styles<IobTheme, any> = {
 };
 
 interface EditorProps {
-    fontSize: number;
-    value: string;
-    defaultValue: string;
-    mode: 'json' | 'css' | 'html';
+    fontSize?: number;
+    value?: string;
+    defaultValue?: string;
+    mode?: 'json' | 'css' | 'html';
     name: string;
     onChange: (newValue: string) => void;
     themeType: string;
-    editValueMode: boolean; // flag that indicates the "value edit mode"
-    error: boolean;
-    classes: Record<string, string>;
+    editValueMode?: boolean; // flag that indicates the "value edit mode"
+    error?: boolean;
 }
 
 function Editor(props: EditorProps) {
     return <AceEditor
-        className={props.error === true ? props.classes.jsonError : (props.error === false ? props.classes.jsonNoError : undefined)}
+        style={props.error === true ? styles.jsonError : (props.error === false ? styles.jsonNoError : undefined)}
         mode={props.mode || 'json'}
         width="100%"
         height="100%"
@@ -61,4 +58,4 @@ function Editor(props: EditorProps) {
     />;
 }
 
-export default withStyles(styles)(Editor);
+export default Editor;

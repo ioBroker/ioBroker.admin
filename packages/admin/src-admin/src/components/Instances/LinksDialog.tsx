@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     List,
@@ -11,17 +10,18 @@ import {
     Avatar,
 } from '@mui/material';
 
-import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
 
 import Utils from '../Utils';
 import BasicUtils from '../../Utils';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     img: {
         width: '100%',
         height: '100%',
     },
 };
+
 export interface InstanceLink {
     name?: ioBroker.StringOrTranslated;
     link: string;
@@ -32,11 +32,10 @@ export interface InstanceLink {
 interface LinksDialogProps {
     links: InstanceLink[];
     onClose: () => void;
-    t: (text: string, ...args: any[]) => string;
+    t: Translate;
     instanceId: string;
     image: string;
     themeType: ThemeType;
-    classes: Record<string, string>;
 }
 
 class LinksDialog extends Component<LinksDialogProps> {
@@ -67,7 +66,7 @@ class LinksDialog extends Component<LinksDialogProps> {
                 >
                     <ListItemAvatar>
                         <Avatar variant="rounded">
-                            <img className={this.props.classes.img} src={this.props.image} alt={this.props.instanceId} />
+                            <img style={styles.img} src={this.props.image} alt={this.props.instanceId} />
                         </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={BasicUtils.getText(link.name, I18n.getLanguage()) + (showPort ? ` [:${link.port}]` : '')} />
@@ -77,4 +76,4 @@ class LinksDialog extends Component<LinksDialogProps> {
     }
 }
 
-export default withStyles(styles)(LinksDialog);
+export default LinksDialog;

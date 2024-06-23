@@ -14,10 +14,12 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
+import type { Translate } from '@iobroker/adapter-react-v5';
+
 interface EnumDeleteDialogProps {
     onClose: () => void;
     enum: ioBroker.EnumObject;
-    t: (text: string, arg1?: any, arg2?: any) => string;
+    t: Translate;
     getName: (text: ioBroker.StringOrTranslated) => string;
     deleteEnum: (enumId: string) => void;
 }

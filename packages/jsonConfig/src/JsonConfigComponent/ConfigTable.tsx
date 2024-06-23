@@ -1,5 +1,4 @@
 import React, { createRef, type RefObject } from 'react';
-import { /* lighten, */ withStyles } from '@mui/styles';
 import Dropzone from 'react-dropzone';
 
 import {
@@ -27,16 +26,16 @@ import {
     Close as IconClose,
 } from '@mui/icons-material';
 
-import { Utils, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
 
-import type {ConfigItemTableIndexed, ConfigItemPanel, ConfigItemTable} from '#JC/types';
+import type { ConfigItemTableIndexed, ConfigItemPanel, ConfigItemTable } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 // eslint-disable-next-line import/no-cycle
 import ConfigPanel from './ConfigPanel';
 
 const MAX_SIZE = 1024 * 1024; // 1MB
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
@@ -45,7 +44,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     paper: {
         width: '100%',
-        marginBottom: theme.spacing(2),
+        marginBottom: 16,
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
     headerText: {
@@ -69,22 +68,21 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         display: 'flex',
         justifyContent: 'space-between',
     },
-    highlight:
-        theme.palette.mode === 'light'
-            ? {
-                color: theme.palette.secondary.main,
-                // backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-            }
-            : {
-                color: theme.palette.text.primary,
-                backgroundColor: theme.palette.secondary.dark,
-            },
+    // highlight: (theme: IobTheme) => (theme.palette.mode === 'light'
+    //     ? {
+    //         color: theme.palette.secondary.main,
+    //         // backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+    //     }
+    //     : {
+    //         color: theme.palette.text.primary,
+    //         backgroundColor: theme.palette.secondary.dark,
+    //     }),
     title: {
         flex: '1 1 100%',
     },
     rootTool: {
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(1),
+        paddingLeft: 16,
+        paddingRight: 8,
     },
     silver: {
         opacity: 0.2,
@@ -173,7 +171,10 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         border: '2px solid red',
         boxSizing: 'border-box',
     },
-});
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 function objectToArray(object: Record<string, any>, nameOfFirstAttr: string, nameOfSecondAttr?: string) {
     nameOfFirstAttr  = nameOfFirstAttr || 'key';
@@ -356,6 +357,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             forceUpdate={this.props.forceUpdate}
             originalData={this.props.originalData}
             customs={this.props.customs}
+            theme={this.props.theme}
             onChange={(attr: string, valueChange: any) => {
                 const newObj = JSON.parse(JSON.stringify(value));
                 newObj[idx][attr] = valueChange;
@@ -449,7 +451,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     };
 
     enhancedTableHead(buttonsWidth: number, doAnyFilterSet: boolean) {
-        const { schema, classes } = this.props;
+        const { schema } = this.props;
         const { order, orderBy } = this.state;
         return <TableHead>
             <TableRow>
@@ -460,8 +462,8 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         align="left"
                         sortDirection={orderBy === headCell.attr ? order : false}
                     >
-                        <div className={classes.flex} style={schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined}>
-                            {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
+                        <div style={{ ...styles.flex, ...(schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined) }}>
+                            {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <span>
                                     <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
                                         <AddIcon />
@@ -470,7 +472,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                             </Tooltip> : null}
                             {headCell.sort && <TableSortLabel
                                 active
-                                className={Utils.clsx(orderBy !== headCell.attr && classes.silver)}
+                                style={orderBy !== headCell.attr ? styles.silver : undefined}
                                 direction={orderBy === headCell.attr ? order : 'asc'}
                                 onClick={() => this.handleRequestSort(headCell.attr)}
                             />}
@@ -496,7 +498,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                     fullWidth
                                     placeholder={this.getText(headCell.title)}
                                 />
-                                : <span className={this.props.classes.headerText}>{this.getText(headCell.title)}</span>}
+                                : <span style={styles.headerText}>{this.getText(headCell.title)}</span>}
                             {headCell.filter ? <IconButton
                                 title={I18n.t('ra_Show/hide filter input')}
                                 size="small"
@@ -901,23 +903,21 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     }}
                 >
                     {({ getRootProps, getInputProps }) => <div
-                        className={Utils.clsx(
-                            this.props.classes.uploadDiv,
-                            this.state.uploadFile === 'dragging' && this.props.classes.uploadDivDragging,
-                            this.props.classes.dropZone,
-                            !this.state.icon && this.props.classes.dropZoneEmpty,
-                        )}
+                        style={{
+                            ...styles.uploadDiv,
+                            ...(this.state.uploadFile === 'dragging' ? styles.uploadDivDragging : undefined),
+                            ...styles.dropZone,
+                            ...(!this.state.icon ? styles.dropZoneEmpty : undefined),
+                        }}
                         {...getRootProps()}
                     >
                         <input {...getInputProps()} />
-                        <div className={Utils.clsx(this.props.classes.uploadCenterDiv)}>
-                            <div className={this.props.classes.uploadCenterTextAndIcon}>
-                                <ImportIcon className={this.props.classes.uploadCenterIcon} />
-                                <div className={this.props.classes.uploadCenterText}>
-                                    {
-                                        this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
-                                            I18n.t('ra_Place your files here or click here to open the browse dialog')
-                                    }
+                        <div style={styles.uploadCenterDiv}>
+                            <div style={styles.uploadCenterTextAndIcon}>
+                                <ImportIcon style={styles.uploadCenterIcon} />
+                                <div style={styles.uploadCenterText}>
+                                    {this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
+                                        I18n.t('ra_Place your files here or click here to open the browse dialog')}
                                 </div>
                             </div>
                         </div>
@@ -938,7 +938,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     }
 
     renderItem(/* error, disabled, defaultValue */) {
-        const { classes, schema } = this.props;
+        const { schema } = this.props;
         let { visibleValue } = this.state;
 
         if (!this.state.value) {
@@ -949,21 +949,21 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
         const doAnyFilterSet = this.isAnyFilterSet();
 
-        return <Paper className={classes.paper}>
+        return <Paper style={styles.paper}>
             {this.showImportDialog()}
             {this.showTypeOfImportDialog()}
-            {schema.label ? <div className={classes.label}>
+            {schema.label ? <div style={styles.label}>
                 <Toolbar
                     variant="dense"
-                    className={classes.rootTool}
+                    style={styles.rootTool}
                 >
-                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+                    <Typography style={styles.title} variant="h6" id="tableTitle" component="div">
                         {this.getText(schema.label)}
                     </Typography>
                 </Toolbar>
             </div> : null}
             <TableContainer>
-                <Table className={classes.table} size="small">
+                <Table style={styles.table} size="small">
                     {this.enhancedTableHead(!doAnyFilterSet && !this.state.orderBy ? 120 : 64, doAnyFilterSet)}
                     <TableBody>
                         {visibleValue.map((idx, i) =>
@@ -975,23 +975,23 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                     <TableCell key={`${headCell.attr}_${idx}`} align="left">
                                         {this.itemTable(headCell.attr, this.state.value[idx], idx)}
                                     </TableCell>)}
-                                {!schema.noDelete && <TableCell align="left" className={classes.buttonCell}>
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')}>
+                                {!schema.noDelete && <TableCell align="left" style={styles.buttonCell}>
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
                                             <UpIcon />
                                         </IconButton>
-                                    </Tooltip> : <div className={classes.buttonEmpty} />) : null}
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')}>
+                                    </Tooltip> : <div style={styles.buttonEmpty} />) : null}
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={() => this.onMoveDown(idx)}>
                                             <DownIcon />
                                         </IconButton>
-                                    </Tooltip> : <div className={classes.buttonEmpty} />) : null}
-                                    <Tooltip title={I18n.t('ra_Delete current row')}>
+                                    </Tooltip> : <div style={styles.buttonEmpty} />) : null}
+                                    <Tooltip title={I18n.t('ra_Delete current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={this.onDelete(idx)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </Tooltip>
-                                    {this.props.schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')}>
+                                    {this.props.schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={this.onClone(idx)}>
                                             <CopyContentIcon />
                                         </IconButton>
@@ -1001,7 +1001,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         {!schema.noDelete && visibleValue.length >= (schema.showSecondAddAt || 5) ?
                             <TableRow>
                                 <TableCell colSpan={schema.items.length + 1}>
-                                    <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
+                                    <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <span>
                                             <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
                                                 <AddIcon />
@@ -1013,8 +1013,8 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     </TableBody>
                 </Table>
                 {!visibleValue.length && this.state.value.length ?
-                    <div className={classes.filteredOut}>
-                        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+                    <div style={styles.filteredOut}>
+                        <Typography style={styles.title} variant="h6" id="tableTitle" component="div">
                             {I18n.t('ra_All items are filtered out')}
                             <IconButton
                                 size="small"
@@ -1036,4 +1036,4 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     }
 }
 
-export default withStyles(styles)(ConfigTable);
+export default ConfigTable;

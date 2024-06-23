@@ -251,6 +251,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
                 socket={this.props.socket}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
+                theme={this.props.theme}
                 isFloatComma={this.props.isFloatComma}
                 dateFormat={this.props.dateFormat}
             />);

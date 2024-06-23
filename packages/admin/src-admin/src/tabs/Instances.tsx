@@ -1,7 +1,5 @@
 import React, { Component, createRef } from 'react';
 
-import { withStyles } from '@mui/styles';
-
 import {
     IconButton,
     LinearProgress,
@@ -34,18 +32,18 @@ import {
     type AdminConnection,
     Router,
     withWidth,
+    TabContent,
+    TabContainer,
     type IobTheme,
     type ThemeName,
     type ThemeType,
+    TabHeader,
 } from '@iobroker/adapter-react-v5';
 
 import BasicUtils from '@/Utils';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type { InstanceLink } from '@/components/Instances/LinksDialog';
 import Config from './Config';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import TabHeader from '../components/TabHeader';
 import InstanceGeneric, {
     type InstanceEntry,
     type InstanceItem,
@@ -57,7 +55,7 @@ import CustomSelectButton from '../components/CustomSelectButton';
 import InstanceFilterDialog from '../components/Instances/InstanceFilterDialog';
 import InstanceCategory from '../components/Instances/InstanceCategory';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
     },
@@ -75,10 +73,16 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         flexFlow: 'wrap',
         justifyContent: 'center',
     },
-    filterActive: {
+    filterActive: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
+    }),
+    tooltip: {
+        pointerEvents: 'none',
     },
-});
+    grow: {
+        flexGrow: 1,
+    },
+};
 
 interface InstancesProps {
     t: (word: string, ...args: any[]) => string;
@@ -106,7 +110,6 @@ interface InstancesProps {
     onRegisterIframeRef: (el: HTMLIFrameElement) => void;
     onUnregisterIframeRef: (el: HTMLIFrameElement) => void;
 
-    classes: Record<string, string>;
     configStored: (allStored: boolean) => void;
 }
 
@@ -141,7 +144,6 @@ interface InstancesState {
     filterMode: string | null;
     filterStatus: string | null;
     showFilterDialog: boolean;
-    expanded: string;
 }
 
 // every tab should get their data itself from server
@@ -171,6 +173,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
     private _cacheList: InstanceItem[] | null = null;
 
     private shouldUpdateAfterDialogClosed: boolean = false;
+
+    private expanded = '';
+
+    private closeCommands: Record<string, (() => void) | null> = {};
 
     constructor(props: InstancesProps) {
         super(props);
@@ -209,7 +215,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
             deleteCustomSupported: false,
             currentHost: this.props.currentHost,
             showFilterDialog: false,
-            expanded: '',
 
             expandedFolder,
 
@@ -800,6 +805,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     onMaxCompactGroupNumber = (maxCompactGroupNumber: number): void => this.setState({ maxCompactGroupNumber });
 
+    onRegisterClose = (panel: string, closeCommand: (() => void) | null) => this.closeCommands[panel] = closeCommand;
+
     getPanels() {
         if (!this._cacheList) {
             this.cacheInstances();
@@ -820,6 +827,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
             states: this.states,
             onToggleExpanded: this.onToggleExpanded,
             getInstanceStatus: this.getInstanceStatus,
+            theme: this.props.theme,
+            onRegisterClose: this.onRegisterClose,
         };
 
         const list = this._cacheList.map((item, idx) => {
@@ -837,7 +846,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         key={instance.id}
                         item={item}
                         context={context}
-                        expanded={this.state.expanded === instance.id}
                     />,
                 };
             }
@@ -851,7 +859,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     key={instance.id}
                     item={item}
                     context={context}
-                    expanded={this.state.expanded === instance.id}
                 />,
             };
         });
@@ -915,8 +922,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return list.map(({ render }) => render);
     }
 
-    onToggleExpanded = (panel: string) => {
-        this.setState(prevState => ({ expanded: prevState.expanded !== panel ? panel : null }));
+    onToggleExpanded = (panel: string, expanded: boolean) => {
+        if (this.expanded !== panel && expanded && this.closeCommands[this.expanded]) {
+            this.closeCommands[this.expanded]();
+        }
+        this.expanded = expanded ? panel : null;
     };
 
     async getHostsData() {
@@ -1005,8 +1015,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
             return <LinearProgress />;
         }
 
-        const { classes } = this.props;
-
         if (this.props.currentHost !== this.state.currentHost) {
             this.hostsTimer = this.hostsTimer || setTimeout(() => {
                 this.hostsTimer = null;
@@ -1019,12 +1027,12 @@ class Instances extends Component<InstancesProps, InstancesState> {
         if (this.state.dialog === 'config' && this.state.dialogProp) {
             const instance = this.state.instances[this.state.dialogProp] || null;
             if (instance) {
-                return <Paper className={classes.paper}>
+                return <Paper style={styles.paper}>
                     {this.renderFilterDialog()}
                     <Config
                         adapter={instance.id.split('.')[0]}
                         adminInstance={this.props.adminInstance}
-                        className={classes.iframe}
+                        style={styles.iframe}
                         configStored={this.props.configStored}
                         dateFormat={this.props.dateFormat}
                         icon={instance.image}
@@ -1153,14 +1161,15 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     <IconButton
                         size="large"
                         onClick={() => this.setState({ showFilterDialog: true })}
+                        sx={this.state.filterMode || this.state.filterStatus ? styles.filterActive : undefined}
                     >
-                        <FilterListIcon style={{ width: 16, height: 16 }} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''} />
+                        <FilterListIcon style={{ width: 16, height: 16 }} />
                     </IconButton>
                 </Tooltip>
                 {/* this.props.expertMode && <Tooltip title="sentry">
                     <IconButton
                         size="small"
-                        className={classes.button}
+                        style={styles.button}
                         onClick={() => {
                             this.setState({ sentry: !this.state.sentry });
                             this.localStorage.setItem(`Instances.sentry`, this.state.sentry ? 'false' : 'true');
@@ -1188,7 +1197,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         value={this.state.filterCompactGroup}
                     />
                     : null}
-                <div className={classes.grow} />
+                <div style={styles.grow} />
                 <TextField
                     variant="standard"
                     inputRef={this.inputRef}
@@ -1212,13 +1221,13 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         </InputAdornment> : null,
                     }}
                 />
-                <div className={classes.grow} />
+                <div style={styles.grow} />
                 <Hidden xsDown>
                     {hostData}
                 </Hidden>
             </TabHeader>
             <TabContent overflow="auto">
-                <div className={this.state.viewMode ? classes.cards : ''}>
+                <div style={this.state.viewMode ? styles.cards : undefined}>
                     {this.getPanels()}
                 </div>
             </TabContent>
@@ -1226,4 +1235,4 @@ class Instances extends Component<InstancesProps, InstancesState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(Instances));
+export default withWidth()(Instances);

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     green, grey, orange, red,
@@ -36,7 +35,7 @@ import {
 } from '@mui/icons-material';
 
 import {
-    Router, Utils,
+    Router,
     Icon,
     Confirm as ConfirmDialog, type IobTheme, type AdminConnection, type ThemeName, type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
@@ -57,7 +56,7 @@ declare global {
     }
 }
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     root: {
         height: '100%',
         display: 'flex',
@@ -71,7 +70,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     instanceIcon: {
         width: 42,
         height: 42,
-        marginRight: theme.spacing(2),
+        marginRight: 16,
         verticalAlign: 'middle',
     },
     button: {
@@ -85,14 +84,14 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         marginLeft: 20,
         marginRight: 10,
     },
-    versionAliveConnected: {
+    versionAliveConnected: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#23a623' : '#60ff60',
-    },
+    }),
     versionAliveNotConnected: {
         color: '#a67223',
     },
     buttonControl: {
-        padding: 5,
+        padding: '5px',
         transition: 'opacity 0.2s',
         height: 34,
     },
@@ -137,7 +136,10 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     orangeDevice: {
         color: orange[300],
     },
-});
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 interface ConfigProps {
     adapter: string;
@@ -151,7 +153,7 @@ interface ConfigProps {
     t: Translate;
     isFloatComma: boolean;
     dateFormat: string;
-    className: string;
+    style: Record<string, React.CSSProperties>;
     icon: string;
     lang: ioBroker.Languages;
     easyMode?: boolean;
@@ -159,7 +161,6 @@ interface ConfigProps {
     onRegisterIframeRef: (ref: HTMLIFrameElement) => void;
     onUnregisterIframeRef: (ref: HTMLIFrameElement) => void;
     configStored: (allStored: boolean) => void;
-    classes: Record<string, string>;
     theme: IobTheme;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     version?: string;
@@ -385,7 +386,7 @@ class Config extends Component<ConfigProps, ConfigState> {
             >
                 <Tooltip title={this.props.t('Show help for this adapter')}>
                     <Fab
-                        classes={{ root: this.props.classes.button }}
+                        sx={{ '&.MuiFab-root': styles.button }}
                         onClick={() => {
                             const lang = this.state.adapterDocLangs?.includes(this.props.lang) ? this.props.lang : 'en';
                             window.open(BasicUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapter }), 'help');
@@ -425,7 +426,7 @@ class Config extends Component<ConfigProps, ConfigState> {
             return <iframe
                 ref={el => this && (this.refIframe = el)}
                 title="config"
-                className={this.props.className}
+                style={this.props.style}
                 src={src}
             >
             </iframe>;
@@ -459,7 +460,7 @@ class Config extends Component<ConfigProps, ConfigState> {
         >
             <DialogTitle>{this.props.t('Edit log level rule for %s', `${this.props.adapter}.${this.props.instance}`)}</DialogTitle>
             <DialogContent>
-                <FormControl className={this.props.classes.formControl} variant="outlined" style={{ marginTop: 10 }}>
+                <FormControl style={{ ...styles.formControl, marginTop: 10 }} variant="outlined">
                     <InputLabel>{this.props.t('log level')}</InputLabel>
                     <Select
                         variant="standard"
@@ -472,7 +473,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                         </MenuItem>)}
                     </Select>
                 </FormControl>
-                <FormControl className={this.props.classes.formControl} variant="outlined">
+                <FormControl style={styles.formControl} variant="outlined">
                     <FormControlLabel
                         control={<Checkbox checked={this.state.logOnTheFlyValue} onChange={e => this.setState({ logOnTheFlyValue: e.target.checked })} />}
                         label={this.props.t('Without restart')}
@@ -511,19 +512,17 @@ class Config extends Component<ConfigProps, ConfigState> {
     }
 
     render() {
-        const { classes } = this.props;
-
-        return <Paper className={classes.root}>
+        return <Paper style={styles.root}>
             <AppBar color="default" position="static">
                 <Toolbar variant="dense">
                     <Typography variant="h6" color="inherit">
-                        {this.props.jsonConfig ? <Icon src={this.props.icon} className={this.props.classes.instanceIcon} />
+                        {this.props.jsonConfig ? <Icon src={this.props.icon} style={styles.instanceIcon} />
                             : null}
                         {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
-                        {this.props.version ? <span className={Utils.clsx(
-                            this.props.classes.version,
-                            this.props.classes[this.getInstanceStatus()],
-                        )}
+                        {this.props.version ? <span style={{
+                            ...styles.version,
+                            ...styles[this.getInstanceStatus()],
+                        }}
                         >
 v
                             {this.props.version}
@@ -546,8 +545,11 @@ v
                                         }
                                     }}
                                     onFocus={event => event.stopPropagation()}
-                                    className={Utils.clsx(classes.buttonControl, this.state.canStart ?
-                                        (this.state.running ? classes.enabled : classes.disabled) : classes.hide)}
+                                    sx={{
+                                        ...styles.buttonControl,
+                                        ...(this.state.canStart ?
+                                            (this.state.running ? styles.enabled : styles.disabled) : styles.hide),
+                                    }}
                                 >
                                     {this.state.running ? <PauseIcon /> : <PlayArrowIcon />}
                                 </IconButton>
@@ -566,7 +568,7 @@ v
                                             .catch(error => window.alert(`Cannot set log level: ${error}`));
                                     }}
                                     onFocus={event => event.stopPropagation()}
-                                    className={Utils.clsx(classes.buttonControl, !this.state.canStart && classes.hide)}
+                                    style={{ ...styles.buttonControl, ...(!this.state.canStart ? styles.hide : undefined) }}
                                     disabled={!this.state.running}
                                 >
                                     <RefreshIcon />
@@ -575,21 +577,25 @@ v
                         </Tooltip>
                         {this.state.tempLogLevel !== this.state.logLevel ?
                             <Tooltip title={this.props.t('temporary log level')}>
-                                <span className={this.props.classes.logLevel}>{this.state.tempLogLevel}</span>
+                                <span style={styles.logLevel}>{this.state.tempLogLevel}</span>
                             </Tooltip> : null}
                         <Tooltip title={this.props.t('log level')}>
-                            <span className={this.props.classes.logLevel}>{this.state.tempLogLevel !== this.state.logLevel ? `/ ${this.state.logLevel}` : this.state.logLevel}</span>
+                            <span style={styles.logLevel}>{this.state.tempLogLevel !== this.state.logLevel ? `/ ${this.state.logLevel}` : this.state.logLevel}</span>
                         </Tooltip>
                         <Tooltip title={this.props.t('Edit log level rule for %s', `${this.props.adapter}.${this.props.instance}`)}>
                             <IconButton
-                                style={{ width: 34, height: 34 }}
                                 size="small"
                                 onClick={event => {
                                     event.stopPropagation();
                                     this.setState({ showLogLevelDialog: true });
                                 }}
                                 onFocus={event => event.stopPropagation()}
-                                className={Utils.clsx(classes.buttonControl, !this.state.canStart && classes.hide)}
+                                style={{
+                                    ...styles.buttonControl,
+                                    ...(!this.state.canStart ? styles.hide : undefined),
+                                    width: 34,
+                                    height: 34,
+                                }}
                             >
                                 <EditIcon style={{ width: 20, height: 20 }} />
                             </IconButton>
@@ -630,4 +636,4 @@ v
     }
 }
 
-export default withStyles(styles)(Config);
+export default Config;

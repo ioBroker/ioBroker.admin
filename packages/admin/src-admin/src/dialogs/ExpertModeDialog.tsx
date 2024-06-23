@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@mui/styles';
 
 import {
     Button,
@@ -9,7 +8,7 @@ import {
     FormControlLabel,
     Checkbox,
     Grid,
-    DialogTitle, IconButton, Typography,
+    DialogTitle, IconButton, Typography, Box,
 } from '@mui/material';
 import {
     Build as BuildIcon,
@@ -18,8 +17,8 @@ import {
 
 import { I18n, IconExpert, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles<IobTheme>(theme => ({
-    root: {
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
@@ -27,7 +26,7 @@ const useStyles = makeStyles<IobTheme>(theme => ({
         borderRadius: 4,
         fontSize: 16,
         fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    },
+    }),
     paper: {
         maxWidth: 800,
     },
@@ -48,7 +47,7 @@ const useStyles = makeStyles<IobTheme>(theme => ({
     width100: {
         width: '100%',
     },
-}));
+};
 
 interface ExpertModeDialogProps {
     expertMode: boolean;
@@ -56,46 +55,45 @@ interface ExpertModeDialogProps {
 }
 
 const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose }) => {
-    const classes = useStyles();
     const [doNotShow, setDoNotShow] = useState(false);
 
     return <Dialog
         onClose={() => onClose()}
         open={!0}
-        classes={{ paper: classes.paper }}
+        sx={{ '& .MuiDialog-paper': styles.paper }}
     >
         <DialogTitle>
             <IconExpert style={{ marginRight: 8 }} />
             {I18n.t('Expert mode')}
         </DialogTitle>
-        <DialogContent className={classes.overflowHidden} dividers>
+        <DialogContent style={styles.overflowHidden} dividers>
             <Grid container>
-                <Grid item className={classes.width100}>
-                    <div className={classes.root}>
-                        <div className={classes.pre}>
+                <Grid item style={styles.width100}>
+                    <Box component="div" sx={styles.root}>
+                        <div style={styles.pre}>
                             <Typography
-                                className={classes.text}
+                                style={styles.text}
                                 variant="body2"
                                 component="p"
                             >
                                 {expertMode ? I18n.t('Now the expert mode will be deactivated only during this browser session.') : I18n.t('Now the expert mode will be active only during this browser session.')}
                             </Typography>
                             {!expertMode ? <Typography
-                                className={classes.textBold}
+                                style={styles.textBold}
                                 variant="body2"
                                 component="p"
                             >
                                 {I18n.t('The expert mode allows you to view and edit system internal details.')}
                             </Typography> : null}
                             {!expertMode ? <Typography
-                                className={classes.textBold}
+                                style={styles.textBold}
                                 variant="body2"
                                 component="p"
                             >
                                 {I18n.t('Please make sure you know what you are doing!')}
                             </Typography> : null}
                             <Typography
-                                className={classes.text}
+                                style={styles.text}
                                 variant="body2"
                                 component="p"
                             >
@@ -110,7 +108,7 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose
                                 <BuildIcon />
                             </IconButton>
                         </div>
-                    </div>
+                    </Box>
                 </Grid>
                 <Grid item>
                     <FormControlLabel
@@ -129,7 +127,7 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose
                 autoFocus
                 onClick={() => {
                     if (doNotShow) {
-                        (window._sessionStorage || window.sessionStorage).setItem('App.doNotShowExpertDialog', 'true');
+                        ((window as any)._sessionStorage as Storage || window.sessionStorage).setItem('App.doNotShowExpertDialog', 'true');
                     }
                     onClose(true);
                 }}

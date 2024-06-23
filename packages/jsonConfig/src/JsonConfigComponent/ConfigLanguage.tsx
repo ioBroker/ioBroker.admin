@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -13,12 +12,6 @@ import { I18n } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemLanguage } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
-
-const styles: Record<string, any> = {
-    fullWidth: {
-        width: '100%',
-    },
-};
 
 const LANGUAGES = [
     {
@@ -103,7 +96,7 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
 
         const item = this.state.selectOptions?.find(it => it.value === this.state.value || (!it.value && !this.state.value));
 
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
+        return <FormControl fullWidth variant="standard">
             {this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null}
             <Select
                 variant="standard"
@@ -150,4 +143,4 @@ class ConfigLanguage extends ConfigGeneric<ConfigLanguageProps, ConfigLanguageSt
     }
 }
 
-export default withStyles(styles)(ConfigLanguage);
+export default ConfigLanguage;

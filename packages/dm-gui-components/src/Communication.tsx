@@ -19,7 +19,10 @@ import {
 
 import { Close, Check } from '@mui/icons-material';
 
-import type { Connection, AdminConnection, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
+import type {
+    Connection, AdminConnection,
+    ThemeName, ThemeType, IobTheme
+} from '@iobroker/adapter-react-v5';
 import { type ConfigItemPanel } from '@iobroker/json-config';
 import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
 import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
@@ -42,6 +45,7 @@ export type CommunicationProps = {
     registerHandler?: (handler: null | ((command: string) => void)) => void;
     themeName: ThemeName;
     themeType: ThemeType;
+    theme: IobTheme;
     isFloatComma: boolean;
     dateFormat: string;
 }
@@ -407,6 +411,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     }}
                     themeName={this.props.themeName}
                     themeType={this.props.themeType}
+                    theme={this.props.theme}
                     isFloatComma={this.props.isFloatComma}
                     dateFormat={this.props.dateFormat}
                 />

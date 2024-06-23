@@ -1,5 +1,4 @@
 import React, { type RefObject, Suspense } from 'react';
-import { withStyles, StylesProvider, createGenerateClassName } from '@mui/styles';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -28,7 +27,7 @@ import {
     Button,
     DialogContent,
     DialogContentText,
-    DialogActions,
+    DialogActions, Box,
 } from '@mui/material';
 
 // @material-ui/icons
@@ -59,12 +58,14 @@ import {
     I18n, Router, Confirm as ConfirmDialog,
     Icon, withWidth, Theme,
     IconExpert,
-    ToggleThemeMenu, type IobTheme, type ThemeName, type AdminConnection, type ThemeType,
+    ToggleThemeMenu,
+    type IobTheme, type ThemeName,
+    type AdminConnection, type ThemeType,
+    Utils,
 } from '@iobroker/adapter-react-v5';
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
 import type { AdminGuiConfig, CompactAdapterInfo, CompactHost } from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
-import Utils from './components/Utils'; // adapter-react-v5/Components/Utils';
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer, {
@@ -134,88 +135,84 @@ const query: { login?: boolean } = {};
         (query as Record<string, boolean | string>)[parts[0]] = parts[1] === undefined ? true : decodeURIComponent(parts[1]);
     });
 
-const generateClassName = createGenerateClassName({
-    productionPrefix: 'iob',
-});
-
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     root: {
         display: 'flex',
         height: '100%',
     },
-    appBar: {
+    appBar: (theme: IobTheme) => ({
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-    },
+    }),
     logoWhite: {
-        background: '#FFFFFF',
+        backgroundColor: '#FFFFFF',
     },
-    appBarShift: {
+    appBarShift: (theme: IobTheme) => ({
         width: `calc(100% - ${DRAWER_FULL_WIDTH}px)`,
-        marginLeft: DRAWER_FULL_WIDTH,
+        ml: DRAWER_FULL_WIDTH / 8,
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-    },
-    appBarShiftEdit: {
+    }),
+    appBarShiftEdit: (theme: IobTheme) => ({
         width: `calc(100% - ${DRAWER_EDIT_WIDTH}px)`,
-        marginLeft: DRAWER_EDIT_WIDTH,
+        ml: DRAWER_EDIT_WIDTH / 8,
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-    },
-    appBarShiftCompact: {
+    }),
+    appBarShiftCompact: (theme: IobTheme) => ({
         width: `calc(100% - ${DRAWER_COMPACT_WIDTH}px)`,
-        marginLeft: DRAWER_COMPACT_WIDTH,
+        ml: DRAWER_COMPACT_WIDTH / 8,
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-    },
+    }),
     menuButton: {
-        marginRight: theme.spacing(2),
+        marginRight: 16,
     },
     hide: {
         display: 'none',
     },
-    content: {
+    content: (theme: IobTheme) => ({
         flexGrow: 1,
-        padding: theme.spacing(1),
+        padding: 1,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
         overflowY: 'auto',
-        marginTop: theme.mixins.toolbar?.minHeight,
+        mt: `${theme.mixins.toolbar?.minHeight}px`,
         '@media (min-width:0px) and (orientation: landscape)': {
             // @ts-expect-error must be defined
-            marginTop: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight,
+            mt: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight ? `${theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)'].minHeight}px` : undefined,
         },
         '@media (min-width:600px)': {
             // @ts-expect-error must be defined
-            marginTop: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight,
+            mt: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight ? `${theme.mixins.toolbar['@media (min-width:600px)'].minHeight}px` : undefined,
         },
-    },
+    }),
     contentMargin: {
-        marginLeft: -DRAWER_FULL_WIDTH,
+        ml: -DRAWER_FULL_WIDTH / 8,
     },
     contentMarginEdit: {
-        marginLeft: -DRAWER_EDIT_WIDTH,
+        ml: -DRAWER_EDIT_WIDTH / 8,
     },
     contentMarginCompact: {
-        marginLeft: -DRAWER_COMPACT_WIDTH,
+        ml: -DRAWER_COMPACT_WIDTH / 8,
     },
-    contentShift: {
+    contentShift: (theme: IobTheme) => ({
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: 0,
-    },
+        ml: 0,
+    }),
     expertIcon: {
         width: 22,
         height: 22,
@@ -247,38 +244,18 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         animation: '1s linear infinite alternate $myEffect',
         opacity: 0.2,
     },
-    '@keyframes myEffect': {
-        '0%': {
-            opacity: 0.2,
-            transform: 'translateY(0)',
-        },
-        '100%': {
-            opacity: 1,
-            transform: 'translateY(-10%)',
-        },
-    },
     errorCmd: {
         color: '#a90000',
-        animation: '0.2s linear infinite alternate $myEffect2',
+        animation: '0.2s linear infinite alternate myEffect2',
     },
-    performed: {
+    performed: (theme: IobTheme) => ({
         color: theme.palette.mode === 'light' ? '#3bfd44' : '#388e3c',
-        animation: '0.2s linear infinite alternate $myEffect2',
-    },
+        animation: '0.2s linear infinite alternate myEffect2',
+    }),
     wrapperButtons: {
         display: 'flex',
         marginRight: 'auto',
         overflowY: 'auto',
-    },
-    '@keyframes myEffect2': {
-        '0%': {
-            opacity: 1,
-            transform: 'translateX(0)',
-        },
-        '100%': {
-            opacity: 0.7,
-            transform: 'translateX(-2%)',
-        },
     },
 
     flexGrow: {
@@ -306,11 +283,11 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         textOverflow: 'ellipsis',
         display: 'inline-block',
     },
-    userBackground: {
-        borderRadius: 4,
+    userBackground: (theme: IobTheme) => ({
+        borderRadius: 1,
         backgroundColor: theme.palette.mode === 'dark' ? '#EEE' : '#222',
-        padding: 3,
-    },
+        p: 0.5,
+    }),
     styleVersion: {
         fontSize: 10,
     },
@@ -320,8 +297,8 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         marginRight: 10,
     },
     expertBadge: {
-        marginTop: 11,
-        marginRight: 11,
+        mt: '11px',
+        mr: '11px',
     },
     siteName: {
         lineHeight: '48px',
@@ -331,7 +308,10 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         display: 'inline-block',
         verticalAlign: 'middle',
     },
-});
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 interface ObjectGuiSettings extends ioBroker.StateObject {
     common: {
@@ -365,7 +345,6 @@ const DEFAULT_GUI_SETTINGS_OBJECT: ObjectGuiSettings = {
 };
 
 interface AppProps {
-    classes: Record<string, string>;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
@@ -1767,6 +1746,7 @@ class App extends Router<AppProps, AppState> {
 
                 return <Suspense fallback={<Connecting />}>
                     <Adapters
+                        theme={this.state.theme}
                         triggerUpdate={this.state.triggerAdapterUpdate}
                         key="adapters"
                         forceUpdateAdapters={this.state.forceUpdateAdapters}
@@ -1851,6 +1831,7 @@ class App extends Router<AppProps, AppState> {
                         socket={this.socket}
                         t={I18n.t}
                         lang={I18n.getLanguage()}
+                        theme={this.state.theme}
                     />
                 </Suspense>;
             }
@@ -1863,6 +1844,7 @@ class App extends Router<AppProps, AppState> {
                         lang={this.state.lang}
                         socket={this.socket}
                         themeType={this.state.themeType}
+                        theme={this.state.theme}
                         ready={this.state.ready}
                         logsWorker={this.logsWorker}
                         expertMode={this.state.expertMode}
@@ -1882,6 +1864,7 @@ class App extends Router<AppProps, AppState> {
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         themeType={this.state.themeType}
+                        theme={this.state.theme}
                     />
                 </Suspense>;
             }
@@ -1895,6 +1878,7 @@ class App extends Router<AppProps, AppState> {
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         themeType={this.state.themeType}
+                        theme={this.state.theme}
                     />
                 </Suspense>;
             }
@@ -1906,6 +1890,7 @@ class App extends Router<AppProps, AppState> {
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         themeType={this.state.themeType}
+                        theme={this.state.theme}
                     />
                 </Suspense>;
             }
@@ -2240,7 +2225,6 @@ class App extends Router<AppProps, AppState> {
             onClose={() => this.closeCmdDialog(() => this.setState({ commandRunning: false }))}
             visible={this.state.cmdDialog}
             callback={this.state.callback}
-            header={I18n.t('Command')}
             onInBackground={() => this.setState({ cmdDialog: false })}
             cmd={this.state.cmd}
             errorFunc={() => this.setState({ commandError: true })}
@@ -2260,28 +2244,24 @@ class App extends Router<AppProps, AppState> {
                 {/* @ts-expect-error fixed in js-controller */}
                 {this.state.systemConfig.common.siteName ?
                     /* @ts-expect-error fixed in js-controller */
-                    <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div> : null}
+                    <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div> : null}
 
-                <div
+                <Box
+                    component="div"
                     title={this.state.user.id}
-                    className={Utils.clsx(
-                        this.props.classes.userBadge,
-                        this.state.user.invertBackground && this.props.classes.userBackground,
-                    )}
+                    sx={{
+                        ...styles.userBadge,
+                        ...(this.state.user.invertBackground ? styles.userBackground : undefined),
+                    }}
                     ref={this.refUser}
                 >
                     {this.state.user.icon ?
-                        <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
+                        <Icon src={this.state.user.icon} style={styles.userIcon} />
                         :
-                        <UserIcon className={this.props.classes.userIcon} />}
+                        <UserIcon style={styles.userIcon} />}
                     <div
                         ref={this.refUserDiv}
-                        style={
-                            this.state.expireWarningMode
-                                ? { color: '#F44' }
-                                : { color: this.state.user?.color || undefined }
-                        }
-                        className={this.props.classes.userText}
+                        style={{ ...styles.userText, color: this.state.expireWarningMode ? '#F44' : (this.state.user?.color || undefined) }}
                     >
                         {this.state.user.name}
                     </div>
@@ -2294,20 +2274,20 @@ class App extends Router<AppProps, AppState> {
                     >
                         <UpdateIcon />
                     </IconButton> : null}
-                </div>
+                </Box>
             </div>;
         }
         // @ts-expect-error fixed in js-controller
         if (this.props.width !== 'xs' && this.props.width !== 'sm' && this.state.systemConfig.common.siteName) {
             // @ts-expect-error fixed in js-controller
-            return <div className={this.props.classes.siteName}>{this.state.systemConfig.common.siteName}</div>;
+            return <div style={styles.siteName}>{this.state.systemConfig.common.siteName}</div>;
         }
         return null;
     }
 
     renderAlertSnackbar() {
         return <Snackbar
-            className={this.props.classes[`alert_${this.state.alertType}`]}
+            style={styles[`alert_${this.state.alertType}`]}
             open={this.state.alert}
             autoHideDuration={6000}
             onClose={() => this.handleAlertClose()}
@@ -2391,24 +2371,26 @@ class App extends Router<AppProps, AppState> {
         </Menu> : null;
     }
 
-    renderToolbar(classes: Record<string, string>, small: boolean) {
+    renderToolbar(small: boolean) {
         const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
         const expertModePermanent =
             !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
+
+        const performedStyle = Utils.getStyle(this.state.theme, styles.performed);
 
         return <Toolbar>
             <IconButton
                 size="large"
                 edge="start"
-                className={Utils.clsx(
-                    classes.menuButton,
-                    !small && this.state.drawerState !== DrawerStates.closed && classes.hide,
-                )}
+                style={{
+                    ...styles.menuButton,
+                    ...(!small && this.state.drawerState !== DrawerStates.closed ? styles.hide : undefined),
+                }}
                 onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}
             >
                 <MenuIcon />
             </IconButton>
-            <Tooltip title={I18n.t('Notifications')}>
+            <Tooltip title={I18n.t('Notifications')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton
                     size="large"
                     disableRipple={!this.state.noNotifications}
@@ -2423,9 +2405,9 @@ class App extends Router<AppProps, AppState> {
                     </Badge>
                 </IconButton>
             </Tooltip>
-            <div className={classes.wrapperButtons}>
+            <div style={styles.wrapperButtons}>
                 <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
-                    {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
+                    {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => Router.doNavigate(null, 'discovery')}
@@ -2435,7 +2417,7 @@ class App extends Router<AppProps, AppState> {
                     </Tooltip>}
                 </IsVisible>
                 <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
-                    <Tooltip title={I18n.t('System settings')}>
+                    <Tooltip title={I18n.t('System settings')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => Router.doNavigate(null, 'system')}
@@ -2459,11 +2441,12 @@ class App extends Router<AppProps, AppState> {
                                 ? ''
                                 : ` (${I18n.t('only in this browser session')})`
                         }`}
+                        componentsProps={{ popper: { sx: styles.tooltip } }}
                     >
                         <Badge
                             color="secondary"
                             variant="dot"
-                            classes={{ badge: this.props.classes.expertBadge }}
+                            sx={{ '& .MuiBadge-badge': styles.expertBadge }}
                             invisible={expertModePermanent}
                         >
                             <IconButton
@@ -2504,10 +2487,10 @@ class App extends Router<AppProps, AppState> {
                                 <IconExpert
                                     // glowColor={this.state.theme.palette.secondary.main}
                                     // active={this.state.expertMode}
-                                    className={Utils.clsx(
-                                        classes.expertIcon,
-                                        this.state.expertMode && classes.expertIconActive,
-                                    )}
+                                    style={{
+                                        ...styles.expertIcon,
+                                        ...(this.state.expertMode ? styles.expertIconActive : undefined),
+                                    }}
                                 />
                             </IconButton>
                         </Badge>
@@ -2517,6 +2500,7 @@ class App extends Router<AppProps, AppState> {
                     title={I18n.t(
                         'Synchronize admin settings between all opened browser windows',
                     )}
+                    componentsProps={{ popper: { sx: styles.c } }}
                 >
                     <IconButton
                         size="large"
@@ -2579,13 +2563,13 @@ class App extends Router<AppProps, AppState> {
                         }
                     />
                 </IsVisible>
-                <div className={classes.flexGrow} />
+                <div style={styles.flexGrow} />
                 {this.state.cmd && !this.state.cmdDialog &&
                     <IconButton size="large" onClick={() => this.setState({ cmdDialog: true })}>
                         <PictureInPictureAltIcon
-                            className={
+                            style={
                                 this.state.commandError
-                                    ? classes.errorCmd : (this.state.performed ? classes.performed : classes.cmd)
+                                    ? styles.errorCmd : (this.state.performed ? performedStyle : styles.cmd)
                             }
                         />
                     </IconButton>}
@@ -2598,10 +2582,10 @@ class App extends Router<AppProps, AppState> {
                 window.innerWidth > 400 &&
                 <Grid
                     container
-                    className={Utils.clsx(
-                        this.state.drawerState !== DrawerStates.opened && classes.avatarVisible,
-                        classes.avatarNotVisible,
-                    )}
+                    style={{
+                        ...(this.state.drawerState !== DrawerStates.opened ? styles.avatarVisible : undefined),
+                        ...styles.avatarNotVisible,
+                    }}
                     spacing={1}
                     alignItems="center"
                 >
@@ -2609,12 +2593,11 @@ class App extends Router<AppProps, AppState> {
                             this.props.width === 'xs' ||
                             this.props.width === 'sm') &&
                         <Hidden xsDown>
-                            <div className={classes.wrapperName}>
+                            <div style={styles.wrapperName}>
                                 <Typography>admin</Typography>
                                 {!this.adminGuiConfig.icon && this.state.versionAdmin && (
                                     <Typography
-                                        className={classes.styleVersion}
-                                        style={{ color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080' }}
+                                        style={{ ...styles.styleVersion, color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080' }}
                                     >
                                         v
                                         {this.state.versionAdmin}
@@ -2647,11 +2630,8 @@ class App extends Router<AppProps, AppState> {
                                 :
                                 <Avatar
                                     onClick={() => this.handleNavigation('easy')}
-                                    className={Utils.clsx(
-                                        (this.state.themeName === 'colored' ||
-                                            this.state.themeName === 'blue') &&
-                                        classes.logoWhite,
-                                    )}
+                                    style={(this.state.themeName === 'colored' || this.state.themeName === 'blue') ?
+                                        styles.logoWhite : undefined}
                                     alt="ioBroker"
                                     src="img/no-image.png"
                                 />}
@@ -2725,76 +2705,71 @@ class App extends Router<AppProps, AppState> {
     }
 
     renderEasyMode() {
-        return <StylesProvider generateClassName={generateClassName}>
-            <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={this.state.theme}>
-                    <div style={{ height: '100%' }}>
-                        {!this.state.connected && <Connecting />}
-                        <Suspense fallback={<Connecting />}>
-                            <EasyMode
-                                navigate={Router.doNavigate}
-                                getLocation={Router.getLocation}
-                                location={this.state.currentTab}
-                                toggleTheme={this.toggleTheme}
-                                themeName={this.state.themeName}
-                                themeType={this.state.themeType}
-                                theme={this.state.theme}
-                                width={this.props.width}
-                                adminInstance={this.adminInstance}
-                                configs={this.state.easyModeConfigs}
-                                socket={this.socket}
-                                configStored={value => this.allStored(value)}
-                                isFloatComma={this.state.systemConfig?.common.isFloatComma}
-                                dateFormat={this.state.systemConfig?.common.dateFormat}
-                                t={I18n.t}
-                                lang={I18n.getLanguage()}
-                                onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
-                                onUnregisterIframeRef={ref => {
-                                    if (this.refConfigIframe === ref) {
-                                        this.refConfigIframe = null;
-                                    }
-                                }}
-                            />
-                        </Suspense>
-                    </div>
-                </ThemeProvider>
-            </StyledEngineProvider>
-        </StylesProvider>;
+        return <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={this.state.theme}>
+                <div style={{ height: '100%' }}>
+                    {!this.state.connected && <Connecting />}
+                    <Suspense fallback={<Connecting />}>
+                        <EasyMode
+                            navigate={Router.doNavigate}
+                            getLocation={Router.getLocation}
+                            location={this.state.currentTab}
+                            toggleTheme={this.toggleTheme}
+                            themeName={this.state.themeName}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                            width={this.props.width}
+                            adminInstance={this.adminInstance}
+                            configs={this.state.easyModeConfigs}
+                            socket={this.socket}
+                            configStored={value => this.allStored(value)}
+                            isFloatComma={this.state.systemConfig?.common.isFloatComma}
+                            dateFormat={this.state.systemConfig?.common.dateFormat}
+                            t={I18n.t}
+                            lang={I18n.getLanguage()}
+                            onRegisterIframeRef={ref => (this.refConfigIframe = ref)}
+                            onUnregisterIframeRef={ref => {
+                                if (this.refConfigIframe === ref) {
+                                    this.refConfigIframe = null;
+                                }
+                            }}
+                        />
+                    </Suspense>
+                </div>
+            </ThemeProvider>
+        </StyledEngineProvider>;
     }
 
     render() {
-        const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
 
         if (this.state.cloudNotConnected) {
-            return <StylesProvider generateClassName={generateClassName}>
-                <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={this.state.theme}>
-                        <div
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                textAlign: 'center',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: this.state.themeType === 'dark' ? '#1a1a1a' : '#fafafa',
-                                color: this.state.themeType === 'dark' ? '#fafafa' : '#1a1a1a',
-                            }}
-                        >
-                            <div style={{ width: 300, height: 100 }}>
-                                <CircularProgress />
-                                <div style={{ fontSize: 16 }}>
-                                    {I18n.t('Waiting for connection of ioBroker...')}
-                                    {' '}
-                                    <span style={{ fontSize: 18 }}>{this.state.cloudReconnect}</span>
-                                </div>
+            return <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <div
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            textAlign: 'center',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: this.state.themeType === 'dark' ? '#1a1a1a' : '#fafafa',
+                            color: this.state.themeType === 'dark' ? '#fafafa' : '#1a1a1a',
+                        }}
+                    >
+                        <div style={{ width: 300, height: 100 }}>
+                            <CircularProgress />
+                            <div style={{ fontSize: 16 }}>
+                                {I18n.t('Waiting for connection of ioBroker...')}
+                                {' '}
+                                <span style={{ fontSize: 18 }}>{this.state.cloudReconnect}</span>
                             </div>
                         </div>
-                        {this.renderAlertSnackbar()}
-                    </ThemeProvider>
-                </StyledEngineProvider>
-            </StylesProvider>;
+                    </div>
+                    {this.renderAlertSnackbar()}
+                </ThemeProvider>
+            </StyledEngineProvider>;
         }
 
         if (this.state.hasGlobalError) {
@@ -2802,114 +2777,136 @@ class App extends Router<AppProps, AppState> {
         }
 
         if (this.state.login) {
-            return <StylesProvider generateClassName={generateClassName}>
-                <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={this.state.theme}>
-                        <Login t={I18n.t} />
-                        {this.renderAlertSnackbar()}
-                    </ThemeProvider>
-                </StyledEngineProvider>
-            </StylesProvider>;
-        } if (!this.state.ready && !this.state.updating) {
-            return <StylesProvider generateClassName={generateClassName}>
-                <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={this.state.theme}>
-                        {window.vendorPrefix === 'PT' ? <LoaderPT themeType={this.state.themeType} /> : null}
-                        {window.vendorPrefix === 'MV' ? <LoaderMV themeType={this.state.themeType} /> : null}
-                        {window.vendorPrefix &&
-                        window.vendorPrefix !== 'PT' && window.vendorPrefix !== 'MV' &&
-                        window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor themeType={this.state.themeType} /> : null}
-                        {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader themeType={this.state.themeType} /> : null}
-                        {this.renderAlertSnackbar()}
-                    </ThemeProvider>
-                </StyledEngineProvider>
-            </StylesProvider>;
-        } if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
+            return <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <Login t={I18n.t} />
+                    {this.renderAlertSnackbar()}
+                </ThemeProvider>
+            </StyledEngineProvider>;
+        }
+        if (!this.state.ready && !this.state.updating) {
+            return <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    {window.vendorPrefix === 'PT' ? <LoaderPT themeType={this.state.themeType} /> : null}
+                    {window.vendorPrefix === 'MV' ? <LoaderMV themeType={this.state.themeType} /> : null}
+                    {window.vendorPrefix &&
+                    window.vendorPrefix !== 'PT' && window.vendorPrefix !== 'MV' &&
+                    window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor themeType={this.state.themeType} /> : null}
+                    {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader themeType={this.state.themeType} /> : null}
+                    {this.renderAlertSnackbar()}
+                </ThemeProvider>
+            </StyledEngineProvider>;
+        }
+        if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
             return this.renderEasyMode();
         }
 
-        return <StylesProvider generateClassName={generateClassName}>
-            <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={this.state.theme}>
-                    <Paper elevation={0} className={classes.root}>
-                        <AppBar
-                            color="default"
-                            position="fixed"
-                            className={Utils.clsx(
-                                classes.appBar,
-                                !small && this.state.drawerState === DrawerStates.opened && !this.state.editMenuList && classes.appBarShift,
-                                !small && this.state.drawerState === DrawerStates.opened && this.state.editMenuList && classes.appBarShiftEdit,
-                                !small && this.state.drawerState === DrawerStates.compact && classes.appBarShiftCompact,
-                            )}
-                        >
-                            {this.renderToolbar(classes, small)}
-                        </AppBar>
-                        <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
-                            <Drawer
-                                adminGuiConfig={this.adminGuiConfig}
-                                state={this.state.drawerState}
-                                editMenuList={this.state.editMenuList}
-                                setEditMenuList={(editMenuList: boolean) => this.setState({ editMenuList })}
-                                systemConfig={this.state.systemConfig}
-                                handleNavigation={(name: string) => this.handleNavigation(name)}
-                                onStateChange={(state: 0 | 1 | 2) => this.handleDrawerState(state)}
-                                onLogout={() => App.logout()}
-                                currentTab={this.state.currentTab && this.state.currentTab.tab}
-                                instancesWorker={this.instancesWorker}
-                                hostsWorker={this.hostsWorker}
-                                logsWorker={this.logsWorker}
-                                logoutTitle={I18n.t('Logout')}
-                                isSecure={this.socket.isSecure}
-                                versionAdmin={this.state.versionAdmin}
-                                t={I18n.t}
-                                lang={I18n.getLanguage()}
-                                socket={this.socket}
-                                expertMode={this.state.expertMode}
-                                ready={this.state.ready}
-                                themeName={this.state.themeName}
-                                themeType={this.state.themeType}
-                                protocol={this.state.protocol}
-                                hostname={this.state.hostname}
-                                port={this.state.port}
-                                adminInstance={this.adminInstance}
-                                hosts={this.state.hosts}
-                                repository={this.state.repository}
-                                installed={this.state.installed}
-                            />
-                        </DndProvider>
-                        <Paper
-                            elevation={0}
-                            square
-                            className={Utils.clsx(
-                                classes.content,
-                                !small && this.state.drawerState !== DrawerStates.compact && !this.state.editMenuList && classes.contentMargin,
-                                !small && this.state.drawerState !== DrawerStates.compact && this.state.editMenuList && classes.contentMarginEdit,
-                                !small && this.state.drawerState !== DrawerStates.opened && classes.contentMarginCompact,
-                                !small && this.state.drawerState !== DrawerStates.closed && classes.contentShift,
-                            )}
-                        >
-                            {this.getCurrentTab()}
-                        </Paper>
-                        {this.renderAlertSnackbar()}
+        return <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={this.state.theme}>
+                <style>
+                    {`@keyframes myEffect2 {
+                        0% {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                        100% {
+                            opacity: 0.7;
+                            transform: translateX(-2%);
+                        }
+                    }
+                    @keyframes myEffect: {
+                        0% {
+                            opacity: 0.2;
+                            transform: translateY(0);
+                        }
+                        100% {
+                            opacity: 1;
+                            transform: translateY(-10%);
+                        }
+                    }
+                    `}
+                </style>
+                <Paper elevation={0} style={styles.root}>
+                    <AppBar
+                        color="default"
+                        position="fixed"
+                        sx={Utils.getStyle(
+                            this.state.theme,
+                            styles.appBar,
+                            !small && this.state.drawerState === DrawerStates.opened && !this.state.editMenuList && styles.appBarShift,
+                            !small && this.state.drawerState === DrawerStates.opened && this.state.editMenuList && styles.appBarShiftEdit,
+                            !small && this.state.drawerState === DrawerStates.compact && styles.appBarShiftCompact,
+                        )}
+                    >
+                        {this.renderToolbar(small)}
+                    </AppBar>
+                    <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
+                        <Drawer
+                            adminGuiConfig={this.adminGuiConfig}
+                            state={this.state.drawerState}
+                            editMenuList={this.state.editMenuList}
+                            setEditMenuList={(editMenuList: boolean) => this.setState({ editMenuList })}
+                            systemConfig={this.state.systemConfig}
+                            handleNavigation={(name: string) => this.handleNavigation(name)}
+                            onStateChange={(state: 0 | 1 | 2) => this.handleDrawerState(state)}
+                            onLogout={() => App.logout()}
+                            currentTab={this.state.currentTab && this.state.currentTab.tab}
+                            instancesWorker={this.instancesWorker}
+                            hostsWorker={this.hostsWorker}
+                            logsWorker={this.logsWorker}
+                            logoutTitle={I18n.t('Logout')}
+                            isSecure={this.socket.isSecure}
+                            versionAdmin={this.state.versionAdmin}
+                            t={I18n.t}
+                            lang={I18n.getLanguage()}
+                            socket={this.socket}
+                            expertMode={this.state.expertMode}
+                            ready={this.state.ready}
+                            themeName={this.state.themeName}
+                            themeType={this.state.themeType}
+                            protocol={this.state.protocol}
+                            hostname={this.state.hostname}
+                            port={this.state.port}
+                            adminInstance={this.adminInstance}
+                            hosts={this.state.hosts}
+                            repository={this.state.repository}
+                            installed={this.state.installed}
+                            theme={this.state.theme}
+                        />
+                    </DndProvider>
+                    <Paper
+                        elevation={0}
+                        square
+                        id="app-paper"
+                        sx={Utils.getStyle(
+                            this.state.theme,
+                            styles.content,
+                            !small && this.state.drawerState !== DrawerStates.compact && !this.state.editMenuList && styles.contentMargin,
+                            !small && this.state.drawerState !== DrawerStates.compact && this.state.editMenuList && styles.contentMarginEdit,
+                            !small && this.state.drawerState !== DrawerStates.opened && styles.contentMarginCompact,
+                            !small && this.state.drawerState !== DrawerStates.closed && styles.contentShift,
+                        )}
+                    >
+                        {this.getCurrentTab()}
                     </Paper>
-                    {this.renderExpertDialog()}
-                    {this.getCurrentDialog()}
-                    {this.renderConfirmDialog()}
-                    {this.renderCommandDialog()}
-                    {this.renderWizardDialog()}
-                    {this.showRedirectDialog()}
-                    {this.renderSlowConnectionWarning()}
-                    {this.renderNewsDialog()}
-                    {this.renderHostWarningDialog()}
-                    {this.renderNotificationsDialog()}
-                    {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
-                        <Connecting />
-                    ) : null}
-                    {this.renderShowGuiSettings()}
-                </ThemeProvider>
-            </StyledEngineProvider>
-        </StylesProvider>;
+                    {this.renderAlertSnackbar()}
+                </Paper>
+                {this.renderExpertDialog()}
+                {this.getCurrentDialog()}
+                {this.renderConfirmDialog()}
+                {this.renderCommandDialog()}
+                {this.renderWizardDialog()}
+                {this.showRedirectDialog()}
+                {this.renderSlowConnectionWarning()}
+                {this.renderNewsDialog()}
+                {this.renderHostWarningDialog()}
+                {this.renderNotificationsDialog()}
+                {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ?
+                    <Connecting /> : null}
+                {this.renderShowGuiSettings()}
+            </ThemeProvider>
+        </StyledEngineProvider>;
     }
 }
 
-export default withWidth()(withStyles(styles)(App));
+export default withWidth()(App);

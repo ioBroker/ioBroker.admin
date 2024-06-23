@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@mui/styles';
 
 import {
     Button, Menu, MenuItem, Tooltip,
 } from '@mui/material';
 
+import type { Translate } from '@iobroker/adapter-react-v5';
 import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
 
-const useStyles = makeStyles(() => ({
+const styles = {
     button: {
         marginLeft: 10,
         marginRight: 10,
@@ -15,7 +15,7 @@ const useStyles = makeStyles(() => ({
     icon: {
         marginRight: 5,
     },
-}));
+};
 
 interface CustomSelectButtonProps {
     arrayItem: { name: string | number }[];
@@ -25,7 +25,7 @@ interface CustomSelectButtonProps {
     contained?: boolean;
     buttonIcon?: React.JSX.Element;
     icons?: boolean;
-    t: (text: string, ...args: any[]) => string;
+    t: Translate;
     translateSuffix?: string;
     noTranslation?: boolean;
 }
@@ -35,17 +35,16 @@ const CustomSelectButton = ({
 }: CustomSelectButtonProps) => {
     const [anchorEl, setAnchorEl] = useState(null);
     translateSuffix = translateSuffix || '';
-    const classes = useStyles();
 
     return <>
-        <Tooltip title={title || ''}>
+        <Tooltip title={title || ''} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
             <Button
-                className={classes.button}
+                style={styles.button}
                 variant={contained ? 'contained' : 'outlined'}
                 color="primary"
                 onClick={e => setAnchorEl(e.currentTarget)}
             >
-                {buttonIcon || (icons && <MaterialDynamicIcon objIconBool iconName={value as string} className={classes.icon} />)}
+                {buttonIcon || (icons && <MaterialDynamicIcon objIconBool iconName={value as string} style={styles.icon} />)}
                 {typeof value === 'number' ? value : (noTranslation ? value : t(value + translateSuffix))}
             </Button>
         </Tooltip>
@@ -70,7 +69,7 @@ const CustomSelectButton = ({
                 {icons && <MaterialDynamicIcon
                     objIconBool
                     iconName={name as string}
-                    className={classes.icon}
+                    style={styles.icon}
                 />}
                 {typeof name === 'number' ? name : (noTranslation ? name : t(name + translateSuffix))}
             </MenuItem>)}

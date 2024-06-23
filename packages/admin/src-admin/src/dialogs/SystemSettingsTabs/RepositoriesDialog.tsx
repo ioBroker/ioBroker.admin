@@ -1,5 +1,4 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 
 import {
@@ -13,8 +12,8 @@ import {
     TableRow,
     TextField,
     Tooltip,
-    Paper, InputAdornment, IconButton,
-    Select, MenuItem, Typography, Box,
+    InputAdornment, IconButton,
+    Select, MenuItem, Typography,
 } from '@mui/material';
 
 import {
@@ -27,10 +26,9 @@ import {
 
 import {
     I18n,
-    Utils as UtilsCommon,
     withWidth,
     Confirm as ConfirmDialog,
-    type Translate, type IobTheme,
+    type Translate, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
@@ -38,7 +36,7 @@ import IsVisible from '@/components/IsVisible';
 import Utils from '../../Utils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -53,7 +51,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         width: '100%',
     },
     buttonPanel: {
-        paddingBottom: 40,
+        paddingBottom: 20,
         display: 'flex',
     },
     descriptionPanel: {
@@ -74,7 +72,8 @@ const styles: Styles<IobTheme, any> = theme => ({
         width: 80,
     },
     upgradePolicyColumn:  {
-        width: 140,
+        width: 190,
+        textAlign: 'center',
     },
     buttonColumn: {
         width: 80,
@@ -92,10 +91,14 @@ const styles: Styles<IobTheme, any> = theme => ({
         },
     },
     fabButton: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
         width: 44,
+        height: 44,
     },
-});
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
 
@@ -122,7 +125,6 @@ const DragHandle = SortableHandle(() => <DragHandleIcon style={{ marginTop: 8, m
 
 interface RepositoriesDialogProps {
     t: Translate;
-    classes: Record<string, string>;
     data: ioBrokerObject<{ repositories: Repository }>;
     dataAux: ioBrokerObject<object, { activeRepo: string | string[] }>;
     multipleRepos: boolean;
@@ -130,6 +132,7 @@ interface RepositoriesDialogProps {
     saving: boolean;
     onChange: (data: ioBrokerObject<{ repositories: Repository }>, dataAux?: ioBrokerObject<object, { activeRepo: string | string[] }>) => void;
     adminGuiConfig: AdminGuiConfig;
+    themeType: ThemeType;
 }
 
 interface RepositoriesDialogState {
@@ -345,14 +348,14 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
 
     renderSortableItem(item: RepositoryArray[number], index: number) {
         const result = <TableRow className="float_row">
-            <TableCell className={UtilsCommon.clsx(this.props.classes.dragColumn, 'float_cell')} title={this.props.t('Drag and drop to reorder')}>
+            <TableCell style={styles.dragColumn} className="float_cell" title={this.props.t('Drag and drop to reorder')}>
                 <DragHandle />
             </TableCell>
-            <TableCell className={UtilsCommon.clsx(this.props.classes.enableColumn, 'float_cell')}>
+            <TableCell style={styles.enableColumn} className="float_cell">
                 {index + 1}
                 {this.props.multipleRepos ? <Checkbox
                     disabled={this.props.adminGuiConfig.admin.settings.activeRepo === false || this.props.saving}
-                    className={this.state.error ? this.props.classes.checkboxError : ''}
+                    sx={this.state.error ? styles.checkboxError : undefined}
                     title={this.state.error ? I18n.t('At least one repo must be selected') : ''}
                     checked={typeof this.props.dataAux.common.activeRepo === 'string' ? this.props.dataAux.common.activeRepo === item.title : this.props.dataAux.common.activeRepo.includes(item.title)}
                     onChange={() => {
@@ -391,7 +394,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     }}
                 /> : null}
             </TableCell>
-            <TableCell className={UtilsCommon.clsx(this.props.classes.stableColumn, 'float_cell')}>
+            <TableCell style={styles.stableColumn} className="float_cell">
                 <Tooltip title={I18n.t('Flag will be automatically detected as repository will be read for the first time')}>
                     <span>
                         <Checkbox
@@ -403,7 +406,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     </span>
                 </Tooltip>
             </TableCell>
-            <TableCell className={UtilsCommon.clsx(this.props.classes.upgradePolicyColumn, 'float_cell')}>
+            <TableCell style={styles.upgradePolicyColumn} className="float_cell">
                 <Tooltip title={I18n.t('Allow automatic adapter upgrades for this repository')}>
                     <span>
                         <Checkbox
@@ -424,13 +427,14 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     </span>
                 </Tooltip>
             </TableCell>
-            <TableCell className={UtilsCommon.clsx(this.props.classes.nameRow, 'float_cell')}>
+            <TableCell style={styles.nameRow} className="float_cell">
                 <TextField
                     variant="standard"
                     disabled={this.props.saving}
                     value={item.title}
                     InputLabelProps={{ shrink: true }}
-                    className={UtilsCommon.clsx(this.props.classes.input, 'xs-centered')}
+                    style={styles.input}
+                    className="xs-centered"
                     onChange={evt => this.onValueChanged(evt.target.value, item.title, 'title')}
                     InputProps={{
                         readOnly: false,
@@ -445,14 +449,15 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     }}
                 />
             </TableCell>
-            <TableCell className={UtilsCommon.clsx('grow_cell', 'float_cell')}>
+            <TableCell className="grow_cell float_cell">
                 <TextField
                     disabled={this.props.saving}
                     variant="standard"
                     id={`default_${index}`}
                     value={item.link}
                     InputLabelProps={{ shrink: true }}
-                    className={UtilsCommon.clsx(this.props.classes.input, 'xs-centered')}
+                    style={styles.input}
+                    className="xs-centered"
                     onChange={evt => this.onValueChanged(evt.target.value, item.title, 'link')}
                     InputProps={{
                         readOnly: false,
@@ -467,7 +472,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     }}
                 />
             </TableCell>
-            <TableCell className={UtilsCommon.clsx(this.props.classes.buttonColumn, 'float_cell')}>
+            <TableCell style={styles.buttonColumn} className="float_cell">
                 <Fab
                     disabled={this.props.saving}
                     size="small"
@@ -484,20 +489,20 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     }
 
     renderSortableList(items: RepositoryArray) {
-        const result = <Table className={this.props.classes.table}>
+        const result = <Table style={styles.table}>
             <TableHead>
                 <TableRow className="float_row">
-                    <TableCell className={UtilsCommon.clsx(this.props.classes.dragColumn, 'float_cell')} />
-                    <TableCell className={UtilsCommon.clsx(this.props.classes.enableColumn, 'float_cell')}>{this.props.multipleRepos ? I18n.t('Active') : ''}</TableCell>
-                    <TableCell className={UtilsCommon.clsx(this.props.classes.stableColumn, 'float_cell')}>{I18n.t('Stable')}</TableCell>
-                    <TableCell className={UtilsCommon.clsx(this.props.classes.upgradePolicyColumn, 'float_cell')}>{I18n.t('Auto-Upgrade')}</TableCell>
-                    <TableCell className={UtilsCommon.clsx(this.props.classes.nameRow, 'float_cell')}>
+                    <TableCell style={styles.dragColumn} className="float_cell" />
+                    <TableCell style={styles.enableColumn} className="float_cell">{this.props.multipleRepos ? I18n.t('Active') : ''}</TableCell>
+                    <TableCell style={styles.stableColumn} className="float_cell">{I18n.t('Stable')}</TableCell>
+                    <TableCell style={styles.upgradePolicyColumn} className="float_cell">{I18n.t('Auto-Upgrade')}</TableCell>
+                    <TableCell style={styles.nameRow} className="float_cell">
                         {this.props.t('name')}
                     </TableCell>
                     <TableCell className="grow_cell float_cell">
                         {this.props.t('link')}
                     </TableCell>
-                    <TableCell className={UtilsCommon.clsx(this.props.classes.buttonColumn, 'float_cell')}> </TableCell>
+                    <TableCell style={styles.buttonColumn} className="float_cell"> </TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
@@ -522,50 +527,52 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         const policy: ioBroker.AutoUpgradePolicy = this.props.dataAux.common.adapterAutoUpgrade?.defaultPolicy || 'none';
         const activatedRepos = this.props.dataAux.common.adapterAutoUpgrade?.repositories || {};
 
-        return <Box sx={{ marginTop: 2 }}>
-            <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
-            <Select
-                sx={{ height: 40 }}
-                value={policy}
-                onChange={e => {
-                    const sysConfig = Utils.clone(this.props.dataAux);
+        return <div style={{ display: 'flex', marginLeft: 20, flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
+                <Select
+                    variant="standard"
+                    style={{ marginLeft: 8 }}
+                    value={policy}
+                    onChange={e => {
+                        const sysConfig = Utils.clone(this.props.dataAux);
 
-                    if (!sysConfig.common.adapterAutoUpgrade) {
-                        sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
-                    }
+                        if (!sysConfig.common.adapterAutoUpgrade) {
+                            sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
+                        }
 
-                    sysConfig.common.adapterAutoUpgrade.defaultPolicy = e.target.value;
+                        sysConfig.common.adapterAutoUpgrade.defaultPolicy = e.target.value;
 
-                    this.props.onChange(this.props.data, sysConfig);
-                }}
-            >
-                {AUTO_UPGRADE_SETTINGS.map(
-                    option => <MenuItem value={option}>{option}</MenuItem>,
-                )}
-            </Select>
-            <IsVisible value={!!activatedRepos.beta && policy !== 'none'}>
-                <Typography sx={{ color: 'red' }}>{I18n.t('You have configured to run automatic upgrades for the "beta" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!')}</Typography>
+                        this.props.onChange(this.props.data, sysConfig);
+                    }}
+                >
+                    {AUTO_UPGRADE_SETTINGS.map(
+                        option => <MenuItem value={option}>{option}</MenuItem>,
+                    )}
+                </Select>
+            </div>
+            <IsVisible value={!!(activatedRepos.beta || activatedRepos['Beta (latest)']) && policy !== 'none'}>
+                <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>{I18n.t('repo_update_hint').split('\n').map(line => <div>{line}</div>)}</Typography>
             </IsVisible>
             <IsVisible value={policy === 'major'}>
-                <Typography sx={{ color: 'red' }}>{I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}</Typography>
+                <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>{I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}</Typography>
             </IsVisible>
-        </Box>;
+        </div>;
     }
 
     render() {
-        const { classes } = this.props;
         const items = repoToArray(this.props.data.native.repositories);
 
-        return <div className={classes.tabPanel}>
+        return <div style={styles.tabPanel}>
             {this.renderConfirmDialog()}
-            <div className={classes.buttonPanel}>
+            <div style={styles.buttonPanel}>
                 <Fab
                     size="small"
                     color="primary"
                     disabled={this.props.saving}
                     aria-label="add"
                     onClick={this.onAdd}
-                    className={classes.fabButton}
+                    style={styles.fabButton}
                     title={this.props.t('Add new line to the repository list')}
                 >
                     <AddIcon />
@@ -574,30 +581,18 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     size="small"
                     disabled={this.props.saving}
                     onClick={this.onRestore}
-                    className={classes.fabButton}
+                    style={styles.fabButton}
                     title={this.props.t('Restore repository list to default')}
                 >
                     <RestoreIcon />
                 </Fab>
-                <Paper variant="outlined" className={classes.descriptionPanel} />
+                {this.renderAutoUpgradePolicy()}
             </div>
             <TableContainer>
                 {this.renderSortableList(items)}
-                {/* <SortableList
-                    helperClass="draggable-item"
-                    useDragHandle
-                    lockAxis="y"
-                    items={items}
-                    onSortEnd={this.onSortEnd}
-                    repoInfo={this.props.repoInfo}
-                    repositories={this.props.data.native.repositories}
-                    onDelete={this.onDelete}
-                    disabled={this.props.saving}
-                /> */}
             </TableContainer>
-            {this.renderAutoUpgradePolicy()}
         </div>;
     }
 }
 
-export default withWidth()(withStyles(styles)(RepositoriesDialog));
+export default withWidth()(RepositoriesDialog);

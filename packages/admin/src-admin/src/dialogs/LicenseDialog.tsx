@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@mui/styles';
 
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -15,16 +15,15 @@ import {
     Check as IconCheck,
 } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        // @ts-expect-error inspect later
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
         display: 'flex',
-    },
+    }),
     paper: {
         maxWidth: 1000,
     },
@@ -38,7 +37,7 @@ const useStyles = makeStyles(theme => ({
         margin: 0,
         padding: 10,
     },
-}));
+};
 
 interface LicenseDialogProps {
     /** URL to show license text from */
@@ -48,7 +47,6 @@ interface LicenseDialogProps {
 }
 
 const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
-    const classes = useStyles();
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -67,18 +65,18 @@ const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
     return <Dialog
         onClose={onClose}
         open={!0}
-        classes={{ paper: classes.paper }}
+        sx={{ '& .MuiDialog-paper': styles.paper }}
     >
         <DialogTitle>{I18n.t('License agreement')}</DialogTitle>
-        <DialogContent className={classes.overflowHidden} dividers>
-            <div className={classes.root}>
+        <DialogContent style={styles.overflowHidden} dividers>
+            <Box component="div" sx={styles.root}>
                 {loading ?
                     <LinearProgress />
                     :
-                    <pre className={classes.pre}>
+                    <pre style={styles.pre}>
                         {text}
                     </pre>}
-            </div>
+            </Box>
         </DialogContent>
         <DialogActions>
             <Button

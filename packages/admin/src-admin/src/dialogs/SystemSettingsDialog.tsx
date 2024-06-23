@@ -1,5 +1,3 @@
-import type { Styles } from '@mui/styles';
-import { withStyles } from '@mui/styles';
 import React, { Component } from 'react';
 
 import {
@@ -12,7 +10,7 @@ import {
     Typography,
     Button,
     LinearProgress,
-    IconButton,
+    IconButton, Box,
 } from '@mui/material';
 
 import {
@@ -47,12 +45,12 @@ import '../assets/css/style.css';
 
 const SOME_PASSWORD = '__SOME_PASSWORD__';
 
-const styles: Styles<IobTheme, any> = theme => ({
-    tabPanel: {
+const styles: Record<string, any> = {
+    tabPanel: (theme: IobTheme) => ({
         width: '100%',
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
         overflow: 'hidden',
-    },
+    }),
     tab: {
         // backgroundColor:'#FFF',
         // color:lightBlue[500]
@@ -71,10 +69,10 @@ const styles: Styles<IobTheme, any> = theme => ({
     content: {
         padding: '0 !important',
     },
-    selected: {
+    selected: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#FFF !important' : '#222 !important',
-    },
-});
+    }),
+};
 
 type SystemLicenseObject = ioBroker.Object & {
     name: string;
@@ -90,7 +88,6 @@ interface SystemSettingsDialogProps {
     width: string;
     adminGuiConfig: AdminGuiConfig;
     expertModeFunc: (value: boolean) => void;
-    classes: Record<string, string>;
     currentHost: string;
 }
 
@@ -435,7 +432,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
 
         const MyComponent: React.FC<BaseSystemSettingsDialogProps> = tab.component;
         const { groups, users, histories } = this.state;
-        return <div className={this.props.classes.tabPanel}>
+        return <Box component="div" sx={styles.tabPanel}>
             <MyComponent
                 adminGuiConfig={this.props.adminGuiConfig}
                 onChange={(data: any, dataAux: any, cb: () => void) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux, cb)}
@@ -455,7 +452,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 socket={this.props.socket}
                 saving={this.state.saving}
             />
-        </div>;
+        </Box>;
     }
 
     static onTabChanged = (newTab: string) => {
@@ -493,14 +490,13 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 key={tab.title}
                 label={this.props.t(tab.title)}
                 value={tab.name}
-                classes={{ selected: this.props.classes.selected }}
+                sx={{ '&.MuiTab-selected': styles.selected }}
             />);
 
         return <Dialog
-            className={this.props.classes.dialog}
-            classes={{
-                root: this.props.classes.dialog,
-                paper: 'dialog-setting',
+            sx={{
+                '&.MuiDialog-root': styles.dialog,
+                '& .MuiDialog-paper': { height: 'calc(100% - 64px)', width: 'calc(100% - 64px)', maxWidth: 'calc(100% - 64px)' },
             }}
             open={!0}
             onClose={(e, reason) => {
@@ -512,18 +508,18 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     }
                 }
             }}
-            fullWidth={false}
+            fullWidth
             fullScreen={false}
             aria-labelledby="system-settings-dialog-title"
         >
-            <DialogContent className={this.props.classes.content}>
+            <DialogContent style={styles.content}>
                 <AppBar position="static" color="default">
-                    <div className={this.props.classes.dialogTitle}>
+                    <div style={styles.dialogTitle}>
                         {this.props.width !== 'xs' && this.props.width !== 'sm' && <Typography className="dialogName">
                             {this.props.t('Base settings')}
                         </Typography>}
                         <Tabs
-                            className={this.props.classes.tab}
+                            style={styles.tab}
                             indicatorColor="secondary"
                             value={this.props.currentTab.id || 'tabConfig'}
                             onChange={(event, newTab: string) => SystemSettingsDialog.onTabChanged(newTab)}
@@ -571,28 +567,4 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
     }
 }
 
-export default withWidth()(withStyles(styles)(SystemSettingsDialog));
-
-// interface TabPanelProps {
-//     children: React.ReactNode;
-//     index: number;
-//     value: number;
-// }
-//
-// const TabPanel: React.FC<TabPanelProps> = (props: TabPanelProps) => {
-//     const {
-//         children, value, index, ...other
-//     } = props;
-//
-//     return <div
-//         role="tabpanel"
-//         hidden={value !== index}
-//         id={`nav-tabpanel-${index}`}
-//         aria-labelledby={`nav-tab-${index}`}
-//         {...other}
-//     >
-//         {value === index && <Box p={3}>
-//             <Typography>{children}</Typography>
-//         </Box>}
-//     </div>;
-// };
+export default withWidth()(SystemSettingsDialog);

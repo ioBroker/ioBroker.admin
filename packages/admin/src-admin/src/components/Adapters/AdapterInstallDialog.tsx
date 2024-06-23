@@ -3,7 +3,7 @@ import semver from 'semver';
 
 import {
     type Translate, type AdminConnection,
-    type ThemeType,
+    type ThemeType, type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import {
@@ -41,6 +41,7 @@ export type AdaptersContext = {
     lang: ioBroker.Languages;
     uuid: string;
     themeType: ThemeType;
+    theme: IobTheme;
     onUpdating: (isUpdating: boolean) => void;
     /** Information about ALL KNOWN adapters in the ioBroker infrastructure. Repo */
     repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>;
@@ -77,7 +78,6 @@ export type AdaptersContext = {
 };
 
 export interface AdapterInstallDialogProps {
-
 }
 
 export interface AdapterInstallDialogState {
@@ -93,9 +93,7 @@ export interface AdapterInstallDialogState {
 }
 
 export default abstract class AdapterInstallDialog<TProps extends AdapterInstallDialogProps, TState extends AdapterInstallDialogState> extends Component<TProps, TState> {
-    protected installedVersion: string = '';
-
-    public constructor(props: TProps) {
+    protected constructor(props: TProps) {
         super(props);
 
         this.state = {
@@ -212,7 +210,7 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
                         const installed = context.installed[entry.name];
 
                         entry.installed = !!installed;
-                        entry.installedVersion = installed ? this.installedVersion : null;
+                        entry.installedVersion = installed ? installed.version : null;
                         try {
                             entry.rightVersion = installed
                                 ? checkVersion
@@ -251,7 +249,7 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
                         try {
                             entry.rightVersion = installed
                                 ? checkVersion
-                                    ? semver.satisfies(entry.installedVersion, entry.version, { includePrerelease: true })
+                                    ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
                                     : true
                                 : false;
                         } catch (e) {
@@ -312,6 +310,7 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
             toggleTranslation={context.toggleTranslation}
             noTranslation={context.noTranslation}
             expertMode={context.expertMode}
+            theme={context.theme}
         />;
     }
 

@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
-import { withStyles, type Styles } from '@mui/styles';
 import MarkdownView from 'react-showdown';
 import semver from 'semver';
 
@@ -18,7 +17,7 @@ import {
     TableCell,
     TableHead,
     TableRow,
-    Snackbar,
+    Snackbar, Box,
 } from '@mui/material';
 
 import {
@@ -45,11 +44,11 @@ import MDUtils, {
 } from './MDUtils';
 // import Page404 from '@iobroker/adapter-react-v5/Components/404';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     root: {
         width: 'calc(100% - 10px)',
         maxWidth: 1400,
-        margin: 5,
+        m: '5px',
         '& .md-link': {
             display: 'inline-block',
         },
@@ -71,7 +70,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         '& code': {
             margin: '0 0.15em',
             padding: '0.125em 0.4em',
-            borderRadius: 2,
+            borderRadius: '2px',
             background: '#e3e3e3',
             color: '#000000',
             whiteSpace: 'pre',
@@ -103,7 +102,7 @@ const styles: Styles<IobTheme, any> = theme => ({
     badgesDetails: {
         display: 'block',
         '& img': {
-            marginRight: 5,
+            mr: '5px',
         },
     },
     titleText: {
@@ -122,7 +121,7 @@ const styles: Styles<IobTheme, any> = theme => ({
     description: {
         fontStyle: 'italic',
     },
-    contentDiv: {
+    contentDiv: (theme: IobTheme) => ({
         position: 'fixed',
         width: '20%',
         minWidth: 200,
@@ -132,7 +131,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         right: 20,
         background: theme.palette.mode === 'dark' ? '#111111' : '#EEEEEE',
         maxHeight: 'calc(100% - 70px)',
-    },
+    }),
     contentDivClosed: {
         position: 'fixed',
         opacity: 0.8,
@@ -152,24 +151,24 @@ const styles: Styles<IobTheme, any> = theme => ({
             color: '#111111',
         },
     },
-    contentLinks: {
+    contentLinks: (theme: IobTheme) => ({
         cursor: 'pointer',
         '&:hover': {
             color: theme.palette.mode === 'dark' ? '#AAA' : '#666',
         },
-    },
+    }),
     headerTranslated: {
         borderColor: '#009c4f',
         borderWidth: '0 0 0 3px',
         padding: 10,
-        marginTop: 5,
-        marginBottom: 5,
+        mt: '5px',
+        mb: '5px',
         borderStyle: 'solid',
         background: '#bdded5',
         cursor: 'pointer',
         '&:before': {
             content: `url(${IconGlobe})`,
-            marginRight: 10,
+            mr: '10px',
             color: '#000000',
             height: 20,
             width: 20,
@@ -254,11 +253,11 @@ const styles: Styles<IobTheme, any> = theme => ({
         },
     },
 
-    summary: {
+    summary: (theme: IobTheme) => ({
         transition: 'background 0.5s, color: 0.5s',
         fontSize: 20,
         backgroundColor: theme.palette.mode === 'dark' ? '#444' : '#DDD',
-    },
+    }),
     summaryExpanded: {
         // fontWeight: 'bold',
     },
@@ -330,14 +329,14 @@ const styles: Styles<IobTheme, any> = theme => ({
         display: 'block',
         width: '100%',
     },
-    changeLogDiv: {
+    changeLogDiv: (theme: IobTheme) => ({
         display: 'block',
-        paddingBottom: theme.spacing(2),
+        bp: '16px',
         '&:hover': {
             backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#DDD',
         },
         width: '100%',
-    },
+    }),
     changeLogVersion: {
         fontWeight: 'bold',
         fontSize: 18,
@@ -345,25 +344,25 @@ const styles: Styles<IobTheme, any> = theme => ({
     changeLogDate: {
         fontSize: 16,
         fontStyle: 'italic',
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         opacity: 0.7,
     },
     changeLogLine: {
         display: 'block',
         fontSize: 14,
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         '&:before': {
             content: '"• "',
         },
     },
     changeLogUL: {
-        paddingLeft: theme.spacing(1),
+        paddingLeft: 8,
         marginTop: 4,
     },
     changeLogAuthor: {
         fontStyle: 'italic',
         fontWeight: 'bold',
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     changeLogLineText: {
 
@@ -372,7 +371,7 @@ const styles: Styles<IobTheme, any> = theme => ({
     changeLogAccordion: {
         justifyContent: 'flex-start',
     },
-});
+};
 
 const CONVERTER_OPTIONS = {
     emoji: true,
@@ -392,7 +391,6 @@ interface MarkdownProps {
     text: string;
     language: ioBroker.Languages;
     themeName: ThemeName;
-    classes: Record<string, string>;
     onNavigate: (id: string, link?: string) => void;
     socket: AdminConnection;
     adapter: string;
@@ -400,7 +398,8 @@ interface MarkdownProps {
     mobile: boolean;
     affiliates: React.FC<any>;
     currentHost: string;
-    className: string;
+    style?: Record<string, any>;
+    theme: IobTheme;
 }
 
 interface MarkdownState {
@@ -450,7 +449,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             notFound: false,
             affiliate: null,
             adapterNews: null,
-            hideContent: window.localStorage ? (window._localStorage || window.localStorage).getItem('Docs.hideContent') === 'true' : false,
+            hideContent: ((window as any)._localStorage as Storage || window.localStorage).getItem('Docs.hideContent') === 'true',
         };
 
         this.mounted = false;
@@ -467,8 +466,10 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         this.contentRef = React.createRef();
 
         this.customLink = ({ text, link }) =>
-            <a
-                className={`${this.props.classes.mdLink} md-link`}
+            <Box
+                component="a"
+                className="md-link"
+                sx={styles.mdLink}
                 onClick={() => {
                     if (link) {
                         if (link.startsWith('#')) {
@@ -490,13 +491,13 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 title={link}
             >
                 {text}
-            </a>;
+            </Box>;
 
         /*
         if (reactObj && (reactObj.type === 'h1' || reactObj.type === 'h2' || reactObj.type === 'h3' || reactObj.type === 'h3')) {
             reactObj.props.children[0] = (<span>{reactObj.props.children[0]}<a
                 href={prefix + '?' + reactObj.props.id}
-                className={this.props.classes.mdHeaderLink + ' md-h-link'}>
+                style={styles.mdHeaderLink + ' md-h-link'}>
             </a></span>);
         }
          */
@@ -509,37 +510,37 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 return <h1 id={id}>
                     <span>{text}</span>
                     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
+                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
                 </h1>;
             } if (_level === 2) {
                 return <h2 id={id}>
                     <span>{text}</span>
                     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
+                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
                 </h2>;
             } if (_level === 3) {
                 return <h3 id={id}>
                     <span>{text}</span>
                     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
+                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
                 </h3>;
             } if (_level === 4) {
                 return <h4 id={id}>
                     <span>{text}</span>
                     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
+                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
                 </h4>;
             } if (_level === 5) {
                 return <h5 id={id}>
                     <span>{text}</span>
                     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
+                    <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
                 </h5>;
             }
             return <h6 id={id}>
                 <span>{text}</span>
                 {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                <a href={`${prefix}?${id}`} className={`${this.props.classes.mdHeaderLink} md-h-link`} />
+                <Box component="a" href={`${prefix}?${id}`} sx={styles.mdHeaderLink} className="md-h-link" />
             </h6>;
         };
         this.meta = () => 'meta'; // text, id, level, prefix,
@@ -806,7 +807,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 const email = m[1];
                 authors.push(<span
                     key={parts[i]}
-                    className={this.props.classes.email}
+                    style={styles.email}
                     title={I18n.t('Click to copy %s', email)}
                     onClick={e => {
                         Utils.copyToClipboard(email, e as any as Event);
@@ -816,7 +817,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                     {parts[i].replace(m[0], '').trim() + (parts.length - 1 === i ? '' : ', ')}
                 </span>);
             } else {
-                authors.push(<span key={parts[i]} className={this.props.classes.name}>{parts[i] + (parts.length - 1 === i ? '' : ', ')}</span>);
+                authors.push(<span key={parts[i]} style={styles.name}>{parts[i] + (parts.length - 1 === i ? '' : ', ')}</span>);
             }
         }
 
@@ -831,9 +832,10 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             // Translate language from english to actual language
             translatedFrom = I18n.t(translatedFrom);
 
-            data.push(<div
+            data.push(<Box
+                component="div"
                 key="translatedFrom"
-                className={this.props.classes.headerTranslated}
+                sx={styles.headerTranslated}
                 onClick={() => {
                     if (this.props.onNavigate) {
                         this.props.onNavigate && this.props.onNavigate(this.state.header.translatedFrom);
@@ -849,14 +851,14 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 title={I18n.t('Go to original')}
             >
                 {I18n.t('Translated from %s', translatedFrom)}
-            </div>);
+            </Box>);
         }
 
         if (this.state.header.adapter) {
             data.push(<h1 key="h1">
                 {[
-                    this.state.header.logo ? <img key="logo" src={`https://www.iobroker.net/${this.state.header.logo}`} alt="logo" className={this.props.classes.logoImage} /> : null,
-                    <div key="title" className={this.props.classes.titleText}>{this.state.header.title}</div>,
+                    this.state.header.logo ? <img key="logo" src={`https://www.iobroker.net/${this.state.header.logo}`} alt="logo" style={styles.logoImage} /> : null,
+                    <div key="title" style={styles.titleText}>{this.state.header.title}</div>,
                 ]}
             </h1>);
             if (this.state.header.readme) {
@@ -866,21 +868,21 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         }
 
         if (this.state.header.description) {
-            data.push(<span key="description" className={this.props.classes.description}>{this.state.header.description}</span>);
+            data.push(<span key="description" style={styles.description}>{this.state.header.description}</span>);
         }
 
         if (Object.keys(this.state.header).find(attr => ADAPTER_CARD.indexOf(attr) !== -1)) {
-            data.push(<Accordion key="header" className={this.props.classes.adapterCard}>
-                <AccordionSummary className={this.props.classes.summary} classes={{ expanded: this.props.classes.summaryExpanded }} expandIcon={<IconExpandMore />}>{I18n.t('Information')}</AccordionSummary>
+            data.push(<Accordion key="header" style={styles.adapterCard}>
+                <AccordionSummary sx={Utils.getStyle(this.props.theme, styles.summary, { '&.MuiAccordionSummary-expanded': styles.summaryExpanded })} expandIcon={<IconExpandMore />}>{I18n.t('Information')}</AccordionSummary>
                 <AccordionActions>
                     <List>
                         {ADAPTER_CARD
                             .filter(attr => Object.prototype.hasOwnProperty.call(this.state.header.hasOwnProperty, attr))
                             .map(attr => <ListItem
                                 key={attr}
-                                className={this.props.classes.adapterCardListItem}
+                                style={styles.adapterCardListItem}
                             >
-                                <div className={this.props.classes.adapterCardAttr}>
+                                <div style={styles.adapterCardAttr}>
                                     {I18n.t(attr)}
 :
                                     {' '}
@@ -893,15 +895,14 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         }
 
         if (Object.keys(this.state.header).find(attr => attr.startsWith('BADGE-'))) {
-            data.push(<Accordion key="header_badges" className={this.props.classes.adapterCard}>
+            data.push(<Accordion key="header_badges" style={styles.adapterCard}>
                 <AccordionSummary
-                    className={this.props.classes.summary}
-                    classes={{ expanded: this.props.classes.summaryExpanded }}
+                    sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
                     expandIcon={<IconExpandMore />}
                 >
                     {I18n.t('Badges')}
                 </AccordionSummary>
-                <AccordionActions classes={{ root: this.props.classes.badgesDetails }}>
+                <AccordionActions sx={styles.badgesDetails}>
                     {Object.keys(this.state.header).filter(attr => attr.startsWith('BADGE-'))
                         .map((attr, i) => [
                             (this.state.header as Record<string, string>)[attr].toString().includes('nodei.co') ? <br key={`br${i}`} /> : null,
@@ -915,13 +916,13 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
     }
 
     renderInfo() {
-        return <div className={this.props.classes.info}>
+        return <div style={styles.info}>
             {this.state.header.lastChanged ? [
-                <span key="lastChangedTitle" className={this.props.classes.infoTitle}>
+                <span key="lastChangedTitle" style={styles.infoTitle}>
                     {I18n.t('Last changed:')}
                     {' '}
                 </span>,
-                <span key="lastChangedValue" className={this.props.classes.infoValue}>{this.state.header.lastChanged}</span>,
+                <span key="lastChangedValue" style={styles.infoValue}>{this.state.header.lastChanged}</span>,
             ] : null}
         </div>;
     }
@@ -932,7 +933,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 const ch   = this.state.content[item].children;
                 const link = this.state.content[item].external && this.state.content[item].link;
                 return <li>
-                    <span onClick={() => Markdown.onNavigate(item, link)} className={this.props.classes.contentLinks}>{this.state.content[item].title}</span>
+                    <Box component="span" onClick={() => Markdown.onNavigate(item, link)} sx={styles.contentLinks}>{this.state.content[item].title}</Box>
                     {ch ? this._renderSubContent(this.state.content[item]) : null}
                 </li>;
             })}
@@ -957,14 +958,14 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
     onToggleContentButton() {
         this.setState({ hideContent: !this.state.hideContent });
-        window.localStorage && (window._localStorage || window.localStorage).setItem('Docs.hideContent', this.state.hideContent ? 'false' : 'true');
+        window.localStorage && ((window as any)._localStorage as Storage || window.localStorage).setItem('Docs.hideContent', this.state.hideContent ? 'false' : 'true');
     }
 
     renderContentCloseButton() {
-        if (this.state.hideContent) {
-            return <IconMenu className={this.props.classes.contentClose} />;
-        }
-        return <IconClose className={this.props.classes.contentClose} onClick={() => this.onToggleContentButton()} />;
+        return <IconButton sx={styles.contentClose} onClick={() => this.onToggleContentButton()}>
+            {this.state.hideContent ? <IconMenu /> :
+                <IconClose />}
+        </IconButton>;
     }
 
     renderContent() {
@@ -973,11 +974,11 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             return null;
         }
         if (this.state.hideContent) {
-            return <Paper className={this.props.classes.contentDivClosed} onClick={() => this.onToggleContentButton()}>
+            return <Paper style={styles.contentDivClosed} onClick={() => this.onToggleContentButton()}>
                 {this.renderContentCloseButton()}
             </Paper>;
         }
-        return <Paper className={this.props.classes.contentDiv}>
+        return <Paper sx={styles.contentDiv}>
             {this.renderContentCloseButton()}
             <ul>
                 {
@@ -987,7 +988,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                         const   title = this.state.content[item].title.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
 
                         return <li key={title} style={{ fontSize: 16 - level * 2, paddingLeft: level * 8, fontWeight: !level ? 'bold' : 'normal' }}>
-                            <span onClick={() => Markdown.onNavigate(item, link)} className={this.props.classes.contentLinks}>{title}</span>
+                            <Box component="span" onClick={() => Markdown.onNavigate(item, link)} className={styles.contentLinks}>{title}</Box>
                             {this.state.content[item].children ? this._renderSubContent(this.state.content[item]) : null}
                         </li>;
                     }).filter(e => e)
@@ -1004,13 +1005,12 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         const CustomH = this.customH;
         return <Accordion>
             <AccordionSummary
-                className={this.props.classes.summary}
-                classes={{ expanded: this.props.classes.summaryExpanded }}
+                sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
                 expandIcon={<IconExpandMore />}
             >
                 {I18n.t('License')}
                 {' '}
-                <span className={this.props.classes.license}>
+                <span style={styles.license}>
                     {' '}
                     {this.state.header.license}
                 </span>
@@ -1026,8 +1026,6 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
     }
 
     renderChangeLogLines() {
-        const classes = this.props.classes;
-
         const versions = Object.keys(this.state.changeLog);
 
         const pos1 = versions.indexOf('**WORK');
@@ -1052,28 +1050,28 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             versions.unshift('__WORK');
         }
 
-        return <div className={classes.changeLog} key="change-log">
+        return <div style={styles.changeLog} key="change-log">
             {versions.map(version => {
                 const item = (this.state.changeLog as Record<string, MarkdownEntry>)[version];
                 if (version.includes('WORK')) {
                     version = 'WORK IN PROGRESS';
                     item.date = '';
                 }
-                return <div key={version} className={classes.changeLogDiv}>
-                    <div className={classes.changeLogVersion}>
+                return <Box component="div" key={version} sx={styles.changeLogDiv}>
+                    <div style={styles.changeLogVersion}>
                         {version}
-                        {item.date ? <span className={classes.changeLogDate}>{item.date }</span> : ''}
+                        {item.date ? <span style={styles.changeLogDate}>{item.date }</span> : ''}
                     </div>
-                    <ul className={classes.changeLogUL}>
+                    <ul style={styles.changeLogUL}>
                         {item.lines.map((line, i) => (typeof line === 'object' ?
-                            <li key={i} className={classes.changeLogLine}>
-                                <span className={classes.changeLogAuthor}>{line.author}</span>
-                                <span className={classes.changeLogLineText}>{line.line}</span>
-                            </li>
+                            <Box component="li" key={i} style={styles.changeLogLine}>
+                                <span style={styles.changeLogAuthor}>{line.author}</span>
+                                <span style={styles.changeLogLineText}>{line.line}</span>
+                            </Box>
                             :
-                            <li key={i} className={classes.changeLogLine}><span className={classes.changeLogLineText}>{line}</span></li>))}
+                            <li key={i} style={styles.changeLogLine}><span style={styles.changeLogLineText}>{line}</span></li>))}
                     </ul>
-                </div>;
+                </Box>;
             })}
         </div>;
     }
@@ -1085,8 +1083,13 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         const CustomLink = this.customLink;
         const CustomH    = this.customH;
         return <Accordion>
-            <AccordionSummary className={this.props.classes.summary} classes={{ expanded: this.props.classes.summaryExpanded }} expandIcon={<IconExpandMore />}>{I18n.t('Changelog')}</AccordionSummary>
-            <AccordionActions classes={{ root: this.props.classes.changeLogAccordion }}>
+            <AccordionSummary
+                sx={{ ...styles.summary, '&.MuiAccordionSummary-expanded': styles.summaryExpanded }}
+                expandIcon={<IconExpandMore />}
+            >
+                {I18n.t('Changelog')}
+            </AccordionSummary>
+            <AccordionActions style={styles.changeLogAccordion}>
                 {typeof this.state.changeLog === 'string' ?
                     <MarkdownView markdown={this.state.changeLog} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />
                     :
@@ -1107,7 +1110,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                     size="large"
                     key="close"
                     color="inherit"
-                    className={this.props.classes.close}
+                    style={styles.close}
                     onClick={() => this.setState({ tooltip: '' })}
                 >
                     <IconClose />
@@ -1173,7 +1176,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                             link = Utils.text2link(link.substring(1));
                             reactObj.props.children[i] = (<div
                                 key={'link' + i}
-                                className={this.props.classes.mdLink + ' md-link'}
+                                style={styles.mdLink + ' md-link'}
                                 title={link}
                                 onClick={() => Markdown.onNavigate(link)}>
                                 {item.props.children ? item.props.children[0] : ''}
@@ -1186,7 +1189,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
                             reactObj.props.children[i] = (<div
                                 key={'link' + i}
-                                className={this.props.classes.mdLink + ' md-link'}
+                                style={styles.mdLink + ' md-link'}
                                 title={oldLink}
                                 onClick={() => Markdown.onNavigate(null, link)}>
                                 {item.props.children ? item.props.children[0] : ''}
@@ -1218,7 +1221,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         /* if (reactObj && (reactObj.type === 'h1' || reactObj.type === 'h2' || reactObj.type === 'h3' || reactObj.type === 'h3')) {
             reactObj.props.children[0] = (<span>{reactObj.props.children[0]}<a
                 href={prefix + '?' + reactObj.props.id}
-                className={this.props.classes.mdHeaderLink + ' md-h-link'}>
+                style={styles.mdHeaderLink + ' md-h-link'}>
             </a></span>);
         } */
     }
@@ -1236,29 +1239,29 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             for (let j = 0; j < header.length; j++) {
                 parts[j] = this.replaceHref(parts[j]);
                 const crt = <MarkdownView markdown={parts[j] || ''} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />;
-                cells.push(<TableCell className={this.props.classes.tableCell} key={`cell${i}_${j}`}>{crt}</TableCell>);
+                cells.push(<TableCell sx={styles.tableCell} key={`cell${i}_${j}`}>{crt}</TableCell>);
             }
 
-            rows.push(<TableRow className={this.props.classes.tableRow} key={`row${i}`}>{cells}</TableRow>);
+            rows.push(<TableRow style={styles.tableRow} key={`row${i}`}>{cells}</TableRow>);
         }
-        return <Table key={`table_${key}`} size="small" className={this.props.classes.table}>
-            <TableHead className={this.props.classes.tableHead}>
-                <TableRow className={this.props.classes.tableRowHead}>
+        return <Table key={`table_${key}`} size="small" style={styles.table}>
+            <TableHead style={styles.tableHead}>
+                <TableRow style={styles.tableRowHead}>
                     {
                         header.map((h, i) =>
-                            <TableCell className={this.props.classes.tableCellHead} key={`header${i}`}>
+                            <TableCell sx={styles.tableCellHead} key={`header${i}`}>
                                 <MarkdownView markdown={h} options={CONVERTER_OPTIONS} components={{ CustomLink, CustomH }} />
                             </TableCell>)
                     }
                 </TableRow>
             </TableHead>
-            <TableBody className={this.props.classes.tableBody}>{rows}</TableBody>
+            <TableBody style={styles.tableBody}>{rows}</TableBody>
         </Table>;
     }
 
     render() {
         if (this.state.notFound) {
-            return null; // <Page404 className={this.props.classes.root} language={this.props.language}/>;
+            return null; // <Page404 style={styles.root} language={this.props.language}/>;
         }
 
         if (this.state.loadTimeout && !this.state.parts.length) {
@@ -1309,18 +1312,21 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 />; */
 
             if (part.type === 'warn') {
-                return <div key={`parts${i}`} className={this.props.classes.warn}>{rct}</div>;
-            } if (part.type === 'alarm') {
-                return <div key={`parts${i}`} className={this.props.classes.alarm}>{rct}</div>;
-            } if (part.type === 'notice') {
-                return <div key={`parts${i}`} className={this.props.classes.notice}>{rct}</div>;
-            }  if (part.type === '@@@') {
-                return <div key={`parts${i}`} className={this.props.classes.todo}>{rct}</div>;
+                return <Box component="div" key={`parts${i}`} sx={styles.warn}>{rct}</Box>;
             }
-            return <div key={`parts${i}`} className={this.props.classes.paragraph}>{rct}</div>;
+            if (part.type === 'alarm') {
+                return <Box component="div" key={`parts${i}`} sx={styles.alarm}>{rct}</Box>;
+            }
+            if (part.type === 'notice') {
+                return <Box component="div" key={`parts${i}`} sx={styles.notice}>{rct}</Box>;
+            }
+            if (part.type === '@@@') {
+                return <Box component="div" key={`parts${i}`} sx={styles.todo}>{rct}</Box>;
+            }
+            return <div key={`parts${i}`} style={styles.paragraph}>{rct}</div>;
         });
 
-        return <div className={Utils.clsx(this.props.classes.root, this.props.className)} ref={this.contentRef}>
+        return <Box component="div" sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)} ref={this.contentRef}>
             {this.renderHeader()}
             {this.state.title && !this.state.header.adapter ? <h1>{this.state.title}</h1> : null}
             {this.renderAffiliates()}
@@ -1331,8 +1337,8 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             {this.renderInfo()}
             {this.renderContent()}
             {this.renderSnackbar()}
-        </div>;
+        </Box>;
     }
 }
 
-export default withStyles(styles)(Markdown);
+export default Markdown;

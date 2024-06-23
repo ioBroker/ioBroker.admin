@@ -9,7 +9,6 @@ import {
     AppBar, Box, CardMedia,
     Tab, Tabs, Typography, Tooltip,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 
 import {
     Warning as WarningIcon,
@@ -20,18 +19,21 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, type ThemeType } from '@iobroker/adapter-react-v5';
+import {
+    I18n, Utils,
+    type ThemeType,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        // @ts-expect-error probably needs better types
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
         display: 'flex',
-        borderRadius: 4,
+        borderRadius: '4px',
         flexDirection: 'column',
-    },
+    }),
     paper: {
         maxWidth: 1000,
         width: '100%',
@@ -45,62 +47,32 @@ const useStyles = makeStyles(theme => ({
     overflowAuto: {
         overflowY: 'auto',
     },
-    pre: {
-        overflow: 'auto',
-        margin: 20,
-        '& p': {
-            fontSize: 18,
-        },
-    },
-    blockInfo: {
-        right: 20,
-        top: 10,
-        position: 'absolute',
-        display: 'flex',
-        alignItems: 'center',
-        color: 'silver',
-    },
-    img: {
-        marginLeft: 10,
-        width: 45,
-        height: 45,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
-        },
-    },
     message: {
         justifyContent: 'space-between',
         display: 'flex',
         width: '100%',
         alignItems: 'center',
+        '@media screen and (max-width: 550px)': {
+            flexWrap: 'wrap',
+        },
     },
     column: {
         flexDirection: 'column',
     },
-    headerText: {
+    headerText: (theme: IobTheme) => ({
         fontWeight: 'bold',
         fontSize: 20,
-        // @ts-expect-error probably needs better types
         color: theme.palette.mode === 'dark' ? '#DDD' : '#111',
-    },
-    descriptionHeaderText: {
+    }),
+    descriptionHeaderText: (theme: IobTheme) => ({
         margin: '18px 0',
-        // @ts-expect-error probably needs better types
         color: theme.palette.mode === 'dark' ? '#CCC' : '#222',
-    },
+    }),
     silver: {
         color: 'silver',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+        },
     },
     button: {
         paddingTop: 18,
@@ -113,13 +85,17 @@ const useStyles = makeStyles(theme => ({
     terminal: {
         fontFamily: 'monospace',
         fontSize: 14,
-        marginLeft: 20,
+        ml: '20px',
         whiteSpace: 'pre-wrap',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+            ml: 0,
+        },
     },
     img2: {
         width: 25,
         height: 25,
-        marginRight: 10,
+        mr: '10px',
         margin: 'auto 0',
         position: 'relative',
         '&:after': {
@@ -145,41 +121,29 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
     },
     classNameBox: {
-        padding: 24,
+        p: '24px',
+        '@media screen and (max-width: 550px)': {
+            p: '10px',
+        },
     },
     textStyle: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+        },
     },
     content: {
         overflow: 'hidden',
     },
     buttonStyle: {
-        margin: 3,
-    },
-    '@media screen and (max-width: 550px)': {
-        classNameBox: {
-            padding: 10,
-        },
-        message: {
-            flexWrap: 'wrap',
-        },
-        textStyle: {
-            fontSize: '2.9vw',
-        },
-        terminal: {
-            fontSize: '2.9vw',
-            marginLeft: 0,
-        },
-        silver: {
-            fontSize: '2.9vw',
-        },
-        buttonStyle: {
+        m: '3px',
+        '@media screen and (max-width: 550px)': {
             fontSize: '2.9vw',
         },
     },
-}));
+};
 
 /** Possible message severities */
 type Severity = 'notify' | 'info' | 'alert';
@@ -209,25 +173,23 @@ const a11yProps = (index: number) => ({
 });
 
 interface TabPanelOptions {
-    value: number;
-    index: number;
-    classNameBox: string;
-    children: React.JSX.Element;
+    index: string;
+    style: React.CSSProperties;
+    sxBox: Record<string, any>;
+    children: React.JSX.Element[];
 }
 
 const TabPanel = ({
-    children, value, index, classNameBox, ...other
+    children, index, sxBox, style,
 }: TabPanelOptions) => <div
     role="tabpanel"
-    hidden={value !== index}
     id={`scrollable-force-tabpanel-${index}`}
     aria-labelledby={`scrollable-force-tab-${index}`}
-    {...other}
+    style={style}
 >
-    { value === index &&
-        <Box className={classNameBox}>
-            <Typography component="div">{children}</Typography>
-        </Box>}
+    <Box sx={sxBox}>
+        <Typography component="div">{children}</Typography>
+    </Box>
 </div>;
 
 type Translated = Record<ioBroker.Languages, string>;
@@ -253,7 +215,10 @@ interface NotificationDialogOptions {
                 [scope: string]: {
                     categories: {
                         [category: string]: Message;
-                    };};
+                    };
+                    description: ioBroker.Translated;
+                    name: ioBroker.Translated;
+                };
             };};
     };
     onClose: () => void;
@@ -270,8 +235,6 @@ interface MessagesPerScope {
 const NotificationsDialog = ({
     notifications, onClose, ackCallback, dateFormat, themeType, instances,
 }: NotificationDialogOptions) => {
-    const classes = useStyles();
-
     const notificationManagerInstalled = !!Object.values(instances).find(instance => instance.common.name === 'notification-manager');
 
     const messages: MessagesPerScope = {};
@@ -289,32 +252,34 @@ const NotificationsDialog = ({
         }
     }
 
-    const [value, setValue] = useState(0);
+    const [panel, setPanel] = useState('');
     const [disabled, setDisabled] = useState<string[]>([]);
     const [expanded, setExpanded] = useState('');
     const [autoCollapse, setAutoCollapse] = useState(true);
 
-    const handleChange = (event: unknown, newValue: number) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
         setAutoCollapse(true);
-        setValue(newValue);
+        setPanel(newValue);
         setExpanded('');
     };
 
-    const handleChangeAccordion = (panel: string) => (_event: unknown, isExpanded: boolean) =>
-        setExpanded(isExpanded ? panel : '');
+    const handleChangeAccordion = (panelName: string) => (_event: unknown, isExpanded: boolean) =>
+        setExpanded(isExpanded ? panelName : '');
 
     const black = themeType === 'dark';
+
+    let firstKey = '';
+    Object.keys(messages).map(scope =>
+        Object.keys(messages[scope]).map(name => firstKey = firstKey || `${scope}-${name}`));
 
     return <Dialog
         onClose={() => onClose()}
         open={!0}
-        classes={{ paper: classes.paper }}
+        sx={{ '& .MuiDialog-paper': styles.paper }}
     >
-        <h2 className={classes.headingTop}>
+        <h2 style={styles.headingTop}>
             <BellIcon
-                sx={{
-                    color: 'primary.main',
-                }}
+                sx={{ color: 'primary.main' }}
                 style={{
                     fontSize: 36,
                     marginLeft: 25,
@@ -327,123 +292,145 @@ const NotificationsDialog = ({
                 <InfoIcon />
             </Tooltip> : null}
         </h2>
-        <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
-            <div className={classes.root}>
+        <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
+            <Box component="div" sx={styles.root}>
                 <AppBar position="static" color="default">
                     <Tabs
-                        value={value}
+                        value={panel || firstKey}
                         onChange={handleChange}
                         variant="scrollable"
                         scrollButtons
                         indicatorColor={black ? 'primary' : 'secondary'}
                         textColor={black ? 'primary' : 'secondary'}
                     >
-                        {Object.values(messages).map(categoryEntry => Object.entries(categoryEntry).map(([name, entry], idx) => <Tab
-                            disabled={disabled.includes(name)}
-                            key={name}
-                            label={`${entry.name[I18n.getLanguage()]}`}
-                            icon={<Status severity={entry.severity} isDark={black} />}
-                            {...a11yProps(idx)}
-                        />))}
+                        {Object.keys(messages).map(scope =>
+                            Object.keys(messages[scope]).map((name, idx) => {
+                                const entry = messages[scope][name];
+                                const key = `${scope}-${name}`;
+
+                                return <Tab
+                                    disabled={disabled.includes(key)}
+                                    key={key}
+                                    value={key}
+                                    label={`${entry.name[I18n.getLanguage()]}`}
+                                    icon={<Status severity={entry.severity} isDark={black} />}
+                                    {...a11yProps(idx)}
+                                />;
+                            }))}
                     </Tabs>
                 </AppBar>
-                {Object.keys(messages).map(scope => <>
-                    {/** @ts-expect-error seems to work with multiple children */}
-                    {Object.keys(messages[scope]).map((name, idx) => <TabPanel
-                        className={classes.overflowAuto}
-                        classNameBox={classes.classNameBox}
-                        key={`tabPanel-${name}`}
-                        style={black ? { color: 'black' } : null}
-                        value={value}
-                        index={idx}
-                    >
-                        <div className={classes.headerText} style={{ fontWeight: 'bold' }}>
-                            {messages[scope][name].name[I18n.getLanguage()]}
-                        </div>
-                        <div className={classes.descriptionHeaderText}>
-                            {messages[scope][name].description[I18n.getLanguage()]}
-                        </div>
-                        <div>
-                            {messages[scope][name].instances ? Object.keys(messages[scope][name].instances).map(nameInst => {
-                                const index = Object.keys(messages[scope]).indexOf(name);
+                {Object.keys(messages).map(scope =>
+                    Object.keys(messages[scope]).map(name => {
+                        const key = `${scope}-${name}`;
+                        if (panel === key || (!panel && key === firstKey)) {
+                            const entry = messages[scope][name];
+                            console.log(`Active panel: ${panel}`, `Key: ${key}`);
+                            return <TabPanel
+                                sxBox={styles.classNameBox}
+                                key={`tabPanel-${name}`}
+                                style={{ ...styles.overflowAuto, color: black ? 'black' : undefined }}
+                                index={key}
+                            >
+                                <Box component="div" sx={styles.headerText} style={{ fontWeight: 'bold' }}>
+                                    {entry.name[I18n.getLanguage()]}
+                                </Box>
+                                <Box component="div" sx={styles.descriptionHeaderText}>
+                                    {entry.description[I18n.getLanguage()]}
+                                </Box>
+                                <div>
+                                    {entry.instances ? Object.keys(entry.instances)
+                                        .map(nameInst => {
+                                            const accKey = `${key}-${nameInst}`;
+                                            if (autoCollapse) {
+                                                handleChangeAccordion(accKey)('', true);
+                                                setAutoCollapse(false);
+                                            }
 
-                                if (autoCollapse && value === index) {
-                                    handleChangeAccordion(`${name}-${nameInst}`)('', true);
-                                    setAutoCollapse(false);
-                                }
+                                            const currentInstance = instances && instances[nameInst];
+                                            let icon = 'img/no-image.png';
+                                            if (currentInstance?.common?.icon && currentInstance?.common?.name) {
+                                                icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
+                                            }
 
-                                const currentInstance = instances && instances[nameInst];
-                                let icon = 'img/no-image.png';
-                                if (currentInstance?.common?.icon && currentInstance?.common?.name) {
-                                    icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
-                                }
-                                return <Accordion
-                                    style={black ? undefined : { background: '#c0c0c052' }}
-                                    key={nameInst}
-                                    expanded={expanded === `${name}-${nameInst}`}
-                                    onChange={handleChangeAccordion(`${name}-${nameInst}`)}
-                                >
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon />}
-                                        classes={{ content: classes.content }}
-                                        aria-controls="panel1bh-content"
-                                        id="panel1bh-header"
+                                            return <Accordion
+                                                style={black ? undefined : { backgroundColor: '#c0c0c052' }}
+                                                key={accKey}
+                                                expanded={expanded === accKey}
+                                                onChange={handleChangeAccordion(accKey)}
+                                            >
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    sx={{ '& .MuiAccordionSummary-content': styles.content }}
+                                                    aria-controls="panel1bh-content"
+                                                    id="panel1bh-header"
+                                                >
+                                                    <Typography style={styles.heading}>
+                                                        <CardMedia sx={styles.img2} component="img" image={icon} />
+                                                        <Box component="div" sx={styles.textStyle}>
+                                                            {nameInst.replace(/^system\.adapter\./, '')}
+                                                        </Box>
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails style={styles.column}>
+                                                    {entry.instances[nameInst].messages.map((msg, i) =>
+                                                        <Typography key={i} component="div" sx={styles.message}>
+                                                            <Box
+                                                                component="div"
+                                                                sx={styles.terminal}
+                                                            >
+                                                                {Utils.renderTextWithA(msg.message)}
+                                                            </Box>
+                                                            <Box
+                                                                component="div"
+                                                                sx={styles.silver}
+                                                            >
+                                                                {Utils.formatDate(new Date(msg.ts), dateFormat)}
+                                                            </Box>
+                                                        </Typography>)}
+                                                </AccordionDetails>
+                                            </Accordion>;
+                                        }) : null}
+                                </div>
+                                <div style={styles.button}>
+                                    <Button
+                                        variant="contained"
+                                        autoFocus={Object.keys(messages[scope]).length !== 1}
+                                        disabled={disabled.includes(name)}
+                                        style={disabled.includes(name) ? { backgroundColor: 'silver' } : undefined}
+                                        sx={styles.buttonStyle}
+                                        onClick={() => {
+                                            ackCallback(entry.host, name);
+                                            setDisabled([...disabled, name]);
+                                        }}
+                                        color={Object.keys(messages[scope]).length !== 1 ? 'primary' : 'grey'}
+                                        startIcon={<CheckIcon />}
                                     >
-                                        <Typography className={classes.heading}>
-                                            <CardMedia className={classes.img2} component="img" image={icon} />
-                                            <div className={classes.textStyle}>
-                                                {nameInst.replace(/^system\.adapter\./, '')}
-                                            </div>
-                                        </Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails className={classes.column}>
-                                        {messages[scope][name].instances[nameInst].messages.map(msg =>
-                                            <Typography key={msg.ts} component="div" className={classes.message}>
-                                                <div className={classes.terminal}>{Utils.renderTextWithA(msg.message)}</div>
-                                                <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
-                                            </Typography>)}
-                                    </AccordionDetails>
-                                </Accordion>;
-                            }) : null}
-                        </div>
-                        <div className={classes.button}>
-                            <Button
-                                variant="contained"
-                                autoFocus={Object.keys(messages[scope]).length !== 1}
-                                disabled={disabled.includes(name)}
-                                style={disabled.includes(name) ? { background: 'silver' } : undefined}
-                                className={classes.buttonStyle}
-                                onClick={() => {
-                                    ackCallback(messages[scope][name].host, name);
-                                    setDisabled([...disabled, name]);
-                                }}
-                                color={Object.keys(messages[scope]).length !== 1 ? 'primary' : 'grey'}
-                                startIcon={<CheckIcon />}
-                            >
-                                {I18n.t('Acknowledge')}
-                            </Button>
-                            {Object.keys(messages[scope]).length === 1 && <Button
-                                variant="contained"
-                                disabled={disabled.includes(name)}
-                                className={classes.buttonStyle}
-                                style={disabled.includes(name) ? { background: 'silver' } : undefined}
-                                onClick={() => {
-                                    setDisabled([...disabled, name]);
-                                    ackCallback(messages[scope][name].host, name);
-                                    onClose();
-                                }}
-                                startIcon={<>
-                                    <CheckIcon />
-                                    <CloseIcon />
-                                </>}
-                                color="primary"
-                            >
-                                {I18n.t('Acknowledge & close')}
-                            </Button>}
-                        </div>
-                    </TabPanel>)}
-                </>)}
-            </div>
+                                        {I18n.t('Acknowledge')}
+                                    </Button>
+                                    {Object.keys(messages[scope]).length === 1 && <Button
+                                        variant="contained"
+                                        disabled={disabled.includes(name)}
+                                        sx={styles.buttonStyle}
+                                        style={disabled.includes(name) ? { backgroundColor: 'silver' } : undefined}
+                                        onClick={() => {
+                                            setDisabled([...disabled, name]);
+                                            ackCallback(entry.host, name);
+                                            onClose();
+                                        }}
+                                        startIcon={<>
+                                            <CheckIcon />
+                                            <CloseIcon />
+                                        </>}
+                                        color="primary"
+                                    >
+                                        {I18n.t('Acknowledge & close')}
+                                    </Button>}
+                                </div>
+                            </TabPanel>;
+                        }
+                        return null;
+                    }))}
+            </Box>
         </DialogContent>
         <DialogActions>
             <Button

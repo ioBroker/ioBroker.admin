@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDragLayer } from 'react-dnd';
-import { withStyles } from '@mui/styles';
+
+import { Box } from '@mui/material';
 
 import type { IobTheme } from '@iobroker/adapter-react-v5';
 
@@ -47,13 +48,13 @@ function getItemStyles(
     };
 }
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    root: {
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         background: theme.palette.background.default,
-    },
-});
+    }),
+};
 
-const CustomDragLayer = ({ classes }: { classes: Record<string, string>}) => {
+function CustomDragLayer(props: { theme: IobTheme })  {
     const {
         itemType,
         isDragging,
@@ -72,7 +73,7 @@ const CustomDragLayer = ({ classes }: { classes: Record<string, string>}) => {
 
     function renderItem() {
         if (itemType === 'box') {
-            return <div className={classes.root} style={{ width: 179 }}>
+            return <Box component="div" sx={styles.root} style={{ width: 179 }}>
                 <DrawerItem
                     key={item.name}
                     visible={item.visible}
@@ -83,8 +84,9 @@ const CustomDragLayer = ({ classes }: { classes: Record<string, string>}) => {
                     selected={item.selected}
                     badgeContent={item.badgeContent}
                     badgeColor={item.badgeColor}
+                    theme={props.theme}
                 />
-            </div>;
+            </Box>;
         }
         return null;
     }
@@ -98,6 +100,6 @@ const CustomDragLayer = ({ classes }: { classes: Record<string, string>}) => {
             {renderItem()}
         </div>
     </div>;
-};
+}
 
-export default withStyles(styles)(CustomDragLayer);
+export default CustomDragLayer;

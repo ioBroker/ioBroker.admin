@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import semver from 'semver';
 import moment from 'moment';
 
-import { withStyles } from '@mui/styles';
-
 import {
     Button, Dialog, DialogActions,
     DialogContent,
@@ -26,6 +24,7 @@ import {
     I18n,
     Utils,
     type IobTheme,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
@@ -43,42 +42,38 @@ import 'moment/locale/ru';
 import 'moment/locale/uk';
 import 'moment/locale/zh-cn';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    closeButton: {
+const styles: Record<string, any> = {
+    closeButton: (theme: IobTheme) => ({
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: 8,
+        top: 8,
         color: theme.palette.grey[500],
-    },
+    }),
     languageButton: {
         position: 'absolute',
-        right: 52 + parseInt(theme.spacing(1), 10),
-        top: theme.spacing(1),
+        right: 52 + 8,
+        top: 8,
     },
-    languageButtonActive: {
+    languageButtonActive: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
-    },
+    }),
     typography: {
         paddingRight: 30,
     },
-    version: {
+    version: (theme: IobTheme) => ({
         background: '#4dabf5',
-        borderRadius: 3,
-        paddingLeft: 10,
+        borderRadius: '3px',
+        pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
+    }),
     wrapperButton: {
-    },
-    '@media screen and (max-width: 465px)': {
-        wrapperButton: {
+        '@media screen and (max-width: 465px)': {
             '& *': {
                 fontSize: 10,
             },
         },
-    },
-    '@media screen and (max-width: 380px)': {
-        wrapperButton: {
+        '@media screen and (max-width: 380px)': {
             '& *': {
                 fontSize: 9,
             },
@@ -101,27 +96,27 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     messageColor_info: {
         color: '#5abd29',
     },
-    messageTitle_warn: {
+    messageTitle_warn: (theme: IobTheme) => ({
         background: '#cb7642',
-        borderRadius: 3,
-        paddingLeft: 10,
+        borderRadius: '3px',
+        pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
-    messageTitle_error: {
+    }),
+    messageTitle_error: (theme: IobTheme) => ({
         background: '#f5614d',
-        borderRadius: 3,
-        paddingLeft: 10,
+        borderRadius: '3px',
+        pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
-    messageTitle_info: {
+    }),
+    messageTitle_info: (theme: IobTheme) => ({
         background: '#5abd29',
-        borderRadius: 3,
-        paddingLeft: 10,
+        borderRadius: '3px',
+        pl: '10px',
         fontWeight: 'bold',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
-    },
+    }),
     messageDialogText: {
         fontSize: 18,
     },
@@ -136,7 +131,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     dialogPaper: {
         maxWidth: 880,
     },
-});
+};
 
 export interface Message {
     title: ioBroker.Translated;
@@ -362,11 +357,11 @@ interface AdapterUpdateDialogProps {
     onClose: () => void;
     rightDependencies: boolean;
     installedVersion: string;
-    t: (text: string, arg1?: any, arg2?: any) => string;
+    t: Translate;
     textUpdate?: string;
     textInstruction?: string;
     instances?: Record<string, CompactInstanceInfo>;
-    classes: Record<string, any>;
+    theme: IobTheme;
 }
 
 interface AdapterUpdateDialogState {
@@ -374,7 +369,7 @@ interface AdapterUpdateDialogState {
 }
 
 class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpdateDialogState> {
-    private readonly t: (text: string, arg1?: any, arg2?: any) => string;
+    private readonly t: Translate;
 
     private readonly mobile: boolean;
 
@@ -478,9 +473,9 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             }
 
             result.push(<Grid item key={entry.version}>
-                <Typography className={this.props.classes.version}>
+                <Typography sx={styles.version}>
                     {entry.version}
-                    {this.props.adapterObject?.version === entry.version ? <span className={this.props.classes.versionTime}>
+                    {this.props.adapterObject?.version === entry.version ? <span style={styles.versionTime}>
 (
                         {moment(this.props.adapterObject.versionDate).fromNow()}
 )
@@ -507,10 +502,10 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
 
     renderOneMessage(message: Message, index: number) {
         return <Grid item key={index}>
-            <Typography className={this.props.classes[`messageTitle_${message.level || 'warn'}`]}>
+            <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
                 {this.getText(message.title, this.props.noTranslation) || ''}
             </Typography>
-            <Typography component="div" variant="body2" className={this.props.classes.messageText}>
+            <Typography component="div" variant="body2" style={styles.messageText}>
                 {this.getText(message.text, this.props.noTranslation) || ''}
             </Typography>
             {message.link ?
@@ -550,19 +545,18 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
         }
         const message = this.messages.find(m => m.buttons);
         const version = this.props.adapterObject?.version;
-        const classes = this.props.classes;
 
         return <Dialog
             onClose={() => this.setState({ showMessageDialog: false })}
             open={!0}
         >
-            <DialogTitle className={classes.messageDialogTitle}>
+            <DialogTitle style={styles.messageDialogTitle}>
                 {this.getText(message.title, this.props.noTranslation) || this.props.t('Please confirm')}
             </DialogTitle>
-            <DialogContent className={classes.messageDialogText}>
-                {message.level === 'warn' ? <IconWarning className={Utils.clsx(classes.messageIcon, classes.messageColor_warn)} /> : null}
-                {message.level === 'error' ? <IconError className={Utils.clsx(classes.messageIcon, classes.messageColor_error)} /> : null}
-                {message.level === 'info' ? <IconInfo className={Utils.clsx(classes.messageIcon, classes.messageColor_info)} /> : null}
+            <DialogContent style={styles.messageDialogText}>
+                {message.level === 'warn' ? <IconWarning style={{ ...styles.messageIcon, ...styles.messageColor_warn }} /> : null}
+                {message.level === 'error' ? <IconError style={{ ...styles.messageIcon, ...styles.messageColor_error }} /> : null}
+                {message.level === 'info' ? <IconInfo style={{ ...styles.messageIcon, ...styles.messageColor_info }} /> : null}
                 {this.getText(message.text, this.props.noTranslation)}
             </DialogContent>
             <DialogActions>
@@ -594,7 +588,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                         </Button>;
                     } if (button === 'agree') {
                         return <Button
-                            className={classes[`messageTitle_${message.level || 'warn'}`]}
+                            sx={styles[`messageTitle_${message.level || 'warn'}`]}
                             variant="contained"
                             onClick={() =>
                                 this.setState({ showMessageDialog: false }, () =>
@@ -621,8 +615,6 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
     }
 
     render() {
-        const { classes } = this.props;
-
         const version = this.props.adapterObject?.version;
 
         const news = this.getNews();
@@ -630,18 +622,18 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
         return <Dialog
             onClose={this.props.onClose}
             open={!0}
-            classes={{ paper: classes.dialogPaper }}
+            sx={{ '& .MuiDialog-paper': styles.dialogPaper }}
         >
             {this.renderMessageDialog()}
             <DialogTitle>
-                <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
+                <Typography component="h2" variant="h6" sx={{ '&.MuiTypography-root': styles.typography }}>
                     <div style={{ width: 'calc(100% - 60px)' }}>{this.t('Update "%s" to v%s', this.props.adapter, version) }</div>
-                    <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
+                    <IconButton size="large" sx={styles.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
                     {this.lang !== 'en' && this.props.toggleTranslation ? <IconButton
                         size="large"
-                        className={Utils.clsx(classes.languageButton, this.props.noTranslation && classes.languageButtonActive)}
+                        style={Utils.getStyle(this.props.theme, styles.languageButton, this.props.noTranslation && styles.languageButtonActive)}
                         onClick={this.props.toggleTranslation}
                         title={I18n.t('Disable/Enable translation')}
                     >
@@ -676,7 +668,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     </Grid> : this.t('No change log available')}
                 </Grid>
             </DialogContent>
-            <DialogActions className={classes.wrapperButton}>
+            <DialogActions sx={styles.wrapperButton}>
                 {!!this.props.rightDependencies && this.props.onIgnore && version && <Button
                     variant="outlined"
                     onClick={() => this.props.onIgnore(version)}
@@ -729,4 +721,4 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
     }
 }
 
-export default withStyles(styles)(AdapterUpdateDialog);
+export default AdapterUpdateDialog;

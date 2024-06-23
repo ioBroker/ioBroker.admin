@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 
-import { withStyles } from '@mui/styles';
-
 import {
     IconButton,
     Tooltip,
     InputAdornment,
     LinearProgress,
-    TextField,
+    TextField, Box,
 } from '@mui/material';
 
 import {
@@ -20,6 +18,9 @@ import {
 import {
     withWidth,
     Utils as UtilsCommon,
+    TabHeader,
+    TabContent,
+    TabContainer,
     type AdminConnection,
     type IobTheme,
     type ThemeType,
@@ -29,14 +30,12 @@ import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@
 import type HostsWorker from '@/Workers/HostsWorker';
 import type { NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
-import TabHeader from '../components/TabHeader';
+import { blinkClasses } from '../components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 import ComponentUtils from '../components/Utils';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     grow: {
         flexGrow: 1,
     },
@@ -83,25 +82,25 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     marginRight: {
         marginRight: 'auto',
     },
-    notStableRepo: {
+    notStableRepo: (theme: IobTheme) => ({
         background: theme.palette.mode === 'dark' ? '#8a7e00' : '#fdee20',
         color: '#000',
         fontSize: 14,
         padding: '2px 8px',
-        borderRadius: 5,
-    },
-    '@media screen and (max-width: 1100px)': {
-        hidden1100: {
+        borderRadius: '5px',
+    }),
+    hidden1100: {
+        '@media screen and (max-width: 1100px)': {
             display: 'none !important',
         },
     },
-    '@media screen and (max-width: 800px)': {
-        hidden800: {
+    hidden800: {
+        '@media screen and (max-width: 800px)': {
             display: 'none !important',
         },
     },
-    '@media screen and (max-width: 600px)': {
-        hidden600: {
+    hidden600: {
+        '@media screen and (max-width: 600px)': {
             display: 'none !important',
         },
     },
@@ -110,7 +109,10 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         opacity: 0.4,
         display: 'block',
     },
-});
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 const wordCache: Record<string, string> = {};
 
@@ -149,7 +151,6 @@ interface HostsProps {
     onUpdating: (updating: boolean) => void;
     themeType: ThemeType;
     lang: ioBroker.Languages;
-    classes: Record<string, string>;
 }
 
 interface HostsState {
@@ -376,7 +377,6 @@ class Hosts extends Component<HostsProps, HostsState> {
 
     render() {
         const {
-            classes,
             expertMode,
         } = this.props;
 
@@ -385,6 +385,7 @@ class Hosts extends Component<HostsProps, HostsState> {
         }
 
         return <TabContainer>
+            <style>{blinkClasses}</style>
             {this.renderSlowConnectionWarning()}
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>
@@ -403,7 +404,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
-                <div className={classes.grow} />
+                <div style={styles.grow} />
                 {this.state.hosts.length > 2 ? <TextField
                     variant="standard"
                     label={this.t('Filter')}
@@ -427,32 +428,32 @@ class Hosts extends Component<HostsProps, HostsState> {
                         </InputAdornment> : null,
                     }}
                 /> : null}
-                <div className={classes.grow} />
+                <div style={styles.grow} />
             </TabHeader>
             <TabContent overflow="auto">
                 {!ComponentUtils.isStableRepository(this.props.systemConfig.common.activeRepo) ?
-                    <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
-                <div className={this.state.viewMode ? classes.cards : ''}>
+                    <Box component="div" sx={styles.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</Box> : null}
+                <div style={this.state.viewMode ? styles.cards : undefined}>
                     {!this.state.viewMode &&
-                        <div className={classes.tabHeaderWrapper}>
-                            <div className={classes.tabHeaderFirstItem}>
+                        <div style={styles.tabHeaderWrapper}>
+                            <div style={styles.tabHeaderFirstItem}>
                                 {this.t('Name:')}
                             </div>
-                            <div className={classes.tabFlex}>
+                            <div style={styles.tabFlex}>
                                 {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden800)}>{this.t('Uptime')}</div>
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden1100)}>
+                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>CPU</Box>
+                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>RAM</Box>
+                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>{this.t('Uptime')}</Box>
+                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
                                     {this.t('Available')}
-                                    <div className={classes.jsController}>js-controller</div>
-                                </div>
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden1100)}>
+                                    <div style={styles.jsController}>js-controller</div>
+                                </Box>
+                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
                                     {this.t('Installed')}
-                                    <div className={classes.jsController}>js-controller</div>
-                                </div>
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{this.t('Events')}</div>
-                                <div className={UtilsCommon.clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
+                                    <div style={styles.jsController}>js-controller</div>
+                                </Box>
+                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}>{this.t('Events')}</Box>
+                                <div style={{ ...styles.tabHeaderItemButton, ...(expertMode ? styles.widthButtons : undefined) }} />
                             </div>
                         </div>}
                     {this.getPanels()}
@@ -462,4 +463,4 @@ class Hosts extends Component<HostsProps, HostsState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(Hosts));
+export default withWidth()(Hosts);

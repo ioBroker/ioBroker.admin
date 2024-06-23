@@ -1,10 +1,8 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
-import type { IobTheme } from '@iobroker/adapter-react-v5';
 
 const offset = 187;
 
-const styles: Styles<IobTheme, any> = {
+const styles: Record<string, React.CSSProperties> = {
     root: {
         left: 0,
         top: 0,
@@ -22,68 +20,66 @@ const styles: Styles<IobTheme, any> = {
         position: 'absolute',
     },
     spinner: {
-        animation: '$rotator 1.4s linear infinite',
+        animation: 'admin-connecting-rotator 1.4s linear infinite',
     },
     path: {
         strokeDasharray: 187,
         strokeDashoffset: 0,
         transformOrigin: 'center',
-        animation: '$dash 1.4s ease-in-out infinite, $colors 5.6s ease-in-out infinite',
-    },
-    '@keyframes colors': {
-        '0%': {
-            stroke: '#4285F4',
-        },
-        '25%': {
-            stroke: '#DE3E35',
-        },
-        '50%': {
-            stroke: '#F7C223',
-        },
-        '75%': {
-            stroke: '#1B9A59',
-        },
-        '100%': {
-            stroke: '#4285F4',
-        },
-    },
-    '@keyframes dash': {
-        '0%': {
-            strokeDashoffset: offset,
-        },
-        '50%': {
-            strokeDashoffset: offset / 4,
-            transform: 'rotate(135deg)',
-        },
-        '100%': {
-            strokeDashoffset: offset,
-            transform: 'rotate(450deg)',
-        },
-    },
-    '@keyframes rotator': {
-        '0%': {
-            transform: 'rotate(0deg)',
-        },
-        '100%': {
-            transform: 'rotate(270deg)',
-        },
+        animation: 'admin-connecting-dash 1.4s ease-in-out infinite, $colors 5.6s ease-in-out infinite',
     },
 };
 
-interface ConnectingProps {
-    classes: Record<string, string>;
-}
-
-function Connecting(props: ConnectingProps) {
-    const { classes } = props;
-
-    return <div className={classes.root}>
-        <div className={classes.connecting}>
-            <svg className={classes.spinner} width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
-                <circle className={classes.path} fill="none" strokeWidth="6" strokeLinecap="round" cx="33" cy="33" r="30" />
+function Connecting() {
+    return <div style={styles.root}>
+        <style>
+            {`
+'   @keyframes admin-connecting-colors {
+        0% {
+            stroke: #4285F4;
+        }
+        25% {
+            stroke: #DE3E35;
+        }
+        50% {
+            stroke: #F7C223;
+        }
+        75% {
+            stroke: #1B9A59;
+        }
+        100% {
+            stroke: #4285F4;
+        }
+    }
+    @keyframes admin-connecting-dash {
+        0% {
+            stroke-dashoffset: ${offset};
+        }
+        50% {
+            stroke-dashoffset: ${offset / 4};
+            transform: rotate(135deg);
+        }
+        100% {
+            stroke-dashoffset: ${offset};
+            transform: 'rotate(450deg);
+        }
+    }
+    @keyframes admin-connecting-rotator {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(270deg);
+        }
+    }
+`}
+        </style>
+        <div style={styles.connecting}>
+            <svg style={styles.spinner} width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                <circle style={styles.path} fill="none" strokeWidth="6" strokeLinecap="round" cx="33" cy="33" r="30" />
             </svg>
         </div>
     </div>;
 }
 
-export default withStyles(styles)(Connecting);
+export default Connecting;

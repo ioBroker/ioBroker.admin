@@ -1,5 +1,4 @@
 import React, { createRef, Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -9,27 +8,27 @@ import {
     Paper,
 } from '@mui/material';
 
-import { withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, withWidth, type Translate } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<any, any> = (theme: IobTheme) => ({
+const styles: Record<string, React.CSSProperties> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'auto',
-        padding: theme.spacing(1),
+        padding: 8,
     },
     controlItem: {
-        width: `calc(100% - ${theme.spacing(2)})`,
-        marginBottom: theme.spacing(2),
-        marginRight: theme.spacing(1),
-        marginLeft: theme.spacing(1),
+        width: 'calc(100% - 16px)',
+        marginBottom: 16,
+        marginRight: 8,
+        marginLeft: 8,
     },
     RAM: {
         width: 400,
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
-});
+};
 
 export interface MultihostSettings {
     enabled?: boolean;
@@ -38,11 +37,10 @@ export interface MultihostSettings {
 }
 
 interface BaseSettingsMultihostProps {
-    t: (text: string) => string;
+    t: Translate;
     onChange: (settings: MultihostSettings) => void;
     settings: MultihostSettings;
-    socket: Record<string, any>;
-    classes: Record<string, any>;
+    socket: AdminConnection;
 }
 
 interface BaseSettingsMultihostState {
@@ -94,11 +92,11 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
     }
 
     render() {
-        return <Paper className={this.props.classes.paper}>
-            <form className={this.props.classes.form} noValidate autoComplete="off">
-                <Grid item className={this.props.classes.gridSettings}>
+        return <Paper style={styles.paper}>
+            <form style={styles.form} noValidate autoComplete="off">
+                <Grid item style={styles.gridSettings}>
                     <Grid container direction="column">
-                        <Grid item className={this.props.classes.controlItem}>
+                        <Grid item style={styles.controlItem}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -110,7 +108,7 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
                             />
                             <div>{ this.props.t('When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.')}</div>
                         </Grid>
-                        <Grid item className={this.props.classes.controlItem}>
+                        <Grid item style={styles.controlItem}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -126,7 +124,7 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Multi-host password')}
-                                className={this.props.classes.controlItem}
+                                style={styles.controlItem}
                                 value={this.state.password}
                                 type="password"
                                 inputProps={{
@@ -146,4 +144,4 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
     }
 }
 
-export default withWidth()(withStyles(styles)(BaseSettingsMultihost));
+export default withWidth()(BaseSettingsMultihost);

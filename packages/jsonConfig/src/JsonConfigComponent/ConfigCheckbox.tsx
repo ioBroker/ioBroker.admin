@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     FormControlLabel,
@@ -13,12 +12,6 @@ import  { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCheckbox } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
-    error: {
-        color: 'red',
-    },
-};
-
 interface ConfigCheckboxProps extends ConfigGenericProps {
     schema: ConfigItemCheckbox;
 }
@@ -28,7 +21,7 @@ class ConfigCheckbox extends ConfigGeneric<ConfigCheckboxProps, ConfigGenericSta
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const isIndeterminate = Array.isArray(value);
 
-        return <FormControl className={this.props.classes.fullWidth} variant="standard">
+        return <FormControl style={{ width: '100%' }} variant="standard">
             <FormControlLabel
                 onClick={e => {
                     e.preventDefault();
@@ -52,15 +45,13 @@ class ConfigCheckbox extends ConfigGeneric<ConfigCheckboxProps, ConfigGenericSta
                 />}
                 label={this.getText(this.props.schema.label)}
             />
-            <FormHelperText className={this.props.classes.error}>
-                {
-                    error ? (this.props.schema.validatorErrorText ? I18n.t(this.props.schema.validatorErrorText) : I18n.t('ra_Error')) :
-                        null
-                }
+            <FormHelperText style={{ color: 'red' }}>
+                {error ? (this.props.schema.validatorErrorText ? I18n.t(this.props.schema.validatorErrorText) : I18n.t('ra_Error')) :
+                    null}
             </FormHelperText>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }
 
-export default withStyles(styles)(ConfigCheckbox);
+export default ConfigCheckbox;

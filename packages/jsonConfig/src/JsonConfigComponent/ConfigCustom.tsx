@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Grid, LinearProgress } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCustom } from '#JC/types';
-import type { ConfigGenericProps } from '#JC/JsonConfigComponent/ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from '#JC/JsonConfigComponent/ConfigGeneric';
 
 const getOrLoadRemote = (
     remote: string,
     shareScope: string,
     remoteFallbackUrl?: string,
-): Promise<{get: (module: string) => () => Promise<{ default: Record<string, React.Component> }>}> =>
+): Promise<{get: (module: string) => () => Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }>}> =>
     new Promise((resolve, reject) => {
     // check if remote exists on the global `window`object
         if (!(window as any)[remote]) {
@@ -77,8 +77,8 @@ function loadComponent(
     sharedScope: string,
     module: string,
     url: string,
-): () => Promise<{ default: Record<string, React.Component> }> {
-    return async (): Promise<{ default: Record<string, React.Component> }> => {
+): () => Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> {
+    return async (): Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }> => {
         const container = await getOrLoadRemote(remote, sharedScope, url);
         const factory = await container.get(module);
         return factory();
@@ -89,13 +89,13 @@ interface ConfigCustomProps extends ConfigGenericProps {
     schema: ConfigItemCustom;
 }
 
-interface ConfigCustomState {
-    Component: Component | null;
+interface ConfigCustomState extends ConfigGenericState {
+    Component: React.FC<ConfigGenericProps> | null;
     error: string;
 }
 
-export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCustomState> {
-    static runningLoads: Record<string, Promise<{ default: Record<string, React.Component> }>> = {};
+export default class ConfigCustom extends ConfigGeneric<ConfigCustomProps, ConfigCustomState> {
+    static runningLoads: Record<string, Promise<{ default: Record<string, React.FC<ConfigGenericProps>> }>> = {};
 
     constructor(props: ConfigCustomProps) {
         super(props);
@@ -103,10 +103,10 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
         // schema.name - Component name
         // schema.i18n - i18n
 
-        this.state = {
+        Object.assign(this.state, {
             Component: null,
             error: '',
-        };
+        });
     }
 
     // load component dynamically
@@ -190,7 +190,7 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
         }
 
         try {
-            const component = (await setPromise).default;
+            const component: Record<string, React.FC<ConfigGenericProps>> = (await setPromise).default;
 
             if (!component?.[componentName]) {
                 const keys = Object.keys(component || {});
@@ -205,7 +205,7 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
     }
 
     render() {
-        const CustomComponent: Component = this.state.Component;
+        const CustomComponent: React.FC<ConfigGenericProps> = this.state.Component;
 
         // render temporary placeholder
         if (!CustomComponent) {
@@ -237,7 +237,6 @@ export default class ConfigCustom extends Component<ConfigCustomProps, ConfigCus
             return item;
         }
 
-        // @ts-expect-error No idea how to solve it
         return <CustomComponent {...this.props} />;
     }
 }
