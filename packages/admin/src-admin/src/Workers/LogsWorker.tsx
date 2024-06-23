@@ -1,6 +1,5 @@
 import { type AdminConnection } from '@iobroker/adapter-react-v5';
-import Utils from '../Utils';
-import { type Style } from '../Utils';
+import Utils, { type Style } from '../Utils';
 
 interface LogLine {
     severity: string;

@@ -1844,6 +1844,7 @@ class App extends Router<AppProps, AppState> {
                         lang={this.state.lang}
                         socket={this.socket}
                         themeType={this.state.themeType}
+                        theme={this.state.theme}
                         ready={this.state.ready}
                         logsWorker={this.logsWorker}
                         expertMode={this.state.expertMode}

@@ -180,7 +180,7 @@ const styles: Record<string, any> = {
             color: theme.palette.text.primary,
         },
         '& .MuiInput-underline::before': {
-            content: '',
+            content: '""',
             borderBottom: 'none',
         },
         '@media screen and (max-width: 450px)': {
@@ -1031,7 +1031,9 @@ class Logs extends Component<LogsProps, LogsState> {
             >
                 {this.t('Log size:')}
                 {' '}
-                <span style={this.state.estimatedSize ? styles.logEstimated : ''}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
+                <span style={this.state.estimatedSize ? styles.logEstimated : undefined}>
+                    {this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}
+                </span>
             </Typography>}
         </TabHeader>;
     }
@@ -1153,9 +1155,7 @@ class Logs extends Component<LogsProps, LogsState> {
         }
 
         return <TabContainer>
-            <TabHeader>
-                {this.renderToolbar()}
-            </TabHeader>
+            {this.renderToolbar()}
             <TabContent>
                 <TableContainer style={styles.container}>
                     <Table stickyHeader size="small" sx={styles.table}>
