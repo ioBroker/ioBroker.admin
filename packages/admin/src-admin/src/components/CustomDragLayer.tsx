@@ -54,7 +54,7 @@ const styles: Record<string, any> = {
     }),
 };
 
-function CustomDragLayer()  {
+function CustomDragLayer(props: { theme: IobTheme })  {
     const {
         itemType,
         isDragging,
@@ -84,6 +84,7 @@ function CustomDragLayer()  {
                     selected={item.selected}
                     badgeContent={item.badgeContent}
                     badgeColor={item.badgeColor}
+                    theme={props.theme}
                 />
             </Box>;
         }

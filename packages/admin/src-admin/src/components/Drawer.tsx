@@ -714,7 +714,7 @@ v
                 onClose={() => this.props.onStateChange(STATES.closed as 1)}
                 onOpen={() => this.props.onStateChange(STATES.opened as 0)}
             >
-                <CustomDragLayer />
+                <CustomDragLayer theme={this.props.theme} />
 
                 {this.getHeader()}
 
@@ -751,7 +751,7 @@ v
             onMouseEnter={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '1')}
             onMouseLeave={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = '0')}
         >
-            <CustomDragLayer />
+            <CustomDragLayer theme={this.props.theme} />
             {this.getHeader()}
             <List style={styles.list}>
                 {this.getNavigationItems()}

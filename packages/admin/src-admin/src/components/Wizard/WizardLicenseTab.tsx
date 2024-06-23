@@ -227,5 +227,4 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
     }
 }
 
-
 export default withWidth()(WizardLicenseTab);

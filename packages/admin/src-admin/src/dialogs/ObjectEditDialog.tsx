@@ -17,13 +17,13 @@ import {
 } from '@mui/icons-material';
 
 import {
-    withWidth, type IobTheme,
+    withWidth,
     type Translate,
     type ThemeName,
 } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     dialog: {
         height: '100%',
         maxHeight: '100%',
@@ -32,11 +32,6 @@ const styles: Record<string, any> = {
     content: {
         textAlign: 'center',
     },
-    tabPanel: (theme: IobTheme) => ({
-        width: '100%',
-        overflow: 'hidden',
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
-    }),
 };
 
 export const EXTENSIONS = {
@@ -50,7 +45,6 @@ interface ObjectEditDialogProps {
     themeName: ThemeName;
     obj: ioBrokerObject;
     onClose: () => void;
-    classes: Record<string, string>;
 }
 
 interface ObjectEditDialogState {
@@ -83,7 +77,7 @@ class ObjectEditDialog extends Component<ObjectEditDialogProps, ObjectEditDialog
 
     render() {
         return <Dialog
-            className={this.props.classes.dialog}
+            style={styles.dialog}
             open={!0}
             onClose={() => this.props.onClose()}
             fullWidth
@@ -95,7 +89,7 @@ class ObjectEditDialog extends Component<ObjectEditDialogProps, ObjectEditDialog
                     this.props.t('Edit object: %s', this.props.obj._id)
                 }
             </DialogTitle>
-            <DialogContent className={this.props.classes.content}>
+            <DialogContent style={styles.content}>
                 <MonacoEditor
                     width="100%"
                     height="100%"
@@ -130,4 +124,4 @@ class ObjectEditDialog extends Component<ObjectEditDialogProps, ObjectEditDialog
     }
 }
 
-export default withWidth()(withStyles(styles)(ObjectEditDialog));
+export default withWidth()(ObjectEditDialog);

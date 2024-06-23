@@ -5110,7 +5110,6 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     private getTooltipInfo(id: string, cb?: () => void) {
         const obj = this.objects[id];
         const state = this.states[id];
-        const classes = styles;
 
         const { valFull, fileViewer } = formatValue({
             state,
@@ -5124,7 +5123,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         valFull?.forEach(_item => {
             if (_item.t === this.texts.quality && state.q) {
-                valFullRx.push(<div style={classes.cellValueTooltipBoth} key={_item.t}>
+                valFullRx.push(<div style={styles.cellValueTooltipBoth} key={_item.t}>
                     {_item.t}
                     :&nbsp;
                     {_item.v}
@@ -5132,11 +5131,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 // <div style={styles.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
                 !_item.nbr && valFullRx.push(<br key={`${_item.t}_br`} />);
             } else {
-                valFullRx.push(<div style={classes.cellValueTooltipTitle} key={_item.t}>
+                valFullRx.push(<div style={styles.cellValueTooltipTitle} key={_item.t}>
                     {_item.t}
                     :&nbsp;
                 </div>);
-                valFullRx.push(<div style={classes.cellValueTooltipValue} key={`${_item.t}_v`}>
+                valFullRx.push(<div style={styles.cellValueTooltipValue} key={`${_item.t}_v`}>
                     {_item.v}
                 </div>);
                 !_item.nbr && valFullRx.push(<br key={`${_item.t}_br`} />);
@@ -5145,7 +5144,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         if (fileViewer === 'image') {
             valFullRx.push(<img
-                style={classes.cellValueTooltipImage}
+                style={styles.cellValueTooltipImage}
                 src={state.val as string}
                 alt={id}
             />);

@@ -210,7 +210,18 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
             t={I18n.t}
             socket={this.props.socket}
             themeName={this.props.themeName}
-            onDone={(settings: any) =>
+            onDone={(settings: {
+                tempUnit: '°C' | '°F';
+                currency: string;
+                dateFormat: string;
+                isFloatComma: boolean;
+                country: string;
+                city: string;
+                address: string;
+                longitude: number;
+                latitude: number;
+                firstDayOfWeek: 'sunday' | 'monday';
+            }) =>
                 this.props.socket.getSystemConfig(true)
                     .then(obj => {
                         Object.assign(obj.common, settings);

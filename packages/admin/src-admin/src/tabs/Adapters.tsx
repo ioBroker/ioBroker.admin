@@ -195,7 +195,6 @@ interface AdaptersProps extends AdapterInstallDialogProps {
     adaptersWorker: AdaptersWorker;
     instancesWorker: InstancesWorker;
     hostsWorker: HostsWorker;
-    classes: Record<string, string>;
     expertMode: boolean;
     executeCommand: (cmd: string, host?: string, callback?: (exitCode: number) => void) => void;
     commandRunning: boolean;
@@ -1501,36 +1500,34 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             updateAllButtonAvailable = false;
         }
 
-        const { classes } = this.props;
-
         return <TabHeader>
-            <Tooltip title={this.t('Change view mode')} classes={{ popper: this.props.classes.tooltip }}>
+            <Tooltip title={this.t('Change view mode')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.changeViewMode()}>
                     {this.state.tableViewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                 </IconButton>
             </Tooltip>
-            <Tooltip title={this.t('Check adapter for updates')} classes={{ popper: this.props.classes.tooltip }}>
+            <Tooltip title={this.t('Check adapter for updates')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.updateAll(true, true)}>
                     <RefreshIcon />
                 </IconButton>
             </Tooltip>
-            {this.state.tableViewMode && !this.state.oneListView && <Tooltip title={this.t('expand all')} classes={{ popper: this.props.classes.tooltip }}>
+            {this.state.tableViewMode && !this.state.oneListView && <Tooltip title={this.t('expand all')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.expandAll()}>
                     <FolderOpenIcon />
                 </IconButton>
             </Tooltip>}
-            {this.state.tableViewMode && !this.state.oneListView && <Tooltip title={this.t('collapse all')} classes={{ popper: this.props.classes.tooltip }}>
+            {this.state.tableViewMode && !this.state.oneListView && <Tooltip title={this.t('collapse all')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.collapseAll()}>
                     <FolderIcon />
                 </IconButton>
             </Tooltip>}
-            {this.state.tableViewMode && <Tooltip title={this.t('list')} classes={{ popper: this.props.classes.tooltip }}>
+            {this.state.tableViewMode && <Tooltip title={this.t('list')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.listTable()}>
                     <ListIcon color={this.state.oneListView ? 'primary' : 'inherit'} />
                 </IconButton>
             </Tooltip>}
 
-            {/* <Tooltip title={this.t('Filter local connection type')} classes={{ popper: this.props.classes.tooltip }}>
+            {/* <Tooltip title={this.t('Filter local connection type')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton size="large" onClick={() => this.toggleConnectionTypeFilter()}>
                     <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
                 </IconButton>
@@ -1542,7 +1539,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 />
             </IconButton> :
                 <Tooltip
-                    classes={{ popper: this.props.classes.tooltip }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                     title={this.t(
                         !this.state.installedList
                             ? 'Show only installed'
@@ -1561,17 +1558,17 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     </IconButton>
                 </Tooltip>}
             <IsVisible config={this.props.adminGuiConfig.admin} name="admin.adapters.filterUpdates">
-                <Tooltip title={this.t('Filter adapter with updates')} classes={{ popper: this.props.classes.tooltip }}>
+                <Tooltip title={this.t('Filter adapter with updates')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton size="large" onClick={() => this.changeUpdateList()}>
                         <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
             </IsVisible>
-            {updateAllButtonAvailable && <Tooltip title={this.t('Update all adapters')} classes={{ popper: this.props.classes.tooltip }}>
+            {updateAllButtonAvailable && <Tooltip title={this.t('Update all adapters')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <IconButton
                     size="large"
                     onClick={() => this.setState({ showUpdater: true })}
-                    className={classes.updateAllButton}
+                    style={styles.updateAllButton}
                 >
                     <UpdateIcon />
                     <UpdateIcon className="admin-update-second-icon" />
@@ -1579,12 +1576,12 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             </Tooltip>}
 
             {this.props.expertMode && this.props.adminGuiConfig.admin?.adapters.gitHubInstall !== false &&
-                <Tooltip title={this.t('Install from custom URL')} classes={{ popper: this.props.classes.tooltip }}>
+                <Tooltip title={this.t('Install from custom URL')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton size="large" onClick={() => this.setState({ gitHubInstallDialog: true })}>
                         <GithubIcon />
                     </IconButton>
                 </Tooltip>}
-            <div className={classes.grow} />
+            <div style={styles.grow} />
             <TextField
                 variant="standard"
                 inputRef={this.inputRef}
@@ -1624,7 +1621,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 onClick={value => this.changeFilterTiles(value as string)}
                 value={this.state.filterTiles}
             />
-            <div className={classes.grow} />
+            <div style={styles.grow} />
             <IsVisible config={this.props.adminGuiConfig.admin} name="admin.adapters.statistics">
                 <Hidden only={['xs', 'sm']}>
                     <Box

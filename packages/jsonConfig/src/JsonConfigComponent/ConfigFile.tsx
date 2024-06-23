@@ -146,6 +146,7 @@ class ConfigFile extends ConfigGeneric<ConfigFileProps, ConfigFileState> {
             allowView={this.props.schema.allowView}
             showToolbar={this.props.schema.showToolbar}
             limitPath={this.props.schema.limitPath}
+            theme={this.props.theme}
         />;
     }
 

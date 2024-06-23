@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -10,6 +9,7 @@ import {
     AppBar,
     Tabs,
     Tab,
+    Box,
 } from '@mui/material';
 
 import {
@@ -33,7 +33,7 @@ import ObjectHistoryData from '../components/Object/ObjectHistoryData';
 import ObjectChart from '../components/Object/ObjectChart';
 import MobileDialog from '../helpers/MobileDialog';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     dialog: {
         height: '100%',
     },
@@ -44,18 +44,18 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         textAlign: 'center',
         overflow: 'hidden',
     },
-    tabPanel: {
+    tabPanel: (theme: IobTheme) => ({
         width: '100%',
         overflow: 'hidden',
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
-    },
-    tabSelected: {
+    }),
+    tabSelected: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#FFFFFF !important',
-    },
-    tabsIndicator: {
+    }),
+    tabsIndicator: (theme: IobTheme) => ({
         backgroundColor: theme.palette.secondary.main,
-    },
-});
+    }),
+};
 
 interface ObjectCustomDialogProps {
     t: (word: string, ...args: any[]) => string;
@@ -71,7 +71,6 @@ interface ObjectCustomDialogProps {
     onClose: () => void;
     reportChangedIds: (ids: string[]) => void;
     isFloatComma: boolean;
-    classes: Record<string, string>;
     allVisibleObjects: boolean;
     systemConfig: ioBroker.SystemConfigObject;
 }
@@ -242,7 +241,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         const varType = this.props.objects[this.props.objectIDs[0]]?.common?.type;
 
         return <Dialog
-            classes={{ scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper }}
+            sx={{ '&.MuiDialog-scrollPaper': styles.dialog, '& .MuiDialog-paper': styles.paper }}
             scroll="paper"
             open={!0}
             onClose={() => this.props.onClose()}
@@ -259,7 +258,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                         this.props.t('Edit config: %s', this.props.objectIDs[0])
                 }
             </DialogTitle>
-            <DialogContent className={this.props.classes.content}>
+            <DialogContent style={styles.content}>
                 <AppBar position="static">
                     <Tabs
                         value={this.state.currentTab}
@@ -268,7 +267,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                             this.setState({ currentTab: newTab });
                             ((window as any)._localStorage as Storage || window.localStorage).setItem('App.objectCustomTab', newTab);
                         }}
-                        classes={{ indicator: this.props.classes.tabsIndicator }}
+                        sx={{ '& .MuiTabs-indicator': styles.tabsIndicator }}
                         indicatorColor="secondary"
                     >
                         <Tab
@@ -276,27 +275,27 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                             label={this.props.t('Custom settings')}
                             id="custom-settings-tab"
                             aria-controls="simple-tabpanel-0"
-                            classes={{ selected: this.props.classes.tabSelected }}
+                            sx={{ '&.MuiTab-selected': styles.tabSelected }}
                         />
                         {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('History data')}
                             id="history-data-tab"
                             aria-controls="simple-tabpanel-1"
-                            classes={{ selected: this.props.classes.tabSelected }}
+                            sx={{ '&.MuiTab-selected': styles.tabSelected }}
                         /> : null}
                         {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('Chart')}
                             id="chart-tab"
                             aria-controls="simple-tabpanel-2"
-                            classes={{ selected: this.props.classes.tabSelected }}
+                            sx={{ '&.MuiTab-selected': styles.tabSelected }}
                         /> : null}
                     </Tabs>
                 </AppBar>
-                {this.state.currentTab === 0 ? <div className={this.props.classes.tabPanel}>{this.renderCustomEditor()}</div> : null}
-                {this.props.objectIDs.length === 1 && this.chartAvailable && this.state.currentTab === 1 ? <div className={this.props.classes.tabPanel}>{this.renderTable()}</div> : null}
-                {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable && this.state.currentTab === 2 ? <div className={this.props.classes.tabPanel}>{this.renderCharts()}</div> : null}
+                {this.state.currentTab === 0 ? <Box component="div" sx={styles.tabPanel}>{this.renderCustomEditor()}</Box> : null}
+                {this.props.objectIDs.length === 1 && this.chartAvailable && this.state.currentTab === 1 ? <Box component="div" sx={styles.tabPanel}>{this.renderTable()}</Box> : null}
+                {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable && this.state.currentTab === 2 ? <Box component="div" sx={styles.tabPanel}>{this.renderCharts()}</Box> : null}
             </DialogContent>
             <DialogActions>
                 {this.state.currentTab === 0 && <Button
@@ -334,4 +333,4 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
     }
 }
 
-export default withStyles(styles)(ObjectCustomDialog);
+export default ObjectCustomDialog;

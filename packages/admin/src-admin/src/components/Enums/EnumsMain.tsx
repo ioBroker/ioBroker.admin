@@ -801,6 +801,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
     }
 
     renderTemplateDialog() {
+        // eslint-disable-next-line no-extra-boolean-cast
         return !!this.state.enumTemplateDialog ? <EnumTemplateDialog
             prefix={this.state.enumTemplateDialog}
             onClose={() => this.setState({ enumTemplateDialog: null })}

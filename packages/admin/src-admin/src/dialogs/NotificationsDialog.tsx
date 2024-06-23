@@ -9,7 +9,6 @@ import {
     AppBar, Box, CardMedia,
     Tab, Tabs, Typography, Tooltip,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 
 import {
     Warning as WarningIcon,
@@ -20,18 +19,21 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, type ThemeType } from '@iobroker/adapter-react-v5';
+import {
+    I18n, Utils,
+    type ThemeType,
+    type IobTheme,
+} from '@iobroker/adapter-react-v5';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        // @ts-expect-error probably needs better types
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
         display: 'flex',
-        borderRadius: 4,
+        borderRadius: '4px',
         flexDirection: 'column',
-    },
+    }),
     paper: {
         maxWidth: 1000,
         width: '100%',
@@ -45,62 +47,32 @@ const useStyles = makeStyles(theme => ({
     overflowAuto: {
         overflowY: 'auto',
     },
-    pre: {
-        overflow: 'auto',
-        margin: 20,
-        '& p': {
-            fontSize: 18,
-        },
-    },
-    blockInfo: {
-        right: 20,
-        top: 10,
-        position: 'absolute',
-        display: 'flex',
-        alignItems: 'center',
-        color: 'silver',
-    },
-    img: {
-        marginLeft: 10,
-        width: 45,
-        height: 45,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
-        },
-    },
     message: {
         justifyContent: 'space-between',
         display: 'flex',
         width: '100%',
         alignItems: 'center',
+        '@media screen and (max-width: 550px)': {
+            flexWrap: 'wrap',
+        },
     },
     column: {
         flexDirection: 'column',
     },
-    headerText: {
+    headerText: (theme: IobTheme) => ({
         fontWeight: 'bold',
         fontSize: 20,
-        // @ts-expect-error probably needs better types
         color: theme.palette.mode === 'dark' ? '#DDD' : '#111',
-    },
-    descriptionHeaderText: {
+    }),
+    descriptionHeaderText: (theme: IobTheme) => ({
         margin: '18px 0',
-        // @ts-expect-error probably needs better types
         color: theme.palette.mode === 'dark' ? '#CCC' : '#222',
-    },
+    }),
     silver: {
         color: 'silver',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+        },
     },
     button: {
         paddingTop: 18,
@@ -113,13 +85,17 @@ const useStyles = makeStyles(theme => ({
     terminal: {
         fontFamily: 'monospace',
         fontSize: 14,
-        marginLeft: 20,
+        ml: '20px',
         whiteSpace: 'pre-wrap',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+            ml: 0,
+        },
     },
     img2: {
         width: 25,
         height: 25,
-        marginRight: 10,
+        mr: '10px',
         margin: 'auto 0',
         position: 'relative',
         '&:after': {
@@ -145,41 +121,29 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
     },
     classNameBox: {
-        padding: 24,
+        p: '24px',
+        '@media screen and (max-width: 550px)': {
+            p: '10px',
+        },
     },
     textStyle: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        '@media screen and (max-width: 550px)': {
+            fontSize: '2.9vw',
+        },
     },
     content: {
         overflow: 'hidden',
     },
     buttonStyle: {
-        margin: 3,
-    },
-    '@media screen and (max-width: 550px)': {
-        classNameBox: {
-            padding: 10,
-        },
-        message: {
-            flexWrap: 'wrap',
-        },
-        textStyle: {
-            fontSize: '2.9vw',
-        },
-        terminal: {
-            fontSize: '2.9vw',
-            marginLeft: 0,
-        },
-        silver: {
-            fontSize: '2.9vw',
-        },
-        buttonStyle: {
+        m: '3px',
+        '@media screen and (max-width: 550px)': {
             fontSize: '2.9vw',
         },
     },
-}));
+};
 
 /** Possible message severities */
 type Severity = 'notify' | 'info' | 'alert';
@@ -211,23 +175,23 @@ const a11yProps = (index: number) => ({
 interface TabPanelOptions {
     value: number;
     index: number;
-    classNameBox: string;
-    children: React.JSX.Element;
+    style: React.CSSProperties;
+    sxBox: Record<string, any>;
+    children: React.JSX.Element[];
 }
 
 const TabPanel = ({
-    children, value, index, classNameBox, ...other
+    children, value, index, sxBox, style,
 }: TabPanelOptions) => <div
     role="tabpanel"
     hidden={value !== index}
     id={`scrollable-force-tabpanel-${index}`}
     aria-labelledby={`scrollable-force-tab-${index}`}
-    {...other}
+    style={style}
 >
-    { value === index &&
-        <Box className={classNameBox}>
-            <Typography component="div">{children}</Typography>
-        </Box>}
+    {value === index && <Box sx={sxBox}>
+        <Typography component="div">{children}</Typography>
+    </Box>}
 </div>;
 
 type Translated = Record<ioBroker.Languages, string>;
@@ -270,8 +234,6 @@ interface MessagesPerScope {
 const NotificationsDialog = ({
     notifications, onClose, ackCallback, dateFormat, themeType, instances,
 }: NotificationDialogOptions) => {
-    const classes = useStyles();
-
     const notificationManagerInstalled = !!Object.values(instances).find(instance => instance.common.name === 'notification-manager');
 
     const messages: MessagesPerScope = {};
@@ -308,9 +270,9 @@ const NotificationsDialog = ({
     return <Dialog
         onClose={() => onClose()}
         open={!0}
-        classes={{ paper: classes.paper }}
+        sx={{ '& .MuiDialog-paper': styles.paper }}
     >
-        <h2 className={classes.headingTop}>
+        <h2 style={styles.headingTop}>
             <BellIcon
                 sx={{
                     color: 'primary.main',
@@ -327,8 +289,8 @@ const NotificationsDialog = ({
                 <InfoIcon />
             </Tooltip> : null}
         </h2>
-        <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
-            <div className={classes.root}>
+        <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
+            <Box component="div" sx={styles.root}>
                 <AppBar position="static" color="default">
                     <Tabs
                         value={value}
@@ -348,21 +310,19 @@ const NotificationsDialog = ({
                     </Tabs>
                 </AppBar>
                 {Object.keys(messages).map(scope => <>
-                    {/** @ts-expect-error seems to work with multiple children */}
                     {Object.keys(messages[scope]).map((name, idx) => <TabPanel
-                        className={classes.overflowAuto}
-                        classNameBox={classes.classNameBox}
+                        sxBox={styles.classNameBox}
                         key={`tabPanel-${name}`}
-                        style={black ? { color: 'black' } : null}
+                        style={{ ...styles.overflowAuto, color: black ? 'black' : undefined }}
                         value={value}
                         index={idx}
                     >
-                        <div className={classes.headerText} style={{ fontWeight: 'bold' }}>
+                        <Box component="div" sx={styles.headerText} style={{ fontWeight: 'bold' }}>
                             {messages[scope][name].name[I18n.getLanguage()]}
-                        </div>
-                        <div className={classes.descriptionHeaderText}>
+                        </Box>
+                        <Box component="div" sx={styles.descriptionHeaderText}>
                             {messages[scope][name].description[I18n.getLanguage()]}
-                        </div>
+                        </Box>
                         <div>
                             {messages[scope][name].instances ? Object.keys(messages[scope][name].instances).map(nameInst => {
                                 const index = Object.keys(messages[scope]).indexOf(name);
@@ -385,34 +345,34 @@ const NotificationsDialog = ({
                                 >
                                     <AccordionSummary
                                         expandIcon={<ExpandMoreIcon />}
-                                        classes={{ content: classes.content }}
+                                        sx={{ '& .MuiAccordionSummary-content': styles.content }}
                                         aria-controls="panel1bh-content"
                                         id="panel1bh-header"
                                     >
-                                        <Typography className={classes.heading}>
-                                            <CardMedia className={classes.img2} component="img" image={icon} />
-                                            <div className={classes.textStyle}>
+                                        <Typography style={styles.heading}>
+                                            <CardMedia sx={styles.img2} component="img" image={icon} />
+                                            <Box component="div" sx={styles.textStyle}>
                                                 {nameInst.replace(/^system\.adapter\./, '')}
-                                            </div>
+                                            </Box>
                                         </Typography>
                                     </AccordionSummary>
-                                    <AccordionDetails className={classes.column}>
+                                    <AccordionDetails style={styles.column}>
                                         {messages[scope][name].instances[nameInst].messages.map(msg =>
-                                            <Typography key={msg.ts} component="div" className={classes.message}>
-                                                <div className={classes.terminal}>{Utils.renderTextWithA(msg.message)}</div>
-                                                <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
+                                            <Typography key={msg.ts} component="div" sx={styles.message}>
+                                                <Box component="div" sx={styles.terminal}>{Utils.renderTextWithA(msg.message)}</Box>
+                                                <Box component="div" sx={styles.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</Box>
                                             </Typography>)}
                                     </AccordionDetails>
                                 </Accordion>;
                             }) : null}
                         </div>
-                        <div className={classes.button}>
+                        <div style={styles.button}>
                             <Button
                                 variant="contained"
                                 autoFocus={Object.keys(messages[scope]).length !== 1}
                                 disabled={disabled.includes(name)}
                                 style={disabled.includes(name) ? { background: 'silver' } : undefined}
-                                className={classes.buttonStyle}
+                                sx={styles.buttonStyle}
                                 onClick={() => {
                                     ackCallback(messages[scope][name].host, name);
                                     setDisabled([...disabled, name]);
@@ -425,7 +385,7 @@ const NotificationsDialog = ({
                             {Object.keys(messages[scope]).length === 1 && <Button
                                 variant="contained"
                                 disabled={disabled.includes(name)}
-                                className={classes.buttonStyle}
+                                sx={styles.buttonStyle}
                                 style={disabled.includes(name) ? { background: 'silver' } : undefined}
                                 onClick={() => {
                                     setDisabled([...disabled, name]);
@@ -443,7 +403,7 @@ const NotificationsDialog = ({
                         </div>
                     </TabPanel>)}
                 </>)}
-            </div>
+            </Box>
         </DialogContent>
         <DialogActions>
             <Button

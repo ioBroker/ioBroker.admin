@@ -1,16 +1,15 @@
 import React from 'react';
 import { Card, CardMedia } from '@mui/material';
-import { withStyles } from '@mui/styles';
 
-import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
+import { type IobTheme } from '@iobroker/adapter-react-v5';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    root: {
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         position: 'relative',
-        margin: 10,
+        m: '10px',
         width: 300,
         minHeight: 200,
         background: theme.palette.background.default,
@@ -21,7 +20,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         '&:hover': {
             boxShadow: boxShadowHover,
         },
-    },
+    }),
     imageBlock: {
         background: 'silver',
         minHeight: 60,
@@ -76,7 +75,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         padding: 20,
         fontSize: 15,
     },
-});
+};
 
 function getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
     if (text && typeof text === 'object') {
@@ -86,7 +85,6 @@ function getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): s
 }
 
 interface EasyModeCardProps {
-    classes: Record<string, string>;
     icon: string;
     id: string;
     desc: ioBroker.StringOrTranslated;
@@ -95,24 +93,23 @@ interface EasyModeCardProps {
 }
 
 const EasyModeCard = ({
-    classes,
     icon,
     id,
     desc,
     lang,
     navigate,
-}: EasyModeCardProps) => <Card onClick={navigate} className={classes.root}>
-    <div className={Utils.clsx(classes.imageBlock, classes.instanceStateNotAlive1)}>
+}: EasyModeCardProps) => <Card onClick={navigate} sx={styles.root}>
+    <div style={{ ...styles.imageBlock, ...styles.instanceStateNotAlive1 }}>
         <CardMedia
-            className={classes.img}
+            sx={styles.img}
             component="img"
             image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'}
         />
     </div>
-    <div className={classes.wrapperDesc}>
-        <div className={classes.desc}>{getText(desc, lang)}</div>
-        <div className={classes.adapter}>{id}</div>
+    <div style={styles.wrapperDesc}>
+        <div style={styles.desc}>{getText(desc, lang)}</div>
+        <div style={styles.adapter}>{id}</div>
     </div>
 </Card>;
 
-export default withStyles(styles)(EasyModeCard);
+export default EasyModeCard;

@@ -1,5 +1,4 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -38,25 +37,25 @@ function a11yProps(index: number): { id: string; 'aria-controls': string } {
     };
 }
 
-const styles: Record<string, any> = ((theme: IobTheme) => ({
-    root: {
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: '100%',
-    },
+    }),
     paper: {
         maxWidth: 1000,
     },
     tabPaper: {
         padding: 16,
     },
-    title: {
+    title: (theme: IobTheme) => ({
         marginTop: 10,
         padding: 8,
         marginLeft: 8,
         fontSize: 18,
         color: theme.palette.primary.main,
-    },
+    }),
     warningText: {
         color: '#f53939',
     },
@@ -76,10 +75,10 @@ const styles: Record<string, any> = ((theme: IobTheme) => ({
         height: 24,
         marginRight: 8,
     },
-    tabSelected: {
+    tabSelected: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#222 !important',
-    },
-} satisfies Styles<any, any>));
+    }),
+};
 
 // some older browsers do not have `flat`
 if (!Array.prototype.flat) {
@@ -118,7 +117,6 @@ interface GitHubInstallDialogProps {
     t: typeof I18n.t;
     /** Method to install adapter */
     installFromUrl: (adapter: string, debug: boolean, customUrl: boolean) => Promise<void>;
-    classes: Record<string, any>;
     /** Upload the adapter */
     upload: (adapter: string) => void;
 }
@@ -203,10 +201,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         return <Dialog
             onClose={() => this.props.onClose()}
             open={!0}
-            classes={{ paper: this.props.classes.paper }}
+            sx={{ '& .MuiDialog-paper': styles.paper }}
         >
             <DialogContent dividers>
-                <div className={this.props.classes.root}>
+                <Box component="div" sx={styles.root}>
                     <AppBar position="static" color="default">
                         <Tabs
                             value={this.state.currentTab}
@@ -220,7 +218,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             <Tab
                                 label={this.props.t('From npm')}
                                 wrapped
-                                classes={{ selected: this.props.classes.tabSelected }}
+                                sx={{ '&.MuiTab-selected': styles.tabSelected }}
                                 icon={<img src={npmIcon} alt="npm" width={24} height={24} />}
                                 {...a11yProps(0)}
                                 value="npm"
@@ -228,7 +226,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             <Tab
                                 label={this.props.t('From github')}
                                 wrapped
-                                classes={{ selected: this.props.classes.tabSelected }}
+                                sx={{ '&.MuiTab-selected': styles.tabSelected }}
                                 icon={<GithubIcon style={{ width: 24, height: 24 }} width={24} height={24} />}
                                 {...a11yProps(0)}
                                 value="GitHub"
@@ -236,17 +234,17 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             <Tab
                                 label={this.props.t('Custom')}
                                 wrapped
-                                classes={{ selected: this.props.classes.tabSelected }}
+                                sx={{ '&.MuiTab-selected': styles.tabSelected }}
                                 icon={<UrlIcon width={24} height={24} />}
                                 {...a11yProps(1)}
                                 value="URL"
                             />
                         </Tabs>
                     </AppBar>
-                    <div className={this.props.classes.title}>
+                    <Box component="div" sx={styles.title}>
                         {this.props.t('Install or update the adapter from %s', this.state.currentTab || 'npm')}
-                    </div>
-                    {this.state.currentTab === 'npm' ? <Paper className={this.props.classes.tabPaper}>
+                    </Box>
+                    {this.state.currentTab === 'npm' ? <Paper style={styles.tabPaper}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FormControlLabel
                                 control={
@@ -276,7 +274,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     const _params = { ...params };
                                     _params.InputProps = _params.InputProps || {} as any;
                                     _params.InputProps.startAdornment = <InputAdornment position="start">
-                                        <Icon src={this.state.autoCompleteValue?.icon || ''} className={this.props.classes.listIcon} />
+                                        <Icon src={this.state.autoCompleteValue?.icon || ''} style={styles.listIcon} />
                                     </InputAdornment>;
 
                                     return <TextField
@@ -291,7 +289,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
                                         {...props}
                                     >
-                                        <Icon src={option?.icon || ''} className={this.props.classes.listIconWithMargin} />
+                                        <Icon src={option?.icon || ''} style={styles.listIconWithMargin} />
                                         {option?.name ?? ''}
                                     </Box>}
                             />
@@ -304,14 +302,14 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         >
                             {this.props.t('Warning!')}
                         </div>
-                        <div className={this.props.classes.warningText}>
+                        <div style={styles.warningText}>
                             {this.props.t('npm_warning', 'NPM', 'NPM')}
                         </div>
-                        <div className={this.props.classes.noteText}>
+                        <div style={styles.noteText}>
                             {this.props.t('github_note')}
                         </div>
                     </Paper> : null}
-                    {this.state.currentTab === 'GitHub' ? <Paper className={this.props.classes.tabPaper}>
+                    {this.state.currentTab === 'GitHub' ? <Paper style={styles.tabPaper}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FormControlLabel
                                 control={
@@ -338,10 +336,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
                                         {...props}
                                     >
-                                        <Icon src={option?.icon || ''} className={this.props.classes.listIconWithMargin} />
+                                        <Icon src={option?.icon || ''} style={styles.listIconWithMargin} />
                                         {option?.name ?? ''}
                                         {option?.nogit && <div
-                                            className={this.props.classes.errorTextNoGit}
+                                            style={styles.errorTextNoGit}
                                         >
                                             {I18n.t('This adapter cannot be installed from git as must be built before installation.')}
                                         </div>}
@@ -358,7 +356,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     _params.InputProps.startAdornment = <InputAdornment position="start">
                                         <Icon
                                             src={this.state.autoCompleteValue?.icon || ''}
-                                            className={this.props.classes.listIconWithMargin}
+                                            style={styles.listIconWithMargin}
                                         />
                                     </InputAdornment>;
 
@@ -378,14 +376,14 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         >
                             {this.props.t('Warning!')}
                         </div>
-                        <div className={this.props.classes.warningText}>
+                        <div style={styles.warningText}>
                             {this.props.t('github_warning', 'GitHub', 'GitHub')}
                         </div>
-                        <div className={this.props.classes.noteText}>
+                        <div style={styles.noteText}>
                             {this.props.t('github_note')}
                         </div>
                     </Paper> : null}
-                    {this.state.currentTab === 'URL' ? <Paper className={this.props.classes.tabPaper}>
+                    {this.state.currentTab === 'URL' ? <Paper style={styles.tabPaper}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FormControlLabel
                                 control={
@@ -441,14 +439,14 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         >
                             {this.props.t('Warning!')}
                         </div>
-                        <div className={this.props.classes.warningText}>
+                        <div style={styles.warningText}>
                             {this.props.t('github_warning', 'URL', 'URL')}
                         </div>
-                        <div className={this.props.classes.noteText}>
+                        <div style={styles.noteText}>
                             {this.props.t('github_note')}
                         </div>
                     </Paper> : null}
-                </div>
+                </Box>
             </DialogContent>
             <DialogActions>
                 <Button
@@ -502,4 +500,4 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 }
 
-export default withStyles(styles)(GitHubInstallDialog);
+export default GitHubInstallDialog;
