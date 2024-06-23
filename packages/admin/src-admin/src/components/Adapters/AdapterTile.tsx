@@ -1,7 +1,7 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
+    Box,
     Card, CardContent, CardMedia, Fab,
     Tooltip, Typography,
 } from '@mui/material';
@@ -18,17 +18,20 @@ import AdapterGeneric, {
     type AdapterGenericProps,
     type AdapterGenericState,
     type ImageProps,
-    genericStyle,
+    genericStyles,
 } from './AdapterGeneric';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    ...genericStyle(theme),
-    root: {
+const styles: Record<string, any> = {
+    ...genericStyles,
+    type: {
+        color: 'tile',
+    },
+    root: (theme: IobTheme) => ({
         position: 'relative',
-        margin: 10,
+        m: '10px',
         width: 300,
         minHeight: 200,
         background: theme.palette.background.default,
@@ -39,8 +42,8 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         '&:hover': {
             boxShadow: boxShadowHover,
         },
-    },
-    imageBlock: {
+    }),
+    imageBlock: (theme: IobTheme) => ({
         background: theme.palette.mode === 'dark' ? '#848484' : '#c0c0c0',
         minHeight: 60,
         display: 'flex',
@@ -48,7 +51,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         position: 'relative',
         justifyContent: 'space-between',
         color: '#000',
-    },
+    }),
     img: {
         width: 45,
         height: 45,
@@ -80,9 +83,9 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         height: 40,
         right: 20,
     },
-    greenText: {
+    greenText: (theme: IobTheme) => ({
         color: theme.palette.success.dark,
-    },
+    }),
     collapse: {
         height: '100%',
         backgroundColor: 'silver',
@@ -97,60 +100,60 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         flexDirection: 'column',
     },
     close: {
-        width: '20px',
-        height: '20px',
-        opacity: '0.9',
+        width: 20,
+        height: 20,
+        opacity: 0.9,
         cursor: 'pointer',
         position: 'relative',
         marginLeft: 'auto',
-        marginBottom: 10,
+        mb: '10px',
         transition: 'all 0.6s ease',
         '&:hover': {
             transform: 'rotate(90deg)',
         },
         '&:before': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: 'rgba(0, 0, 0, 0.54)',
             transform: 'rotate(45deg)',
         },
         '&:after': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: 'rgba(0, 0, 0, 0.54)',
             transform: 'rotate(-45deg)',
         },
     },
-    footerBlock: {
+    footerBlock: (theme: IobTheme) => ({
         background: theme.palette.background.default,
-        padding: 10,
+        p: '10px',
         display: 'flex',
         justifyContent: 'space-between',
-    },
+    }),
     versionDate: {
         alignSelf: 'center',
     },
-    adapter: {
+    adapter: (theme: IobTheme) => ({
         width: '100%',
         fontWeight: 'bold',
         fontSize: 16,
         verticalAlign: 'middle',
-        paddingLeft: 8,
-        paddingTop: 16,
+        pl: 1,
+        pt: 2,
         color: theme.palette.mode === 'dark' ? '#333' : '#333',
-    },
+    }),
     adapterWithAgo: {
         width: 'calc(100% - 145px)',
     },
-    description: {
+    description: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#222' : 'inherit',
-    },
+    }),
 
     cardContent: {
         overflow: 'auto',
@@ -186,20 +189,22 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         alignItems: 'center',
     },
 
-    rating: {
-        marginTop: 20,
-    },
     versionWarn: {
         color: amber[500],
         marginRight: 5,
     },
-});
+    rating: {
+        marginTop: 20,
+    },
+};
 
 interface AdapterTileState extends AdapterGenericState {
     openCollapse: boolean;
 }
 
 class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> {
+    protected styles: Record<string, any> = styles;
+
     constructor(props: AdapterGenericProps) {
         super(props);
 
@@ -209,28 +214,29 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
     }
 
     renderInfoCard() {
-        return <div className={this.props.classes.collapse}>
-            <CardContent className={this.props.classes.cardContent}>
-                <div className={this.props.classes.cardContentDiv}>
-                    <div
-                        className={this.props.classes.close}
+        return <div style={this.styles.collapse}>
+            <CardContent style={this.styles.cardContent}>
+                <div style={this.styles.cardContentDiv}>
+                    <Box
+                        component="div"
+                        sx={this.styles.close}
                         onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
                     />
                 </div>
-                <Typography gutterBottom component="span" variant="body2" className={this.props.classes.description}>
+                <Typography gutterBottom component="span" variant="body2" sx={this.styles.description}>
                     {this.props.cached.desc}
                 </Typography>
             </CardContent>
-            <div className={this.props.classes.footerBlock}>
+            <Box component="div" sx={this.styles.footerBlock}>
                 {this.renderAddInstanceButton()}
-                <div className={this.props.classes.cardContentFlex}>
+                <div style={this.styles.cardContentFlex}>
                     {this.renderAutoUpgradeButton()}
                     {this.renderReadmeButton()}
                     {this.renderUploadButton()}
                     {this.renderDeleteButton()}
                     {this.renderInstallSpecificVersionButton()}
                 </div>
-            </div>
+            </Box>
         </div>;
     }
 
@@ -238,57 +244,61 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
         const available = this.props.context.repository[this.props.adapterName];
         const availableVersion = available?.version;
 
-        return <div
-            className={Utils.clsx(
-                this.props.classes.imageBlock,
-                this.installedVersion ? this.props.classes.installed : '',
-                this.installedVersion && availableVersion && this.installedVersion !== availableVersion && this.props.cached.updateAvailable ? this.props.classes.update : '',
+        return <Box
+            component="div"
+            sx={Utils.getStyle(
+                this.props.context.theme,
+                this.styles.imageBlock,
+                this.installedVersion && this.styles.installed,
+                this.installedVersion && availableVersion && this.installedVersion !== availableVersion && this.props.cached.updateAvailable && this.styles.update,
             )}
         >
             <CardMedia
-                className={this.props.classes.img}
+                sx={this.styles.img}
                 component={(props: ImageProps) => this.renderImage(props)}
                 src={this.props.cached.image || 'img/no-image.png'}
                 image={this.props.cached.image || 'img/no-image.png'}
             />
-            <div
-                className={Utils.clsx(
-                    this.props.classes.adapter,
-                    (available.stat || this.props.context.sortRecentlyUpdated) && this.props.classes.adapterWithAgo,
+            <Box
+                component="div"
+                sx={Utils.getStyle(
+                    this.props.context.theme,
+                    this.styles.adapter,
+                    (available.stat || this.props.context.sortRecentlyUpdated) && this.styles.adapterWithAgo,
                 )}
             >
                 {this.props.adapterName}
-            </div>
-            {this.props.context.sortPopularFirst ? <div className={this.props.classes.versionDate}>{available.stat}</div> : null}
-            {this.props.context.sortRecentlyUpdated ? <div className={this.props.classes.versionDate}>{this.props.cached.daysAgoText}</div> : null}
+            </Box>
+            {this.props.context.sortPopularFirst ? <div style={this.styles.versionDate}>{available.stat}</div> : null}
+            {this.props.context.sortRecentlyUpdated ? <div style={this.styles.versionDate}>{this.props.cached.daysAgoText}</div> : null}
             {!this.props.context.sortPopularFirst && !this.props.context.sortRecentlyUpdated ? this.renderRating() : null}
             {!this.state.openCollapse ? <Tooltip title={this.props.context.t('Info')}>
                 <Fab
                     onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
-                    className={this.props.classes.fab}
+                    style={this.styles.fab}
                     color="primary"
                     aria-label="add"
                 >
                     <MoreVertIcon />
                 </Fab>
             </Tooltip> : null}
-        </div>;
+        </Box>;
     }
 
     renderCardContent() {
         const allowAdapterUpdate = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate : true;
         const installed = this.props.context.installed[this.props.adapterName];
 
-        return <CardContent className={this.props.classes.cardContent2}>
+        return <CardContent style={this.styles.cardContent2}>
             <Typography gutterBottom variant="h5" component="h5">{this.props.cached.title}</Typography>
-            <div className={this.props.classes.cardContentFlex}>
+            <div style={this.styles.cardContentFlex}>
                 {this.renderConnectionType()}
                 {this.renderDataSource()}
                 <div>{this.renderLicenseInfo()}</div>
                 {this.renderSentryInfo()}
             </div>
-            <div className={this.props.classes.cardMargin10}>
-                {installed?.count ? <Typography component="span" className={this.props.classes.cardContentFlexBetween}>
+            <div style={this.styles.cardMargin10}>
+                {installed?.count ? <Typography component="span" style={this.styles.cardContentFlexBetween}>
                     <div>
                         {this.props.context.t('Installed instances')}
                         :
@@ -296,11 +306,18 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
                     <div>{installed.count}</div>
                 </Typography> : null}
                 <IsVisible value={allowAdapterUpdate}>
-                    <Typography component="span" className={this.props.classes.availableVersion}>
+                    <Typography component="span" style={this.styles.availableVersion}>
                         <div>{this.props.context.t('Available version:')}</div>
-                        <div className={Utils.clsx(this.props.cached.updateAvailable && this.props.classes.greenText, this.props.classes.curdContentFlexCenter)}>
+                        <Box
+                            component="div"
+                            sx={Utils.getStyle(
+                                this.props.context.theme,
+                                this.props.cached.updateAvailable && this.styles.greenText,
+                                this.styles.curdContentFlexCenter,
+                            )}
+                        >
                             {this.renderVersion()}
-                        </div>
+                        </Box>
                     </Typography>
                 </IsVisible>
                 {this.renderInstalledVersion()}
@@ -311,7 +328,7 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
     render(): React.JSX.Element {
         this.installedVersion = this.props.context.installed[this.props.adapterName]?.version;
 
-        return <Card className={this.props.classes.root}>
+        return <Card sx={this.styles.root}>
             {this.state.openCollapse ? this.renderInfoCard() : null}
             {this.renderCardMedia()}
             {this.renderCardContent()}
@@ -320,4 +337,4 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
     }
 }
 
-export default withStyles(styles)(AdapterTile);
+export default AdapterTile;

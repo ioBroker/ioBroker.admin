@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField, FormControl } from '@mui/material';
 
@@ -8,7 +7,7 @@ import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemNumber } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     indeterminate: {
         opacity: 0.5,
     },
@@ -124,7 +123,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
             return <Autocomplete
-                className={this.props.classes.indeterminate}
+                style={styles.indeterminate}
                 fullWidth
                 freeSolo
                 value={arr[0]}
@@ -162,7 +161,7 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
             }
         }
 
-        return <FormControl variant="standard" className={this.props.classes.control}>
+        return <FormControl variant="standard" style={styles.control}>
             <TextField
                 variant="standard"
                 type="number"
@@ -204,4 +203,4 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
     }
 }
 
-export default withStyles(styles)(ConfigNumber);
+export default ConfigNumber;

@@ -39,6 +39,7 @@ const objIcon: Record<string, string> = {
 interface MaterialDynamicIconProps {
     iconName?: string;
     className?: string;
+    style?: React.CSSProperties;
     adapter?: string;
     socket?: any;
     onClick?: (e: React.MouseEvent) => void;
@@ -46,7 +47,7 @@ interface MaterialDynamicIconProps {
 }
 
 const MaterialDynamicIcon = ({
-    iconName, className, adapter, socket, onClick, objIconBool,
+    iconName, className, adapter, socket, onClick, objIconBool, style,
 }: MaterialDynamicIconProps) => {
     const [url, setUrl] = useState('');
 
@@ -60,12 +61,19 @@ const MaterialDynamicIcon = ({
 
     if (adapter) {
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-        return <img onClick={e => onClick && onClick(e)} src={url || ''} className={className} alt="" />;
+        return <img
+            onClick={e => onClick && onClick(e)}
+            src={url || ''}
+            className={className}
+            style={style}
+            alt=""
+        />;
     }
     const Element = (Icons as Record<string, SvgIconComponent>)[objIconBool ? objIcon[iconName] || 'Help' : (iconName || 'Help')];
 
     return <Element
         className={className}
+        style={style}
         onClick={(e: React.MouseEvent) => onClick && onClick(e)}
     />;
 };

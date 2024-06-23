@@ -1192,7 +1192,7 @@
   "You can set the log level permanently in the base host settings": "U kunt het logniveau permanent instellen in de hostbasisinstellingen",
   "You can't see events via cloud": "U kunt gebeurtenissen niet via de cloud bekijken",
   "You cannot delete host, when it is alive": "U kunt de host niet verwijderen wanneer deze nog leeft",
-  "You have configured to run automatic upgrades for the \"beta\" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!": "U heeft geconfigureerd om automatische upgrades uit te voeren voor de \"bèta\"-repository. Houd er rekening mee dat als de bèta-repository actief is, deze adapter automatisch bèta-updates zal binnenhalen volgens deze configuratie!",
+  "repo_update_hint": "U heeft geconfigureerd om automatische upgrades uit te voeren voor de \"bèta\"-repository. Houd er rekening mee dat als de bèta-repository actief is, deze adapter automatisch bèta-updates zal binnenhalen volgens deze configuratie!",
   "You have unread news!": "Je hebt ongelezen nieuws!",
   "You have unsaved changes": "Je hebt niet-opgeslagen wijzigingen",
   "You must set the administrator password": "U moet het beheerderswachtwoord instellen",

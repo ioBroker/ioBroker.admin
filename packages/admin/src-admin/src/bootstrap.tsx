@@ -1,9 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import * as Sentry from '@sentry/browser';
-
-import { Utils, Theme, type ThemeName } from '@iobroker/adapter-react-v5';
 
 import './index.css';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -23,28 +20,16 @@ declare global {
 window.adapterName = 'admin';
 
 console.log(`iobroker.${window.adapterName}@${version.version}`);
-let themeName = Utils.getThemeName();
 
 function build() {
     const container = document.getElementById('root');
     const root = createRoot(container);
 
-    return root.render(
-        <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={Theme(themeName)}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <ContextWrapperProvider>
-                        <App
-                            onThemeChange={(_themeName: ThemeName) => {
-                                themeName = _themeName;
-                                build();
-                            }}
-                        />
-                    </ContextWrapperProvider>
-                </LocalizationProvider>
-            </ThemeProvider>
-        </StyledEngineProvider>,
-    );
+    return root.render(<LocalizationProvider dateAdapter={AdapterDateFns}>
+        <ContextWrapperProvider>
+            <App />
+        </ContextWrapperProvider>
+    </LocalizationProvider>);
 }
 
 const versionChanged = [

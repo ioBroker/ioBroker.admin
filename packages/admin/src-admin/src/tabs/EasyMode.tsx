@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar,
@@ -8,7 +7,7 @@ import {
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 
 import {
-    Utils, ToggleThemeMenu,
+    ToggleThemeMenu,
     type IobTheme, type AdminConnection,
     type ThemeType, type ThemeName,
     type Translate,
@@ -17,13 +16,13 @@ import {
 import Config from './Config';
 import EasyModeCard from '../components/EasyModeCard';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    appBar: {
+const styles: Record<string, any> = {
+    appBar: (theme: IobTheme) => ({
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-    },
+    }),
     wrapperEasyMode: {
         height: '100%',
         borderRadius: 0,
@@ -78,7 +77,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     logoPointer: {
         cursor: 'pointer',
     },
-});
+};
 
 export interface InstanceConfig {
     id: string;
@@ -100,7 +99,6 @@ interface EasyModeConfig {
 }
 
 interface EasyModeProps {
-    classes: Record<string, string>;
     themeName: ThemeName;
     toggleTheme: () => void;
     t: Translate;
@@ -154,7 +152,6 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
 
     render() {
         const {
-            classes,
             t,
             themeName,
             toggleTheme,
@@ -178,18 +175,27 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
 
         const tab = location.id;
         const currentInstance = configs.find(({ id }) => id === tab);
-        return <Paper className={classes.wrapperEasyMode}>
+        return <Paper style={styles.wrapperEasyMode}>
             <AppBar
                 color="default"
                 position="fixed"
-                className={classes.appBar}
+                sx={styles.appBar}
             >
-                <Toolbar className={classes.toolBar}>
-                    <div className={classes.wrapperHeader}>
-                        <CardMedia onClick={(strictMode && !getLocation().dialog) || currentInstance?.tab ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro') : null} className={Utils.clsx(classes.img, themeName === 'colored' && classes.logoWhite, ((strictMode && !getLocation().dialog) || currentInstance?.tab) && classes.logoPointer)} component="img" image="img/no-image.png" />
-                        <div className={classes.headerName}>{t('Easy Admin')}</div>
+                <Toolbar style={styles.toolBar}>
+                    <div style={styles.wrapperHeader}>
+                        <CardMedia
+                            onClick={(strictMode && !getLocation().dialog) || currentInstance?.tab ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro') : null}
+                            style={{
+                                ...styles.img,
+                                ...(themeName === 'colored' ? styles.logoWhite : undefined),
+                                ...(((strictMode && !getLocation().dialog) || currentInstance?.tab) ? styles.logoPointer : undefined),
+                            }}
+                            component="img"
+                            image="img/no-image.png"
+                        />
+                        <div style={styles.headerName}>{t('Easy Admin')}</div>
                     </div>
-                    <div className={classes.IconButtons}>
+                    <div style={styles.IconButtons}>
                         {((strictMode && !getLocation().dialog) || currentInstance?.tab) && <IconButton size="large" onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
@@ -203,9 +209,9 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
                 </Toolbar>
             </AppBar>
             {currentInstance ?
-                <Paper className={classes.paper}>
+                <Paper style={styles.paper}>
                     <Config
-                        className={classes.iframe}
+                        style={styles.iframe}
                         adapter={currentInstance.id.split('.')[0]}
                         instance={parseInt(currentInstance.id.split('.')[1], 10)}
                         jsonConfig={currentInstance.jsonConfig}
@@ -229,8 +235,8 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
                         onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
                     />
                 </Paper> :
-                <div className={classes.wrapperCard}>
-                    <div className={classes.controlHeight}>
+                <div style={styles.wrapperCard}>
+                    <div style={styles.controlHeight}>
                         {configs
                             .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
                             .map(el => <EasyModeCard
@@ -245,4 +251,4 @@ class EasyMode extends Component<EasyModeProps, EasyModeState> {
     }
 }
 
-export default withStyles(styles)(EasyMode);
+export default EasyMode;

@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     InputLabel,
@@ -10,9 +9,9 @@ import {
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemCertificates } from '#JC/types';
-import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
@@ -94,8 +93,8 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
         const itemCertPrivate = this.state.certsPrivateOptions?.find(item => item.value === certPrivate);
         const itemCertChained = this.state.certsChainOptions?.find(item => item.value === certChained);
 
-        return <div className={this.props.classes.fullWidth}>
-            {this.state.collectionsOptions ? <FormControl className={this.props.classes.leWidth} variant="standard">
+        return <div style={styles.fullWidth}>
+            {this.state.collectionsOptions ? <FormControl style={styles.leWidth} variant="standard">
                 <InputLabel shrink>Let&apos;s encrypt</InputLabel>
                 <Select
                     variant="standard"
@@ -133,7 +132,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
             </FormControl> : null}
             {this.state.collectionsOptions ? <br /> : null}
             {this.state.collectionsOptions && leCollection !== 'false' ? <div>{I18n.t('ra_Fallback custom certificates')}</div> : null}
-            <FormControl className={this.props.classes.certWidth} variant="standard">
+            <FormControl style={styles.certWidth} variant="standard">
                 <InputLabel shrink>{I18n.t('ra_Public certificate')}</InputLabel>
                 <Select
                     variant="standard"
@@ -154,7 +153,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
                         </MenuItem>)}
                 </Select>
             </FormControl>
-            <FormControl className={this.props.classes.certWidth} variant="standard">
+            <FormControl style={styles.certWidth} variant="standard">
                 <InputLabel shrink>{I18n.t('ra_Private certificate')}</InputLabel>
                 <Select
                     variant="standard"
@@ -175,7 +174,7 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
                         </MenuItem>)}
                 </Select>
             </FormControl>
-            <FormControl className={this.props.classes.certWidth} variant="standard">
+            <FormControl style={styles.certWidth} variant="standard">
                 <InputLabel shrink>{I18n.t('ra_Chained certificate')}</InputLabel>
                 <Select
                     variant="standard"
@@ -200,4 +199,4 @@ class ConfigCertificates extends ConfigGeneric<ConfigCertificatesProps, ConfigCe
     }
 }
 
-export default withStyles(styles)(ConfigCertificates);
+export default ConfigCertificates;

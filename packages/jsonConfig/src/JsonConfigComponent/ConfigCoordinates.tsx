@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     TextField,
@@ -15,10 +14,10 @@ import {
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import type { ConfigItemCoordinates } from '#JC/types';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     width: {
         width: 'calc(100% - 85px)',
     },
@@ -29,7 +28,6 @@ const styles: Record<string, any> = {
 };
 
 interface ConfigCoordinatesProps extends ConfigGenericProps {
-    classes: Record<string, string>;
     schema: ConfigItemCoordinates;
 }
 
@@ -163,7 +161,7 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
             {this.props.schema.longitudeName && this.props.schema.latitudeName ?
                 <TextField
                     variant="standard"
-                    className={this.props.classes.width50}
+                    style={styles.width50}
                     value={this.state.longitude ?? ''}
                     error={!!error}
                     disabled={this.state.useSystem || !!disabled}
@@ -178,7 +176,7 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
             {this.props.schema.longitudeName && this.props.schema.latitudeName ?
                 <TextField
                     variant="standard"
-                    className={this.props.classes.width50}
+                    style={styles.width50}
                     value={this.state.latitude ?? ''}
                     error={!!error}
                     disabled={this.state.useSystem || !!disabled}
@@ -192,7 +190,7 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
             {!this.props.schema.longitudeName || !this.props.schema.latitudeName ?
                 <TextField
                     variant="standard"
-                    className={this.props.classes.width}
+                    style={styles.width}
                     value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                     error={!!error}
                     disabled={!!disabled}
@@ -231,4 +229,4 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
     }
 }
 
-export default withStyles(styles)(ConfigCoordinates);
+export default ConfigCoordinates;

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import semver from 'semver';
 
-import { makeStyles } from '@mui/styles';
-
 import {
     Button,
     Dialog,
@@ -10,7 +8,7 @@ import {
     DialogContent,
     DialogTitle,
     CardMedia,
-    Typography,
+    Typography, Box,
 } from '@mui/material';
 
 import {
@@ -21,17 +19,17 @@ import {
     Public as WorldIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 import type { CompactAdapterInfo } from '@/types';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        backgroundColor: (theme as any).palette.background.paper,
+const styles: Record<string, any> = {
+    root: (theme: IobTheme) => ({
+        backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
         display: 'flex',
-        borderRadius: 4,
-    },
+        borderRadius: '4px',
+    }),
     paper: {
         maxWidth: 1000,
         width: '100%',
@@ -41,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     },
     pre: {
         overflow: 'auto',
-        margin: 20,
+        m: '20px',
         '& p': {
             fontSize: 18,
         },
@@ -55,29 +53,31 @@ const useStyles = makeStyles(theme => ({
         color: 'silver',
     },
     img: {
-        marginLeft: 10,
-        width: 45,
-        height: 45,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
+        '& .news-admin-dialog-img': {
+            marginLeft: 10,
+            width: 45,
+            height: 45,
+            margin: 'auto 0',
+            position: 'relative',
+            '&:after': {
+                content: '""',
+                position: 'absolute',
+                zIndex: 2,
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'url("img/no-image.png") 100% 100% no-repeat',
+                backgroundSize: 'cover',
+                backgroundColor: '#fff',
+            },
         },
     },
     img2: {
         width: 70,
         height: 70,
-        margin: '10px 0',
-        borderRadius: 4,
+        m: '10px 0',
+        borderRadius: '4px',
         position: 'relative',
         '&:after': {
             content: '""',
@@ -92,21 +92,21 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: '#fff',
         },
     },
-    link:{
+    link: {
         margin: '10px 0',
     },
-}));
+};
 
-const Status = ({ name, ...props }: { name: string; className: string }) => {
+const Status = ({ name }: { name: string }) => {
     switch (name) {
         case 'warning':
-            return <WarningIcon style={{ color: '#ffca00' }} {...props} />;
+            return <WarningIcon className="news-admin-dialog-img" style={{ color: '#ffca00' }} />;
         case 'info':
-            return <InfoIcon style={{ color: '#007cff' }} {...props} />;
+            return <InfoIcon className="news-admin-dialog-img" style={{ color: '#007cff' }} />;
         case 'danger':
-            return <CancelIcon style={{ color: '#ff2f2f' }} {...props} />;
+            return <CancelIcon className="news-admin-dialog-img" style={{ color: '#ff2f2f' }} />;
         default:
-            return <InfoIcon style={{ color: '#007cff' }} {...props} />;
+            return <InfoIcon className="news-admin-dialog-img" style={{ color: '#007cff' }} />;
     }
 };
 
@@ -304,7 +304,6 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
 const NewsAdminDialog = ({
     newsArr, current, onSetLastNewsId,
 }: { newsArr: ShowMessage[]; current: string; onSetLastNewsId: (id?: string) => void }) => {
-    const classes = useStyles();
     const [id, setId] = useState(current);
     const [last, setLast] = useState(false);
     const [indexArr, setIndexArr] = useState(0);
@@ -342,19 +341,19 @@ const NewsAdminDialog = ({
     return <Dialog
         onClose={onClose}
         open={!0}
-        classes={{ paper: classes.paper }}
+        sx={{ '& .MuiDialog-paper': styles.paper }}
     >
-        <div className={classes.blockInfo}>
+        <Box component="div" sx={{ ...styles.blockInfo, ...styles.img }}>
             {new Date(newsArr[indexArr].created).toLocaleDateString(lang)}
-            <Status className={classes.img} name={newsArr[indexArr].class} />
-        </div>
+            <Status name={newsArr[indexArr].class} />
+        </Box>
         <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
         <DialogTitle>{title}</DialogTitle>
-        <DialogContent className={classes.overflowHidden} dividers>
-            <div className={classes.root}>
-                <div className={classes.pre}>
+        <DialogContent style={styles.overflowHidden} dividers>
+            <Box component="div" sx={styles.root}>
+                <Box component="div" sx={styles.pre}>
                     {newsArr[indexArr]?.img &&
-                        <CardMedia className={classes.img2} component="img" image={newsArr[indexArr].img} />}
+                        <CardMedia sx={styles.img2} component="img" image={newsArr[indexArr].img} />}
                     <Typography
                         variant="body2"
                         component="p"
@@ -364,14 +363,14 @@ const NewsAdminDialog = ({
                     {newsArr[indexArr]?.link &&
                         <Button
                             variant="contained"
-                            className={classes.link}
+                            style={styles.link}
                             onClick={() => window.open(newsArr[indexArr].link, '_blank')}
                             color="primary"
                         >
                             {linkTitle || I18n.t('Link')}
                         </Button>}
-                </div>
-            </div>
+                </Box>
+            </Box>
         </DialogContent>
         <DialogActions>
             {

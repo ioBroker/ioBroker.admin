@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import { type Styles, withStyles } from '@mui/styles';
-
 import {
     Button,
     Checkbox,
@@ -21,24 +19,24 @@ import {
 import type { IobTheme, Translate, AdminConnection } from '@iobroker/adapter-react-v5';
 import Command from '../components/Command';
 
-const styles: Styles<IobTheme, any> = theme => ({
-    closeButton: {
+const styles: Record<string, any> = {
+    closeButton: (theme: IobTheme) => ({
         position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        right: 8,
+        top: 8,
         color: theme.palette.grey[500],
-    },
+    }),
     hiddenDialog: {
         display: 'none',
     },
     dialogRoot: {
         height: 'calc(100% - 64px)',
     },
-});
+};
 
 interface CommandDialogProps {
     t: Translate;
-    confirmText: string;
+    confirmText?: string;
     onClose: () => void;
     callback: () => void;
     onInBackground: () => void;
@@ -52,7 +50,6 @@ interface CommandDialogProps {
     commandError: boolean;
     socket: AdminConnection;
     host: string;
-    classes: Record<string, string>;
 }
 
 interface CommandDialogState {
@@ -73,19 +70,17 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
     }
 
     render() {
-        const { classes } = this.props;
-
         return <Dialog
             scroll="paper"
             fullWidth
-            classes={{ root: !this.props.visible ? classes.hiddenDialog : '', paper: classes.dialogRoot }}
+            sx={{ '&.MuiDialog-root': !this.props.visible ? styles.hiddenDialog : undefined, '& .MuiDialog-paper': styles.dialogRoot }}
             onClose={this.props.inBackground ? this.props.onClose : this.props.onInBackground}
             open={!0}
             maxWidth="md"
         >
             <DialogTitle>
                 {this.state.progressText || this.props.t('Running command')}
-                <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose} disabled={this.props.inBackground}>
+                <IconButton size="large" sx={styles.closeButton} onClick={this.props.onClose} disabled={this.props.inBackground}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
@@ -157,4 +152,4 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
     }
 }
 
-export default withStyles(styles)(CommandDialog);
+export default CommandDialog;

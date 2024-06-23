@@ -1,7 +1,7 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
+    Box,
     CardContent,
     CardMedia, Skeleton,
     Typography,
@@ -11,15 +11,15 @@ import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import BasicUtils from '@/Utils';
 import HostGeneric, {
-    boxShadow, boxShadowHover, genericStyle,
+    boxShadow, boxShadowHover, genericStyles,
     type HostGenericProps, type HostGenericState,
 } from './HostGeneric';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
-    ...genericStyle(theme),
-    root: {
+const styles: Record<string, any> = {
+    ...genericStyles,
+    root: (theme: IobTheme) => ({
         position: 'relative',
-        margin: 7,
+        m: '7px',
         background: theme.palette.background.default,
         boxShadow,
         // display: 'flex',
@@ -28,7 +28,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         '&:hover': {
             boxShadow: boxShadowHover,
         },
-    },
+    }),
     imageBlock: {
         marginRight: 6,
         minHeight: 60,
@@ -40,23 +40,6 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         justifyContent: 'space-between',
         transition: 'background 0.5s',
         alignItems: 'baseline',
-    },
-    onBlick: {
-        animation: '$onBlink 2s ease-in-out',
-        animationIterationCount: 2,
-        fontSize: 12,
-        marginLeft: 4,
-    },
-    '@keyframes onBlink': {
-        '0%': {
-            color: theme.palette.mode === 'dark' ? '#264d72' : '#3679be',
-        },
-        '80%': {
-            color: theme.palette.mode === 'dark' ? '#3679be' : '#264d72',
-        },
-        '100%': {
-            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-        },
     },
     collapse: {
         height: 160,
@@ -74,14 +57,6 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     collapseOn: {
         animation: '$height 1s',
     },
-    '@keyframes height': {
-        '0%': {
-            height: 0,
-        },
-        '100%': {
-            height: 160,
-        },
-    },
     onOff: {
         alignSelf: 'center',
         width: 4,
@@ -91,17 +66,17 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         // top: 5,
         // right: 5,
     },
-    host: {
+    host: (theme: IobTheme) => ({
         width: '100%',
         fontWeight: 'bold',
         fontSize: 16,
-        paddingLeft: 8,
+        paddingLeft: '8px',
         alignSelf: 'center',
         color: theme.palette.mode === 'dark' ? '#ddd' : '#222',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-    },
+    }),
     cardContentH5: {
         height: '100%',
         display: 'flex',
@@ -134,26 +109,11 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         top: -21,
         // animation: '$colors 3s ease-in-out infinite'
     },
-    '@keyframes colors': {
-        '0%': {
-            top: -21,
-        },
-        '100%': {
-            top: '101%',
-        },
-    },
     red: {
         background: '#da0000',
         // animation: '$red 3s ease-in-out infinite alternate'
     },
-    '@keyframes red': {
-        '0%': {
-            opacity: 1,
-        },
-        '100%': {
-            opacity: 0.8,
-        },
-    },
+
     flex: {
         flex: 1,
         whiteSpace: 'nowrap',
@@ -189,37 +149,27 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
             },
             animation: '$warning 2.5s ease-in-out infinite alternate',
         },
-    },
-    '@keyframes warning': {
-        '0%': {
-            opacity: 1,
-        },
-        '100%': {
-            opacity: 0.7,
+        '@media screen and (max-width: 500px)': {
+            flexDirection: 'column',
         },
     },
     wrapperColor: {
         position: 'relative',
         overflow: 'hidden',
     },
-    '@media screen and (max-width: 1100px)': {
-        hidden1100: {
+    hidden1100: {
+        '@media screen and (max-width: 1100px)': {
             display: 'none !important',
         },
     },
-    '@media screen and (max-width: 800px)': {
-        hidden800: {
+    hidden800: {
+        '@media screen and (max-width: 800px)': {
             display: 'none !important',
         },
     },
-    '@media screen and (max-width: 600px)': {
-        hidden600: {
+    hidden600: {
+        '@media screen and (max-width: 600px)': {
             display: 'none !important',
-        },
-    },
-    '@media screen and (max-width: 500px)': {
-        wrapperFlex: {
-            flexDirection: 'column',
         },
     },
     badge: {
@@ -254,7 +204,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     cell: {
         // paddingLeft: 6,
     },
-});
+};
 
 interface HostRowProps extends HostGenericProps {
     hidden?: boolean;
@@ -269,8 +219,8 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
         if (typeof this.props.hostData !== 'object') {
             return null;
         }
-        return <div className={this.props.classes.wrapperBlockItem} key={value}>
-            <span className={Utils.clsx(this.props.classes.bold, this.props.classes.nowrap)}>
+        return <div style={styles.wrapperBlockItem} key={value}>
+            <span style={{ ...styles.bold, ...styles.nowrap }}>
                 {this.props.t(value)}
                 :
                 {' '}
@@ -288,16 +238,16 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
             return this.props.hostData;
         }
 
-        return <div className={this.props.classes.wrapperInfo}>
-            <div className={this.props.classes.marginRight}>
+        return <div style={styles.wrapperInfo}>
+            <div style={styles.marginRight}>
                 {this.props.hostData && typeof this.props.hostData === 'object' ?
                     Object.keys(this.props.hostData).map((value, idx) => idx < 5 && this.renderValue(value)) : <Skeleton />}
             </div>
-            <div className={this.props.classes.marginRight}>
+            <div style={styles.marginRight}>
                 {this.props.hostData && typeof this.props.hostData === 'object' ? Object.keys(this.props.hostData).map((value, idx) => idx > 4 && idx < 10 &&
                     this.renderValue(value)) : <Skeleton />}
             </div>
-            <div className={this.props.classes.marginRight}>
+            <div style={styles.marginRight}>
                 {this.props.hostData && typeof this.props.hostData === 'object' && Object.keys(this.props.hostData).map((value, idx) => idx > 10 &&
                     this.renderValue(value))}
             </div>
@@ -306,49 +256,58 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
 
     render() {
         const upgradeAvailable = (this.props.isCurrentHost || this.props.alive) && BasicUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
-        const { classes } = this.props;
         const description = this.getHostDescriptionAll();
 
-        return <div
-            style={{ border: `2px solid ${this.props.host.common.color || 'inherit'}`, borderRadius: 5 }}
+        return <Box
+            component="div"
+            sx={Utils.getStyle(
+                this.props.theme,
+                styles.root,
+                this.props.hidden && styles.hidden,
+                {
+                    border: `2px solid ${this.props.host.common.color || 'inherit'}`,
+                    borderRadius: '5px',
+                },
+            )}
             key={this.props.hostId}
-            className={Utils.clsx(classes.root, this.props.hidden ? classes.hidden : '')}
         >
             {this.renderDialogs()}
-            <div
-                className={Utils.clsx(classes.wrapperFlex, !this.props.alive && classes.cursorNoDrop)}
+            <Box
+                component="div"
+                sx={{ ...styles.wrapperFlex, ...(!this.props.alive ? styles.cursorNoDrop : undefined) }}
                 onClick={this.state.openDialogLogLevel ? null : () => this.setState({ openCollapse: !this.state.openCollapse })}
             >
-                <div className={classes.wrapperColor}>
-                    <div className={Utils.clsx(classes.onOff, this.props.alive ? classes.green : classes.red)} />
-                    {this.props.alive && <div className={classes.dotLine} />}
+                <div style={styles.wrapperColor}>
+                    <div style={{ ...styles.onOff, ...(this.props.alive ? styles.green : styles.red) }} />
+                    {this.props.alive && <div style={styles.dotLine} />}
                 </div>
                 <div
                     ref={this.refWarning}
-                    style={{ background: this.props.host.common.color || 'inherit' }}
-                    className={classes.imageBlock}
+                    style={{ ...styles.imageBlock, background: this.props.host.common.color || 'inherit' }}
                 >
                     {this.renderNotificationsBadge(<CardMedia
-                        className={classes.img}
+                        sx={styles.img}
                         component="img"
-                        // @ts-expect-error will be fixed in js-controller
-                        image={this.props.host.common.image || 'img/no-image.png'}
+                        image={this.props.host.common.icon || 'img/no-image.png'}
                     />, true)}
                     <div
-                        style={{ color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' }}
-                        className={classes.host}
+                        style={Utils.getStyle(
+                            this.props.theme,
+                            styles.host,
+                            { color: (this.props.host.common.color && Utils.invertColor(this.props.host.common.color, true)) || 'inherit' },
+                        )}
                     >
                         {this.props.host.common.name}
-                        {!this.state.openCollapse && typeof description === 'object' ? <span className={classes.onBlick}>
+                        {!this.state.openCollapse && typeof description === 'object' ? <span className={`onBlick-${this.props.themeType || 'light'}`}>
                             (
                             {this.props.t('Click for more')}
                             )
                         </span> : null}
                     </div>
                 </div>
-                <CardContent className={classes.cardContentH5}>
+                <CardContent sx={{ '&.MuiCardContent-root': styles.cardContentH5 }}>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800, classes.cell)}
+                        sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
                         variant="body2"
                         color="textSecondary"
                         component="div"
@@ -356,7 +315,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         <div ref={this.refCpu}>- %</div>
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800, classes.cell)}
+                        sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
                         variant="body2"
                         color="textSecondary"
                         component="div"
@@ -364,7 +323,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         <div ref={this.refMem}>- %</div>
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden800, classes.cell)}
+                        sx={{ ...styles.flex, ...styles.hidden800, ...styles.cell }}
                         variant="body2"
                         color="textSecondary"
                         component="div"
@@ -372,19 +331,20 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         <div ref={this.refUptime}>-/-</div>
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden1100, classes.cell)}
+                        sx={{ ...styles.flex, ...styles.hidden1100, ...styles.cell }}
                         variant="body2"
                         color="textSecondary"
                         component="div"
                     >
-                        <div
-                            className={Utils.clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)}
+                        <Box
+                            component="div"
+                            sx={{ ...(upgradeAvailable ? styles.greenText : undefined), ...styles.curdContentFlexCenter }}
                         >
                             {this.renderUpdateButton(upgradeAvailable)}
-                        </div>
+                        </Box>
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden1100)}
+                        sx={{ ...styles.flex, ...styles.hidden1100 }}
                         variant="body2"
                         color="textSecondary"
                         component="p"
@@ -392,36 +352,39 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         {this.props.host.common.installedVersion}
                     </Typography>
                     <Typography
-                        className={Utils.clsx(classes.flex, classes.hidden600, classes.cell)}
+                        sx={{ ...styles.flex, ...styles.hidden600, ...styles.cell }}
                         variant="body2"
                         color="textSecondary"
                         component="div"
                     >
                         <div ref={this.refEvents}>- / -</div>
                     </Typography>
-                    <div className={classes.marginTop10}>
-                        <Typography component="span" className={classes.enableButton}>
+                    <div style={styles.marginTop10}>
+                        <Typography component="span" style={styles.enableButton}>
                             {this.renderEditButton()}
                             {this.renderHostBaseEdit()}
                             {this.renderRestartButton()}
-                            {this.props.expertMode && this.state.logLevel ? this.renderLogLevel() : <div className={classes.emptyButton} />}
+                            {this.props.expertMode && this.state.logLevel ? this.renderLogLevel() : <div style={styles.emptyButton} />}
                             {this.renderRemoveButton()}
                         </Typography>
                     </div>
                 </CardContent>
-            </div>
-            {this.state.openCollapse && typeof description === 'object' && <div
-                className={Utils.clsx(classes.collapse, !this.state.openCollapse ? classes.collapseOff : classes.collapseOn)}
+            </Box>
+            {typeof description === 'object' && <div
+                style={{
+                    ...styles.collapse,
+                    ...(!this.state.openCollapse ? styles.collapseOff : styles.collapseOn),
+                }}
                 onClick={event => event.stopPropagation()}
             >
-                <CardContent className={classes.cardContentInfo}>
+                <CardContent style={styles.cardContentInfo}>
                     {description}
-                    {this.renderCopyButton()}
+                    {this.renderCopyButton({ height: 44, width: 44 })}
                 </CardContent>
-                <div className={classes.footerBlock} />
+                <Box component="div" sx={styles.footerBlock} />
             </div>}
-        </div>;
+        </Box>;
     }
 }
 
-export default withStyles(styles)(HostRow);
+export default HostRow;

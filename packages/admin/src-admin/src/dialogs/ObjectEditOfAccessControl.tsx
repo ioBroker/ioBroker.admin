@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 
 import {
-    I18n, Icon, type ThemeType,
+    I18n, Icon, type IobTheme, type ThemeType,
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
@@ -212,10 +212,12 @@ interface ObjectEditOfAccessControlProps {
     t: Translate;
     modalEmptyId: string;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
-    onClose, onApply, selected, extendObject, objects, t, modalEmptyId, themeType,
+    onClose, onApply, selected, extendObject, objects,
+    t, modalEmptyId, themeType, theme,
 }) => {
     const [stateOwnerUser, setStateOwnerUser] = useState<AccessControlUser>(null);
     const [stateOwnerGroup, setStateOwnerGroup] = useState<AccessControlGroup>(null);
@@ -388,6 +390,7 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
         return <LinearProgress />;
     }
     return <CustomModal
+        theme={theme}
         titleButtonApply="apply"
         overflowHidden
         disableApply={disabledButton}

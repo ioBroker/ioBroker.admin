@@ -3,9 +3,10 @@ import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { findCard, moveCard } from '@/helpers/cardSort';
 
-const style: React.CSSProperties = {
+const styles: React.CSSProperties = {
     cursor: 'move',
 };
+
 interface DragWrapperProps {
     canDrag: boolean;
     setEndDrag: () => void;
@@ -77,14 +78,14 @@ const DragWrapper = ({
     const opacity = isDragging ? 0 : 1;
     drag(drop(ref));
 
-    return <div ref={ref} style={{ ...style, opacity }} data-handler-id={handlerId}>
+    return <div ref={ref} style={{ ...styles, opacity }} data-handler-id={handlerId}>
         <a
             type="box"
             data-handler-id={handlerId}
             onClick={event => event.preventDefault()}
             href={`/#${name}`}
             style={{
-                ...style,
+                ...styles,
                 opacity,
                 color: 'inherit',
                 textDecoration: 'none',

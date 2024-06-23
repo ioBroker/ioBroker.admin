@@ -11,15 +11,15 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import { type ThemeType, Utils } from '@iobroker/adapter-react-v5';
+import { type ThemeType, type Translate, Utils } from '@iobroker/adapter-react-v5';
 
 interface CategoryLabelProps {
     categoryData: Record<string, any>;
     showEnumEditDialog: (category: Record<string, any>, isNew: boolean) => void;
     showEnumDeleteDialog: (category: Record<string, any>) => void;
-    classes: Record<string, any>;
-    t: (text: string) => string;
-    lang: string;
+    t: Translate;
+    lang: ioBroker.Languages;
+    styles: Record<string, React.CSSProperties>;
     themeType: ThemeType;
 }
 
@@ -35,10 +35,9 @@ const CategoryLabel = (props: CategoryLabelProps) => {
 
     const textColor = Utils.getInvertedColor(props.categoryData.common.color, props.themeType, true);
 
-    return <span ref={drop} className={props.classes.categoryTitle} style={{ color: textColor }}>
+    return <span ref={drop} style={{ ...props.styles.categoryTitle, color: textColor }}>
         {props.categoryData.common.icon ? <span
-            className={props.classes.icon}
-            style={{ backgroundImage: `url(${props.categoryData.common.icon})` }}
+            style={{ ...props.styles.icon, backgroundImage: `url(${props.categoryData.common.icon})` }}
         /> : null}
         {typeof props.categoryData.common.name === 'string' ? props.categoryData.common.name : (props.categoryData.common.name[props.lang] || props.categoryData.common.name.en)}
         <IconButton
@@ -53,9 +52,7 @@ const CategoryLabel = (props: CategoryLabelProps) => {
         {props.categoryData.common.dontDelete ? null : <IconButton
             size="small"
             style={{ color: textColor }}
-            onClick={() => {
-                props.showEnumDeleteDialog(props.categoryData);
-            }}
+            onClick={() => props.showEnumDeleteDialog(props.categoryData)}
         >
             <Tooltip title={props.t('Delete')} placement="top">
                 <DeleteIcon />

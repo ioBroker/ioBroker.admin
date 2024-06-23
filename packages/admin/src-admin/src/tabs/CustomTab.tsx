@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
-
 import { LinearProgress } from '@mui/material';
 
 import { withWidth, type ThemeType } from '@iobroker/adapter-react-v5';
@@ -8,7 +6,7 @@ import { withWidth, type ThemeType } from '@iobroker/adapter-react-v5';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import Utils from '../Utils';
 
-const styles = () => ({
+const styles: Record<string, React.CSSProperties> = {
     root: {
         // border:     '0 solid #FFF',
         display: 'block',
@@ -23,7 +21,7 @@ const styles = () => ({
             '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
         border: '0px solid #888',
     },
-});
+};
 
 export async function getHref(
     instancesWorker: InstancesWorker,
@@ -103,7 +101,6 @@ interface CustomTabProps {
     hosts: ioBroker.HostObject[];
     adminInstance: string;
     themeName: ThemeType;
-    classes: Record<string, string>;
     onRegisterIframeRef: (ref: HTMLIFrameElement) => void;
     onUnregisterIframeRef: (ref: HTMLIFrameElement) => void;
 }
@@ -159,7 +156,7 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
         return <iframe
             ref={el => this.refIframe = el}
             title={this.props.tab}
-            className={this.props.classes.root}
+            style={styles.root}
             src={this.state.href}
             onError={e => {
                 (e.target as HTMLIFrameElement).onerror = null;
@@ -169,4 +166,4 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
     }
 }
 
-export default withWidth()(withStyles(styles)(CustomTab));
+export default withWidth()(CustomTab);

@@ -35,7 +35,7 @@ interface UserBlockProps {
     removeUserFromGroup: (userId: string, groupId: string) => void;
     getText: (text: ioBroker.StringOrTranslated) => string;
     themeType: ThemeType;
-    classes: Record<string, string>;
+    styles: Record<string, any>;
     socket: AdminConnection;
     isDragging?: boolean;
 }
@@ -56,10 +56,10 @@ const UserBlock: React.FC<UserBlockProps> = props => {
     { <DragPreviewImage connect={preview}/> } */
     return <Card
         style={style}
-        className={props.classes.userGroupCard2}
+        sx={props.styles.userGroupCard2}
     >
-        <div className={props.classes.userCardContent}>
-            <div className={props.classes.right}>
+        <div style={props.styles.userCardContent}>
+            <div style={props.styles.right}>
                 <Checkbox
                     checked={props.user.common.enabled}
                     style={{ color: textColor }}
@@ -91,22 +91,22 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                 </IconButton>
             </div>
             <CardContent>
-                <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
+                <Typography gutterBottom component="div" style={props.styles.userGroupTitle}>
                     {
                         props.user.common.icon ?
                             <Icon
-                                className={props.classes.icon}
+                                style={props.styles.icon}
                                 src={props.user.common.icon}
                             />
                             :
-                            <PersonIcon className={props.classes.icon} />
+                            <PersonIcon style={props.styles.icon} />
                     }
                     <div>
                         <div>
-                            <span className={props.classes.userGroupUserName}>
+                            <span style={props.styles.userGroupUserName}>
                                 {props.getText(props.user.common.name)}
                             </span>
-                            <span className={props.classes.userGroupUserID}>
+                            <span style={props.styles.userGroupUserID}>
                                 [
                                 {props.user._id}
 ]
@@ -115,7 +115,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                         <span>
                             {
                                 props.user.common.desc ?
-                                    <div className={props.classes.description}>
+                                    <div style={props.styles.description}>
                                         {props.getText(props.user.common.desc)}
                                     </div>
                                     : null
@@ -138,17 +138,17 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                         return <Card
                             key={group._id}
                             variant="outlined"
-                            className={props.classes.userGroupMember}
+                            sx={props.styles.userGroupMember}
                             style={{ color: _textColor, borderColor: `${_textColor}80`, background: group.common?.color || 'inherit' }}
                         >
                             {
                                 group.common.icon ?
                                     <Icon
-                                        className={props.classes.icon}
+                                        style={props.styles.icon}
                                         src={group.common.icon}
                                     />
                                     :
-                                    <GroupIcon className={props.classes.icon} />
+                                    <GroupIcon style={props.styles.icon} />
                             }
                             {props.getText(group.common.name)}
                             <IconButton

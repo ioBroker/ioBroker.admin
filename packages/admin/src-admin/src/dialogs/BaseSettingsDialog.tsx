@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -11,6 +10,7 @@ import {
     Tabs,
     Button,
     LinearProgress,
+    Box,
 } from '@mui/material';
 
 import {
@@ -35,20 +35,20 @@ import BaseSettingsPlugins, { type PluginsSettings } from '../components/BaseSet
 
 // icons
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     content: {
         height: 500,
         overflow: 'hidden',
     },
-    tabPanel: {
+    tabPanel: (theme: IobTheme) => ({
         width: '100%',
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
         overflow: 'auto',
-    },
-    selected: {
+    }),
+    selected: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#FFF !important' : '#222 !important',
-    },
-});
+    }),
+};
 
 interface BaseSettingsDialogProps {
     t: Translate;
@@ -57,7 +57,6 @@ interface BaseSettingsDialogProps {
     socket: AdminConnection;
     themeType: ThemeType;
     onClose: () => void;
-    classes: Record<string, string>;
 }
 
 interface BaseSettingsDialogState {
@@ -267,7 +266,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
 
     render() {
         return <Dialog
-            className={this.props.classes.dialog}
+            style={styles.dialog}
             open={!0}
             onClose={() => false}
             fullWidth
@@ -280,7 +279,7 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
                 {' '}
                 {this.props.currentHostName || this.props.currentHost}
             </DialogTitle>
-            <DialogContent className={this.props.classes.content}>
+            <DialogContent style={styles.content}>
                 <AppBar position="static">
                     <Tabs
                         value={this.state.currentTab}
@@ -288,32 +287,32 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
                         aria-label="system tabs"
                         indicatorColor="secondary"
                     >
-                        <Tab label={this.props.t('System')} id="system-tab" aria-controls="simple-tabpanel-0" classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('System')} id="system-tab" aria-controls="simple-tabpanel-0" sx={{ '&.Mui-selected': styles.selected }} />
                         <Tab
                             label={this.props.t('Multi-host')}
                             id="multihost-tab"
-                            classes={{ selected: this.props.classes.selected }}
+                            sx={{ '&.Mui-selected': styles.selected }}
                             aria-controls="simple-tabpanel-1"
                         />
-                        <Tab label={this.props.t('Objects')} id="objects-tab" aria-controls="simple-tabpanel-3" classes={{ selected: this.props.classes.selected }} />
-                        <Tab label={this.props.t('States')} id="states-tab" aria-controls="simple-tabpanel-4" classes={{ selected: this.props.classes.selected }} />
-                        <Tab label={this.props.t('Log')} id="log-tab" aria-controls="simple-tabpanel-5" classes={{ selected: this.props.classes.selected }} />
-                        <Tab label={this.props.t('Plugins')} id="plugins-tab" aria-controls="simple-tabpanel-6" classes={{ selected: this.props.classes.selected }} />
+                        <Tab label={this.props.t('Objects')} id="objects-tab" aria-controls="simple-tabpanel-3" sx={{ '&.Mui-selected': styles.selected }} />
+                        <Tab label={this.props.t('States')} id="states-tab" aria-controls="simple-tabpanel-4" sx={{ '&.Mui-selected': styles.selected }} />
+                        <Tab label={this.props.t('Log')} id="log-tab" aria-controls="simple-tabpanel-5" sx={{ '&.Mui-selected': styles.selected }} />
+                        <Tab label={this.props.t('Plugins')} id="plugins-tab" aria-controls="simple-tabpanel-6" sx={{ '&.Mui-selected': styles.selected }} />
                     </Tabs>
                 </AppBar>
                 {this.state.loading ? <LinearProgress /> : null}
                 {!this.state.loading && this.state.currentTab === 0 ?
-                    <div className={this.props.classes.tabPanel}>{this.renderSystem()}</div> : null}
+                    <Box component="div" sx={styles.tabPanel}>{this.renderSystem()}</Box> : null}
                 {!this.state.loading && this.state.currentTab === 1 ?
-                    <div className={this.props.classes.tabPanel}>{this.renderMultihost()}</div> : null}
+                    <Box component="div" sx={styles.tabPanel}>{this.renderMultihost()}</Box> : null}
                 {!this.state.loading && this.state.currentTab === 2 ?
-                    <div className={this.props.classes.tabPanel}>{this.renderObjects()}</div> : null}
+                    <Box component="div" sx={styles.tabPanel}>{this.renderObjects()}</Box> : null}
                 {!this.state.loading && this.state.currentTab === 3 ?
-                    <div className={this.props.classes.tabPanel}>{this.renderStates()}</div> : null}
+                    <Box component="div" sx={styles.tabPanel}>{this.renderStates()}</Box> : null}
                 {!this.state.loading && this.state.currentTab === 4 ?
-                    <div className={this.props.classes.tabPanel}>{this.renderLog()}</div> : null}
+                    <Box component="div" sx={styles.tabPanel}>{this.renderLog()}</Box> : null}
                 {!this.state.loading && this.state.currentTab === 5 ?
-                    <div className={this.props.classes.tabPanel}>{this.renderPlugins()}</div> : null}
+                    <Box component="div" sx={styles.tabPanel}>{this.renderPlugins()}</Box> : null}
                 {this.renderConfirmDialog()}
                 {this.renderRestartDialog()}
             </DialogContent>
@@ -341,4 +340,4 @@ class BaseSettingsDialog extends Component<BaseSettingsDialogProps, BaseSettings
     }
 }
 
-export default withWidth()(withStyles(styles)(BaseSettingsDialog));
+export default withWidth()(BaseSettingsDialog);

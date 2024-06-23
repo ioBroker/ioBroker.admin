@@ -17,6 +17,7 @@ import {
     Utils, Icon,
     type Connection, I18n,
     type ThemeName, type ThemeType,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 import type { DeviceDetails } from '@iobroker/dm-utils';
 import type { DeviceInfo, ActionBase } from '@iobroker/dm-utils/build/types/api';
@@ -58,6 +59,7 @@ interface DeviceCardProps {
     alive: boolean;
     themeName: ThemeName;
     themeType: ThemeType;
+    theme: IobTheme;
     isFloatComma: boolean;
     dateFormat: string;
 }
@@ -172,6 +174,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     onChange={(data: Record<string, any>) => this.setState({ data })}
                     themeName={this.props.themeName}
                     themeType={this.props.themeType}
+                    theme={this.props.theme}
                     isFloatComma={this.props.isFloatComma}
                     dateFormat={this.props.dateFormat}
                 />

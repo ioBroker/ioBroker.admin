@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -10,6 +9,7 @@ import {
     TextField,
     Tooltip, InputAdornment,
     IconButton,
+    Box,
 } from '@mui/material';
 
 import {
@@ -19,9 +19,9 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Utils, UploadImage, type IobTheme } from '@iobroker/adapter-react-v5';
+import { UploadImage, type Translate } from '@iobroker/adapter-react-v5';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     error: {
         border: '2px solid #FF0000',
     },
@@ -33,7 +33,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     button: {
         marginTop: 20,
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
     },
     funcDivEdit: {
         width: '100%',
@@ -115,13 +115,12 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     tabsPadding: {
         padding: '0px 24px',
     },
-});
+};
 
 interface HostEditProps {
-    classes: Record<string, string>;
     obj: ioBroker.HostObject;
     onClose: (newObj?: ioBroker.HostObject) => void;
-    t: (text: string, ...args: any[]) => string;
+    t: Translate;
 }
 
 interface HostEditState {
@@ -191,12 +190,12 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
     }
 
     buttonAddKey(nameKey: string, cb: () => void) {
-        const { t, classes } = this.props;
+        const { t } = this.props;
         return <div
-            className={classes.marginBlock}
+            style={styles.marginBlock}
         >
             <Button
-                className={classes.buttonAdd}
+                style={styles.buttonAdd}
                 variant="contained"
                 color="secondary"
                 onClick={cb}
@@ -208,23 +207,25 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
     }
 
     buttonRemoveKey(nameKey: string, cb: () => void) {
-        const { t, classes } = this.props;
-        return <Tooltip title={t(`Remove ${nameKey}`)}><div className={classes.close} onClick={cb} /></Tooltip>;
+        const { t } = this.props;
+        return <Tooltip title={t(`Remove ${nameKey}`)}>
+            <Box component="div" sx={styles.close} onClick={cb} />
+        </Tooltip>;
     }
 
     renderCommonEdit() {
         try {
             const json = JSON.parse(this.state.text);
             const disabled = false;
-            const { classes, t } = this.props;
-            return <div className={classes.commonTabWrapper}>
-                <div className={classes.commonWrapper}>
+            const { t } = this.props;
+            return <div style={styles.commonTabWrapper}>
+                <div style={styles.commonWrapper}>
                     {typeof json.common.title !== 'undefined' ?
                         <TextField
                             variant="standard"
                             disabled={disabled}
                             label={t('title')}
-                            className={Utils.clsx(classes.marginBlock, classes.textField)}
+                            style={{ ...styles.marginBlock, ...styles.textField }}
                             fullWidth
                             value={json.common.title}
                             onChange={el => this.setCommonItem(json, 'title', el.target.value)}
@@ -241,11 +242,11 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                         /> :
                         this.buttonAddKey('title', () => this.setCommonItem(json, 'title', ''))}
                     {typeof json.common.color !== 'undefined' ?
-                        <div className={classes.flex}>
+                        <div style={styles.flex}>
                             <TextField
                                 variant="standard"
                                 disabled={disabled}
-                                className={Utils.clsx(classes.marginBlock, classes.color)}
+                                style={{ ...styles.marginBlock, ...styles.color }}
                                 label={t('Color')}
                                 type="color"
                                 value={json.common.color}
@@ -266,7 +267,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                         this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))}
                 </div>
                 {typeof json.common.icon !== 'undefined' ?
-                    <div className={classes.flexDrop}>
+                    <div style={styles.flexDrop}>
                         <UploadImage
                             disabled={disabled}
                             crop
@@ -277,7 +278,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                         />
                         {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
                     </div> :
-                    <div className={classes.flexDrop}>
+                    <div style={styles.flexDrop}>
                         {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
                     </div>}
             </div>;
@@ -290,7 +291,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
         // const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
 
         return <Dialog
-            classes={{ paper: this.props.classes.dialog }}
+            sx={{ '& .MuiDialog-paper': styles.dialog }}
             open={!0}
             maxWidth="lg"
             fullWidth
@@ -302,7 +303,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
             <DialogTitle id="edit-value-dialog-title">
                 {this.props.t('Edit host settings')}
 :
-                <span className={this.props.classes.id}>{this.props.obj._id}</span>
+                <span style={styles.id}>{this.props.obj._id}</span>
             </DialogTitle>
             <DialogContent>
                 {this.renderCommonEdit()}
@@ -330,4 +331,4 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
     }
 }
 
-export default withStyles(styles)(HostEdit);
+export default HostEdit;

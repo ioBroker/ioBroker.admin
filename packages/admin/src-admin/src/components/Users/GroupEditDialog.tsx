@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles, type Styles } from '@mui/styles';
 
 import {
     Dialog,
@@ -11,7 +10,7 @@ import {
     Checkbox,
     FormControlLabel,
     Tabs,
-    Tab,
+    Tab, Box,
 } from '@mui/material';
 
 import {
@@ -27,7 +26,7 @@ import {
 
 import {
     Utils, IconPicker,
-    type Translate, type IobTheme,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 
@@ -48,7 +47,7 @@ interface PermissionsTabProps {
     t: Translate;
     group: ioBroker.GroupObject;
     onChange: (group: ioBroker.GroupObject) => void;
-    classes: Record<string, string>;
+    styles: Record<string, React.CSSProperties>;
     innerWidth: number;
 }
 
@@ -120,10 +119,10 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
         read: true, list: true, write: false, delete: false, create: false, ...acl.file,
     };
 
-    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermissionsTab">
+    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog} key="PermissionsTab">
         {mapObject(props.group.common.acl || {}, (block, blockKey) =>
             <Grid item xs={12} md={12} key={blockKey}>
-                <h2 className={props.classes.permHeaders}>{props.t(`group_acl_${blockKey}`)}</h2>
+                <Box component="h2" sx={props.styles.permHeaders}>{props.t(`group_acl_${blockKey}`)}</Box>
                 {mapObject(block as Record<string, boolean>, (perm, permKey) =>
                     <FormControlLabel
                         key={permKey}
@@ -143,11 +142,11 @@ function PermissionsTab(props: PermissionsTabProps): React.JSX.Element {
     </Grid>;
 }
 
-const styles: Styles<IobTheme, any> = () => ({
-    contentRoot:{
+const styles: Record<string, React.CSSProperties> = {
+    contentRoot: {
         padding: '16px 24px',
     },
-});
+};
 
 interface GroupEditDialogProps extends PermissionsTabProps {
     onClose: () => void;
@@ -157,6 +156,7 @@ interface GroupEditDialogProps extends PermissionsTabProps {
     saveData: (originalId: string | null) => void;
     getText: (text: ioBroker.StringOrTranslated) => string;
     group: ioBroker.GroupObject;
+    styles: Record<string, React.CSSProperties>;
 }
 
 const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
@@ -207,7 +207,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
     const description = props.getText(props.group.common.desc);
     const name = props.getText(props.group.common.name);
 
-    const mainTab = <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
+    const mainTab = <Grid container spacing={props.innerWidth < 500 ? 1 : 4} style={props.styles.dialog}>
         <Grid item xs={12} md={6}>
             <IOTextField
                 label="Name"
@@ -223,7 +223,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 }}
                 autoComplete="off"
                 icon={TextFieldsIcon}
-                classes={props.classes}
+                styles={props.styles}
             />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -238,7 +238,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                     props.onChange(newData);
                 }}
                 icon={LocalOfferIcon}
-                classes={props.classes}
+                styles={props.styles}
             />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -248,7 +248,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 disabled
                 value={props.group._id}
                 icon={PageviewIcon}
-                classes={props.classes}
+                styles={props.styles}
             />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -262,7 +262,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                     props.onChange(newData);
                 }}
                 icon={DescriptionIcon}
-                classes={props.classes}
+                styles={props.styles}
             />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -277,7 +277,7 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                     newData.common.icon = fileBlob;
                     props.onChange(newData);
                 }}
-                previewClassName={props.classes.iconPreview}
+                previewStyle={props.styles.iconPreview}
                 icon={ImageIcon}
                 // classes={props.classes}
             />
@@ -287,15 +287,15 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
                 label="Color"
                 t={props.t}
                 value={props.group.common.color}
-                previewClassName={props.classes.iconPreview}
+                previewStyle={props.styles.iconPreview}
                 onChange={color => {
                     const newData: ioBroker.GroupObject = Utils.clone(props.group) as ioBroker.GroupObject;
                     newData.common.color = color;
                     props.onChange(newData);
                 }}
                 icon={ColorLensIcon}
-                className={props.classes.colorPicker}
-                classes={props.classes}
+                style={props.styles.colorPicker}
+                styles={props.styles}
             />
         </Grid>
     </Grid>;
@@ -311,23 +311,23 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
         }}
         fullWidth={props.innerWidth < 500}
     >
-        <DialogTitle className={props.classes.dialogTitle}>
+        <DialogTitle style={props.styles.dialogTitle}>
             <Tabs variant="fullWidth" value={tab} onChange={(e, newTab) => setTab(newTab)}>
                 <Tab label={props.t('Main')} value={0} />
                 <Tab label={props.t('Permissions')} value={1} />
             </Tabs>
         </DialogTitle>
         <DialogContent
-            classes={{
-                root: Utils.clsx(
-                    props.innerWidth < 500 ? props.classes.narrowContent : '',
-                    props.classes.contentRoot,
-                ),
+            sx={{
+                '&.MuiDialogContent-root': {
+                    ...(props.innerWidth < 500 ? props.styles.narrowContent : undefined),
+                    ...styles.contentRoot,
+                },
             }}
         >
             {selectedTab}
         </DialogContent>
-        <DialogActions className={props.classes.dialogActions}>
+        <DialogActions style={props.styles.dialogActions}>
             <Button
                 variant="contained"
                 color="primary"
@@ -350,4 +350,4 @@ const GroupEditDialog: React.FC<GroupEditDialogProps> = props => {
     </Dialog>;
 };
 
-export default withStyles(styles)(GroupEditDialog);
+export default GroupEditDialog;

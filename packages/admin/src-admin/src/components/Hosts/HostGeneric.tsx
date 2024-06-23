@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import semver from 'semver';
 
 import {
-    Avatar, Badge,
+    Avatar, Badge, Box,
     FormControl,
     FormHelperText,
     IconButton,
@@ -30,7 +30,7 @@ import {
 
 import {
     Utils, IconCopy, type AdminConnection,
-    type IobTheme, type ThemeType,
+    type IobTheme, type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import type HostsWorker from '@/Workers/HostsWorker';
@@ -46,15 +46,104 @@ import CustomModal from '../CustomModal';
 export const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 export const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
-export const genericStyle = (theme: IobTheme): Record<string, any> => ({
-    '@keyframes warning': {
-        '0%': {
-            opacity: 1,
+export const blinkClasses = `
+    @keyframes newValueAnimationHostDark {
+        0% {
+            color: #00f900;
+        }
+        80% {
+            color: #008000;
+        }
+        100% {
+            color: #fff;
+        }
+    }
+    @keyframes newValueAnimationHostLight {
+        0% {
+            color: #00f900;
+        }
+        80% {
+            color: #008000;
+        }
+        100% {
+            color: #fff;
+        }
+    }
+    .newValueHost-dark {
+        animation: newValueAnimationHostDark 2s ease-in-out;
+    }
+    .newValueHost-light {
+        animation: newValueAnimationHostLight 2s ease-in-out;
+    }
+    @keyframes colors {
+        0% {
+            left: -51px;
+        }
+        100% {
+            left: 101%;
+        }
+    }
+    @keyframes warning {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.7;
+        }
+    }
+    @keyframes red {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.8;
+        }
+    }
+    @keyframes onBlink-keys-dark {
+        0% {
+            color: #264d72;
+        }
+        80% {
+            color: #3679be;
+        }
+        100% {
+            color: #fff;
+        }
+    }
+    @keyframes onBlink-keys-light {
+        0% {
+            color: #3679be;
+        }
+        80% {
+            color: #264d72;
+        }
+        100% {
+            color: #000;
+        }
+    }
+    .onBlick-light {
+        animation: onBlink-keys-light 2s ease-in-out;
+        animation-iteration-count: 2;
+        font-size: 12px;
+        margin-left: 4px;
+    }
+    .onBlick-dark {
+        animation: onBlink-keys-dark 2s ease-in-out;
+        animation-iteration-count: 2;
+        font-size: 12px;
+        margin-left: 4px;
+    }
+    @keyframes height {
+        0% {
+            height: 0;
         },
-        '100%': {
-            opacity: 0.7,
-        },
-    },
+        100% {
+            height: 160px;
+        }
+    }
+`;
+
+export const genericStyles: Record<string, any> = {
     img: {
         width: 45,
         height: 45,
@@ -76,43 +165,12 @@ export const genericStyle = (theme: IobTheme): Record<string, any> => ({
     collapseOff: {
         height: 0,
     },
-    close: {
-        width: 20,
-        height: 20,
-        opacity: 0.9,
-        cursor: 'pointer',
-        position: 'relative',
-        marginLeft: 'auto',
-        marginBottom: 10,
-        transition: 'all 0.6s ease',
-        '&:hover': {
-            transform: 'rotate(90deg)',
-        },
-        '&:before': {
-            position: 'absolute',
-            left: 9,
-            content: '""',
-            height: 20,
-            width: 3,
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)',
-        },
-        '&:after': {
-            position: 'absolute',
-            left: 9,
-            content: '""',
-            height: 20,
-            width: 3,
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)',
-        },
-    },
-    footerBlock: {
+    footerBlock: (theme: IobTheme) => ({
         background: theme.palette.background.default,
-        padding: 10,
+        p: '10px',
         display: 'flex',
         justifyContent: 'space-between',
-    },
+    }),
     hidden: {
         display: 'none',
     },
@@ -120,9 +178,9 @@ export const genericStyle = (theme: IobTheme): Record<string, any> => ({
     emptyButton: {
         width: 48,
     },
-    greenText: {
+    greenText: (theme: IobTheme) => ({
         color: theme.palette.success.dark,
-    },
+    }),
     wrapperAvailable: {
         display: 'flex',
         alignItems: 'center',
@@ -130,7 +188,7 @@ export const genericStyle = (theme: IobTheme): Record<string, any> => ({
     buttonUpdate: {
         border: '1px solid',
         padding: '0px 7px',
-        borderRadius: 5,
+        borderRadius: '5px',
         display: 'flex',
         alignItems: 'center',
         cursor: 'pointer',
@@ -166,24 +224,10 @@ export const genericStyle = (theme: IobTheme): Record<string, any> => ({
     baseSettingsButton: {
         transform: 'rotate(45deg)',
     },
-    newValue: {
-        animation: '$newValueAnimation 2s ease-in-out',
-    },
-    '@keyframes newValueAnimation': {
-        '0%': {
-            color: '#00f900',
-        },
-        '80%': {
-            color: '#008000',
-        },
-        '100%': {
-            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-        },
-    },
     tooltip: {
         pointerEvents: 'none',
     },
-});
+};
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
@@ -219,7 +263,6 @@ export interface HostGenericProps {
     adminInstance: string;
     alive: boolean;
     available: string;
-    classes: Record<string, string>;
     executeCommandRemove: () => void;
     expertMode: boolean;
     hostData: Record<string, any> | string;
@@ -234,7 +277,7 @@ export interface HostGenericProps {
     showAdaptersWarning: (notifications: Record<string, NotificationAnswer>, hostId: string) => void;
     socket: AdminConnection;
     systemConfig: ioBroker.SystemConfigObject;
-    t: (text: string, ...args: any) => string;
+    t: Translate;
     theme: IobTheme;
     themeType: ThemeType;
     toggleTranslation: () => void;
@@ -255,7 +298,7 @@ export interface HostGenericState {
 }
 
 export default abstract class HostGeneric<TProps extends HostGenericProps, TState extends HostGenericState> extends Component<TProps, TState> {
-    static formatInfo: Record<string, (value: any, t: (text: string, ...args: any) => string) => string> = {
+    static formatInfo: Record<string, (value: any, t: Translate) => string> = {
         Uptime: BasicUtils.formatSeconds,
         'System uptime': BasicUtils.formatSeconds,
         RAM: BasicUtils.formatRam,
@@ -370,7 +413,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         this.inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
         if (this.refEvents.current) {
             this.refEvents.current.innerHTML = `${this.inputCache} / ${this.outputCache}`;
-            toggleClassName(this.refEvents.current, this.props.classes.newValue);
+            toggleClassName(this.refEvents.current, `newValueHost-${this.props.themeType || 'light'}`);
         }
     };
 
@@ -378,7 +421,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         this.outputCache = output && output.val !== null ? `↦${output.val}` : '-';
         if (this.refEvents.current) {
             this.refEvents.current.innerHTML = `${this.inputCache} / ${this.outputCache}`;
-            toggleClassName(this.refEvents.current, this.props.classes.newValue);
+            toggleClassName(this.refEvents.current, `newValueHost-${this.props.themeType || 'light'}`);
         }
     };
 
@@ -406,7 +449,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         this.cpuCache = this.formatValue(state, '%');
         if (this.refCpu.current) {
             this.refCpu.current.innerHTML = this.cpuCache;
-            toggleClassName(this.refCpu.current, this.props.classes.newValue);
+            toggleClassName(this.refCpu.current, `newValueHost-${this.props.themeType || 'light'}`);
         }
     };
 
@@ -414,7 +457,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         this.memCache = this.formatValue(state, '%');
         if (this.refMem.current) {
             this.refMem.current.innerHTML = this.memCache;
-            toggleClassName(this.refMem.current, this.props.classes.newValue);
+            toggleClassName(this.refMem.current, `newValueHost-${this.props.themeType || 'light'}`);
         }
     };
 
@@ -426,7 +469,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
         if (this.refUptime.current) {
             this.refUptime.current.innerHTML = this.uptimeCache;
-            toggleClassName(this.refUptime.current, this.props.classes.newValue);
+            toggleClassName(this.refUptime.current, `newValueHost-${this.props.themeType || 'light'}`);
         }
     };
 
@@ -467,6 +510,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             return null;
         }
         return <CustomModal
+            theme={this.props.theme}
             title={this.props.t('Edit log level rule for %s', this.props.host.common.name)}
             onApply={() => {
                 this.props.socket.setState(`${this.props.hostId}.logLevel`, this.state.logLevelSelect)
@@ -475,7 +519,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             }}
             onClose={() => this.setState({ openDialogLogLevel: false, logLevelSelect: this.state.logLevel })}
         >
-            <FormControl className={this.props.classes.formControl} variant="outlined" style={{ marginTop: 8 }}>
+            <FormControl style={{ ...genericStyles.formControl, marginTop: 8 }} variant="outlined">
                 <InputLabel>{this.props.t('log level')}</InputLabel>
                 <Select
                     variant="standard"
@@ -490,13 +534,13 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                     ))}
                 </Select>
             </FormControl>
-            <FormControl className={this.props.classes.formControl} variant="outlined">
+            <FormControl style={genericStyles.formControl} variant="outlined">
                 <FormHelperText>
                     {this.props.t('Log level will be reset to the saved level after the restart of the controller')}
                 </FormHelperText>
                 <FormHelperText>
                     {this.props.t('You can set the log level permanently in the base host settings')}
-                    <BuildIcon className={this.props.classes.baseSettingsButton} />
+                    <BuildIcon style={genericStyles.baseSettingsButton} />
                 </FormHelperText>
             </FormControl>
         </CustomModal>;
@@ -524,28 +568,29 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderUpdateButton(upgradeAvailable: boolean) {
-        return upgradeAvailable ? <Tooltip title={this.props.t('Update')} classes={{ popper: this.props.classes.tooltip }}>
-            <div
+    renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties) {
+        return upgradeAvailable ? <Tooltip title={this.props.t('Update')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+            <Box
+                component="div"
                 onClick={event => {
                     event.stopPropagation();
                     this.openHostUpdateDialog();
                 }}
-                className={this.props.classes.buttonUpdate}
+                sx={genericStyles.buttonUpdate}
             >
-                <IconButton className={this.props.classes.buttonUpdateIcon} size="small">
+                <IconButton style={genericStyles.buttonUpdateIcon} size="small">
                     <RefreshIcon />
                 </IconButton>
                 {this.props.available}
-            </div>
+            </Box>
         </Tooltip>
             :
-            this.props.available;
+            <span style={style}>{this.props.available}</span>;
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderHostBaseEdit() {
-        return this.props.expertMode ? <Tooltip title={this.props.t('Host Base Settings')} classes={{ popper: this.props.classes.tooltip }}>
+        return this.props.expertMode ? <Tooltip title={this.props.t('Host Base Settings')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
             <div>
                 <IconButton
                     size="large"
@@ -555,7 +600,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                         this.setState({ baseSettingsDialog: true });
                     }}
                 >
-                    <BuildIcon className={this.props.classes.baseSettingsButton} />
+                    <BuildIcon style={genericStyles.baseSettingsButton} />
                 </IconButton>
             </div>
         </Tooltip> : null;
@@ -563,7 +608,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderRestartButton() {
-        return <Tooltip title={this.props.t('Restart host')} classes={{ popper: this.props.classes.tooltip }}>
+        return <Tooltip title={this.props.t('Restart host')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
             <div>
                 <IconButton
                     size="large"
@@ -597,7 +642,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderRemoveButton() {
         return !this.props.alive && !this.props.isCurrentHost ? <Tooltip
             title={this.props.alive || this.props.isCurrentHost ? this.props.t('You cannot delete host, when it is alive') : this.props.t('Remove')}
-            classes={{ popper: this.props.classes.tooltip }}
+            sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
         >
             <IconButton
                 size="large"
@@ -610,12 +655,12 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             </IconButton>
         </Tooltip>
             :
-            <div className={this.props.classes.emptyButton} />;
+            <div style={genericStyles.emptyButton} />;
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderCopyButton(style?: React.CSSProperties) {
-        return <Tooltip title={this.props.t('Copy')} classes={{ popper: this.props.classes.tooltip }}>
+        return <Tooltip title={this.props.t('Copy')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
             <IconButton
                 size="large"
                 onClick={() => this.onCopy()}
@@ -630,7 +675,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderLogLevel() {
         return <Tooltip
             title={`${this.props.t('loglevel')} ${this.state.logLevel}`}
-            classes={{ popper: this.props.classes.tooltip }}
+            sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
         >
             <IconButton
                 size="large"
@@ -639,7 +684,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                     this.setState({ openDialogLogLevel: true });
                 }}
             >
-                <Avatar className={Utils.clsx(this.props.classes.smallAvatar, this.props.classes[this.state.logLevel])}>
+                <Avatar style={{ ...genericStyles.smallAvatar, ...genericStyles[this.state.logLevel] }}>
                     {getLogLevelIcon(this.state.logLevel)}
                 </Avatar>
             </IconButton>
@@ -656,7 +701,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             } : undefined}
             title={this.props.t('Hosts notifications')}
             badgeContent={this.state.errorHost.count}
-            className={this.props.classes.badge}
+            style={genericStyles.badge}
             color="error"
             onClick={e => {
                 e.stopPropagation();
@@ -698,6 +743,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                     this.setState({ hostUpdateDialog: false, hostUpdate: null, instructionDialog: true });
                 }
             }}
+            theme={this.props.theme}
             installedVersion={this.props.host.common.installedVersion}
             onInstruction={() =>
                 this.setState({ hostUpdateDialog: false, hostUpdate: null, instructionDialog: true })}
@@ -722,7 +768,6 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             return <JsControllerDialog
                 socket={this.props.socket}
                 hostId={this.props.hostId}
-                theme={this.props.theme}
                 version={this.props.jsControllerInfo.version}
                 onClose={() => this.setState({ instructionDialog: false })}
             />;

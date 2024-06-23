@@ -1192,7 +1192,7 @@
   "You can set the log level permanently in the base host settings": "Puede establecer el nivel de registro de forma permanente en la configuración base del host",
   "You can't see events via cloud": "No puedes ver eventos a través de la nube",
   "You cannot delete host, when it is alive": "No puede eliminar el host, cuando está vivo",
-  "You have configured to run automatic upgrades for the \"beta\" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!": "Ha configurado para ejecutar actualizaciones automáticas para el repositorio \"beta\". Tenga en cuenta que si el repositorio beta está activo, este adaptador obtendrá actualizaciones beta automáticamente de acuerdo con esta configuración.",
+  "repo_update_hint": "Ha configurado para ejecutar actualizaciones automáticas para el repositorio \"beta\". Tenga en cuenta que si el repositorio beta está activo, este adaptador obtendrá actualizaciones beta automáticamente de acuerdo con esta configuración.",
   "You have unread news!": "¡Tienes noticias sin leer!",
   "You have unsaved changes": "Tiene cambios sin guardar",
   "You must set the administrator password": "Debe establecer la contraseña de administrador",

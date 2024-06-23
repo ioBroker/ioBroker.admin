@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import { TextField } from '@mui/material';
 
@@ -9,13 +8,6 @@ import type { ConfigItemPort } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, any> = {
-    indeterminate: {
-        opacity: 0.5,
-    },
-    control: {
-        flexDirection: 'row',
-        width: '100%',
-    },
     warning: {
         '& .Mui-error': {
             color: 'orange',
@@ -206,7 +198,7 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
             value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
             error={!!error}
             disabled={!!disabled}
-            className={warning ? this.props.classes.warning : ''}
+            sx={warning ? styles.warning : undefined}
             onChange={e => {
                 const _value = Number(e.target.value.toString().replace(/[^0-9]/g, '')).toString();
                 const _error = this.checkValue(_value);
@@ -229,4 +221,4 @@ class ConfigPort extends ConfigGeneric<ConfigPortProps, ConfigPortState> {
     }
 }
 
-export default withStyles(styles)(ConfigPort);
+export default ConfigPort;

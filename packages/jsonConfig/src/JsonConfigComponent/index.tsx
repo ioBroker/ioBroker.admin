@@ -1,20 +1,21 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import { LinearProgress } from '@mui/material';
 
 import {
-    type AdminConnection, I18n,
-    Utils, type ThemeName,
+    type AdminConnection,
+    I18n,
+    type ThemeName,
     type ThemeType,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemPanel, ConfigItemTabs } from '#JC/types';
-import type { DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
+import ConfigGeneric, { type DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     root: {
         width: '100%',
         height: '100%',
@@ -42,10 +43,10 @@ interface JsonConfigComponentProps {
     multiEdit?: boolean;
     instanceObj?: ioBroker.InstanceObject;
     customObj?: ioBroker.Object;
-    customs?: Record<string, Component>;
-    classes: Record<string, string>;
-    className?: string;
+    customs?: Record<string, typeof ConfigGeneric>;
     DeviceManager?: React.FC<DeviceManagerPropsProps>;
+    style?: React.CSSProperties;
+    theme: IobTheme;
 }
 
 interface JsonConfigComponentState {
@@ -60,7 +61,7 @@ interface JsonConfigComponentState {
     data: Record<string, any> | null;
 }
 
-export class JsonConfigComponentClass extends Component<JsonConfigComponentProps, JsonConfigComponentState> {
+export class JsonConfigComponent extends Component<JsonConfigComponentProps, JsonConfigComponentState> {
     private readonly forceUpdateHandlers: Record<string, (data: any) => void>;
 
     private errorTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -364,6 +365,7 @@ export class JsonConfigComponentClass extends Component<JsonConfigComponentProps
                 changed={this.state.changed}
                 onError={(attr, error) => this.onError(attr, error)}
                 DeviceManager={this.props.DeviceManager}
+                theme={this.props.theme}
             />;
         }
         if (item.type === 'panel' ||
@@ -401,6 +403,7 @@ export class JsonConfigComponentClass extends Component<JsonConfigComponentProps
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
                 DeviceManager={this.props.DeviceManager}
+                theme={this.props.theme}
             />;
         }
 
@@ -433,10 +436,16 @@ export class JsonConfigComponentClass extends Component<JsonConfigComponentProps
             return <LinearProgress />;
         }
 
-        return <div className={Utils.clsx(!this.props.embedded && this.props.classes.root, this.props.className)} style={this.state.schema.style}>
+        return <div
+            style={{
+                ...(!this.props.embedded ? styles.root : undefined),
+                ...this.props.style,
+                ...this.state.schema.style,
+            }}
+        >
             {this.renderItem(this.state.schema)}
         </div>;
     }
 }
 
-export default withStyles(styles)(JsonConfigComponentClass);
+export default JsonConfigComponent;

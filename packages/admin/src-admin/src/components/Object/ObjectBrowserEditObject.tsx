@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -17,7 +16,7 @@ import {
     Fab,
     IconButton,
     FormControl, InputLabel,
-    MenuItem, Select, Tooltip, Autocomplete,
+    MenuItem, Select, Tooltip, Autocomplete, Box,
 } from '@mui/material';
 
 import {
@@ -35,13 +34,13 @@ import {
     IconFx,
     UploadImage,
     type AdminConnection,
-    type Translate, type IobTheme,
+    type Translate,
     type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     divWithoutTitle: {
         width: '100%',
         height: '100%',
@@ -64,7 +63,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     },
     button: {
         marginTop: 20,
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
     },
     funcDivEdit: {
         width: '100%',
@@ -109,7 +108,7 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     flex: {
         display: 'flex',
         '& > div': {
-            marginRight: theme.spacing(1),
+            marginRight: 8,
         },
     },
     close: {
@@ -153,15 +152,13 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
     tabsPadding: {
         padding: '0px 24px',
     },
-    '@media screen and (max-width: 465px)': {
-        wrapperButton: {
+    wrapperButton: {
+        '@media screen and (max-width: 465px)': {
             '& *': {
                 fontSize: 10,
             },
         },
-    },
-    '@media screen and (max-width: 380px)': {
-        wrapperButton: {
+        '@media screen and (max-width: 380px)': {
             '& *': {
                 fontSize: 9,
             },
@@ -171,12 +168,12 @@ const styles: Record<string, any> = (theme: IobTheme) => ({
         color: '#fa4a4a',
     },
     typeNameEng: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         opacity: 0.7,
         fontStyle: 'italic',
         fontSize: 'smaller',
     },
-});
+};
 
 const DEFAULT_ROLES = [
     'button',
@@ -435,7 +432,6 @@ const DEFAULT_ROLES = [
 ] as const;
 
 interface ObjectBrowserEditObjectProps {
-    classes: Record<string, string>;
     socket: AdminConnection;
     obj: ioBroker.AnyObject;
     roleArray: string[];
@@ -706,7 +702,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
     renderTabs() {
         return <Tabs
-            className={this.props.classes.tabsPadding}
+            style={styles.tabsPadding}
             value={this.state.tab}
             onChange={(e, tab) => {
                 ((window as any)._localStorage || window.localStorage).setItem(
@@ -836,10 +832,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     }
 
     buttonAddKey(nameKey: string, cb: () => void): React.JSX.Element {
-        const { classes } = this.props;
-        return <div className={classes.marginBlock}>
+        return <div style={styles.marginBlock}>
             <Button
-                className={classes.buttonAdd}
+                style={styles.buttonAdd}
                 variant="contained"
                 color="secondary"
                 startIcon={<IconAdd />}
@@ -851,9 +846,9 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     }
 
     buttonRemoveKey(nameKey: string, cb: () => void): React.JSX.Element {
-        const { t, classes } = this.props;
+        const { t } = this.props;
         return <Tooltip title={t('Remove attribute %s', nameKey)}>
-            <div className={classes.close} onClick={cb} />
+            <Box component="div" sx={styles.close} onClick={cb} />
         </Tooltip>;
     }
 
@@ -863,7 +858,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
             const disabled = false;
             const {
-                classes, t, roleArray, obj,
+                t, roleArray, obj,
             } = this.props;
             const checkState = obj.type === 'state';
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
@@ -889,8 +884,8 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     }
                 }
             }
-            return <div
-                className={classes.commonTabWrapper}
+            return <Box
+                style={styles.commonTabWrapper}
                 onKeyDown={e => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -899,19 +894,19 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     }
                 }}
             >
-                <div className={classes.commonWrapper}>
+                <Box style={styles.commonWrapper}>
                     {typeof json.common.name !== 'undefined' ? <TextField
                         variant="standard"
                         disabled={disabled}
                         label={t('Name')}
-                        className={Utils.clsx(classes.marginBlock, classes.textField)}
+                        style={{ ...styles.marginBlock, ...styles.textField }}
                         fullWidth
                         value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), {}, false, true)}
                         onChange={el => this.setCommonItem(json, 'name', el.target.value)}
                     /> : this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))}
                     {checkState ? (
-                        typeof json.common.type !== 'undefined' ? <div className={classes.flex}>
-                            <FormControl className={classes.marginBlock} fullWidth>
+                        typeof json.common.type !== 'undefined' ? <Box component="div" sx={styles.flex}>
+                            <FormControl style={styles.marginBlock} fullWidth>
                                 <InputLabel>{t('State type')}</InputLabel>
                                 <Select
                                     variant="standard"
@@ -919,26 +914,24 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     value={json.common.type}
                                     onChange={el => this.setCommonItem(json, 'type', el.target.value)}
                                 >
-                                    {stateTypeArray.map(el => (
-                                        <MenuItem key={el} value={el}>
-                                            {t(el)}
-                                            <span className={this.props.classes.typeNameEng}>
-                                                (
-                                                {el}
-                                                )
-                                            </span>
-                                        </MenuItem>
-                                    ))}
+                                    {stateTypeArray.map(el => <MenuItem key={el} value={el}>
+                                        {t(el)}
+                                        <span style={styles.typeNameEng}>
+                                            (
+                                            {el}
+                                            )
+                                        </span>
+                                    </MenuItem>)}
                                 </Select>
                             </FormControl>
                             {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
-                        </div> : this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
+                        </Box> : this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
                     ) : null}
-                    <div className={classes.flex}>
+                    <Box component="div" sx={styles.flex}>
                         {checkState ? (
-                            typeof json.common.read !== 'undefined' ? <div className={classes.flex}>
+                            typeof json.common.read !== 'undefined' ? <Box component="div" sx={styles.flex}>
                                 <FormControlLabel
-                                    className={classes.marginBlock}
+                                    style={styles.marginBlock}
                                     control={
                                         <Checkbox
                                             disabled={disabled}
@@ -950,12 +943,12 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     label={t('Readable')}
                                 />
                                 {this.buttonRemoveKey('read', () => this.removeCommonItem(json, 'read'))}
-                            </div> : this.buttonAddKey('read', () => this.setCommonItem(json, 'read', true))
+                            </Box> : this.buttonAddKey('read', () => this.setCommonItem(json, 'read', true))
                         ) : null}
                         {checkState ? (
-                            typeof json.common.write !== 'undefined' ? <div className={classes.flex}>
+                            typeof json.common.write !== 'undefined' ? <Box component="div" sx={styles.flex}>
                                 <FormControlLabel
-                                    className={classes.marginBlock}
+                                    style={styles.marginBlock}
                                     control={
                                         <Checkbox
                                             disabled={disabled}
@@ -967,13 +960,13 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     label={t('Writeable')}
                                 />
                                 {this.buttonRemoveKey('write', () => this.removeCommonItem(json, 'write'))}
-                            </div> : this.buttonAddKey('write', () => this.setCommonItem(json, 'write', true))
+                            </Box> : this.buttonAddKey('write', () => this.setCommonItem(json, 'write', true))
                         ) : null}
-                    </div>
+                    </Box>
                     {checkRole ? (
-                        typeof json.common.role !== 'undefined' ? <div className={classes.flex}>
+                        typeof json.common.role !== 'undefined' ? <Box component="div" sx={styles.flex}>
                             <Autocomplete
-                                className={classes.marginBlock}
+                                style={styles.marginBlock}
                                 fullWidth
                                 disabled={disabled}
                                 value={json.common.role}
@@ -983,94 +976,90 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                     <TextField variant="standard" {...params} label={t('Role')} />}
                             />
                             {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
-                        </div> : this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
+                        </Box> : this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
                     ) : null}
-                    {typeof json.common.color !== 'undefined' ? <div className={classes.flex}>
+                    {typeof json.common.color !== 'undefined' ? <Box component="div" sx={styles.flex}>
                         <TextField
                             variant="standard"
                             disabled={disabled}
-                            className={Utils.clsx(classes.marginBlock, classes.color)}
+                            className={{ ...styles.marginBlock, ...styles.color }}
                             label={t('Color')}
                             type="color"
                             value={json.common.color}
                             onChange={el => this.setCommonItem(json, 'color', el.target.value)}
                         />
                         {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
-                    </div> : this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))}
-                    <div className={classes.flex}>
+                    </Box> : this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))}
+                    <Box component="div" sx={styles.flex}>
                         {json.common.type === 'number' ? (
-                            typeof json.common.min !== 'undefined' ? <div className={classes.flex}>
+                            typeof json.common.min !== 'undefined' ? <Box component="div" sx={styles.flex}>
                                 <TextField
                                     variant="standard"
                                     disabled={disabled}
-                                    className={Utils.clsx(classes.marginBlock, classes.color)}
+                                    className={{ ...styles.marginBlock, ...styles.color }}
                                     label={t('Min')}
                                     value={json.common.min}
                                     onChange={el => this.setCommonItem(json, 'min', el.target.value)}
                                 />
                                 {this.buttonRemoveKey('min', () => this.removeCommonItem(json, 'min'))}
-                            </div>
+                            </Box>
                                 :
-                                <div className={classes.flex}>
+                                <Box component="div" sx={styles.flex}>
                                     {this.buttonAddKey('min', () => this.setCommonItem(json, 'min', 0))}
-                                </div>) : null}
+                                </Box>) : null}
                         {json.common.type === 'number' ? (
                             typeof json.common.max !== 'undefined' ? (
-                                <div className={classes.flex}>
+                                <Box component="div" sx={styles.flex}>
                                     <TextField
                                         variant="standard"
                                         disabled={disabled}
-                                        className={Utils.clsx(classes.marginBlock, classes.color)}
+                                        className={{ ...styles.marginBlock, ...styles.color }}
                                         label={t('Max')}
                                         value={json.common.max}
                                         onChange={el => this.setCommonItem(json, 'max', el.target.value)}
                                     />
                                     {this.buttonRemoveKey('max', () => this.removeCommonItem(json, 'max'))}
-                                </div>
-                            ) : (
-                                <div className={classes.flex}>
-                                    {this.buttonAddKey('max', () => this.setCommonItem(json, 'max', 100))}
-                                </div>
-                            )
+                                </Box>
+                            ) : <Box component="div" sx={styles.flex}>
+                                {this.buttonAddKey('max', () => this.setCommonItem(json, 'max', 100))}
+                            </Box>
                         ) : null}
                         {json.common.type === 'number' ? (
                             typeof json.common.step !== 'undefined' ? (
-                                <div className={classes.flex}>
+                                <Box component="div" sx={styles.flex}>
                                     <TextField
                                         variant="standard"
                                         disabled={disabled}
-                                        className={Utils.clsx(classes.marginBlock, classes.color)}
+                                        className={{ ...styles.marginBlock, ...styles.color }}
                                         label={t('Step')}
                                         value={json.common.step}
                                         onChange={el => this.setCommonItem(json, 'step', el.target.value)}
                                     />
                                     {this.buttonRemoveKey('step', () => this.removeCommonItem(json, 'step'))}
-                                </div>
-                            ) : (
-                                <div className={classes.flex}>
-                                    {this.buttonAddKey('step', () => this.setCommonItem(json, 'step', 1))}
-                                </div>
-                            )
+                                </Box>
+                            ) : <Box component="div" sx={styles.flex}>
+                                {this.buttonAddKey('step', () => this.setCommonItem(json, 'step', 1))}
+                            </Box>
                         ) : null}
-                    </div>
+                    </Box>
                     {json.common.type === 'number' ? (
-                        typeof json.common.unit !== 'undefined' ? <div className={classes.flex}>
+                        typeof json.common.unit !== 'undefined' ? <Box component="div" sx={styles.flex}>
                             <TextField
                                 variant="standard"
                                 disabled={disabled}
-                                className={Utils.clsx(classes.marginBlock, classes.color)}
+                                className={{ ...styles.marginBlock, ...styles.color }}
                                 label={t('Unit')}
                                 value={json.common.unit}
                                 onChange={el => this.setCommonItem(json, 'unit', el.target.value)}
                             />
                             {this.buttonRemoveKey('unit', () => this.removeCommonItem(json, 'unit'))}
-                        </div> :
-                            <div className={classes.flexDrop}>
+                        </Box> :
+                            <div style={styles.flexDrop}>
                                 {this.buttonAddKey('unit', () => this.setCommonItem(json, 'unit', ''))}
                             </div>
                     ) : null}
-                </div>
-                {typeof json.common.icon !== 'undefined' ? <div className={classes.flex} style={{ flexGrow: 1, minWidth: 158 }}>
+                </Box>
+                {typeof json.common.icon !== 'undefined' ? <Box component="div" sx={styles.flex} style={{ flexGrow: 1, minWidth: 158 }}>
                     <UploadImage
                         disabled={disabled}
                         maxSize={10 * 1024}
@@ -1079,11 +1068,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         onChange={base64 => this.setCommonItem(json, 'icon', base64)}
                     />
                     {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
-                </div> :
-                    <div className={classes.flex}>
+                </Box> :
+                    <Box component="div" sx={styles.flex}>
                         {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
-                    </div>}
-            </div>;
+                    </Box>}
+            </Box>;
         } catch (e) {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
@@ -1094,7 +1083,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             const json = JSON.parse(this.state.text);
             const funcVisible = json.common?.alias?.read !== undefined || json.common?.alias?.write !== undefined;
 
-            return <Grid container direction="column" className={this.props.classes.marginTop}>
+            return <Grid container direction="column" style={styles.marginTop}>
                 <Grid item>
                     <FormControlLabel
                         control={
@@ -1117,7 +1106,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         variant="standard"
                         label={this.props.t('Alias state')}
                         value={json.common?.alias?.id || ''}
-                        className={this.props.classes.aliasIdEdit}
+                        style={styles.aliasIdEdit}
                         InputProps={{
                             endAdornment: json.common?.alias?.id ? <InputAdornment position="end">
                                 <IconButton size="large" onClick={() => this.setAliasItem(json, 'id', '')}>
@@ -1129,7 +1118,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         margin="normal"
                     />
                     <Fab
-                        className={this.props.classes.button}
+                        style={styles.button}
                         size="small"
                         onClick={() => this.setState({ selectId: true, selectRead: false, selectWrite: false })}
                     >
@@ -1142,7 +1131,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         variant="standard"
                         label={this.props.t('Alias read state')}
                         value={json.common?.alias?.id?.read || ''}
-                        className={this.props.classes.aliasIdEdit}
+                        style={styles.aliasIdEdit}
                         InputProps={{
                             endAdornment: json.common?.alias?.id?.read ? <InputAdornment position="end">
                                 <IconButton
@@ -1157,7 +1146,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         margin="normal"
                     />
                     <Fab
-                        className={this.props.classes.button}
+                        style={styles.button}
                         size="small"
                         onClick={() => this.setState({ selectId: false, selectRead: true, selectWrite: false })}
                     >
@@ -1170,7 +1159,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         variant="standard"
                         label={this.props.t('Alias write state')}
                         value={json.common?.alias?.id?.write || ''}
-                        className={this.props.classes.aliasIdEdit}
+                        style={styles.aliasIdEdit}
                         InputProps={{
                             endAdornment: json.common?.alias?.id?.write ? <InputAdornment position="end">
                                 <IconButton
@@ -1185,14 +1174,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         margin="normal"
                     />
                     <Fab
-                        className={this.props.classes.button}
+                        style={styles.button}
                         size="small"
                         onClick={() => this.setState({ selectId: false, selectRead: false, selectWrite: true })}
                     >
                         ...
                     </Fab>
                 </Grid> : null}
-                <Grid item className={this.props.classes.marginTop}>
+                <Grid item style={styles.marginTop}>
                     <FormControlLabel
                         control={
                             <Checkbox
@@ -1222,7 +1211,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         variant="standard"
                         label={this.props.t('Read converter')}
                         value={json.common?.alias?.read || 'val'}
-                        className={this.props.classes.funcEdit}
+                        style={styles.funcEdit}
                         error={!!this.state.readError}
                         InputProps={{
                             endAdornment: json.common?.alias?.read ? <InputAdornment position="end">
@@ -1234,7 +1223,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 </IconButton>
                             </InputAdornment> : null,
                             startAdornment: <InputAdornment position="start">
-                                <IconFx className={this.props.classes.funcIcon} />
+                                <IconFx style={styles.funcIcon} />
                             </InputAdornment>,
                         }}
                         onChange={e => this.setAliasItem(json, 'read', e.target.value)}
@@ -1253,7 +1242,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         helperText={
                             this.state.writeError || `${this.props.t('JS function like')} "(val - 21) * 5"`
                         }
-                        className={this.props.classes.funcEdit}
+                        style={styles.funcEdit}
                         InputProps={{
                             endAdornment: json.common?.alias?.write ? <InputAdornment position="end">
                                 <IconButton
@@ -1264,7 +1253,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                 </IconButton>
                             </InputAdornment> : null,
                             startAdornment: <InputAdornment position="start">
-                                <IconFx className={this.props.classes.funcIcon} />
+                                <IconFx style={styles.funcIcon} />
                             </InputAdornment>,
                         }}
                         onChange={e => this.setAliasItem(json, 'write', e.target.value)}
@@ -1345,7 +1334,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         const fullWidth = obj.type !== 'state' || (obj.common.type !== 'number' && obj.common.type !== 'boolean');
 
         return <Dialog
-            classes={{ paper: this.props.classes.dialog }}
+            sx={{ '& .MuiPaper-root': styles.dialog }}
             open={!0}
             maxWidth="lg"
             fullWidth={fullWidth}
@@ -1357,7 +1346,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             <DialogTitle id="edit-value-dialog-title">
                 {this.props.t('Edit object:')}
                 {' '}
-                <span className={this.props.classes.id}>{this.props.obj._id}</span>
+                <span style={styles.id}>{this.props.obj._id}</span>
             </DialogTitle>
 
             {this.renderTabs()}
@@ -1365,11 +1354,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
             <DialogContent>
                 {this.state.tab === 'object' ? <div
-                    className={Utils.clsx(
-                        this.props.classes.divWithoutTitle,
-                        withAlias && this.props.classes.divWithoutTitleAndTab,
-                        this.state.error && this.props.classes.error,
-                    )}
+                    style={{
+                        ...styles.divWithoutTitle,
+                        ...(withAlias ? styles.divWithoutTitleAndTab : undefined),
+                        ...(this.state.error ? styles.error : undefined),
+                    }}
                     onKeyDown={e => {
                         if (e.ctrlKey && e.key === 'Enter') {
                             e.preventDefault();
@@ -1385,7 +1374,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         themeType={this.props.themeType}
                     />
                     {this.state.showCommonDeleteMessage ?
-                        <div className={this.props.classes.commonDeleteTip}>{I18n.t('common_delete_tip')}</div> : null}
+                        <div style={styles.commonDeleteTip}>{I18n.t('common_delete_tip')}</div> : null}
                 </div> : null}
                 {this.state.tab === 'alias' &&
                 this.props.obj._id.startsWith('alias.0') &&
@@ -1395,7 +1384,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 {this.state.tab === 'common' ? this.renderCommonEdit() : null}
                 {this.renderSelectDialog()}
             </DialogContent>
-            <DialogActions className={this.props.classes.wrapperButton}>
+            <DialogActions sx={styles.wrapperButton}>
                 <Button
                     color="grey"
                     onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
@@ -1436,4 +1425,4 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     }
 }
 
-export default withStyles(styles)(ObjectBrowserEditObject);
+export default ObjectBrowserEditObject;

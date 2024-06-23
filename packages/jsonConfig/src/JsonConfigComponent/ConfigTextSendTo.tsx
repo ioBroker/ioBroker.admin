@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     TextField,
@@ -9,9 +8,9 @@ import {
 import { IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemSendTo } from '#JC/types';
-import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     fullWidth: {
         width: '100%',
     },
@@ -95,8 +94,8 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
         }
-        return <div className={this.props.classes.fullWidth}>{this.state.text}</div>;
+        return <div style={styles.fullWidth}>{this.state.text}</div>;
     }
 }
 
-export default withStyles(styles)(ConfigTextSendTo);
+export default ConfigTextSendTo;

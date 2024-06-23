@@ -1,11 +1,10 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
-import { Utils, I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
 import type { ConfigItemAlive } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     root: {
         width: '100%',
     },
@@ -62,7 +61,7 @@ class ConfigAlive extends ConfigGeneric<ConfigAliveProps, ConfigAliveState> {
         }
 
         const instance = this.state.instance.replace(/^system.adapter./, '');
-        return <div className={Utils.clsx(this.props.classes.root, !this.state.alive && this.props.classes.notAlive)}>
+        return <div style={{ ...styles.root, ...(!this.state.alive ? styles.notAlive : undefined) }}>
             {this.state.alive ?
                 this.props.schema.textAlive !== undefined ? (this.props.schema.textAlive ? I18n.t(this.props.schema.textAlive, instance) : '') : I18n.t('ra_Instance %s is alive', instance)
                 :
@@ -71,4 +70,4 @@ class ConfigAlive extends ConfigGeneric<ConfigAliveProps, ConfigAliveState> {
     }
 }
 
-export default withStyles(styles)(ConfigAlive);
+export default ConfigAlive;

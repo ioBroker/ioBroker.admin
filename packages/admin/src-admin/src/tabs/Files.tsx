@@ -4,12 +4,14 @@ import {
     LinearProgress,
 } from '@mui/material';
 
-import type { AdminConnection, ThemeType, Translate } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection, type IobTheme,
+    type ThemeType, type Translate,
+    TabContainer, TabContent,
+} from '@iobroker/adapter-react-v5';
 
 import FileBrowser, { type FileBrowserClass, type MetaObject } from '../components/FileBrowser';
 
-import TabContainer from '../components/TabContainer';
-import TabContent from '../components/TabContent';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
 
 interface FilesProps {
@@ -19,6 +21,7 @@ interface FilesProps {
     ready: boolean;
     expertMode: boolean;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 class Files extends Component<FilesProps> {
@@ -55,6 +58,7 @@ class Files extends Component<FilesProps> {
 
     renderAclDialog(context: FileBrowserClass) {
         return <FileEditOfAccessControl
+            theme={this.props.theme}
             themeType={this.props.themeType}
             applyChangesToObject={async (fileObj: MetaObject) => {
                 // it is setObject
@@ -90,8 +94,7 @@ class Files extends Component<FilesProps> {
                         if (item && item.file && item.acl) {
                             context.updateItemsAcl([{
                                 id: `${adapter}/${item.path ? `${item.path}/` : ''}${item.file}`,
-                                // @ts-expect-error fix later
-                                acl: item.acl,
+                                acl: item.acl as ioBroker.EvaluatedFileACL,
                                 level: 0,         // not used
                                 name: '', // not used
                                 folder: false,    // not used
@@ -131,6 +134,7 @@ class Files extends Component<FilesProps> {
                     ready={this.props.ready}
                     socket={this.props.socket}
                     themeType={this.props.themeType}
+                    theme={this.props.theme}
                     lang={this.props.lang}
                     t={this.props.t}
                     showToolbar

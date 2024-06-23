@@ -1,5 +1,4 @@
 import React from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -27,7 +26,6 @@ import {
     Confirm as ConfirmDialog,
     withWidth, I18n,
     type Translate,
-    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 import { type AdminGuiConfig } from '@/types';
 
@@ -35,7 +33,7 @@ import Utils from '../../Utils';
 import countries from '../../assets/json/countries.json';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, React.CSSProperties> = {
     tabPanel: {
         width: '100%',
         height: '100% ',
@@ -45,16 +43,16 @@ const styles: Styles<IobTheme, any> = theme => ({
         // backgroundColor: blueGrey[ 50 ]
     },
     formControl: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
         minWidth: '100%',
     },
     selectEmpty: {
-        marginTop: theme.spacing(2),
+        marginTop: 16,
     },
     map: {
         borderRadius: 5,
     },
-});
+};
 
 const MyMapComponent: React.FC<{ addMap: (map: any) => any }> = props => {
     const map = useMap();
@@ -81,7 +79,6 @@ interface Props {
     onChange: (data: any, dataAux: any, cb?: () => void) => void;
     histories: string[];
     multipleRepos: boolean;
-    classes: Record<string, string>;
 }
 
 interface State {
@@ -305,7 +302,6 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     };
 
     getSelect(e: Setting, i: number) {
-        const { classes } = this.props;
         let value = (this.props.data.common as Record<string, any>)[e.id];
 
         if (e.id === 'defaultLogLevel' && !value) {
@@ -361,7 +357,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
             return (
                 <Grid item sm={6} xs={12} key={i}>
-                    <FormControl className={classes.formControl} variant="standard">
+                    <FormControl style={styles.formControl} variant="standard">
                         <InputLabel shrink id={`${e.id}-label`}>
                             {this.props.t(e.title)}
                         </InputLabel>
@@ -394,14 +390,14 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         </MenuItem>);
 
         return <Grid item sm={6} xs={12} key={i}>
-            <FormControl className={classes.formControl} variant="standard">
+            <FormControl style={styles.formControl} variant="standard">
                 <InputLabel shrink id={`${e.id}-label`}>
                     {this.props.t(e.title)}
                 </InputLabel>
                 <Select
                     disabled={this.props.saving}
                     variant="standard"
-                    className={classes.formControl}
+                    style={styles.formControl}
                     id={e.id}
                     value={value === undefined ? false : value}
                     onChange={evt => this.handleChange(evt, i)}
@@ -433,19 +429,18 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     }
 
     getCounters = () => {
-        const { classes } = this.props;
         const items = countries.map((elem, index) => <MenuItem value={elem.name} key={index}>
             {this.props.t(elem.name)}
         </MenuItem>);
 
-        return <FormControl className={classes.formControl} variant="standard">
+        return <FormControl style={styles.formControl} variant="standard">
             <InputLabel shrink id="country-label">
                 {this.props.t('Country:')}
             </InputLabel>
             <Select
                 disabled={this.props.saving}
                 variant="standard"
-                className={classes.formControl}
+                style={styles.formControl}
                 id="country"
                 value={this.props.data.common.country}
                 onChange={this.handleChangeCountry}
@@ -528,7 +523,6 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     };
 
     render() {
-        const { classes } = this.props;
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
         const center: LatLngTuple = [
@@ -538,7 +532,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
 
         const { zoom } = this.state;
 
-        return <div className={classes.tabPanel}>
+        return <div style={styles.tabPanel}>
             {this.renderConfirmDialog()}
             <Grid container spacing={3}>
                 <Grid item lg={6} md={12}>
@@ -572,7 +566,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                 </Grid>
                 <Grid item lg={6} md={12} style={{ width: '100%' }}>
                     <MapContainer
-                        className={classes.map}
+                        style={styles.map}
                         center={center}
                         zoom={zoom}
                         maxZoom={18}
@@ -594,7 +588,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                     {this.getCounters()}
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}>
-                    <FormControl className={classes.formControl} variant="standard">
+                    <FormControl style={styles.formControl} variant="standard">
                         <InputLabel shrink id="city-label">
                             {this.props.t('City:')}
                         </InputLabel>
@@ -621,7 +615,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                     </FormControl>
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}>
-                    <FormControl className={classes.formControl} variant="standard">
+                    <FormControl style={styles.formControl} variant="standard">
                         <InputLabel shrink id="latitude-label">
                             {this.props.t('Latitude:')}
                         </InputLabel>
@@ -638,7 +632,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                     </FormControl>
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}>
-                    <FormControl className={classes.formControl} variant="standard">
+                    <FormControl style={styles.formControl} variant="standard">
                         <InputLabel shrink id="longitude-label">
                             {this.props.t('Longitude:')}
                         </InputLabel>
@@ -659,4 +653,4 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     }
 }
 
-export default withWidth()(withStyles(styles)(MainSettingsDialog));
+export default withWidth()(MainSettingsDialog);

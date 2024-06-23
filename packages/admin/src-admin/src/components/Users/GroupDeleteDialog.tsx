@@ -20,7 +20,7 @@ interface GroupDeleteDialogProps {
     onClose: () => void;
     group: ioBroker.GroupObject;
     deleteGroup: (groupId: string) => void;
-    classes: Record<string, string>;
+    styles: Record<string, React.CSSProperties>;
 }
 
 export default function GroupDeleteDialog(props: GroupDeleteDialogProps): React.JSX.Element {
@@ -34,7 +34,7 @@ export default function GroupDeleteDialog(props: GroupDeleteDialogProps): React.
                 {props.t('Do you want to delete group %s?', props.group.common.name)}
             </DialogContentText>
         </DialogContent>
-        <DialogActions className={props.classes.dialogActions}>
+        <DialogActions style={props.styles.dialogActions}>
             <Button
                 variant="contained"
                 color="primary"

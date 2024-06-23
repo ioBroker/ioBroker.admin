@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import { withStyles } from '@mui/styles';
 import {
+    Box,
     Button,
     Menu,
     MenuItem,
@@ -15,17 +15,9 @@ import type { CompactHost } from '@/types';
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type HostEvent, type HostAliveEvent } from '@/Workers/HostsWorker';
 
-const styles = () => ({
-    img: {
-        width: 30,
-        height: 30,
-        margin: 'auto 0',
-        position: 'relative',
-        marginRight: 10,
-        borderRadius: 3,
-        background: '#FFFFFF',
-        padding: 2,
-        '&:after': {
+const styles: Record<string, any> = {
+    imgDiv: {
+        '& svg:after': {
             content: '""',
             position: 'absolute',
             zIndex: 2,
@@ -37,6 +29,33 @@ const styles = () => ({
             backgroundSize: 'cover',
             backgroundColor: '#fff',
         },
+        '& img:after': {
+            content: '""',
+            position: 'absolute',
+            zIndex: 2,
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            backgroundSize: 'cover',
+            backgroundColor: '#fff',
+        },
+        '@media screen and (max-width: 710px)': {
+            '& img,svg': {
+                marginRight: 0,
+            },
+        },
+    },
+    img: {
+        width: 30,
+        height: 30,
+        margin: 'auto 0',
+        position: 'relative',
+        marginRight: 10,
+        borderRadius: 3,
+        background: '#FFFFFF',
+        padding: 2,
     },
     notAlive: {
         opacity: 0.3,
@@ -48,29 +67,24 @@ const styles = () => ({
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        '@media screen and (max-width: 710px)': {
+            display: 'none',
+        },
     },
     width: {
         width: '100%',
+        '@media screen and (max-width: 710px)': {
+            width: 'auto',
+        },
     },
     selector: {
         width: 15,
         display: 'inline-block',
     },
-    '@media screen and (max-width: 710px)': {
-        name: {
-            display: 'none',
-        },
-        width: {
-            width: 'auto',
-        },
-        imgButton: {
-            marginRight: 0,
-        },
-    },
     tooltip: {
         pointerEvents: 'none',
     },
-}) as any;
+};
 
 interface HostSelectorsProps {
     disabled?: boolean;
@@ -81,7 +95,6 @@ interface HostSelectorsProps {
     setCurrentHost: (hostname: string, aliveHost: string) => void;
     tooltip: string;
     themeType?: string;
-    classes: Record<string, any>;
 }
 
 interface HostSelectorsState {
@@ -116,6 +129,25 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                             alive[hosts[h]._id] = false;
                         }
                     }
+
+                    // if the current host is not alive, find the first alive host and set it as current
+                    if (!alive[this.props.currentHost]) {
+                        const aliveHost = Object.keys(alive).find(id => alive[id]);
+                        if (aliveHost) {
+                            setTimeout(() => {
+                                const obj = this.state.hosts.find(ob => ob._id === aliveHost);
+                                if (obj) {
+                                    this.props.setCurrentHost(
+                                        obj.common?.name || aliveHost.replace('system.host.', ''),
+                                        aliveHost,
+                                    );
+                                } else {
+                                    this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
+                                }
+                            }, 100);
+                        }
+                    }
+
                     this.setState({ alive }, () => {
                         this.props.hostsWorker.registerHandler(this.onHostsObjectChange);
                         this.props.hostsWorker.registerAliveHandler(this.onAliveChanged);
@@ -199,6 +231,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                         changed = true;
                     }
                 } else {
+                    // new host detected
                     changed = true;
                     hosts.push({
                         _id: event.id as ioBroker.ObjectIDs.Host,
@@ -214,8 +247,9 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                             },
                         },
                     });
+
                     const state = await this.props.socket.getState(`${event.id}.alive`);
-                    alive[event.id] = state ? state.val as boolean : false;
+                    alive[event.id] = !!state?.val;
                 }
             }),
         )
@@ -252,16 +286,16 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
             );
         }
 
-        return <div>
+        return <Box>
             <Tooltip
                 title={this.props.tooltip || I18n.t('Change current host')}
-                classes={{ popper: this.props.classes.tooltip }}
+                componentsProps={{ popper: { sx: styles.tooltip } }}
             >
                 <span>
                     <Button
                         color={this.props.themeType === 'dark' ? 'primary' : 'secondary'}
-                        className={this.props.classes.button}
                         style={{
+                            ...styles.button,
                             background: selectedHostObj?.common?.color || 'none',
                             borderColor: selectedHostObj?.common?.color
                                 ? Utils.invertColor(selectedHostObj.common.color, false)
@@ -272,11 +306,13 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                         aria-haspopup="true"
                         onClick={e => this.setState({ anchorEl: e.currentTarget })}
                     >
-                        <div
-                            className={Utils.clsx(
-                                this.props.classes.width,
-                                !this.state.alive[this.props.currentHost] && this.props.classes.notAlive,
-                            )}
+                        <Box
+                            component="div"
+                            sx={{
+                                ...styles.width,
+                                ...(!this.state.alive[this.props.currentHost] ? styles.notAlive : undefined),
+                                ...styles.imgDiv,
+                            }}
                             style={{
                                 display: 'flex',
                                 color: selectedHostObj?.common?.color
@@ -286,11 +322,11 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                             }}
                         >
                             <Icon
-                                className={Utils.clsx(this.props.classes.img, this.props.classes.imgButton)}
+                                style={styles.img}
                                 src={selectedHostObj?.common?.icon || 'img/no-image.png'}
                             />
-                            <div className={this.props.classes.name}>{selectedHostObj?.common?.name}</div>
-                        </div>
+                            <Box component="div" sx={styles.name}>{selectedHostObj?.common?.name}</Box>
+                        </Box>
                     </Button>
                 </span>
             </Tooltip>
@@ -316,23 +352,25 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                         this.setState({ anchorEl: null });
                     }}
                 >
-                    <div
+                    <Box
+                        component="div"
+                        sx={styles.imgDiv}
                         style={{
                             display: 'flex',
                             color: (color && Utils.invertColor(color, true)) || 'inherit',
                             alignItems: 'center',
                         }}
                     >
-                        <div className={this.props.classes.selector}>
+                        <div style={styles.selector}>
                             {_id === this.props.currentHost ? 'ᐅ' : ''}
                         </div>
-                        <Icon className={this.props.classes.img} src={icon || 'img/no-image.png'} />
+                        <Icon style={styles.img} src={icon || 'img/no-image.png'} />
                         {name}
-                    </div>
+                    </Box>
                 </MenuItem>)}
             </Menu>
-        </div>;
+        </Box>;
     }
 }
 
-export default withStyles(styles)(HostSelectors);
+export default HostSelectors;

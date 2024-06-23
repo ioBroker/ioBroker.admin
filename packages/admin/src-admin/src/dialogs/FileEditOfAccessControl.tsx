@@ -5,6 +5,7 @@ import {
     I18n, SelectWithIcon,
     type AdminConnection,
     type ThemeType, type Translate,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import type {
@@ -298,6 +299,7 @@ interface FileEditOfAccessControlProps {
     objects: Record<string, ioBroker.Object>;
     t: Translate;
     themeType: ThemeType;
+    theme: IobTheme;
     folders: Folders;
     socket: AdminConnection;
 }
@@ -313,6 +315,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
     themeType,
     folders,
     socket,
+    theme,
 }) => {
     const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
     const object: FolderOrFileItem = (selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected)) || {} as FolderOrFileItem;
@@ -474,6 +477,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
         return <LinearProgress />;
     }
     return <CustomModal
+        theme={theme}
         titleButtonApply="apply"
         overflowHidden
         disableApply={disabledButton}

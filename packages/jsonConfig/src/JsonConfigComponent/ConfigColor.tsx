@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChromePicker, type ColorResult, type RGBColor } from 'react-color';
+import { ChromePicker, type ColorResult } from 'react-color';
 
 import {
     IconButton,

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import type { Styles } from '@mui/styles';
-import { withStyles } from '@mui/styles';
 
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -26,7 +25,7 @@ import {
 import type { ioBrokerObject } from '@/types';
 import Utils from '../components/Utils';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     dialog: {
         height: '100%',
         maxHeight: '100%',
@@ -35,14 +34,9 @@ const styles: Styles<IobTheme, any> = theme => ({
     content: {
         textAlign: 'center',
     },
-    tabPanel: {
-        width: '100%',
-        overflow: 'hidden',
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
-    },
-    error: {
+    error: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#ff7777' : '#c20000',
-    },
+    }),
     image: {
         height: '100%',
         width: 'auto',
@@ -59,9 +53,9 @@ const styles: Styles<IobTheme, any> = theme => ({
         border: '1px solid white',
         borderRadius: 5,
         padding: '8px 16px',
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
-});
+};
 
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg'],
@@ -74,7 +68,6 @@ interface ObjectViewFileDialogProps {
     socket: AdminConnection;
     obj: ioBrokerObject;
     onClose: () => void;
-    classes: Record<string, string>;
 }
 
 interface ObjectViewFileDialogState {
@@ -140,7 +133,7 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
 
     render() {
         return <Dialog
-            className={this.props.classes.dialog}
+            style={styles.dialog}
             open={!0}
             maxWidth={this.state.audio ? 'sm' : 'md'}
             onClose={() => this.props.onClose()}
@@ -148,22 +141,20 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
             aria-labelledby="object-view-dialog-title"
         >
             <DialogTitle id="object-view-dialog-title">
-                {
-                    this.props.t('View file in state: %s', this.props.obj._id)
-                }
+                {this.props.t('View file in state: %s', this.props.obj._id)}
             </DialogTitle>
-            <DialogContent className={this.props.classes.content}>
-                { this.state.error ? <div className={this.props.classes.error}>{this.state.error === 'State is not binary' ? this.props.t('No file stored yet') : this.props.t(this.state.error)}</div> : null}
+            <DialogContent style={styles.content}>
+                {this.state.error ? <Box component="div" sx={styles.error}>{this.state.error === 'State is not binary' ? this.props.t('No file stored yet') : this.props.t(this.state.error)}</Box> : null}
                 {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                { this.state.audio ? <audio ref={this.audioRef} src={`data:${this.state.mime};base64,${this.state.binary}`} /> : null }
-                { this.state.audio ? <Fab color="primary" onClick={() => this.audioRef.current && this.audioRef.current.play()}>
+                {this.state.audio ? <audio ref={this.audioRef} src={`data:${this.state.mime};base64,${this.state.binary}`} /> : null}
+                {this.state.audio ? <Fab color="primary" onClick={() => this.audioRef.current && this.audioRef.current.play()}>
                     <PlayIcon />
                 </Fab> : null }
-                { this.state.image ? <img src={`data:${this.state.mime};base64,${this.state.binary}`} alt={this.props.obj._id} className={this.props.classes.image} /> : null}
-                { this.state.text !== null ? <pre className={this.props.classes.text}>{this.state.text}</pre> : null}
+                {this.state.image ? <img src={`data:${this.state.mime};base64,${this.state.binary}`} alt={this.props.obj._id} style={styles.image} /> : null}
+                {this.state.text !== null ? <pre style={styles.text}>{this.state.text}</pre> : null}
             </DialogContent>
             <DialogActions>
-                <a className={this.props.classes.download} download={this.state.fileName} href={`data:${this.state.mime};base64,${this.state.binary}`}>
+                <a style={styles.download} download={this.state.fileName} href={`data:${this.state.mime};base64,${this.state.binary}`}>
                     <DownloadIcon style={{ paddingRight: 8, height: 12 }} />
                     <span>{this.props.t('Download')}</span>
                 </a>
@@ -180,4 +171,4 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
     }
 }
 
-export default withWidth()(withStyles(styles)(ObjectViewFileDialog));
+export default withWidth()(ObjectViewFileDialog);

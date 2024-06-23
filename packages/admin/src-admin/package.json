@@ -3,7 +3,7 @@
     "private": true,
     "homepage": ".",
     "scripts": {
-        "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true&& craco start",
+        "start": "set DANGEROUSLY_DISABLE_HOST_CHECK=true && craco start",
         "old-start": "react-scripts start",
         "lint": "eslint --fix --ext .js,.jsx,.tsx src",
         "build": "craco build",
@@ -24,7 +24,10 @@
         "@iobroker/json-config": "file:../../jsonConfig",
         "@iobroker/dm-gui-components": "file:../../dm-gui-components"
     },
-    "proxy": "http://127.0.0.1:8081",
+    "devDependencies": {
+        "http-proxy-middleware": "^3.0.0"
+    },
+    "proxya": "http://127.0.0.1:8081",
     "plugins": [
         [
             "@babel/plugin-proposal-decorators",

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Dialog,
@@ -19,7 +18,7 @@ import {
     MenuItem,
     FormControl,
     Select,
-    Typography,
+    Typography, Box,
 } from '@mui/material';
 
 import {
@@ -30,12 +29,12 @@ import {
 
 import type { IobTheme, Translate } from '@iobroker/adapter-react-v5';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     rating: {
         marginBottom: 20,
     },
     listRating: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     listTime: {
         opacity: 0.5,
@@ -44,17 +43,17 @@ const styles: Styles<IobTheme, any> = theme => ({
     list: {
         // maxHeight: 200,
     },
-    listOwn: {
+    listOwn: (theme: IobTheme) => ({
         backgroundColor: theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark,
-    },
-    listTitle: {
+    }),
+    listTitle: (theme: IobTheme) => ({
         backgroundColor: theme.palette.primary.dark,
-        paddingTop: 4,
-        paddingBottom: 4,
-        marginBottom: 4,
+        pt: '4px',
+        pb: '4px',
+        mb: '4px',
         color: '#ffffff',
         textAlign: 'center',
-    },
+    }),
     languageFilter: {
         width: 300,
     },
@@ -68,11 +67,11 @@ const styles: Styles<IobTheme, any> = theme => ({
     noComments: {
         width: '100%',
         textAlign: 'center',
-        marginTop: theme.spacing(2),
+        marginTop: 16,
     },
     commentCount: {
         marginTop: 2,
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         opacity: 0.8,
         fontSize: 10,
         float: 'right',
@@ -87,7 +86,7 @@ const styles: Styles<IobTheme, any> = theme => ({
         alignItems: 'center',
         gap: '10px',
     },
-});
+};
 
 const LANGUAGES = [
     {
@@ -167,10 +166,9 @@ interface RatingDialogProps {
     lang: string;
     uuid: string;
     version: string;
-    currentRating: { rating: { r: number; ts: number }; title: string };
+    currentRating: { rating?: { r: number; c: number }; title: string };
     adapter: string;
     onClose: (update?: RatingDialogRepository) => void;
-    classes: Record<string, string>;
 }
 
 interface RatingDialogState {
@@ -262,9 +260,9 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
      * @return {JSX.Element}
      */
     renderInfoText() {
-        return <div className={this.props.classes.infoTextContainer}>
+        return <div style={styles.infoTextContainer}>
             <InfoIcon />
-            <Typography className={this.props.classes.infoText}>{this.props.t('use GitHub for issues')}</Typography>
+            <Typography style={styles.infoText}>{this.props.t('use GitHub for issues')}</Typography>
         </div>;
     }
 
@@ -274,8 +272,8 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                 !(this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang));
 
             return <div style={{ width: '100%', textAlign: 'left' }}>
-                <h3 className={this.props.classes.listTitle}>{this.props.t('Comments')}</h3>
-                <FormControl variant="standard" className={this.props.classes.languageFilter}>
+                <Box component="h3" sx={styles.listTitle}>{this.props.t('Comments')}</Box>
+                <FormControl variant="standard" style={styles.languageFilter}>
                     <InputLabel>{this.props.t('Show comments in language')}</InputLabel>
                     <Select
                         variant="standard"
@@ -288,7 +286,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                         <MenuItem value="_">
                             {this.props.t('All')}
                             {' '}
-                            <span className={this.props.classes.commentCount}>{this.state.votings.comments.length}</span>
+                            <span style={styles.commentCount}>{this.state.votings.comments.length}</span>
                         </MenuItem>
                         {LANGUAGES.map(item => <MenuItem
                             key={item.id}
@@ -296,11 +294,11 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                         >
                             {item.title}
                             {' '}
-                            {this.state.commentsByLanguage[item.id] ? <span className={this.props.classes.commentCount}>{this.state.commentsByLanguage[item.id]}</span> : null}
+                            {this.state.commentsByLanguage[item.id] ? <span style={styles.commentCount}>{this.state.commentsByLanguage[item.id]}</span> : null}
                         </MenuItem>)}
                     </Select>
                 </FormControl>
-                <List classes={{ root: this.props.classes.list }} dense disablePadding>
+                <List style={styles.list} dense disablePadding>
                     {found && this.state.votings.comments.map((comment, i) => {
                         if (this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang) {
                             return null;
@@ -308,20 +306,20 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                         return comment ? <ListItem
                             key={i}
                             title={comment.uuid ? this.props.t('Your comment') : ''}
-                            classes={{ root: comment.uuid ? this.props.classes.listOwn : undefined }}
+                            sx={{ '&.MuiListItem-root': comment.uuid ? styles.listOwn : undefined }}
                             dense
                         >
-                            <ListItemAvatar classes={{ root: this.props.classes.listRating }}>
+                            <ListItemAvatar style={styles.listRating}>
                                 <Rating readOnly defaultValue={comment.rating} size="small" />
                             </ListItemAvatar>
                             <ListItemText
                                 primary={comment.comment}
                                 secondary={`${new Date(comment.ts).toLocaleString()} / v${comment.version}`}
-                                classes={{ secondary: this.props.classes.listTime }}
+                                sx={{ '& .MuiListItemText-secondary': styles.listTime }}
                             />
                         </ListItem> : null;
                     })}
-                    {!found && <div className={this.props.classes.noComments}>{this.props.t('No comments in selected language')}</div>}
+                    {!found && <div style={styles.noComments}>{this.props.t('No comments in selected language')}</div>}
                 </List>
             </div>;
         }
@@ -348,7 +346,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
             <DialogContent style={{ textAlign: 'center' }} title={this.props.currentRating?.title || ''}>
                 {this.renderInfoText()}
                 <Rating
-                    className={this.props.classes.rating}
+                    style={styles.rating}
                     name={this.props.adapter}
                     value={this.props.version ? this.state.ratingNumber : this.props.currentRating?.rating?.r}
                     size="large"
@@ -359,7 +357,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                 {this.props.version ? <div style={{ width: '100%', textAlign: 'left' }}>
                     <TextField
                         variant="standard"
-                        className={this.props.classes.ratingTextControl}
+                        style={styles.ratingTextControl}
                         value={this.state.ratingComment}
                         label={this.props.t('Comment to version')}
                         inputProps={{ maxLength: 200 }}
@@ -378,7 +376,7 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
                             </InputAdornment> : null,
                         }}
                     />
-                    <FormControl variant="standard" className={this.props.classes.ratingLanguageControl}>
+                    <FormControl variant="standard" style={styles.ratingLanguageControl}>
                         <InputLabel>{this.props.t('Language')}</InputLabel>
                         <Select
                             variant="standard"
@@ -428,4 +426,4 @@ class RatingDialog extends Component<RatingDialogProps, RatingDialogState> {
     }
 }
 
-export default withStyles(styles)(RatingDialog);
+export default RatingDialog;

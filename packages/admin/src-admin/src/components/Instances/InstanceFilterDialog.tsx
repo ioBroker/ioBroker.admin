@@ -8,7 +8,6 @@ import {
     Avatar, Card, Checkbox, DialogTitle,
     FormControlLabel, MenuItem, Select,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 
 import {
     Warning as WarningIcon,
@@ -22,11 +21,11 @@ import {
     green, grey, orange, red,
 } from '@mui/material/colors';
 
-import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 import filterIcon from '../../assets/filter.svg';
 
-const useStyles = makeStyles((theme: IobTheme) => ({
+const styles: Record<string, React.CSSProperties> = {
     root: {
         width: '100%',
         padding: 10,
@@ -153,13 +152,13 @@ const useStyles = makeStyles((theme: IobTheme) => ({
     icon: {
         width: 18,
         height: 18,
-        marginRight: theme.spacing(1),
+        marginRight: 8,
         display: 'inline-block',
     },
     menuValue: {
         whiteSpace: 'nowrap',
     },
-}));
+};
 
 const modeArray = ['none', 'daemon', 'schedule', 'once'];
 // const statusArray = [
@@ -171,28 +170,28 @@ const modeArray = ['none', 'daemon', 'schedule', 'once'];
 //     'enabled and OK'
 // ];
 
-const getModeIcon = (idx: number, className: string): React.JSX.Element | null => {
+const getModeIcon = (idx: number, style: React.CSSProperties): React.JSX.Element | null => {
     if (idx === 1) {
-        return <SettingsIcon className={className} />;
+        return <SettingsIcon style={style} />;
     }
     if (idx === 2) {
-        return <SettingsIcon className={className} />;
+        return <SettingsIcon style={style} />;
     }
     if (idx === 3) {
-        return <WarningIcon className={className} />;
+        return <WarningIcon style={style} />;
     }
     if (idx === 4) {
-        return <ScheduleIcon className={className} />;
+        return <ScheduleIcon style={style} />;
     }
     if (idx === 5) {
         return <div
             style={{
+                ...style,
                 width: 20,
                 height: 20,
                 margin: 2,
                 borderRadius: 2,
             }}
-            className={className}
         >
             <div style={{
                 width: 'calc(100% - 2px)',
@@ -226,27 +225,25 @@ interface InstanceFilterDialogProps {
 const InstanceFilterDialog = ({
     onClose, filterMode, filterStatus,
 }: InstanceFilterDialogProps) => {
-    const classes = useStyles();
-
     const [modeCheck, setModeCheck] = useState(filterMode);
     const [statusCheck, setStatusCheck] = useState(filterStatus);
 
     return <Dialog
         onClose={() => onClose()}
         open={!0}
-        classes={{ paper: classes.paper }}
+        sx={{ '& .MuiDialog-paper': styles.paper }}
     >
         <DialogTitle style={{ display: 'flex' }}>
             <div style={{ display: 'flex' }}>
-                <Avatar variant="square" className={classes.square} src={filterIcon} />
+                <Avatar variant="square" style={styles.square} src={filterIcon} />
                 {I18n.t('Filter instances')}
             </div>
         </DialogTitle>
-        <DialogContent className={classes.overflowHidden} dividers>
-            <Card className={classes.root}>
-                <div className={classes.rowBlock}>
+        <DialogContent style={styles.overflowHidden} dividers>
+            <Card style={styles.root}>
+                <div style={styles.rowBlock}>
                     <FormControlLabel
-                        className={classes.checkbox}
+                        style={styles.checkbox}
                         control={
                             <Checkbox
                                 checked={!!modeCheck}
@@ -259,7 +256,7 @@ const InstanceFilterDialog = ({
                         disabled={!modeCheck}
                         variant="standard"
                         value={modeCheck || 'none'}
-                        className={classes.select}
+                        style={styles.select}
                         onChange={el => {
                             if (el.target.value === 'none') {
                                 setModeCheck(null);
@@ -273,9 +270,9 @@ const InstanceFilterDialog = ({
                         </MenuItem>)}
                     </Select>
                 </div>
-                <div className={classes.rowBlock}>
+                <div style={styles.rowBlock}>
                     <FormControlLabel
-                        className={classes.checkbox}
+                        style={styles.checkbox}
                         control={
                             <Checkbox
                                 checked={!!statusCheck}
@@ -288,7 +285,7 @@ const InstanceFilterDialog = ({
                         disabled={!statusCheck}
                         variant="standard"
                         value={statusCheck || 'none'}
-                        className={classes.select}
+                        style={styles.select}
                         onChange={el => {
                             if (el.target.value === 'none') {
                                 setStatusCheck(null);
@@ -298,9 +295,9 @@ const InstanceFilterDialog = ({
                         }}
                     >
                         {Object.keys(statusArray).map((name, idx) => <MenuItem key={name} value={name}>
-                            <div className={classes.menuWrapper}>
-                                {statusArray[name].status ? <div className={classes.iconWrapper}>{getModeIcon(idx, (classes as Record<string, string>)[`statusIcon_${idx}`])}</div> : null}
-                                <div className={classes.textWrapper}>{I18n.t(statusArray[name].text)}</div>
+                            <div style={styles.menuWrapper}>
+                                {statusArray[name].status ? <div style={styles.iconWrapper}>{getModeIcon(idx, styles[`statusIcon_${idx}`])}</div> : null}
+                                <div style={styles.textWrapper}>{I18n.t(statusArray[name].text)}</div>
                             </div>
                         </MenuItem>)}
                     </Select>

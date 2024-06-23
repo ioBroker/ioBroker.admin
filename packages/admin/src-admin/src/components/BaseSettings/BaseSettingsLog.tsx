@@ -1,5 +1,4 @@
 import React, { createRef, Component } from 'react';
-import { type Styles, withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -31,44 +30,44 @@ import {
     Computer as IconSyslog,
     Send as IconStream,
 } from '@mui/icons-material';
-import { withWidth, type IobTheme } from '@iobroker/adapter-react-v5';
+import { withWidth, type IobTheme, type Translate } from '@iobroker/adapter-react-v5';
 import IconSeq from '../../assets/seq.png';
 
-const styles: Styles<any, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     paper: {
         height: '100%',
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
-        padding: theme.spacing(1),
+        padding: 8,
     },
-    gridSettings: {
+    gridSettings: (theme: IobTheme) => ({
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
         width: '100%',
         overflow: 'auto',
-    },
+    }),
     controlItem: {
         width: 400,
-        marginBottom: theme.spacing(2),
-        marginRight: theme.spacing(1),
-        marginLeft: theme.spacing(1),
+        marginBottom: 16,
+        marginRight: 8,
+        marginLeft: 8,
     },
     delButton: {
         position: 'absolute',
         top: 2,
-        right: theme.spacing(6),
+        right: 48,
     },
     addButton: {
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
     buttonIcon: {
         height: 24,
     },
     headingIcon: {
         height: 24,
-        marginRight: theme.spacing(1),
+        marginRight: 8,
     },
-});
+};
 
 interface TransportSettings {
     type: string;
@@ -103,17 +102,16 @@ export interface SettingsLog {
 }
 
 interface BaseSettingsLogProps {
-    t: (text: string) => string;
+    t: Translate;
     onChange: (settings: SettingsLog) => void;
     settings: SettingsLog;
-    classes: Record<string, string>;
 }
 
 interface BaseSettingsLogState {
     level: string;
     maxDays: number | string;
     noStdout: boolean;
-    transport: Record<string, any>;
+    transport: Record<string, TransportSettings>;
     expanded: string[];
 }
 
@@ -225,7 +223,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
     renderEnabled(name: string) {
         return <Grid item>
             <FormControlLabel
-                className={this.props.classes.controlItem}
+                style={styles.controlItem}
                 control={
                     <Checkbox
                         checked={this.state.transport[name].enabled}
@@ -243,7 +241,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
 
     renderLogLevel(name: string) {
         return this.state.transport[name].enabled ? <Grid item>
-            <FormControl className={this.props.classes.controlItem} variant="standard">
+            <FormControl style={styles.controlItem} variant="standard">
                 <InputLabel>{this.props.t('Level')}</InputLabel>
                 <Select
                     variant="standard"
@@ -284,9 +282,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             }}
         >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative', background: 'rgba(128, 128, 128, 0.3)' }}>
-                <IconSyslog className={this.props.classes.headingIcon} />
-                <Typography className={this.props.classes.heading}>{name}</Typography>
-                <Fab size="small" className={this.props.classes.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
+                <IconSyslog style={styles.headingIcon} />
+                <Typography style={styles.heading}>{name}</Typography>
+                <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
@@ -295,7 +293,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].host}
                             helperText={this.props.t('The host running syslogd, defaults to localhost')}
                             onChange={e => {
@@ -309,7 +307,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].port}
                             type="number"
                             helperText={this.props.t('The port on the host that syslog is running on, defaults to syslogd\'s default port(514/UDP).')}
@@ -322,7 +320,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                         />
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
-                        <FormControl className={this.props.classes.controlItem} variant="standard">
+                        <FormControl style={styles.controlItem} variant="standard">
                             <InputLabel>{this.props.t('Protocol')}</InputLabel>
                             <Select
                                 variant="standard"
@@ -343,7 +341,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].path}
                             helperText={this.props.t('The path to the syslog dgram socket (i.e. /dev/log or /var/run/syslog for OS X).')}
                             onChange={e => {
@@ -357,7 +355,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].facility}
                             helperText={this.props.t('Syslog facility to use (Default: local0).')}
                             onChange={e => {
@@ -371,7 +369,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].localhost}
                             helperText={this.props.t('Host to indicate that log messages are coming from (Default: localhost).')}
                             onChange={e => {
@@ -385,7 +383,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].sysLogType}
                             helperText={this.props.t('The type of the syslog protocol to use (Default: BSD).')}
                             onChange={e => {
@@ -399,7 +397,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].app_name}
                             helperText={this.props.t('The name of the application (Default: process.title).')}
                             onChange={e => {
@@ -413,7 +411,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].eol}
                             helperText={this.props.t('The end of line character to be added to the end of the message (Default: Message without modifications).')}
                             onChange={e => {
@@ -446,9 +444,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             }}
         >
             <AccordionSummary style={{ background: 'rgba(128, 128, 128, 0.3)' }} expandIcon={<ExpandMoreIcon />}>
-                <IconFile className={this.props.classes.headingIcon} />
-                <Typography className={this.props.classes.heading}>{name}</Typography>
-                <Fab size="small" className={this.props.classes.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
+                <IconFile style={styles.headingIcon} />
+                <Typography style={styles.heading}>{name}</Typography>
+                <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
@@ -457,7 +455,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].filename}
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
@@ -471,7 +469,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].fileext}
                             onChange={e => {
                                 const transport = JSON.parse(JSON.stringify(this.state.transport));
@@ -485,7 +483,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].maxSize}
                             type="number"
                             helperText={this.props.t('MB')}
@@ -501,7 +499,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].maxFiles}
                             type="number"
                             onChange={e => {
@@ -534,9 +532,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             }}
         >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative', background: 'rgba(128, 128, 128, 0.3)' }}>
-                <IconHttp className={this.props.classes.headingIcon} />
-                <Typography className={this.props.classes.heading}>{name}</Typography>
-                <Fab size="small" className={this.props.classes.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
+                <IconHttp style={styles.headingIcon} />
+                <Typography style={styles.heading}>{name}</Typography>
+                <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
@@ -545,7 +543,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].host}
                             helperText={this.props.t('Remote host of the HTTP logging endpoint')}
                             onChange={e => {
@@ -559,7 +557,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].port}
                             type="number"
                             helperText={this.props.t('Remote port of the HTTP logging endpoint')}
@@ -574,7 +572,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].path}
                             helperText={this.props.t('Remote URI of the HTTP logging endpoint')}
                             onChange={e => {
@@ -588,7 +586,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].auth}
                             helperText={this.props.t('An object representing the username and password for HTTP Basic Auth')}
                             onChange={e => {
@@ -601,7 +599,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <FormControlLabel
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             control={
                                 <Checkbox
                                     checked={this.state.transport[name].ssl}
@@ -637,9 +635,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             }}
         >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative', background: 'rgba(128, 128, 128, 0.3)' }}>
-                <IconStream className={this.props.classes.headingIcon} />
-                <Typography className={this.props.classes.heading}>{name}</Typography>
-                <Fab size="small" className={this.props.classes.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
+                <IconStream style={styles.headingIcon} />
+                <Typography style={styles.heading}>{name}</Typography>
+                <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
@@ -647,7 +645,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].stream}
                             helperText={this.props.t('any Node.js stream. If an objectMode stream is provided then the entire info object will be written. Otherwise info[MESSAGE] will be written')}
                             onChange={e => {
@@ -660,7 +658,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <FormControlLabel
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             control={
                                 <Checkbox
                                     checked={this.state.transport[name].silent}
@@ -677,7 +675,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].eol}
                             helperText={this.props.t('Line-ending character to use. (default: os.EOL).)')}
                             onChange={e => {
@@ -710,9 +708,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             }}
         >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative', background: 'rgba(128, 128, 128, 0.3)' }}>
-                <img className={this.props.classes.headingIcon} src={IconSeq} alt="seq" />
-                <Typography className={this.props.classes.heading}>{name}</Typography>
-                <Fab size="small" className={this.props.classes.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
+                <img style={styles.headingIcon} src={IconSeq} alt="seq" />
+                <Typography style={styles.heading}>{name}</Typography>
+                <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
@@ -721,7 +719,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].serverUrl}
                             helperText={this.props.t('The http(s) URL including port of the seq server. If you use HTTPS a real certificate is needed; self signed certs are ot accepted.')}
                             onChange={e => {
@@ -735,7 +733,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.transport[name].apiKey}
                             helperText={this.props.t('The apiKey of the seq system')}
                             onChange={e => {
@@ -851,11 +849,11 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
     }
 
     render() {
-        return <Paper className={this.props.classes.paper}>
-            <Grid item className={this.props.classes.gridSettings}>
+        return <Paper style={styles.paper}>
+            <Grid item sx={styles.gridSettings}>
                 <Grid container direction="column">
                     <Grid item>
-                        <FormControl className={this.props.classes.controlItem} variant="standard">
+                        <FormControl style={styles.controlItem} variant="standard">
                             <InputLabel>{this.props.t('Level')}</InputLabel>
                             <Select
                                 variant="standard"
@@ -873,7 +871,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     <Grid item>
                         <TextField
                             variant="standard"
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             value={this.state.maxDays}
                             helperText={this.props.t('Every day one file')}
                             type="number"
@@ -883,7 +881,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                     </Grid>
                     <Grid item>
                         <FormControlLabel
-                            className={this.props.classes.controlItem}
+                            style={styles.controlItem}
                             control={
                                 <Checkbox
                                     checked={this.state.noStdout}
@@ -919,52 +917,52 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
             <Toolbar>
                 <Button
                     color="grey"
-                    className={this.props.classes.addButton}
+                    style={styles.addButton}
                     variant="contained"
                     onClick={() => this.add('file')}
                     startIcon={<IconPlus />}
                 >
-                    <IconFile className={this.props.classes.buttonIcon} />
+                    <IconFile style={styles.buttonIcon} />
                     {this.props.t('File log')}
                 </Button>
                 <Button
                     color="grey"
-                    className={this.props.classes.addButton}
+                    style={styles.addButton}
                     variant="contained"
                     onClick={() => this.add('syslog')}
                     startIcon={<IconPlus />}
                 >
-                    <IconSyslog className={this.props.classes.buttonIcon} />
+                    <IconSyslog style={styles.buttonIcon} />
                     {this.props.t('Syslog')}
                 </Button>
                 <Button
                     color="grey"
-                    className={this.props.classes.addButton}
+                    style={styles.addButton}
                     variant="contained"
                     onClick={() => this.add('http')}
                     startIcon={<IconPlus />}
                 >
-                    <IconHttp className={this.props.classes.buttonIcon} />
+                    <IconHttp style={styles.buttonIcon} />
                     {this.props.t('HTTP log')}
                 </Button>
                 <Button
                     color="grey"
-                    className={this.props.classes.addButton}
+                    style={styles.addButton}
                     variant="contained"
                     onClick={() => this.add('stream')}
                     startIcon={<IconPlus />}
                 >
-                    <IconStream className={this.props.classes.buttonIcon} />
+                    <IconStream style={styles.buttonIcon} />
                     {this.props.t('Stream log')}
                 </Button>
                 <Button
                     color="grey"
-                    className={this.props.classes.addButton}
+                    style={styles.addButton}
                     variant="contained"
                     onClick={() => this.add('seq')}
                     startIcon={<IconPlus />}
                 >
-                    <img src={IconSeq} className={this.props.classes.buttonIcon} alt="seq" />
+                    <img src={IconSeq} style={styles.buttonIcon} alt="seq" />
                     {this.props.t('SEQ log')}
                 </Button>
             </Toolbar>
@@ -972,4 +970,4 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
     }
 }
 
-export default withWidth()(withStyles(styles)(BaseSettingsLog));
+export default withWidth()(BaseSettingsLog);

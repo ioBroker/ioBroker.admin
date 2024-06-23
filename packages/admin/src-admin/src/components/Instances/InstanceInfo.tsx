@@ -1,12 +1,11 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 import {
     Grid,
     Tooltip,
     Typography,
 } from '@mui/material';
 
-const styles = () => ({
+const styles: Record<string, React.CSSProperties> = {
     nowrap: {
         flexFlow: 'nowrap',
         overflow: 'hidden',
@@ -15,14 +14,16 @@ const styles = () => ({
         width:'100%',
         overflow: 'hidden',
     },
-});
+    tooltip: {
+        pointerEvents: 'none',
+    },
+};
 
 interface InstanceInfoProps {
     children: (React.JSX.Element | string)[] | React.JSX.Element | string;
     icon?: React.JSX.Element;
     tooltip?: string;
-    classes: Record<string, string>;
-    className?: string;
+    style?: React.CSSProperties;
 }
 
 const InstanceInfo = (props: InstanceInfoProps) => <Grid
@@ -32,24 +33,23 @@ const InstanceInfo = (props: InstanceInfoProps) => <Grid
     alignItems="center"
     direction="row"
     spacing={1}
-    className={props.classes.nowrap}
+    style={styles.nowrap}
 >
-    <Grid item>
-        {props.icon &&
-            <Tooltip title={props.tooltip || ''}>
-                {props.icon}
-            </Tooltip>}
-    </Grid>
+    {props.icon && <Grid item>
+        <Tooltip title={props.tooltip || ''} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            {props.icon}
+        </Tooltip>
+    </Grid>}
     <Grid
-        className={props.classes.width}
+        style={styles.width}
         item
     >
-        <Tooltip title={props.tooltip || ''}>
-            <Typography component="div" className={props.className}>
+        <Tooltip title={props.tooltip || ''} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Typography component="div" style={props.style}>
                 {props.children}
             </Typography>
         </Tooltip>
     </Grid>
 </Grid>;
 
-export default withStyles(styles)(InstanceInfo);
+export default InstanceInfo;

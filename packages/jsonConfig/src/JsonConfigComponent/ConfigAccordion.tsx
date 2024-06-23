@@ -1,5 +1,4 @@
 import React from 'react';
-import { withStyles } from '@mui/styles';
 
 import {
     FormHelperText,
@@ -18,29 +17,33 @@ import {
     ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 
-import { Utils, I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemAccordion, ConfigItemIndexed, ConfigItemPanel } from '#JC/types';
+import Utils from '#JC/Utils';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 // eslint-disable-next-line import/no-cycle
 import ConfigPanel from './ConfigPanel';
 
-const styles: Record<string, any> = (theme: IobTheme) => ({
+const styles: Record<string, any> = {
     fullWidth: {
         width: '100%',
     },
-    accordionSummary: {
+    accordionSummary: (theme: IobTheme) => ({
         backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
-    },
+    }),
     accordionTitle: {
         // fontWeight: 'bold',
     },
-    toolbar: {
+    toolbar: (theme: IobTheme) => ({
         backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
         borderRadius: 3,
+    }),
+    tooltip: {
+        pointerEvents: 'none',
     },
-});
+};
 
 interface ConfigAccordionProps extends ConfigGenericProps {
     schema: ConfigItemAccordion;
@@ -126,6 +129,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
             }}
             onError={(error, attr) => this.onError(error, attr)}
             table={this.props.table}
+            theme={this.props.theme}
         />;
     }
 
@@ -216,7 +220,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
     }
 
     renderItem(/* error, disabled, defaultValue */) {
-        const { classes, schema } = this.props;
+        const { schema } = this.props;
         const { value } = this.state;
 
         if (!value) {
@@ -225,7 +229,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
 
         return <Paper>
             {schema.label || !schema.noDelete ? <Toolbar variant="dense">
-                {schema.label ? <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+                {schema.label ? <Typography variant="h6" id="tableTitle" component="div">
                     {this.getText(schema.label)}
                 </Typography> : null}
                 {!schema.noDelete ? <IconButton size="small" color="primary" onClick={this.onAdd}>
@@ -236,29 +240,29 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                 <Accordion key={`${idx}_${i}`} expanded={this.state.activeIndex === i} onChange={(e, expanded) => { this.setState({ activeIndex: expanded ? i : -1 }); }}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
-                        className={Utils.clsx(classes.fullWidth, classes.accordionSummary)}
+                        sx={Utils.getStyle(this.props.theme, styles.fullWidth, styles.accordionSummary)}
                     >
-                        <Typography className={classes.accordionTitle}>{idx[schema.titleAttr]}</Typography>
+                        <Typography style={styles.accordionTitle}>{idx[schema.titleAttr]}</Typography>
                     </AccordionSummary>
                     <AccordionDetails style={({ ...schema.style, ...(this.props.themeType ? schema.darkStyle : {}) })}>
                         {this.itemAccordion(value[i], i)}
-                        <Toolbar className={classes.toolbar}>
-                            {i ? <Tooltip title={I18n.t('ra_Move up')}>
+                        <Toolbar sx={styles.toolbar}>
+                            {i ? <Tooltip title={I18n.t('ra_Move up')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={() => this.onMoveUp(i)}>
                                     <UpIcon />
                                 </IconButton>
-                            </Tooltip> : <div className={classes.buttonEmpty} />}
-                            {i < value.length - 1 ? <Tooltip title={I18n.t('ra_Move down')}>
+                            </Tooltip> : <div style={styles.buttonEmpty} />}
+                            {i < value.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={() => this.onMoveDown(i)}>
                                     <DownIcon />
                                 </IconButton>
-                            </Tooltip> : <div className={classes.buttonEmpty} />}
-                            {!schema.noDelete ? <Tooltip title={I18n.t('ra_Delete current row')}>
+                            </Tooltip> : <div style={styles.buttonEmpty} />}
+                            {!schema.noDelete ? <Tooltip title={I18n.t('ra_Delete current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={this.onDelete(i)}>
                                     <DeleteIcon />
                                 </IconButton>
                             </Tooltip> : null}
-                            {schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')}>
+                            {schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <IconButton size="small" onClick={this.onClone(i)}>
                                     <CopyContentIcon />
                                 </IconButton>
@@ -266,7 +270,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                         </Toolbar>
                     </AccordionDetails>
                 </Accordion>)}
-            {!schema.noDelete && value.length > 0 ? <Toolbar variant="dense" className={classes.rootTool}>
+            {!schema.noDelete && value.length > 0 ? <Toolbar variant="dense" sx={styles.rootTool}>
                 <IconButton size="small" color="primary" onClick={this.onAdd}>
                     <AddIcon />
                 </IconButton>
@@ -276,4 +280,4 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
     }
 }
 
-export default withStyles(styles)(ConfigAccordion);
+export default ConfigAccordion;

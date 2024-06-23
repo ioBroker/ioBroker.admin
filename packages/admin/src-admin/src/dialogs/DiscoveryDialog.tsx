@@ -27,7 +27,6 @@ import {
     Typography,
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
 
 import {
     Visibility as VisibilityIcon,
@@ -40,14 +39,17 @@ import {
     ReportProblem as ReportProblemIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, SelectWithIcon } from '@iobroker/adapter-react-v5';
+import {
+    I18n, Utils,
+    SelectWithIcon,
+} from '@iobroker/adapter-react-v5';
 
 import Command from '../components/Command';
 import LicenseDialog from './LicenseDialog';
 import GenerateInputsModal from './GenerateInputsModal';
 import useStateLocal from '../helpers/hooks/useStateLocal';
 
-const useStyles = makeStyles(theme => ({
+const styles: Record<string, any> = {
     root: {
         // backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -71,90 +73,12 @@ const useStyles = makeStyles(theme => ({
     overflowAuto: {
         overflowY: 'auto',
     },
-    pre: {
-        overflow: 'auto',
-        margin: 20,
-        '& p': {
-            fontSize: 18,
-        },
-    },
-    blockInfo: {
-        right: 20,
-        top: 10,
-        position: 'absolute',
-        display: 'flex',
-        alignItems: 'center',
-        color: 'silver',
-    },
-    img: {
-        marginLeft: 10,
-        width: 45,
-        height: 45,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
-        },
-    },
-    message: {
-        justifyContent: 'space-between',
-        display: 'flex',
-        width: '100%',
-        alignItems: 'center',
-    },
-    column: {
-        flexDirection: 'column',
-    },
     headerText: {
         fontWeight: 'bold',
         fontSize: 15,
     },
     descriptionHeaderText: {
         margin: '10px 0',
-    },
-    silver: {
-        color: 'silver',
-    },
-    button: {
-        paddingTop: 18,
-        paddingBottom: 5,
-        position: 'sticky',
-        bottom: 0,
-        background: 'white',
-        zIndex: 3,
-    },
-    terminal: {
-        fontFamily: 'monospace',
-        fontSize: 14,
-        marginLeft: 20,
-    },
-    img2: {
-        width: 25,
-        height: 25,
-        marginRight: 10,
-        margin: 'auto 0',
-        position: 'relative',
-        '&:after': {
-            content: '""',
-            position: 'absolute',
-            zIndex: 2,
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'url("img/no-image.png") 100% 100% no-repeat',
-            backgroundSize: 'cover',
-            backgroundColor: '#fff',
-        },
     },
     heading: {
         display: 'flex',
@@ -165,24 +89,18 @@ const useStyles = makeStyles(theme => ({
         padding: 13,
         fontSize: 16,
     },
-    headerBlockDisplay: {
-        backgroundColor: '#272727',
-        padding: 13,
-        fontSize: 16,
-        display: 'flex',
-    },
     headerBlockDisplayItem: {
-        padding: 5,
+        p: '5px',
         fontSize: 16,
         display: 'flex',
-        margin: 2,
+        m: '2px',
         border: '1px solid #c0c0c045',
-        borderRadius: 4,
+        borderRadius: '4px',
         alignItems: 'center',
         transition: 'background .5s, color .5s',
     },
     activeBlock: {
-        background: '#c0c0c021',
+        backgroundColor: '#c0c0c021',
         border: '1px solid #4dabf5',
     },
     pointer: {
@@ -190,7 +108,7 @@ const useStyles = makeStyles(theme => ({
     },
     hover: {
         '&:hover': {
-            background: '#c0c0c021',
+            backgroundColor: '#c0c0c021',
         },
     },
     installSuccess: {
@@ -211,7 +129,7 @@ const useStyles = makeStyles(theme => ({
     },
     paperTable: {
         width: '100%',
-        marginBottom: (theme as any).spacing(2),
+        marginBottom: 16,
     },
     wrapperSwitch: {
         display: 'flex',
@@ -245,13 +163,12 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
     },
-}));
+};
 
 interface TabPanelProps {
-    classes: Record<string, string>;
-    children: any;
-    value: any;
-    index: any;
+    children: React.JSX.Element | React.JSX.Element[];
+    value: number;
+    index: number;
     title: string;
     custom?: boolean;
     boxHeight?: boolean;
@@ -260,15 +177,15 @@ interface TabPanelProps {
 }
 
 function TabPanel({
-    classes, children, value, index, title, custom, boxHeight, black, ...props
+    style, children, value, index, title, custom, boxHeight, black, ...props
 }: TabPanelProps): React.JSX.Element | null {
     if (custom) {
         return <div {...props}>{value === index && children}</div>;
     }
     if (value === index) {
-        return <div {...props}>
+        return <div {...props} style={style}>
             <AppBar position="static" color="default">
-                <div style={!black ? { color: 'white' } : undefined} className={classes.headerBlock}>
+                <div style={{ ...styles.headerBlock, color: !black ? 'white' : undefined }}>
                     {title}
                 </div>
             </AppBar>
@@ -309,7 +226,13 @@ const headCells = [
     },
 ];
 
-function EnhancedTableHead(props: Record<string, any>): React.JSX.Element {
+interface EnhancedTableHeadProps {
+    numSelected: number;
+    onSelectAllClick: (event: any) => void;
+    rowCount: number;
+}
+
+function EnhancedTableHead(props: EnhancedTableHeadProps): React.JSX.Element {
     const { numSelected, rowCount, onSelectAllClick } = props;
 
     return <TableHead>
@@ -322,15 +245,13 @@ function EnhancedTableHead(props: Record<string, any>): React.JSX.Element {
                     inputProps={{ 'aria-label': 'select all desserts' }}
                 />
             </TableCell>
-            {headCells.map(headCell => (
-                <TableCell
-                    key={headCell.id}
-                    align={headCell.numeric ? 'right' : 'left'}
-                    padding={headCell.disablePadding ? 'none' : 'normal'}
-                >
-                    <TableSortLabel>{headCell.label}</TableSortLabel>
-                </TableCell>
-            ))}
+            {headCells.map(headCell => <TableCell
+                key={headCell.id}
+                align={headCell.numeric ? 'right' : 'left'}
+                padding={headCell.disablePadding ? 'none' : 'normal'}
+            >
+                <TableSortLabel>{headCell.label}</TableSortLabel>
+            </TableCell>)}
         </TableRow>
     </TableHead>;
 }
@@ -407,8 +328,6 @@ function DiscoveryDialog({
     onClose,
     theme,
 }: Record<string, any>) {
-    const classes = useStyles();
-
     const [step, setStep] = useState<number>(0);
     const [listMethods, setListMethods] = useState<Record<string, any>>({});
     const [checkboxChecked, setCheckboxChecked] = useState<Record<string, any>>({});
@@ -701,9 +620,9 @@ function DiscoveryDialog({
                 }
             }}
             open={!0}
-            classes={{ paper: classes.paper }}
+            sx={{ '& .MuiDialog-paper': styles.paper }}
         >
-            <h2 className={classes.heading}>
+            <h2 style={styles.heading}>
                 <VisibilityIcon
                     style={{
                         color: 'rgb(77 171 245)',
@@ -714,87 +633,71 @@ function DiscoveryDialog({
                 />
                 {I18n.t('Find devices and services')}
             </h2>
-            <Stepper className={classes.stepper} alternativeLabel activeStep={step}>
-                {steps.map(label => (
-                    <Step key={label}>
-                        <StepLabel>{I18n.t(label)}</StepLabel>
-                    </Step>
-                ))}
+            <Stepper style={styles.stepper} alternativeLabel activeStep={step}>
+                {steps.map(label => <Step key={label}>
+                    <StepLabel>{I18n.t(label)}</StepLabel>
+                </Step>)}
             </Stepper>
-            <DialogContent className={Utils.clsx(classes.flex, classes.overflowHidden)} dividers>
-                <div className={classes.root}>
+            <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
+                <div style={styles.root}>
                     <TabPanel
-                        className={classes.overflowAuto}
-                        style={black ? { color: 'white' } : null}
+                        style={{ ...styles.overflowAuto, color: black ? 'white' : undefined }}
                         value={step}
                         index={0}
                         black={black}
-                        classes={classes}
                         title={I18n.t('Discover all possible devices')}
                     >
-                        {!disableScanner ? (
-                            <>
-                                {' '}
-                                <div className={classes.headerText}>{I18n.t('press_discover')}</div>
-                                {discoveryData?.native?.lastScan && (
-                                    <div className={classes.descriptionHeaderText}>
-                                        {I18n.t(
-                                            'Last scan on %s',
-                                            Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat),
-                                        )}
-                                    </div>
+                        {!disableScanner ? <>
+                            {' '}
+                            <div style={styles.headerText}>{I18n.t('press_discover')}</div>
+                            {discoveryData?.native?.lastScan && <div style={styles.descriptionHeaderText}>
+                                {I18n.t(
+                                    'Last scan on %s',
+                                    Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat),
                                 )}
-                                <div
-                                    style={!black ? { color: 'white' } : undefined}
-                                    className={classes.headerBlock}
-                                >
-                                    {I18n.t('Use following methods:')}
+                            </div>}
+                            <div
+                                style={{ ...styles.headerBlock, color: !black ? 'white' : undefined }}
+                            >
+                                {I18n.t('Use following methods:')}
+                            </div>
+                            {Object.keys(listMethods).map(key => (
+                                <div key={key}>
+                                    <Checkbox
+                                        checked={checkboxChecked[key]}
+                                        disabled={disableScanner}
+                                        onChange={(_, value) => {
+                                            const newCheckboxChecked = JSON.parse(
+                                                JSON.stringify(checkboxChecked),
+                                            );
+                                            newCheckboxChecked[key] = value;
+                                            ((window as any)._localStorage || window.localStorage).setItem(
+                                                'App.discoveryLastSelection',
+                                                JSON.stringify(newCheckboxChecked),
+                                            );
+                                            setCheckboxChecked(newCheckboxChecked);
+                                        }}
+                                    />
+                                    {key}
                                 </div>
-                                {Object.keys(listMethods).map(key => (
-                                    <div key={key}>
-                                        <Checkbox
-                                            checked={checkboxChecked[key]}
-                                            disabled={disableScanner}
-                                            onChange={(_, value) => {
-                                                const newCheckboxChecked = JSON.parse(
-                                                    JSON.stringify(checkboxChecked),
-                                                );
-                                                newCheckboxChecked[key] = value;
-                                                ((window as any)._localStorage || window.localStorage).setItem(
-                                                    'App.discoveryLastSelection',
-                                                    JSON.stringify(newCheckboxChecked),
-                                                );
-                                                setCheckboxChecked(newCheckboxChecked);
-                                            }}
-                                        />
-                                        {key}
-                                    </div>
-                                ))}
-                            </>
-                        ) : (
-                            scanRunning && (
-                                <div>
-                                    {devicesProgress >= 99
-                                        ? `Lookup services - ${servicesProgress}%`
-                                        : `Lookup devices - ${devicesProgress}%`}
-                                    {disableScanner && (
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={devicesProgress >= 99 ? servicesProgress : devicesProgress}
-                                        />
-                                    )}
-                                    {devicesProgress >= 99
-                                        ? `${instancesFound} service(s) found`
-                                        : `${devicesFound} device(s) found`}
-                                </div>
-                            )
-                        )}
+                            ))}
+                        </> : (scanRunning && <div>
+                            {devicesProgress >= 99
+                                ? `Lookup services - ${servicesProgress}%`
+                                : `Lookup devices - ${devicesProgress}%`}
+                            {disableScanner && <LinearProgress
+                                variant="determinate"
+                                value={devicesProgress >= 99 ? servicesProgress : devicesProgress}
+                            />}
+                            {devicesProgress >= 99
+                                ? `${instancesFound} service(s) found`
+                                : `${devicesFound} device(s) found`}
+                        </div>)}
                     </TabPanel>
                     <TabPanel
-                        className={classes.overflowAuto}
+                        style={styles.overflowAuto}
                         value={step}
                         index={1}
-                        classes={classes}
                         title={
                             discoveryData?.native?.lastScan
                                 ? I18n.t(
@@ -804,8 +707,8 @@ function DiscoveryDialog({
                                 : I18n.t('Create instances automatically')
                         }
                     >
-                        <div className={classes.wrapperSwitch}>
-                            <div className={classes.divSwitch}>
+                        <div style={styles.wrapperSwitch}>
+                            <div style={styles.divSwitch}>
                                 <div style={!showAll ? { color: 'green' } : undefined}>
                                     {I18n.t('hide ignored')}
                                 </div>
@@ -816,7 +719,7 @@ function DiscoveryDialog({
                                 />
                                 <div style={showAll ? { color: 'green' } : undefined}>{I18n.t('show ignored')}</div>
                             </div>
-                            <div className={Utils.clsx(classes.divSwitch, classes.marginLeft)}>
+                            <div style={{ ...styles.divSwitch, ...styles.marginLeft }}>
                                 <div style={!suggested ? { color: 'green' } : undefined}>
                                     {I18n.t('hide suggested')}
                                 </div>
@@ -830,11 +733,10 @@ function DiscoveryDialog({
                                 </div>
                             </div>
                         </div>
-                        <Paper className={classes.paperTable}>
+                        <Paper style={styles.paperTable}>
                             <TableContainer>
-                                <Table className={classes.table} size="small">
+                                <Table style={styles.table} size="small">
                                     <EnhancedTableHead
-                                        classes={classes}
                                         numSelected={selected.length}
                                         onSelectAllClick={handleSelectAllClick}
                                         rowCount={discoveryData?.native?.newInstances?.length || 0}
@@ -864,14 +766,14 @@ function DiscoveryDialog({
                                                         />
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" padding="none">
-                                                        <div className={classes.instanceWrapper}>
+                                                        <div style={styles.instanceWrapper}>
                                                             <Avatar
                                                                 variant="square"
                                                                 alt={obj._id.replace('system.adapter.', '')}
                                                                 src={repository[obj.common.name]?.icon}
-                                                                className={classes.instanceIcon}
+                                                                style={styles.instanceIcon}
                                                             />
-                                                            <div className={classes.instanceId}>
+                                                            <div style={styles.instanceId}>
                                                                 {obj._id.replace('system.adapter.', '')}
                                                             </div>
                                                         </div>
@@ -924,29 +826,28 @@ function DiscoveryDialog({
                         </Paper>
                     </TabPanel>
                     <TabPanel
-                        className={classes.overflowAuto}
                         value={step}
                         index={2}
-                        style={{ height: '100%' }}
+                        style={{ ...styles.overflowAuto, height: '100%' }}
                         boxHeight
-                        classes={classes}
                         title={I18n.t('Install adapters')}
                     >
                         <div style={{ display: 'flex', height: '100%' }}>
                             <div>
                                 {selected.map((el, idx) => (
-                                    <div
+                                    <Box
+                                        component="div"
                                         key={el}
                                         onClick={finishInstall ? () => setSelectLogsIndex(idx) : undefined}
-                                        className={Utils.clsx(
-                                            classes.headerBlockDisplayItem,
-                                            finishInstall && classes.pointer,
-                                            finishInstall && classes.hover,
-                                            finishInstall && selectLogsIndex === idx && classes.activeBlock,
-                                        )}
+                                        sx={{
+                                            ...styles.headerBlockDisplayItem,
+                                            ...(finishInstall ? styles.pointer : undefined),
+                                            ...(finishInstall ? styles.hover : undefined),
+                                            ...(finishInstall && selectLogsIndex === idx ? styles.activeBlock : undefined),
+                                        }}
                                     >
-                                        <div className={classes.width200}>
-                                            <div className={classes.instanceWrapper}>
+                                        <div style={styles.width200}>
+                                            <div style={styles.instanceWrapper}>
                                                 <Avatar
                                                     variant="square"
                                                     alt={el.replace('system.adapter.', '')}
@@ -954,9 +855,9 @@ function DiscoveryDialog({
                                                         repository[el.replace('system.adapter.', '').split('.')[0]]
                                                             ?.icon
                                                     }
-                                                    className={classes.instanceIcon}
+                                                    style={styles.instanceIcon}
                                                 />
-                                                <div className={classes.instanceId}>
+                                                <div style={styles.instanceId}>
                                                     {el.replace('system.adapter.', '')}
                                                 </div>
                                             </div>
@@ -965,11 +866,11 @@ function DiscoveryDialog({
                                             <CircularProgress size={20} />
                                         )}
                                         {installStatus[idx + 1] === 'error' ? (
-                                            <ReportProblemIcon className={classes.installError} />
+                                            <ReportProblemIcon style={styles.installError} />
                                         ) : installStatus[idx + 1] === 'success' ? (
-                                            <AssignmentTurnedInIcon className={classes.installSuccess} />
+                                            <AssignmentTurnedInIcon style={styles.installSuccess} />
                                         ) : null}
-                                    </div>
+                                    </Box>
                                 ))}
                             </div>
                             {currentInstall && (installProgress || finishInstall) && (
@@ -994,7 +895,6 @@ function DiscoveryDialog({
                                                         .split('.')[0]
                                                 }`
                                         }
-                                        // @ts-expect-error wait until component is typed
                                         onFinished={(_, logsSuccess) => {
                                             let data = JSON.parse(
                                                 JSON.stringify(
@@ -1084,7 +984,6 @@ function DiscoveryDialog({
                                                 });
                                             });
                                         }}
-                                        // @ts-expect-error wait until component is typed
                                         errorFunc={(el, logsError) => {
                                             if (el === 51 && cmdName === 'install') {
                                                 setCmdName('upload');

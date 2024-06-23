@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles, type Styles } from '@mui/styles';
 
 import {
     Button,
@@ -26,25 +25,26 @@ import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import {
     I18n, IconFx,
-    Utils, type IobTheme,
+    type IobTheme,
     type AdminConnection,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
 
-const styles: Styles<IobTheme, any> = theme => ({
+const styles: Record<string, any> = {
     funcIcon: {
         width: 16,
         height: 16,
     },
     formControlLabel: {
-        marginBottom: theme.spacing(2),
+        marginBottom: 16,
     },
     color: {
         // display: 'block',
         width: 70,
     },
     typeNameEng: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 8,
         opacity: 0.7,
         fontStyle: 'italic',
         fontSize: 'smaller',
@@ -52,22 +52,21 @@ const styles: Styles<IobTheme, any> = theme => ({
     usedInAlias: {
         // backgroundColor: theme.palette.secondary.main,
     },
-    addNewAlias: {
+    addNewAlias: (theme: IobTheme) => ({
         backgroundColor: theme.palette.primary.main,
-    },
-});
+    }),
+};
 const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
 
 // todo: icon, enum function, enum room, write from other object
 
 interface ObjectAliasEditorProps {
-    t: (text: string) => string;
+    t: Translate;
     socket: AdminConnection;
     objects: Record<string, ioBrokerObject>;
     onRedirect: (id: string, timeout?: number) => void;
     obj: ioBrokerObject;
     onClose: () => void;
-    classes: Record<string, string>;
 }
 
 interface ObjectAliasEditorState {
@@ -97,7 +96,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
         const id = this.props.obj._id;
 
         this.aliasIDs = Object.keys(this.props.objects).filter(_id => _id.startsWith('alias.0'));
-        // Try to find, if this state used somewhere in alias
+        // Try to find if this state used somewhere in alias
         for (let i = 0; i < this.aliasIDs.length; i++) {
             const alias = this.props.objects[this.aliasIDs[i]].common?.alias;
             if (alias?.id === id || (typeof alias?.id === 'object' && (alias.id.read === id || alias.id.write === id))) {
@@ -144,7 +143,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
             <DialogTitle>{I18n.t('Create new alias: %s', `alias.0.${this.state.newAliasId}`)}</DialogTitle>
             <DialogContent>
                 <TextField
-                    className={this.props.classes.formControlLabel}
+                    style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasId}
                     InputProps={{
@@ -163,7 +162,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     fullWidth
                 />
                 <TextField
-                    className={this.props.classes.formControlLabel}
+                    style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasName}
                     InputProps={{
@@ -181,7 +180,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     fullWidth
                 />
                 <TextField
-                    className={this.props.classes.formControlLabel}
+                    style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasDesc}
                     InputProps={{
@@ -198,7 +197,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     label={I18n.t('Alias description')}
                     fullWidth
                 />
-                <FormControl className={this.props.classes.formControlLabel} fullWidth>
+                <FormControl style={styles.formControlLabel} fullWidth>
                     <InputLabel>{I18n.t('State type')}</InputLabel>
                     <Select
                         variant="standard"
@@ -208,7 +207,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                         {stateTypeArray.map(el => (
                             <MenuItem key={el} value={el}>
                                 {I18n.t(el)}
-                                <span className={this.props.classes.typeNameEng}>
+                                <span style={styles.typeNameEng}>
 (
                                     {el}
 )
@@ -218,7 +217,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     </Select>
                 </FormControl>
                 <TextField
-                    className={this.props.classes.formControlLabel}
+                    style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasUnit}
                     InputProps={{
@@ -237,14 +236,14 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                 />
                 <TextField
                     variant="standard"
-                    className={Utils.clsx(this.props.classes.formControlLabel, this.props.classes.color)}
+                    style={{ ...styles.formControlLabel, ...styles.color }}
                     label={I18n.t('Color')}
                     type="color"
                     value={this.state.newAliasColor}
                     onChange={e => this.setState({ newAliasColor: e.target.value })}
                 />
                 <FormControlLabel
-                    className={this.props.classes.formControlLabel}
+                    style={{ ...styles.formControlLabel, marginLeft: 16 }}
                     control={<Checkbox
                         indeterminate={this.state.newAliasRead === undefined || this.state.newAliasRead === null}
                         checked={this.state.newAliasRead}
@@ -260,7 +259,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     label={I18n.t('Alias read')}
                 />
                 <FormControlLabel
-                    className={this.props.classes.formControlLabel}
+                    style={styles.formControlLabel}
                     control={<Checkbox
                         indeterminate={this.state.newAliasWrite === undefined || this.state.newAliasWrite === null}
                         checked={this.state.newAliasWrite}
@@ -276,7 +275,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     label={I18n.t('Alias write')}
                 />
                 <FormControlLabel
-                    className={this.props.classes.formControlLabel}
+                    style={styles.formControlLabel}
                     control={<Checkbox
                         checked={this.state.newAliasUseFormula}
                         onChange={e => this.setState({ newAliasUseFormula: e.target.checked })}
@@ -284,7 +283,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     label={I18n.t('Use convert functions')}
                 />
                 {this.state.newAliasUseFormula && this.state.newAliasRead ? <TextField
-                    className={this.props.classes.formControlLabel}
+                    style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasReadFormula}
                     onChange={e => this.setState({ newAliasReadFormula: e.target.value })}
@@ -300,13 +299,13 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                             </IconButton>
                         </InputAdornment> : null,
                         startAdornment: <InputAdornment position="start">
-                            <IconFx className={this.props.classes.funcIcon} />
+                            <IconFx style={styles.funcIcon} />
                         </InputAdornment>,
                     }}
                     fullWidth
                 /> : null}
                 {this.state.newAliasUseFormula && this.state.newAliasWrite ? <TextField
-                    className={this.props.classes.formControlLabel}
+                    style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasWriteFormula}
                     onChange={e => this.setState({ newAliasWriteFormula: e.target.value })}
@@ -321,7 +320,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                             </IconButton>
                         </InputAdornment> : null,
                         startAdornment: <InputAdornment position="start">
-                            <IconFx className={this.props.classes.funcIcon} />
+                            <IconFx style={styles.funcIcon} />
                         </InputAdornment>,
                     }}
                     helperText={`${I18n.t('JS function like')} "val / 5 + 21"`}
@@ -413,7 +412,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                 <MenuList style={{ maxWidth: 400 }}>
                     {this.state.usedInAliases.map(aliasID =>
                         <MenuItem
-                            className={this.props.classes.usedInAlias}
+                            style={styles.usedInAlias}
                             key={aliasID}
                             onClick={() => this.props.onRedirect(aliasID)}
                         >
@@ -424,7 +423,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                         </MenuItem>)}
                     <MenuItem
                         onClick={() => this.setState({ showAddNewAlias: true })}
-                        className={this.props.classes.addNewAlias}
+                        sx={styles.addNewAlias}
                     >
                         <ListItemIcon>
                             <AddLink fontSize="small" />
@@ -447,4 +446,4 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
     }
 }
 
-export default withWidth()(withStyles(styles)(ObjectAliasEditor));
+export default withWidth()(ObjectAliasEditor);
