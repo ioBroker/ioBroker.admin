@@ -89,7 +89,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
             return;
         }
 
-        this.setState({ policy: obj.common.automaticUpgrade, currentSavedPolicy: obj.common.automaticUpgrade });
+        this.setState({ policy: obj.common.automaticUpgrade || 'none', currentSavedPolicy: obj.common.automaticUpgrade || 'none' });
     }
 
     /**
@@ -115,7 +115,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
     render(): React.JSX.Element {
         return <Dialog open={!0} maxWidth="md">
             <DialogTitle>{I18n.t('Auto upgrade policy for %s', this.props.adapter)}</DialogTitle>
-            <DialogContent style={{ minHeight: 150, padding: '0 20px', overflow: 'hidden' }}>
+            <DialogContent style={{ padding: '0 20px', overflow: 'hidden' }}>
                 <IsVisible value={!this.state.supported}>
                     <Typography>{I18n.t('This feature is supported up from js-controller Kiera (Version 6)!')}</Typography>
                 </IsVisible>
@@ -123,7 +123,8 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
                     <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
                     <Select
                         variant="standard"
-                        sx={{
+                        style={{
+                            marginTop: 20,
                             minWidth: 150,
                         }}
                         value={this.state.policy}

@@ -38,6 +38,7 @@ import HostSelectors from '@/components/HostSelectors';
 const styles: Record<string, any> = {
     formControl: {
         marginTop: 24,
+        width: 100,
     },
     closeButton: (theme: IobTheme) => ({
         position: 'absolute',

@@ -667,7 +667,7 @@ const styles: Record<string, any> = {
     },
     cellButtonsButton: {
         display: 'inline-block',
-        opacity: 0.7,
+        opacity: 0.5,
         width: SMALL_BUTTON_SIZE + 4,
         height: SMALL_BUTTON_SIZE + 4,
         '&:hover': {
@@ -675,13 +675,13 @@ const styles: Record<string, any> = {
         },
         paddingTop: 0,
         paddingLeft: 0,
-        marginTop: -2,
+        mt: '-2px',
     },
     cellButtonsEmptyButton: {
         fontSize: 12,
     },
     cellButtonMinWidth: {
-        minWidth: 47,
+        minWidth: 40,
     },
     cellButtonsButtonAlone: {
         marginLeft: SMALL_BUTTON_SIZE + 4,
@@ -4913,10 +4913,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
                     size="large"
                 >
-                    ---
+                    <div style={{ height: 15 }}>---</div>
                 </IconButton> : null}
                 {this.props.onObjectDelete && item.children && item.children.length ? <IconButton
-                    style={{ ...styles.cellButtonsButton, ...styles.cellButtonsButtonAlone }}
+                    sx={{ ...styles.cellButtonsButton, ...styles.cellButtonsButtonAlone }}
                     size="small"
                     aria-label="delete"
                     title={this.texts.deleteObject}
@@ -4964,7 +4964,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 componentsProps={{ popper: { sx: styles.tooltip } }}
             >
                 <IconButton
-                    style={styles.cellButtonMinWidth}
+                    sx={{
+                        ...styles.cellButtonsButton,
+                        ...styles.cellButtonMinWidth,
+                        opacity: 1,
+                    }}
                     onClick={() => this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
                     size="large"
                 >
@@ -4979,7 +4983,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
             showEdit ? <IconButton
                 key="edit"
-                style={styles.cellButtonsButton}
+                sx={{
+                    ...styles.cellButtonsButton,
+                    ...styles.cellButtonMinWidth,
+                }}
                 size="small"
                 aria-label="edit"
                 title={this.texts.editObject}
@@ -4990,11 +4997,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             >
                 <IconEdit style={styles.cellButtonsButtonIcon} />
             </IconButton> :
-                <div key="editDisabled" style={styles.cellButtonsButton} />,
+                <Box component="div" key="editDisabled" sx={styles.cellButtonsButton} />,
 
             this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ? <IconButton
                 key="delete"
-                style={styles.cellButtonsButton}
+                sx={styles.cellButtonsButton}
                 size="small"
                 aria-label="delete"
                 onClick={() => {
@@ -5026,7 +5033,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 item.data.obj.type === 'state' &&
                 // @ts-expect-error deprecated from js-controller 6
                 item.data.obj.common?.type !== 'file' ? <IconButton
-                    xs={{
+                    sx={{
                         ...styles.cellButtonsButton,
                         ...(item.data.hasCustoms
                             ? this.styles.cellButtonsButtonWithCustoms
