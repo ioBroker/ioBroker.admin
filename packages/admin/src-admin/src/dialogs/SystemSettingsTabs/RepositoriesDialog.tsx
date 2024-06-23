@@ -12,8 +12,8 @@ import {
     TableRow,
     TextField,
     Tooltip,
-    Paper, InputAdornment, IconButton,
-    Select, MenuItem, Typography, Box,
+    InputAdornment, IconButton,
+    Select, MenuItem, Typography,
 } from '@mui/material';
 
 import {
@@ -28,7 +28,7 @@ import {
     I18n,
     withWidth,
     Confirm as ConfirmDialog,
-    type Translate,
+    type Translate, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
@@ -93,6 +93,7 @@ const styles: Record<string, any> = {
     fabButton: {
         marginRight: 8,
         width: 44,
+        height: 44,
     },
     tooltip: {
         pointerEvents: 'none',
@@ -131,6 +132,7 @@ interface RepositoriesDialogProps {
     saving: boolean;
     onChange: (data: ioBrokerObject<{ repositories: Repository }>, dataAux?: ioBrokerObject<object, { activeRepo: string | string[] }>) => void;
     adminGuiConfig: AdminGuiConfig;
+    themeType: ThemeType;
 }
 
 interface RepositoriesDialogState {
@@ -525,34 +527,37 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
         const policy: ioBroker.AutoUpgradePolicy = this.props.dataAux.common.adapterAutoUpgrade?.defaultPolicy || 'none';
         const activatedRepos = this.props.dataAux.common.adapterAutoUpgrade?.repositories || {};
 
-        return <Box sx={{ marginTop: 2 }}>
-            <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
-            <Select
-                sx={{ height: 40 }}
-                value={policy}
-                onChange={e => {
-                    const sysConfig = Utils.clone(this.props.dataAux);
+        return <div style={{ display: 'flex', marginLeft: 20, flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography>{I18n.t('Allow only the following upgrades to be performed automatically:')}</Typography>
+                <Select
+                    variant="standard"
+                    style={{ marginLeft: 8 }}
+                    value={policy}
+                    onChange={e => {
+                        const sysConfig = Utils.clone(this.props.dataAux);
 
-                    if (!sysConfig.common.adapterAutoUpgrade) {
-                        sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
-                    }
+                        if (!sysConfig.common.adapterAutoUpgrade) {
+                            sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
+                        }
 
-                    sysConfig.common.adapterAutoUpgrade.defaultPolicy = e.target.value;
+                        sysConfig.common.adapterAutoUpgrade.defaultPolicy = e.target.value;
 
-                    this.props.onChange(this.props.data, sysConfig);
-                }}
-            >
-                {AUTO_UPGRADE_SETTINGS.map(
-                    option => <MenuItem value={option}>{option}</MenuItem>,
-                )}
-            </Select>
-            <IsVisible value={!!activatedRepos.beta && policy !== 'none'}>
-                <Typography sx={{ color: 'red' }}>{I18n.t('You have configured to run automatic upgrades for the "beta" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!')}</Typography>
+                        this.props.onChange(this.props.data, sysConfig);
+                    }}
+                >
+                    {AUTO_UPGRADE_SETTINGS.map(
+                        option => <MenuItem value={option}>{option}</MenuItem>,
+                    )}
+                </Select>
+            </div>
+            <IsVisible value={!!(activatedRepos.beta || activatedRepos['Beta (latest)']) && policy !== 'none'}>
+                <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>{I18n.t('repo_update_hint').split('\n').map(line => <div>{line}</div>)}</Typography>
             </IsVisible>
             <IsVisible value={policy === 'major'}>
-                <Typography sx={{ color: 'red' }}>{I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}</Typography>
+                <Typography sx={{ color: this.props.themeType === 'dark' ? '#ff6060' : '#a30000', fontSize: 14 }}>{I18n.t('The current selected configuration will allow to automatically pull in incompatible changes of this adapter!')}</Typography>
             </IsVisible>
-        </Box>;
+        </div>;
     }
 
     render() {
@@ -581,23 +586,11 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                 >
                     <RestoreIcon />
                 </Fab>
-                <Paper variant="outlined" style={styles.descriptionPanel} />
+                {this.renderAutoUpgradePolicy()}
             </div>
             <TableContainer>
                 {this.renderSortableList(items)}
-                {/* <SortableList
-                    helperClass="draggable-item"
-                    useDragHandle
-                    lockAxis="y"
-                    items={items}
-                    onSortEnd={this.onSortEnd}
-                    repoInfo={this.props.repoInfo}
-                    repositories={this.props.data.native.repositories}
-                    onDelete={this.onDelete}
-                    disabled={this.props.saving}
-                /> */}
             </TableContainer>
-            {this.renderAutoUpgradePolicy()}
         </div>;
     }
 }

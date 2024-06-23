@@ -1511,12 +1511,18 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     <RefreshIcon />
                 </IconButton>
             </Tooltip>
-            {this.state.tableViewMode && !this.state.oneListView && <Tooltip title={this.t('expand all')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            {this.state.tableViewMode && !this.state.oneListView && <Tooltip
+                title={this.t('expand all')}
+                componentsProps={{ popper: { sx: styles.tooltip } }}
+            >
                 <IconButton size="large" onClick={() => this.expandAll()}>
                     <FolderOpenIcon />
                 </IconButton>
             </Tooltip>}
-            {this.state.tableViewMode && !this.state.oneListView && <Tooltip title={this.t('collapse all')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            {this.state.tableViewMode && !this.state.oneListView && <Tooltip
+                title={this.t('collapse all')}
+                componentsProps={{ popper: { sx: styles.tooltip } }}
+            >
                 <IconButton size="large" onClick={() => this.collapseAll()}>
                     <FolderIcon />
                 </IconButton>
@@ -1568,7 +1574,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 <IconButton
                     size="large"
                     onClick={() => this.setState({ showUpdater: true })}
-                    style={styles.updateAllButton}
+                    sx={styles.updateAllButton}
                 >
                     <UpdateIcon />
                     <UpdateIcon className="admin-update-second-icon" />

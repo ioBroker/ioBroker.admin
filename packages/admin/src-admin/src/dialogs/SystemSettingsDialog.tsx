@@ -496,7 +496,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         return <Dialog
             sx={{
                 '&.MuiDialog-root': styles.dialog,
-                '& .MuiDialog-paper': 'dialog-setting',
+                '& .MuiDialog-paper': { height: 'calc(100% - 64px)', width: 'calc(100% - 64px)', maxWidth: 'calc(100% - 64px)' },
             }}
             open={!0}
             onClose={(e, reason) => {
@@ -508,7 +508,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     }
                 }
             }}
-            fullWidth={false}
+            fullWidth
             fullScreen={false}
             aria-labelledby="system-settings-dialog-title"
         >

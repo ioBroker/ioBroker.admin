@@ -1192,7 +1192,7 @@
   "You can set the log level permanently in the base host settings": "您可以在主机基础设置中永久设置日志级别",
   "You can't see events via cloud": "您无法通过云查看事件",
   "You cannot delete host, when it is alive": "你不能删除主机，当它还活着",
-  "You have configured to run automatic upgrades for the \"beta\" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!": "您已配置为运行“beta”存储库的自动升级，请注意，如果 beta 存储库处于活动状态，则此适配器将根据此配置自动提取 beta 更新！",
+  "repo_update_hint": "您已配置为运行“beta”存储库的自动升级，请注意，如果 beta 存储库处于活动状态，则此适配器将根据此配置自动提取 beta 更新！",
   "You have unread news!": "您有未读新闻！",
   "You have unsaved changes": "您有未保存的更改",
   "You must set the administrator password": "您必须设置管理员密码",

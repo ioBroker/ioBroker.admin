@@ -1192,7 +1192,7 @@
   "You can set the log level permanently in the base host settings": "Ви можете назавжди встановити рівень журналу в налаштуваннях бази хоста",
   "You can't see events via cloud": "Ви не можете бачити події через хмару",
   "You cannot delete host, when it is alive": "Ви не можете видалити хост, коли він живий",
-  "You have configured to run automatic upgrades for the \"beta\" repository, be aware that if the beta repository is active this adapter will pull in beta updates automatically according to this configuration!": "Ви налаштували запуск автоматичних оновлень для репозиторію \"бета-версії\", майте на увазі, що якщо бета-репозиторій активний, цей адаптер автоматично завантажуватиме бета-оновлення відповідно до цієї конфігурації!",
+  "repo_update_hint": "Ви налаштували запуск автоматичних оновлень для репозиторію \"бета-версії\", майте на увазі, що якщо бета-репозиторій активний, цей адаптер автоматично завантажуватиме бета-оновлення відповідно до цієї конфігурації!",
   "You have unread news!": "У вас є непрочитані новини!",
   "You have unsaved changes": "У вас є незбережені зміни",
   "You must set the administrator password": "Необхідно встановити пароль адміністратора",

@@ -173,25 +173,23 @@ const a11yProps = (index: number) => ({
 });
 
 interface TabPanelOptions {
-    value: number;
-    index: number;
+    index: string;
     style: React.CSSProperties;
     sxBox: Record<string, any>;
     children: React.JSX.Element[];
 }
 
 const TabPanel = ({
-    children, value, index, sxBox, style,
+    children, index, sxBox, style,
 }: TabPanelOptions) => <div
     role="tabpanel"
-    hidden={value !== index}
     id={`scrollable-force-tabpanel-${index}`}
     aria-labelledby={`scrollable-force-tab-${index}`}
     style={style}
 >
-    {value === index && <Box sx={sxBox}>
+    <Box sx={sxBox}>
         <Typography component="div">{children}</Typography>
-    </Box>}
+    </Box>
 </div>;
 
 type Translated = Record<ioBroker.Languages, string>;
@@ -217,7 +215,10 @@ interface NotificationDialogOptions {
                 [scope: string]: {
                     categories: {
                         [category: string]: Message;
-                    };};
+                    };
+                    description: ioBroker.Translated;
+                    name: ioBroker.Translated;
+                };
             };};
     };
     onClose: () => void;
@@ -251,21 +252,25 @@ const NotificationsDialog = ({
         }
     }
 
-    const [value, setValue] = useState(0);
+    const [panel, setPanel] = useState('');
     const [disabled, setDisabled] = useState<string[]>([]);
     const [expanded, setExpanded] = useState('');
     const [autoCollapse, setAutoCollapse] = useState(true);
 
-    const handleChange = (event: unknown, newValue: number) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
         setAutoCollapse(true);
-        setValue(newValue);
+        setPanel(newValue);
         setExpanded('');
     };
 
-    const handleChangeAccordion = (panel: string) => (_event: unknown, isExpanded: boolean) =>
-        setExpanded(isExpanded ? panel : '');
+    const handleChangeAccordion = (panelName: string) => (_event: unknown, isExpanded: boolean) =>
+        setExpanded(isExpanded ? panelName : '');
 
     const black = themeType === 'dark';
+
+    let firstKey = '';
+    Object.keys(messages).map(scope =>
+        Object.keys(messages[scope]).map(name => firstKey = firstKey || `${scope}-${name}`));
 
     return <Dialog
         onClose={() => onClose()}
@@ -274,9 +279,7 @@ const NotificationsDialog = ({
     >
         <h2 style={styles.headingTop}>
             <BellIcon
-                sx={{
-                    color: 'primary.main',
-                }}
+                sx={{ color: 'primary.main' }}
                 style={{
                     fontSize: 36,
                     marginLeft: 25,
@@ -293,116 +296,140 @@ const NotificationsDialog = ({
             <Box component="div" sx={styles.root}>
                 <AppBar position="static" color="default">
                     <Tabs
-                        value={value}
+                        value={panel || firstKey}
                         onChange={handleChange}
                         variant="scrollable"
                         scrollButtons
                         indicatorColor={black ? 'primary' : 'secondary'}
                         textColor={black ? 'primary' : 'secondary'}
                     >
-                        {Object.values(messages).map(categoryEntry => Object.entries(categoryEntry).map(([name, entry], idx) => <Tab
-                            disabled={disabled.includes(name)}
-                            key={name}
-                            label={`${entry.name[I18n.getLanguage()]}`}
-                            icon={<Status severity={entry.severity} isDark={black} />}
-                            {...a11yProps(idx)}
-                        />))}
+                        {Object.keys(messages).map(scope =>
+                            Object.keys(messages[scope]).map((name, idx) => {
+                                const entry = messages[scope][name];
+                                const key = `${scope}-${name}`;
+
+                                return <Tab
+                                    disabled={disabled.includes(key)}
+                                    key={key}
+                                    value={key}
+                                    label={`${entry.name[I18n.getLanguage()]}`}
+                                    icon={<Status severity={entry.severity} isDark={black} />}
+                                    {...a11yProps(idx)}
+                                />;
+                            }))}
                     </Tabs>
                 </AppBar>
-                {Object.keys(messages).map(scope => <>
-                    {Object.keys(messages[scope]).map((name, idx) => <TabPanel
-                        sxBox={styles.classNameBox}
-                        key={`tabPanel-${name}`}
-                        style={{ ...styles.overflowAuto, color: black ? 'black' : undefined }}
-                        value={value}
-                        index={idx}
-                    >
-                        <Box component="div" sx={styles.headerText} style={{ fontWeight: 'bold' }}>
-                            {messages[scope][name].name[I18n.getLanguage()]}
-                        </Box>
-                        <Box component="div" sx={styles.descriptionHeaderText}>
-                            {messages[scope][name].description[I18n.getLanguage()]}
-                        </Box>
-                        <div>
-                            {messages[scope][name].instances ? Object.keys(messages[scope][name].instances).map(nameInst => {
-                                const index = Object.keys(messages[scope]).indexOf(name);
+                {Object.keys(messages).map(scope =>
+                    Object.keys(messages[scope]).map(name => {
+                        const key = `${scope}-${name}`;
+                        if (panel === key || (!panel && key === firstKey)) {
+                            const entry = messages[scope][name];
+                            console.log(`Active panel: ${panel}`, `Key: ${key}`);
+                            return <TabPanel
+                                sxBox={styles.classNameBox}
+                                key={`tabPanel-${name}`}
+                                style={{ ...styles.overflowAuto, color: black ? 'black' : undefined }}
+                                index={key}
+                            >
+                                <Box component="div" sx={styles.headerText} style={{ fontWeight: 'bold' }}>
+                                    {entry.name[I18n.getLanguage()]}
+                                </Box>
+                                <Box component="div" sx={styles.descriptionHeaderText}>
+                                    {entry.description[I18n.getLanguage()]}
+                                </Box>
+                                <div>
+                                    {entry.instances ? Object.keys(entry.instances)
+                                        .map(nameInst => {
+                                            const accKey = `${key}-${nameInst}`;
+                                            if (autoCollapse) {
+                                                handleChangeAccordion(accKey)('', true);
+                                                setAutoCollapse(false);
+                                            }
 
-                                if (autoCollapse && value === index) {
-                                    handleChangeAccordion(`${name}-${nameInst}`)('', true);
-                                    setAutoCollapse(false);
-                                }
+                                            const currentInstance = instances && instances[nameInst];
+                                            let icon = 'img/no-image.png';
+                                            if (currentInstance?.common?.icon && currentInstance?.common?.name) {
+                                                icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
+                                            }
 
-                                const currentInstance = instances && instances[nameInst];
-                                let icon = 'img/no-image.png';
-                                if (currentInstance?.common?.icon && currentInstance?.common?.name) {
-                                    icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
-                                }
-                                return <Accordion
-                                    style={black ? undefined : { background: '#c0c0c052' }}
-                                    key={nameInst}
-                                    expanded={expanded === `${name}-${nameInst}`}
-                                    onChange={handleChangeAccordion(`${name}-${nameInst}`)}
-                                >
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon />}
-                                        sx={{ '& .MuiAccordionSummary-content': styles.content }}
-                                        aria-controls="panel1bh-content"
-                                        id="panel1bh-header"
+                                            return <Accordion
+                                                style={black ? undefined : { backgroundColor: '#c0c0c052' }}
+                                                key={accKey}
+                                                expanded={expanded === accKey}
+                                                onChange={handleChangeAccordion(accKey)}
+                                            >
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    sx={{ '& .MuiAccordionSummary-content': styles.content }}
+                                                    aria-controls="panel1bh-content"
+                                                    id="panel1bh-header"
+                                                >
+                                                    <Typography style={styles.heading}>
+                                                        <CardMedia sx={styles.img2} component="img" image={icon} />
+                                                        <Box component="div" sx={styles.textStyle}>
+                                                            {nameInst.replace(/^system\.adapter\./, '')}
+                                                        </Box>
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails style={styles.column}>
+                                                    {entry.instances[nameInst].messages.map((msg, i) =>
+                                                        <Typography key={i} component="div" sx={styles.message}>
+                                                            <Box
+                                                                component="div"
+                                                                sx={styles.terminal}
+                                                            >
+                                                                {Utils.renderTextWithA(msg.message)}
+                                                            </Box>
+                                                            <Box
+                                                                component="div"
+                                                                sx={styles.silver}
+                                                            >
+                                                                {Utils.formatDate(new Date(msg.ts), dateFormat)}
+                                                            </Box>
+                                                        </Typography>)}
+                                                </AccordionDetails>
+                                            </Accordion>;
+                                        }) : null}
+                                </div>
+                                <div style={styles.button}>
+                                    <Button
+                                        variant="contained"
+                                        autoFocus={Object.keys(messages[scope]).length !== 1}
+                                        disabled={disabled.includes(name)}
+                                        style={disabled.includes(name) ? { backgroundColor: 'silver' } : undefined}
+                                        sx={styles.buttonStyle}
+                                        onClick={() => {
+                                            ackCallback(entry.host, name);
+                                            setDisabled([...disabled, name]);
+                                        }}
+                                        color={Object.keys(messages[scope]).length !== 1 ? 'primary' : 'grey'}
+                                        startIcon={<CheckIcon />}
                                     >
-                                        <Typography style={styles.heading}>
-                                            <CardMedia sx={styles.img2} component="img" image={icon} />
-                                            <Box component="div" sx={styles.textStyle}>
-                                                {nameInst.replace(/^system\.adapter\./, '')}
-                                            </Box>
-                                        </Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails style={styles.column}>
-                                        {messages[scope][name].instances[nameInst].messages.map(msg =>
-                                            <Typography key={msg.ts} component="div" sx={styles.message}>
-                                                <Box component="div" sx={styles.terminal}>{Utils.renderTextWithA(msg.message)}</Box>
-                                                <Box component="div" sx={styles.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</Box>
-                                            </Typography>)}
-                                    </AccordionDetails>
-                                </Accordion>;
-                            }) : null}
-                        </div>
-                        <div style={styles.button}>
-                            <Button
-                                variant="contained"
-                                autoFocus={Object.keys(messages[scope]).length !== 1}
-                                disabled={disabled.includes(name)}
-                                style={disabled.includes(name) ? { background: 'silver' } : undefined}
-                                sx={styles.buttonStyle}
-                                onClick={() => {
-                                    ackCallback(messages[scope][name].host, name);
-                                    setDisabled([...disabled, name]);
-                                }}
-                                color={Object.keys(messages[scope]).length !== 1 ? 'primary' : 'grey'}
-                                startIcon={<CheckIcon />}
-                            >
-                                {I18n.t('Acknowledge')}
-                            </Button>
-                            {Object.keys(messages[scope]).length === 1 && <Button
-                                variant="contained"
-                                disabled={disabled.includes(name)}
-                                sx={styles.buttonStyle}
-                                style={disabled.includes(name) ? { background: 'silver' } : undefined}
-                                onClick={() => {
-                                    setDisabled([...disabled, name]);
-                                    ackCallback(messages[scope][name].host, name);
-                                    onClose();
-                                }}
-                                startIcon={<>
-                                    <CheckIcon />
-                                    <CloseIcon />
-                                </>}
-                                color="primary"
-                            >
-                                {I18n.t('Acknowledge & close')}
-                            </Button>}
-                        </div>
-                    </TabPanel>)}
-                </>)}
+                                        {I18n.t('Acknowledge')}
+                                    </Button>
+                                    {Object.keys(messages[scope]).length === 1 && <Button
+                                        variant="contained"
+                                        disabled={disabled.includes(name)}
+                                        sx={styles.buttonStyle}
+                                        style={disabled.includes(name) ? { backgroundColor: 'silver' } : undefined}
+                                        onClick={() => {
+                                            setDisabled([...disabled, name]);
+                                            ackCallback(entry.host, name);
+                                            onClose();
+                                        }}
+                                        startIcon={<>
+                                            <CheckIcon />
+                                            <CloseIcon />
+                                        </>}
+                                        color="primary"
+                                    >
+                                        {I18n.t('Acknowledge & close')}
+                                    </Button>}
+                                </div>
+                            </TabPanel>;
+                        }
+                        return null;
+                    }))}
             </Box>
         </DialogContent>
         <DialogActions>
