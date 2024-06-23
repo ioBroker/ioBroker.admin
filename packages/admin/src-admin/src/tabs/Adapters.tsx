@@ -1470,6 +1470,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         return <GitHubInstallDialog
             t={this.t}
             categories={this.state.categories}
+            installed={this.state.installedGlobal}
             upload={adapterName => this.props.executeCommand(`upload ${adapterName}${this.props.expertMode ? ' --debug' : ''}`)}
             installFromUrl={(adapterName, debug, customUrl) => this.addInstance({
                 adapterName,

@@ -41,7 +41,7 @@ import {
 
 import {
     I18n, Utils,
-    SelectWithIcon, type IobTheme,
+    SelectWithIcon,
 } from '@iobroker/adapter-react-v5';
 
 import Command from '../components/Command';
@@ -90,17 +90,17 @@ const styles: Record<string, any> = {
         fontSize: 16,
     },
     headerBlockDisplayItem: {
-        padding: 5,
+        p: '5px',
         fontSize: 16,
         display: 'flex',
-        margin: 2,
+        m: '2px',
         border: '1px solid #c0c0c045',
-        borderRadius: 4,
+        borderRadius: '4px',
         alignItems: 'center',
         transition: 'background .5s, color .5s',
     },
     activeBlock: {
-        background: '#c0c0c021',
+        backgroundColor: '#c0c0c021',
         border: '1px solid #4dabf5',
     },
     pointer: {
@@ -108,7 +108,7 @@ const styles: Record<string, any> = {
     },
     hover: {
         '&:hover': {
-            background: '#c0c0c021',
+            backgroundColor: '#c0c0c021',
         },
     },
     installSuccess: {
@@ -127,10 +127,10 @@ const styles: Record<string, any> = {
     //     color: 'black'
     // }
     },
-    paperTable: (theme: IobTheme) => ({
+    paperTable: {
         width: '100%',
-        marginBottom: (theme as any).spacing(2),
-    }),
+        marginBottom: 16,
+    },
     wrapperSwitch: {
         display: 'flex',
         margin: 10,
@@ -733,7 +733,7 @@ function DiscoveryDialog({
                                 </div>
                             </div>
                         </div>
-                        <Paper sx={styles.paperTable}>
+                        <Paper style={styles.paperTable}>
                             <TableContainer>
                                 <Table style={styles.table} size="small">
                                     <EnhancedTableHead

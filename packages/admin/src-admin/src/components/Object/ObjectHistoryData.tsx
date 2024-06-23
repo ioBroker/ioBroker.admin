@@ -103,11 +103,11 @@ const styles: Record<string, any> = {
         color: theme.palette.primary.main,
     }),
     rowSelected: (theme: IobTheme) => ({
-        background: theme.palette.secondary.main,
+        backgroundColor: theme.palette.secondary.main,
         color: theme.palette.secondary.contrastText,
         '& td': {
             color: theme.palette.secondary.contrastText,
-            background: theme.palette.secondary.main,
+            backgroundColor: theme.palette.secondary.main,
         },
     }),
     rowFocused: (theme: IobTheme) => ({
@@ -117,26 +117,18 @@ const styles: Record<string, any> = {
         bottom: 0,
         left: 0,
         right: 0,
-        margin: 3,
+        m: '3px',
         border: `1px dotted ${theme.palette.action.active}`,
     }),
     grow: {
         flexGrow: 1,
     },
-    editorTimePicker: {
-        marginLeft: 8,
-        width: 120,
-    },
-    editorDatePicker: {
-        marginLeft: 8,
-        width: 150,
-    },
     msInput: {
         width: 50,
-        paddingTop: 10,
-        marginLeft: 5,
+        pt: '10px',
+        ml: '5px',
         '& label': {
-            marginTop: 15,
+            mt: '15px',
         },
     },
     cellAckTrue: (theme: IobTheme) => ({
@@ -147,7 +139,7 @@ const styles: Record<string, any> = {
     },
     toolbarDate: {
         width: 124,
-        marginTop: 9,
+        mt: '9px',
         '& fieldset': {
             display: 'none',
         },
@@ -155,13 +147,13 @@ const styles: Record<string, any> = {
             padding: '8px 0 0 0',
         },
         '& .MuiInputAdornment-root': {
-            marginLeft: 0,
-            marginTop: 7,
+            ml: 0,
+            mt: '7px',
         },
     },
     toolbarTime: {
         width: 84,
-        marginTop: 9,
+        mt: '9px',
         // marginLeft: 8,
         '& fieldset': {
             display: 'none',
@@ -170,8 +162,8 @@ const styles: Record<string, any> = {
             padding: '8px 0 0 0',
         },
         '& .MuiInputAdornment-root': {
-            marginLeft: 0,
-            marginTop: 7,
+            ml: 0,
+            mt: '7px',
         },
     },
     toolbarTimeGrid: {
@@ -211,13 +203,6 @@ const styles: Record<string, any> = {
     },
     colTs: {
         // width: 200,
-    },
-    dateInput: {
-        width: 140,
-        marginRight: 8,
-    },
-    timeInput: {
-        width: 100,
     },
 };
 
@@ -1161,7 +1146,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
 
                     {this.state.insertOpened ?
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                            <Box component="div" sx={styles.toolbarTimeGrid}>
+                            <div style={styles.toolbarTimeGrid}>
                                 <div style={styles.toolbarTimeLabel}>
                                     {this.props.t('Time')}
                                 </div>
@@ -1186,7 +1171,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                                     value={this.state.edit.ms}
                                     onChange={e => this.updateEdit('ms', e.target.value)}
                                 />
-                            </Box>
+                            </div>
                         </LocalizationProvider> : null}
                 </form>
             </DialogContent>
@@ -1315,7 +1300,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             </FormControl>
 
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                <Box component="div" sx={styles.toolbarTimeGrid}>
+                <div style={styles.toolbarTimeGrid}>
                     <div
                         style={{
                             ...styles.toolbarTimeLabel,
@@ -1337,8 +1322,8 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         value={new Date(this.state.start)}
                         onChange={date => this.setStartDate(date)}
                     />
-                </Box>
-                <Box component="div" sx={styles.toolbarTimeGrid}>
+                </div>
+                <div style={styles.toolbarTimeGrid}>
                     <div
                         style={{
                             ...styles.toolbarTimeLabel,
@@ -1360,7 +1345,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                         value={new Date(this.state.end)}
                         onChange={date => this.setEndDate(date)}
                     />
-                </Box>
+                </div>
             </LocalizationProvider>
             <Box component="div" sx={styles.grow} />
 

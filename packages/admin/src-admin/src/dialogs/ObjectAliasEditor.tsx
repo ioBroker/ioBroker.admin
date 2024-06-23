@@ -243,7 +243,7 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     onChange={e => this.setState({ newAliasColor: e.target.value })}
                 />
                 <FormControlLabel
-                    style={styles.formControlLabel}
+                    style={{ ...styles.formControlLabel, marginLeft: 16 }}
                     control={<Checkbox
                         indeterminate={this.state.newAliasRead === undefined || this.state.newAliasRead === null}
                         checked={this.state.newAliasRead}

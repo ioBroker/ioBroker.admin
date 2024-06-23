@@ -92,7 +92,7 @@ const styles: Record<string, any> = {
     terminal: {
         fontFamily: 'monospace',
         fontSize: 14,
-        marginLeft: 20,
+        ml: '20px',
         whiteSpace: 'pre-wrap',
         '@media screen and (max-width: 550px)': {
             fontSize: '2.9vw',
@@ -102,7 +102,7 @@ const styles: Record<string, any> = {
     img2: {
         width: 25,
         height: 25,
-        marginRight: 10,
+        mr: '10px',
         margin: 'auto 0',
         position: 'relative',
         '&:after': {
@@ -128,9 +128,9 @@ const styles: Record<string, any> = {
         alignItems: 'center',
     },
     classNameBox: {
-        padding: 24,
+        p: '24px',
         '@media screen and (max-width: 550px)': {
-            padding: 10,
+            p: '10px',
         },
     },
     textStyle: {
@@ -145,7 +145,7 @@ const styles: Record<string, any> = {
         overflow: 'hidden',
     },
     buttonStyle: {
-        margin: 3,
+        margin: '3px',
         '@media screen and (max-width: 550px)': {
             fontSize: '2.9vw',
         },

@@ -122,7 +122,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         let chartAvailable = this.props.objectIDs.length === 1;
         if (chartAvailable) {
             const id = this.props.objectIDs[0];
-            if (this.props.objects[id] && this.props.objects[id].common && this.props.objects[id].common.custom && this.props.objects[id].common.custom) {
+            if (this.props.objects[id]?.common?.custom) {
                 chartAvailable = !!Object.keys(this.props.objects[id].common.custom).find(inst => {
                     const obj = this.props.objects[`system.adapter.${inst}`];
                     return obj && obj.common && obj.common.getHistory;
@@ -146,6 +146,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
             obj={this.props.objects[this.props.objectIDs[0]]}
             customsInstances={this.props.customsInstances}
             themeType={this.props.themeType}
+            theme={this.props.theme}
             objects={this.props.objects}
         />;
     }

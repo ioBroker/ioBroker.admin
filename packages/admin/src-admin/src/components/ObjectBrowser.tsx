@@ -673,8 +673,7 @@ const styles: Record<string, any> = {
         '&:hover': {
             opacity: 1,
         },
-        paddingTop: 0,
-        paddingLeft: 0,
+        p: 0,
         mt: '-2px',
     },
     cellButtonsEmptyButton: {
@@ -807,6 +806,7 @@ const styles: Record<string, any> = {
     },
     aclText: {
         fontSize: 13,
+        marginTop: 6,
     },
     rightsObject: {
         color: '#55ff55',
@@ -2020,21 +2020,21 @@ function prepareSparkData(
 }
 
 export const ITEM_IMAGES: Record<string, React.JSX.Element> = {
-    state: <IconState className="itemIcon" />,
-    channel: <IconChannel className="itemIcon" />,
-    device: <IconDevice className="itemIcon" />,
-    adapter: <IconAdapter className="itemIcon" />,
-    meta: <IconMeta className="itemIcon" />,
-    instance: <IconInstance className="itemIcon" style={{ color: '#7da7ff' }} />,
-    enum: <IconEnum className="itemIcon" />,
-    chart: <IconChart className="itemIcon" />,
-    config: <IconConfig className="itemIcon" />,
-    group: <IconGroup className="itemIcon" />,
-    user: <IconUser className="itemIcon" />,
-    host: <IconHost className="itemIcon" />,
-    schedule: <IconSchedule className="itemIcon" />,
-    script: <IconScript className="itemIcon" />,
-    folder: <IconClosed className="itemIcon itemIconFolder" />,
+    state: <IconState className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    channel: <IconChannel className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    device: <IconDevice className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    adapter: <IconAdapter className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    meta: <IconMeta className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    instance: <IconInstance className="itemIcon" style={{ color: '#7da7ff', verticalAlign: 'middle' }} />,
+    enum: <IconEnum className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    chart: <IconChart className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    config: <IconConfig className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    group: <IconGroup className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    user: <IconUser className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    host: <IconHost className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    schedule: <IconSchedule className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    script: <IconScript className="itemIcon" style={{ verticalAlign: 'middle' }} />,
+    folder: <IconClosed className="itemIcon itemIconFolder" style={{ verticalAlign: 'middle' }} />,
 };
 
 interface ScreenWidthOne {
@@ -7513,6 +7513,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             role={role || ''}
             states={Utils.getStates(this.objects[this.edit.id] as ioBroker.StateObject)}
             themeType={this.props.themeType}
+            theme={this.props.theme}
             expertMode={!!this.state.filter.expertMode}
             value={this.edit.val}
             socket={this.props.socket}

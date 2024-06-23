@@ -82,7 +82,7 @@ const styles: Record<string, any> = {
     },
     toolbarDate: {
         width: 124,
-        marginTop: 9,
+        mt: '9px',
         '& fieldset': {
             display: 'none',
         },
@@ -90,13 +90,13 @@ const styles: Record<string, any> = {
             padding: '8px 0 0 0',
         },
         '& .MuiInputAdornment-root': {
-            marginLeft: 0,
-            marginTop: 7,
+            ml: 0,
+            mt: '7px',
         },
     },
     toolbarTime: {
         width: 84,
-        marginTop: 9,
+        mt: '9px',
         // marginLeft: 8,
         '& fieldset': {
             display: 'none',
@@ -105,8 +105,8 @@ const styles: Record<string, any> = {
             padding: '8px 0 0 0',
         },
         '& .MuiInputAdornment-root': {
-            marginLeft: 0,
-            marginTop: 7,
+            ml: 0,
+            mt: '7px',
         },
     },
     toolbarTimeLabel: {
@@ -135,13 +135,6 @@ const styles: Record<string, any> = {
         marginRight: 8,
         height: 34,
         width: 34,
-    },
-    dateInput: {
-        width: 140,
-        marginRight: 8,
-    },
-    timeInput: {
-        width: 80,
     },
 };
 

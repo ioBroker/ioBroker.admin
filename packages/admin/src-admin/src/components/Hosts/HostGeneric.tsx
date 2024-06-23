@@ -768,7 +768,6 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             return <JsControllerDialog
                 socket={this.props.socket}
                 hostId={this.props.hostId}
-                theme={this.props.theme}
                 version={this.props.jsControllerInfo.version}
                 onClose={() => this.setState({ instructionDialog: false })}
             />;

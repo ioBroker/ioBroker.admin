@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 
 import {
@@ -60,7 +59,7 @@ const styles: Record<string, any> = {
     }),
     h22: (theme: IobTheme) => ({
         p: 0,
-        m:0,
+        m: 0,
         fontSize: 25,
         fontWeight: 300,
         borderRadius: '3px',
@@ -479,14 +478,6 @@ cd
             </Button>
         </DialogActions>
     </Dialog>;
-};
-
-JsControllerDialog.propTypes = {
-    socket: PropTypes.object,
-    hostId: PropTypes.string,
-    theme: PropTypes.object,
-    version: PropTypes.string,
-    onClose: PropTypes.func,
 };
 
 export default JsControllerDialog;

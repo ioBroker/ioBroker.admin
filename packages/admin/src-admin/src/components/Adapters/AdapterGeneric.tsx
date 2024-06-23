@@ -468,7 +468,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             <IconButton
                 size="small"
                 disabled={this.props.context.commandRunning}
-                onClick={this.onUpload}
+                onClick={() => this.onUpload()}
             >
                 <PublishIcon />
             </IconButton>

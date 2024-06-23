@@ -36,7 +36,7 @@ import {
 } from '@mui/icons-material';
 
 import {
-    type AdminConnection,
+    type AdminConnection, type IobTheme,
     type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 
@@ -160,6 +160,7 @@ interface ObjectBrowserValueProps {
     onClose: (newValue?: { val: ioBroker.StateValue; ack: boolean; q: number; expire: number | undefined }) => void;
     /** Configured theme */
     themeType: ThemeType;
+    theme: IobTheme;
     socket: AdminConnection;
     defaultHistory: string;
     dateFormat: string;
@@ -397,6 +398,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             socket={this.props.socket}
             obj={this.props.object}
             themeType={this.props.themeType}
+            theme={this.props.theme}
             from={this.chartFrom}
             end={Date.now()}
             noToolbar
