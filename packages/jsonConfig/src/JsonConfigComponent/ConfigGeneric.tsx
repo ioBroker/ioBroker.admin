@@ -265,9 +265,6 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
 
     /**
      * Extract attribute out of data
-     *
-     * @param data
-     * @param attr
      */
     static getValue(data: Record<string, any>, attr: string | string[]): any {
         if (typeof attr === 'string') {
@@ -837,6 +834,28 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         </a>;
     }
 
+    // we have a problem that a string '{"password": "${password}"}' cannot contain a double quota inside the string
+    // escape it with \"
+    static escapeString(str: string, data: Record<string, any>): string {
+        if (typeof str !== 'string') {
+            return '';
+        }
+        str = str.replace(/`/g, '\\`');
+        // extract all tokes with ${data.token}
+        str = str.replace(/\${([^}]+)}/g, (_match: string, p1: string | any) => {
+            if (p1 && typeof p1 === 'string' && p1.startsWith('data.')) {
+                const value = ConfigGeneric.getValue(data, p1.replace(/^data\./, ''));
+
+                if (typeof value === 'string') {
+                    return `\${${p1}.replace(/"/g, '\\\\"')}`;
+                }
+            }
+            return p1;
+        });
+
+        return str;
+    }
+
     getPattern(pattern: string | { func: string }, data?: Record<string, any>) {
         data = data || this.props.data;
         if (!pattern) {
@@ -867,7 +886,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                     'customObj',
                     '_socket',
                     '_changed',
-                    `return \`${patternStr.replace(/`/g, '\\`')}\``,
+                    `return \`${ConfigGeneric.escapeString(patternStr, data)}\``,
                 );
                 return f(
                     data,
@@ -881,6 +900,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                     this.props.changed,
                 );
             }
+
             // eslint-disable-next-line no-new-func
             const f = new Function(
                 'data',
@@ -892,7 +912,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 '_common',
                 '_socket',
                 '_changed',
-                `return \`${patternStr.replace(/`/g, '\\`')}\``,
+                `return \`${ConfigGeneric.escapeString(patternStr, data)}\``,
             );
             return f(
                 data,
