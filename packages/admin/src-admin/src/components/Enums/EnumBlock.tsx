@@ -421,7 +421,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                             <span style={styles.enumGroupEnumID}>
                                 {props.idText || props.id}
                             </span>
-                            {common.desc ?
+                            {common?.desc ?
                                 <div style={styles.enumName}>
                                     {props.getName(common.desc)}
                                 </div> : null}
