@@ -388,7 +388,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             showMessageDialog: false,
         };
 
-        const messages: ioBroker.MessageRule[] = [
+        const messages = false; /* ioBroker.MessageRule[] = [
             {
                 condition: {
                     operand: 'and',
@@ -440,7 +440,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 level: 'warn',
                 buttons: ['agree', 'cancel'],
             },
-        ];
+        ] */
 
         this.messages = checkCondition(
             this.props.adapterObject?.messages || messages,
