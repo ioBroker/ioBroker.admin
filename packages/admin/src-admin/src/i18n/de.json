@@ -1606,5 +1606,8 @@
   "Filter adapters to see others. There is %s more": "Filtern Sie Adapter, um andere anzuzeigen. Es gibt %s mehr",
   "Enter version manually": "Version manuell eingeben",
   "Or select from the list": "Oder aus der Liste wählen",
-  "Source (show all)": "Quelle (alle anzeigen)"
+  "Source (show all)": "Quelle (alle anzeigen)",
+  "Requesting data...": "Daten anfordern...",
+  "Show sent statistics data": "Gesendete Statistikdaten anzeigen",
+  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "Die übermittelten Daten werden von der ioBroker GmbH ausschließlich zu statistischen Zwecken ausgewertet und nicht an Dritte weitergegeben."
 }

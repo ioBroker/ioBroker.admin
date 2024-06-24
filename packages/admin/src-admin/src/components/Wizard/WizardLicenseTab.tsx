@@ -15,19 +15,22 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
+    DialogTitle, LinearProgress,
 } from '@mui/material';
 
 import {
     Language as IconWorld,
     Close as IconCancel,
-    Check as IconCheck,
+    Check as IconCheck, Close,
 } from '@mui/icons-material';
 
 import {
-    I18n, type IobTheme,
+    type AdminConnection,
+    I18n, type ThemeType,
     type Translate, withWidth,
 } from '@iobroker/adapter-react-v5';
+
+import Editor from '@/components/Editor';
 import LicenseTexts from '../LicenseTexts';
 
 const TOOLBAR_HEIGHT = 64;
@@ -50,11 +53,11 @@ const styles: Record<string, any> = {
         minWidth: 200,
         marginRight: 24,
     },
-    licenseDiv: (theme: IobTheme) => ({
+    licenseDiv: {
         width: '100%',
-        height: `calc(100% - ${parseInt(theme.mixins.toolbar.minHeight as string, 10) + 8 + 70}px)`,
+        height: `calc(100% - ${65 + 88}px)`,
         overflow: 'auto',
-    }),
+    },
     grow: {
         flexGrow: 1,
     },
@@ -89,14 +92,19 @@ const styles: Record<string, any> = {
 
 interface WizardLicenseTabProps {
     t: Translate;
-    onDone: (config: { lang: string }) => void;
-    lang?: string;
+    onDone: (config: { lang: ioBroker.Languages }) => void;
+    lang?: ioBroker.Languages;
+    socket: AdminConnection;
+    themeType: ThemeType;
 }
 
 interface WizardLicenseTabState {
     statisticsAccepted: boolean;
-    lang: string;
+    lang: ioBroker.Languages;
     notAgree: boolean;
+    showStatisticsDialog: boolean;
+    requesting: boolean;
+    diagData: Record<string, any> | null;
 }
 
 class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTabState> {
@@ -109,6 +117,9 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
             statisticsAccepted: false,
             lang: this.props.lang || I18n.getLanguage(),
             notAgree: false,
+            diagData: null,
+            requesting: false,
+            showStatisticsDialog: false,
         };
 
         this.focusRef = createRef();
@@ -116,6 +127,54 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
 
     componentDidMount() {
         this.focusRef.current && this.focusRef.current.focus();
+    }
+
+    async readStatistics() {
+        // Get current host
+        const instance = await this.props.socket.getCurrentInstance();
+        // read settings of current instance
+        const settings: ioBroker.InstanceObject = (await this.props.socket.getObject(`system.adapter.${instance}`)) as any as ioBroker.InstanceObject;
+
+        const diagData = await this.props.socket.getDiagData(settings.common.host, 'extended');
+
+        this.setState({ diagData, requesting: false });
+    }
+
+    renderStatisticsDialog() {
+        if (!this.state.showStatisticsDialog) {
+            return null;
+        }
+        return <Dialog
+            open={!0}
+            maxWidth="lg"
+            fullWidth
+            sx={{ '& .MuiDialog-paper': { maxHeight: 'calc(100% - 96px)', height: 'calc(100% - 96px)' } }}
+            onClose={() => this.setState({ showStatisticsDialog: false })}
+        >
+            <DialogTitle>{this.props.t('Sent data:')}</DialogTitle>
+            <DialogContent>
+                {this.state.requesting && <LinearProgress />}
+                {this.state.requesting && <div>{this.props.t('Requesting data...')}</div>}
+                {!this.state.requesting && <div style={{ fontSize: 14, marginBottom: 8 }}>{this.props.t('The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.')}</div>}
+                {!this.state.requesting && <Editor
+                    style={{ height: 'calc(100% - 41px)' }}
+                    editValueMode
+                    themeType={this.props.themeType}
+                    value={JSON.stringify(this.state.diagData, null, 2)}
+                />}
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    onClick={() => this.setState({ showStatisticsDialog: false })}
+                    color="primary"
+                    autoFocus
+                    startIcon={<Close />}
+                >
+                    {I18n.t('Close')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 
     renderNotAgree() {
@@ -126,7 +185,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
             open={!0}
             onClose={() => this.setState({ notAgree: false })}
         >
-            <DialogTitle>{ this.props.t('Message') }</DialogTitle>
+            <DialogTitle>{this.props.t('Message')}</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     <span role="img" aria-label="unhappy">😒</span>
@@ -136,6 +195,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
             </DialogContent>
             <DialogActions>
                 <Button
+                    variant="contained"
                     onClick={() => this.setState({ notAgree: false })}
                     color="primary"
                     startIcon={<IconCheck />}
@@ -169,7 +229,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
                             value={I18n.getLanguage()}
                             onChange={e => {
                                 I18n.setLanguage(e.target.value as ioBroker.Languages);
-                                this.setState({ lang: e.target.value });
+                                this.setState({ lang: e.target.value as ioBroker.Languages });
                             }}
                         >
                             <MenuItem value="en">English</MenuItem>
@@ -181,6 +241,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
                             <MenuItem value="it">Italiano</MenuItem>
                             <MenuItem value="es">Espanol</MenuItem>
                             <MenuItem value="pl">Polski</MenuItem>
+                            <MenuItem value="uk">Українська</MenuItem>
                             <MenuItem value="zh-cn">简体中文</MenuItem>
                         </Select>
                     </FormControl>
@@ -190,13 +251,24 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
                             control={<Checkbox ref={this.focusRef} checked={this.state.statisticsAccepted} onChange={e => this.setState({ statisticsAccepted: e.target.checked })} />}
                             label={this.props.t('I agree with the collection of anonymous statistics.')}
                         />
-                        <div style={styles.statAcceptNote}>{this.props.t('(This can be disabled later in settings)')}</div>
+                        <div style={styles.statAcceptNote}>
+                            {this.props.t('(This can be disabled later in settings)')}
+                            <Button
+                                variant="outlined"
+                                style={{ marginLeft: 16 }}
+                                onClick={() =>
+                                    this.setState({ showStatisticsDialog: true, requesting: true }, () =>
+                                        this.readStatistics())}
+                            >
+                                {this.props.t('Show sent statistics data')}
+                            </Button>
+                        </div>
                     </div>
                 </Grid>
                 <Grid item>
                     <h1>{this.props.t('License terms')}</h1>
                 </Grid>
-                <Grid item sx={styles.licenseDiv}>
+                <Grid item style={styles.licenseDiv}>
                     {this.renderLicenseText()}
                 </Grid>
             </Grid>
@@ -222,7 +294,8 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
                 </Button>
                 <div style={styles.grow} />
             </Toolbar>
-            { this.renderNotAgree() }
+            {this.renderNotAgree()}
+            {this.renderStatisticsDialog()}
         </Paper>;
     }
 }

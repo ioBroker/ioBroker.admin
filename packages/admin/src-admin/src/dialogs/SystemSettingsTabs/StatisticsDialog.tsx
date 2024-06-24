@@ -2,7 +2,7 @@ import React from 'react';
 
 import {
     Grid, Paper, Card, Typography, MenuItem,
-    FormControl, Select, InputLabel,
+    FormControl, Select, InputLabel, type SelectChangeEvent,
 } from '@mui/material';
 
 import blueGrey from '@mui/material/colors/blueGrey';
@@ -55,7 +55,7 @@ const styles: Record<string, React.CSSProperties> = {
 interface StatisticsDialogProps {
     t: Translate;
     data: ioBroker.SystemConfigObject;
-    dataAux: ioBroker.SystemConfigObject;
+    dataAux: Record<string, any> | null;
     themeType: ThemeType;
     onChange: (data: ioBroker.SystemConfigObject) => void;
     saving: boolean;
@@ -86,6 +86,7 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
 
     getTypesSelector() {
         const { common } = this.props.data;
+
         const items = StatisticsDialog.getTypes().map((elem, index) =>
             <MenuItem value={elem.title} key={index}>
                 {this.props.t(elem.title)}
@@ -102,7 +103,7 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
                 id="statistics"
                 value={common.diag}
                 displayEmpty
-                onChange={this.handleChangeType}
+                onChange={(e: SelectChangeEvent<'none' | 'normal' | 'no-city' | 'extended'>) => this.handleChangeType(e.target.value as 'none' | 'normal' | 'no-city' | 'extended')}
             >
                 {items}
             </Select>
@@ -115,10 +116,10 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
         this.props.onChange(newData);
     }
 
-    handleChangeType = (evt: { target: { value: string } }) => {
-        this.doChange('diag', evt.target.value);
+    handleChangeType = (value: 'none' | 'normal' | 'no-city' | 'extended') => {
+        this.doChange('diag', value);
         if (this.props.handle) {
-            this.props.handle(evt.target.value);
+            this.props.handle(value);
         }
     };
 

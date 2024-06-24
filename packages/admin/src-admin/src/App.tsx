@@ -2148,6 +2148,7 @@ class App extends Router<AppProps, AppState> {
                 host={this.state.currentHost}
                 socket={this.socket}
                 themeName={this.state.themeName}
+                themeType={this.state.themeType}
                 toggleTheme={this.toggleTheme}
                 lang={I18n.getLanguage()}
                 onClose={(redirect?: string) => {

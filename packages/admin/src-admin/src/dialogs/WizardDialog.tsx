@@ -22,7 +22,7 @@ import {
     withWidth,
     Router, ToggleThemeMenu, I18n,
     type AdminConnection,
-    type ThemeName,
+    type ThemeName, type ThemeType,
 } from '@iobroker/adapter-react-v5';
 
 import WizardPasswordTab from '@/components/Wizard/WizardPasswordTab';
@@ -114,6 +114,7 @@ interface WizardDialogProps {
     onClose: (redirect?: string) => void;
     toggleTheme: () => void;
     themeName: ThemeName;
+    themeType: ThemeType;
     /** Active host name */
     host: string;
     /** Execute command on given host */
@@ -179,16 +180,15 @@ class WizardDialog extends Component<WizardDialogProps, WizardDialogState> {
             t={I18n.t}
             socket={this.props.socket}
             themeName={this.props.themeName}
-            onDone={(settings: any) => {
-                this.props.socket.getSystemConfig(true)
-                    .then(obj => {
-                        obj.common.licenseConfirmed = true;
-                        if (settings?.lang) {
-                            obj.common.language = settings.lang;
-                        }
-                        return this.props.socket.setSystemConfig(obj);
-                    })
-                    .then(() => this.setState({ activeStep: this.state.activeStep + 1 }));
+            themeType={this.props.themeType}
+            onDone={async (settings?: { lang: ioBroker.Languages }) => {
+                const obj = await this.props.socket.getSystemConfig(true);
+                obj.common.licenseConfirmed = true;
+                if (settings?.lang) {
+                    obj.common.language = settings.lang;
+                    await this.props.socket.setSystemConfig(obj);
+                }
+                this.setState({ activeStep: this.state.activeStep + 1 });
             }}
         />;
     }

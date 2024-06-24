@@ -20,6 +20,7 @@ export interface EditorProps {
     /** flag that indicates the "value edit mode" */
     editValueMode?: boolean;
     error?: boolean;
+    style?: React.CSSProperties;
 }
 
 class Editor extends Component<EditorProps> {
@@ -29,6 +30,7 @@ class Editor extends Component<EditorProps> {
                 border: '1px solid',
                 borderColor: this.props.error ? 'red' : '#00000000',
                 minHeight: 200,
+                ...this.props.style,
             }}
             mode={this.props.mode || 'json'}
             width="100%"

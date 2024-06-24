@@ -75,11 +75,11 @@ const styles: Record<string, any> = {
         },
     },
     button: {
-        paddingTop: 18,
+        paddingTop: 5,
         paddingBottom: 5,
         position: 'sticky',
         bottom: 0,
-        background: 'white',
+        // background: 'white',
         zIndex: 3,
     },
     terminal: {
@@ -121,9 +121,9 @@ const styles: Record<string, any> = {
         alignItems: 'center',
     },
     classNameBox: {
-        p: '24px',
+        p: '8px',
         '@media screen and (max-width: 550px)': {
-            p: '10px',
+            p: '4px',
         },
     },
     textStyle: {

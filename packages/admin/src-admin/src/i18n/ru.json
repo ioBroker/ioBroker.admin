@@ -1606,5 +1606,8 @@
   "Filter adapters to see others. There is %s more": "Отфильтруйте адаптеры, чтобы увидеть другие. Есть ещё %s",
   "Enter version manually": "Введите версию вручную",
   "Or select from the list": "Или выберите из списка",
-  "Source (show all)": "Источник (показать все)"
+  "Source (show all)": "Источник (показать все)",
+  "Requesting data...": "Запрос данных...",
+  "Show sent statistics data": "Показать отправленные статистические данные",
+  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "Отправленные данные будут обрабатываться ioBroker GmbH только в статистических целях и не будут переданы третьим лицам."
 }

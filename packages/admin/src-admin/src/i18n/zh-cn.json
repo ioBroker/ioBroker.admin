@@ -1606,5 +1606,8 @@
   "Filter adapters to see others. There is %s more": "过滤适配器以查看其他适配器。还有 %s",
   "Enter version manually": "手动输入版本",
   "Or select from the list": "或从列表中选择",
-  "Source (show all)": "来源（显示全部）"
+  "Source (show all)": "来源（显示全部）",
+  "Requesting data...": "正在请求数据...",
+  "Show sent statistics data": "显示已发送的统计数据",
+  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "发送的数据仅由 ioBroker GmbH 用于统计目的处理，不会与任何第三方共享。"
 }
