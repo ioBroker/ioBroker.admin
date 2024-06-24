@@ -14,7 +14,7 @@ import {
 
 import { type IobTheme, type Translate, withWidth } from '@iobroker/adapter-react-v5';
 
-import AdminUtils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 
 const TOOLBAR_HEIGHT = 64;
 

@@ -27,7 +27,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import type { AdminGuiConfig } from '@/types';
-import Utils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
 import LicensesDialog from './SystemSettingsTabs/LicensesDialog';
@@ -159,7 +159,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         const newState: Partial<SystemSettingsDialogState> = { loading: false };
         try {
             let systemRepositories = await this.props.socket.getObject('system.repositories');
-            systemRepositories = Utils.clone(systemRepositories);
+            systemRepositories = AdminUtils.clone(systemRepositories);
             systemRepositories = (systemRepositories || {}) as ioBroker.RepositoryObject;
             systemRepositories.native = (systemRepositories.native || {}) as ioBroker.RepositoryObject['native'];
             systemRepositories.native.repositories = systemRepositories.native.repositories || {};

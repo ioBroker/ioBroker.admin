@@ -27,7 +27,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
-import AdminUtils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 
 import User1 from '../../assets/users/user1.svg';
 import User2 from '../../assets/users/user2.svg';

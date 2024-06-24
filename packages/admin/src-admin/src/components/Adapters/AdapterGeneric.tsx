@@ -36,7 +36,7 @@ import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
 import CustomModal from '@/components/CustomModal';
 import RatingDialog, { type RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdapterDeletionDialog from '@/dialogs/AdapterDeletionDialog';
-import BasicUtils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import AdminUpdater from '@/dialogs/AdminUpdater';
 import AdapterInstallDialog, {
     type AdapterInstallDialogProps,
@@ -754,7 +754,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         const adapter = this.props.context.repository[this.props.adapterName];
         const lang = adapter.docs?.[this.props.context.lang] ? this.props.context.lang : 'en';
 
-        window.open(BasicUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapterName }), 'help');
+        window.open(AdminUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapterName }), 'help');
     }
 
     getNews(all = false): { version: string; news: string }[] {

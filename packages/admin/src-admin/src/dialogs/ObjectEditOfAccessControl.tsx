@@ -6,10 +6,9 @@ import {
 
 import {
     I18n, Icon, type IobTheme, type ThemeType,
-    type Translate,
+    type Translate, Utils,
 } from '@iobroker/adapter-react-v5';
 
-import Utils from '../components/Utils';
 import CustomModal from '../components/CustomModal';
 
 const readWriteArray: Record<string, { name: string; valueNum: number; title: string }[]>[] = [

@@ -57,7 +57,7 @@ const STYLES: Record<string, Style> = {
     107: { backgroundColor: 'white' }, // ANSI_BRIGHT_BG_WHITE
 };
 
-class Utils {
+class AdminUtils {
     /**
      * Perform JSON parse/stringify with type inference
      *
@@ -218,7 +218,7 @@ class Utils {
                     if (attr === 'bind' || attr === 'ip') {
                         let ip = object.native.bind || object.native.ip;
                         if (ip === '0.0.0.0') {
-                            ip = Utils.getHostname(object, objects, hosts, hostname, adminInstance);
+                            ip = AdminUtils.getHostname(object, objects, hosts, hostname, adminInstance);
                         }
                         if (!link.includes(`%${placeholder}%`)) {
                             link = link.replace(`%native_${placeholder}%`, ip || '');
@@ -267,7 +267,7 @@ class Utils {
                 } else if (
                     ip.family === 'IPv4' && localIp.includes('.') &&
                     // eslint-disable-next-line no-bitwise
-                    (Utils.ip2int(localIp) & Utils.ip2int(ip.netmask)) === (Utils.ip2int(ip.address) & Utils.ip2int(ip.netmask))
+                    (AdminUtils.ip2int(localIp) & AdminUtils.ip2int(ip.netmask)) === (AdminUtils.ip2int(ip.address) & AdminUtils.ip2int(ip.netmask))
                 ) {
                     hostIp = ip.address;
                 } else {
@@ -321,7 +321,7 @@ class Utils {
             // find IP address
             const host = hosts.find(obj => obj._id === `system.host.${instanceObj.common.host}`);
             if (host) {
-                const ip = Utils.findNetworkAddressOfHost(host, currentHostname);
+                const ip = AdminUtils.findNetworkAddressOfHost(host, currentHostname);
                 if (ip) {
                     hostname = ip;
                 } else {
@@ -364,7 +364,7 @@ class Utils {
                         let ip = native.bind || native.ip;
                         if (!ip || ip === '127.0.0.1' || ip === 'localhost' || ip === '0.0.0.0') {
                             // Check host
-                            ip = Utils.getHostname(instanceObj, context.objects, context.hosts, context.hostname, context.adminInstance);
+                            ip = AdminUtils.getHostname(instanceObj, context.objects, context.hosts, context.hostname, context.adminInstance);
                         }
 
                         if (_urls.length) {
@@ -407,9 +407,9 @@ class Utils {
                             const adapterInstance = `${adapter}.${instance}`;
                             if (_urls.length) {
                                 _urls.forEach(item =>
-                                    item.url = Utils._replaceLink(item.url, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance));
+                                    item.url = AdminUtils._replaceLink(item.url, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance));
                             } else {
-                                link = Utils._replaceLink(link, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance);
+                                link = AdminUtils._replaceLink(link, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance);
                                 port = context.objects[`system.adapter.${adapterInstance}`]?.native?.port;
                             }
                         } else {
@@ -439,21 +439,21 @@ class Utils {
                                     if (_urls.length) {
                                         const item = _urls.find(t => t.instance === id);
                                         if (item) {
-                                            item.url = Utils._replaceLink(item.url, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
+                                            item.url = AdminUtils._replaceLink(item.url, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
                                         } else {
                                             // add new
-                                            const _link = Utils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
+                                            const _link = AdminUtils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
                                             const _port = context.objects[`system.adapter.${id}`]?.native?.port;
                                             _urls.push({ url: _link, port: _port, instance: id });
                                         }
                                     } else {
-                                        const _link = Utils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
+                                        const _link = AdminUtils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
                                         const _port = context.objects[`system.adapter.${id}`]?.native?.port;
                                         _urls.push({ url: _link, port: _port, instance: id });
                                     }
                                 });
                             } else {
-                                link = Utils._replaceLink(link, context.objects, adapterInstance, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
+                                link = AdminUtils._replaceLink(link, context.objects, adapterInstance, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
                                 port = context.objects[`system.adapter.${adapterInstance}`]?.native?.port;
                             }
                         }
@@ -612,31 +612,31 @@ class Utils {
     static checkPassword(password: string, passwordRepeat?: string) {
         password = password || '';
         passwordRepeat = passwordRepeat || '';
-        if (password && passwordRepeat && password !== Utils.PASSWORD_SET && passwordRepeat !== Utils.PASSWORD_SET) {
+        if (password && passwordRepeat && password !== AdminUtils.PASSWORD_SET && passwordRepeat !== AdminUtils.PASSWORD_SET) {
             if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
-                return Utils.PASSWORD_ERROR_LENGTH;
+                return AdminUtils.PASSWORD_ERROR_LENGTH;
             }
             if (password !== passwordRepeat) {
-                return Utils.PASSWORD_ERROR_NOT_EQUAL;
+                return AdminUtils.PASSWORD_ERROR_NOT_EQUAL;
             }
             return false;
         }
-        if (password && password !== Utils.PASSWORD_SET) {
+        if (password && password !== AdminUtils.PASSWORD_SET) {
             if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
-                return Utils.PASSWORD_ERROR_LENGTH;
+                return AdminUtils.PASSWORD_ERROR_LENGTH;
             }
             return false;
         }
-        if (passwordRepeat && passwordRepeat !== Utils.PASSWORD_SET) {
+        if (passwordRepeat && passwordRepeat !== AdminUtils.PASSWORD_SET) {
             if (passwordRepeat.length < 8 || !passwordRepeat.match(/\d/) || !passwordRepeat.match(/[a-z]/) || !passwordRepeat.match(/[A-Z]/)) {
-                return Utils.PASSWORD_ERROR_LENGTH;
+                return AdminUtils.PASSWORD_ERROR_LENGTH;
             }
             return false;
         }
-        if (password === Utils.PASSWORD_SET || passwordRepeat === Utils.PASSWORD_SET) {
+        if (password === AdminUtils.PASSWORD_SET || passwordRepeat === AdminUtils.PASSWORD_SET) {
             return false;
         }
-        return Utils.PASSWORD_ERROR_EMPTY;
+        return AdminUtils.PASSWORD_ERROR_EMPTY;
     }
 
     /**
@@ -648,7 +648,7 @@ class Utils {
         const { adapterName } = options;
         let { lang } = options;
 
-        if (!Utils.SUPPORTED_DOC_LANGUAGES.includes(lang)) {
+        if (!AdminUtils.SUPPORTED_DOC_LANGUAGES.includes(lang)) {
             lang = 'en';
         }
 
@@ -677,4 +677,4 @@ class Utils {
     }
 }
 
-export default Utils;
+export default AdminUtils;

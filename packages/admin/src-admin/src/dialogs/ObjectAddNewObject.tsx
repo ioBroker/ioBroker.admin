@@ -18,9 +18,8 @@ import {
     AddBox as AddIcon,
 } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n, Utils } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
-import Utils from '../components/Utils';
 
 const stateTypeArray = [
     'array',

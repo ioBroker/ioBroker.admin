@@ -14,12 +14,12 @@ import { DragHandle } from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
 import { Utils, ColorPicker, type IobTheme } from '@iobroker/adapter-react-v5';
-import BasicUtils from '../Utils';
+import AdminUtils from '../AdminUtils';
 
 const styles: Record<string, any> = {
     selected: (theme: IobTheme) => ({
         background: theme.palette.primary.main,
-        color: theme.palette.mode === 'light' ? 'white' : BasicUtils.invertColor(theme.palette.primary.main, true),
+        color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
         '&:hover': {
             color: theme.palette.primary.main,
             '& $selectedIcon': {
@@ -28,7 +28,7 @@ const styles: Record<string, any> = {
         },
     }),
     selectedIcon: (theme: IobTheme) => ({
-        color: theme.palette.mode === 'light' ? 'white' : BasicUtils.invertColor(theme.palette.primary.main, true),
+        color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
     }),
     compactBadge: {
         pl: '12px',

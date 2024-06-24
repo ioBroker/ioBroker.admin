@@ -29,7 +29,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 import { type AdminGuiConfig } from '@/types';
 
-import Utils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 import countries from '../../assets/json/countries.json';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
@@ -248,7 +248,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
                 id: 'activeRepo',
                 title: 'Default Repository',
                 translate: false,
-                values: Utils.objectMap(this.props.dataAux.native.repositories, (repo, name) =>
+                values: AdminUtils.objectMap(this.props.dataAux.native.repositories, (repo, name) =>
                     ({
                         id: name,
                         title: name,
@@ -510,7 +510,7 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     };
 
     doChange = (name: string, value: any, cb?: () => void) => {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         (newData.common as Record<string, any>)[name] = value;
         this.props.onChange(newData, null, () =>
             cb && cb());

@@ -24,7 +24,7 @@ import {
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
-import Utils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import IntroCard from '@/components/Intro/IntroCard';
 import EditIntroLinkDialog from '@/components/Intro/EditIntroLinkDialog';
 
@@ -97,12 +97,12 @@ const styles: Record<string, any> = {
 };
 
 const formatInfo: Record<string, (seconds: number, t?: Translate) => string>  = {
-    Uptime:        Utils.formatSeconds,
-    'System uptime': Utils.formatSeconds,
-    RAM:           Utils.formatRam,
-    Speed:         Utils.formatSpeed,
-    'Disk size':     Utils.formatBytes,
-    'Disk free':     Utils.formatBytes,
+    Uptime:        AdminUtils.formatSeconds,
+    'System uptime': AdminUtils.formatSeconds,
+    RAM:           AdminUtils.formatRam,
+    Speed:         AdminUtils.formatSpeed,
+    'Disk size':     AdminUtils.formatBytes,
+    'Disk free':     AdminUtils.formatBytes,
 };
 
 interface IntroProps {
@@ -690,7 +690,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 
     addLinks(link: string, common: any, instanceId: string, instance: Record<string, any>, objects: any[], hosts: any[], instances: any[], introInstances: any[]) {
-        const _urls = Utils.replaceLink(link, common.name, instanceId, {
+        const _urls = AdminUtils.replaceLink(link, common.name, instanceId, {
             objects,
             hostname:      this.props.hostname,
             protocol:      this.props.protocol,

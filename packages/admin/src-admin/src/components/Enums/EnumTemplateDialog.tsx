@@ -17,13 +17,12 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { Icon, type Translate } from '@iobroker/adapter-react-v5';
+import { Icon, type Translate, Utils } from '@iobroker/adapter-react-v5';
 
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
 
-import Utils from '../Utils';
-import BasicUtils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 
 interface EnumIcon {
     _id: string;
@@ -158,7 +157,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                 {this.state.loading && <LinearProgress />}
                 <div style={styles.content}>
                     {templates.map((template, i) => {
-                        const name = BasicUtils.getText(template.name, this.props.lang) || template._id;
+                        const name = AdminUtils.getText(template.name, this.props.lang) || template._id;
 
                         if (this.props.enums[`${this.props.prefix}.${template._id}`]) {
                             return null;
@@ -183,7 +182,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                                 style={styles.enumTemplateButton}
                                 startIcon={<Icon src={this.state.icons[i]} style={styles.icon} />}
                             >
-                                <span style={styles.enumTemplateLabel}>{BasicUtils.getText(template.name, this.props.lang) || template._id}</span>
+                                <span style={styles.enumTemplateLabel}>{AdminUtils.getText(template.name, this.props.lang) || template._id}</span>
                             </Button>;
                         }
                         return null;

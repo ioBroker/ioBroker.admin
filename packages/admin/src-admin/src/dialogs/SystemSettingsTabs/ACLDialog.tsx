@@ -22,7 +22,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
-import Utils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -165,7 +165,7 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
     }
 
     doChange(name: keyof ACLOwners, value: string): void {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         if (name === 'owner') {
             newData.common.defaultNewAcl.owner = value as ioBroker.ObjectIDs.User;
         } else if (name === 'ownerGroup') {
@@ -179,7 +179,7 @@ class ACLDialog extends BaseSystemSettingsDialog<ACLObjectProps> {
         elemNum: number,
         num: number,
     ): void {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         // eslint-disable-next-line no-bitwise
         newData.common.defaultNewAcl[ownerType] ^= ACLDialog.permBits[elemNum][num];
         this.props.onChange(newData);

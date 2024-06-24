@@ -15,7 +15,7 @@ import {
 
 import { Utils, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import BasicUtils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import HostGeneric, {
     boxShadow,
     boxShadowHover,
@@ -261,7 +261,7 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
     }
 
     render() {
-        const upgradeAvailable = (this.props.isCurrentHost || this.props.alive) && BasicUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
+        const upgradeAvailable = (this.props.isCurrentHost || this.props.alive) && AdminUtils.updateAvailable(this.props.host.common.installedVersion, this.props.available);
         const description = this.getHostDescriptionAll();
 
         return <Card key={this.props.hostId} sx={Utils.getStyle(this.props.theme, styles.root, this.props.hidden && styles.hidden)}>

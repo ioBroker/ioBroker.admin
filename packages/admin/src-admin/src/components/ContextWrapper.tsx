@@ -4,7 +4,7 @@ import React, {
     useState,
 } from 'react';
 
-import BasicUtils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 
 type MyContext = {
     hostsUpdate: number;
@@ -49,7 +49,7 @@ export function ContextWrapperProvider({ children }: { children: React.JSX.Eleme
             const jsControllerVersion = stateContext.repository['js-controller'].version;
             let count = 0;
             stateContext.hosts.forEach(element => {
-                if (BasicUtils.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
+                if (AdminUtils.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
                     count++;
                 }
             });
@@ -66,7 +66,7 @@ export function ContextWrapperProvider({ children }: { children: React.JSX.Eleme
                     _installed?.version &&
                     adapter?.version &&
                     _installed.ignoreVersion !== adapter.version &&
-                    BasicUtils.updateAvailable(_installed.version, adapter.version)
+                    AdminUtils.updateAvailable(_installed.version, adapter.version)
                 ) {
                     count++;
                 }

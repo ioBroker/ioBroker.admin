@@ -334,6 +334,7 @@ export function checkCondition(
                     title: message.title,
                     text: message.text,
                     link: message.link,
+                    linkText: message.linkText,
                     buttons: message.buttons,
                     level: message.level,
                 });
@@ -387,44 +388,58 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             showMessageDialog: false,
         };
 
-        const messages = [
+        const messages: ioBroker.MessageRule[] = [
             {
-                "condition": {
-                    "operand": "and",
-                    "rules": [
-                        "oldVersion<=1.0.44",
-                        "newVersion>=1.0.45"
-                    ]
+                condition: {
+                    operand: 'and',
+                    rules: [
+                        'oldVersion<=1.5.0',
+                        'newVersion>=2.0.0',
+                    ],
                 },
-                "title": {
-                    "en": "Important notice",
-                    "de": "Wichtiger Hinweis",
-                    "ru": "Важное замечание",
-                    "pt": "Notícia importante",
-                    "nl": "Belangrijke mededeling",
-                    "fr": "Avis important",
-                    "it": "Avviso IMPORTANTE",
-                    "es": "Noticia importante",
-                    "pl": "Ważna uwaga",
-                    "zh-cn": "重要通知"
+                title: {
+                    en: 'Important notice',
+                    de: 'Wichtiger Hinweis',
+                    ru: 'Важное замечание',
+                    pt: 'Notícia importante',
+                    nl: 'Belangrijke mededeling',
+                    fr: 'Avis important',
+                    it: 'Avviso IMPORTANTE',
+                    es: 'Noticia importante',
+                    pl: 'Ważna uwaga',
+                    uk: 'aaa',
+                    'zh-cn': '重要通知',
                 },
-                "text": {
-                    "en": "From the ioBroker.knx@2.0.0 version only 500 data points can be used fro free. If you have more than 500 KNX data points, you must order the paid license",
-                    "de": "Ab der Version ioBroker.knx@2.0.0 können nur noch 500 Datenpunkte frei verwendet werden. Wenn Sie mehr als 500 KNX-Datenpunkte haben, müssen Sie die kostenpflichtige Lizenz bestellen",
-                    "ru": "Из версии ioBroker.knx@2.0.0 только 500 точек данных можно использовать бесплатно. Если у вас более 500 точек данных KNX, необходимо заказать платную лицензию.",
-                    "pt": "Na versão ioBroker.knx@2.0.0, apenas 500 pontos de dados podem ser usados gratuitamente. Se você tiver mais de 500 pontos de dados KNX, você deve solicitar a licença paga",
-                    "nl": "Van de ioBroker.knx@2.0.0 versie kunnen slechts 500 datapunten gratis worden gebruikt. Als u meer dan 500 KNX-datapunten heeft, moet u de betaalde licentie bestellen",
-                    "fr": "À partir de la version ioBroker.knx@2.0.0, seuls 500 points de données peuvent être utilisés gratuitement. Si vous avez plus de 500 points de données KNX, vous devez commander la licence payante",
-                    "it": "Dalla versione ioBroker.knx@2.0.0 è possibile utilizzare gratuitamente solo 500 punti dati. Se hai più di 500 punti dati KNX, devi ordinare la licenza a pagamento",
-                    "es": "Desde la versión ioBroker.knx@2.0.0, solo se pueden usar 500 puntos de datos de forma gratuita. Si tiene más de 500 puntos de datos KNX, debe solicitar la licencia paga",
-                    "pl": "Od wersji ioBroker.knx@2.0.0 można bezpłatnie korzystać tylko z 500 punktów danych. Jeśli masz więcej niż 500 punktów danych KNX, musisz zamówić płatną licencję",
-                    "zh-cn": "从 ioBroker.knx@2.0.0 版本开始，只能免费使用 500 个数据点。如果您有超过 500 个 KNX 数据点，则必须订购付费许可证"
+                text: {
+                    en: 'From the ioBroker.knx@2.0.0 version only 500 data points can be used fro free. If you have more than 500 KNX data points, you must order the paid license',
+                    de: 'Ab der Version ioBroker.knx@2.0.0 können nur noch 500 Datenpunkte frei verwendet werden. Wenn Sie mehr als 500 KNX-Datenpunkte haben, müssen Sie die kostenpflichtige Lizenz bestellen',
+                    ru: 'Из версии ioBroker.knx@2.0.0 только 500 точек данных можно использовать бесплатно. Если у вас более 500 точек данных KNX, необходимо заказать платную лицензию.',
+                    pt: 'Na versão ioBroker.knx@2.0.0, apenas 500 pontos de dados podem ser usados gratuitamente. Se você tiver mais de 500 pontos de dados KNX, você deve solicitar a licença paga',
+                    nl: 'Van de ioBroker.knx@2.0.0 versie kunnen slechts 500 datapunten gratis worden gebruikt. Als u meer dan 500 KNX-datapunten heeft, moet u de betaalde licentie bestellen',
+                    fr: 'À partir de la version ioBroker.knx@2.0.0, seuls 500 points de données peuvent être utilisés gratuitement. Si vous avez plus de 500 points de données KNX, vous devez commander la licence payante',
+                    it: 'Dalla versione ioBroker.knx@2.0.0 è possibile utilizzare gratuitamente solo 500 punti dati. Se hai più di 500 punti dati KNX, devi ordinare la licenza a pagamento',
+                    es: 'Desde la versión ioBroker.knx@2.0.0, solo se pueden usar 500 puntos de datos de forma gratuita. Si tiene más de 500 puntos de datos KNX, debe solicitar la licencia paga',
+                    pl: 'Od wersji ioBroker.knx@2.0.0 można bezpłatnie korzystać tylko z 500 punktów danych. Jeśli masz więcej niż 500 punktów danych KNX, musisz zamówić płatną licencję',
+                    uk: 'aaa',
+                    'zh-cn': '从 ioBroker.knx@2.0.0 版本开始，只能免费使用 500 个数据点。如果您有超过 500 个 KNX 数据点，则必须订购付费许可证',
                 },
-                "link": "https://iobroker.net/www/pricing",
-                "linkText": "Prices",
-                "level": "warn",
-                "buttons": ["agree", "cancel"]
-            }
+                link: 'https://iobroker.net/www/pricing',
+                linkText: {
+                    en: 'Link text',
+                    de: 'Link text',
+                    ru: 'Из версии ioBroker.knx@2.0.0 только 500 точек данных можно использовать бесплатно. Если у вас более 500 точек данных KNX, необходимо заказать платную лицензию.',
+                    pt: 'Na versão ioBroker.knx@2.0.0, apenas 500 pontos de dados podem ser usados gratuitamente. Se você tiver mais de 500 pontos de dados KNX, você deve solicitar a licença paga',
+                    nl: 'Van de ioBroker.knx@2.0.0 versie kunnen slechts 500 datapunten gratis worden gebruikt. Als u meer dan 500 KNX-datapunten heeft, moet u de betaalde licentie bestellen',
+                    fr: 'À partir de la version ioBroker.knx@2.0.0, seuls 500 points de données peuvent être utilisés gratuitement. Si vous avez plus de 500 points de données KNX, vous devez commander la licence payante',
+                    it: 'Dalla versione ioBroker.knx@2.0.0 è possibile utilizzare gratuitamente solo 500 punti dati. Se hai più di 500 punti dati KNX, devi ordinare la licenza a pagamento',
+                    es: 'Desde la versión ioBroker.knx@2.0.0, solo se pueden usar 500 puntos de datos de forma gratuita. Si tiene más de 500 puntos de datos KNX, debe solicitar la licencia paga',
+                    pl: 'Od wersji ioBroker.knx@2.0.0 można bezpłatnie korzystać tylko z 500 punktów danych. Jeśli masz więcej niż 500 punktów danych KNX, musisz zamówić płatną licencję',
+                    uk: 'aaa',
+                    'zh-cn': '从 ioBroker.knx@2.0.0 版本开始，只能免费使用 500 个数据点。如果您有超过 500 个 KNX 数据点，则必须订购付费许可证',
+                },
+                level: 'warn',
+                buttons: ['agree', 'cancel'],
+            },
         ];
 
         this.messages = checkCondition(

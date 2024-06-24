@@ -1,5 +1,5 @@
 import { type AdminConnection } from '@iobroker/adapter-react-v5';
-import Utils from '../Utils';
+import AdminUtils from '../AdminUtils';
 
 export type AdapterEventType = 'new' | 'changed' | 'deleted';
 
@@ -52,7 +52,7 @@ export default class AdaptersWorker {
                     return;
                 }
 
-                Utils.fixAdminUI(obj);
+                AdminUtils.fixAdminUI(obj);
 
                 if (this.objects[id]) {
                     oldObj = this.objects[id];

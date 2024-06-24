@@ -11,7 +11,7 @@ import {
     ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 
-import BasicUtils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import InstanceInfo from './InstanceInfo';
 import IsVisible from '../IsVisible';
 import InstanceGeneric, {
@@ -251,7 +251,7 @@ class InstanceRow extends InstanceGeneric<InstanceRowProps, InstanceGenericState
                         </Box>}
                         <Box component="div" sx={{ ...styles.maxWidth300, ...styles.visible800 }}>
                             <InstanceInfo>
-                                {BasicUtils.getText(item.name, this.props.context.lang)}
+                                {AdminUtils.getText(item.name, this.props.context.lang)}
                             </InstanceInfo>
                             {this.renderEditNameButton()}
                         </Box>
@@ -363,7 +363,7 @@ class InstanceRow extends InstanceGeneric<InstanceRowProps, InstanceGenericState
                             onMouseLeave={() => this.setState({ visibleEdit: false })}
                             style={styles.secondaryHeadingDiv}
                         >
-                            <div style={styles.secondaryHeadingDivDiv}>{BasicUtils.getText(item.name, this.props.context.lang)}</div>
+                            <div style={styles.secondaryHeadingDivDiv}>{AdminUtils.getText(item.name, this.props.context.lang)}</div>
                             {this.renderEditNameButton()}
                         </div>
                     </Typography>

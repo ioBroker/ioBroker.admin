@@ -66,7 +66,7 @@ import sentry from '@/assets/sentry.svg';
 import noSentry from '@/assets/sentryNo.svg';
 import CustomModal from '../CustomModal';
 import LinksDialog, { type InstanceLink } from './LinksDialog';
-import BasicUtils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 export const arrayTier = [
@@ -654,7 +654,7 @@ export default abstract class InstanceGeneric<
             title={this.props.context.t('Enter title for %s', this.props.instance.id)}
             disableApplyIfNotChanged
             textInput
-            defaultValue={BasicUtils.getText(this.props.item.name, this.props.context.lang)}
+            defaultValue={AdminUtils.getText(this.props.item.name, this.props.context.lang)}
             onApply={value => {
                 this.setName(this.props.instance, value.toString());
                 this.setState({ openDialogName: false, openDialog: false });

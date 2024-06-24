@@ -33,7 +33,7 @@ import {
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
-import Utils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Record<string, any> = {
@@ -105,7 +105,7 @@ type Repository = Record<'stable' | string, ioBroker.RepositoryInformation>;
 type RepositoryArray = Array<{ title: string; link: string }>;
 
 function repoToArray(repos: Repository): RepositoryArray {
-    return Utils.objectMap(repos, (repo, name) => ({
+    return AdminUtils.objectMap(repos, (repo, name) => ({
         title: name,
         link: repo.link,
     }));
@@ -162,7 +162,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     }
 
     onValueChanged(value: any, id: string, name: 'title' | 'link') {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         const item = array.find(element => element.title === id);
         const oldTitle = item.title;
@@ -183,7 +183,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     }
 
     onDelete(id: string) {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         const index = array.findIndex(element => element.title === id);
         delete array[index];
@@ -201,7 +201,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     }
 
     onAdd = () => {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         const array = repoToArray(newData.native.repositories);
         array.push({
             title: '__',
@@ -212,7 +212,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     };
 
     onRestore = () => {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         newData.native.repositories = {
             // @ts-expect-error will be fixed in js-controller
             stable: {
@@ -251,7 +251,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
             }
         }
 
-        const newConfig = Utils.clone(this.props.dataAux);
+        const newConfig = AdminUtils.clone(this.props.dataAux);
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = 'stable';
             return newConfig;
@@ -264,12 +264,12 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
     };
 
     getUpdateDefaultRepo = (newRepo: string, newData?: ioBrokerObject<{ repositories: Repository }>, oldTitle?: string, newTitle?: string) => {
-        const newConfig = Utils.clone(this.props.dataAux);
+        const newConfig = AdminUtils.clone(this.props.dataAux);
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = newRepo;
             return newConfig;
         }
-        newData = newData || Utils.clone(this.props.data);
+        newData = newData || AdminUtils.clone(this.props.data);
         if (oldTitle !== undefined && typeof newConfig.common.activeRepo !== 'string') {
             const pos = newConfig.common.activeRepo.indexOf(oldTitle);
             if (pos !== -1) {
@@ -298,14 +298,14 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
 
     onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
         console.log(oldIndex, newIndex);
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         const items = repoToArray(newData.native.repositories);
         const item = items[oldIndex];
         items.splice(oldIndex, 1);
         items.splice(newIndex, 0, item);
         newData.native.repositories = arrayToRepo(items);
 
-        const newConfig = Utils.clone(this.props.dataAux);
+        const newConfig = AdminUtils.clone(this.props.dataAux);
 
         if (typeof newConfig.common.activeRepo === 'string') {
             newConfig.common.activeRepo = [newConfig.common.activeRepo];
@@ -360,7 +360,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     checked={typeof this.props.dataAux.common.activeRepo === 'string' ? this.props.dataAux.common.activeRepo === item.title : this.props.dataAux.common.activeRepo.includes(item.title)}
                     onChange={() => {
                         let showWarning = false;
-                        const newData = Utils.clone(this.props.dataAux);
+                        const newData = AdminUtils.clone(this.props.dataAux);
                         if (typeof newData.common.activeRepo === 'string') {
                             newData.common.activeRepo = [newData.common.activeRepo];
                         }
@@ -413,7 +413,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                             disabled={this.props.saving}
                             checked={this.props.dataAux.common?.adapterAutoUpgrade?.repositories[item.title]}
                             onChange={e => {
-                                const sysConfig = Utils.clone(this.props.dataAux);
+                                const sysConfig = AdminUtils.clone(this.props.dataAux);
 
                                 if (!sysConfig.common.adapterAutoUpgrade) {
                                     sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };
@@ -535,7 +535,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     style={{ marginLeft: 8 }}
                     value={policy}
                     onChange={e => {
-                        const sysConfig = Utils.clone(this.props.dataAux);
+                        const sysConfig = AdminUtils.clone(this.props.dataAux);
 
                         if (!sysConfig.common.adapterAutoUpgrade) {
                             sysConfig.common.adapterAutoUpgrade = { repositories: {}, defaultPolicy: 'none' };

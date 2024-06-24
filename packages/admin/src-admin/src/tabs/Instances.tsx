@@ -40,7 +40,7 @@ import {
     TabHeader,
 } from '@iobroker/adapter-react-v5';
 
-import BasicUtils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type { InstanceLink } from '@/components/Instances/LinksDialog';
 import Config from './Config';
@@ -408,7 +408,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     link = links[linkName] as InstanceLink;
                 }
 
-                const urls = BasicUtils.replaceLink(link.link, common.name, instanceId, {
+                const urls = AdminUtils.replaceLink(link.link, common.name, instanceId, {
                     objects: instancesFromWorker,
                     hostname: this.props.hostname,
                     protocol: this.props.protocol,
@@ -613,10 +613,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
             return '';
         }
         if (obj.common.titleLang) {
-            return BasicUtils.getText(obj.common.titleLang, this.props.lang);
+            return AdminUtils.getText(obj.common.titleLang, this.props.lang);
         }
 
-        return BasicUtils.getText(obj.common.title, this.props.lang);
+        return AdminUtils.getText(obj.common.title, this.props.lang);
     }
 
     getInputOutput(id: string): { stateInput: number; stateOutput: number } {

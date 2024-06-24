@@ -12,7 +12,7 @@ import {
     type Translate,
     type ThemeType,
 } from '@iobroker/adapter-react-v5';
-import Utils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import Editor from '../../components/Editor';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
@@ -111,7 +111,7 @@ class StatisticsDialog extends BaseSystemSettingsDialog<StatisticsDialogProps> {
     }
 
     doChange(name: string, value: string) {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         (newData.common as Record<string, any>)[name] = value;
         this.props.onChange(newData);
     }

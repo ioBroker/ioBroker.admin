@@ -10,8 +10,9 @@ import {
     Router,
     type AdminConnection,
     type Translate,
-    Utils,
 } from '@iobroker/adapter-react-v5';
+
+import AdminUtils, { type Style } from '../AdminUtils';
 
 const styles: Record<string, React.CSSProperties> = {
     log: {
@@ -193,7 +194,7 @@ class Command extends Component<CommandProps, CommandState> {
                     setTimeout(_adapter => {
                         this.props.socket.getObject(_adapter)
                             .then(obj => {
-                                Utils.fixAdminUI(obj);
+                                AdminUtils.fixAdminUI(obj);
                                 obj && obj.common?.adminUI?.config !== 'none' && Router.doNavigate('tab-instances', 'config', _adapter);
                             });
                     }, 1000, adapter);
@@ -234,22 +235,24 @@ class Command extends Component<CommandProps, CommandState> {
 
                 if (pos > 0) {
                     const part = text.substring(0, pos);
-                    const message = Utils.parseColorMessage(part);
+                    const message = AdminUtils.parseColorMessage(part);
                     result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
                     text = text.replace(part, '');
                 }
 
                 const part = text.substring(0, match.length);
                 if (part) {
-                    const message = Utils.parseColorMessage(part);
+                    const message = AdminUtils.parseColorMessage(part);
                     result.push(<span key={result.length} style={styles[match.toLowerCase()]}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
                     text = text.replace(part, '');
                 }
             }
 
             if (text) {
-                const message = Utils.parseColorMessage(text);
-                result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}</span>);
+                const message = AdminUtils.parseColorMessage(text);
+                result.push(<span key={result.length}>
+                    {typeof message === 'object' ? (message as { original: string; parts: { text: string; style: Style }[] }).parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}
+                </span>);
             }
 
             return result;

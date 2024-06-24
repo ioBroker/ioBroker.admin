@@ -4,7 +4,7 @@ import { LinearProgress } from '@mui/material';
 import { withWidth, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
-import Utils from '../Utils';
+import AdminUtils from '../AdminUtils';
 
 const styles: Record<string, React.CSSProperties> = {
     root: {
@@ -51,7 +51,7 @@ export async function getHref(
         }
     }
     instance = instances && instances[instance];
-    Utils.fixAdminUI(instance);
+    AdminUtils.fixAdminUI(instance);
     if (!instance || !instance.common || !instance.common.adminTab) {
         console.error(`Cannot find instance ${tab}`);
 
@@ -76,7 +76,7 @@ export async function getHref(
         }
 
         // replace
-        const hrefs = Utils.replaceLink(href, adapter, instNum, {
+        const hrefs = AdminUtils.replaceLink(href, adapter, instNum, {
             hostname,
             protocol,
             objects: instances,

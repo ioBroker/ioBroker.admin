@@ -13,7 +13,7 @@ import type {
     MetaACL, MetaObject,
 } from '@/components/FileBrowser';
 
-import Utils from '../Utils';
+import AdminUtils from '../AdminUtils';
 import CustomModal from '../components/CustomModal';
 
 const readWriteArray: Record<string, { name: 'read' | 'write'; valueNum: number; title: string }[]>[] = [
@@ -192,7 +192,7 @@ async function loadFolders(folderId: string, folders: Folders, socket: AdminConn
             const file = dirFiles[f];
             const item: FolderOrFileItem = {
                 id: `${folderId}/${file.file}`,
-                ext: Utils.getFileExtension(file.file),
+                ext: AdminUtils.getFileExtension(file.file),
                 folder: file.isDir,
                 name: file.file,
                 size: file.stats && file.stats.size,
@@ -272,7 +272,7 @@ async function loadPath(
         files.forEach(file => {
             const item = {
                 id:       `${part}/${file.file}`,
-                ext:      Utils.getFileExtension(file.file),
+                ext:      AdminUtils.getFileExtension(file.file),
                 folder:   file.isDir,
                 name:     file.file,
                 size:     file.stats && file.stats.size,

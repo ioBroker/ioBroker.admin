@@ -1,5 +1,5 @@
 import { type AdminConnection } from '@iobroker/adapter-react-v5';
-import Utils, { type Style } from '../Utils';
+import AdminUtils, { type Style } from '../AdminUtils';
 
 interface LogLine {
     severity: string;
@@ -262,7 +262,7 @@ export default class LogsWorker {
                     objLine = this.logs[length - 1];
                     if (objLine) {
                         if (typeof objLine.message === 'object') {
-                            objLine.message = Utils.parseColorMessage(objLine.message.original + line);
+                            objLine.message = AdminUtils.parseColorMessage(objLine.message.original + line);
                         } else {
                             objLine.message += line;
                         }
@@ -276,7 +276,7 @@ export default class LogsWorker {
         }
 
         if (typeof objLine.message !== 'object') {
-            objLine.message = Utils.parseColorMessage(objLine.message);
+            objLine.message = AdminUtils.parseColorMessage(objLine.message);
         }
 
         if (isNew) {

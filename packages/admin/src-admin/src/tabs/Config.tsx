@@ -43,7 +43,7 @@ import {
 import { JsonConfig } from '@iobroker/json-config';
 import DeviceManager from '@iobroker/dm-gui-components';
 
-import BasicUtils from '../Utils';
+import AdminUtils from '../AdminUtils';
 
 const arrayLogLevel: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
 
@@ -389,7 +389,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                         sx={{ '&.MuiFab-root': styles.button }}
                         onClick={() => {
                             const lang = this.state.adapterDocLangs?.includes(this.props.lang) ? this.props.lang : 'en';
-                            window.open(BasicUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapter }), 'help');
+                            window.open(AdminUtils.getDocsLinkForAdapter({ lang, adapterName: this.props.adapter }), 'help');
                         }}
                     >
                         <HelpIcon />

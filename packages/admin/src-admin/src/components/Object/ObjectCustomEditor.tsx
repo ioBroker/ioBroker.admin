@@ -28,7 +28,7 @@ import {
     JsonConfigComponent,
     type ConfigItemPanel,
 } from '@iobroker/json-config';
-import Utils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import type { BasicComponentProps } from '@/types';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -184,7 +184,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
 
-        this.customObj = this.props.objectIDs.length > 1 ? { common: { custom: {} }, native: {} } as ioBroker.AnyObject : Utils.deepClone(this.props.objects[this.props.objectIDs[0]] || null);
+        this.customObj = this.props.objectIDs.length > 1 ? { common: { custom: {} }, native: {} } as ioBroker.AnyObject : AdminUtils.deepClone(this.props.objects[this.props.objectIDs[0]] || null);
 
         if (this.customObj) {
             this.loadAllCustoms()
@@ -240,13 +240,13 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     }
 
     async getCustomTemplate(adapter: string): Promise<void> {
-        const ad = this.props.objects[`system.adapter.${adapter}`] ? Utils.deepClone(this.props.objects[`system.adapter.${adapter}`]) : null;
+        const ad = this.props.objects[`system.adapter.${adapter}`] ? AdminUtils.deepClone(this.props.objects[`system.adapter.${adapter}`]) : null;
 
         if (!ad) {
             console.error(`Cannot find adapter "${adapter}"`);
             return;
         }
-        Utils.fixAdminUI(ad);
+        AdminUtils.fixAdminUI(ad);
 
         if (ad.common?.adminUI.custom === 'json') {
             try {
@@ -560,7 +560,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             disabled={!!disabled}
                             onChange={e => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
-                                const newValues = Utils.deepClone(this.cachedNewValues);
+                                const newValues = AdminUtils.deepClone(this.cachedNewValues);
 
                                 newValues[instance] = newValues[instance] || {};
                                 if (isIndeterminate || e.target.checked) {
@@ -606,7 +606,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                             onValueChange={(attr: string, value: any) => {
                                 this.cachedNewValues = this.cachedNewValues || this.state.newValues;
                                 console.log(`${attr} => ${value}`);
-                                const newValues = Utils.deepClone(this.cachedNewValues);
+                                const newValues = AdminUtils.deepClone(this.cachedNewValues);
                                 newValues[instance] = newValues[instance] || {};
                                 if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig?.[instance], attr)) === JSON.stringify(value)) {
                                     ConfigGeneric.setValue(newValues[instance], attr, null);
@@ -644,7 +644,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         }
         return this.props.socket.getObject(id)
             .then((obj: ioBroker.AnyObject) => {
-                oldObjects[id] = Utils.deepClone(obj);
+                oldObjects[id] = AdminUtils.deepClone(obj);
                 objects[id] = obj;
                 return obj;
             });

@@ -17,7 +17,7 @@ import {
 
 import {
     withWidth,
-    Utils as UtilsCommon,
+    Utils,
     TabHeader,
     TabContent,
     TabContainer,
@@ -33,7 +33,6 @@ import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
 import { blinkClasses } from '../components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
-import ComponentUtils from '../components/Utils';
 
 const styles: Record<string, any> = {
     grow: {
@@ -431,7 +430,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                 <div style={styles.grow} />
             </TabHeader>
             <TabContent overflow="auto">
-                {!ComponentUtils.isStableRepository(this.props.systemConfig.common.activeRepo) ?
+                {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ?
                     <Box component="div" sx={styles.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</Box> : null}
                 <div style={this.state.viewMode ? styles.cards : undefined}>
                     {!this.state.viewMode &&
@@ -441,18 +440,18 @@ class Hosts extends Component<HostsProps, HostsState> {
                             </div>
                             <div style={styles.tabFlex}>
                                 {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
-                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>CPU</Box>
-                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>RAM</Box>
-                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>{this.t('Uptime')}</Box>
-                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
+                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>CPU</Box>
+                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>RAM</Box>
+                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>{this.t('Uptime')}</Box>
+                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
                                     {this.t('Available')}
                                     <div style={styles.jsController}>js-controller</div>
                                 </Box>
-                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
+                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
                                     {this.t('Installed')}
                                     <div style={styles.jsController}>js-controller</div>
                                 </Box>
-                                <Box component="div" sx={UtilsCommon.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}>{this.t('Events')}</Box>
+                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}>{this.t('Events')}</Box>
                                 <div style={{ ...styles.tabHeaderItemButton, ...(expertMode ? styles.widthButtons : undefined) }} />
                             </div>
                         </div>}

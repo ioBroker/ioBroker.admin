@@ -42,7 +42,7 @@ import { FaPalette as ColorsIcon } from 'react-icons/fa';
 import { amber, grey, red } from '@mui/material/colors';
 
 import {
-    Icon, withWidth, Utils as UtilsCommon,
+    Icon, withWidth, Utils,
     TabHeader,
     type IobTheme, type ThemeType,
     type Translate, type AdminConnection,
@@ -54,7 +54,7 @@ import type LogsWorker from '@/Workers/LogsWorker';
 import type { LogLineSaved } from '@/Workers/LogsWorker';
 import type { CompactAdapterInfo, CompactHost } from '@/types';
 
-import Utils from '../Utils';
+import AdminUtils from '../AdminUtils';
 
 const MAX_LOGS = 3000;
 
@@ -670,7 +670,7 @@ class Logs extends Component<LogsProps, LogsState> {
                 style={styles.downloadLogSize}
                 variant="caption"
             >
-                {Utils.formatBytes(entry.path.size) || '-'}
+                {AdminUtils.formatBytes(entry.path.size) || '-'}
             </Typography>
         </MenuItem>);
     }
@@ -752,7 +752,7 @@ class Logs extends Component<LogsProps, LogsState> {
 
         rows.push(<TableRow
             id={options.length === i ? 'endOfLog' : undefined}
-            sx={UtilsCommon.getStyle(
+            sx={Utils.getStyle(
                 this.props.theme,
                 styles.row,
                 row.odd && styles.rowOdd,
@@ -1032,7 +1032,7 @@ class Logs extends Component<LogsProps, LogsState> {
                 {this.t('Log size:')}
                 {' '}
                 <span style={this.state.estimatedSize ? styles.logEstimated : undefined}>
-                    {this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}
+                    {this.state.logSize === null ? '-' : AdminUtils.formatBytes(this.state.logSize)}
                 </span>
             </Typography>}
         </TabHeader>;

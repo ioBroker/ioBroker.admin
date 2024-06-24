@@ -10,10 +10,13 @@ import {
     Avatar,
 } from '@mui/material';
 
-import { I18n, type ThemeType, type Translate } from '@iobroker/adapter-react-v5';
+import {
+    I18n, type ThemeType,
+    type Translate,
+    Utils,
+} from '@iobroker/adapter-react-v5';
 
-import Utils from '../Utils';
-import BasicUtils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 
 const styles: Record<string, React.CSSProperties> = {
     img: {
@@ -62,14 +65,14 @@ class LinksDialog extends Component<LinksDialogProps> {
                         window.open(url, this.props.instanceId);
                         this.props.onClose();
                     }}
-                    key={BasicUtils.getText(link.name, I18n.getLanguage())}
+                    key={AdminUtils.getText(link.name, I18n.getLanguage())}
                 >
                     <ListItemAvatar>
                         <Avatar variant="rounded">
                             <img style={styles.img} src={this.props.image} alt={this.props.instanceId} />
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={BasicUtils.getText(link.name, I18n.getLanguage()) + (showPort ? ` [:${link.port}]` : '')} />
+                    <ListItemText primary={AdminUtils.getText(link.name, I18n.getLanguage()) + (showPort ? ` [:${link.port}]` : '')} />
                 </ListItemButton>)}
             </List>
         </Dialog>;

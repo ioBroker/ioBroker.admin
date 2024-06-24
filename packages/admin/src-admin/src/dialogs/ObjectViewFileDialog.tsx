@@ -20,10 +20,10 @@ import {
 import {
     withWidth, type IobTheme,
     type Translate, type AdminConnection,
+    Utils,
 } from '@iobroker/adapter-react-v5';
 
 import type { ioBrokerObject } from '@/types';
-import Utils from '../components/Utils';
 
 const styles: Record<string, any> = {
     dialog: {

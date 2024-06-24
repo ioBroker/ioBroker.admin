@@ -28,7 +28,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { type ioBrokerObject } from '@/types';
-import Utils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 // icons
@@ -103,7 +103,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
     }
 
     static certToArray(certs: Certificate): CertificateArray {
-        return Utils.objectMap(certs, (cert, name: string) => ({
+        return AdminUtils.objectMap(certs, (cert, name: string) => ({
             title: name,
             data: cert,
         }));
@@ -293,7 +293,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
     }
 
     onChangeText = (value: string, id: string, name: 'title' | 'data') => {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         array.find(element => element.title === id)[name] = value;
         newData.native.certificates = CertificatesDialog.arrayToCert(array);
@@ -301,7 +301,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
     };
 
     onDelete = (id: string) => {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         const index = array.findIndex(element => element.title === id);
         delete array[index];
@@ -310,7 +310,7 @@ class CertificatesDialog extends BaseSystemSettingsDialog<CertificatesDialogProp
     };
 
     onAdd = (title?: string, data?: string) => {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         const array = CertificatesDialog.certToArray(newData.native.certificates);
         if (!title) {
             let i = 1;

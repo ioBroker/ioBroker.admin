@@ -13,7 +13,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 
 import { withWidth, type Translate, type IobTheme } from '@iobroker/adapter-react-v5';
 import type { ioBrokerObject } from '@/types';
-import Utils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Record<string, any> = {
@@ -168,7 +168,7 @@ class SSLDialog extends BaseSystemSettingsDialog<SSLDialogProps> {
     }
 
     doChange(name: 'email' | 'domains' | 'path', value: string) {
-        const newData = Utils.clone(this.props.data);
+        const newData = AdminUtils.clone(this.props.data);
         newData.native.letsEncrypt = newData.native.letsEncrypt || {};
         newData.native.letsEncrypt[name] = value;
         this.props.onChange(newData);

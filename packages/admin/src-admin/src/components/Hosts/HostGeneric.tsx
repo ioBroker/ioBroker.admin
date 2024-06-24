@@ -39,7 +39,7 @@ import AdapterUpdateDialog, { type RepoAdapterObject } from '@/dialogs/AdapterUp
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
-import BasicUtils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 import HostEdit from './HostEdit';
 import CustomModal from '../CustomModal';
 
@@ -299,12 +299,12 @@ export interface HostGenericState {
 
 export default abstract class HostGeneric<TProps extends HostGenericProps, TState extends HostGenericState> extends Component<TProps, TState> {
     static formatInfo: Record<string, (value: any, t: Translate) => string> = {
-        Uptime: BasicUtils.formatSeconds,
-        'System uptime': BasicUtils.formatSeconds,
-        RAM: BasicUtils.formatRam,
-        Speed: BasicUtils.formatSpeed,
-        'Disk size': BasicUtils.formatBytes,
-        'Disk free': BasicUtils.formatBytes,
+        Uptime: AdminUtils.formatSeconds,
+        'System uptime': AdminUtils.formatSeconds,
+        RAM: AdminUtils.formatRam,
+        Speed: AdminUtils.formatSpeed,
+        'Disk size': AdminUtils.formatBytes,
+        'Disk free': AdminUtils.formatBytes,
     };
 
     protected readonly refEvents = React.createRef<HTMLDivElement>();

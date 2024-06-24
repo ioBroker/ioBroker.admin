@@ -25,7 +25,7 @@ import InstanceGeneric, {
     type InstanceGenericState,
 } from './InstanceGeneric';
 import IsVisible from '../IsVisible';
-import BasicUtils from '../../Utils';
+import AdminUtils from '../../AdminUtils';
 
 const styles: Record<string, any> = {
     ...genericStyles,
@@ -327,7 +327,7 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                         onMouseLeave={() => this.setState({ visibleEdit: false })}
                         style={styles.displayFlex}
                     >
-                        {BasicUtils.getText(item.name, this.props.context.lang)}
+                        {AdminUtils.getText(item.name, this.props.context.lang)}
                         {this.renderEditNameButton()}
                     </div>
                 </Typography>

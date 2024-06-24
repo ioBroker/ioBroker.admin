@@ -33,13 +33,13 @@ import CustomSelectButton from '@/components/CustomSelectButton';
 import AdaptersUpdaterDialog from '@/dialogs/AdaptersUpdaterDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import IsVisible from '@/components/IsVisible';
-import Utils from '@/components/Utils';
-import BasicUtils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import {
     TabHeader,
     type AdminConnection, type IobTheme,
     type ThemeType, type Translate,
     TabContainer,
+    Utils,
 } from '@iobroker/adapter-react-v5';
 import type AdaptersWorker from '@/Workers/AdaptersWorker';
 import { type AdapterEvent } from '@/Workers/AdaptersWorker';
@@ -493,7 +493,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 if (
                     repositoryEntry &&
                     repositoryEntry.version !== version &&
-                    BasicUtils.updateAvailable(version, repositoryEntry.version) &&
+                    AdminUtils.updateAvailable(version, repositoryEntry.version) &&
                     !updateAvailable.includes(adapterName)
                 ) {
                     updateAvailable.push(adapterName);

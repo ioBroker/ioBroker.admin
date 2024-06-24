@@ -33,7 +33,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { getHref } from '@/tabs/CustomTab';
-import BasicUtils from '@/Utils';
+import AdminUtils from '@/AdminUtils';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type NotificationAnswer } from '@/Workers/HostsWorker';
@@ -262,7 +262,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             const jsControllerVersion = repository['js-controller']?.version || '';
             let count = 0;
             hosts.forEach(element => {
-                if (BasicUtils.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
+                if (AdminUtils.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
                     count++;
                 }
             });
@@ -288,7 +288,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         _installed?.version &&
                         adapter?.version &&
                         _installed.ignoreVersion !== adapter.version &&
-                        BasicUtils.updateAvailable(_installed.version, adapter.version)
+                        AdminUtils.updateAvailable(_installed.version, adapter.version)
                     ) {
                         count++;
                     }
