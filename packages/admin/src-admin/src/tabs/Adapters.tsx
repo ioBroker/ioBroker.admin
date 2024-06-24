@@ -531,14 +531,16 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
 
         for (const host of hosts) {
             try {
-                const res = await this.props.socket.getInstalled(host._id, update, this.state.readTimeoutMs);
+                const alive = await this.props.socket.getState(`${host._id}.alive`);
+                if (alive?.val) {
+                    const res = await this.props.socket.getInstalled(host._id, update, this.state.readTimeoutMs);
 
-                if (host._id === this.state.currentHost) {
-                    installedLocal = res;
+                    if (host._id === this.state.currentHost) {
+                        installedLocal = res;
+                    }
+                    // TODO: handle cases where different versions of adapters are installed on different hosts
+                    installedGlobal = { ...installedGlobal, ...res };
                 }
-
-                // TODO: handle cases where different versions of adapters are installed on different hosts
-                installedGlobal = { ...installedGlobal, ...res };
             } catch (e) {
                 window.alert(
                     `Cannot getInstalled from "${host._id}" (timeout ${this.state.readTimeoutMs}ms): ${e}`,

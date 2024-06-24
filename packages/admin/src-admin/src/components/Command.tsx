@@ -6,8 +6,12 @@ import {
     Grid, LinearProgress, Paper, Switch, Typography,
 } from '@mui/material';
 
-import { Router, type AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
-import Utils from '../Utils';
+import {
+    Router,
+    type AdminConnection,
+    type Translate,
+    Utils,
+} from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, React.CSSProperties> = {
     log: {

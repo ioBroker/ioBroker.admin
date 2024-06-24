@@ -1,8 +1,14 @@
 import React from 'react';
 import {
-    Paper, Toolbar, Button, Accordion, Box, AccordionSummary, AccordionDetails, Checkbox, Typography, LinearProgress,
+    Paper, Toolbar, Button, Accordion,
+    Box, AccordionSummary, AccordionDetails,
+    Checkbox, Typography, LinearProgress,
 } from '@mui/material';
-import { Check as IconCheck, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import {
+    Check as IconCheck,
+    ExpandMore as ExpandMoreIcon,
+    ArrowForward as IconNext,
+} from '@mui/icons-material';
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import type { Repository } from '@/types';
 
@@ -62,14 +68,14 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
     }
 
     /**
-     * Install adapters if next button is called
+     * Install adapters if the next button is called
      */
     async onDone(): Promise<void> {
         const { selectedAdapters } = this.state;
 
         this.props.onDone();
 
-        // after calling onDone we install in background
+        // after calling onDone we install in the background
         for (const adapter of selectedAdapters) {
             await new Promise<void>(resolve => {
                 this.props.executeCommand(`add ${adapter}`, this.props.host, resolve);
@@ -96,12 +102,12 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
         const title = adapter.titleLang[lang] || adapter.titleLang.en;
 
         return <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-            <Accordion sx={{
+            <Accordion style={{
                 borderColor: 'rgba(0, 0, 0, 0.2)', borderWidth: '1px', borderStyle: 'solid', width: '100%',
             }}
             >
                 <AccordionSummary
-                    sx={{
+                    style={{
                         backgroundColor: 'primary.main',
                         fontWeight: 'bold',
                         height: 52,
@@ -110,7 +116,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                     aria-controls="panel1-content"
                     id="panel1-header"
                 >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box style={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Checkbox
                             sx={{ color: 'text.primary', '&.Mui-checked': { color: 'text.primary' } }}
                             onClick={e => e.stopPropagation()}
@@ -131,7 +137,7 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                         {title}
                     </Box>
                 </AccordionSummary>
-                <AccordionDetails sx={{
+                <AccordionDetails style={{
                     backgroundColor: 'background.appbar', whiteSpace: 'pre-wrap', fontSize: 16, textAlign: 'left',
                 }}
                 >
@@ -224,9 +230,9 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
                     color="primary"
                     variant="contained"
                     onClick={() => this.onDone()}
-                    startIcon={<IconCheck />}
+                    startIcon={this.state.selectedAdapters.length ? <IconCheck /> : <IconNext />}
                 >
-                    {I18n.t('Apply')}
+                    {this.state.selectedAdapters.length ? I18n.t('Install selected adapters') : I18n.t('Next')}
                 </Button>
             </Toolbar>
         </Paper>;

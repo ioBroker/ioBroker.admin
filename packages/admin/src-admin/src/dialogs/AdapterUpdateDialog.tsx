@@ -387,7 +387,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             showMessageDialog: false,
         };
 
-        const messages = false; /* [
+        const messages = [
             {
                 "condition": {
                     "operand": "and",
@@ -425,8 +425,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 "level": "warn",
                 "buttons": ["agree", "cancel"]
             }
-        ]
-        */
+        ];
 
         this.messages = checkCondition(
             this.props.adapterObject?.messages || messages,
@@ -508,19 +507,17 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             <Typography component="div" variant="body2" style={styles.messageText}>
                 {this.getText(message.text, this.props.noTranslation) || ''}
             </Typography>
-            {message.link ?
-                <Button
-                    onClick={() => {
-                        const w = window.open(message.link, '_blank');
-                        w.focus();
-                    }}
-                    startIcon={<IconWeb />}
-                    variant="contained"
-                    color="grey"
-                >
-                    {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
-                </Button>
-                : null}
+            {message.link ? <Button
+                onClick={() => {
+                    const w = window.open(message.link, '_blank');
+                    w.focus();
+                }}
+                startIcon={<IconWeb />}
+                variant="contained"
+                color="grey"
+            >
+                {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
+            </Button> : null}
         </Grid>;
     }
 
@@ -560,19 +557,17 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 {this.getText(message.text, this.props.noTranslation)}
             </DialogContent>
             <DialogActions>
-                {message.link ?
-                    <Button
-                        onClick={() => {
-                            const w = window.open(message.link, '_blank');
-                            w.focus();
-                        }}
-                        startIcon={<IconWeb />}
-                        variant="contained"
-                        color="secondary"
-                    >
-                        {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
-                    </Button>
-                    : null}
+                {message.link ? <Button
+                    onClick={() => {
+                        const w = window.open(message.link, '_blank');
+                        w.focus();
+                    }}
+                    startIcon={<IconWeb />}
+                    variant="contained"
+                    color="secondary"
+                >
+                    {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
+                </Button> : null}
                 {message.link ? <div style={{ flexGrow: 1 }} /> : null}
                 {message.buttons.map(button => {
                     if (button === 'ok') {
@@ -681,7 +676,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     autoFocus
                     disabled={!this.props.rightDependencies || !version || !this.props.adapterObject}
                     onClick={() => {
-                        if (this.messages && this.messages.find(message => message.buttons)) {
+                        if (this.messages?.find(message => message.buttons)) {
                             this.setState({ showMessageDialog: true });
                         } else {
                             this.props.onUpdate(version);
@@ -697,7 +692,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     autoFocus
                     disabled={!this.props.rightDependencies || !version || !this.props.adapterObject}
                     onClick={() => {
-                        if (this.messages && this.messages.find(message => message.buttons)) {
+                        if (this.messages?.find(message => message.buttons)) {
                             this.setState({ showMessageDialog: true });
                         } else {
                             this.props.onInstruction();

@@ -373,19 +373,17 @@ const NewsAdminDialog = ({
             </Box>
         </DialogContent>
         <DialogActions>
-            {
-                link ? <Button
-                    variant="contained"
-                    onClick={() => {
-                        const frame = window.open(link, '_blank');
-                        frame && frame.focus();
-                    }}
-                    color="secondary"
-                    startIcon={<WorldIcon />}
-                >
-                    {linkTitle || I18n.t('Show more info')}
-                </Button> : null
-            }
+            {link ? <Button
+                variant="contained"
+                onClick={() => {
+                    const frame = window.open(link, '_blank');
+                    frame && frame.focus();
+                }}
+                color="secondary"
+                startIcon={<WorldIcon />}
+            >
+                {linkTitle || I18n.t('Show more info')}
+            </Button> : null}
             <Button
                 variant="contained"
                 autoFocus

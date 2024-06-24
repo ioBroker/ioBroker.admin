@@ -1609,5 +1609,8 @@
   "Source (show all)": "Bron (toon alles)",
   "Requesting data...": "Gegevens opvragen...",
   "Show sent statistics data": "Toon verzonden statistische gegevens",
-  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "De verzonden gegevens worden door ioBroker GmbH uitsluitend voor statistische doeleinden verwerkt en niet met derden gedeeld."
+  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "De verzonden gegevens worden door ioBroker GmbH uitsluitend voor statistische doeleinden verwerkt en niet met derden gedeeld.",
+  "Next": "Volgende",
+  "Install selected adapters": "Installeer geselecteerde adapters",
+  "More info": "Meer informatie"
 }

@@ -1609,5 +1609,8 @@
   "Source (show all)": "Fonte (mostra tutto)",
   "Requesting data...": "Richiesta dati...",
   "Show sent statistics data": "Mostra i dati statistici inviati",
-  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "I dati inviati verranno elaborati da ioBroker GmbH solo per scopi statistici e non saranno condivisi con terze parti."
+  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "I dati inviati verranno elaborati da ioBroker GmbH solo per scopi statistici e non saranno condivisi con terze parti.",
+  "Next": "Prossimo",
+  "Install selected adapters": "Installa gli adattatori selezionati",
+  "More info": "Ulteriori informazioni"
 }

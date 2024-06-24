@@ -154,7 +154,7 @@ class Utils {
             if (text === text.toUpperCase()) {
                 text = text[0] + text.substring(1).toLowerCase();
             }
-        } else if (!isDesc && item.common) {
+        } else if (!isDesc && item?.common) {
             const textObj = item.common.name || item.common.desc;
             if (textObj && typeof textObj === 'object') {
                 text = (options.language && textObj[options.language]) || textObj.en || textObj.de || textObj.ru || '';
@@ -1769,7 +1769,7 @@ class Utils {
             if (typeof args[a] === 'function') {
                 Object.assign(result, (args[a] as (_theme: IobTheme) => Record<string, any>)(theme));
             } else if (args[a] && typeof args[a] === 'object') {
-                Object.keys(args[a]).forEach((attr: string) => {
+                Object.keys(args[a] as Record<string, any>).forEach((attr: string) => {
                     if (typeof (args[a] as Record<string, any>)[attr] === 'function') {
                         result[attr] = ((args[a] as Record<string, any>)[attr] as (_theme: IobTheme) => Record<string, any>)(theme);
                     } else if (typeof (args[a] as Record<string, any>)[attr] === 'object') {
