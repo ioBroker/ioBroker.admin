@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.2 (2024-06-24)
 * (bluefox) Working on Json-Custom-Components
 * (foxriver76) on js-controller updater correctly determine the ip of slave hosts
 * (foxriver76) removed "@iobroker/types" from production dependencies
@@ -111,9 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.17.12 (2024-05-22)
 * (foxriver76) support of Node.js upgrade via UI (with js-controller Kiera - v6)
 * (bluefox) Corrected CRON settings
-
-### 6.17.11 (2024-05-20)
-* (bluefox) Corrected custom configuration dialog
 
 ## License
 The MIT License (MIT)

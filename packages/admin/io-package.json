@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.1",
+    "version": "7.0.2",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.2": {
+        "en": "Working on Json-Custom-Components\non js-controller updater correctly determine the ip of slave hosts\nremoved \"@iobroker/types\" from production dependencies",
+        "de": "Arbeiten an Json-Custom-Components\nauf js-controller updater den ip von slave-hosts korrekt bestimmen\n\"@iobroker/typen\" aus produktionsabhängigkeiten entfernt",
+        "ru": "Работа над Json-Custom-Components\nна js-контроллере обновления правильно определить ip рабовладельцев\nудалены \"@iobroker/types\" из производственных зависимостей",
+        "pt": "Trabalhando em Json-Custom-Components\nem js-controller atualizador corretamente determinar o ip de hosts escravos\nremovido \"@iobroker/types\" de dependências de produção",
+        "nl": "Werken aan Json-Custom-Components\nop js-controller updater de ip van slave hosts correct bepalen\nverwijderd \"@iobroker/types\" uit productieafhankelijkheden",
+        "fr": "Travail sur Json-Custom-Composants\nsur js-controller updater correctement déterminer l'ip des serveurs esclaves\nsupprimé \"@iobroker/types\" des dépendances de production",
+        "it": "Lavorare su Json-Custom-Components\nsu aggiornamento js-controller determinare correttamente l'ip degli host slave\nrimosso \"@iobroker/types\" dalle dipendenze di produzione",
+        "es": "Trabajando en Json-Custom-Components\nsobre js-controller updater correctamente determinar el ip de hosts esclavos\neliminado \"@iobroker/tipos\" de las dependencias de producción",
+        "pl": "Praca nad komponentami Json- Custom\nna ns- kontroler updater poprawnie określić ip zastępów niewolników\nusunięto \"@ iobroker / types\" z zależności produkcji",
+        "uk": "Робота на Json-Custom-Component\nна js-controller updater правильно визначити ip рабів\nвилучено \"@iobroker/types\" від виробничих залежностей",
+        "zh-cn": "研究Json-Custom-组件\n在 js 控制器更新器上正确确定奴隶主机的 ip\n从生产依赖中删除“@iobroduc/types”"
+      },
       "7.0.1": {
         "en": "Because of the breaking change in GUI components, the GUI was updated. Users will see no difference, but developers should check their packages.\nRewritten many GUI components to TypeScript\nAdded support for the adapter's auto-update option. New version of js-controller required.\nGUI was re-written to typescript to 100%\nShows only installed adapters in the adapter tab or first 100 adapters",
         "de": "Aufgrund der brechenden Änderung der GUI-Komponenten wurde die GUI aktualisiert. Benutzer sehen keinen Unterschied, aber Entwickler sollten ihre Pakete überprüfen.\nViele GUI-Komponenten neu geschrieben zu TypeScript\nUnterstützung für die automatische Aktualisierung des Adapters hinzugefügt. Neue Version des js-Controllers erforderlich.\nGUI wurde zu 100 % neu geschrieben\nZeigt nur installierte Adapter in der Adapter-Tab oder erste 100 Adapter",
@@ -95,19 +108,6 @@
         "pl": "Poprawiony styl picker czasu w konfiguratorze JSON\nPoprawione zapisywanie koloru karty",
         "uk": "Виправлений стиль таймера часу в налаштуваннях JSON\nВиправлено збереження кольору вкладки",
         "zh-cn": "JSON 配置中纠正的时间选择样式\n已校正标签颜色的保存"
-      },
-      "6.17.7": {
-        "en": "Improved category tab",
-        "de": "Verbesserte Kategorie Tab",
-        "ru": "Улучшенная вкладка категории",
-        "pt": "Aba de categoria melhorada",
-        "nl": "Verbeterd categorietabblad",
-        "fr": "Onglet catégorie améliorée",
-        "it": "Scheda categoria migliorata",
-        "es": "Pestaña de categoría mejorada",
-        "pl": "Ulepszona karta kategorii",
-        "uk": "Покращена вкладка категорії",
-        "zh-cn": "改进类别标签"
       }
     },
     "desc": {
