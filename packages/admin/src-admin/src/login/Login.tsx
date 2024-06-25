@@ -30,7 +30,8 @@ const styles: Record<string, any> = {
     },
     paper: (theme: IobTheme) => ({
         background: theme.palette.background.paper + (theme.palette.background.paper.length < 7 ? 'd' : 'dd'),
-        padding: 24,
+        backgroundColor: console.log(theme.palette.background.paper),
+        p: '24px',
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
