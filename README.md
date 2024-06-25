@@ -89,9 +89,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Login page was corrected
+
 ### 7.0.2 (2024-06-24)
 * (bluefox) Working on Json-Custom-Components
-* (foxriver76) on js-controller updater correctly determine the ip of slave hosts
+* (foxriver76) on js-controller updater correctly determines the ip of slave hosts
 * (foxriver76) removed "@iobroker/types" from production dependencies
 
 ### 7.0.1 (2024-06-10)
