@@ -970,6 +970,7 @@ class App extends Router<AppProps, AppState> {
                                     window.alert('New adapter version detected. Reloading...');
                                     setTimeout(() => window.location.reload(), 500);
                                 }
+                                this.adminInstance = this.adminInstance && (await this.socket.getCurrentInstance());
 
                                 // read settings anew
                                 await this.getGUISettings();
