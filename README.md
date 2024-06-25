@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.3 (2024-06-25)
 * (bluefox) Login page was corrected
 
 ### 7.0.2 (2024-06-24)
@@ -110,10 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.17.13 (2024-05-23)
 * (bluefox) Alias editing corrected
 * (bluefox) Web-extension indicator corrected
-
-### 6.17.12 (2024-05-22)
-* (foxriver76) support of Node.js upgrade via UI (with js-controller Kiera - v6)
-* (bluefox) Corrected CRON settings
 
 ## License
 The MIT License (MIT)
