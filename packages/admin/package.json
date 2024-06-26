@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@iobroker/adapter-core": "^3.1.6",
-    "@iobroker/socket-classes": "^1.5.2",
+    "@iobroker/socket-classes": "^1.5.5",
     "@iobroker/webserver": "^1.0.3",
     "@iobroker/ws-server": "^2.1.2",
     "@types/leaflet": "^1.9.12",
@@ -43,7 +43,7 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "semver": "^7.6.2",
-    "ws": "^8.17.0"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@iobroker/dm-gui-components": "file:../dm-gui-components",
