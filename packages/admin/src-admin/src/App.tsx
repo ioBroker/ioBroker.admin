@@ -783,6 +783,10 @@ class App extends Router<AppProps, AppState> {
     async getGUISettings() {
         let obj;
 
+        if (!this.adminInstance) {
+            return;
+        }
+
         try {
             obj = await this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`);
         } catch (e) {
@@ -970,7 +974,9 @@ class App extends Router<AppProps, AppState> {
                                     window.alert('New adapter version detected. Reloading...');
                                     setTimeout(() => window.location.reload(), 500);
                                 }
-                                this.adminInstance = this.adminInstance && (await this.socket.getCurrentInstance());
+                                if (!this.adminInstance) {
+                                    this.adminInstance = await this.socket.getCurrentInstance();
+                                }
 
                                 // read settings anew
                                 await this.getGUISettings();
@@ -1059,140 +1065,139 @@ class App extends Router<AppProps, AppState> {
                     this.adminGuiConfig.admin.adapters = this.adminGuiConfig.admin.adapters || {};
                     this.adminGuiConfig.admin.login = this.adminGuiConfig.admin.login || {};
 
-                    this.socket
-                        .getCurrentInstance()
-                        .then(adminInstance => {
-                            this.adminInstance = adminInstance;
-                            return this.socket.getObject(`system.adapter.${adminInstance}`);
-                        })
-                        .then(adminObj => {
-                            // use instance language
-                            if (adminObj?.native?.language) {
-                                I18n.setLanguage(adminObj.native.language);
-                            } else {
-                                I18n.setLanguage(this.socket.systemLang);
-                            }
-                            this.languageSet = true;
-                            return this.socket.getIsEasyModeStrict();
-                        })
-                        .then(async isStrict => {
-                            await this.getGUISettings();
+                    try {
+                        if (!this.adminInstance) {
+                            this.adminInstance = await this.socket.getCurrentInstance();
+                        }
+                        if (!this.adminInstance) {
+                            console.error('Cannot read admin instance!');
+                        }
+                        const adminObj = await this.socket.getObject(`system.adapter.${this.adminInstance}`);
+                        // use instance language
+                        if (adminObj?.native?.language) {
+                            I18n.setLanguage(adminObj.native.language);
+                        } else {
+                            I18n.setLanguage(this.socket.systemLang);
+                        }
 
-                            if (isStrict) {
-                                this.socket.getEasyMode()
-                                    .then(config => {
-                                        this.setState({
-                                            lang: this.socket.systemLang,
-                                            ready: true,
-                                            strictEasyMode: true,
-                                            easyModeConfigs: config.configs,
-                                        });
-                                    });
-                                return;
-                            }
-                            // create Workers
-                            this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
-                            this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                            this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
-                            this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
-                            this.objectsWorker = this.objectsWorker || new ObjectsWorker(this.socket);
+                        this.languageSet = true;
+                        const isStrict = await this.socket.getIsEasyModeStrict();
 
-                            const newState: Partial<AppState> = {
+                        await this.getGUISettings();
+
+                        if (isStrict) {
+                            const config = await this.socket.getEasyMode();
+                            this.setState({
                                 lang: this.socket.systemLang,
                                 ready: true,
-                            };
+                                strictEasyMode: true,
+                                easyModeConfigs: config.configs,
+                            });
+                            return;
+                        }
 
+                        // create Workers
+                        this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
+                        this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
+                        this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
+                        this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
+                        this.objectsWorker = this.objectsWorker || new ObjectsWorker(this.socket);
+
+                        const newState: Partial<AppState> = {
+                            lang: this.socket.systemLang,
+                            ready: true,
+                        };
+
+                        try {
+                            newState.systemConfig = await this.socket.getCompactSystemConfig();
+                            newState.wizard = !newState.systemConfig.common.licenseConfirmed;
+                            await this.findCurrentHost(newState);
+                            await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
+                        } catch (error) {
+                            console.log(error);
+                        }
+
+                        this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
+                        this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
+                        this.hostsWorker.registerHandler(this.updateHosts);
+                        this.hostsWorker.registerNotificationHandler(this.handleNewNotifications);
+
+                        const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem(
+                            'App.expertMode',
+                        );
+                        newState.expertMode = storedExpertMode
+                            ? storedExpertMode === 'true'
+                            : !!newState.systemConfig.common.expertMode;
+
+                        // Read user and show him
+                        if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
                             try {
-                                newState.systemConfig = await this.socket.getCompactSystemConfig();
-                                newState.wizard = !newState.systemConfig.common.licenseConfirmed;
-                                await this.findCurrentHost(newState);
-                                await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
-                            } catch (error) {
-                                console.log(error);
-                            }
+                                const user = await this.socket
+                                    .getCurrentUser();
 
-                            this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
-                            this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
-                            this.hostsWorker.registerHandler(this.updateHosts);
-                            this.hostsWorker.registerNotificationHandler(this.handleNewNotifications);
+                                const userObj = await this.socket.getObject(`system.user.${user}`);
 
-                            const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem(
-                                'App.expertMode',
-                            );
-                            newState.expertMode = storedExpertMode
-                                ? storedExpertMode === 'true'
-                                : !!newState.systemConfig.common.expertMode;
-
-                            // Read user and show him
-                            if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
-                                try {
-                                    const user = await this.socket
-                                        .getCurrentUser();
-
-                                    const userObj = await this.socket.getObject(`system.user.${user}`);
-
-                                    if (userObj.native?.vendor) {
-                                        Object.assign(this.adminGuiConfig, userObj.native.vendor);
-                                    }
-
-                                    if (this.socket.isSecure) {
-                                        this.setState({
-                                            user: {
-                                                id: userObj._id,
-                                                name: Utils.getObjectNameFromObj(
-                                                    userObj,
-                                                    this.socket.systemLang,
-                                                ),
-                                                color: userObj.common.color,
-                                                icon: userObj.common.icon,
-                                                invertBackground: this.mustInvertBackground(
-                                                    userObj.common.color,
-                                                ),
-                                            },
-                                        });
-
-                                        // start ping interval
-                                        this.makePingAuth();
-                                    }
-                                } catch (e)  {
-                                    console.error(`Could not determine user to show: ${e}`);
-                                    this.showAlert(e, 'error');
+                                if (userObj.native?.vendor) {
+                                    Object.assign(this.adminGuiConfig, userObj.native.vendor);
                                 }
+
+                                if (this.socket.isSecure) {
+                                    this.setState({
+                                        user: {
+                                            id: userObj._id,
+                                            name: Utils.getObjectNameFromObj(
+                                                userObj,
+                                                this.socket.systemLang,
+                                            ),
+                                            color: userObj.common.color,
+                                            icon: userObj.common.icon,
+                                            invertBackground: this.mustInvertBackground(
+                                                userObj.common.color,
+                                            ),
+                                        },
+                                    });
+
+                                    // start ping interval
+                                    this.makePingAuth();
+                                }
+                            } catch (e)  {
+                                console.error(`Could not determine user to show: ${e}`);
+                                this.showAlert(e, 'error');
                             }
+                        }
 
-                            this.setState(newState as AppState, () => this.setCurrentTabTitle());
+                        this.setState(newState as AppState, () => this.setCurrentTabTitle());
 
-                            this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+                        this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
 
-                            // Give some time for communication
-                            setTimeout(() => this.logsWorkerChanged(this.state.currentHost), 1000);
+                        // Give some time for communication
+                        setTimeout(() => this.logsWorkerChanged(this.state.currentHost), 1000);
 
-                            setTimeout(() => this.findNewsInstance()
-                                .then(instance => {
-                                    this.newsInstance = instance;
-                                    this.socket.subscribeState(
-                                        `admin.${instance}.info.newsFeed`,
-                                        this.onNews,
-                                    );
-                                }), 5_000);
+                        setTimeout(() => this.findNewsInstance()
+                            .then(instance => {
+                                this.newsInstance = instance;
+                                this.socket.subscribeState(
+                                    `admin.${instance}.info.newsFeed`,
+                                    this.onNews,
+                                );
+                            }), 5_000);
 
-                            setTimeout(
-                                async () => {
-                                    const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
-                                    this.showAdaptersWarning(
-                                        notifications,
-                                        newState.currentHost,
-                                    );
+                        setTimeout(
+                            async () => {
+                                const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
+                                this.showAdaptersWarning(
+                                    notifications,
+                                    newState.currentHost,
+                                );
 
-                                    this.handleNewNotifications(notifications);
-                                },
-                                3_000,
-                            );
-                        })
-                        .catch(error => {
-                            console.error(error);
-                            this.showAlert(error, 'error');
-                        });
+                                this.handleNewNotifications(notifications);
+                            },
+                            3_000,
+                        );
+                    } catch (error) {
+                        console.error(error);
+                        this.showAlert(error, 'error');
+                    }
                 },
                 onError: error => {
                     console.error(error);
