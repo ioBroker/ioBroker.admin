@@ -139,12 +139,12 @@
     "react-sortable-hoc": {
       "react": "^18.3.1",
       "react-dom": "^18.3.1"
+    },
+    "lerna": {
+      "string-width": "4.2.3",
+      "strip-ansi": "6.0.1",
+      "wrap-ansi": "7.0.0"
     }
-  },
-  "resolutions": {
-    "lerna/**/string-width": "4",
-    "lerna/**/strip-ansi": "6",
-    "lerna/**/wrap-ansi": "7"
   },
   "scripts": {
     "build": "npm run clean && lerna run build",
