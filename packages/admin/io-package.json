@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.4",
+    "version": "7.0.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.5": {
+        "en": "Login page was corrected",
+        "de": "Login-Seite wurde korrigiert",
+        "ru": "Страница входа была исправлена",
+        "pt": "A página de login foi corrigida",
+        "nl": "Aanmeldpagina is gecorrigeerd",
+        "fr": "La page de connexion a été corrigée",
+        "it": "La pagina di accesso è stata corretta",
+        "es": "La página de inicio fue corregida",
+        "pl": "Strona logowania została poprawiona",
+        "uk": "Увімкнути сторінку",
+        "zh-cn": "登录页面已更正"
+      },
       "7.0.2": {
         "en": "Working on Json-Custom-Components\non js-controller updater correctly determine the ip of slave hosts\nremoved \"@iobroker/types\" from production dependencies",
         "de": "Arbeiten an Json-Custom-Components\nauf js-controller updater den ip von slave-hosts korrekt bestimmen\n\"@iobroker/typen\" aus produktionsabhängigkeiten entfernt",
