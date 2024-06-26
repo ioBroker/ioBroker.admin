@@ -18,10 +18,11 @@ import {
 import {
     Close,
     Link as IconLink,
-    AddLink, Close as IconClose,
+    AddLink,
+    Close as IconClose,
 } from '@mui/icons-material';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import { withWidth } from '@iobroker/adapter-react-v5';
 
 import {
     I18n, IconFx,
@@ -29,6 +30,7 @@ import {
     type AdminConnection,
     type Translate,
 } from '@iobroker/adapter-react-v5';
+
 import type { ioBrokerObject } from '@/types';
 
 const styles: Record<string, any> = {
