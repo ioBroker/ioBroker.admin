@@ -18,8 +18,8 @@ admin/words.js
 /lib/socketCommandsAdmin.js
 /lib/passportSocket.js
 **/build
-package-lock.json
-**/src-admin/package-lock.json
+packages/admin/src-admin/package-lock.json
+packages/admin/package-lock.json
 **/src/public_aes
 **/src/public/js/adapter-settings-aes.js
 testSentry.bat
