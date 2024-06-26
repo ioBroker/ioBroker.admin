@@ -569,7 +569,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties) {
-        return upgradeAvailable ? <Tooltip title={this.props.t('Update')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return upgradeAvailable ? <Tooltip title={this.props.t('Update')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
             <Box
                 component="div"
                 onClick={event => {
@@ -590,7 +590,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderHostBaseEdit() {
-        return this.props.expertMode ? <Tooltip title={this.props.t('Host Base Settings')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return this.props.expertMode ? <Tooltip title={this.props.t('Host Base Settings')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
             <div>
                 <IconButton
                     size="large"
@@ -608,7 +608,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderRestartButton() {
-        return <Tooltip title={this.props.t('Restart host')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return <Tooltip title={this.props.t('Restart host')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
             <div>
                 <IconButton
                     size="large"
@@ -642,7 +642,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderRemoveButton() {
         return !this.props.alive && !this.props.isCurrentHost ? <Tooltip
             title={this.props.alive || this.props.isCurrentHost ? this.props.t('You cannot delete host, when it is alive') : this.props.t('Remove')}
-            sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
+            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
         >
             <IconButton
                 size="large"
@@ -660,7 +660,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderCopyButton(style?: React.CSSProperties) {
-        return <Tooltip title={this.props.t('Copy')} sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}>
+        return <Tooltip title={this.props.t('Copy')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
             <IconButton
                 size="large"
                 onClick={() => this.onCopy()}
@@ -675,7 +675,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     renderLogLevel() {
         return <Tooltip
             title={`${this.props.t('loglevel')} ${this.state.logLevel}`}
-            sx={{ '& .MuiTooltip-popper': genericStyles.tooltip }}
+            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
         >
             <IconButton
                 size="large"

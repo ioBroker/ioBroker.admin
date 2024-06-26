@@ -42,7 +42,7 @@ import MDUtils, {
     type MarkdownHeader,
     type MarkdownPart,
 } from './MDUtils';
-// import Page404 from '@iobroker/adapter-react-v5/Components/404';
+// import { Page404 } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     root: {

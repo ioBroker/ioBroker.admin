@@ -182,7 +182,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             <DialogTitle id="update-dialog-title">
                 <div style={styles.wrapperHead}>
                     {this.props.t('Update %s adapter(s)', this.state.selected.length)}
-                    {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')}>
+                    {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                         <Checkbox
                             checked={this.state.selected.length === this.updateAvailable.length}
                             style={styles.checkbox}

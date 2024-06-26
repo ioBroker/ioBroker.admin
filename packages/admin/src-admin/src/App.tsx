@@ -2507,7 +2507,7 @@ class App extends Router<AppProps, AppState> {
                     title={I18n.t(
                         'Synchronize admin settings between all opened browser windows',
                     )}
-                    componentsProps={{ popper: { sx: styles.c } }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton
                         size="large"

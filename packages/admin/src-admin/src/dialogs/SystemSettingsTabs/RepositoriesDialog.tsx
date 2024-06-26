@@ -395,7 +395,10 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                 /> : null}
             </TableCell>
             <TableCell style={styles.stableColumn} className="float_cell">
-                <Tooltip title={I18n.t('Flag will be automatically detected as repository will be read for the first time')}>
+                <Tooltip
+                    title={I18n.t('Flag will be automatically detected as repository will be read for the first time')}
+                    componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                >
                     <span>
                         <Checkbox
                             disabled
@@ -407,7 +410,10 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                 </Tooltip>
             </TableCell>
             <TableCell style={styles.upgradePolicyColumn} className="float_cell">
-                <Tooltip title={I18n.t('Allow automatic adapter upgrades for this repository')}>
+                <Tooltip
+                    title={I18n.t('Allow automatic adapter upgrades for this repository')}
+                    componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                >
                     <span>
                         <Checkbox
                             disabled={this.props.saving}

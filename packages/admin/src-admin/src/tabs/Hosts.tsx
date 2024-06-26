@@ -387,7 +387,7 @@ class Hosts extends Component<HostsProps, HostsState> {
             <style>{blinkClasses}</style>
             {this.renderSlowConnectionWarning()}
             <TabHeader>
-                <Tooltip title={this.t('Show / hide List')}>
+                <Tooltip title={this.t('Show / hide List')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
@@ -398,7 +398,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.t('Reload')}>
+                <Tooltip title={this.t('Reload')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton size="large" onClick={() => this.forceUpdate()}>
                         <RefreshIcon />
                     </IconButton>

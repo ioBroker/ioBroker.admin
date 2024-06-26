@@ -1076,7 +1076,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return <TabContainer>
             {this.renderFilterDialog()}
             <TabHeader>
-                <Tooltip title={this.t('Show / hide List')}>
+                <Tooltip title={this.t('Show / hide List')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
@@ -1088,7 +1088,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     </IconButton>
                 </Tooltip>
 
-                {!this.state.viewMode && <Tooltip title={this.t('Category')}>
+                {!this.state.viewMode && <Tooltip title={this.t('Category')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
@@ -1101,7 +1101,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 </Tooltip>}
 
                 {!this.state.viewMode && this.state.viewCategory && <>
-                    <Tooltip title={this.t('expand all')}>
+                    <Tooltip title={this.t('expand all')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => {
@@ -1116,7 +1116,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                             <FolderOpenIcon />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={this.t('collapse all')}>
+                    <Tooltip title={this.t('collapse all')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
                             size="large"
                             onClick={() => {
@@ -1128,12 +1128,12 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         </IconButton>
                     </Tooltip>
                 </>}
-                <Tooltip title={this.t('Reload')}>
+                <Tooltip title={this.t('Reload')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton size="large" onClick={() => this.getData(true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
-                {this.props.hosts.length > 1 ? <Tooltip title={this.t('Show instances only for current host')}>
+                {this.props.hosts.length > 1 ? <Tooltip title={this.t('Show instances only for current host')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
@@ -1144,11 +1144,13 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         <DevicesIcon color={this.state.onlyCurrentHost ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip> : null}
-                <Tooltip title={this.t(!this.state.playArrow ?
-                    'Show running or stopped instances' :
-                    this.state.playArrow === 1 ?
-                        'Showed only running instances' :
-                        'Showed only stopped instances')}
+                <Tooltip
+                    title={this.t(!this.state.playArrow ?
+                        'Show running or stopped instances' :
+                        this.state.playArrow === 1 ?
+                            'Showed only running instances' :
+                            'Showed only stopped instances')}
+                     componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton size="large" onClick={() => this.changeStartedStopped()}>
                         <PlayArrowIcon
@@ -1157,7 +1159,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         />
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.t('Filter instances')}>
+                <Tooltip title={this.t('Filter instances')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => this.setState({ showFilterDialog: true })}
@@ -1166,7 +1168,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         <FilterListIcon style={{ width: 16, height: 16 }} />
                     </IconButton>
                 </Tooltip>
-                {/* this.props.expertMode && <Tooltip title="sentry">
+                {/* this.props.expertMode && <Tooltip title="sentry" componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="small"
                         style={styles.button}

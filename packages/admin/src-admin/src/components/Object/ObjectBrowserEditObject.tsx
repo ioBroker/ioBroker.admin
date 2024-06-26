@@ -33,9 +33,10 @@ import {
     SelectID as DialogSelectID,
     IconFx,
     UploadImage,
-    type AdminConnection,
+    type Connection,
     type Translate,
     type ThemeType,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import Editor from '../Editor';
@@ -172,6 +173,9 @@ const styles: Record<string, any> = {
         opacity: 0.7,
         fontStyle: 'italic',
         fontSize: 'smaller',
+    },
+    tooltip: {
+        pointerEvents: 'none',
     },
 };
 
@@ -432,14 +436,15 @@ const DEFAULT_ROLES = [
 ] as const;
 
 interface ObjectBrowserEditObjectProps {
-    socket: AdminConnection;
+    socket: Connection;
     obj: ioBroker.AnyObject;
     roleArray: string[];
     expertMode: boolean;
     themeType: ThemeType;
+    theme: IobTheme;
     aliasTab: boolean;
     onClose: (obj?: ioBroker.AnyObject) => void;
-    dialogName: string;
+    dialogName?: string;
     objects: Record<string, ioBroker.AnyObject>;
     dateFormat: string;
     isFloatComma: boolean;
@@ -769,14 +774,13 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         return <DialogSelectID
             key="selectDialog"
             imagePrefix="."
-            // @ts-expect-error types are wrong in adapter-react-v5
             dateFormat={this.props.dateFormat}
+            theme={this.props.theme}
             isFloatComma={this.props.isFloatComma}
             socket={this.props.socket}
             dialogName="aliasesEdit"
             title={`${this.props.t('Select for')} ${this.props.obj._id}`}
             selected={id}
-            statesOnly
             onOk={idx => {
                 const selectRead = this.state.selectRead;
                 const selectWrite = this.state.selectWrite;
@@ -847,7 +851,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
     buttonRemoveKey(nameKey: string, cb: () => void): React.JSX.Element {
         const { t } = this.props;
-        return <Tooltip title={t('Remove attribute %s', nameKey)}>
+        return <Tooltip title={t('Remove attribute %s', nameKey)} componentsProps={{ popper: { sx: styles.tooltip } }}>
             <Box component="div" sx={styles.close} onClick={cb} />
         </Tooltip>;
     }

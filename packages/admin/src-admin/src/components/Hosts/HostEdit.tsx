@@ -208,7 +208,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
 
     buttonRemoveKey(nameKey: string, cb: () => void) {
         const { t } = this.props;
-        return <Tooltip title={t(`Remove ${nameKey}`)}>
+        return <Tooltip title={t(`Remove ${nameKey}`)} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
             <Box component="div" sx={styles.close} onClick={cb} />
         </Tooltip>;
     }

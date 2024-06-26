@@ -384,7 +384,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         size="small"
                         onClick={() => props.showEnumEditDialog(props.enum, false)}
                     >
-                        <Tooltip title={props.t('Edit')} placement="top">
+                        <Tooltip title={props.t('Edit')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                             <EditIcon style={{ color: textColor }} />
                         </Tooltip>
                     </IconButton> : null}
@@ -392,7 +392,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         size="small"
                         onClick={() => props.copyEnum(props.id)}
                     >
-                        <Tooltip title={props.t('Clone')} placement="top">
+                        <Tooltip title={props.t('Clone')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                             <FileCopyIcon style={{ color: textColor }} />
                         </Tooltip>
                     </IconButton> : null}
@@ -401,7 +401,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         onClick={() => props.showEnumDeleteDialog(props.enum)}
                         disabled={common?.dontDelete}
                     >
-                        <Tooltip title={props.t('Delete')} placement="top">
+                        <Tooltip title={props.t('Delete')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                             <DeleteIcon style={common?.dontDelete ? null : { color: textColor }} />
                         </Tooltip>
                     </IconButton>
@@ -464,7 +464,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                                     size="small"
                                     onClick={() => props.removeMemberFromEnum(member._id, props.id)}
                                 >
-                                    <Tooltip title={props.t('Remove')} placement="top">
+                                    <Tooltip title={props.t('Remove')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                                         <ClearIcon style={{ color: textColor }} />
                                     </Tooltip>
                                 </IconButton>
@@ -484,7 +484,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         }
                     }}
                 >
-                    <Tooltip title={props.t('Add child')} placement="top">
+                    <Tooltip title={props.t('Add child')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                         <AddIcon style={{ color: textColor }} />
                     </Tooltip>
                 </IconButton>

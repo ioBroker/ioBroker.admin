@@ -288,7 +288,11 @@ const NotificationsDialog = ({
             />
             {I18n.t('Notifications')}
 
-            {!notificationManagerInstalled ? <Tooltip sx={{ position: 'absolute', right: 24, color: 'text.primary' }} title={I18n.t('Tip: Use the "notification-manager" adapter to receive notifications automatically via messaging adapters.')}>
+            {!notificationManagerInstalled ? <Tooltip
+                sx={{ position: 'absolute', right: 24, color: 'text.primary' }}
+                title={I18n.t('Tip: Use the "notification-manager" adapter to receive notifications automatically via messaging adapters.')}
+                componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+            >
                 <InfoIcon />
             </Tooltip> : null}
         </h2>

@@ -309,7 +309,7 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
                 <Box component="p" sx={styles.warning}>{this.props.t('base_settings_hint')}</Box>
                 <Grid container direction="column">
                     <Grid item>
-                        <Tooltip title={this.props.t('switch_db_note')}>
+                        <Tooltip title={this.props.t('switch_db_note')} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                             <FormControl style={styles.controlItem} variant="standard">
                                 <InputLabel>{ this.props.t('Type') }</InputLabel>
                                 <Select

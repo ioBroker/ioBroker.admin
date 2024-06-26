@@ -384,7 +384,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                     top: 5,
                 }}
             >
-                <Tooltip title={this.props.t('Show help for this adapter')}>
+                <Tooltip title={this.props.t('Show help for this adapter')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <Fab
                         sx={{ '&.MuiFab-root': styles.button }}
                         onClick={() => {
@@ -527,7 +527,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 v
                             {this.props.version}
                         </span> : null}
-                        <Tooltip title={this.props.t('Start/stop')}>
+                        <Tooltip title={this.props.t('Start/stop')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                             <span>
                                 <IconButton
                                     size="small"
@@ -555,7 +555,7 @@ v
                                 </IconButton>
                             </span>
                         </Tooltip>
-                        <Tooltip title={this.props.t('Restart')}>
+                        <Tooltip title={this.props.t('Restart')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                             <span>
                                 <IconButton
                                     size="small"
@@ -576,10 +576,10 @@ v
                             </span>
                         </Tooltip>
                         {this.state.tempLogLevel !== this.state.logLevel ?
-                            <Tooltip title={this.props.t('temporary log level')}>
+                            <Tooltip title={this.props.t('temporary log level')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                 <span style={styles.logLevel}>{this.state.tempLogLevel}</span>
                             </Tooltip> : null}
-                        <Tooltip title={this.props.t('log level')}>
+                        <Tooltip title={this.props.t('log level')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                             <span style={styles.logLevel}>{this.state.tempLogLevel !== this.state.logLevel ? `/ ${this.state.logLevel}` : this.state.logLevel}</span>
                         </Tooltip>
                         <Tooltip title={this.props.t('Edit log level rule for %s', `${this.props.adapter}.${this.props.instance}`)}>

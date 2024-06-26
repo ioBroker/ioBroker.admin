@@ -1529,7 +1529,7 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderDeleteButton() {
-        return <Tooltip title={this.props.context.t('Delete')}>
+        return <Tooltip title={this.props.context.t('Delete')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
                 style={this.styles.button}

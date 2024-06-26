@@ -13,7 +13,7 @@ import {
     Delete as IconDelete,
 } from '@mui/icons-material';
 
-import type { Translate } from '@iobroker/adapter-react-v5/types';
+import type { Translate } from '@iobroker/adapter-react-v5';
 
 interface GroupDeleteDialogProps {
     t: Translate;

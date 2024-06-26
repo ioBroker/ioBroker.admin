@@ -987,7 +987,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 const updateSupported = this.state.nodeUpdateSupported && hostData.Platform === 'linux';
 
                 nodeUpdate =
-                    <Tooltip title={this.props.t('Some updates available')}>
+                    <Tooltip title={this.props.t('Some updates available')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                         <span style={{ ...styles.nodeUpdate, display: 'inline-flex' }}>
 (
                             {nodeUpdate}
@@ -1018,7 +1018,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 // ignore
             }
             if (npmUpdate) {
-                npmUpdate = <Tooltip title={this.props.t('Some updates available')}>
+                npmUpdate = <Tooltip title={this.props.t('Some updates available')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <span style={styles.nodeUpdate}>
 (
                         {npmUpdate}
