@@ -45,12 +45,6 @@ import { localeMap } from './utils';
 import Editor from '../Editor';
 
 const styles: Record<string, any> = {
-    input: {
-        width: '100%',
-    },
-    textInput: {
-        width: '100%',
-    },
     formControl: {
         minWidth: 100,
     },
@@ -90,56 +84,6 @@ const styles: Record<string, any> = {
         pointerEvents: 'none',
     },
 };
-
-const switchStyles = {
-    '&.MuiSwitch-root': {
-        width: 28,
-        height: 16,
-        padding: 0,
-        display: 'flex',
-    },
-    '&.MuiSwitch-switchBase': (theme: Theme) => ({
-        p: '2px',
-        color: theme.palette.grey[500],
-        '&$checked': {
-            transform: 'translateX(12px)',
-            color: theme.palette.common.white,
-            '& + $track': {
-                opacity: 1,
-                backgroundColor: theme.palette.primary.main,
-                borderColor: theme.palette.primary.main,
-            },
-        },
-    }),
-    '&.MuiSwitch-thumb': {
-        width: 12,
-        height: 12,
-        boxShadow: 'none',
-    },
-    '&.MuiSwitch-track': (theme: Theme) => ({
-        border: `1px solid ${theme.palette.grey[500]}`,
-        borderRadius: `${16 / 2}px`,
-        opacity: 1,
-        backgroundColor: theme.palette.common.white,
-    }),
-};
-
-interface AntSwitchProps {
-    autoFocus: boolean;
-    defaultChecked: boolean;
-    onKeyUp: (e: React.KeyboardEvent) => void;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
-}
-
-function AntSwitch(props: AntSwitchProps) {
-    return <Switch
-        autoFocus={props.autoFocus}
-        defaultChecked={props.defaultChecked}
-        onKeyUp={props.onKeyUp}
-        onChange={props.onChange}
-        sx={switchStyles}
-    />;
-}
 
 interface NumberValidationOptions {
     value: unknown;
@@ -491,7 +435,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 control={<Checkbox defaultChecked={false} onChange={e => (this.ack = e.target.checked)} />}
                 label={this.props.t('Acknowledged')}
             />
-            <Tooltip title={this.props.t('Acknowledged explanation')} componentsProps={{ popper: { sx: styles.c } }}>
+            <Tooltip title={this.props.t('Acknowledged explanation')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                 <InfoIcon color="primary" />
             </Tooltip>
         </div>;
@@ -604,7 +548,16 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                     flex={this.state.type === 'json' && this.state.fullScreen ? 1 : undefined}
                                     style={{ paddingTop: 0 }}
                                 >
-                                    {this.state.type === 'boolean' ? <Typography component="div">
+                                    {this.state.type === 'boolean' ? <Typography
+                                        component="div"
+                                        style={this.props.expertMode ? {
+                                            marginTop: 20,
+                                            width: '100%',
+                                            backgroundColor: this.props.themeType === 'dark' ? '#595959' : '#dadada',
+                                            borderRadius: 5,
+                                            padding: 5,
+                                        } : undefined}
+                                    >
                                         <Grid component="label" container alignItems="center" spacing={1}>
                                             <Grid item style={{ marginRight: 10 }}>
                                                 {this.props.t('Value')}
@@ -612,7 +565,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                             </Grid>
                                             <Grid item>FALSE</Grid>
                                             <Grid item>
-                                                <AntSwitch
+                                                <Switch
                                                     autoFocus
                                                     defaultChecked={
                                                         this.propsValue === 'null' ||
@@ -628,7 +581,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                         </Grid>
                                     </Typography> : (this.state.type === 'number' ? <TextField
                                         variant="standard"
-                                        style={styles.textInput}
+                                        fullWidth
                                         autoFocus
                                         error={!this.state.valid}
                                         type="number"
@@ -652,14 +605,13 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                             this.renderStates()
                                             : <TextField
                                                 variant="standard"
-                                                style={styles.textInput}
+                                                fullWidth
                                                 inputRef={this.inputRef}
                                                 autoFocus
                                                 helperText={this.props.t(
                                                     'Press CTRL+ENTER to write the value, when focused',
                                                 )}
                                                 label={this.props.t('Value')}
-                                                fullWidth
                                                 multiline
                                                 onKeyDown={e => e.ctrlKey && e.key === 'Enter' && this.onUpdate(e)}
                                                 defaultValue={this.propsValue.toString()}
