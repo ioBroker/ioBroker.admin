@@ -89,8 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 7.0.5 (2024-06-26)
+### **WORK IN PROGRESS**
 * (bluefox) Login page was corrected
+* (bluefox) Icons were corrected
 
 ### 7.0.2 (2024-06-24)
 * (bluefox) Working on Json-Custom-Components
