@@ -974,7 +974,7 @@ class Logs extends Component<LogsProps, LogsState> {
                 <Badge
                     badgeContent={this.state.logErrors}
                     color="error"
-                    sx={{ '&. MuiBadge-badge': { ...styles.badge, ...styles.badgeError } }}
+                    sx={{ '& .MuiBadge-badge': { ...styles.badge, ...styles.badgeError } }}
                 >
                     <IconButton
                         size="large"
