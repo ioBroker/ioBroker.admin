@@ -10,7 +10,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "check-ts": "tsc --noEmit --checkJS false",
-        "tsc": "tsc --project tsconfig.build.json"
+        "tsc": "tsc --project tsconfig.json"
     },
     "eslintConfig": {
         "extends": "react-app"

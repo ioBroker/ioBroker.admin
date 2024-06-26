@@ -82,6 +82,7 @@ class ConfigObjectId extends ConfigGeneric<ConfigObjectIdProps, ConfigObjectIdSt
                 dialogName={`admin.${this.props.adapterName}`}
                 filterFunc={schema.filterFunc}
                 themeType={this.props.themeType}
+                theme={this.props.theme}
                 types={schema.types ? (Array.isArray(schema.types) ? schema.types : [schema.types]) : undefined}
                 customFilter={schema.customFilter}
                 filters={schema.filters}

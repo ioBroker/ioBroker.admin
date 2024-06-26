@@ -23,7 +23,7 @@ import {
     Typography,
     Switch,
     Autocomplete,
-    Tooltip, type Theme,
+    Tooltip,
 } from '@mui/material';
 
 import {
