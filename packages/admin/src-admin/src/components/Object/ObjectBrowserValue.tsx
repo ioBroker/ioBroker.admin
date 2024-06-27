@@ -18,7 +18,6 @@ import {
     FormControl,
     Select,
     Grid,
-    Hidden,
     Fab,
     Typography,
     Switch,
@@ -112,6 +111,7 @@ interface ObjectBrowserValueProps {
     isFloatComma: boolean;
     t: Translate;
     lang: ioBroker.Languages;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface ObjectBrowserValueState {
@@ -673,11 +673,14 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                 </Grid> : null}
                             </Grid>
                         </Grid>
-                        {this.state.chart && this.state.chartEnabled && this.state.type !== 'json' ? <Hidden only={['sm', 'xs']}>
-                            <Grid item xs={6} style={{ minHeight: 300 }}>
-                                {this.renderChart()}
-                            </Grid>
-                        </Hidden> : null}
+                        {this.state.chart && this.state.chartEnabled && this.state.type !== 'json' ? <Grid
+                            item
+                            xs={6}
+                            style={{ minHeight: 300 }}
+                            sx={{ display: { sm: 'none', md: 'inline-block' } }}
+                        >
+                            {this.renderChart()}
+                        </Grid> : null}
                     </Grid>
                 </form>
             </DialogContent>
@@ -689,18 +692,18 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                     disabled={!this.state.valid}
                     onClick={e => this.onUpdate(e)}
                     color="primary"
-                    startIcon={<IconCheck />}
+                    startIcon={this.props.width !== 'xs' ? <IconCheck /> : undefined}
                     style={this.props.object.common?.write === false ? styles.readOnly : undefined}
                 >
-                    {this.props.t('Set value')}
+                    {this.props.width !== 'xs' ? this.props.t('Set value') : <IconCheck fontSize="large" />}
                 </Button>
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     color="grey"
-                    startIcon={<IconCancel />}
+                    startIcon={this.props.width !== 'xs' ? <IconCancel /> : undefined}
                 >
-                    {this.props.t('Cancel')}
+                    {this.props.width !== 'xs' ? this.props.t('Cancel') : <IconCancel fontSize="large" />}
                 </Button>
             </DialogActions>
         </Dialog>;

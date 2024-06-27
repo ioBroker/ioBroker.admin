@@ -34,6 +34,7 @@ import {
     ListItemText,
     Menu,
     MenuItem,
+    Paper,
     Select,
     Snackbar,
     Switch,
@@ -383,6 +384,7 @@ const styles: Record<string, any> = {
         lineHeight: `${ROW_HEIGHT}px`,
         verticalAlign: 'top',
         userSelect: 'none',
+        position: 'relative',
         width: '100%',
         '&:hover': {
             background: `${
@@ -408,6 +410,17 @@ const styles: Record<string, any> = {
     tableRowAliasReadWrite: {
         height: ROW_HEIGHT + 22,
     },
+    tableRowFocused: (theme: IobTheme) => ({
+        '&:after': {
+            content: '""',
+            position: 'absolute',
+            top: 1,
+            left: 1,
+            right: 1,
+            bottom: 1,
+            border: theme.palette.mode ? '1px dotted #000' : '1px dotted #FFF',
+        },
+    }),
     checkBox: {
         padding: 0,
     },
@@ -483,6 +496,12 @@ const styles: Record<string, any> = {
         opacity: 0.8,
         position: 'absolute',
         right: 3,
+    },
+    cellCopyButtonInDetails: {
+        width: SMALL_BUTTON_SIZE,
+        height: SMALL_BUTTON_SIZE,
+        top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
+        opacity: 0.8,
     },
     cellEditButton: {
         width: SMALL_BUTTON_SIZE,
@@ -710,6 +729,18 @@ const styles: Record<string, any> = {
     },
     cellButtonsValueButtonEdit: {
         right: (SMALL_BUTTON_SIZE / 2) + 16,
+    },
+    cellDetailsLine: {
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        height: 24,
+        fontSize: 14,
+    },
+    cellDetailsName: {
+        fontWeight: 'bold',
+        marginRight: 8,
+        minWidth: 100,
     },
 
     filteredOut: {
@@ -2247,6 +2278,7 @@ interface ObjectBrowserValueProps {
     isFloatComma: boolean;
     t: Translate;
     lang: ioBroker.Languages;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface ObjectBrowserEditObjectProps {
@@ -2360,6 +2392,7 @@ interface ObjectBrowserState {
     loaded: boolean;
     foldersFirst: boolean;
     selected: string[];
+    focused: string;
     selectedNonObject: string;
     filter: ObjectBrowserFilter;
     filterKey: number;
@@ -2679,6 +2712,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             selectedNonObject: this.localStorage.getItem(`${props.dialogName || 'App'}.selectedNonObject`) || '',
             filter,
             filterKey: 0,
+            focused: this.localStorage.getItem(`${props.dialogName || 'App'}.focused`) || '',
             depth: 0,
             expandAllVisible: false,
             expanded,
@@ -2713,6 +2747,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         };
 
         this.texts = {
+            name: props.t('ra_Name'),
+            categories: props.t('ra_Categories'),
             value: props.t('ra_tooltip_value'),
             ack: props.t('ra_tooltip_ack'),
             ts: props.t('ra_tooltip_ts'),
@@ -3173,6 +3209,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      * Called when an item is selected/deselected.
      */
     onSelect(toggleItem: string, isDouble?: boolean, cb?: () => void) {
+        this.localStorage.setItem(`${this.props.dialogName || 'App'}.focused`, toggleItem);
+
         if (!this.props.multiSelect) {
             if (
                 this.objects[toggleItem] &&
@@ -3180,7 +3218,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             ) {
                 this.localStorage.removeItem(`${this.props.dialogName || 'App'}.selectedNonObject`);
                 if (this.state.selected[0] !== toggleItem) {
-                    this.setState({ selected: [toggleItem], selectedNonObject: '' }, () => {
+                    this.setState({ selected: [toggleItem], selectedNonObject: '', focused: toggleItem }, () => {
                         this.onAfterSelect(isDouble);
                         cb && cb();
                     });
@@ -3189,7 +3227,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 }
             } else {
                 this.localStorage.setItem(`${this.props.dialogName || 'App'}.selectedNonObject`, toggleItem);
-                this.setState({ selected: [], selectedNonObject: toggleItem }, () => {
+                this.setState({ selected: [], selectedNonObject: toggleItem, focused: toggleItem }, () => {
                     this.onAfterSelect();
                     cb && cb();
                 });
@@ -3209,7 +3247,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 selected.splice(pos, 1);
             }
 
-            this.setState({ selected, selectedNonObject: '' }, () => {
+            this.setState({ selected, selectedNonObject: '', focused: toggleItem }, () => {
                 this.onAfterSelect(isDouble);
                 cb && cb();
             });
@@ -4550,6 +4588,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 display: 'flex',
                 width: '100%',
                 alignItems: 'center',
+                overflowX: 'auto',
             }}
         >
             <div
@@ -4573,46 +4612,40 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         </IconButton>
                     </div>
                 </Tooltip>
-                {this.props.showExpertButton && !this.props.expertMode && (
-                    <Tooltip
-                        title={this.props.t('ra_expertMode')}
-                        componentsProps={{ popper: { sx: styles.tooltip } }}
+                {this.props.showExpertButton && !this.props.expertMode && <Tooltip
+                    title={this.props.t('ra_expertMode')}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <IconButton
+                        key="expertMode"
+                        color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                        onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                        size="large"
                     >
-                        <IconButton
-                            key="expertMode"
-                            color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                            onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                            size="large"
-                        >
-                            <IconExpert />
-                        </IconButton>
-                    </Tooltip>
-                )}
-                {!this.props.disableColumnSelector && (
-                    <Tooltip
-                        title={this.props.t('ra_Configure')}
-                        componentsProps={{ popper: { sx: styles.tooltip } }}
+                        <IconExpert />
+                    </IconButton>
+                </Tooltip>}
+                {!this.props.disableColumnSelector && this.props.width !== 'xs' && <Tooltip
+                    title={this.props.t('ra_Configure')}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <IconButton
+                        key="columnSelector"
+                        color={this.state.columnsAuto ? 'primary' : 'default'}
+                        onClick={() => this.setState({ columnsSelectorShow: true })}
+                        size="large"
                     >
-                        <IconButton
-                            key="columnSelector"
-                            color={this.state.columnsAuto ? 'primary' : 'default'}
-                            onClick={() => this.setState({ columnsSelectorShow: true })}
-                            size="large"
-                        >
-                            <IconColumns />
-                        </IconButton>
-                    </Tooltip>
-                )}
-                {this.state.expandAllVisible && (
-                    <Tooltip
-                        title={this.props.t('ra_Expand all nodes')}
-                        componentsProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <IconButton key="expandAll" onClick={() => this.onExpandAll()} size="large">
-                            <IconOpen />
-                        </IconButton>
-                    </Tooltip>
-                )}
+                        <IconColumns />
+                    </IconButton>
+                </Tooltip>}
+                {this.props.width !== 'xs' && this.state.expandAllVisible && <Tooltip
+                    title={this.props.t('ra_Expand all nodes')}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <IconButton key="expandAll" onClick={() => this.onExpandAll()} size="large">
+                        <IconOpen />
+                    </IconButton>
+                </Tooltip>}
                 <Tooltip
                     title={this.props.t('ra_Collapse all nodes')}
                     componentsProps={{ popper: { sx: styles.tooltip } }}
@@ -4621,7 +4654,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         <IconClosed />
                     </IconButton>
                 </Tooltip>
-                <Tooltip
+                {this.props.width !== 'xs' && <Tooltip
                     title={this.props.t('ra_Expand one step node')}
                     componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
@@ -4646,8 +4679,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <IconOpen />
                         </Badge>
                     </IconButton>
-                </Tooltip>
-                <Tooltip
+                </Tooltip>}
+                {this.props.width !== 'xs' && <Tooltip
                     title={this.props.t('ra_Collapse one step node')}
                     componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
@@ -4672,17 +4705,15 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             <IconClosed />
                         </Badge>
                     </IconButton>
-                </Tooltip>
-                {this.props.objectStatesView && (
-                    <Tooltip
-                        title={this.props.t('ra_Toggle the states view')}
-                        componentsProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <IconButton onClick={() => this.onStatesViewVisible()} size="large">
-                            <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
-                        </IconButton>
-                    </Tooltip>
-                )}
+                </Tooltip>}
+                {this.props.objectStatesView && <Tooltip
+                    title={this.props.t('ra_Toggle the states view')}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <IconButton onClick={() => this.onStatesViewVisible()} size="large">
+                        <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>}
 
                 <Tooltip
                     title={this.props.t('ra_Show/Hide object descriptions')}
@@ -4754,15 +4785,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         </IconButton>
                     </Tooltip>}
             </div>
-            {!!this.props.objectBrowserEditObject && (
-                <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
-                    {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t(
-                        'ra_States',
-                    )}: ${
-                        Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length
-                    }`}
-                </div>
-            )}
+            {!!this.props.objectBrowserEditObject && this.props.width !== 'xs' && <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+                {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t(
+                    'ra_States',
+                )}: ${
+                    Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length
+                }`}
+            </div>}
             {this.props.objectEditBoolean && <Tooltip
                 title={this.props.t('ra_Edit custom config')}
                 componentsProps={{ popper: { sx: styles.tooltip } }}
@@ -5184,6 +5213,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     private renderColumnValue(
         id: string,
         item: TreeItem,
+        narrowStyleWithDetails?: boolean,
     ): React.JSX.Element | null {
         const obj = item.data.obj;
         if (!obj || !this.states) {
@@ -5238,7 +5268,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 {valText.s}
                 )
             </span>);
-            valTextRx.push(<IconCopy
+            !narrowStyleWithDetails && valTextRx.push(<IconCopy
                 className="copyButton"
                 style={this.styles.iconCopy}
                 onClick={e => this.onCopy(e, copyText)}
@@ -5258,7 +5288,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         return <Tooltip
             key="value"
-            title={this.state.tooltipInfo?.el || 'Calculating...'}
+            title={this.state.tooltipInfo?.el}
             componentsProps={{
                 popper: { sx: styles.cellValueTooltipBox },
                 tooltip: { sx: styles.cellValueTooltip },
@@ -5266,7 +5296,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             onOpen={() => this.getTooltipInfo(id, () => this.readHistory(id))}
             onClose={() => this.state.tooltipInfo?.id === id && this.setState({ tooltipInfo: null })}
         >
-            <Box component="div" style={info.style} sx={styles.cellValueText}>
+            <Box
+                component="div"
+                style={info.style}
+                sx={{ ...styles.cellValueText, height: narrowStyleWithDetails ? undefined : ROW_HEIGHT }}
+            >
                 {val}
             </Box>
         </Tooltip>;
@@ -5750,7 +5784,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         item: TreeItem,
         isExpanded: boolean | undefined,
         counter: { count: number },
-    ): React.JSX.Element {
+    ): { row: React.JSX.Element; details: React.JSX.Element | null } {
         const id = item.data.id;
         counter.count++;
         isExpanded = isExpanded === undefined ? this.state.expanded.includes(id) : isExpanded;
@@ -5828,8 +5862,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             !this.props.notEditable &&
             this.objects[id] &&
             (this.state.filter.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
+
         const checkVisibleObjectType =
             this.state.statesView && (itemType === 'state' || itemType === 'channel' || itemType === 'device');
+
         let newValue = '';
         const newValueTitle = [];
         if (checkVisibleObjectType) {
@@ -5846,6 +5882,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 newValueTitle.push(`${this.texts.stateChangedBy} ${user}`);
             }
         }
+
         if (obj) {
             obj.from &&
                 newValueTitle.push(
@@ -6067,7 +6104,348 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        return <Grid
+        const narrowStyleWithDetails = this.props.width === 'xs' && this.state.focused === id;
+
+        const colID = <Grid
+            container
+            wrap="nowrap"
+            direction="row"
+            sx={styles.cellId}
+            style={{ width: this.columnsVisibility.id, paddingLeft }}
+        >
+            <Grid item container alignItems="center">
+                {checkbox}
+                {iconFolder}
+            </Grid>
+            <Grid
+                item
+                style={{
+                    ...styles.cellIdSpan,
+                    ...(invertBackground ? this.styles.invertedBackground : undefined),
+                    color: checkColor,
+                    fontWeight: bold ? 'bold' : undefined,
+                }}
+            >
+                <Tooltip
+                    title={getIdFieldTooltip(item.data, this.props.lang)}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <div>{item.data.name}</div>
+                </Tooltip>
+                {alias}
+                {icons}
+            </Grid>
+            <div style={{ ...styles.grow, ...(invertBackground ? this.styles.invertedBackgroundFlex : {}) }} />
+            <Grid item container alignItems="center">
+                {iconItem}
+            </Grid>
+            {this.props.width !== 'xs' || narrowStyleWithDetails ? <div>
+                <IconCopy
+                    className={narrowStyleWithDetails ? '' : 'copyButton'}
+                    style={styles.cellCopyButton}
+                    onClick={e => this.onCopy(e, id)}
+                />
+            </div> : null}
+        </Grid>;
+
+        let colName = (narrowStyleWithDetails && name) || this.columnsVisibility.name ? <Box
+            component="div"
+            sx={{
+                ...styles.cellName,
+                ...(useDesc ? styles.cellNameWithDesc : undefined),
+                width: this.props.width !== 'xs' ? this.columnsVisibility.name : undefined,
+                ml: narrowStyleWithDetails ? 0 : '5px',
+            }}
+        >
+            {name}
+            {!narrowStyleWithDetails && item.data?.title ? <Box
+                style={{ color: checkColor }}
+            >
+                <IconCopy
+                    className="copyButton"
+                    style={styles.cellCopyButton}
+                    onClick={e => this.onCopy(e, item.data?.title as string)}
+                />
+            </Box> : null}
+        </Box> : null;
+
+        let colMiddle: ({ el: React.JSX.Element; type: 'filter_type' | 'filter_role' | 'filter_func' | 'filter_room' | 'quality' | 'from' | 'lc' | 'ts' } | null)[] | null;
+        if (!this.state.statesView) {
+            colMiddle = [
+                narrowStyleWithDetails || this.columnsVisibility.type ? {
+                    el: <div
+                        key="type"
+                        style={{
+                            ...styles.cellType,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.type : undefined,
+                        }}
+                    >
+                        {typeImg}
+                        &nbsp;
+                        {obj?.type}
+                    </div>,
+                    type: 'filter_type',
+                } : null,
+                narrowStyleWithDetails || this.columnsVisibility.role ? {
+                    el: <div
+                        key="role"
+                        style={{
+                            ...styles.cellRole,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.role : undefined,
+                            cursor:
+                                this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
+                                    ? 'text'
+                                    : 'default',
+                        }}
+                        onClick={
+                            this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
+                                ? () => this.setState({ roleDialog: item.data.id })
+                                : undefined
+                        }
+                    >
+                        {common?.role}
+                    </div>,
+                    type: 'filter_role',
+                } : null,
+                narrowStyleWithDetails || this.columnsVisibility.room ? {
+                    el: <div
+                        key="room"
+                        style={{
+                            ...styles.cellRoom,
+                            ...(item.data.per ? styles.cellEnumParent : {}),
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.room : undefined,
+                            cursor: enumEditable ? 'text' : 'default',
+                        }}
+                        onClick={enumEditable ? () => {
+                            const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
+                            this.setState({
+                                enumDialogEnums: enums,
+                                enumDialog: {
+                                    item,
+                                    type: 'room',
+                                    enumsOriginal: JSON.stringify(enums),
+                                },
+                            });
+                        } : undefined}
+                    >
+                        {item.data.rooms}
+                    </div>,
+                    type: 'filter_room',
+                } : null,
+                narrowStyleWithDetails || this.columnsVisibility.func ? {
+                    el: <div
+                        key="func"
+                        style={{
+                            ...styles.cellFunc,
+                            ...(item.data.pef ? styles.cellEnumParent : {}),
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.func : undefined,
+                            cursor: enumEditable ? 'text' : 'default',
+                        }}
+                        onClick={enumEditable ? () => {
+                            const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
+                            this.setState({
+                                enumDialogEnums: enums,
+                                enumDialog: {
+                                    item,
+                                    type: 'func',
+                                    enumsOriginal: JSON.stringify(enums),
+                                },
+                            });
+                        } : undefined}
+                    >
+                        {item.data.funcs}
+                    </div>,
+                    type: 'filter_func',
+                } : null,
+            ];
+        } else {
+            colMiddle = [
+                narrowStyleWithDetails || this.columnsVisibility.changedFrom ? {
+                    el: <div
+                        key="from"
+                        style={{
+                            ...styles.cellRole,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.changedFrom : undefined,
+                        }}
+                        title={newValueTitle.join('\n')}
+                    >
+                        {checkVisibleObjectType && this.states[id]?.from ? newValue : null}
+                    </div>,
+                    type: 'from',
+                } : null,
+                narrowStyleWithDetails || this.columnsVisibility.qualityCode ? {
+                    el: <div
+                        key="q"
+                        style={{
+                            ...styles.cellRole,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.qualityCode : undefined,
+                        }}
+                        title={q || ''}
+                    >
+                        {q}
+                    </div>,
+                    type: 'quality',
+                } : null,
+                narrowStyleWithDetails || this.columnsVisibility.timestamp ? {
+                    el: <div
+                        key="ts"
+                        style={{
+                            ...styles.cellRole,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.timestamp : undefined,
+                        }}
+                    >
+                        {checkVisibleObjectType && this.states[id]?.ts
+                            ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat || this.systemConfig.common.dateFormat)
+                            : null}
+                    </div>,
+                    type: 'ts',
+                } : null,
+                narrowStyleWithDetails || this.columnsVisibility.lastChange ? {
+                    el: <div
+                        key="lc"
+                        style={{
+                            ...styles.cellRole,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.lastChange : undefined,
+                        }}
+                    >
+                        {checkVisibleObjectType && this.states[id]?.lc
+                            ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat || this.systemConfig.common.dateFormat)
+                            : null}
+                    </div>,
+                    type: 'lc',
+                } : null,
+            ];
+        }
+
+        let colCustom = this.adapterColumns?.map(it => <div
+            style={{
+                ...styles.cellAdapter,
+                width: this.props.width !== 'xs' ? (this.columnsVisibility as Record<string, number>)[it.id] : undefined,
+            }}
+            key={it.id}
+            title={`${it.adapter} => ${it.pathText}`}
+        >
+            {obj ? this.renderCustomValue(obj, it, item) : null}
+        </div>) || null;
+
+        const columnValue = narrowStyleWithDetails || this.columnsVisibility.val ? this.renderColumnValue(id, item, narrowStyleWithDetails) : null;
+
+        let colValue = (narrowStyleWithDetails && columnValue) || this.columnsVisibility.val ? <div
+            style={{
+                ...styles.cellValue,
+                width: this.props.width !== 'xs' ? this.columnsVisibility.val : undefined,
+                cursor: valueEditable ? (common?.type === 'file' ? 'zoom-in' : (item.data.button ? 'grab' : 'text')) : 'default',
+            }}
+            onClick={valueEditable ? () => {
+                if (!obj || !this.states) {
+                    // return;
+                } else if (common?.type === 'file') {
+                    this.setState({ viewFileDialog: id });
+                    // eslint-disable-next-line brace-style
+                } else if (!this.state.filter.expertMode && item.data.button) {
+                    // in non-expert mode control button directly
+                    this.props.socket
+                        .setState(id, true)
+                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                } else {
+                    this.edit = {
+                        val: this.states[id] ? this.states[id].val : '',
+                        q: this.states[id] ? this.states[id].q || 0 : 0,
+                        ack: false,
+                        id,
+                    };
+                    this.setState({ updateOpened: true });
+                }
+            } : undefined}
+        >
+            {columnValue}
+        </div> : null;
+
+        let colButtons = narrowStyleWithDetails || this.columnsVisibility.buttons ? <div
+            style={{
+                ...styles.cellButtons,
+                width: this.props.width !== 'xs' ? this.columnsVisibility.buttons : undefined,
+            }}
+        >
+            {this.renderColumnButtons(id, item)}
+        </div> : null;
+
+        let colDetails: React.JSX.Element | null = null;
+        if (this.props.width === 'xs' && this.state.focused === id) {
+            colMiddle = colMiddle.filter(a => a);
+            let renderedMiddle: React.JSX.Element[] | null;
+            if (!colMiddle.length) {
+                renderedMiddle = null;
+            } else {
+                renderedMiddle = colMiddle.map(it => (
+                    <div style={styles.cellDetailsLine}>
+                        <span style={styles.cellDetailsName}>
+                            {this.texts[it.type]}
+                            :
+                        </span>
+                        {it.el}
+                    </div>
+                ));
+            }
+            if (!colCustom.length) {
+                colCustom = null;
+            }
+            colDetails = (
+                <Paper
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: 10,
+                        backgroundColor: this.props.theme.palette.mode === 'dark' ? '#333' : '#ccc',
+                    }}
+                >
+                    {colName && <div style={styles.cellDetailsLine}>
+                        <span style={styles.cellDetailsName}>{this.texts.name}:</span>
+                        {colName}
+                        <div style={{ flexGrow: 1 }} />
+                        {item.data?.title ? <IconCopy
+                            className="copyButton"
+                            style={styles.cellCopyButtonInDetails}
+                            onClick={e => this.onCopy(e, item.data?.title as string)}
+                        /> : null}
+                    </div>}
+                    {renderedMiddle}
+                    {colCustom && <div style={styles.cellDetailsLine}>{colCustom}</div>}
+                    {this.objects[id]?.type === 'state' && <div style={styles.cellDetailsLine}>
+                        <span style={styles.cellDetailsName}>{this.texts.value}:</span>
+                        {colValue}
+                        <div style={{ flexGrow: 1 }} />
+                        <IconCopy
+                            className="copyButton"
+                            style={styles.cellCopyButtonInDetails}
+                            onClick={e => {
+                                const { valText } = formatValue({
+                                    state: this.states[id],
+                                    obj: this.objects[id] as ioBroker.StateObject,
+                                    texts: this.texts,
+                                    dateFormat: this.props.dateFormat || this.systemConfig.common.dateFormat,
+                                    isFloatComma: this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma,
+                                });
+                                this.onCopy(e, valText.v.toString());
+                            }}
+                            key="cc"
+                        />
+                    </div>}
+                    {colButtons && (
+                        <div style={{ ...styles.cellDetailsLine, justifyContent: 'right' }}>{colButtons}</div>
+                    )}
+                </Paper>
+            );
+
+            colName = null;
+            colMiddle = null;
+            colCustom = null;
+            colValue = null;
+            colButtons = null;
+        }
+
+        const row = <Grid
             container
             direction="row"
             wrap="nowrap"
@@ -6078,6 +6456,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 !this.props.dragEnabled && styles.tableRowNoDragging,
                 alias && styles.tableRowAlias,
                 readWriteAlias && styles.tableRowAliasReadWrite,
+                this.state.focused === id && this.props.multiSelect && styles.tableRowFocused,
                 !item.data.visible && styles.filteredOut,
                 item.data.hasVisibleParent &&
                     !item.data.visible &&
@@ -6115,214 +6494,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 }
             }}
         >
-            <Grid
-                container
-                wrap="nowrap"
-                direction="row"
-                sx={styles.cellId}
-                style={{ width: this.columnsVisibility.id, paddingLeft }}
-            >
-                <Grid item container alignItems="center">
-                    {checkbox}
-                    {iconFolder}
-                </Grid>
-                <Grid
-                    item
-                    style={{
-                        ...styles.cellIdSpan,
-                        ...(invertBackground ? this.styles.invertedBackground : undefined),
-                        color: checkColor,
-                        fontWeight: bold ? 'bold' : undefined,
-                    }}
-                >
-                    <Tooltip
-                        title={getIdFieldTooltip(item.data, this.props.lang)}
-                        componentsProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <div>{item.data.name}</div>
-                    </Tooltip>
-                    {alias}
-                    {icons}
-                </Grid>
-                <div style={{ ...styles.grow, ...(invertBackground ? this.styles.invertedBackgroundFlex : {}) }} />
-                <Grid item container alignItems="center">
-                    {iconItem}
-                </Grid>
-                <div>
-                    <IconCopy
-                        className="copyButton"
-                        style={styles.cellCopyButton}
-                        onClick={e => this.onCopy(e, id)}
-                    />
-                </div>
-            </Grid>
-
-            {this.columnsVisibility.name ? <Box
-                component="div"
-                sx={{
-                    ...styles.cellName,
-                    ...(useDesc ? styles.cellNameWithDesc : undefined),
-                    width: this.columnsVisibility.name,
-                }}
-            >
-                {name}
-                {item.data?.title ? <Box
-                    style={{ color: checkColor }}
-                >
-                    <IconCopy
-                        className="copyButton"
-                        style={styles.cellCopyButton}
-                        onClick={e => this.onCopy(e, item.data?.title as string)}
-                    />
-                </Box> : null}
-            </Box> : null}
-
-            {!this.state.statesView ? <>
-                {this.columnsVisibility.type ? <div
-                    style={{ ...styles.cellType, width: this.columnsVisibility.type }}
-                >
-                    {typeImg}
-                    &nbsp;
-                    {obj && obj.type}
-                </div> : null}
-                {this.columnsVisibility.role ? <div
-                    style={{
-                        ...styles.cellRole,
-                        width: this.columnsVisibility.role,
-                        cursor:
-                            this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
-                                ? 'text'
-                                : 'default',
-                    }}
-                    onClick={
-                        this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
-                            ? () => this.setState({ roleDialog: item.data.id })
-                            : undefined
-                    }
-                >
-                    {common?.role}
-                </div> : null}
-                {this.columnsVisibility.room ? <div
-                    style={{
-                        ...styles.cellRoom,
-                        ...(item.data.per ? styles.cellEnumParent : {}),
-                        width: this.columnsVisibility.room,
-                        cursor: enumEditable ? 'text' : 'default',
-                    }}
-                    onClick={enumEditable ? () => {
-                        const enums = findEnumsForObjectAsIds(
-                            this.info,
-                            item.data.id,
-                            'roomEnums',
-                        );
-                        this.setState({
-                            enumDialogEnums: enums,
-                            enumDialog: {
-                                item,
-                                type: 'room',
-                                enumsOriginal: JSON.stringify(enums),
-                            },
-                        });
-                    } : undefined}
-                >
-                    {item.data.rooms}
-                </div> : null}
-                {this.columnsVisibility.func ? <div
-                    style={{
-                        ...styles.cellFunc,
-                        ...(item.data.pef ? styles.cellEnumParent : {}),
-                        width: this.columnsVisibility.func,
-                        cursor: enumEditable ? 'text' : 'default',
-                    }}
-                    onClick={enumEditable ? () => {
-                        const enums = findEnumsForObjectAsIds(
-                            this.info,
-                            item.data.id,
-                            'funcEnums',
-                        );
-                        this.setState({
-                            enumDialogEnums: enums,
-                            enumDialog: {
-                                item,
-                                type: 'func',
-                                enumsOriginal: JSON.stringify(enums),
-                            },
-                        });
-                    } : undefined}
-                >
-                    {item.data.funcs}
-                </div> : null}
-            </> : <>
-                {this.columnsVisibility.changedFrom ? <div
-                    style={{ ...styles.cellRole, width: this.columnsVisibility.changedFrom }}
-                    title={newValueTitle.join('\n')}
-                >
-                    {checkVisibleObjectType && this.states[id]?.from ? newValue : null}
-                </div> : null}
-                {this.columnsVisibility.qualityCode ? <div
-                    style={{ ...styles.cellRole, width: this.columnsVisibility.qualityCode }}
-                    title={q || ''}
-                >
-                    {q}
-                </div> : null}
-                {this.columnsVisibility.timestamp ? <div
-                    style={{ ...styles.cellRole, width: this.columnsVisibility.timestamp }}
-                >
-                    {checkVisibleObjectType && this.states[id]?.ts
-                        ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat || this.systemConfig.common.dateFormat)
-                        : null}
-                </div> : null}
-                {this.columnsVisibility.lastChange ? <div
-                    style={{ ...styles.cellRole, width: this.columnsVisibility.lastChange }}
-                >
-                    {checkVisibleObjectType && this.states[id]?.lc
-                        ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat || this.systemConfig.common.dateFormat)
-                        : null}
-                </div> : null}
-            </>}
-            {this.adapterColumns.map(it => <div
-                style={{ ...styles.cellAdapter, width: (this.columnsVisibility as Record<string, number>)[it.id] }}
-                key={it.id}
-                title={`${it.adapter} => ${it.pathText}`}
-            >
-                {obj ? this.renderCustomValue(obj, it, item) : null}
-            </div>)}
-            {this.columnsVisibility.val ? <div
-                style={{
-                    ...styles.cellValue,
-                    width: this.columnsVisibility.val,
-                    cursor: valueEditable ? (common?.type === 'file' ? 'zoom-in' : (item.data.button ? 'grab' : 'text')) : 'default',
-                }}
-                onClick={valueEditable ? () => {
-                    if (!obj || !this.states) {
-                        // return;
-                    } else if (common?.type === 'file') {
-                        this.setState({ viewFileDialog: id });
-                        // eslint-disable-next-line brace-style
-                    } else if (!this.state.filter.expertMode && item.data.button) {
-                        // in non-expert mode control button directly
-                        this.props.socket
-                            .setState(id, true)
-                            .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
-                    } else {
-                        this.edit = {
-                            val: this.states[id] ? this.states[id].val : '',
-                            q: this.states[id] ? this.states[id].q || 0 : 0,
-                            ack: false,
-                            id,
-                        };
-                        this.setState({ updateOpened: true });
-                    }
-                } : undefined}
-            >
-                {this.renderColumnValue(id, item)}
-            </div> : null}
-            {this.columnsVisibility.buttons ? <div
-                style={{ ...styles.cellButtons, width: this.columnsVisibility.buttons }}
-            >
-                {this.renderColumnButtons(id, item)}
-            </div> : null}
+            {colID}
+            {colName}
+            {colMiddle?.map(it => it?.el)}
+            {colCustom}
+            {colValue}
+            {colButtons}
         </Grid>;
+        return { row, details: colDetails };
     }
 
     /**
@@ -6335,7 +6514,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     ): React.JSX.Element[] {
         const items: (React.JSX.Element | null)[] = [];
         counter = counter || { count: 0 };
-        let leaf = this.renderLeaf(root, isExpanded, counter);
+        const result = this.renderLeaf(root, isExpanded, counter);
+        let leaf: React.JSX.Element;
         const DragWrapper = this.props.DragWrapper;
         if (this.props.dragEnabled && DragWrapper) {
             if (root.data.sumVisibility) {
@@ -6344,16 +6524,21 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     item={root}
                     style={styles.draggable}
                 >
-                    {leaf}
+                    {result.row}
                 </DragWrapper>;
             } else {
                 // change cursor
                 leaf = <div key={root.data.id} style={styles.nonDraggable}>
-                    {leaf}
+                    {result.row}
                 </div>;
             }
+        } else {
+            leaf = result.row;
         }
         root.data.id && leaf && items.push(leaf);
+        if (result.details) {
+            items.push(result.details);
+        }
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
 
@@ -6382,6 +6567,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                     return null;
                 }) as any as React.JSX.Element);
+
                 // then items
                 root.children && items.push(root.children.map(item => {
                     if (!item.children) {
@@ -6761,6 +6947,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private renderHeader(): React.JSX.Element {
         let filterClearInValue = null;
+
         if (!this.columnsVisibility.buttons && !this.isFilterEmpty()) {
             filterClearInValue = <IconButton
                 onClick={() => this.clearFilter()}
@@ -6771,6 +6958,16 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 <IconClearFilter />
                 <IconClose style={styles.buttonClearFilterIcon} />
             </IconButton>;
+        }
+
+        if (this.props.width === 'xs') {
+            return <div style={styles.headerRow}>
+                <div
+                    style={{ ...styles.headerCell, width: '100%' }}
+                >
+                    {this.getFilterInput('id')}
+                </div>
+            </div>;
         }
 
         return <div style={styles.headerRow}>
@@ -7533,6 +7730,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.setState({ updateOpened: false });
                 res && this.onUpdate(res);
             }}
+            width={this.props.width}
         />;
     }
 

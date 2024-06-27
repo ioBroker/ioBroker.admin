@@ -12,7 +12,6 @@ import Dropzone from 'react-dropzone';
 
 import {
     LinearProgress,
-    Hidden,
     ListItemIcon,
     ListItemText,
     Menu,
@@ -1253,22 +1252,26 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 {isUserData ? this.props.t('ra_User files') : item.name}
             </Box>
 
-            <Hidden smDown>
-                <div style={styles[`itemSize${this.state.viewType}`]}>
-                    {this.state.viewType === TABLE && this.state.folders[item.id]
-                        ? this.state.folders[item.id].length
-                        : ''}
-                </div>
-            </Hidden>
+            <Box
+                component="div"
+                style={styles[`itemSize${this.state.viewType}`]}
+                sx={{ display: { md: 'inline-block', sm: 'none' } }}
+            >
+                {this.state.viewType === TABLE && this.state.folders[item.id]
+                    ? this.state.folders[item.id].length
+                    : ''}
+            </Box>
 
-            <Hidden smDown>
+            <Box
+                component="div"
+                sx={{ display: { md: 'inline-block', sm: 'none' } }}
+            >
                 {this.state.viewType === TABLE && this.props.expertMode ? this.formatAcl(item.acl) : null}
-            </Hidden>
+            </Box>
 
-            <Hidden smDown>
-                {this.state.viewType === TABLE && this.props.expertMode ?
-                    <Box component="div" sx={styles[`itemDeleteButton${this.state.viewType}`]} /> : null}
-            </Hidden>
+            {this.state.viewType === TABLE && this.props.expertMode ?
+                <Box component="div" sx={{ ...styles.itemDeleteButtonTable, display: { md: 'inline-block', sm: 'none' } }} /> : null}
+
             {this.state.viewType === TABLE && this.props.allowDownload ?
                 <div style={styles[`itemDownloadEmpty${this.state.viewType}`]} /> : null}
 
@@ -1483,11 +1486,22 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 :
                 this.getFileIcon(ext)}
             <Box component="div" sx={styles[`itemName${this.state.viewType}`]}>{item.name}</Box>
-            <Hidden smDown>{this.formatSize(item.size)}</Hidden>
-            <Hidden smDown>
+            <Box
+                component="div"
+                sx={{ display: { md: 'inline-block', sm: 'none' } }}
+            >
+                {this.formatSize(item.size)}
+            </Box>
+            <Box
+                component="div"
+                sx={{ display: { md: 'inline-block', sm: 'none' } }}
+            >
                 {this.state.viewType === TABLE && this.props.expertMode ? this.formatAcl(item.acl) : null}
-            </Hidden>
-            <Hidden smDown>
+            </Box>
+            <Box
+                component="div"
+                sx={{ display: { md: 'inline-block', sm: 'none' } }}
+            >
                 {this.state.viewType === TABLE && this.props.expertMode && FileBrowserClass.getEditFile(ext) ?
                     <IconButton
                         aria-label="edit"
@@ -1507,14 +1521,14 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                                 this.props.onSelect(item.id, true, !!this.state.folders[item.id]);
                             }
                         }}
-                        sx={styles[`itemDeleteButton${this.state.viewType}`]}
+                        sx={styles.itemDeleteButtonTable}
                         size="large"
                     >
                         <EditIcon fontSize="small" />
                     </IconButton>
                     :
                     <Box component="div" sx={styles[`itemDeleteButton${this.state.viewType}`]} />}
-            </Hidden>
+            </Box>
             {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             {this.state.viewType === TABLE && this.props.allowDownload ? <Box
                 component="a"

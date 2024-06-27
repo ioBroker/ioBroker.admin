@@ -14,7 +14,6 @@ import {
     Snackbar,
     Toolbar,
     Typography,
-    Hidden,
     Tooltip,
     Badge,
     Menu,
@@ -2397,22 +2396,22 @@ class App extends Router<AppProps, AppState> {
             >
                 <MenuIcon />
             </IconButton>
-            <Tooltip title={I18n.t('Notifications')} componentsProps={{ popper: { sx: styles.tooltip } }}>
-                <IconButton
-                    size="large"
-                    disableRipple={!this.state.noNotifications}
-                    style={{ opacity: this.state.noNotifications ? 1 : 0.3 }}
-                    onClick={this.state.noNotifications ? () => this.setState({ notificationsDialog: true }) : null}
-                >
-                    <Badge
-                        badgeContent={this.state.noNotifications}
-                        color="secondary"
-                    >
-                        <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-            </Tooltip>
             <div style={styles.wrapperButtons}>
+                <Tooltip title={I18n.t('Notifications')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                    <IconButton
+                        size="large"
+                        disableRipple={!this.state.noNotifications}
+                        style={{ opacity: this.state.noNotifications ? 1 : 0.3 }}
+                        onClick={this.state.noNotifications ? () => this.setState({ notificationsDialog: true }) : null}
+                    >
+                        <Badge
+                            badgeContent={this.state.noNotifications}
+                            color="secondary"
+                        >
+                            <NotificationsIcon />
+                        </Badge>
+                    </IconButton>
+                </Tooltip>
                 <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
                     {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                         <IconButton
@@ -2599,19 +2598,17 @@ class App extends Router<AppProps, AppState> {
                     {(!this.state.user ||
                             this.props.width === 'xs' ||
                             this.props.width === 'sm') &&
-                        <Hidden xsDown>
-                            <div style={styles.wrapperName}>
-                                <Typography>admin</Typography>
-                                {!this.adminGuiConfig.icon && this.state.versionAdmin && (
-                                    <Typography
-                                        style={{ ...styles.styleVersion, color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080' }}
-                                    >
-                                        v
-                                        {this.state.versionAdmin}
-                                    </Typography>
-                                )}
-                            </div>
-                        </Hidden>}
+                        <Box component="div" style={styles.wrapperName} sx={{ display: { md: 'inline-block', xs: 'none' } }}>
+                            <Typography>admin</Typography>
+                            {!this.adminGuiConfig.icon && this.state.versionAdmin && (
+                                <Typography
+                                    style={{ ...styles.styleVersion, color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080' }}
+                                >
+                                    v
+                                    {this.state.versionAdmin}
+                                </Typography>
+                            )}
+                        </Box>}
                     <Grid item>
                         <a
                             href="/#easy"

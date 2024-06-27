@@ -257,9 +257,12 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                         </div> : null}
 
                     <IsVisible config={item} name="allowInstanceSettings">
-                        <Hidden smUp>
+                        <Box
+                            component="div"
+                            sx={{ display: { sm: 'none', xs: 'inline-block' } }}
+                        >
                             {this.renderSettingsButton()}
-                        </Hidden>
+                        </Box>
                     </IsVisible>
                 </Typography>
             </CardContent>
@@ -335,9 +338,12 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                 <div style={styles.marginTop10}>
                     <Typography component="span" style={styles.enableButton}>
                         {this.renderPlayPause()}
-                        <Hidden xsDown>
+                        <Box
+                            component="div"
+                            sx={{ display: { sm: 'inline-block', xs: 'none' } }}
+                        >
                             {this.renderSettingsButton()}
-                        </Hidden>
+                        </Box>
                         {this.renderRestartButton()}
                         <IsVisible config={item} name="allowInstanceLink">
                             {this.renderLink()}

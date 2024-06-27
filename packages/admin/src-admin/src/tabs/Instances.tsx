@@ -5,9 +5,8 @@ import {
     LinearProgress,
     Tooltip,
     Paper,
-    Hidden,
     InputAdornment,
-    TextField,
+    TextField, Box,
 } from '@mui/material';
 
 import {
@@ -1014,6 +1013,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         if (!this.state.instances) {
             return <LinearProgress />;
         }
+        console.log(`Width: ${this.props.width}`);
 
         if (this.props.currentHost !== this.state.currentHost) {
             this.hostsTimer = this.hostsTimer || setTimeout(() => {
@@ -1150,7 +1150,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         this.state.playArrow === 1 ?
                             'Showed only running instances' :
                             'Showed only stopped instances')}
-                     componentsProps={{ popper: { sx: styles.tooltip } }}
+                    componentsProps={{ popper: { sx: styles.tooltip } }}
                 >
                     <IconButton size="large" onClick={() => this.changeStartedStopped()}>
                         <PlayArrowIcon
@@ -1204,7 +1204,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     variant="standard"
                     inputRef={this.inputRef}
                     label={this.t('Filter')}
-                    style={{ margin: '5px 0' }}
+                    sx={{ margin: { xs: '0 0 2px 16px', md: '5px 0 5px 0' } }}
                     defaultValue={this.state.filterText}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.handleFilterChange(event)}
                     InputProps={{
@@ -1224,9 +1224,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     }}
                 />
                 <div style={styles.grow} />
-                <Hidden xsDown>
+                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline-block' } }}>
                     {hostData}
-                </Hidden>
+                </Box>
             </TabHeader>
             <TabContent overflow="auto">
                 <div style={this.state.viewMode ? styles.cards : undefined}>

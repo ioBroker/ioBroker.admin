@@ -77,7 +77,7 @@ const styles: Record<string, any> = {
     row: {
         '@media screen and (max-width: 450px)': {
             '& > *': {
-                fontSize: 8,
+                fontSize: '8px !important',
             },
         },
     },

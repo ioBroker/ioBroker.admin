@@ -232,7 +232,7 @@ export const styles: Record<string, any> = {
         height: 24,
     },
     statusIndicator: {
-        marginTop: 12,
+        marginLeft: 8,
     },
     green: {
         // backgroundColor: green[700]

@@ -2,7 +2,7 @@ import React from 'react';
 
 import {
     Accordion, AccordionDetails, AccordionSummary, Avatar,
-    Grid, Hidden,
+    Grid,
     Tooltip, Typography,
     Box,
 } from '@mui/material';
@@ -40,7 +40,6 @@ const styles: Record<string, any> = {
             height: 28,
             width: 28,
             ml: '4px',
-            mt: '8px',
         },
     },
     hidden1250: {
@@ -149,6 +148,7 @@ const styles: Record<string, any> = {
         minWidth: 270,
         lineHeight: '34px',
         justifyContent: 'space-around',
+        alignItems: 'center',
         '@media screen and (max-width: 480px)': {
             minWidth: 'auto !important',
             ml: '10px',
@@ -183,10 +183,10 @@ const styles: Record<string, any> = {
         mb: '2px',
     },
     desktopButton: {
-        paddingRight: 12,
-        paddingTop: 4,
-        paddingBottom: 4,
-        paddingLeft: 4,
+        // paddingRight: 12,
+        // paddingTop: 4,
+        // paddingBottom: 4,
+        // paddingLeft: 4,
     },
     rowGridLine: {
         marginTop: -2,
@@ -261,10 +261,19 @@ class InstanceRow extends InstanceGeneric<InstanceRowProps, InstanceGenericState
                     </Grid>
                 </Grid>
                 <div style={styles.displayFlex}>
+
                     <IsVisible config={item} name="allowInstanceDelete">
-                        <Hidden smUp>
+                        <Box component="div" sx={{ display: { xs: 'inline-block', md: 'none' } }}>
                             {this.renderSettingsButton()}
-                        </Hidden>
+                        </Box>
+                    </IsVisible>
+                    <Box component="div" sx={{ display: { md: 'none', xs: 'inline-block' } }}>
+                        {this.renderRestartButton()}
+                    </Box>
+                    <IsVisible config={item} name="allowInstanceLink">
+                        <Box component="div" sx={{ display: { md: 'none', xs: 'inline-block' } }}>
+                            {this.renderLink()}
+                        </Box>
                     </IsVisible>
                     <IsVisible config={item} name="allowInstanceDelete">
                         {this.renderDeleteButton()}
@@ -345,15 +354,19 @@ class InstanceRow extends InstanceGeneric<InstanceRowProps, InstanceGenericState
                     {this.renderPlayPause()}
 
                     <IsVisible config={item} name="allowInstanceSettings">
-                        <Hidden xsDown>
+                        <Box component="div" sx={{ display: { md: 'inline-block', xs: 'none' } }}>
                             {this.renderSettingsButton()}
-                        </Hidden>
+                        </Box>
                     </IsVisible>
 
-                    {this.renderRestartButton()}
+                    <Box component="div" sx={{ display: { md: 'inline-block', xs: 'none' } }}>
+                        {this.renderRestartButton()}
+                    </Box>
 
                     <IsVisible config={item} name="allowInstanceLink">
-                        {this.renderLink()}
+                        <Box component="div" sx={{ display: { md: 'inline-block', xs: 'none' } }}>
+                            {this.renderLink()}
+                        </Box>
                     </IsVisible>
 
                     <Typography sx={{ ...styles.secondaryHeading, ...styles.hidden800 }} component="div">

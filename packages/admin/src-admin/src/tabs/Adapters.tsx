@@ -9,7 +9,6 @@ import {
     TextField,
     Tooltip,
     InputAdornment,
-    Hidden,
     DialogTitle,
     DialogContent,
     DialogActions,
@@ -1633,33 +1632,31 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             />
             <div style={styles.grow} />
             <IsVisible config={this.props.adminGuiConfig.admin} name="admin.adapters.statistics">
-                <Hidden only={['xs', 'sm']}>
-                    <Box
-                        component="div"
-                        sx={styles.infoAdapters}
-                        onClick={() => this.setState({ showStatistics: true })}
-                    >
-                        <Box component="div" sx={{ ...styles.counters, ...styles.greenText }}>
-                            {this.t('Selected adapters')}
-                            <div ref={this.countRef} />
-                        </Box>
-                        <Box component="div" sx={styles.counters}>
-                            {this.t('Total adapters')}
-                            :
-                            <div>{this.allAdapters}</div>
-                        </Box>
-                        <Box component="div" sx={styles.counters}>
-                            {this.t('Installed adapters')}
-                            :
-                            <div>{this.installedAdapters}</div>
-                        </Box>
-                        <Box component="div" sx={styles.counters}>
-                            {this.t('Last month updated adapters')}
-                            :
-                            <div>{this.recentUpdatedAdapters}</div>
-                        </Box>
+                <Box
+                    component="div"
+                    sx={Utils.getStyle(this.props.theme, styles.infoAdapters, { display: { sm: 'none', md: 'inline-block' } })}
+                    onClick={() => this.setState({ showStatistics: true })}
+                >
+                    <Box component="div" sx={{ ...styles.counters, ...styles.greenText }}>
+                        {this.t('Selected adapters')}
+                        <div ref={this.countRef} />
                     </Box>
-                </Hidden>
+                    <Box component="div" sx={styles.counters}>
+                        {this.t('Total adapters')}
+                        :
+                        <div>{this.allAdapters}</div>
+                    </Box>
+                    <Box component="div" sx={styles.counters}>
+                        {this.t('Installed adapters')}
+                        :
+                        <div>{this.installedAdapters}</div>
+                    </Box>
+                    <Box component="div" sx={styles.counters}>
+                        {this.t('Last month updated adapters')}
+                        :
+                        <div>{this.recentUpdatedAdapters}</div>
+                    </Box>
+                </Box>
             </IsVisible>
         </TabHeader>;
     }
