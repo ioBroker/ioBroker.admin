@@ -734,8 +734,8 @@ const styles: Record<string, any> = {
         display: 'flex',
         alignItems: 'center',
         width: '100%',
-        height: 24,
-        fontSize: 14,
+        height: 32,
+        fontSize: 16,
     },
     cellDetailsName: {
         fontWeight: 'bold',
@@ -2296,6 +2296,7 @@ interface ObjectBrowserEditObjectProps {
     isFloatComma: boolean;
     onNewObject: (obj: ioBroker.AnyObject) => void;
     t: Translate;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface ObjectAliasEditorProps {
@@ -6169,10 +6170,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             </Box> : null}
         </Box> : null;
 
-        let colMiddle: ({ el: React.JSX.Element; type: 'filter_type' | 'filter_role' | 'filter_func' | 'filter_room' | 'quality' | 'from' | 'lc' | 'ts' } | null)[] | null;
+        let colMiddle: ({
+            el: React.JSX.Element;
+            type: 'filter_type' | 'filter_role' | 'filter_func' | 'filter_room' | 'quality' | 'from' | 'lc' | 'ts';
+            onClick?: (() => void) | null | undefined;
+        } | null)[] | null;
         if (!this.state.statesView) {
             colMiddle = [
-                narrowStyleWithDetails || this.columnsVisibility.type ? {
+                (narrowStyleWithDetails && obj?.type) || this.columnsVisibility.type ? {
                     el: <div
                         key="type"
                         style={{
@@ -6186,19 +6191,20 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </div>,
                     type: 'filter_type',
                 } : null,
-                narrowStyleWithDetails || this.columnsVisibility.role ? {
+                (narrowStyleWithDetails && common) || this.columnsVisibility.role ? {
                     el: <div
                         key="role"
                         style={{
                             ...styles.cellRole,
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.role : undefined,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.role : '100%',
                             cursor:
                                 this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
                                     ? 'text'
                                     : 'default',
                         }}
                         onClick={
-                            this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
+                            !narrowStyleWithDetails && this.state.filter.expertMode &&
+                            enumEditable && this.props.objectBrowserEditRole
                                 ? () => this.setState({ roleDialog: item.data.id })
                                 : undefined
                         }
@@ -6206,17 +6212,20 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         {common?.role}
                     </div>,
                     type: 'filter_role',
+                    onClick: narrowStyleWithDetails && this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole
+                        ? () => this.setState({ roleDialog: item.data.id })
+                        : undefined,
                 } : null,
-                narrowStyleWithDetails || this.columnsVisibility.room ? {
+                (narrowStyleWithDetails && common) || this.columnsVisibility.room ? {
                     el: <div
                         key="room"
                         style={{
                             ...styles.cellRoom,
                             ...(item.data.per ? styles.cellEnumParent : {}),
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.room : undefined,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.room : '100%',
                             cursor: enumEditable ? 'text' : 'default',
                         }}
-                        onClick={enumEditable ? () => {
+                        onClick={!narrowStyleWithDetails && enumEditable ? () => {
                             const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
                             this.setState({
                                 enumDialogEnums: enums,
@@ -6231,17 +6240,28 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         {item.data.rooms}
                     </div>,
                     type: 'filter_room',
+                    onClick: narrowStyleWithDetails && enumEditable ? () => {
+                        const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums');
+                        this.setState({
+                            enumDialogEnums: enums,
+                            enumDialog: {
+                                item,
+                                type: 'room',
+                                enumsOriginal: JSON.stringify(enums),
+                            },
+                        });
+                    } : undefined,
                 } : null,
-                narrowStyleWithDetails || this.columnsVisibility.func ? {
+                (narrowStyleWithDetails && common) || this.columnsVisibility.func ? {
                     el: <div
                         key="func"
                         style={{
                             ...styles.cellFunc,
                             ...(item.data.pef ? styles.cellEnumParent : {}),
-                            width: this.props.width !== 'xs' ? this.columnsVisibility.func : undefined,
+                            width: this.props.width !== 'xs' ? this.columnsVisibility.func : '100%',
                             cursor: enumEditable ? 'text' : 'default',
                         }}
-                        onClick={enumEditable ? () => {
+                        onClick={!narrowStyleWithDetails && enumEditable ? () => {
                             const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
                             this.setState({
                                 enumDialogEnums: enums,
@@ -6256,11 +6276,22 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                         {item.data.funcs}
                     </div>,
                     type: 'filter_func',
+                    onClick: narrowStyleWithDetails && enumEditable ? () => {
+                        const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums');
+                        this.setState({
+                            enumDialogEnums: enums,
+                            enumDialog: {
+                                item,
+                                type: 'func',
+                                enumsOriginal: JSON.stringify(enums),
+                            },
+                        });
+                    } : undefined,
                 } : null,
             ];
         } else {
             colMiddle = [
-                narrowStyleWithDetails || this.columnsVisibility.changedFrom ? {
+                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.from) || this.columnsVisibility.changedFrom ? {
                     el: <div
                         key="from"
                         style={{
@@ -6273,7 +6304,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </div>,
                     type: 'from',
                 } : null,
-                narrowStyleWithDetails || this.columnsVisibility.qualityCode ? {
+                (narrowStyleWithDetails && q) || this.columnsVisibility.qualityCode ? {
                     el: <div
                         key="q"
                         style={{
@@ -6286,7 +6317,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </div>,
                     type: 'quality',
                 } : null,
-                narrowStyleWithDetails || this.columnsVisibility.timestamp ? {
+                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.ts) || this.columnsVisibility.timestamp ? {
                     el: <div
                         key="ts"
                         style={{
@@ -6300,7 +6331,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     </div>,
                     type: 'ts',
                 } : null,
-                narrowStyleWithDetails || this.columnsVisibility.lastChange ? {
+                (narrowStyleWithDetails && checkVisibleObjectType && this.states[id]?.lc) || this.columnsVisibility.lastChange ? {
                     el: <div
                         key="lc"
                         style={{
@@ -6377,66 +6408,71 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (!colMiddle.length) {
                 renderedMiddle = null;
             } else {
-                renderedMiddle = colMiddle.map(it => (
-                    <div style={styles.cellDetailsLine}>
-                        <span style={styles.cellDetailsName}>
-                            {this.texts[it.type]}
-                            :
-                        </span>
-                        {it.el}
-                    </div>
-                ));
+                renderedMiddle = colMiddle.map(it => <div style={styles.cellDetailsLine}>
+                    <span style={styles.cellDetailsName}>
+                        {this.texts[it.type]}
+                        :
+                    </span>
+                    {it.el}
+                    <div style={{ flexGrow: 1 }} />
+                    {it.onClick ? <IconEdit
+                        style={styles.cellCopyButtonInDetails}
+                        onClick={() => it.onClick()}
+                    /> : null}
+                </div>);
             }
             if (!colCustom.length) {
                 colCustom = null;
             }
-            colDetails = (
-                <Paper
-                    style={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        padding: 10,
-                        backgroundColor: this.props.theme.palette.mode === 'dark' ? '#333' : '#ccc',
-                    }}
-                >
-                    {colName && <div style={styles.cellDetailsLine}>
-                        <span style={styles.cellDetailsName}>{this.texts.name}:</span>
-                        {colName}
-                        <div style={{ flexGrow: 1 }} />
-                        {item.data?.title ? <IconCopy
-                            className="copyButton"
-                            style={styles.cellCopyButtonInDetails}
-                            onClick={e => this.onCopy(e, item.data?.title as string)}
-                        /> : null}
-                    </div>}
-                    {renderedMiddle}
-                    {colCustom && <div style={styles.cellDetailsLine}>{colCustom}</div>}
-                    {this.objects[id]?.type === 'state' && <div style={styles.cellDetailsLine}>
-                        <span style={styles.cellDetailsName}>{this.texts.value}:</span>
-                        {colValue}
-                        <div style={{ flexGrow: 1 }} />
-                        <IconCopy
-                            className="copyButton"
-                            style={styles.cellCopyButtonInDetails}
-                            onClick={e => {
-                                const { valText } = formatValue({
-                                    state: this.states[id],
-                                    obj: this.objects[id] as ioBroker.StateObject,
-                                    texts: this.texts,
-                                    dateFormat: this.props.dateFormat || this.systemConfig.common.dateFormat,
-                                    isFloatComma: this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma,
-                                });
-                                this.onCopy(e, valText.v.toString());
-                            }}
-                            key="cc"
-                        />
-                    </div>}
-                    {colButtons && (
-                        <div style={{ ...styles.cellDetailsLine, justifyContent: 'right' }}>{colButtons}</div>
-                    )}
-                </Paper>
-            );
+            colDetails = <Paper
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: 10,
+                    backgroundColor: this.props.theme.palette.mode === 'dark' ? '#333' : '#ccc',
+                }}
+            >
+                {colName && <div style={styles.cellDetailsLine}>
+                    <span style={styles.cellDetailsName}>
+                        {this.texts.name}
+                        :
+                    </span>
+                    {colName}
+                    <div style={{ flexGrow: 1 }} />
+                    {item.data?.title ? <IconCopy
+                        className="copyButton"
+                        style={styles.cellCopyButtonInDetails}
+                        onClick={e => this.onCopy(e, item.data?.title as string)}
+                    /> : null}
+                </div>}
+                {renderedMiddle}
+                {colCustom && <div style={styles.cellDetailsLine}>{colCustom}</div>}
+                {this.objects[id]?.type === 'state' && <div style={styles.cellDetailsLine}>
+                    <span style={styles.cellDetailsName}>
+                        {this.texts.value}
+                        :
+                    </span>
+                    {colValue}
+                    <div style={{ flexGrow: 1 }} />
+                    <IconCopy
+                        className="copyButton"
+                        style={styles.cellCopyButtonInDetails}
+                        onClick={e => {
+                            const { valText } = formatValue({
+                                state: this.states[id],
+                                obj: this.objects[id] as ioBroker.StateObject,
+                                texts: this.texts,
+                                dateFormat: this.props.dateFormat || this.systemConfig.common.dateFormat,
+                                isFloatComma: this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma,
+                            });
+                            this.onCopy(e, valText.v.toString());
+                        }}
+                        key="cc"
+                    />
+                </div>}
+                {colButtons && <div style={{ ...styles.cellDetailsLine, justifyContent: 'right' }}>{colButtons}</div>}
+            </Paper>;
 
             colName = null;
             colMiddle = null;
@@ -7257,6 +7293,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 }
                 this.setState({ editObjectDialog: '', editObjectAlias: false });
             }}
+            width={this.props.width}
         />;
     }
 

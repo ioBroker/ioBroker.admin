@@ -450,6 +450,7 @@ interface ObjectBrowserEditObjectProps {
     isFloatComma: boolean;
     onNewObject: (obj: ioBroker.AnyObject) => void;
     t: Translate;
+    width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface ObjectBrowserEditObjectState {
@@ -1356,7 +1357,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             {this.renderTabs()}
             {this.renderCopyDialog()}
 
-            <DialogContent>
+            <DialogContent
+                sx={{
+                    p: this.props.width === 'xs' ? '6px' : undefined,
+                }}
+            >
                 {this.state.tab === 'object' ? <div
                     style={{
                         ...styles.divWithoutTitle,
@@ -1395,7 +1400,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     disabled={this.state.error || this.state.changed}
                     title={this.props.t('Create a copy of this object')}
                 >
-                    <IconCopy />
+                    <IconCopy fontSize={this.props.width === 'xs' ? 'large' : undefined} />
                 </Button>
                 <div style={{ flexGrow: 1 }} />
                 {this.state.tab === 'object' && <Button
@@ -1411,18 +1416,18 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     variant="contained"
                     disabled={this.state.error || !this.state.changed}
                     onClick={() => this.onUpdate()}
-                    startIcon={<IconCheck />}
+                    startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
                     color="primary"
                 >
-                    {this.props.t('Write')}
+                    {this.props.width === 'xs' ? <IconCheck fontSize="large" /> : this.props.t('Write')}
                 </Button>
                 <Button
                     color="grey"
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    startIcon={<IconClose />}
+                    startIcon={this.props.width === 'xs' ? undefined : <IconClose />}
                 >
-                    {this.props.t('Cancel')}
+                    {this.props.width === 'xs' ? <IconClose fontSize="large" /> : this.props.t('Cancel')}
                 </Button>
             </DialogActions>
         </Dialog>;
