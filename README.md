@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected call of getObjectView with null parameter
+
 ### 7.0.6 (2024-06-26)
 * (bluefox) Login page was corrected
 * (bluefox) Icons were corrected
