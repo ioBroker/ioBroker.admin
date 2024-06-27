@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.7 (2024-06-27)
 * (bluefox) Corrected call of getObjectView with null parameter
 
 ### 7.0.6 (2024-06-26)
@@ -110,10 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.17.14 (2024-05-25)
 * (bluefox) Only some packages updated
-
-### 6.17.13 (2024-05-23)
-* (bluefox) Alias editing corrected
-* (bluefox) Web-extension indicator corrected
 
 ## License
 The MIT License (MIT)

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.6",
+    "version": "7.0.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.7": {
+        "en": "Corrected call of getObjectView with null parameter",
+        "de": "Korrigierter Anruf von getObject Ansicht mit Null-Parameter",
+        "ru": "Исправленный звонок getObject Просмотр с нулевым параметром",
+        "pt": "Chamada correta de getObject Ver com parâmetro nulo",
+        "nl": "Gecorrigeerde aanroep van getObject Beeld met nul parameter",
+        "fr": "Appel corrigé de getObject Affichage avec paramètre null",
+        "it": "Chiamata corretta di getObject Visualizza con parametro null",
+        "es": "Llamada corregida de getObject Ver con parámetro null",
+        "pl": "Poprawione wywołanie getObject Widok z parametrem null",
+        "uk": "Виправлений виклик getObject Перегляд з параметром null",
+        "zh-cn": "已更正的调取对象 以无效参数查看"
+      },
       "7.0.6": {
         "en": "Login page was corrected\nIcons were corrected",
         "de": "Login-Seite wurde korrigiert\nIcons wurden korrigiert",
@@ -95,19 +108,6 @@
         "pl": "obsługa aktualizacji Node.js poprzez UI (z sterownikiem js- Kiera - v6)\nPoprawione ustawienia CRON",
         "uk": "підтримка оновлення NOde.js через UI (з js-controller Kiera - v6)\nВиправлені налаштування CRON",
         "zh-cn": "通过 UI 支持 Node.js 升级( 带有 js- controller Kiera - v6)\n更正的 CRON 设置"
-      },
-      "6.17.11": {
-        "en": "Corrected custom configuration dialog",
-        "de": "Benutzerdefinierte Konfiguration Dialog korrigiert",
-        "ru": "Исправленный диалог настройки",
-        "pt": "Diálogo de configuração personalizado correto",
-        "nl": "Gecorrigeerd configuratievenster",
-        "fr": "Boîte de dialogue de configuration personnalisée corrigée",
-        "it": "Configurazione personalizzata corretta",
-        "es": "Diálogo de configuración personalizada corregido",
-        "pl": "Poprawione okno konfiguracji użytkownika",
-        "uk": "Виправлено користувацький діалог налаштування",
-        "zh-cn": "已校正自定义配置对话框"
       }
     },
     "desc": {
