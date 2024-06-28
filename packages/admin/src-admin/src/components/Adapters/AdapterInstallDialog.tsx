@@ -75,6 +75,7 @@ export type AdaptersContext = {
     sortRecentlyUpdated: boolean;
     isTileView: boolean;
     updateRating: (adapter: string, rating: RatingDialogRepository) => void;
+    setAdminUpgradeTo: (version: string) => void;
 };
 
 export interface AdapterInstallDialogProps {

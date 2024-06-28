@@ -37,7 +37,6 @@ import CustomModal from '@/components/CustomModal';
 import RatingDialog, { type RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdapterDeletionDialog from '@/dialogs/AdapterDeletionDialog';
 import AdminUtils from '@/AdminUtils';
-import AdminUpdater from '@/dialogs/AdminUpdater';
 import AdapterInstallDialog, {
     type AdapterInstallDialogProps,
     type AdapterInstallDialogState,
@@ -164,7 +163,6 @@ export interface AdapterGenericState extends AdapterInstallDialogState {
     autoUpgradeDialogOpen: boolean;
     showUpdateDialog: boolean;
     adapterDeletionDialog: boolean;
-    adminUpgradeTo: string;
     adapterInstallSpecificVersion: string;
     showInstallVersion: boolean;
     showSetRating: {
@@ -191,7 +189,6 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             autoUpgradeDialogOpen: false,
             showUpdateDialog: false,
             adapterDeletionDialog: false,
-            adminUpgradeTo: '',
             adapterInstallSpecificVersion: '',
             showInstallVersion: false,
             showSetRating: null,
@@ -714,26 +711,6 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         />;
     }
 
-    /**
-     * Perform the Admin Upgrade via Webserver
-     * This allows showing UI progress even admin is down
-     */
-    renderWebserverUpgrade() {
-        if (!this.state.adminUpgradeTo) {
-            return null;
-        }
-
-        return <AdminUpdater
-            socket={this.props.context.socket}
-            themeType={this.props.context.themeType}
-            host={this.props.context.adminHost}
-            onClose={() => this.setState({ adminUpgradeTo: '', showDialog: false })}
-            version={this.state.adminUpgradeTo}
-            adminInstance={this.props.context.adminInstance}
-            onUpdating={isUpdating => this.props.context.onUpdating(isUpdating)}
-        />;
-    }
-
     renderAdapterDeletionDialog() {
         if (!this.state.adapterDeletionDialog) {
             return null;
@@ -816,8 +793,11 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
     }
 
     async update(version: string) {
-        if (this.props.adapterName === 'admin' && this.props.context.adminHost === this.props.context.currentHost && (await this.props.context.socket.checkFeatureSupported('ADAPTER_WEBSERVER_UPGRADE'))) {
-            this.setState({ adminUpgradeTo: version, showDialog: true });
+        if (this.props.adapterName === 'admin' &&
+            this.props.context.adminHost === this.props.context.currentHost &&
+            (await this.props.context.socket.checkFeatureSupported('ADAPTER_WEBSERVER_UPGRADE'))
+        ) {
+            this.props.context.setAdminUpgradeTo(version);
             return;
         }
 
@@ -841,7 +821,6 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             {this.renderAdapterInstallVersion()}
             {this.renderSetRatingDialog()}
             {this.renderAdapterDeletionDialog()}
-            {this.renderWebserverUpgrade()}
             {this.renderAutoUpdateDialog()}
         </>;
     }

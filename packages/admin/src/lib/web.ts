@@ -10,7 +10,7 @@ import * as mime from 'mime';
 import * as zlib from 'node:zlib';
 import * as archiver from 'archiver';
 import axios from 'axios';
-import Ajv from 'ajv';
+import * as Ajv from 'ajv';
 import * as JSON5 from 'json5';
 import * as passport from 'passport';
 import * as fileUpload from 'express-fileupload';
@@ -394,7 +394,7 @@ class Web {
         // @ts-expect-error check later
         if (res?.common.adminUI?.config === 'json') {
             try {
-                const ajv = new Ajv({ allErrors: false, strict: false });
+                const ajv = new Ajv({ allErrors: false, strictDefaults: 'log', strictKeywords: 'log', strictNumbers: false });
 
                 const adapterPath = path.dirname(require.resolve(`iobroker.${adapterName}/package.json`));
 

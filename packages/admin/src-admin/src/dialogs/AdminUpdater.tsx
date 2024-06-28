@@ -45,8 +45,8 @@ interface AdminUpdaterProps {
 }
 
 interface AdminUpdaterState {
-    response: any;
-    error: any;
+    response: ServerResponse | null;
+    error: string | null;
     starting: boolean;
     upAgain: boolean;
 }

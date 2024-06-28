@@ -470,8 +470,6 @@ interface ObjectBrowserEditObjectState {
 }
 
 class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, ObjectBrowserEditObjectState> {
-    private readonly isMobile = window.innerWidth < 850;
-
     /** Original object stringified */
     private originalObj: string;
 

@@ -62,6 +62,7 @@ import AdapterInstallDialog, {
 import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
 import type { AdminGuiConfig } from '@/types';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
+import AdminUpdater from '@/dialogs/AdminUpdater';
 
 type DockerInformation = {
     /** If it is a Docker installation */
@@ -245,6 +246,7 @@ interface AdaptersState extends AdapterInstallDialogState {
     triggerUpdate: number;
     ratings: Ratings | null;
     categoriesExpanded: { [categoryName: string]: boolean };
+    adminUpgradeTo: string;
 }
 
 class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
@@ -325,6 +327,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             triggerUpdate: props.triggerUpdate,
             ratings: null,
             categoriesExpanded: {},
+            adminUpgradeTo: '',
         } as AdaptersState);
 
         this.inputRef = createRef();
@@ -365,7 +368,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     async componentDidMount() {
         if (this.props.ready) {
             await this.updateAll();
-            this.state.search && (await this.filterAdapters());
+            this.state.search && this.filterAdapters();
             this.props.adaptersWorker.registerHandler(this.onAdaptersChanged);
             this.props.instancesWorker.registerHandler(this.onAdaptersChanged);
         }
@@ -1268,8 +1271,11 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 Object.assign(repository[adapter].rating, rating);
                 this.setState({ repository });
             },
+            setAdminUpgradeTo: this.setAdminUpgradeTo,
         } as AdaptersContext;
     }
+
+    setAdminUpgradeTo = (version: string) => this.setState({ adminUpgradeTo: version });
 
     buildCache(context: AdaptersContext) {
         this.cache.listOfVisibleAdapter = [];
@@ -1661,6 +1667,31 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         </TabHeader>;
     }
 
+    /**
+     * Perform the Admin Upgrade via Webserver
+     * This allows showing UI progress even admin is down
+     */
+    renderWebserverUpgrade() {
+        if (!this.state.adminUpgradeTo) {
+            return null;
+        }
+
+        return <AdminUpdater
+            socket={this.props.socket}
+            themeType={this.props.themeType}
+            host={this.props.adminHost}
+            onClose={() => {
+                console.log('Close dialog');
+                this.setState({ adminUpgradeTo: '', showDialog: false });
+            }}
+            version={this.state.adminUpgradeTo}
+            adminInstance={this.props.adminInstance}
+            onUpdating={isUpdating => {
+                this.props.onUpdating(isUpdating);
+            }}
+        />;
+    }
+
     render() {
         if (!this.state.init) {
             return <LinearProgress />;
@@ -1789,6 +1820,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             {this.getStatistics()}
             {this.renderSlowConnectionWarning()}
             {this.renderGitHubInstallDialog(context)}
+            {this.renderWebserverUpgrade()}
         </TabContainer>;
     }
 }
