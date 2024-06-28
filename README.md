@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.8 (2024-06-28)
 * (bluefox) Improved the mobile object browser
 
 ### 7.0.7 (2024-06-27)
@@ -110,9 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) Added support for the adapter's auto-update option. New version of js-controller required.
 * (bluefox) GUI was re-written to typescript to 100%
 * (bluefox) Shows only installed adapters in the adapter tab or first 100 adapters
-
-### 6.17.14 (2024-05-25)
-* (bluefox) Only some packages updated
 
 ## License
 The MIT License (MIT)
