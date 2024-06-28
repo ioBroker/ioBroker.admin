@@ -109,7 +109,7 @@ const styles: Record<string, any> = {
     flex: {
         display: 'flex',
         '& > div': {
-            marginRight: 8,
+            mr: '8px',
         },
     },
     close: {
@@ -860,7 +860,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
     renderCommonEdit(): React.JSX.Element {
         try {
             const json = JSON.parse(this.state.text);
-            const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
+            const stateTypeArray: ioBroker.CommonType[] = ['number', 'string', 'boolean', 'array', 'object', 'mixed'];
             const disabled = false;
             const {
                 t, roleArray, obj,
@@ -899,7 +899,16 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     }
                 }}
             >
-                <Box style={styles.commonWrapper}>
+                <Box
+                    style={{
+                        ...styles.commonWrapper,
+                        width: this.props.width === 'xs' ? '100%' : undefined,
+                        minWidth: this.props.width === 'xs' ? '100%' : undefined,
+                        gap: this.props.width === 'xs' ? '10px' : undefined,
+                        display: this.props.width === 'xs' ? 'flex' : undefined,
+                        flexDirection: this.props.width === 'xs' ? 'column' : undefined,
+                    }}
+                >
                     {typeof json.common.name !== 'undefined' ? <TextField
                         variant="standard"
                         disabled={disabled}
@@ -912,7 +921,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     {checkState ? (
                         typeof json.common.type !== 'undefined' ? <Box component="div" sx={styles.flex}>
                             <FormControl style={styles.marginBlock} fullWidth>
-                                <InputLabel>{t('State type')}</InputLabel>
+                                <InputLabel style={{ transform: 'scale(0.75)' }}>{t('State type')}</InputLabel>
                                 <Select
                                     variant="standard"
                                     disabled={disabled}
@@ -932,7 +941,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
                         </Box> : this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
                     ) : null}
-                    <Box component="div" sx={styles.flex}>
+                    <Box component="div" sx={{ ...styles.flex, flexWrap: this.props.width === 'xs' ? 'wrap' : undefined }}>
                         {checkState ? (
                             typeof json.common.read !== 'undefined' ? <Box component="div" sx={styles.flex}>
                                 <FormControlLabel
@@ -987,7 +996,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         <TextField
                             variant="standard"
                             disabled={disabled}
-                            className={{ ...styles.marginBlock, ...styles.color }}
+                            style={{ ...styles.marginBlock, ...styles.color }}
                             label={t('Color')}
                             type="color"
                             value={json.common.color}
@@ -995,7 +1004,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         />
                         {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
                     </Box> : this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))}
-                    <Box component="div" sx={styles.flex}>
+                    <Box component="div" sx={{ ...styles.flex, flexWrap: this.props.width === 'xs' ? 'wrap' : undefined, gap: this.props.width === 'xs' ? '10px' : undefined }}>
                         {json.common.type === 'number' ? (
                             typeof json.common.min !== 'undefined' ? <Box component="div" sx={styles.flex}>
                                 <TextField
@@ -1030,19 +1039,17 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             </Box>
                         ) : null}
                         {json.common.type === 'number' ? (
-                            typeof json.common.step !== 'undefined' ? (
-                                <Box component="div" sx={styles.flex}>
-                                    <TextField
-                                        variant="standard"
-                                        disabled={disabled}
-                                        className={{ ...styles.marginBlock, ...styles.color }}
-                                        label={t('Step')}
-                                        value={json.common.step}
-                                        onChange={el => this.setCommonItem(json, 'step', el.target.value)}
-                                    />
-                                    {this.buttonRemoveKey('step', () => this.removeCommonItem(json, 'step'))}
-                                </Box>
-                            ) : <Box component="div" sx={styles.flex}>
+                            typeof json.common.step !== 'undefined' ? <Box component="div" sx={styles.flex}>
+                                <TextField
+                                    variant="standard"
+                                    disabled={disabled}
+                                    className={{ ...styles.marginBlock, ...styles.color }}
+                                    label={t('Step')}
+                                    value={json.common.step}
+                                    onChange={el => this.setCommonItem(json, 'step', el.target.value)}
+                                />
+                                {this.buttonRemoveKey('step', () => this.removeCommonItem(json, 'step'))}
+                            </Box> : <Box component="div" sx={styles.flex}>
                                 {this.buttonAddKey('step', () => this.setCommonItem(json, 'step', 1))}
                             </Box>
                         ) : null}
@@ -1348,10 +1355,17 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
         >
-            <DialogTitle id="edit-value-dialog-title">
+            <DialogTitle
+                id="edit-value-dialog-title"
+                style={{
+                    width: 'calc(100% - 32px)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                }}
+            >
                 {this.props.t('Edit object:')}
                 {' '}
-                <span style={styles.id}>{this.props.obj._id}</span>
+                <Box component="span" style={styles.id} sx={{ fontSize: { xs: 10 } }}>{this.props.obj._id}</Box>
             </DialogTitle>
 
             {this.renderTabs()}
@@ -1359,7 +1373,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
             <DialogContent
                 sx={{
-                    p: this.props.width === 'xs' ? '6px' : undefined,
+                    p: this.props.width === 'xs' && this.state.tab === 'object' ? '6px' : undefined,
                 }}
             >
                 {this.state.tab === 'object' ? <div
@@ -1386,10 +1400,8 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         <div style={styles.commonDeleteTip}>{I18n.t('common_delete_tip')}</div> : null}
                 </div> : null}
                 {this.state.tab === 'alias' &&
-                this.props.obj._id.startsWith('alias.0') &&
-                this.props.obj.type === 'state'
-                    ? this.renderAliasEdit()
-                    : null}
+                    this.props.obj._id.startsWith('alias.0') &&
+                    this.props.obj.type === 'state' ? this.renderAliasEdit() : null}
                 {this.state.tab === 'common' ? this.renderCommonEdit() : null}
                 {this.renderSelectDialog()}
             </DialogContent>
@@ -1407,10 +1419,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     color="grey"
                     onClick={e => this.onCopy(e)}
                     disabled={this.state.error}
-                    title={this.isMobile ? this.props.t('Copy into clipboard') : ''}
-                    startIcon={<IconCopyClipboard />}
+                    title={this.props.width === 'xs' ? this.props.t('Copy into clipboard') : ''}
+                    startIcon={this.props.width === 'xs' ? undefined : <IconCopyClipboard />}
                 >
-                    {this.isMobile ? null : this.props.t('Copy into clipboard')}
+                    {this.props.width === 'xs' ? <IconCopyClipboard fontSize={32} /> : this.props.t('Copy into clipboard')}
                 </Button>}
                 <Button
                     variant="contained"

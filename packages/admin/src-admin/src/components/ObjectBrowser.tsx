@@ -6140,7 +6140,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             <Grid item container alignItems="center">
                 {iconItem}
             </Grid>
-            {this.props.width !== 'xs' || narrowStyleWithDetails ? <div>
+            {this.props.width !== 'xs' ? <div>
                 <IconCopy
                     className={narrowStyleWithDetails ? '' : 'copyButton'}
                     style={styles.cellCopyButton}
@@ -6433,6 +6433,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     backgroundColor: this.props.theme.palette.mode === 'dark' ? '#333' : '#ccc',
                 }}
             >
+                <div style={styles.cellDetailsLine}>
+                    <div style={{ flexGrow: 1 }} />
+                    <IconCopy
+                        style={styles.cellCopyButtonInDetails}
+                        onClick={e => this.onCopy(e, id)}
+                    />
+                </div>
                 {colName && <div style={styles.cellDetailsLine}>
                     <span style={styles.cellDetailsName}>
                         {this.texts.name}
