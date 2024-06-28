@@ -401,7 +401,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
         }
         const keys = Object.keys(json);
         for (let k = 0; k < keys.length; k++) {
-            if (typeof json[keys[k]] === 'object') {
+            if (json[keys[k]] && typeof json[keys[k]] === 'object') {
                 json[keys[k]] = await this.scanForInclude(json[keys[k]], filePaths);
             }
         }
