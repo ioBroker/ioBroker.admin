@@ -91,7 +91,9 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
 
         if (isIndeterminate) {
             const autoCompleteOptions = ConfigGeneric.getValue(this.props.data, this.props.attr);
-            const arr = [...autoCompleteOptions].map(item => ({ label: item.toString(), value: item }));
+            const arr = autoCompleteOptions?.filter((a: any) => a || a === 0)
+                .map((item: any) => ({ label: item.toString() || '', value: item })) || [];
+
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
             return <Autocomplete

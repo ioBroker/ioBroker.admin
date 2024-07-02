@@ -118,7 +118,8 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
 
         if (isIndeterminate) {
             const autoCompleteOptions = ConfigGeneric.getValue(this.props.data, this.props.attr);
-            const arr = [...autoCompleteOptions].map(item => ({ label: item.toString(), value: item }));
+            const arr = autoCompleteOptions?.filter((a: number | null | undefined) => a || a === 0)
+                .map((item: number) => ({ label: item.toString(), value: item })) || [];
 
             arr.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
 
