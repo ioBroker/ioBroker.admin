@@ -462,7 +462,6 @@ cd
                 variant="contained"
                 onClick={() => {
                     window.open(CONTROLLER_CHANGELOG_URL, '_blank');
-                    onClose();
                 }}
                 color="grey"
                 startIcon={<DescriptionIcon />}

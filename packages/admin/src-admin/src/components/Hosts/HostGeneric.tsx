@@ -748,7 +748,6 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             installedVersion={this.props.host.common.installedVersion}
             onInstruction={() => {
                 window.open(CONTROLLER_CHANGELOG_URL, '_blank');
-                this.setState({ hostUpdateDialog: false, hostUpdate: null, instructionDialog: false });
             }}
             onClose={() => this.setState({ hostUpdateDialog: false, hostUpdate: null })}
         />;
