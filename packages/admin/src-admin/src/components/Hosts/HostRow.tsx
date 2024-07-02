@@ -42,7 +42,7 @@ const styles: Record<string, any> = {
         alignItems: 'baseline',
     },
     collapse: {
-        height: 160,
+        height: 200,
         backgroundColor: 'rgba(128, 128, 128, 0.1)',
         // position: 'absolute',
         width: '100%',
@@ -55,7 +55,7 @@ const styles: Record<string, any> = {
         flexDirection: 'column',
     },
     collapseOn: {
-        animation: '$height 1s',
+        animation: 'height 1s',
     },
     onOff: {
         alignSelf: 'center',
@@ -298,11 +298,6 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         )}
                     >
                         {this.props.host.common.name}
-                        {!this.state.openCollapse && typeof description === 'object' ? <span className={`onBlick-${this.props.themeType || 'light'}`}>
-                            (
-                            {this.props.t('Click for more')}
-                            )
-                        </span> : null}
                     </div>
                 </div>
                 <CardContent sx={{ '&.MuiCardContent-root': styles.cardContentH5 }}>
@@ -366,6 +361,7 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                             {this.renderRestartButton()}
                             {this.props.expertMode && this.state.logLevel ? this.renderLogLevel() : <div style={styles.emptyButton} />}
                             {this.renderRemoveButton()}
+                            {this.renderExtendButton(this.state.openCollapse)}
                         </Typography>
                     </div>
                 </CardContent>
