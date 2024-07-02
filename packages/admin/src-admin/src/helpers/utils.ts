@@ -11,3 +11,6 @@ export function isObject(it: any): it is Record<string, any> {
     return Object.prototype.toString.call(it) === '[object Object]'; // this code is 25% faster than below one
     // return it && typeof it === 'object' && !(it instanceof Array);
 }
+
+/** Url where controller changelog is reachable */
+export const CONTROLLER_CHANGELOG_URL = 'https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md';
