@@ -16,6 +16,41 @@ import * as passport from 'passport';
 import * as fileUpload from 'express-fileupload';
 import { Strategy } from 'passport-local';
 
+export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
+    accessAllowedConfigs: string[];
+    accessAllowedTabs: string[];
+    accessApplyRights: boolean;
+    accessLimit: boolean;
+    auth: boolean;
+    autoUpdate: number;
+    bind: string;
+    cache: boolean;
+    certChained: string;
+    certPrivate: string;
+    certPublic: string;
+    defaultUser: string;
+    doNotCheckPublicIP: boolean;
+    language: ioBroker.Languages;
+    leCollection: boolean;
+    loadingBackgroundColor: string;
+    loadingBackgroundImage: boolean;
+    loadingHideLogo: boolean;
+    loginBackgroundColor: string;
+    loginBackgroundImage: boolean;
+    loginHideLogo: boolean;
+    loginMotto: string;
+    port: number;
+    secure: boolean;
+    thresholdValue: number;
+    tmpPath: string;
+    tmpPathAllow: boolean;
+    ttl: number;
+    reverseProxy: {
+        globalPath: string;
+        paths: { path: string; instance: string }[];
+    }[];
+}
+
 let session;
 let bodyParser;
 let AdapterStore;
@@ -394,7 +429,10 @@ class Web {
         // @ts-expect-error check later
         if (res?.common.adminUI?.config === 'json') {
             try {
-                const ajv = new Ajv({ allErrors: false, strictDefaults: 'log', strictKeywords: 'log', strictNumbers: false });
+                const ajv = new Ajv.Ajv({
+                    allErrors: false,
+                    strict: 'log',
+                });
 
                 const adapterPath = path.dirname(require.resolve(`iobroker.${adapterName}/package.json`));
 
@@ -1359,4 +1397,4 @@ class Web {
     }
 }
 
-module.exports = Web;
+export default Web;

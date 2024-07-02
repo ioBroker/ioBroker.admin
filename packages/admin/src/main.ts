@@ -21,12 +21,12 @@ import { SocketAdmin } from '@iobroker/socket-classes';
 // @ts-expect-error it not TS
 import * as ws from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
+import Web, { type AdminAdapterConfig } from './lib/web';
 
 const adapterName = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
     .pop();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const Web = require('./lib/web');
 
 const { getInstalledInfo } = utils.commonTools;
 
@@ -37,7 +37,7 @@ const CURRENT_MAX_MAJOR_NODEJS = 18;
 const CURRENT_MAX_MAJOR_NPM = 8;
 
 let socket: typeof SocketAdmin;
-let webServer: typeof Web;
+let webServer: Web;
 let lastRepoUpdate: number;
 
 // TODO: these are not just state objects adjust later
@@ -78,6 +78,8 @@ interface NewsMessage {
 }
 
 class Admin extends utils.Adapter {
+    public declare config: AdminAdapterConfig;
+
     /** secret used for the socket connection */
     private secret: string;
 

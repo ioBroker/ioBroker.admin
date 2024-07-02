@@ -25,7 +25,7 @@ const styles: Record<string, any> = {
         display: 'flex',
     }),
     paper: {
-        maxWidth: 1000,
+        maxWidth: 800,
     },
     overflowHidden: {
         display: 'flex',
@@ -36,6 +36,7 @@ const styles: Record<string, any> = {
         whiteSpace: 'pre-wrap',
         margin: 0,
         padding: 10,
+        width: '100%',
     },
 };
 
@@ -53,6 +54,10 @@ const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
     useEffect(() => {
         setLoading(true);
         setText('');
+        if (url.startsWith('https://github.com/')) {
+            url = url.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/');
+        }
+
         fetch(url)
             .then(el => el.text())
             .then(txt => {
@@ -65,6 +70,8 @@ const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
     return <Dialog
         onClose={onClose}
         open={!0}
+        maxWidth="lg"
+        fullWidth
         sx={{ '& .MuiDialog-paper': styles.paper }}
     >
         <DialogTitle>{I18n.t('License agreement')}</DialogTitle>

@@ -24,14 +24,29 @@ import {
 
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
+import { type HostAliveEvent, type HostEvent } from '@/Workers/HostsWorker';
 import AdminUtils from '@/AdminUtils';
 import IntroCard from '@/components/Intro/IntroCard';
 import EditIntroLinkDialog from '@/components/Intro/EditIntroLinkDialog';
 
 import { type InstanceEvent } from '@/Workers/InstancesWorker';
-import { type HostEvent } from '@/Workers/HostsWorker';
 import NodeUpdateDialog from '@/dialogs/NodeUpdateDialog';
 import IntroCardCamera from '@/components/Intro/IntroCardCamera';
+
+export type CompactHost = {
+    _id: `system.host.${string}`;
+    common: {
+        name: string;
+        icon?: string;
+        color?: string;
+        installedVersion?: string;
+    };
+    native: {
+        hardware: {
+            networkInterfaces?: ioBroker.HostNative['hardware']['networkInterfaces'];
+        };
+    };
+};
 
 const styles: Record<string, any> = {
     root: {
@@ -95,6 +110,31 @@ const styles: Record<string, any> = {
         pointerEvents: 'none',
     },
 };
+
+interface ReverseProxyItem {
+    globalPath: string;
+    paths: { path: string; instance: string }[];
+}
+
+interface IntroInstanceItem {
+    id: string;
+    name?: string;
+    color?: string;
+    description?: string;
+    image?: string;
+    port?: number;
+    link?: string;
+    linkName?: string;
+    order?: number;
+    info: string;
+}
+
+interface HostData {
+    alive: boolean;
+    time?: number;
+    _versions?: Record<string, string>;
+    [key: string]: any;
+}
 
 const formatInfo: Record<string, (seconds: number, t?: Translate) => string>  = {
     Uptime:        AdminUtils.formatSeconds,
@@ -165,7 +205,7 @@ interface IntroState {
     hostTimeDiffMap: Map<string, number>;
     hostsData: Record<string, any>;
     alive: Record<string, boolean>;
-    reverseProxy: null | any[];
+    reverseProxy: null | ReverseProxyItem[];
     hasUnsavedChanges: boolean;
     openSnackBar: boolean;
     editLinkIndex: number;
@@ -266,12 +306,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
         this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
     }
 
-    updateHostsAlive = async (events: any[]) => {
-        const alive = JSON.parse(JSON.stringify(this.state.alive));
+    updateHostsAlive = async (events: HostAliveEvent[]) => {
+        const alive: Record<string, boolean> = JSON.parse(JSON.stringify(this.state.alive));
         const hostsId: string[] = [];
 
         // if some host deleted
-        if (events.find(event => event.type === 'delete')) {
+        if (events.find(event => event.type === 'deleted')) {
             // get all information anew
             this.getDataDelayed();
             return;
@@ -314,27 +354,21 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     };
 
-    activateEditMode() {
-        let systemConfig: ioBroker.SystemConfigObject;
-        this.props.socket.getSystemConfig(true)
-            .then(_systemConfig => {
-                systemConfig = _systemConfig;
-                return this.getInstances(true, null, systemConfig);
-            })
-            .then((data: Record<string, any>) => {
-                const introLinks = systemConfig?.native?.introLinks ? systemConfig.native.introLinks as ItemElement[] : [];
+    async activateEditMode() {
+        const systemConfig: ioBroker.SystemConfigObject = await this.props.socket.getSystemConfig(true);
+        const data: Record<string, any> = await this.getInstances(true, null, systemConfig);
+        const introLinks = systemConfig?.native?.introLinks ? systemConfig.native.introLinks as ItemElement[] : [];
 
-                this.introLinksOriginal = JSON.stringify(introLinks);
-                this.deactivatedOriginal  = JSON.parse(JSON.stringify(data.deactivated));
+        this.introLinksOriginal = JSON.stringify(introLinks);
+        this.deactivatedOriginal  = JSON.parse(JSON.stringify(data.deactivated));
 
-                this.setState({
-                    instances: data.instances,
-                    deactivated: data.deactivated,
-                    edit: true,
-                    introLinks,
-                    hasUnsavedChanges: false,
-                });
-            });
+        this.setState({
+            instances: data.instances,
+            deactivated: data.deactivated,
+            edit: true,
+            introLinks,
+            hasUnsavedChanges: false,
+        });
     }
 
     deactivateEditMode() {
@@ -619,7 +653,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    async getHostData(hostId: string, isAlive?: boolean) {
+    async getHostData(hostId: string, isAlive?: boolean): Promise<{ id: string; data: HostData }> {
         let alive;
         if (isAlive !== undefined) {
             alive = { val: isAlive };
@@ -632,7 +666,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             }
         }
 
-        let data: Record<string, any>;
+        let data: HostData = { alive: false };
         if (alive?.val) {
             try {
                 data = await this.props.socket.getHostInfo(hostId, false, 10000);
@@ -655,12 +689,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return { id: hostId, data };
     }
 
-    async getHostsData(hosts: Record<string, any>[]) {
+    async getHostsData(hosts: CompactHost[]) {
         const promises = hosts.map(obj => this.getHostData(obj._id));
 
         const results = await Promise.all(promises);
         const hostsData: Record<string, any> = {};
-        const alive: Record<string, any> = {};
+        const alive: Record<string, boolean> = {};
         results.forEach(res => {
             hostsData[res.id] = this.preprocessHostData(res.data);
             alive[res.id] = res.data.alive;
@@ -668,8 +702,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return { hostsData, alive };
     }
 
-    static applyReverseProxy(webReverseProxyPath: Record<string, any>, instances: any[], instance: Record<string, any>) {
-        webReverseProxyPath && webReverseProxyPath.paths.forEach((item: any) => {
+    static applyReverseProxy(
+        webReverseProxyPath: ReverseProxyItem,
+        instances: any[],
+        instance: Record<string, any>,
+    ) {
+        webReverseProxyPath?.paths.forEach(item => {
             if (item.instance === instance.id) {
                 instance.link = item.path;
             } else if (item.instance.startsWith('web.')) {
@@ -689,7 +727,16 @@ class Intro extends React.Component<IntroProps, IntroState> {
         });
     }
 
-    addLinks(link: string, common: any, instanceId: string, instance: Record<string, any>, objects: any[], hosts: any[], instances: any[], introInstances: any[]) {
+    addLinks(
+        link: string,
+        common: ioBroker.InstanceCommon,
+        instanceId: string,
+        instance: IntroInstanceItem,
+        objects: ioBroker.Object[],
+        hosts: ioBroker.HostObject[],
+        instances: ioBroker.InstanceObject[],
+        introInstances: IntroInstanceItem[],
+    ) {
         const _urls = AdminUtils.replaceLink(link, common.name, instanceId, {
             objects,
             hostname:      this.props.hostname,
@@ -699,8 +746,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             hosts,
         }) || [];
 
-        let webReverseProxyPath: any;
-        if (this.state.reverseProxy && this.state.reverseProxy.length) {
+        let webReverseProxyPath: ReverseProxyItem | null = null;
+        if (this.state.reverseProxy?.length) {
             webReverseProxyPath = this.state.reverseProxy.find(item => item.globalPath === this.currentProxyPath);
         }
         if (_urls.length === 1) {
@@ -730,7 +777,11 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
-    async getInstances(update: boolean | undefined, hosts: Record<string, any> | null, systemConfig: ioBroker.SystemConfigObject) {
+    async getInstances(
+        update: boolean | undefined,
+        hosts: CompactHost[] | null,
+        systemConfig: ioBroker.SystemConfigObject,
+    ) {
         hosts = hosts || this.state.hosts;
 
         try {
@@ -740,7 +791,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 deactivated = Object.keys(deactivated);
                 deactivated.sort();
             }
-            const introInstances: any[] = [];
+            const introInstances: IntroInstanceItem[] = [];
             const objects: Record<string, ioBroker.InstanceObject> = {};
             instances.forEach(obj => objects[obj._id] = obj);
 
@@ -851,7 +902,15 @@ class Intro extends React.Component<IntroProps, IntroState> {
                             link = links[linkName] as any as { link: string; color?: string };
                         }
 
-                        const instance: { id: string; name: string; color: string; description: string; image: string } = {
+                        const instance: {
+                            id: string;
+                            name: string;
+                            color: string;
+                            description: string;
+                            image: string;
+                            port?: number;
+                            link?: string;
+                        } = {
                             id: obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`),
                             name: (common.titleLang ?
                                 ((common.titleLang as ioBroker.Translated)[this.props.lang] || (common.titleLang as ioBroker.Translated).en) : common.title) + (linkName === '_default' ? '' : ` ${linkName}`),
@@ -870,16 +929,25 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     common.welcomeScreenPro && links.push(common.welcomeScreenPro);
 
                     links.forEach(link => {
-                        const instance: Record<string, any> = {
-                            // @ts-expect-error fix link
+                        const instance: {
+                            id: string;
+                            name?: string;
+                            color?: string;
+                            description?: string;
+                            image?: string;
+                            port?: number;
+                            link?: string;
+                            order?: number;
+                        } = {
+                            // @ts-expect-error fix all the constructs here later on
                             id: `${obj._id.replace('system.adapter.', '')}/${link.link}`,
-                            // @ts-expect-error fix link
+                            // @ts-expect-error fix all the constructs here later on
                             name: link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '',
-                            // @ts-expect-error fix link
+                            // @ts-expect-error fix all the constructs here later on
                             color: link.color || '',
-                            description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '',
+                            description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc as string || '',
                             image: common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png',
-                            // @ts-expect-error fix link
+                            // @ts-expect-error fix all the constructs here later on
                             order: link.order,
                         };
 
@@ -916,16 +984,17 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 return 0;
             });
 
-            Object.keys(hosts as any).forEach(key => {
-                const obj = hosts?.[key];
+            hosts?.forEach(obj => {
                 const common = obj?.common;
-                let name = common?.name;
-                if (name && typeof name === 'object') {
-                    name = name[this.props.lang] || name.en;
+                let name: ioBroker.StringOrTranslated = common?.name;
+                if (typeof name === 'object') {
+                    if (name) {
+                        name = (name as ioBroker.Translated)[this.props.lang] || (name as ioBroker.Translated).en;
+                    }
                 }
 
                 if (common) {
-                    const instance = {
+                    const instance: IntroInstanceItem = {
                         id: obj._id,
                         name: name || '',
                         color: '',
@@ -1118,35 +1187,26 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }, 300);
     };
 
-    getData(update?: boolean) {
-        let hosts: any;
-        let systemConfig: ioBroker.SystemConfigObject;
-
-        return this.props.socket.getSystemConfig(update)
-            .then((_systemConfig: ioBroker.SystemConfigObject) => {
-                systemConfig = _systemConfig;
-                return this.props.socket.getCompactHosts(update);
-            })
-            .then((_hosts: any[]) => {
-                _hosts.forEach(host => this.preprocessHostData(host));
-                hosts = _hosts;
-                return this.getInstances(update, hosts, systemConfig);
-            })
-            .then((data: any) => {
-                this.setState({
-                    instances: data.instances,
-                    hosts,
-                    deactivated: data.deactivated,
-                    introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [],
-                });
-                // hosts data could last a long time, so show some results to user now and then get the info about hosts
-                return this.getHostsData(hosts);
-            })
-            .then((newState: IntroState) => new Promise<void>(resolve => {
-                this.setState(newState, () =>
+    async getData(update?: boolean) {
+        try {
+            const systemConfig: ioBroker.SystemConfigObject = await this.props.socket.getSystemConfig(update);
+            const hosts: CompactHost[] = await this.props.socket.getCompactHosts(update);
+            const data = await this.getInstances(update, hosts, systemConfig);
+            this.setState({
+                instances: data.instances,
+                hosts,
+                deactivated: data.deactivated,
+                introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [],
+            });
+            // hosts data could last a long time, so show some results to user now and then get the info about hosts
+            const newState: Partial<IntroState> = await this.getHostsData(hosts);
+            await new Promise<void>(resolve => {
+                this.setState(newState as IntroState, () =>
                     resolve());
-            }))
-            .catch((error: any) => window.alert(`Cannot get data: ${error}`));
+            });
+        } catch (error: any) {
+            window.alert(`Cannot get data: ${error}`);
+        }
     }
 
     /**
@@ -1192,7 +1252,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
      *
      * @param hostData Host data from controller
      */
-    preprocessHostData(hostData: Record<string, any>): Record<string, (string | number)> {
+    preprocessHostData(hostData: HostData): HostData {
         if (hostData.dockerInformation?.isDocker) {
             let dockerString = hostData.dockerInformation.isOfficial ? 'official image' : 'unofficial image';
 

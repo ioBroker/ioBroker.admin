@@ -5,26 +5,36 @@ declare global {
             // non-primitive types are not inferred correctly
             accessAllowedConfigs: string[];
             accessAllowedTabs: string[];
-            reverseProxy: unknown[];
-            language: ioBroker.Languages;
-            autoUpdate: number;
-            defaultUser: string;
-            auth: boolean;
             accessApplyRights: boolean;
             accessLimit: boolean;
-            tmpPathAllow: boolean;
-            tmpPath: string;
-            port: number;
-            secure: boolean;
-            loginBackgroundImage: string;
-            loginBackgroundColor: string;
-            loadingBackgroundImage: string;
-            loadingBackgroundColor: string;
-            loginMotto: string;
-            ttl: number;
-            cache: boolean;
-            doNotCheckPublicIP: boolean;
+            auth: boolean;
+            autoUpdate: number;
             bind: string;
+            cache: boolean;
+            certChained: string;
+            certPrivate: string;
+            certPublic: string;
+            defaultUser: string;
+            doNotCheckPublicIP: boolean;
+            language: ioBroker.Languages;
+            leCollection: boolean;
+            loadingBackgroundColor: string;
+            loadingBackgroundImage: boolean;
+            loadingHideLogo: boolean;
+            loginBackgroundColor: string;
+            loginBackgroundImage: boolean;
+            loginHideLogo: boolean;
+            loginMotto: string;
+            port: number;
+            reverseProxy: {
+                globalPath: string;
+                paths: { path: string; instance: string }[];
+            }[];
+            secure: boolean;
+            thresholdValue: number;
+            tmpPath: string;
+            tmpPathAllow: boolean;
+            ttl: number;
         }
     }
 }
