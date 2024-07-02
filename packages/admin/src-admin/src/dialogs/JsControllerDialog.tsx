@@ -21,6 +21,7 @@ import {
     I18n, Utils, IconCopy,
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
+import { CONTROLLER_CHANGELOG_URL } from '@/helpers/utils';
 
 const styles: Record<string, any> = {
     root: {
@@ -460,7 +461,7 @@ cd
             <Button
                 variant="contained"
                 onClick={() => {
-                    window.open('https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md', '_blank');
+                    window.open(CONTROLLER_CHANGELOG_URL, '_blank');
                     onClose();
                 }}
                 color="grey"
