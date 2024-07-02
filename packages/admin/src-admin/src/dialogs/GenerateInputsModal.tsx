@@ -242,7 +242,6 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                     title={I18n.t('Test')}
                 >
                     <Paper style={styles.paperTable}>
-                        {/* @ts-expect-error missing param */}
                         <ConfigPanel
                             data={schemaData}
                             socket={socket}

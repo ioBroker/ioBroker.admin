@@ -414,7 +414,6 @@ class Config extends Component<ConfigProps, ConfigState> {
                 isFloatComma={this.props.isFloatComma}
                 configStored={this.props.configStored}
                 t={this.props.t}
-                // @ts-expect-error fix later
                 DeviceManager={DeviceManager}
             />;
         }

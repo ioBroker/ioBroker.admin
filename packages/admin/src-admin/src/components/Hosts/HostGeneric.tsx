@@ -24,6 +24,8 @@ import {
     Error as ErrorIcon,
 } from '@mui/icons-material';
 
+import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
+
 import {
     amber, blue, grey, red,
 } from '@mui/material/colors';
@@ -604,6 +606,25 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                 </IconButton>
             </div>
         </Tooltip> : null;
+    }
+
+    /**
+     * Render a button to extend the component in general the component can be extended by clicking anywhere on it
+     * However, it is used as an additional indicator that it is expandable
+     *
+     * @param open if host is expanded
+     */
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderExtendButton(open: boolean) {
+        return <Tooltip title={this.props.t(open ? 'collapse' : 'Expand')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
+            <div>
+                <IconButton
+                    size="large"
+                >
+                    {open ? <BiChevronUp /> : <BiChevronDown />}
+                </IconButton>
+            </div>
+        </Tooltip>;
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
