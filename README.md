@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 7.0.8 (2024-06-28)
+### **WORK IN PROGRESS**
 * (bluefox) Improved the mobile object browser
 
 ### 7.0.7 (2024-06-27)
