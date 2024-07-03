@@ -156,6 +156,7 @@ interface AdaptersListState {
     sortRecentlyUpdated: boolean;
     renderCounter: number;
     expertMode: boolean;
+    commandRunning: boolean;
 }
 
 class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
@@ -179,6 +180,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             renderCounter: 0,
             listOfVisibleAdapter: JSON.stringify(props.listOfVisibleAdapter),
             expertMode: props.context.expertMode,
+            commandRunning: props.commandRunning,
         };
     }
 
@@ -190,7 +192,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 key={`adapter-${adapterName}`}
                 adapterName={adapterName}
                 cached={cached}
-                commandRunning={this.props.commandRunning}
+                commandRunning={this.state.commandRunning}
             />;
         }
         return null;
@@ -314,7 +316,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 context={context}
                 adapterName={adapterName}
                 cached={cached}
-                commandRunning={this.props.commandRunning}
+                commandRunning={this.state.commandRunning}
             />);
         }
         if (this.props.listOfVisibleAdapter.length > items.length) {
@@ -445,6 +447,10 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             console.log('Render because of listOfVisibleAdapter');
             changed = true;
         }
+        if (props.commandRunning !== state.commandRunning) {
+            console.log('Render because of commandRunning');
+            changed = true;
+        }
         if (changed) {
             return {
                 descWidth: props.descWidth,
@@ -461,6 +467,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 listOfVisibleAdapter,
                 renderCounter: state.renderCounter + 1,
                 expertMode: props.context.expertMode,
+                commandRunning: props.commandRunning,
             };
         }
 
@@ -480,7 +487,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         if (!this.props.systemConfig?.common?.activeRepo) {
             return <LinearProgress />;
         }
-        console.log('Render list');
+
         if (this.props.tableViewMode) {
             return this.renderTableView(this.props.stableRepo, this.props.repoName, this.props.context);
         }
