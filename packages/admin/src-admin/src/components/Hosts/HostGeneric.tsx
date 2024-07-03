@@ -41,6 +41,7 @@ import AdapterUpdateDialog, { type RepoAdapterObject } from '@/dialogs/AdapterUp
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
+import { CONTROLLER_CHANGELOG_URL } from '@/helpers/utils';
 import AdminUtils from '../../AdminUtils';
 import HostEdit from './HostEdit';
 import CustomModal from '../CustomModal';
@@ -752,7 +753,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             adapterObject={this.props.jsControllerInfo}
             t={this.props.t}
             textUpdate={this.state.updateAvailable ? this.props.t('Start update') : this.props.t('Show instructions')}
-            textInstruction={this.state.updateAvailable ? this.props.t('Show instructions') : null}
+            textInstruction={this.props.t('Show whole changelog')}
             rightDependencies
             news={this.getNews()}
             toggleTranslation={this.props.toggleTranslation}
@@ -766,8 +767,9 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             }}
             theme={this.props.theme}
             installedVersion={this.props.host.common.installedVersion}
-            onInstruction={() =>
-                this.setState({ hostUpdateDialog: false, hostUpdate: null, instructionDialog: true })}
+            onInstruction={() => {
+                window.open(CONTROLLER_CHANGELOG_URL, '_blank');
+            }}
             onClose={() => this.setState({ hostUpdateDialog: false, hostUpdate: null })}
         />;
     }
