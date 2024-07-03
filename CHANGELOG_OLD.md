@@ -1,6 +1,17 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 7.0.1 (2024-06-10)
+* (bluefox) Because of the breaking change in GUI components, the GUI was updated. Users will see no difference, but developers should check their packages.
+* (bluefox) Rewritten many GUI components to TypeScript
+* (foxriver76) Added support for the adapter's auto-update option. New version of js-controller required.
+* (bluefox) GUI was re-written to typescript to 100%
+* (bluefox) Shows only installed adapters in the adapter tab or first 100 adapters
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.

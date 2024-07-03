@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.9",
+    "version": "7.0.10",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.10": {
+        "en": "host tab details are now indicated by a classic chevron instead of blink indicator\nshow js-controller changelog more prominent\ncorrecting the update button",
+        "de": "host-tab-details werden nun durch einen klassischen chevron angezeigt statt blink-indikator\nshow js-controller changelog mehr prominent\nkorrektur der update-taste",
+        "ru": "детали вкладки хоста теперь указаны классическим шевроном вместо индикатора мигания\nпоказать js-controller сменлог более заметно\nисправление кнопки обновления",
+        "pt": "detalhes da aba do host agora são indicados por um chevron clássico em vez de indicador de piscar\nmostrar js-controller changelog mais proeminente\ncorrigindo o botão de atualização",
+        "nl": "host tab details worden nu aangegeven door een klassieke chevron in plaats van knipper indicator\ntoon js-controller changelog prominenter\ncorrectie van de updateknop",
+        "fr": "les détails de l'onglet hôte sont maintenant indiqués par un chevron classique au lieu de clignotant\nmontrer js-controller changelog plus proéminent\ncorriger le bouton de mise à jour",
+        "it": "i dettagli della scheda host sono ora indicati da un classico chevron invece di indicatore di blink\nmostra js-controller changelog più prominente\ncorreggere il pulsante di aggiornamento",
+        "es": "los detalles de la pestaña host son ahora indicados por un clásico chevron en lugar de indicador de parpadeo\nshow js-controller changelog más prominente\ncorregir el botón de actualización",
+        "pl": "szczegóły karty hosta są teraz wskazywane przez klasyczny chevron zamiast wskaźnika mrugnięcia\nshow js- controller changelog bardziej widoczne\npoprawianie przycisku aktualizacji",
+        "uk": "деталі вкладок ведучих тепер вказують класичний шеврон замість індикатора blink\nпоказати js-controller зміниlog докладніше\nвиправлення кнопки оновлення",
+        "zh-cn": "主机标签细节现在用经典的 chevron 来表示,而不是闪烁指示器\n显示更突出的 js 控制器更改日志\n更正更新按钮"
+      },
       "7.0.9": {
         "en": "Improved the mobile object browser",
         "de": "Verbessert den mobilen Objekt-Browser",
@@ -95,19 +108,6 @@
         "pl": "Ze względu na przełomową zmianę komponentów GUI, GUI został zaktualizowany. Użytkownicy nie zauważą różnicy, ale deweloperzy powinni sprawdzić swoje pakiety.\nPrzepisz wiele komponentów GUI na TypeScript\nDodano wsparcie dla opcji autoaktualizacji adaptera. Nowa wersja sterownika js-.\nInterfejs graficzny został przepisany na maszynie do 100%\nPokazuje tylko zainstalowane adaptery w zakładce adapter lub pierwszych 100 adapterów",
         "uk": "У зв'язку з зміною переходів в компонентах GUI було оновлено графічний інтерфейс. Користувачі не мають різниці, але розробники повинні перевірити свої пакети.\nЗапишіть багато компонентів GUI для TypeScript\nДодано підтримку автоматичного оновлення адаптера. Нова версія js-controller обов'язкова.\nГрафічний інтерфейс перезапису до 100%\nПоказати тільки встановлені адаптери в вкладці адаптера або перші 100 адаптерів",
         "zh-cn": "由于GUI组件的突破变化,GUI得到了更新. 用户不会看到任何区别,但开发者应该检查他们的软件包.\n将许多图形用户界面组件重写为 TypeScript\n添加对适配器自动更新选项的支持. 需要新版本的js控制器.\n图形用户界面被重写为打字到100%\n仅在适配器标签或前100个适配器中显示已安装适配器"
-      },
-      "6.17.14": {
-        "en": "Only some packages updated",
-        "de": "Nur einige Pakete aktualisiert",
-        "ru": "Только некоторые пакеты обновляются",
-        "pt": "Apenas alguns pacotes atualizados",
-        "nl": "Slechts enkele pakketten bijgewerkt",
-        "fr": "Seulement quelques paquets mis à jour",
-        "it": "Solo alcuni pacchetti aggiornati",
-        "es": "Sólo algunos paquetes actualizados",
-        "pl": "Tylko niektóre pakiety zaktualizowane",
-        "uk": "Тільки деякі пакети оновлено",
-        "zh-cn": "只更新一些软件包"
       }
     },
     "desc": {

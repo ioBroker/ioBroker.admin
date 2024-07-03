@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.10 (2024-07-03)
 * (foxriver76) host tab details are now indicated by a classic chevron instead of blink indicator
 * (foxriver76) show js-controller changelog more prominent
 * (bluefox) correcting the update button
@@ -108,13 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Working on Json-Custom-Components
 * (foxriver76) on js-controller updater correctly determines the ip of slave hosts
 * (foxriver76) removed "@iobroker/types" from production dependencies
-
-### 7.0.1 (2024-06-10)
-* (bluefox) Because of the breaking change in GUI components, the GUI was updated. Users will see no difference, but developers should check their packages.
-* (bluefox) Rewritten many GUI components to TypeScript
-* (foxriver76) Added support for the adapter's auto-update option. New version of js-controller required.
-* (bluefox) GUI was re-written to typescript to 100%
-* (bluefox) Shows only installed adapters in the adapter tab or first 100 adapters
 
 ## License
 The MIT License (MIT)
