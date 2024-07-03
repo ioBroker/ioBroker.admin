@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.11 (2024-07-03)
 * (foxriver76) host tab details are now indicated by a classic chevron instead of blink indicator
 * (foxriver76) show js-controller changelog more prominent
 * (bluefox) correcting the update button

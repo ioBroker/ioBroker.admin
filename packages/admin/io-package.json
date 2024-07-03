@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.10",
+    "version": "7.0.11",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.11": {
+        "en": "host tab details are now indicated by a classic chevron instead of blink indicator\nshow js-controller changelog more prominent\ncorrecting the update button",
+        "de": "host-tab-details werden nun durch einen klassischen chevron angezeigt statt blink-indikator\nshow js-controller changelog mehr prominent\nkorrektur der update-taste",
+        "ru": "детали вкладки хоста теперь указаны классическим шевроном вместо индикатора мигания\nпоказать js-controller сменлог более заметно\nисправление кнопки обновления",
+        "pt": "detalhes da aba do host agora são indicados por um chevron clássico em vez de indicador de piscar\nmostrar js-controller changelog mais proeminente\ncorrigindo o botão de atualização",
+        "nl": "host tab details worden nu aangegeven door een klassieke chevron in plaats van knipper indicator\ntoon js-controller changelog prominenter\ncorrectie van de updateknop",
+        "fr": "les détails de l'onglet hôte sont maintenant indiqués par un chevron classique au lieu de clignotant\nmontrer js-controller changelog plus proéminent\ncorriger le bouton de mise à jour",
+        "it": "i dettagli della scheda host sono ora indicati da un classico chevron invece di indicatore di blink\nmostra js-controller changelog più prominente\ncorreggere il pulsante di aggiornamento",
+        "es": "los detalles de la pestaña host son ahora indicados por un clásico chevron en lugar de indicador de parpadeo\nshow js-controller changelog más prominente\ncorregir el botón de actualización",
+        "pl": "szczegóły karty hosta są teraz wskazywane przez klasyczny chevron zamiast wskaźnika mrugnięcia\nshow js- controller changelog bardziej widoczne\npoprawianie przycisku aktualizacji",
+        "uk": "деталі вкладок ведучих тепер вказують класичний шеврон замість індикатора blink\nпоказати js-controller зміниlog докладніше\nвиправлення кнопки оновлення",
+        "zh-cn": "主机标签细节现在用经典的 chevron 来表示,而不是闪烁指示器\n显示更突出的 js 控制器更改日志\n更正更新按钮"
+      },
       "7.0.9": {
         "en": "Improved the mobile object browser",
         "de": "Verbessert den mobilen Objekt-Browser",
