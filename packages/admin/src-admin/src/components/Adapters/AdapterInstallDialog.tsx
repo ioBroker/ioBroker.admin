@@ -30,7 +30,6 @@ export type InstalledInfo = { [adapterName: string]: AdapterInformationEx } &
 
 export type AdaptersContext = {
     expertMode: boolean;
-    commandRunning: boolean;
     t: Translate;
     /** current selected host */
     socket: AdminConnection;

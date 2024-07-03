@@ -1222,7 +1222,6 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     getContext(descHidden: boolean): AdaptersContext {
         return {
             expertMode: this.props.expertMode,
-            commandRunning: this.props.commandRunning,
             t: this.t,
             socket: this.props.socket,
             removeUpdateAvailable: (adapterName: string) => {
@@ -1814,6 +1813,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 sortByName={this.state.filterTiles === 'Name A-Z'}
                 sortPopularFirst={context.sortPopularFirst}
                 sortRecentlyUpdated={context.sortRecentlyUpdated}
+                commandRunning={this.props.commandRunning}
             />
 
             {this.getUpdater()}

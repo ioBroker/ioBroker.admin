@@ -157,6 +157,7 @@ export interface AdapterGenericProps extends AdapterInstallDialogProps {
     /** Same information for every adapter */
     context: AdaptersContext;
     cached: AdapterCacheEntry;
+    commandRunning: boolean;
 }
 
 export interface AdapterGenericState extends AdapterInstallDialogState {
@@ -224,7 +225,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             <Tooltip title={this.props.context.t('Add instance')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
-                    disabled={this.props.context.commandRunning}
+                    disabled={this.props.commandRunning}
                     style={!this.props.cached.rightOs ? this.styles.hidden : undefined}
                     onClick={this.props.cached.rightOs ? () => this.onAddInstance(this.props.adapterName, this.props.context) : undefined}
                 >
@@ -391,7 +392,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
     renderVersion() {
         const allowAdapterUpdate = this.props.context.repository[this.props.adapterName] ? this.props.context.repository[this.props.adapterName].allowAdapterUpdate : true;
 
-        return !this.props.context.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate !== false ? <Tooltip title={this.props.context.t('Update')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+        return !this.props.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate !== false ? <Tooltip title={this.props.context.t('Update')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <div
                 onClick={() => this.setState({ showUpdateDialog: true, showDialog: true })}
                 style={{ ...this.styles.buttonUpdate, ...(this.props.cached.rightDependencies ? this.styles.updateAvailable : undefined) }}
@@ -464,7 +465,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         return this.props.context.expertMode && this.installedVersion && <Tooltip title={this.props.context.t('Upload')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
-                disabled={this.props.context.commandRunning}
+                disabled={this.props.commandRunning}
                 onClick={() => this.onUpload()}
             >
                 <PublishIcon />
@@ -480,7 +481,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
             <Tooltip title={this.props.context.t('Delete adapter')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
-                    disabled={this.props.context.commandRunning}
+                    disabled={this.props.commandRunning}
                     onClick={() => this.setState({ adapterDeletionDialog: true, showDialog: true })}
                 >
                     <DeleteForeverIcon />
@@ -495,7 +496,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
 
         return this.props.context.expertMode && allowAdapterUpdate !== false && this.installedVersion && <Tooltip title={this.props.context.t('Install a specific version')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
-                disabled={this.props.context.commandRunning}
+                disabled={this.props.commandRunning}
                 size="small"
                 onClick={() => this.setState({ showInstallVersion: true, showDialog: true })}
             >
@@ -512,7 +513,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
         return <Tooltip title={this.props.context.t('Rebuild')}>
             <IconButton
                 size="small"
-                disabled={this.props.context.commandRunning}
+                disabled={this.props.commandRunning}
                 onClick={() => this.rebuild()}
             >
                 <BuildIcon />

@@ -138,6 +138,7 @@ interface AdaptersListProps {
     sortByName: boolean;
     sortPopularFirst: boolean;
     sortRecentlyUpdated: boolean;
+    commandRunning: boolean;
 }
 
 interface AdaptersListState {
@@ -189,6 +190,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 key={`adapter-${adapterName}`}
                 adapterName={adapterName}
                 cached={cached}
+                commandRunning={this.props.commandRunning}
             />;
         }
         return null;
@@ -312,6 +314,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 context={context}
                 adapterName={adapterName}
                 cached={cached}
+                commandRunning={this.props.commandRunning}
             />);
         }
         if (this.props.listOfVisibleAdapter.length > items.length) {
