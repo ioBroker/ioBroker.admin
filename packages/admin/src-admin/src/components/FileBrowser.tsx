@@ -226,10 +226,10 @@ const styles: Record<string, any> = {
         fontSize: '1rem',
         verticalAlign: 'top',
         flexGrow: 1,
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
         '@media screen and (max-width: 500px)': {
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
             textAlign: 'end',
             direction: 'rtl',
         },
