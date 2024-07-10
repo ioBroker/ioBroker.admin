@@ -1414,29 +1414,29 @@ class Admin extends utils.Adapter {
     }
 
     getRecommendedVersions(): Promise<{ node: number; npm: number }> {
-         return new Promise(resolve =>
-             this.sendToHost(this.host, 'getRepository', {}, repository => {
-                 const repoInfo: {
-                     repoTime: string;
-                     recommendedVersions: {
-                         nodeJsRecommended: number;
-                         npmRecommended: number;
-                     };
-                 } = (repository as any)?._repoInfo;
+        return new Promise(resolve =>
+            this.sendToHost(this.host, 'getRepository', {}, repository => {
+                const repoInfo: {
+                    repoTime: string;
+                    recommendedVersions: {
+                        nodeJsRecommended: number;
+                        npmRecommended: number;
+                    };
+                } = (repository as any)?._repoInfo;
 
-                 if (repoInfo?.recommendedVersions) {
-                     resolve({
-                         node: repoInfo.recommendedVersions?.nodeJsRecommended,
-                         npm: repoInfo.recommendedVersions?.npmRecommended,
-                     });
-                 } else {
-                     resolve({
-                         node: CURRENT_MAX_MAJOR_NODEJS,
-                         npm: CURRENT_MAX_MAJOR_NPM,
-                     });
-                 }
-             })
-         );
+                if (repoInfo?.recommendedVersions) {
+                    resolve({
+                        node: repoInfo.recommendedVersions?.nodeJsRecommended,
+                        npm: repoInfo.recommendedVersions?.npmRecommended,
+                    });
+                } else {
+                    resolve({
+                        node: CURRENT_MAX_MAJOR_NODEJS,
+                        npm: CURRENT_MAX_MAJOR_NPM,
+                    });
+                }
+            })
+        );
     }
 
     /**
