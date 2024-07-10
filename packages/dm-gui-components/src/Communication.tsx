@@ -601,11 +601,15 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     variant="contained"
                     disabled={okDisabled}
                     color="primary"
-                    onClick={() => this.setState({ showInput: null }, () =>
-                        this.sendActionToInstance('dm:instanceAction', {
-                            actionId: this.state.showInput.id,
-                            value: this.state.showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (this.state.showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
-                        }))}
+                    onClick={() => {
+                        const showInput = this.state.showInput;
+                        this.setState({ showInput: null }, () => {
+                            this.sendActionToInstance('dm:instanceAction', {
+                                actionId: showInput.id,
+                                value: showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
+                            })
+                        })
+                    }}
                     startIcon={<Check />}
                 >
                     {getTranslation('yesButtonText')}
