@@ -196,7 +196,6 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 ownerGroup: 'system.group.administrator',
             };
 
-            // @ts-expect-error will be fixed in js-controller
             systemConfig.common.firstDayOfWeek = systemConfig.common.firstDayOfWeek || 'monday';
 
             newState.diagData = await this.props.socket.getDiagData(this.props.currentHost, systemConfig.common.diag);

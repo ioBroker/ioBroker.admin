@@ -175,9 +175,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
         this.props.socket.getCompactSystemConfig(true)
             .then(obj => this.setState(
                 {
-                    // @ts-expect-error will be fixed in js-controller
                     tempUnit: obj.common.tempUnit,
-                    // @ts-expect-error will be fixed in js-controller
                     currency: obj.common.currency,
                     dateFormat: obj.common.dateFormat,
                     isFloatComma: obj.common.isFloatComma,
@@ -186,7 +184,6 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                     address: '',
                     longitude: obj.common.longitude,
                     latitude: obj.common.latitude,
-                    // @ts-expect-error will be fixed in js-controller
                     firstDayOfWeek: obj.common.firstDayOfWeek || 'monday',
                 },
                 () => this.updateMap(),

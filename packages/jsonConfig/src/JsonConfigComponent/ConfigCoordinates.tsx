@@ -74,8 +74,8 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
                         latitude: obj.common.latitude,
                     },
                     async () => {
-                        await this.onChange(this.props.schema.longitudeName, (obj.common.longitude || '').trim());
-                        await this.onChange(this.props.schema.latitudeName, (obj.common.latitude || '').trim());
+                        await this.onChange(this.props.schema.longitudeName, obj.common.longitude);
+                        await this.onChange(this.props.schema.latitudeName, obj.common.latitude);
                     },
                 );
             } else {

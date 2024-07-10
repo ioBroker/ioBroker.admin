@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
 
 import {

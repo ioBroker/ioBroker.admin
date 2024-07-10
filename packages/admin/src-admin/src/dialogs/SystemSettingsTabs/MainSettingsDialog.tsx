@@ -282,8 +282,8 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         if (!this.map || this.map !== map) {
             this.map = map;
             const center: LatLngTuple = [
-                parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : '50') || 0,
-                parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : '10') || 0,
+                parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude as any as string  : '50') || 0,
+                parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude as any as string : '10') || 0,
             ];
 
             this.marker = new Marker(
@@ -465,8 +465,8 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
             this.latLongTimer && clearTimeout(this.latLongTimer);
             this.latLongTimer = setTimeout(() => {
                 this.latLongTimer = null;
-                this.map.flyTo([parseFloat(this.props.data.common.latitude), parseFloat(this.props.data.common.longitude)]);
-                this.marker.setLatLng([parseFloat(this.props.data.common.latitude), parseFloat(this.props.data.common.longitude)]);
+                this.map.flyTo([parseFloat(this.props.data.common.latitude as any as string), parseFloat(this.props.data.common.longitude as any as string)]);
+                this.marker.setLatLng([parseFloat(this.props.data.common.latitude as any as string), parseFloat(this.props.data.common.longitude as any as string)]);
             }, 500);
         }
     };
@@ -526,8 +526,8 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
         const center: LatLngTuple = [
-            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : '50') || 0,
-            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : '10') || 0,
+            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude as any as string  : '50') || 0,
+            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude as any as string : '10') || 0,
         ];
 
         const { zoom } = this.state;
