@@ -1422,7 +1422,8 @@ class Admin extends utils.Adapter {
                         nodeJsRecommended: number;
                         npmRecommended: number;
                     };
-                } = (repository as any)?._repoInfo;
+                    // @ts-ignore
+                } = (repository as unknown)?._repoInfo;
 
                 if (repoInfo?.recommendedVersions) {
                     resolve({
