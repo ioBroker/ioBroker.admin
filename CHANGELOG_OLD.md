@@ -1,6 +1,15 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 7.0.2 (2024-06-24)
+* (bluefox) Working on Json-Custom-Components
+* (foxriver76) on js-controller updater correctly determines the ip of slave hosts
+* (foxriver76) removed "@iobroker/types" from production dependencies
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.

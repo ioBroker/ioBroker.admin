@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.12 (2024-07-10)
 * (bluefox) Changed a recommended node.js version from 18 to 20
 
 ### 7.0.11 (2024-07-03)
@@ -106,11 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.0.6 (2024-06-26)
 * (bluefox) Login page was corrected
 * (bluefox) Icons were corrected
-
-### 7.0.2 (2024-06-24)
-* (bluefox) Working on Json-Custom-Components
-* (foxriver76) on js-controller updater correctly determines the ip of slave hosts
-* (foxriver76) removed "@iobroker/types" from production dependencies
 
 ## License
 The MIT License (MIT)
