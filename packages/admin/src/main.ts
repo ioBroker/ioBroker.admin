@@ -1065,10 +1065,11 @@ class Admin extends utils.Adapter {
         }
 
         // https://nodejs.org/download/release/index.json
-        // detect new version of the same major version and new major version (that is allowed by ioBroker)
+        // detect a new version of the same major version and new major version (that is allowed by ioBroker)
         try {
+            const recommendedVersions = await this.getRecommendedVersions();
             // find newest suggested version
-            const nodeNewestNext = response.data.find(item => item.version.startsWith(`v${CURRENT_MAX_MAJOR_NODEJS}.`));
+            const nodeNewestNext = response.data.find(item => item.version.startsWith(`v${recommendedVersions.node}.`));
             const nodeCurrentMajor = process.version.split('.')[0];
             const nodeNewest = response.data.find(item => item.version.startsWith(`${nodeCurrentMajor}.`));
             if (nodeNewestNext) {
@@ -1080,7 +1081,7 @@ class Admin extends utils.Adapter {
 
             // find newest suggested version
             const npmNewestNext =
-                nodeNewestNext || response.data.find(item => item.npm.startsWith(`${CURRENT_MAX_MAJOR_NPM}.`));
+                nodeNewestNext || response.data.find(item => item.npm.startsWith(`${recommendedVersions.npm}.`));
             const npmNewest = response.data.find(item => item.version === process.version);
             if (npmNewestNext) {
                 result.npmNewestNext = npmNewestNext.npm;
@@ -1410,6 +1411,26 @@ class Admin extends utils.Adapter {
                 this.config.autoUpdate * ONE_HOUR_MS + 1
             );
         }
+    }
+
+    getRecommendedVersions(): Promise<{ node: number; npm: number; }> {
+         return new Promise(resolve => this.sendToHost(
+            this.host,
+            'getRepository',
+            { },
+            repository => {
+                if ((repository as any)?._repoInfo?.recommededVersions) {
+                    resolve({
+                        node: (repository as any)?._repoInfo?.recommededVersions.nodeJsRecommended,
+                        npm: (repository as any)?._repoInfo?.recommededVersions.npmRecommended,
+                    });
+                } else {
+                    resolve({
+                        node: CURRENT_MAX_MAJOR_NODEJS,
+                        npm: CURRENT_MAX_MAJOR_NPM,
+                    });
+                }
+            }));
     }
 
     /**
