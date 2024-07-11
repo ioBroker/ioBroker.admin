@@ -17,11 +17,7 @@ interface ConfigAutocompleteSendToState extends ConfigAutocompleteState {
 }
 
 class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToProps, ConfigAutocompleteSendToState> {
-    componentDidMount() {
-        super.componentDidMount();
-
-        this.askInstance();
-    }
+    private initialized = false;
 
     askInstance() {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -81,15 +77,16 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
     }
 
     renderItem(error: unknown, disabled: boolean): React.JSX.Element | null {
-        if (!this.state.selectOptions) {
-            return null;
-        }
-
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context) {
-                setTimeout(() => this.askInstance(), 300);
+            if (context !== this.state.context || !this.initialized) {
+                setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
+                this.initialized = true;
             }
+        }
+
+        if (!this.state.selectOptions) {
+            return null;
         }
 
         let item;

@@ -76,11 +76,7 @@ interface ConfigSelectSendToState extends ConfigGenericState {
 }
 
 class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSelectSendToState> {
-    componentDidMount() {
-        super.componentDidMount();
-
-        this.askInstance();
-    }
+    private initialized = false;
 
     askInstance() {
         if (this.props.alive) {
@@ -136,8 +132,9 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
     renderItem(error: unknown, disabled: boolean /* , defaultValue */) {
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context) {
-                setTimeout(() => this.askInstance(), 300);
+            if (context !== this.state.context || !this.initialized) {
+                setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
+                this.initialized = true;
             }
         }
 
@@ -174,19 +171,20 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                 }}
             />;
         }
+
         if (!this.state.list) {
             return <CircularProgress size="small" />;
         }
-        const selectOptions = this.state.list
-            .filter(item => {
-                if (!item.hidden) {
-                    return true;
-                }
-                if (this.props.custom) {
-                    return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
-                }
-                return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
-            });
+
+        const selectOptions = this.state.list.filter(item => {
+            if (!item.hidden) {
+                return true;
+            }
+            if (this.props.custom) {
+                return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
+            }
+            return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
+        });
 
         const item = selectOptions.find(it => it.value === value);
 

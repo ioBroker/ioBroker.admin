@@ -26,11 +26,7 @@ interface ConfigTextSendToState extends ConfigGenericState {
 }
 
 class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSendToState> {
-    componentDidMount() {
-        super.componentDidMount();
-
-        this.askInstance();
-    }
+    private initialized = false;
 
     askInstance() {
         if (this.props.alive) {
@@ -63,15 +59,16 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
     }
 
     renderItem(/* error, disabled, defaultValue */) {
-        if (this.state.text === undefined) {
-            return null;
-        }
-
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context) {
-                setTimeout(() => this.askInstance(), 300);
+            if (context !== this.state.context || !this.initialized) {
+                setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
+                this.initialized = true;
             }
+        }
+
+        if (this.state.text === undefined) {
+            return null;
         }
 
         if (this.props.schema.container === 'text') {

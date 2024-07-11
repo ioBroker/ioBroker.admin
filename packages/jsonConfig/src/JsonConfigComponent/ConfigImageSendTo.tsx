@@ -13,6 +13,8 @@ interface ConfigImageSendToState extends ConfigGenericState {
 }
 
 class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImageSendToState> {
+    private initialized = false;
+
     componentDidMount() {
         super.componentDidMount();
 
@@ -54,15 +56,16 @@ class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImag
     }
 
     renderItem(/* error, disabled, defaultValue */) {
-        if (this.state.image === undefined) {
-            return null;
-        }
-
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context) {
-                setTimeout(() => this.askInstance(), 300);
+            if (context !== this.state.context || !this.initialized) {
+                setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
+                this.initialized = true;
             }
+        }
+
+        if (this.state.image === undefined) {
+            return null;
         }
 
         return <img

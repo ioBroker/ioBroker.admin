@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Do not send `sendto` requests if control is hidden
+
 ### 7.0.12 (2024-07-10)
 * (bluefox) Changed a recommended node.js version from 18 to 20
 
