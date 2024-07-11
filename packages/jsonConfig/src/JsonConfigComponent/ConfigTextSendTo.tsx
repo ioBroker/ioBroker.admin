@@ -22,11 +22,12 @@ interface ConfigTextSendToProps extends ConfigGenericProps {
 
 interface ConfigTextSendToState extends ConfigGenericState {
     text?: string;
-    context?: string;
 }
 
 class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSendToState> {
     private initialized = false;
+
+    private _context: string | undefined;
 
     askInstance() {
         if (this.props.alive) {
@@ -45,7 +46,7 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
             }
 
             this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
-                .then(text => this.setState({ text: text || '', context: this.getContext() }));
+                .then(text => this.setState({ text: text || '' }));
         }
     }
 
@@ -61,7 +62,8 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
     renderItem(/* error, disabled, defaultValue */) {
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context || !this.initialized) {
+            if (context !== this._context || !this.initialized) {
+                this._context = context;
                 setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
                 this.initialized = true;
             }
