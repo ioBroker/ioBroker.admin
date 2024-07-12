@@ -12,16 +12,10 @@ interface ConfigAutocompleteSendToProps extends ConfigGenericProps {
     schema: ConfigItemAutocompleteSendTo;
 }
 
-interface ConfigAutocompleteSendToState extends ConfigAutocompleteState {
-    context: string;
-}
+class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToProps, ConfigAutocompleteState> {
+    private initialized = false;
 
-class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToProps, ConfigAutocompleteSendToState> {
-    componentDidMount() {
-        super.componentDidMount();
-
-        this.askInstance();
-    }
+    private _context: string | undefined;
 
     askInstance() {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -57,9 +51,9 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                     // if __different
                     if (Array.isArray(value)) {
                         selectOptions.unshift({ label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE });
-                        this.setState({ value: ConfigGeneric.DIFFERENT_VALUE, selectOptions, context: this.getContext() });
+                        this.setState({ value: ConfigGeneric.DIFFERENT_VALUE, selectOptions });
                     } else {
-                        this.setState({ value, selectOptions, context: this.getContext() });
+                        this.setState({ value, selectOptions });
                     }
                 });
         } else if (Array.isArray(value)) {
@@ -81,15 +75,17 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
     }
 
     renderItem(error: unknown, disabled: boolean): React.JSX.Element | null {
-        if (!this.state.selectOptions) {
-            return null;
-        }
-
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context) {
-                setTimeout(() => this.askInstance(), 300);
+            if (context !== this._context || !this.initialized) {
+                this._context = context;
+                setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
+                this.initialized = true;
             }
+        }
+
+        if (!this.state.selectOptions) {
+            return null;
         }
 
         let item;

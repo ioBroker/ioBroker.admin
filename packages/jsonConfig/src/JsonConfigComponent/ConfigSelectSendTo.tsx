@@ -72,15 +72,12 @@ interface ConfigSelectSendToProps extends ConfigGenericProps {
 
 interface ConfigSelectSendToState extends ConfigGenericState {
     list?: { label: string; value: string; hidden?: boolean }[];
-    context?: string;
 }
 
 class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSelectSendToState> {
-    componentDidMount() {
-        super.componentDidMount();
+    private initialized = false;
 
-        this.askInstance();
-    }
+    private _context: string | undefined;
 
     askInstance() {
         if (this.props.alive) {
@@ -100,7 +97,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
 
             this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
                 .then(list =>
-                    this.setState({ list, context: this.getContext() }));
+                    this.setState({ list }));
         } else {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
@@ -136,8 +133,10 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
     renderItem(error: unknown, disabled: boolean /* , defaultValue */) {
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context) {
-                setTimeout(() => this.askInstance(), 300);
+            if (context !== this._context || !this.initialized) {
+                this._context = context;
+                setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
+                this.initialized = true;
             }
         }
 
@@ -174,19 +173,20 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                 }}
             />;
         }
+
         if (!this.state.list) {
             return <CircularProgress size="small" />;
         }
-        const selectOptions = this.state.list
-            .filter(item => {
-                if (!item.hidden) {
-                    return true;
-                }
-                if (this.props.custom) {
-                    return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
-                }
-                return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
-            });
+
+        const selectOptions = this.state.list.filter(item => {
+            if (!item.hidden) {
+                return true;
+            }
+            if (this.props.custom) {
+                return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
+            }
+            return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
+        });
 
         const item = selectOptions.find(it => it.value === value);
 

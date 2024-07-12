@@ -846,11 +846,11 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             if (p1 && typeof p1 === 'string' && p1.startsWith('data.')) {
                 const value = ConfigGeneric.getValue(data, p1.replace(/^data\./, ''));
 
-                if (typeof value === 'string') {
+                if (typeof value === 'string' && value.includes('"')) {
                     return `\${${p1}.replace(/"/g, '\\\\"')}`;
                 }
             }
-            return p1;
+            return _match;
         });
 
         return str;

@@ -22,15 +22,12 @@ interface ConfigTextSendToProps extends ConfigGenericProps {
 
 interface ConfigTextSendToState extends ConfigGenericState {
     text?: string;
-    context?: string;
 }
 
 class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSendToState> {
-    componentDidMount() {
-        super.componentDidMount();
+    private initialized = false;
 
-        this.askInstance();
-    }
+    private _context: string | undefined;
 
     askInstance() {
         if (this.props.alive) {
@@ -49,7 +46,7 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
             }
 
             this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
-                .then(text => this.setState({ text: text || '', context: this.getContext() }));
+                .then(text => this.setState({ text: text || '' }));
         }
     }
 
@@ -63,15 +60,17 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
     }
 
     renderItem(/* error, disabled, defaultValue */) {
-        if (this.state.text === undefined) {
-            return null;
-        }
-
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context) {
-                setTimeout(() => this.askInstance(), 300);
+            if (context !== this._context || !this.initialized) {
+                this._context = context;
+                setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
+                this.initialized = true;
             }
+        }
+
+        if (this.state.text === undefined) {
+            return null;
         }
 
         if (this.props.schema.container === 'text') {

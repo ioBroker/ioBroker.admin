@@ -9,10 +9,13 @@ interface ConfigImageSendToProps extends ConfigGenericProps {
 
 interface ConfigImageSendToState extends ConfigGenericState {
     image?: string;
-    context?: string;
 }
 
 class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImageSendToState> {
+    private initialized = false;
+
+    private _context: string | undefined;
+
     componentDidMount() {
         super.componentDidMount();
 
@@ -38,7 +41,7 @@ class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImag
             }
 
             this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
-                .then(image => this.setState({ image: image || '', context: this.getContext() }));
+                .then(image => this.setState({ image: image || '' }));
         }
     }
 
@@ -54,15 +57,17 @@ class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImag
     }
 
     renderItem(/* error, disabled, defaultValue */) {
-        if (this.state.image === undefined) {
-            return null;
-        }
-
         if (this.props.alive) {
             const context = this.getContext();
-            if (context !== this.state.context) {
-                setTimeout(() => this.askInstance(), 300);
+            if (context !== this._context || !this.initialized) {
+                this._context = context;
+                setTimeout(() => this.askInstance(), this.initialized ? 300 : 50);
+                this.initialized = true;
             }
+        }
+
+        if (this.state.image === undefined) {
+            return null;
         }
 
         return <img
