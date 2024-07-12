@@ -1,8 +1,6 @@
 {
-  "manufacturer": "Виробник",
-  "model": "Модель",
-  "batteryTooltip": "Батарея",
   "allDevicesFilteredOut": "Усі пристрої відфільтровано",
+  "batteryTooltip": "Батарея",
   "cancelButtonText": "Скасувати",
   "closeButtonText": "Закрити",
   "connectedIconTooltip": "Підключено",
@@ -11,12 +9,15 @@
   "filterLabelText": "Фільтрувати за назвою",
   "instanceLabelText": "Екземпляр",
   "instanceNotAlive": "Примірник не живий",
+  "manufacturer": "Виробник",
+  "model": "Модель",
   "noButtonText": "Немає",
   "noDevicesFoundText": "Пристроїв не знайдено",
   "noInstanceSelectedText": "Виберіть екземпляр",
   "okButtonText": "в порядку",
+  "pleaseEnterValueText": "Будь ласка введіть",
   "refreshInstanceList": "Оновити список екземплярів",
+  "refreshTooltip": "Оновити",
   "toClipboard": "в буфер обміну",
-  "yesButtonText": "Так",
-  "pleaseEnterValueText": "Будь ласка введіть"
+  "yesButtonText": "Так"
 }
