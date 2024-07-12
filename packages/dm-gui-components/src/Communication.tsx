@@ -271,7 +271,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         }
                     }
                     if (response.result.error) {
-                        console.error(`Error: ${response.result.error}`);
+                        console.error(`Error: ${response.result.error.message}`);
                         this.setState({ showToast: response.result.error.message });
                     }
                     this.setState({ showSpinner: false });
