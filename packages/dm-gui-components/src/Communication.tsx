@@ -57,6 +57,13 @@ interface CommunicationForm {
     handleClose?: (data?: Record<string, any>) => void;
 }
 
+interface InputAction extends ActionBase {
+    /** If it is a device action */
+    deviceId?: string;
+    /** Optional refresh function to execute */
+    refresh?: () => void;
+}
+
 export type CommunicationState = {
     showSpinner: boolean;
     showToast: string | null;
@@ -73,8 +80,8 @@ export type CommunicationState = {
         open: boolean;
         progress: number;
     } | null;
-    showConfirmation: ActionBase | null;
-    showInput: ActionBase | null;
+    showConfirmation: InputAction | null;
+    showInput: InputAction | null;
     inputValue: string | boolean | number | null;
 }
 
@@ -95,6 +102,15 @@ interface DmControlResponse extends DmResponse {
         deviceId: string;
         controlId: string;
     };
+}
+
+interface Message {
+    actionId?: string;
+    deviceId?: string;
+    value?: unknown;
+    origin?: string;
+    confirm?: boolean;
+    data?: any;
 }
 
 interface DmActionResponse extends DmResponse {
@@ -161,11 +177,11 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.deviceHandler = (deviceId, action, refresh) => () => {
             if (action.confirmation) {
-                this.setState({ showConfirmation: action });
+                this.setState({ showConfirmation: {...action, deviceId, refresh }});
                 return;
             }
             if (action.inputBefore) {
-                this.setState({ showInput: action, inputValue: action.inputBefore.defaultValue || '' });
+                this.setState({ showInput: { ...action, deviceId, refresh }, inputValue: action.inputBefore.defaultValue || '' });
                 return;
             }
 
@@ -186,7 +202,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         console.error('loadData not implemented');
     }
 
-    sendActionToInstance = (command: string, messageToSend: any, refresh?: () => void) => {
+    sendActionToInstance = (command: `dm:${string}`, messageToSend: Message, refresh?: () => void) => {
         const send = async () => {
             this.setState({ showSpinner: true });
             const response: DmActionResponse = await this.props.socket.sendTo(this.props.selectedInstance, command, messageToSend);
@@ -479,8 +495,13 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     color="primary"
                     onClick={() => {
                         const showConfirmation = this.state.showConfirmation;
-                        this.setState({ showConfirmation: null }, () =>
-                            this.sendActionToInstance('dm:instanceAction', { actionId: showConfirmation.id }));
+                        this.setState({ showConfirmation: null }, () => {
+                            if (showConfirmation.deviceId) {
+                                this.sendActionToInstance('dm:deviceAction', { actionId: showConfirmation.id, deviceId: showConfirmation.deviceId }, showConfirmation.refresh);
+                            } else {
+                                this.sendActionToInstance('dm:instanceAction', { actionId: showConfirmation.id });
+                            }
+                        });
                     }}
                     autoFocus
                     startIcon={<Check />}
@@ -605,10 +626,18 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     onClick={() => {
                         const showInput = this.state.showInput;
                         this.setState({ showInput: null }, () => {
-                            this.sendActionToInstance('dm:instanceAction', {
-                                actionId: showInput.id,
-                                value: showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
-                            })
+                            if (showInput.deviceId) {
+                                this.sendActionToInstance('dm:deviceAction', {
+                                    actionId: showInput.id,
+                                    deviceId: showInput.deviceId,
+                                    value: showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
+                                }, showInput.refresh)
+                            } else {
+                                this.sendActionToInstance('dm:instanceAction', {
+                                    actionId: showInput.id,
+                                    value: showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
+                                })
+                            }
                         })
                     }}
                     startIcon={<Check />}
