@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.12",
+    "version": "7.0.13",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.13": {
+        "en": "Do not send `sendto` requests if control is hidden\nRead recommended versions from `iobroker/iobroker`",
+        "de": "Senden Sie keine `sendto` Anfragen, wenn die Kontrolle versteckt ist\nEmpfohlene Versionen von `iobroker/iobroker `",
+        "ru": "Не отправляйте запросы \"отправить\", если контроль скрыт\nРекомендуемые версии от `iobroker/iobroker \"",
+        "pt": "Não envie pedidos `sendto` se o controle estiver oculto\nLeia as versões recomendadas de `iobroker/iobroker \"",
+        "nl": "Verstuur geen verzoeken om een Sendto te versturen als de controle verborgen is\nLees aanbevolen versies van Iobroker/Iobroker Wat",
+        "fr": "Ne pas envoyer de requêtes `sendto` si le contrôle est caché\nLire les versions recommandées de `iobroker/iobroker \"",
+        "it": "Non inviare richieste `sendto` se il controllo è nascosto\nLeggi le versioni consigliate da `iobroker/iobroker #",
+        "es": "No envíe solicitudes de 'enviar' si el control está oculto\nLeer las versiones recomendadas de `iobroker/iobroker `",
+        "pl": "Nie wysyłaj żądań 'sendto', jeśli kontrola jest ukryta\nPrzeczytaj zalecane wersje z 'iobroker / iobroker'",
+        "uk": "Не надсилайте запити `sendto`, якщо приховано контроль\nЧитати рекомендовані версії з `iobroker/iobroker й",
+        "zh-cn": "隐藏控制时不要发送“ 发送” 请求\n阅读“iobrocco/iobroco”的建议版本 `"
+      },
       "7.0.12": {
         "en": "Changed a recommended node.js version from 18 to 20",
         "de": "Änderung einer empfohlenen node.js-Version von 18 bis 20",
@@ -95,19 +108,6 @@
         "pl": "Strona logowania została poprawiona\nIkony zostały poprawione",
         "uk": "Увімкнути сторінку\nІкони виправили",
         "zh-cn": "登录页面已更正\n图标已更正"
-      },
-      "7.0.2": {
-        "en": "Working on Json-Custom-Components\non js-controller updater correctly determine the ip of slave hosts\nremoved \"@iobroker/types\" from production dependencies",
-        "de": "Arbeiten an Json-Custom-Components\nauf js-controller updater den ip von slave-hosts korrekt bestimmen\n\"@iobroker/typen\" aus produktionsabhängigkeiten entfernt",
-        "ru": "Работа над Json-Custom-Components\nна js-контроллере обновления правильно определить ip рабовладельцев\nудалены \"@iobroker/types\" из производственных зависимостей",
-        "pt": "Trabalhando em Json-Custom-Components\nem js-controller atualizador corretamente determinar o ip de hosts escravos\nremovido \"@iobroker/types\" de dependências de produção",
-        "nl": "Werken aan Json-Custom-Components\nop js-controller updater de ip van slave hosts correct bepalen\nverwijderd \"@iobroker/types\" uit productieafhankelijkheden",
-        "fr": "Travail sur Json-Custom-Composants\nsur js-controller updater correctement déterminer l'ip des serveurs esclaves\nsupprimé \"@iobroker/types\" des dépendances de production",
-        "it": "Lavorare su Json-Custom-Components\nsu aggiornamento js-controller determinare correttamente l'ip degli host slave\nrimosso \"@iobroker/types\" dalle dipendenze di produzione",
-        "es": "Trabajando en Json-Custom-Components\nsobre js-controller updater correctamente determinar el ip de hosts esclavos\neliminado \"@iobroker/tipos\" de las dependencias de producción",
-        "pl": "Praca nad komponentami Json- Custom\nna ns- kontroler updater poprawnie określić ip zastępów niewolników\nusunięto \"@ iobroker / types\" z zależności produkcji",
-        "uk": "Робота на Json-Custom-Component\nна js-controller updater правильно визначити ip рабів\nвилучено \"@iobroker/types\" від виробничих залежностей",
-        "zh-cn": "研究Json-Custom-组件\n在 js 控制器更新器上正确确定奴隶主机的 ip\n从生产依赖中删除“@iobroduc/types”"
       }
     },
     "desc": {

@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.13 (2024-07-12)
 * (bluefox) Do not send `sendto` requests if control is hidden
 * (bluefox) Read recommended versions from `iobroker/iobroker`
 
@@ -106,10 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.0.7 (2024-06-27)
 * (bluefox) Corrected call of getObjectView with null parameter
-
-### 7.0.6 (2024-06-26)
-* (bluefox) Login page was corrected
-* (bluefox) Icons were corrected
 
 ## License
 The MIT License (MIT)
