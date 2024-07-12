@@ -383,7 +383,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
     renderSnackbar() {
         return <Snackbar
             open={!!this.state.showToast}
-            autoHideDuration={6000}
+            autoHideDuration={6_000}
             onClose={() => this.setState({ showToast: null })}
             message={this.state.showToast}
         />;
@@ -478,8 +478,9 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     variant="contained"
                     color="primary"
                     onClick={() => {
+                        const showConfirmation = this.state.showConfirmation;
                         this.setState({ showConfirmation: null }, () =>
-                            this.sendActionToInstance('dm:instanceAction', { actionId: this.state.showConfirmation.id }));
+                            this.sendActionToInstance('dm:instanceAction', { actionId: showConfirmation.id }));
                     }}
                     autoFocus
                     startIcon={<Check />}
