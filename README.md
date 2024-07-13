@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Allowed playing mp3 files in the file browser
+
 ### 7.0.13 (2024-07-12)
 * (bluefox) Do not send `sendto` requests if control is hidden
 * (bluefox) Read recommended versions from `iobroker/iobroker`
