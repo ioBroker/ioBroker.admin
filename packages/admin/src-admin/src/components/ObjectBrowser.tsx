@@ -3038,7 +3038,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      */
     private onAfterSelect(isDouble?: boolean) {
         this.lastSelectedItems = [...this.state.selected];
-        if (this.state.selected && this.state.selected.length) {
+        if (this.state.selected?.length) {
             this.localStorage.setItem(
                 `${this.props.dialogName || 'App'}.objectSelected`,
                 JSON.stringify(this.lastSelectedItems),
@@ -3052,7 +3052,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
             }
         } else {
-            this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, '');
+            this.localStorage.removeItem(`${this.props.dialogName || 'App'}.objectSelected`);
             if (this.state.selected.length) {
                 this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
             } else {
@@ -7180,11 +7180,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             const scrollBarWidth = this.tableRef.current.offsetWidth - this.tableRef.current.clientWidth;
             if (this.state.scrollBarWidth !== scrollBarWidth) {
                 setTimeout(() => this.setState({ scrollBarWidth }), 100);
-            } else if (
+            }
+            if (
                 !this.selectedFound &&
                 (this.state.selected?.[0] || this.lastSelectedItems?.[0])
             ) {
                 this.scrollToItem(this.state.selected?.[0] || this.lastSelectedItems?.[0]);
+            } else if (!this.selectedFound && !this.state.selected?.length && !this.lastSelectedItems?.length) {
+                this.selectedFound = true;
             }
         }
     }
