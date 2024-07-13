@@ -2463,7 +2463,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private pausedSubscribes: boolean = false;
 
-    private selectedFound: boolean = false;
+    private selectedFound: boolean;
 
     private root: TreeItem | null = null;
 
@@ -2669,6 +2669,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             selected = props.selected;
         }
         selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
+
+        this.selectedFound = !selected.length && !this.lastSelectedItems.length;
 
         const columnsStr = this.localStorage.getItem(`${props.dialogName || 'App'}.columns`);
         let columns: string[] | null;
