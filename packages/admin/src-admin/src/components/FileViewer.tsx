@@ -17,7 +17,7 @@ import { FaCopy as CopyIcon } from 'react-icons/fa';
 import {
     Close as CloseIcon,
     Save as SaveIcon,
-    Brightness6 as Brightness5Icon, PlayArrow, Pause,
+    Brightness6 as Brightness5Icon,
 } from '@mui/icons-material';
 
 import type { Connection } from '@iobroker/socket-client';
@@ -113,15 +113,10 @@ interface FileViewerState {
 class FileViewer extends Component<FileViewerProps, FileViewerState> {
     private timeout: ReturnType<typeof setTimeout> | null = null;
 
-    private readonly refSound: React.RefObject<HTMLAudioElement> | null = null;
-
     constructor(props: FileViewerProps) {
         super(props);
         const ext = Utils.getFileExtension(props.href);
 
-        if (EXTENSIONS.audio.includes(ext)) {
-            this.refSound = React.createRef<HTMLAudioElement>();
-        }
         this.state = {
             text: null,
             code: null,
@@ -281,12 +276,28 @@ class FileViewer extends Component<FileViewerProps, FileViewerState> {
                 {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                 <audio
                     style={{ width: '100%' }}
-                    ref={this.refSound}
-                    id="fileViewer_sound"
                     src={this.props.href}
                     controls
                 ></audio>
             </div>;
+        }
+        if (this.state.ext && EXTENSIONS.video.includes(this.state.ext)) {
+            return (
+                <div
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                    <video style={{ width: '100%', height: '100%' }} controls>
+                        <source src={this.props.href} type={`video/${this.state.ext}}`} />
+                    </video>
+                </div>
+            );
         }
         if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             // File viewer in adapter-react does not support write
