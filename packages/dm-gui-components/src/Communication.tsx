@@ -177,7 +177,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.deviceHandler = (deviceId, action, refresh) => () => {
             if (action.confirmation) {
-                this.setState({ showConfirmation: {...action, deviceId, refresh }});
+                this.setState({ showConfirmation: { ...action, deviceId, refresh }});
                 return;
             }
             if (action.inputBefore) {
