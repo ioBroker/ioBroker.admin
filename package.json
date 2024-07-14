@@ -136,6 +136,12 @@
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "typescript": "^5.5.3"
   },
+  "optionalDependencies": {
+    "@nx/nx-darwin-arm64": "19.4.2",
+    "@nx/nx-darwin-x64": "19.4.2",
+    "@nx/nx-linux-x64-gnu": "19.4.2",
+    "@nx/nx-win32-x64-msvc": "19.4.2"
+  },
   "overrides": {
     "react-sortable-hoc": {
       "react": "^18.3.1",
@@ -144,7 +150,11 @@
     "lerna": {
       "string-width": "4.2.3",
       "strip-ansi": "6.0.1",
-      "wrap-ansi": "7.0.0"
+      "wrap-ansi": "7.0.0",
+      "@nx/nx-darwin-arm64": "19.4.2",
+      "@nx/nx-darwin-x64": "19.4.2",
+      "@nx/nx-linux-x64-gnu": "19.4.2",
+      "@nx/nx-win32-x64-msvc": "19.4.2"
     }
   },
   "scripts": {
