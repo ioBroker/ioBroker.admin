@@ -285,7 +285,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             value = _value as Record<string, any>[];
         }
 
-        if (!Array.isArray(_value)) {
+        if (!Array.isArray(value)) {
             value = [];
         }
 
@@ -319,7 +319,6 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     }
 
     itemTable(attrItem: string, data: Record<string, any>, idx: number) {
-        const { value } = this.state;
         const { schema } = this.props;
         const schemaForAttribute = schema.items && schema.items.find((el: ConfigItemTableIndexed) => el.attr === attrItem);
 
@@ -359,7 +358,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             customs={this.props.customs}
             theme={this.props.theme}
             onChange={(attr: string, valueChange: any) => {
-                const newObj = JSON.parse(JSON.stringify(value));
+                const newObj: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
                 newObj[idx][attr] = valueChange;
                 this.setState({ value: newObj }, () => {
                     this.validateUniqueProps();
@@ -553,7 +552,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     }
 
     onDelete = (index: number) => () => {
-        const newValue = JSON.parse(JSON.stringify(this.state.value));
+        const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         newValue.splice(index, 1);
 
         this.setState({ value: newValue, iteration: this.state.iteration + 10_000 }, () =>
@@ -652,8 +651,8 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     }
 
     onClone = (index: number) => () => {
-        const newValue = JSON.parse(JSON.stringify(this.state.value));
-        const cloned = JSON.parse(JSON.stringify(newValue[index]));
+        const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
+        const cloned: Record<string, any> = JSON.parse(JSON.stringify(newValue[index]));
         if (typeof this.props.schema.clone === 'string' && typeof cloned[this.props.schema.clone] === 'string') {
             let i = 1;
             let text = cloned[this.props.schema.clone];
@@ -716,7 +715,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
     onAdd = () => {
         const { schema } = this.props;
-        const newValue = JSON.parse(JSON.stringify(this.state.value));
+        const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         const newItem = schema.items?.reduce((accumulator: Record<string, any>, currentValue: ConfigItemTableIndexed) => {
             let defaultValue;
             if (currentValue.defaultFunc) {
@@ -781,7 +780,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     };
 
     onMoveUp(idx: number) {
-        const newValue = JSON.parse(JSON.stringify(this.state.value));
+        const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         const item = newValue[idx];
         newValue.splice(idx, 1);
         newValue.splice(idx - 1, 0, item);
@@ -791,7 +790,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     }
 
     onMoveDown(idx: number) {
-        const newValue = JSON.parse(JSON.stringify(this.state.value));
+        const newValue: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
         const item = newValue[idx];
         newValue.splice(idx, 1);
         newValue.splice(idx + 1, 0, item);
@@ -838,7 +837,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                     color="primary"
                     autoFocus
                     onClick={() => {
-                        const value = JSON.parse(JSON.stringify(this.state.value));
+                        const value: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
 
                         (this.state.showTypeOfImportDialog as Record<string, any>[])
                             .forEach((obj: Record<string, any>) => value.push(obj));
@@ -941,7 +940,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         const { schema } = this.props;
         let { visibleValue } = this.state;
 
-        if (!this.state.value) {
+        if (!this.state.value || !Array.isArray(this.state.value)) {
             return null;
         }
 

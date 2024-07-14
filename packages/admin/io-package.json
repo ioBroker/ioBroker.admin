@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.0.14": {
-        "en": "Allowed playing mp3 and video files in the file browser",
-        "de": "Erlaubt, mp3 und Videodateien im Dateibrowser zu spielen",
-        "ru": "Позволяет играть в mp3 и видео файлы в браузере файла",
-        "pt": "Permitiram reproduzir mp3 e arquivos de vídeo no navegador de arquivos",
-        "nl": "Toegestaan het afspelen van mp3 en videobestanden in de bestandsbrowser",
-        "fr": "Permet de lire des fichiers mp3 et vidéo dans le navigateur de fichiers",
-        "it": "Consentito di giocare mp3 e file video nel browser del file",
-        "es": "Permitido reproducir archivos mp3 y de vídeo en el navegador de archivos",
-        "pl": "Dozwolone odtwarzanie plików mp3 i wideo w przeglądarce plików",
-        "uk": "Дозволено відтворення mp3 та відео файлів у браузері файлів",
-        "zh-cn": "允许在文件浏览器中播放 mp3 和视频文件"
-      },
       "7.0.13": {
         "en": "Do not send `sendto` requests if control is hidden\nRead recommended versions from `iobroker/iobroker`",
         "de": "Senden Sie keine `sendto` Anfragen, wenn die Kontrolle versteckt ist\nEmpfohlene Versionen von `iobroker/iobroker `",
