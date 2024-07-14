@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.14 (2024-07-14)
 * (bluefox) Allowed playing mp3 and video files in the file browser
 
 ### 7.0.13 (2024-07-12)
@@ -106,9 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.0.9 (2024-07-02)
 * (bluefox) Improved the mobile object browser
-
-### 7.0.7 (2024-06-27)
-* (bluefox) Corrected call of getObjectView with null parameter
 
 ## License
 The MIT License (MIT)

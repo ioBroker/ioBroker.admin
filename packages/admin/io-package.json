@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.13",
+    "version": "7.0.14",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.14": {
+        "en": "Allowed playing mp3 and video files in the file browser",
+        "de": "Erlaubt, mp3 und Videodateien im Dateibrowser zu spielen",
+        "ru": "Позволяет играть в mp3 и видео файлы в браузере файла",
+        "pt": "Permitiram reproduzir mp3 e arquivos de vídeo no navegador de arquivos",
+        "nl": "Toegestaan het afspelen van mp3 en videobestanden in de bestandsbrowser",
+        "fr": "Permet de lire des fichiers mp3 et vidéo dans le navigateur de fichiers",
+        "it": "Consentito di giocare mp3 e file video nel browser del file",
+        "es": "Permitido reproducir archivos mp3 y de vídeo en el navegador de archivos",
+        "pl": "Dozwolone odtwarzanie plików mp3 i wideo w przeglądarce plików",
+        "uk": "Дозволено відтворення mp3 та відео файлів у браузері файлів",
+        "zh-cn": "允许在文件浏览器中播放 mp3 和视频文件"
+      },
       "7.0.13": {
         "en": "Do not send `sendto` requests if control is hidden\nRead recommended versions from `iobroker/iobroker`",
         "de": "Senden Sie keine `sendto` Anfragen, wenn die Kontrolle versteckt ist\nEmpfohlene Versionen von `iobroker/iobroker `",
@@ -95,19 +108,6 @@
         "pl": "Poprawione wywołanie getObject Widok z parametrem null",
         "uk": "Виправлений виклик getObject Перегляд з параметром null",
         "zh-cn": "已更正的调取对象 以无效参数查看"
-      },
-      "7.0.6": {
-        "en": "Login page was corrected\nIcons were corrected",
-        "de": "Login-Seite wurde korrigiert\nIcons wurden korrigiert",
-        "ru": "Страница входа была исправлена\nИконы были исправлены",
-        "pt": "A página de login foi corrigida\nÍcones foram corrigidos",
-        "nl": "Aanmeldpagina is gecorrigeerd\nPictogrammen zijn gecorrigeerd",
-        "fr": "La page de connexion a été corrigée\nLes icônes ont été corrigées",
-        "it": "La pagina di accesso è stata corretta\nLe icone sono state corrette",
-        "es": "La página de inicio fue corregida\nIcons were corrected",
-        "pl": "Strona logowania została poprawiona\nIkony zostały poprawione",
-        "uk": "Увімкнути сторінку\nІкони виправили",
-        "zh-cn": "登录页面已更正\n图标已更正"
       }
     },
     "desc": {
