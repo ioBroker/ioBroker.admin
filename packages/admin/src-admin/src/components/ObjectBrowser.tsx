@@ -2453,8 +2453,6 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private localStorage: Storage = (window as any)._localStorage as Storage || window.localStorage;
 
-    private lastSelectedItems: string[];
-
     private lastAppliedFilter: string | null = null;
 
     private readonly tableRef: React.RefObject<HTMLDivElement>;
@@ -2463,7 +2461,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
     private pausedSubscribes: boolean = false;
 
-    private selectedFound: boolean;
+    private selectFirst: string;
 
     private root: TreeItem | null = null;
 
@@ -2596,18 +2594,17 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     constructor(props: ObjectBrowserProps) {
         super(props);
 
-        const lastSelectedItems: string =
-            this.localStorage.getItem(`${props.dialogName || 'App'}.objectSelected`) || '[]';
-        try {
-            this.lastSelectedItems = JSON.parse(lastSelectedItems) as string[];
-            if (typeof this.lastSelectedItems !== 'object') {
-                this.lastSelectedItems = [this.lastSelectedItems];
+        const lastSelectedItemStr: string =
+            this.localStorage.getItem(`${props.dialogName || 'App'}.objectSelected`) || '';
+        if (lastSelectedItemStr.startsWith('[')) {
+            try {
+                const lastSelectedItems = JSON.parse(lastSelectedItemStr) as string[];
+                this.selectFirst = lastSelectedItems[0] || '';
+            } catch (e) {
+                // ignore
             }
-            // remove empty items
-            this.lastSelectedItems = this.lastSelectedItems.filter((id: string) => id);
-        } catch (e) {
-            // ignore
-            this.lastSelectedItems = [];
+        } else {
+            this.selectFirst = lastSelectedItemStr;
         }
 
         let expanded: string[];
@@ -2670,7 +2667,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
         selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
 
-        this.selectedFound = !selected.length && !this.lastSelectedItems.length;
+        this.selectFirst = selected.length && selected[0] ? selected[0] : this.selectFirst;
 
         const columnsStr = this.localStorage.getItem(`${props.dialogName || 'App'}.columns`);
         let columns: string[] | null;
@@ -3037,22 +3034,25 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      * @param isDouble is double click
      */
     private onAfterSelect(isDouble?: boolean) {
-        this.lastSelectedItems = [...this.state.selected];
-        if (this.state.selected?.length) {
+        if (this.state.selected?.length && this.state.selected[0]) {
             this.localStorage.setItem(
                 `${this.props.dialogName || 'App'}.objectSelected`,
-                JSON.stringify(this.lastSelectedItems),
+                this.state.selected[0],
             );
 
-            if (this.lastSelectedItems.length === 1 && this.objects[this.lastSelectedItems[0]]) {
+            // remove a task to select the pre-selected item if now we want to see another object
+            if (this.selectFirst && this.selectFirst !== this.state.selected[0]) {
+                this.selectFirst = '';
+            }
+
+            if (this.state.selected.length === 1 && this.objects[this.state.selected[0]]) {
                 const name =
-                    this.lastSelectedItems.length === 1
-                        ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.props.lang })
-                        : '';
-                this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
+                    Utils.getObjectName(this.objects, this.state.selected[0], null, { language: this.props.lang });
+                this.props.onSelect && this.props.onSelect(this.state.selected, name, isDouble);
             }
         } else {
             this.localStorage.removeItem(`${this.props.dialogName || 'App'}.objectSelected`);
+
             if (this.state.selected.length) {
                 this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
             } else {
@@ -7180,19 +7180,15 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             const scrollBarWidth = this.tableRef.current.offsetWidth - this.tableRef.current.clientWidth;
             if (this.state.scrollBarWidth !== scrollBarWidth) {
                 setTimeout(() => this.setState({ scrollBarWidth }), 100);
-            }
-            if (
-                !this.selectedFound &&
-                (this.state.selected?.[0] || this.lastSelectedItems?.[0])
-            ) {
-                this.scrollToItem(this.state.selected?.[0] || this.lastSelectedItems?.[0]);
-            } else if (!this.selectedFound && !this.state.selected?.length && !this.lastSelectedItems?.length) {
-                this.selectedFound = true;
+            } else if (this.selectFirst) {
+                this.scrollToItem(this.selectFirst);
             }
         }
     }
 
     scrollToItem(id: string): void {
+        this.selectFirst = '';
+
         const node = window.document.getElementById(id);
         node &&
             node.scrollIntoView({
@@ -7200,7 +7196,6 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 block: 'center',
                 inline: 'center',
             });
-        this.selectedFound = true;
     }
 
     private renderCustomDialog(): React.JSX.Element | null {
