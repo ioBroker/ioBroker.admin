@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
-* (bluefox) Allowed playing mp3 files in the file browser
+* (bluefox) Allowed playing mp3 and video files in the file browser
 
 ### 7.0.13 (2024-07-12)
 * (bluefox) Do not send `sendto` requests if control is hidden

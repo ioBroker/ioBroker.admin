@@ -8,7 +8,11 @@ import type { ConfigItemStaticDivider } from '#JC/types';
 import Utils from '#JC/Utils';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
-const styles: Record<string, any> = {
+const styles: {
+    fullWidth: (theme: IobTheme) => React.CSSProperties;
+    primary: (theme: IobTheme) => React.CSSProperties;
+    secondary: (theme: IobTheme) => React.CSSProperties;
+} = {
     fullWidth: (theme: IobTheme) => ({
         width: '100%',
         backgroundColor: theme.palette.mode === 'dark' ? '#FFF' : '#000',
@@ -27,16 +31,19 @@ interface ConfigInstanceSelectProps extends ConfigGenericProps {
 }
 
 class ConfigStaticDivider extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
-    renderItem(/* error: string, disabled: boolean , defaultValue */) {
+    renderItem() {
         return <Box
             component="hr"
             sx={Utils.getStyle(
                 this.props.theme,
                 styles.fullWidth,
-                this.props.schema.color === 'primary' ? styles.primary : (this.props.schema.color === 'secondary' && styles.secondary),
+                this.props.schema.color === 'primary' ?
+                    styles.primary :
+                    (this.props.schema.color === 'secondary' ? styles.secondary :
+                        { backgroundColor: this.props.schema.color || (this.props.themeType === 'dark' ? '#333' : '#ddd') }),
                 {
-                    height: this.props.schema.color ? this.props.schema.height || 2 : this.props.schema.height || 1,
-                    backgroundColor: this.props.schema.color !== 'primary' && this.props.schema.color !== 'secondary' && this.props.schema.color ? this.props.schema.color : undefined,
+                    height: this.props.schema.color ?
+                        this.props.schema.height || 2 : this.props.schema.height || 1,
                 },
             )}
         />;

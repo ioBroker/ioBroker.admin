@@ -23,6 +23,12 @@ export default defineConfig(({ mode }) => {
                     '@iobroker/adapter-react-v5': {
                         singleton: true,
                     },
+                    '@iobroker/json-config': {
+                        singleton: true,
+                    },
+                    '@iobroker/dm-gui-components': {
+                        singleton: true,
+                    },
                     react: {
                         singleton: true,
                         // requiredVersion: pkg.dependencies.react,
@@ -35,7 +41,15 @@ export default defineConfig(({ mode }) => {
                         singleton: true,
                         // requiredVersion: pkg.dependencies['@mui/material'],
                     },
-                    '@mui/styles': {
+                    '@mui/icons-material': {
+                        singleton: true,
+                        // requiredVersion: pkg.dependencies['@mui/material'],
+                    },
+                    '@mui/material/styles': {
+                        singleton: true,
+                        // requiredVersion: pkg.dependencies['@mui/material'],
+                    },
+                    '@mui/material/colors': {
                         singleton: true,
                         // requiredVersion: pkg.dependencies['@mui/material'],
                     },
