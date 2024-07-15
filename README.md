@@ -90,7 +90,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
-* (bluefox) Correcting CRON description
+* (bluefox) Corrected the CRON description
+* (bluefox) Corrected the Device Manager Component
 
 ### 7.0.16 (2024-07-15)
 * (bluefox) Allowed playing mp3 and video files in the file browser

@@ -182,7 +182,7 @@ interface JsonConfigProps {
     instance: number;
     isFloatComma: boolean;
     dateFormat: string;
-    secret: string;
+    secret?: string;
     socket: AdminConnection;
     theme: IobTheme;
     themeName: ThemeName;
@@ -213,7 +213,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
     private fileLangSubscribed = '';
 
-    private secret = '';
+    private secret: string;
 
     constructor(props: JsonConfigProps) {
         super(props);
@@ -226,6 +226,8 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             saveConfigDialog: false,
             hash: '_',
         };
+
+        this.secret = props.secret || '';
 
         this.getInstanceObject()
             .then(obj => this.getConfigFile()
@@ -357,9 +359,11 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             const obj = await this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`);
             // decode all native attributes listed in obj.encryptedNative
             if (Array.isArray(obj.encryptedNative)) {
-                const systemConfig = await this.props.socket.getSystemConfig();
-                await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
-                this.secret = systemConfig.native.secret;
+                if (!this.secret) {
+                    const systemConfig = await this.props.socket.getSystemConfig();
+                    await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
+                    this.secret = systemConfig.native.secret;
+                }
                 obj.encryptedNative?.forEach(attr => {
                     if (obj.native[attr]) {
                         obj.native[attr] = decrypt(this.secret, obj.native[attr]);

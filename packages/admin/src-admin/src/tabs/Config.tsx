@@ -37,10 +37,15 @@ import {
 import {
     Router,
     Icon,
-    Confirm as ConfirmDialog, type IobTheme, type AdminConnection, type ThemeName, type ThemeType, type Translate,
+    Confirm as ConfirmDialog,
+    type IobTheme,
+    type AdminConnection,
+    type ThemeName,
+    type ThemeType,
+    type Translate,
 } from '@iobroker/adapter-react-v5';
 
-import { JsonConfig } from '@iobroker/json-config';
+import { type DeviceManagerPropsProps, JsonConfig } from '@iobroker/json-config';
 import DeviceManager from '@iobroker/dm-gui-components';
 
 import AdminUtils from '../AdminUtils';
@@ -414,8 +419,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                 isFloatComma={this.props.isFloatComma}
                 configStored={this.props.configStored}
                 t={this.props.t}
-                // @ts-expect-error fix later
-                DeviceManager={DeviceManager}
+                DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
             />;
         }
         const src = `adapter/${this.props.adapter}/` +

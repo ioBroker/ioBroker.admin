@@ -153,6 +153,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 schema={items[this.state.tab]}
                 table={this.props.table}
                 theme={this.props.theme}
+                DeviceManager={this.props.DeviceManager}
                 withIcons={withIcons}
             />
         </div>;

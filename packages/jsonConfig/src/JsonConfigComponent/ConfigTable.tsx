@@ -357,6 +357,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
             originalData={this.props.originalData}
             customs={this.props.customs}
             theme={this.props.theme}
+            DeviceManager={this.props.DeviceManager}
             onChange={(attr: string, valueChange: any) => {
                 const newObj: Record<string, any>[] = JSON.parse(JSON.stringify(this.state.value));
                 newObj[idx][attr] = valueChange;

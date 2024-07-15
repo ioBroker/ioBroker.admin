@@ -129,6 +129,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
             }}
             onError={(error, attr) => this.onError(error, attr)}
             table={this.props.table}
+            DeviceManager={this.props.DeviceManager}
             theme={this.props.theme}
         />;
     }

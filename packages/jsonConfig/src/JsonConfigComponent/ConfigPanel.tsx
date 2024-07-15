@@ -1,4 +1,4 @@
-import React, { type JSXElementConstructor } from 'react';
+import React from 'react';
 
 import {
     Grid,
@@ -12,6 +12,7 @@ import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 import { type IobTheme } from '@iobroker/adapter-react-v5';
 import type { ConfigItemPanel } from '#JC/types';
+import Utils from '#JC/Utils';
 
 import ConfigGeneric, { type ConfigGenericState, type ConfigGenericProps } from './ConfigGeneric';
 // eslint-disable-next-line import/no-cycle
@@ -65,7 +66,6 @@ import ConfigTimePicker from './ConfigTimePicker';
 import ConfigTopic from './ConfigTopic';
 import ConfigUUID from './ConfigUUID';
 import ConfigUser from './ConfigUser';
-import Utils from "#JC/Utils";
 
 const components: Record<string, typeof ConfigGeneric<any, any>> = {
     accordion: ConfigAccordion,
@@ -231,6 +231,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
                 schema={items[attr]}
+                DeviceManager={this.props.DeviceManager}
                 attr={attr}
                 table={this.props.table}
             />;
