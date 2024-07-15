@@ -38,9 +38,9 @@ declare module '@mui/material/Button' {
 }
 
 export type CommunicationProps = {
-    /* socket object */
+    /** Socket connection */
     socket: Connection;
-    /* Instance to communicate with device-manager backend, like `adapterName.X` */
+    /** Instance to communicate with device-manager backend, like `adapterName.X` */
     selectedInstance: string; // adapterName.X
     registerHandler?: (handler: null | ((command: string) => void)) => void;
     themeName: ThemeName;
@@ -273,8 +273,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     console.log('Response content', response.result);
                     if (response.result.refresh) {
                         if (response.result.refresh === true) {
-                            this.loadData();
                             console.log('Refreshing all');
+                            this.loadData();
                         } else if (response.result.refresh === 'instance') {
                             console.log(`Refreshing instance infos: ${this.props.selectedInstance}`);
                         } else if (response.result.refresh === 'device') {
