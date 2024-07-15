@@ -280,11 +280,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         } else if (response.result.refresh === 'device') {
                             if (!refresh) {
                                 console.log('No refresh function provided to refresh "device"');
-                                break;
+                            } else {
+                                console.log(`Refreshing device infos: ${this.props.selectedInstance}`);
+                                refresh();
                             }
-
-                            console.log(`Refreshing device infos: ${this.props.selectedInstance}`);
-                            refresh();
                         } else {
                             console.log('Not refreshing anything');
                         }
