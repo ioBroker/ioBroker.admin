@@ -185,6 +185,8 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 return;
             }
 
+            console.log('deviceHandler ')
+            console.log(refresh)
             return this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
         }
 
@@ -217,7 +219,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                             message: {
                                 message: response.message,
                                 handleClose: () => this.setState({ message: null }, () =>
-                                    this.sendActionToInstance('dm:actionProgress', { origin: response.origin })),
+                                    this.sendActionToInstance('dm:actionProgress', { origin: response.origin }, refresh)),
                             },
                         });
                     }
@@ -233,7 +235,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     this.sendActionToInstance('dm:actionProgress', {
                                         origin: response.origin,
                                         confirm,
-                                    })),
+                                    }, refresh)),
                             },
                         });
                     }
@@ -250,7 +252,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     this.sendActionToInstance('dm:actionProgress', {
                                         origin: response.origin,
                                         data,
-                                    });
+                                    }, refresh);
                                 }),
                             },
                         });
@@ -266,7 +268,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                             this.setState({ progress: response.progress });
                         }
                     }
-                    this.sendActionToInstance('dm:actionProgress', { origin: response.origin });
+                    this.sendActionToInstance('dm:actionProgress', { origin: response.origin }, refresh);
                     break;
 
                 case 'result':
