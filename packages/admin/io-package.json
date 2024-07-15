@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.16",
+    "version": "7.0.17",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.17": {
+        "en": "Corrected the CRON description\nCorrected the Device Manager Component",
+        "de": "Korrektur der CRON-Beschreibung\nDie Gerätemanager-Komponente wurde korrigiert",
+        "ru": "Исправлено описание Крон\nИсправлен компонент диспетчера устройств",
+        "pt": "Corrigido a descrição CRON\nCorrected the Device Manager Component",
+        "nl": "Gewijzigde CRON-beschrijving\nDe component Apparaatbeheer corrigeren",
+        "fr": "Correction de la description du CRON\nCorrection du composant Gestionnaire de périphériques",
+        "it": "Corretto la descrizione CRON\nCorretto il componente Gestione dispositivi",
+        "es": "Corregido la descripción CRON\nCorregido el componente del administrador de dispositivos",
+        "pl": "Poprawiono opis CRON\nNaprawiono element menedżera urządzeń",
+        "uk": "Виправлено опис CRON\nВиправлено компонент диспетчера пристроїв",
+        "zh-cn": "更正了CRON描述\n纠正了设备管理器组件"
+      },
       "7.0.16": {
         "en": "Allowed playing mp3 and video files in the file browser",
         "de": "Erlaubt, mp3 und Videodateien im Dateibrowser zu spielen",
@@ -95,19 +108,6 @@
         "pl": "Ulepszenie mobilnej przeglądarki obiektów",
         "uk": "Покращення веб-браузера",
         "zh-cn": "改进移动对象浏览器"
-      },
-      "7.0.7": {
-        "en": "Corrected call of getObjectView with null parameter",
-        "de": "Korrigierter Anruf von getObject Ansicht mit Null-Parameter",
-        "ru": "Исправленный звонок getObject Просмотр с нулевым параметром",
-        "pt": "Chamada correta de getObject Ver com parâmetro nulo",
-        "nl": "Gecorrigeerde aanroep van getObject Beeld met nul parameter",
-        "fr": "Appel corrigé de getObject Affichage avec paramètre null",
-        "it": "Chiamata corretta di getObject Visualizza con parametro null",
-        "es": "Llamada corregida de getObject Ver con parámetro null",
-        "pl": "Poprawione wywołanie getObject Widok z parametrem null",
-        "uk": "Виправлений виклик getObject Перегляд з параметром null",
-        "zh-cn": "已更正的调取对象 以无效参数查看"
       }
     },
     "desc": {

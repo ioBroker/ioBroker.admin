@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.17 (2024-07-15)
 * (bluefox) Corrected the CRON description
 * (bluefox) Corrected the Device Manager Component
 
@@ -107,9 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (foxriver76) host tab details are now indicated by a classic chevron instead of blink indicator
 * (foxriver76) show js-controller changelog more prominent
 * (bluefox) correcting the update button
-
-### 7.0.9 (2024-07-02)
-* (bluefox) Improved the mobile object browser
 
 ## License
 The MIT License (MIT)
