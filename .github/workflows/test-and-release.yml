@@ -141,10 +141,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js 18.x
+      - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
 
       - name: Extract the version and commit body from the tag
         id: extract_release
@@ -170,6 +170,7 @@ jobs:
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
+          git checkout -- package-lock.json
           npx lerna publish from-package --yes
 
       - name: Create Github Release
