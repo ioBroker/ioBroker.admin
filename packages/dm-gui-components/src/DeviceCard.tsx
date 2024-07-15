@@ -452,7 +452,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     /> : null}
                     <Icon src={this.state.icon} style={imgStyle} />
                 </div>
-                <div style={titleStyle}>{this.props.title}</div>
+                <div style={titleStyle}>{this.state.details?.data.name || this.props.title}</div>
                 {this.props.device.hasDetails ? <Fab
                     disabled={!this.props.alive}
                     size="small"

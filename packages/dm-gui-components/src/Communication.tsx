@@ -38,9 +38,9 @@ declare module '@mui/material/Button' {
 }
 
 export type CommunicationProps = {
-    /* socket object */
+    /** Socket connection */
     socket: Connection;
-    /* Instance to communicate with device-manager backend, like `adapterName.X` */
+    /** Instance to communicate with device-manager backend, like `adapterName.X` */
     selectedInstance: string; // adapterName.X
     registerHandler?: (handler: null | ((command: string) => void)) => void;
     themeName: ThemeName;
@@ -217,7 +217,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                             message: {
                                 message: response.message,
                                 handleClose: () => this.setState({ message: null }, () =>
-                                    this.sendActionToInstance('dm:actionProgress', { origin: response.origin })),
+                                    this.sendActionToInstance('dm:actionProgress', { origin: response.origin }, refresh)),
                             },
                         });
                     }
@@ -233,7 +233,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     this.sendActionToInstance('dm:actionProgress', {
                                         origin: response.origin,
                                         confirm,
-                                    })),
+                                    }, refresh)),
                             },
                         });
                     }
@@ -250,7 +250,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                     this.sendActionToInstance('dm:actionProgress', {
                                         origin: response.origin,
                                         data,
-                                    });
+                                    }, refresh);
                                 }),
                             },
                         });
@@ -266,19 +266,21 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                             this.setState({ progress: response.progress });
                         }
                     }
-                    this.sendActionToInstance('dm:actionProgress', { origin: response.origin });
+                    this.sendActionToInstance('dm:actionProgress', { origin: response.origin }, refresh);
                     break;
 
                 case 'result':
                     console.log('Response content', response.result);
                     if (response.result.refresh) {
                         if (response.result.refresh === true) {
-                            this.loadData();
                             console.log('Refreshing all');
+                            this.loadData();
                         } else if (response.result.refresh === 'instance') {
                             console.log(`Refreshing instance infos: ${this.props.selectedInstance}`);
                         } else if (response.result.refresh === 'device') {
-                            if (refresh) {
+                            if (!refresh) {
+                                console.log('No refresh function provided to refresh "device"');
+                            } else {
                                 console.log(`Refreshing device infos: ${this.props.selectedInstance}`);
                                 refresh();
                             }

@@ -152,7 +152,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
     /**
     * Load devices
     */
-    loadData(): void {
+    override loadData(): void {
         this.setState({ loading: true }, async () => {
             console.log(`Loading devices for ${this.props.selectedInstance}...`);
             let devices;
