@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.16 (2024-07-15)
 * (bluefox) Allowed playing mp3 and video files in the file browser
 
 ### 7.0.13 (2024-07-12)
