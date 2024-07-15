@@ -185,8 +185,6 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 return;
             }
 
-            console.log('deviceHandler ')
-            console.log(refresh)
             return this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
         }
 
