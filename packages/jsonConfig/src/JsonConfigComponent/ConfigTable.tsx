@@ -569,10 +569,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         value.forEach(row => {
             const line: string[] = [];
             schema.items.forEach((it: ConfigItemTableIndexed) => {
-                if (row[it.attr].includes(';')) {
+                if (row[it.attr]?.includes(';')) {
                     line.push(`"${row[it.attr]}"`);
                 } else {
-                    line.push(row[it.attr]);
+                    line.push(row[it.attr] === undefined || row[it.attr] === null ? '' : row[it.attr]);
                 }
             });
             lines.push(line.join(';'));

@@ -14,7 +14,7 @@
     "@alcalzone/release-script-plugin-iobroker": "^3.7.2",
     "@alcalzone/release-script-plugin-lerna": "^3.7.0",
     "@alcalzone/release-script-plugin-license": "^3.7.0",
-    "@babel/core": "^7.24.8",
+    "@babel/core": "^7.24.9",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-decorators": "^7.24.7",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -29,7 +29,7 @@
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@fnando/sparkline": "^0.3.10",
     "@honkhonk/vite-plugin-svgr": "^1.1.0",
-    "@iobroker/adapter-react-v5": "^6.1.0",
+    "@iobroker/adapter-react-v5": "^6.1.1",
     "@iobroker/admin-component-easy-access": "^1.0.1",
     "@iobroker/dm-utils": "^0.2.2",
     "@iobroker/js-controller-common-db": "^6.0.8",
@@ -37,9 +37,9 @@
     "@iobroker/socket-client": "^2.4.18",
     "@iobroker/testing": "^4.1.3",
     "@iobroker/types": "6.0.8",
-    "@mui/icons-material": "^5.16.1",
+    "@mui/icons-material": "^5.16.2",
     "@mui/lab": "5.0.0-alpha.172",
-    "@mui/material": "^5.16.1",
+    "@mui/material": "^5.16.2",
     "@mui/x-data-grid": "^7.10.0",
     "@mui/x-date-pickers": "^7.10.0",
     "@originjs/vite-plugin-commonjs": "^1.0.3",
@@ -55,7 +55,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/express-fileupload": "^1.5.0",
     "@types/leaflet": "^1.9.12",
-    "@types/lodash": "^4.17.6",
+    "@types/lodash": "^4.17.7",
     "@types/mocha": "^10.0.7",
     "@types/node": "^20.14.10",
     "@types/passport": "^1.0.16",
@@ -63,8 +63,8 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-color": "^3.0.12",
-    "@typescript-eslint/eslint-plugin": "^7.16.0",
-    "@typescript-eslint/parser": "^7.16.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.1",
+    "@typescript-eslint/parser": "^7.16.1",
     "babel": "^6.23.0",
     "babel-plugin-inline-json-import": "^0.3.2",
     "buffer": "^6.0.3",
@@ -137,10 +137,10 @@
     "typescript": "^5.5.3"
   },
   "optionalDependencies": {
-    "@nx/nx-darwin-arm64": "19.4.2",
-    "@nx/nx-darwin-x64": "19.4.2",
-    "@nx/nx-linux-x64-gnu": "19.4.2",
-    "@nx/nx-win32-x64-msvc": "19.4.2"
+    "@nx/nx-darwin-arm64": "19.4.3",
+    "@nx/nx-darwin-x64": "19.4.3",
+    "@nx/nx-linux-x64-gnu": "19.4.3",
+    "@nx/nx-win32-x64-msvc": "19.4.3"
   },
   "overrides": {
     "react-sortable-hoc": {
@@ -151,22 +151,22 @@
       "string-width": "4.2.3",
       "strip-ansi": "6.0.1",
       "wrap-ansi": "7.0.0",
-      "@nx/nx-darwin-arm64": "19.4.2",
-      "@nx/nx-darwin-x64": "19.4.2",
-      "@nx/nx-linux-x64-gnu": "19.4.2",
-      "@nx/nx-win32-x64-msvc": "19.4.2"
+      "@nx/nx-darwin-arm64": "19.4.3",
+      "@nx/nx-darwin-x64": "19.4.3",
+      "@nx/nx-linux-x64-gnu": "19.4.3",
+      "@nx/nx-win32-x64-msvc": "19.4.3"
     }
   },
   "scripts": {
     "build": "npm run clean && lerna run build",
     "clean": "lerna run clean",
-    "install-monorepo": "npm i -f && npm i -w packages/dm-gui-components -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f",
+    "install-monorepo": "npm i -f && npm i -w packages/dm-gui-components -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f && npm i -w packages/admin/src-admin -f",
     "npm": "npm run install-monorepo",
     "start": "npm run start -w packages/admin",
     "release": "release-script",
     "release-patch": "release-script patch --yes --no-update-lockfile --publishAll",
     "release-minor": "release-script minor --yes --no-update-lockfile --publishAll",
     "release-major": "release-script major --yes --no-update-lockfile --publishAll",
-    "update-packages": "ncu --upgrade && cd packages/admin && ncu --upgrade && cd ../dm-gui-components && ncu --upgrade && cd ../jsonConfig && ncu --upgrade && cd ../.."
+    "update-packages": "ncu --upgrade && cd packages/admin && ncu --upgrade && cd src-admin && ncu --upgrade && cd ../../dm-gui-components && ncu --upgrade && cd ../jsonConfig && ncu --upgrade && cd ../.."
   }
 }
