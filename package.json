@@ -160,7 +160,7 @@
   "scripts": {
     "build": "npm run clean && lerna run build",
     "clean": "lerna run clean",
-    "install-monorepo": "npm i -f && npm i -w packages/dm-gui-components -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f && npm i -w packages/admin/src-admin -f",
+    "install-monorepo": "npm i -f && npm i -w packages/dm-gui-components -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f",
     "npm": "npm run install-monorepo",
     "start": "npm run start -w packages/admin",
     "release": "release-script",

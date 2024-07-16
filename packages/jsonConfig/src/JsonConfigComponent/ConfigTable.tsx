@@ -115,7 +115,7 @@ const styles: Record<string, React.CSSProperties> = {
     uploadDiv: {
         position: 'relative',
         width: '100%',
-        height: 300,
+        minHeight: 300,
         opacity: 0.9,
         marginTop: 30,
         cursor: 'pointer',
@@ -882,6 +882,11 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         return <Dialog
             open={!0}
             onClose={() => this.setState({ showImportDialog: false })}
+            sx={{
+                '& .MuiDialog-paper': {
+                    minHeight: 500,
+                },
+            }}
             maxWidth="md"
             fullWidth
         >
