@@ -20,6 +20,9 @@ import {
     Fluorescent,
     WbIncandescent,
     Settings,
+    QuestionMark,
+    Group,
+    Person,
 } from '@mui/icons-material';
 
 import {
@@ -78,13 +81,19 @@ function getFaIcon(icon: string, color: string): React.JSX.Element | null {
     if (iconStyle.includes('fa-pause')) {
         return <Pause style={{ color }} />;
     }
-    if (iconStyle.includes('forward') || iconStyle.includes('fa-forward')) {
+    if (iconStyle.includes('forward')) {
         return <FastForward style={{ color }} />;
     }
-    if (iconStyle.includes('rewind') || iconStyle.includes('fa-rewind')) {
+    if (iconStyle.includes('rewind')) {
         return <FastRewind style={{ color }} />;
     }
-    return null;
+    if (iconStyle.includes('users') || iconStyle.includes('group')) {
+        return <Group style={{ color }} />;
+    }
+     if (iconStyle.includes('user')) {
+        return <Person style={{ color }} />;
+    }
+    return <QuestionMark style={{ color }} />;
 }
 
 function getIconByName(name: string, color: string): React.JSX.Element | null {
@@ -124,7 +133,7 @@ function getIconByName(name: string, color: string): React.JSX.Element | null {
     if (name === 'forward' || name === 'next') {
         return <FastForward style={{ color }} />;
     }
-    if (name === 'rewind' || name === 'previous') {
+        if (name === 'rewind' || name === 'previous') {
         return <FastRewind style={{ color }} />;
     }
     if (name === 'lamp' || name === 'light') {
@@ -142,7 +151,13 @@ function getIconByName(name: string, color: string): React.JSX.Element | null {
     if (name === 'settings') {
         return <Settings style={{ color }} />;
     }
-    return null;
+    if (name === 'users' || name === 'group') {
+        return <Group style={{ color }} />;
+    }
+    if (name === 'user') {
+        return <Person style={{ color }} />;
+    }
+    return <QuestionMark style={{ color }} />;
 }
 
 export function renderControlIcon(
