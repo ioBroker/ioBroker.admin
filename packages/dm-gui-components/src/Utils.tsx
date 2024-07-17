@@ -20,6 +20,7 @@ import {
     Fluorescent,
     WbIncandescent,
     Settings,
+    QrCode
 } from '@mui/icons-material';
 
 import {
@@ -41,6 +42,9 @@ function getFaIcon(icon: string, color: string): React.JSX.Element | null {
     }
     if (iconStyle.includes('fa-plus')) {
         return <Add style={{ color }} />;
+    }
+    if (iconStyle.includes('fa-qrcode')) {
+        return <QrCode style={{ color }} />;
     }
     if (iconStyle.includes('fa-wifi')) {
         return <Wifi style={{ color }} />;
