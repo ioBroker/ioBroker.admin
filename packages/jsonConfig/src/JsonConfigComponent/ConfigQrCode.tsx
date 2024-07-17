@@ -13,7 +13,7 @@ interface ConfigQrCodeProps extends ConfigGenericProps {
 class ConfigQrCode extends ConfigGeneric<ConfigQrCodeProps, ConfigGenericState> {
     renderItem() {
         return <FormControl variant="standard">
-            <QRCode value={this.props.schema.data} />
+            <QRCode value={this.props.schema.data} size={this.props.schema.size} fgColor={this.props.schema.fgColor} bgColor={this.props.schema.bgColor} level={this.props.schema.level} />
         </FormControl>;
     }
 }
