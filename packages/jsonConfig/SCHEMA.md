@@ -82,6 +82,9 @@ Possible types:
   - `step` - (default `(max - min) / 100`)
   - `unit` - Unit of slider
 
+- `qrCode` - show data in a QR Code (up from Admin 7)
+  - `data` - the data to be encoded in the QR Code
+
 - `ip` - bind address
   - `listenOnAllPorts` - add 0.0.0.0 to option
   - `onlyIp4` - show only IP4 addresses
