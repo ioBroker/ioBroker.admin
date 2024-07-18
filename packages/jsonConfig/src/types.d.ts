@@ -167,6 +167,20 @@ export interface ConfigItemNumber extends ConfigItem {
     readOnly?: boolean;
 }
 
+export interface ConfigItemQrCode extends ConfigItem {
+    type: 'qrCode';
+    /** Data to show in the QR code */
+    data: string;
+    /** Size of the QR code */
+    size?: number;
+    /** Foreground color */
+    fgColor?: string;
+    /** Background color */
+    bgColor?: string;
+    /** QR code level */
+    level?: 'L' | 'M' | 'Q' | 'H';
+}
+
 export interface ConfigItemPassword extends ConfigItem {
     type: 'password';
     /** repeat password must be compared with password */
@@ -655,4 +669,4 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigIt
     ConfigItemInterface | ConfigItemJsonEditor | ConfigItemLicense | ConfigItemPassword |
     ConfigItemSetState | ConfigItemStaticDivider | ConfigItemStaticHeader |
     ConfigItemStaticImage | ConfigItemStaticText | ConfigItemTopic |
-    ConfigItemObjectId;
+    ConfigItemObjectId | ConfigItemQrCode;
