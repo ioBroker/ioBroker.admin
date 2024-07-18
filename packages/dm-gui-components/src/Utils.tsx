@@ -43,7 +43,7 @@ function getFaIcon(icon: string, color: string): React.JSX.Element | null {
     if (iconStyle.includes('fa-plus')) {
         return <Add style={{ color }} />;
     }
-    if (iconStyle.includes('fa-qrcode')) {
+    if (iconStyle.includes('fa-qrcode') || iconStyle === 'qrcode') {
         return <QrCode style={{ color }} />;
     }
     if (iconStyle.includes('fa-wifi')) {
@@ -82,10 +82,10 @@ function getFaIcon(icon: string, color: string): React.JSX.Element | null {
     if (iconStyle.includes('fa-pause')) {
         return <Pause style={{ color }} />;
     }
-    if (iconStyle.includes('forward') || iconStyle.includes('fa-forward')) {
+    if (iconStyle.includes('forward')) {
         return <FastForward style={{ color }} />;
     }
-    if (iconStyle.includes('rewind') || iconStyle.includes('fa-rewind')) {
+    if (iconStyle.includes('rewind')) {
         return <FastRewind style={{ color }} />;
     }
     return null;
