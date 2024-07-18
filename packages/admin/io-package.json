@@ -199,7 +199,15 @@
     "localLinks": {
       "_default": {
         "link": "%protocol%://%bind%:%port%",
-        "pro": true
+        "name": {
+          "en": "Admin",
+          "ru": "Админ"
+        },
+        "pro": "admin/index.html",
+        "icon": "admin/img/admin.png",
+        "color": "pink",
+        "order": 5,
+        "intro": true
       }
     },
     "plugins": {

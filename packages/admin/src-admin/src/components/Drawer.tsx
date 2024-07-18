@@ -203,8 +203,6 @@ interface DrawerProps {
     logsWorker: LogsWorker;
 
     hostname: string;
-    protocol: string;
-    port: number;
     adminInstance: string;
     installed: Record<string, { version: string; ignoreVersion?: string }>;
     hosts: ioBroker.HostObject[];
@@ -618,6 +616,9 @@ v
             currentTab, state, handleNavigation,
         } = this.props;
 
+        const hosts: Record<string, ioBroker.HostObject> = {};
+        this.props.hosts.forEach(host => hosts[host._id] = host);
+
         return tabs.map((tab, idx) => {
             if (!this.props.editMenuList && !tab.visible) {
                 return null;
@@ -651,7 +652,14 @@ v
                     compact={!this.isSwipeable() && state !== STATES.opened}
                     onClick={e => {
                         if (e.ctrlKey || e.shiftKey) {
-                            getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts, this.props.adminInstance, this.props.themeType)
+                            getHref(
+                                this.props.instancesWorker,
+                                tab.name,
+                                this.props.hostname,
+                                hosts,
+                                this.props.adminInstance,
+                                this.props.themeType,
+                            )
                                 .then(href => {
                                     if (href) {
                                         console.log(href);

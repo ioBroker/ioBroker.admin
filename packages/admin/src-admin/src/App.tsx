@@ -432,9 +432,7 @@ interface AppState {
     noNotifications: number;
     configNotSaved: boolean;
     login: boolean;
-    protocol: 'http:' | 'https:';
     hostname: string;
-    port: number;
     hasGlobalError?: null | Error;
     guiSettings?: boolean;
     strictEasyMode?: boolean;
@@ -592,11 +590,7 @@ class App extends Router<AppProps, AppState> {
                 ready: false,
                 lang: 'en',
 
-                // Finished
-                protocol: App.getProtocol(),
                 hostname: window.location.hostname,
-                port: App.getPort(),
-                //---------
 
                 expertMode: false,
 
@@ -1707,8 +1701,6 @@ class App extends Router<AppProps, AppState> {
 
     /**
      * Get the theme type
-     * @param {Theme} theme Theme
-     * @returns {string} Theme type
      */
     private static getThemeType(theme: IobTheme): ThemeType {
         return theme.palette.mode;
@@ -1794,9 +1786,7 @@ class App extends Router<AppProps, AppState> {
                         socket={this.socket}
                         instancesWorker={this.instancesWorker}
                         lang={I18n.getLanguage()}
-                        protocol={this.state.protocol}
                         hostname={this.state.hostname}
-                        port={this.state.port}
                         adminInstance={this.adminInstance}
                         repository={this.state.repository}
                         hosts={this.state.hosts}
@@ -1826,9 +1816,7 @@ class App extends Router<AppProps, AppState> {
                 return <Suspense fallback={<Connecting />}>
                     <Intro
                         key="intro"
-                        protocol={this.state.protocol}
                         hostname={this.state.hostname}
-                        port={this.state.port}
                         adminInstance={this.adminInstance}
                         instancesWorker={this.instancesWorker}
                         hostsWorker={this.hostsWorker}
@@ -1944,9 +1932,7 @@ class App extends Router<AppProps, AppState> {
                     <CustomTab
                         key={this.state.currentTab.tab}
                         t={I18n.t}
-                        protocol={this.state.protocol}
                         hostname={this.state.hostname}
-                        port={this.state.port}
                         adminInstance={this.adminInstance}
                         hosts={this.state.hosts}
                         instancesWorker={this.instancesWorker}
@@ -2868,9 +2854,7 @@ class App extends Router<AppProps, AppState> {
                             ready={this.state.ready}
                             themeName={this.state.themeName}
                             themeType={this.state.themeType}
-                            protocol={this.state.protocol}
                             hostname={this.state.hostname}
-                            port={this.state.port}
                             adminInstance={this.adminInstance}
                             hosts={this.state.hosts}
                             repository={this.state.repository}
