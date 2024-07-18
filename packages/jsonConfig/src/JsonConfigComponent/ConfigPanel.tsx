@@ -66,6 +66,7 @@ import ConfigTimePicker from './ConfigTimePicker';
 import ConfigTopic from './ConfigTopic';
 import ConfigUUID from './ConfigUUID';
 import ConfigUser from './ConfigUser';
+import ConfigQrCode from './ConfigQrCode';
 
 const components: Record<string, typeof ConfigGeneric<any, any>> = {
     accordion: ConfigAccordion,
@@ -103,6 +104,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     password: ConfigPassword,
     pattern: ConfigPattern,
     port: ConfigPort,
+    qrCode: ConfigQrCode,
     room: ConfigRoom,
     select: ConfigSelect,
     selectSendTo: ConfigSelectSendTo,

@@ -91,6 +91,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (bluefox) Corrected export from JSON table
+* (foxriver76) added `qrCode` component to JSON config
 
 ### 7.0.17 (2024-07-15)
 * (bluefox) Corrected the CRON description
