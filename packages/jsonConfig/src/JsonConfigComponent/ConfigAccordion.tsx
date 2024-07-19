@@ -19,7 +19,10 @@ import {
 
 import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemAccordion, ConfigItemIndexed, ConfigItemPanel } from '#JC/types';
+import type {
+    ConfigItemAccordion, ConfigItemAny,
+    ConfigItemIndexed, ConfigItemPanel,
+} from '#JC/types';
 import Utils from '#JC/Utils';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
@@ -94,7 +97,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
             items: schema.items.reduce((accumulator: Record<string, ConfigItemIndexed>, currentValue: ConfigItemIndexed) => {
                 accumulator[currentValue.attr] = currentValue;
                 return accumulator;
-            }, {}),
+            }, {}) as Record<string, ConfigItemAny>,
             style: { marginLeft: -8, marginTop: 10, marginBottom: 10 },
         };
 

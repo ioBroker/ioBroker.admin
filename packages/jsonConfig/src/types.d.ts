@@ -7,14 +7,16 @@ declare module '@mui/material/Button' {
     }
 }
 
+type CustomCSSProperties = React.CSSProperties;
+
 export type ConfigItemType = 'tabs' | 'panel' | 'text' | 'number' | 'color' | 'checkbox' | 'slider' | 'ip' | 'user' | 'room' | 'func' | 'select' |
     'autocomplete' | 'image' | 'objectId' | 'password' | 'instance' | 'chips' | 'alive' | 'pattern' | 'sendto' | 'setState' |
     'staticText' | 'staticLink' | 'staticImage' | 'table' | 'accordion' | 'jsonEditor' | 'language' | 'certificate' |
     'certificates' | 'certCollection' | 'custom' | 'datePicker' | 'timePicker' | 'divider' | 'header' | 'cron' |
     'fileSelector' | 'file' | 'imageSendTo' | 'selectSendTo' | 'autocompleteSendTo' | 'textSendTo' | 'coordinates' | 'interface' | 'license' |
-    'checkLicense' | 'uuid' | 'port' | 'deviceManager' | 'topic';
+    'checkLicense' | 'uuid' | 'port' | 'deviceManager' | 'topic' | 'qrCode';
 
-type ConfigIconType = 'auth' | 'send' | 'web' | 'warning' | 'error' | 'info' | 'search' | 'book' | 'help' | 'upload' | string;
+type ConfigIconType = 'edit' | 'auth' | 'send' | 'web' | 'warning' | 'error' | 'info' | 'search' | 'book' | 'help' | 'upload' | 'user' | 'group' | 'delete' | 'refresh' | 'add' | 'unpair' | 'pair' | string;
 
 export interface ConfigItemConfirmData {
     condition: string;
@@ -41,8 +43,8 @@ export interface ConfigItem {
     disabled?: string | boolean;
     help?: ioBroker.StringOrTranslated;
     helpLink?: string;
-    style?: React.CSSProperties;
-    darkStyle?: React.CSSProperties;
+    style?: CustomCSSProperties;
+    darkStyle?: CustomCSSProperties;
     validator?: string;
     validatorErrorText?: string;
     validatorNoSaveOnError?: boolean;
@@ -111,10 +113,11 @@ export interface ConfigItemSelectOption {
 export interface ConfigItemPanel extends ConfigItem {
     type: 'panel' | never;
     label?: ioBroker.StringOrTranslated;
-    items: Record<string, ConfigItem>;
+    // eslint-disable-next-line no-use-before-define
+    items: Record<string, ConfigItemAny>;
     collapsable?: boolean;
     color?: 'primary' | 'secondary';
-    innerStyle?: React.CSSProperties;
+    innerStyle?: CustomCSSProperties;
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
@@ -134,7 +137,7 @@ export interface ConfigItemTabs extends ConfigItem {
     type: 'tabs';
     items: Record<string, ConfigItemPanel>;
     iconPosition?: 'bottom' | 'end' | 'start' | 'top';
-    tabsStyle?: React.CSSProperties;
+    tabsStyle?: CustomCSSProperties;
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
@@ -277,7 +280,7 @@ export interface ConfigItemStaticImage extends ConfigItem {
     href?: string;
 }
 
-export interface ConfigItemStaticText extends ConfigItem {
+export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     type: 'staticText';
     /** multi-language text */
     text: string;
@@ -343,7 +346,7 @@ export interface ConfigItemSetState extends ConfigItem {
     error?: { [error: string]: ioBroker.StringOrTranslated };
 }
 
-export interface ConfigItemAutocompleteSendTo extends ConfigItem {
+export interface ConfigItemAutocompleteSendTo extends Omit<ConfigItem, 'data'> {
     type: 'autocompleteSendTo';
     command?: string;
     jsonData?: string;
@@ -369,6 +372,7 @@ export interface ConfigItemDivider extends ConfigItem {
     color?: 'primary' | 'secondary' | string;
     height?: string | number;
 }
+
 export interface ConfigItemHeader extends ConfigItem {
     type: 'header';
     text?: ioBroker.StringOrTranslated;
@@ -422,7 +426,7 @@ export interface ConfigItemPort extends ConfigItem {
     readOnly?: boolean;
 }
 
-export interface ConfigItemImageSendTo extends ConfigItem {
+export interface ConfigItemImageSendTo extends Omit<ConfigItem, 'data'> {
     type: 'imageSendTo';
     command?: string;
     alsoDependsOn?: string[];
@@ -430,7 +434,7 @@ export interface ConfigItemImageSendTo extends ConfigItem {
     data?: Record<string, any>;
 }
 
-export interface ConfigItemSendTo extends ConfigItem {
+export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
     type: 'sendto';
     command?: string;
     jsonData?: string;
@@ -454,7 +458,7 @@ export interface ConfigItemSendTo extends ConfigItem {
     copyToClipboard?: boolean;
 }
 
-export interface ConfigItemTextSendTo extends ConfigItem {
+export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
     type: 'textSendTo';
     container?: 'text' | 'div';
     copyToClipboard?: boolean;
@@ -464,7 +468,7 @@ export interface ConfigItemTextSendTo extends ConfigItem {
     data?: Record<string, any>;
 }
 
-export interface ConfigItemSelectSendTo extends ConfigItem {
+export interface ConfigItemSelectSendTo extends Omit<ConfigItem, 'data'> {
     type: 'selectSendTo';
     manual?: boolean;
     multiple?: boolean;
@@ -545,6 +549,7 @@ export interface ConfigItemCertificates extends ConfigItem {
     certPrivateName?: string;
     certChainedName?: string;
 }
+
 export interface ConfigItemCheckLicense extends ConfigItem {
     type: 'checkLicense';
     /** Check UUID */
@@ -655,7 +660,8 @@ export interface ConfigItemFileSelector extends ConfigItem {
     noSize?: boolean;
 }
 
-export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigItemAutocompleteSendTo | ConfigItemPanel |
+export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete |
+    ConfigItemAutocompleteSendTo | ConfigItemPanel |
     ConfigItemTabs | ConfigItemText |
     ConfigItemNumber | ConfigItemColor | ConfigItemCheckbox |
     ConfigItemSlider | ConfigItemIP | ConfigItemUser | ConfigItemRoom | ConfigItemFunc |

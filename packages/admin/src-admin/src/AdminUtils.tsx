@@ -73,8 +73,8 @@ class AdminUtils {
      */
     static formatRam(bytes: number): string {
         const GB = Math.floor((bytes / (1024 * 1024 * 1024)) * 10) / 10;
-        bytes %= (1024 * 1024 * 1024);
-        const MB = Math.floor(((bytes / (1024 * 1024)) * 10)) / 10;
+        bytes %= 1024 * 1024 * 1024;
+        const MB = Math.floor((bytes / (1024 * 1024)) * 10) / 10;
         let text = '';
 
         if (GB > 1) {
@@ -136,9 +136,7 @@ class AdminUtils {
 
         if (bw) {
             // http://stackoverflow.com/a/3943023/112731
-            return (r * 0.299 + g * 0.587 + b * 0.114) > 186
-                ? '#000000'
-                : '#FFFFFF';
+            return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? '#000000' : '#FFFFFF';
         }
         // invert color components
         const finalR = (255 - r).toString(16);
@@ -193,7 +191,16 @@ class AdminUtils {
     }
 
     // internal use
-    static _replaceLink(link: string, objects: Record<string, ioBroker.InstanceObject>, adapterInstance: string, attr: string, placeholder: string, hosts: ioBroker.HostObject[], hostname: string, adminInstance: string) {
+    static _replaceLink(
+        link: string,
+        objects: Record<string, ioBroker.InstanceObject>,
+        adapterInstance: string,
+        attr: string,
+        placeholder: string,
+        hosts: Record<string, ioBroker.HostObject>,
+        hostname: string,
+        adminInstance: string,
+    ): string {
         if (attr === 'protocol') {
             attr = 'secure';
         }
@@ -257,15 +264,19 @@ class AdminUtils {
             networkInterface?.forEach(ip => {
                 if (ip.internal) {
                     return;
-                } if (localIp.includes(':') && ip.family !== 'IPv6') {
-                    return;
-                } if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                }
+                if (localIp.includes(':') && ip.family !== 'IPv6') {
                     return;
                 }
-                if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
+                if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                    return;
+                }
+                if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) {
+                    // if DNS name
                     hostIp = ip.address;
                 } else if (
-                    ip.family === 'IPv4' && localIp.includes('.') &&
+                    ip.family === 'IPv4' &&
+                    localIp.includes('.') &&
                     // eslint-disable-next-line no-bitwise
                     (AdminUtils.ip2int(localIp) & AdminUtils.ip2int(ip.netmask)) === (AdminUtils.ip2int(ip.address) & AdminUtils.ip2int(ip.netmask))
                 ) {
@@ -281,12 +292,15 @@ class AdminUtils {
                 networkInterface?.forEach(ip => {
                     if (ip.internal) {
                         return;
-                    } if (localIp.includes(':') && ip.family !== 'IPv6') {
-                        return;
-                    } if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                    }
+                    if (localIp.includes(':') && ip.family !== 'IPv6') {
                         return;
                     }
-                    if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
+                    if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                        return;
+                    }
+                    if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) {
+                        // if DNS name
                         hostIp = ip.address;
                     } else {
                         hostIp = ip.address;
@@ -309,7 +323,13 @@ class AdminUtils {
         return hostIp;
     }
 
-    static getHostname(instanceObj: ioBroker.InstanceObject, objects: Record<string, ioBroker.InstanceObject>, hosts: ioBroker.HostObject[], currentHostname: string, adminInstance: string) {
+    static getHostname(
+        instanceObj: ioBroker.InstanceObject,
+        objects: Record<string, ioBroker.InstanceObject>,
+        hosts: Record<string, ioBroker.HostObject>,
+        currentHostname: string,
+        adminInstance: string,
+    ) {
         if (!instanceObj || !instanceObj.common) {
             return null;
         }
@@ -319,7 +339,7 @@ class AdminUtils {
         const adminHost = objects[`system.adapter.${adminInstance}`]?.common?.host;
         if (instanceObj.common.host !== adminHost) {
             // find IP address
-            const host = hosts.find(obj => obj._id === `system.host.${instanceObj.common.host}`);
+            const host = hosts[`system.host.${instanceObj.common.host}`];
             if (host) {
                 const ip = AdminUtils.findNetworkAddressOfHost(host, currentHostname);
                 if (ip) {
@@ -340,19 +360,36 @@ class AdminUtils {
     }
 
     /**
-     * Format number in seconds to time text
-     * @param link pattern for link
-     * @param adapter admin name
-     * @param instance admin instance
-     * @param context {objects, hostname(of browser), protocol(of browser)}
+     * Convert the template link to string
      */
-    static replaceLink(link: string, adapter: string, instance: string, context: Record<string, any>): Record<string, any>[] {
-        const _urls: Record<string, any>[] = [];
-        let port;
+    static replaceLink(
+        /** pattern for link */
+        link: string,
+        /** adapter name */
+        adapter: string,
+        /** adapter instance number */
+        instance: number,
+        context: {
+            instances: Record<string, ioBroker.InstanceObject>;
+            hostname: string;
+            adminInstance: string;
+            hosts: Record<string, ioBroker.HostObject>;
+        },
+    ): {
+        url: string;
+        port: number;
+        instance?: string;
+    }[] {
+        const _urls: {
+            url: string;
+            port: number;
+            instance?: string;
+        }[] = [];
+        let port: number;
 
         if (link) {
-            const instanceObj = context.objects[`system.adapter.${adapter}.${instance}`];
-            const native      = instanceObj?.native || {};
+            const instanceObj = context.instances[`system.adapter.${adapter}.${instance}`];
+            const native = instanceObj?.native || {};
 
             const placeholders = link.match(/%(\w+)%/g);
 
@@ -361,37 +398,46 @@ class AdminUtils {
                     let placeholder = placeholders[p];
 
                     if (placeholder === '%ip%') {
-                        let ip = native.bind || native.ip;
+                        let ip: string = (native.bind || native.ip) as string;
                         if (!ip || ip === '127.0.0.1' || ip === 'localhost' || ip === '0.0.0.0') {
                             // Check host
-                            ip = AdminUtils.getHostname(instanceObj, context.objects, context.hosts, context.hostname, context.adminInstance);
+                            ip = AdminUtils.getHostname(
+                                instanceObj,
+                                context.instances,
+                                context.hosts,
+                                context.hostname,
+                                context.adminInstance,
+                            );
                         }
 
                         if (_urls.length) {
-                            _urls.forEach(item => item.url = item.url.replace('%ip%', ip));
+                            _urls.forEach(item => (item.url = item.url.replace('%ip%', ip)));
                         } else {
                             link = link.replace('%ip%', ip || '');
                         }
                     } else if (placeholder === '%protocol%') {
-                        let protocol = native.secure === undefined ? native.protocol : native.secure;
-                        if (protocol === true || protocol === 'true') {
+                        const protocolVal: string | boolean =
+                            native.secure === undefined ? native.protocol : native.secure;
+                        let protocol: 'http' | 'https';
+                        if (protocolVal === true || protocolVal === 'true') {
                             protocol = 'https';
-                        } else if (protocol === false || protocol === 'false' || !protocol) {
+                        } else if (protocolVal === false || protocolVal === 'false' || !protocolVal) {
                             protocol = 'http';
+                        } else {
+                            protocol = protocolVal.toString().replace(/:$/, '') as 'http' | 'https';
                         }
-                        protocol = protocol.replace(/:$/, '');
 
                         if (_urls.length) {
-                            _urls.forEach(item => item.url = item.url.replace('%protocol%', protocol));
+                            _urls.forEach(item => (item.url = item.url.replace('%protocol%', protocol)));
                         } else {
                             link = link.replace('%protocol%', protocol);
                         }
                     } else if (placeholder === '%instance%') {
-                        link = link.replace('%instance%', instance);
+                        link = link.replace('%instance%', instance.toString());
                         if (_urls.length) {
-                            _urls.forEach(item => item.url = item.url.replace('%instance%', instance));
+                            _urls.forEach(item => (item.url = item.url.replace('%instance%', instance.toString())));
                         } else {
-                            link = link.replace('%instance%', instance);
+                            link = link.replace('%instance%', instance.toString());
                         }
                     } else {
                         // remove %%
@@ -406,11 +452,31 @@ class AdminUtils {
                             // if only one instance
                             const adapterInstance = `${adapter}.${instance}`;
                             if (_urls.length) {
-                                _urls.forEach(item =>
-                                    item.url = AdminUtils._replaceLink(item.url, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance));
+                                _urls.forEach(
+                                    item =>
+                                        (item.url = AdminUtils._replaceLink(
+                                            item.url,
+                                            context.instances,
+                                            adapterInstance,
+                                            placeholder,
+                                            placeholder,
+                                            context.hosts,
+                                            context.hostname,
+                                            context.adminInstance,
+                                        )),
+                                );
                             } else {
-                                link = AdminUtils._replaceLink(link, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance);
-                                port = context.objects[`system.adapter.${adapterInstance}`]?.native?.port;
+                                link = AdminUtils._replaceLink(
+                                    link,
+                                    context.instances,
+                                    adapterInstance,
+                                    placeholder,
+                                    placeholder,
+                                    context.hosts,
+                                    context.hostname,
+                                    context.adminInstance,
+                                );
+                                port = context.instances[`system.adapter.${adapterInstance}`]?.native?.port;
                             }
                         } else {
                             const [adapterInstance, attr] = placeholder.split('_');
@@ -418,43 +484,79 @@ class AdminUtils {
                             // if instance number not found
                             if (!adapterInstance.match(/\.[0-9]+$/)) {
                                 // list all possible instances
-                                let ids;
+                                let ids: string[];
                                 if (adapter === adapterInstance) {
                                     // take only this one instance and that's all
                                     ids = [`${adapter}.${instance}`];
                                 } else {
-                                    ids = Object.keys(context.objects)
-                                        .filter(id => id.startsWith(`system.adapter.${adapterInstance}.`) && context.objects[id].common.enabled)
+                                    ids = Object.keys(context.instances)
+                                        .filter(id => id.startsWith(`system.adapter.${adapterInstance}.`) && context.instances[id].common.enabled)
                                         .map(id => id.substring(15));
+
                                     // try to get disabled instances
                                     if (!ids.length) {
-                                        ids = Object.keys(context.objects)
+                                        ids = Object.keys(context.instances)
                                             .filter(id => id.startsWith(`system.adapter.${adapterInstance}.`))
                                             .map(id => id.substring(15));
                                     }
                                 }
 
-                                // eslint-disable-next-line
                                 ids.forEach(id => {
                                     if (_urls.length) {
                                         const item = _urls.find(t => t.instance === id);
                                         if (item) {
-                                            item.url = AdminUtils._replaceLink(item.url, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
+                                            item.url = AdminUtils._replaceLink(
+                                                item.url,
+                                                context.instances,
+                                                id,
+                                                attr,
+                                                placeholder,
+                                                context.hosts,
+                                                context.hostname,
+                                                context.adminInstance,
+                                            );
                                         } else {
                                             // add new
-                                            const _link = AdminUtils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
-                                            const _port = context.objects[`system.adapter.${id}`]?.native?.port;
+                                            const _link = AdminUtils._replaceLink(
+                                                link,
+                                                context.instances,
+                                                id,
+                                                attr,
+                                                placeholder,
+                                                context.hosts,
+                                                context.hostname,
+                                                context.adminInstance,
+                                            );
+                                            const _port: number = context.instances[`system.adapter.${id}`]?.native?.port as number;
                                             _urls.push({ url: _link, port: _port, instance: id });
                                         }
                                     } else {
-                                        const _link = AdminUtils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
-                                        const _port = context.objects[`system.adapter.${id}`]?.native?.port;
+                                        const _link = AdminUtils._replaceLink(
+                                            link,
+                                            context.instances,
+                                            id,
+                                            attr,
+                                            placeholder,
+                                            context.hosts,
+                                            context.hostname,
+                                            context.adminInstance,
+                                        );
+                                        const _port: number = context.instances[`system.adapter.${id}`]?.native?.port as number;
                                         _urls.push({ url: _link, port: _port, instance: id });
                                     }
                                 });
                             } else {
-                                link = AdminUtils._replaceLink(link, context.objects, adapterInstance, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
-                                port = context.objects[`system.adapter.${adapterInstance}`]?.native?.port;
+                                link = AdminUtils._replaceLink(
+                                    link,
+                                    context.instances,
+                                    adapterInstance,
+                                    attr,
+                                    placeholder,
+                                    context.hosts,
+                                    context.hostname,
+                                    context.adminInstance,
+                                );
+                                port = context.instances[`system.adapter.${adapterInstance}`]?.native?.port as number;
                             }
                         }
                     }
@@ -468,7 +570,10 @@ class AdminUtils {
         return [{ url: link, port }];
     }
 
-    static objectMap<Result = any, Value = any>(object: Record<string, Value>, callback: (res: Value, key: string) => Result): Result[] {
+    static objectMap<Result = any, Value = any>(
+        object: Record<string, Value>,
+        callback: (res: Value, key: string) => Result,
+    ): Result[] {
         const result: Result[] = [];
         for (const key in object) {
             result.push(callback(object[key], key));
@@ -509,7 +614,10 @@ class AdminUtils {
                     obj.common.adminUI.tab = 'html';
                 }
 
-                obj.common.adminUI && console.warn(`Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`);
+                obj.common.adminUI &&
+                    console.warn(
+                        `Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`,
+                    );
             } else {
                 let changed = false;
                 if (obj.common.materializeTab && obj.common.adminTab) {
@@ -525,7 +633,7 @@ class AdminUtils {
                 }
 
                 if (obj.common.jsonCustom || obj.common.supportCustoms) {
-                    if (obj.common.adminUI.custom !== 'json')   {
+                    if (obj.common.adminUI.custom !== 'json') {
                         obj.common.adminUI.custom = 'json';
                         changed = true;
                     }
@@ -553,7 +661,10 @@ class AdminUtils {
                     obj.common.adminUI.config = 'html';
                     changed = true;
                 }
-                changed && console.warn(`Please modify "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`);
+                changed &&
+                    console.warn(
+                        `Please modify "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`,
+                    );
             }
         }
     }
@@ -598,7 +709,8 @@ class AdminUtils {
         return text;
     }
 
-    static PASSWORD_ERROR_LENGTH = 'Password must be at least 8 characters long and have numbers, upper and lower case letters';
+    static PASSWORD_ERROR_LENGTH =
+        'Password must be at least 8 characters long and have numbers, upper and lower case letters';
 
     static PASSWORD_ERROR_NOT_EQUAL = 'Repeat password is not equal with password';
 
@@ -612,7 +724,12 @@ class AdminUtils {
     static checkPassword(password: string, passwordRepeat?: string) {
         password = password || '';
         passwordRepeat = passwordRepeat || '';
-        if (password && passwordRepeat && password !== AdminUtils.PASSWORD_SET && passwordRepeat !== AdminUtils.PASSWORD_SET) {
+        if (
+            password &&
+            passwordRepeat &&
+            password !== AdminUtils.PASSWORD_SET &&
+            passwordRepeat !== AdminUtils.PASSWORD_SET
+        ) {
             if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
                 return AdminUtils.PASSWORD_ERROR_LENGTH;
             }
@@ -628,7 +745,12 @@ class AdminUtils {
             return false;
         }
         if (passwordRepeat && passwordRepeat !== AdminUtils.PASSWORD_SET) {
-            if (passwordRepeat.length < 8 || !passwordRepeat.match(/\d/) || !passwordRepeat.match(/[a-z]/) || !passwordRepeat.match(/[A-Z]/)) {
+            if (
+                passwordRepeat.length < 8 ||
+                !passwordRepeat.match(/\d/) ||
+                !passwordRepeat.match(/[a-z]/) ||
+                !passwordRepeat.match(/[A-Z]/)
+            ) {
                 return AdminUtils.PASSWORD_ERROR_LENGTH;
             }
             return false;

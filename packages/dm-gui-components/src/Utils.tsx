@@ -20,7 +20,7 @@ import {
     Fluorescent,
     WbIncandescent,
     Settings,
-    QrCode
+    QrCode,
 } from '@mui/icons-material';
 
 import {
@@ -43,7 +43,7 @@ function getFaIcon(icon: string, color: string): React.JSX.Element | null {
     if (iconStyle.includes('fa-plus')) {
         return <Add style={{ color }} />;
     }
-    if (iconStyle.includes('fa-qrcode') || iconStyle === 'qrcode') {
+    if (iconStyle.includes('fa-qrcode') || iconStyle.includes('qrcode')) {
         return <QrCode style={{ color }} />;
     }
     if (iconStyle.includes('fa-wifi')) {
@@ -107,10 +107,10 @@ function getIconByName(name: string, color: string): React.JSX.Element | null {
     if (name === 'discover' || name === 'search') {
         return <Search style={{ color }} />;
     }
-    if (name === 'unpairDevice') {
+    if (name === 'unpairDevice' || name === 'unpair') {
         return <LinkOff style={{ color }} />;
     }
-    if (name === 'pairDevice') {
+    if (name === 'pairDevice' || name === 'pair') {
         return <LinkIcon style={{ color }} />;
     }
     if (name === 'identify') {

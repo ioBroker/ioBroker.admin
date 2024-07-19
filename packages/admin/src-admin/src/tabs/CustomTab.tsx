@@ -27,17 +27,14 @@ export async function getHref(
     instancesWorker: InstancesWorker,
     tab: string,
     hostname: string,
-    protocol: string,
-    port: number,
-    hosts: ioBroker.HostObject[],
+    hosts: Record<string, ioBroker.HostObject>,
     adminInstance: string,
     themeType: ThemeType,
 ) {
     const instances = await instancesWorker.getInstances();
     let adapter = tab.replace(/^tab-/, '');
-    let instNum;
     const m = adapter.match(/-(\d+)$/);
-    instNum = m ? m[1] : null;
+    const instNum: number | null = m ? parseInt(m[1], 10) : null;
     let instance;
     if (instances) {
         if (instNum !== null) {
@@ -57,6 +54,7 @@ export async function getHref(
 
         return '';
     }
+
     // calculate href
     let href = instance.common.adminTab.link;
     if (!href) {
@@ -70,20 +68,27 @@ export async function getHref(
         href += `${href.includes('?') ? '&' : '?'}instance=${instNum}`;
     }
     if (href.includes('%')) {
+        let _instNum: number;
         // fix for singletons
-        if (instNum === null || instNum === undefined) {
-            instNum = instance._id.split('.').pop();
+        if (instNum === null) {
+            _instNum = parseInt(instance._id.split('.').pop(), 10);
+        } else {
+            _instNum = instNum as number;
         }
 
         // replace
-        const hrefs = AdminUtils.replaceLink(href, adapter, instNum, {
-            hostname,
-            protocol,
-            objects: instances,
-            hosts,
-            adminInstance,
-            port,
-        });
+        const hrefs = AdminUtils.replaceLink(
+            href,
+            adapter,
+            _instNum,
+            {
+                hostname,
+                // it cannot be void
+                instances: instances as Record<string, ioBroker.InstanceObject>,
+                hosts,
+                adminInstance,
+            },
+        );
 
         href = hrefs ? hrefs[0]?.url : '';
     }
@@ -96,8 +101,6 @@ interface CustomTabProps {
     instancesWorker: InstancesWorker;
     tab: string;
     hostname: string;
-    protocol: string;
-    port: number;
     hosts: ioBroker.HostObject[];
     adminInstance: string;
     themeName: ThemeType;
@@ -120,7 +123,19 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
             href: '',
         };
 
-        getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts,  this.props.adminInstance, this.props.themeName)
+        const hosts: Record<string, ioBroker.HostObject> = {};
+        for (const host of props.hosts) {
+            hosts[host._id] = host;
+        }
+
+        getHref(
+            this.props.instancesWorker,
+            this.props.tab,
+            this.props.hostname,
+            hosts,
+            this.props.adminInstance,
+            this.props.themeName,
+        )
             .then(href => {
                 this.setState({ href });
                 // check if href exists
