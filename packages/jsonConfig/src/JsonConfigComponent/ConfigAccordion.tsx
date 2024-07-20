@@ -41,7 +41,7 @@ const styles: Record<string, any> = {
     },
     toolbar: (theme: IobTheme) => ({
         backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
-        borderRadius: 3,
+        borderRadius: '3px',
     }),
     tooltip: {
         pointerEvents: 'none',
@@ -98,7 +98,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                 accumulator[currentValue.attr] = currentValue;
                 return accumulator;
             }, {}) as Record<string, ConfigItemAny>,
-            style: { marginLeft: -8, marginTop: 10, marginBottom: 10 },
+            style: { marginLeft: '-8px', marginTop: '10px', marginBottom: '10px' },
         };
 
         return <ConfigPanel
@@ -166,7 +166,11 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
 
         newValue.splice(index, 0, cloned);
 
-        this.setState({ value: newValue, activeIndex: -1, iteration: this.state.iteration + 10000 }, () => this.onChangeWrapper(newValue));
+        this.setState({
+            value: newValue,
+            activeIndex: -1,
+            iteration: this.state.iteration + 10000,
+        }, () => this.onChangeWrapper(newValue));
     };
 
     onChangeWrapper = (newValue: any) => {
@@ -241,14 +245,18 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                 </IconButton> : null}
             </Toolbar> : null}
             {value.map((idx, i) =>
-                <Accordion key={`${idx}_${i}`} expanded={this.state.activeIndex === i} onChange={(e, expanded) => { this.setState({ activeIndex: expanded ? i : -1 }); }}>
+                <Accordion
+                    key={`${idx}_${i}`}
+                    expanded={this.state.activeIndex === i}
+                    onChange={(_e, expanded) => this.setState({ activeIndex: expanded ? i : -1 })}
+                >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         sx={Utils.getStyle(this.props.theme, styles.fullWidth, styles.accordionSummary)}
                     >
                         <Typography style={styles.accordionTitle}>{idx[schema.titleAttr]}</Typography>
                     </AccordionSummary>
-                    <AccordionDetails style={({ ...schema.style, ...(this.props.themeType ? schema.darkStyle : {}) })}>
+                    <AccordionDetails style={({ ...schema.style, ...(this.props.themeType ? schema.darkStyle : undefined) })}>
                         {this.itemAccordion(value[i], i)}
                         <Toolbar sx={styles.toolbar}>
                             {i ? <Tooltip title={I18n.t('ra_Move up')} componentsProps={{ popper: { sx: styles.tooltip } }}>
