@@ -361,9 +361,13 @@ export interface ConfigItemAutocompleteSendTo extends Omit<ConfigItem, 'data'> {
 
 export interface ConfigItemAccordion extends ConfigItem {
     type: 'accordion';
+    /** Title shown on the accordion */
     titleAttr?: string;
+    /** If delete or add disabled, If noDelete is false, add, delete and move up/down should work */
     noDelete?: boolean;
+    /** If clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique. */
     clone?: boolean | string;
+    /** Items of accordion */
     items: ConfigItemIndexed[];
 }
 
@@ -483,18 +487,29 @@ export interface ConfigItemSelectSendTo extends Omit<ConfigItem, 'data'> {
 export interface ConfigItemTable extends ConfigItem {
     type: 'table';
     items?: ConfigItemTableIndexed[];
+    /** If delete or add disabled, If noDelete is false, add, delete and move up/down should work */
     noDelete?: boolean;
     /** @deprecated don't use */
     objKeyName?: string;
     /** @deprecated don't use */
     objValueName?: string;
+    /** If add allowed even if filter is set */
     allowAddByFilter?: boolean;
+    /** The number of lines from which the second add button at the bottom of the table will be shown. Default 5 */
     showSecondAddAt?: number;
+    /** Show first plus button on top of the first column and not on the left. */
     showFirstAddOnTop?: boolean;
+    /** If clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique. */
     clone?: boolean | string;
+    /** If export button should be shown. Export as csv file. */
     export?: boolean;
+    /** If import button should be shown. Import from csv file. */
     import?: boolean;
+    /** Show table in compact mode */
+    compact?: boolean;
+    /** Specify the 'attr' name of columns which need to be unique */
     uniqueColumns?: string[];
+    /** These items will be encrypted before saving with simple (not SHA) encryption method */
     encryptedAttributes?: string[];
 }
 
