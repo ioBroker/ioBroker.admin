@@ -27,7 +27,8 @@ import {
 import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
-import { checkCondition, type RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
+import { checkCondition } from '@/dialogs/AdapterUpdateDialog';
+import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
 interface GetNewsResultEntry {
     version: string;

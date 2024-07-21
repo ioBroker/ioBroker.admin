@@ -36,7 +36,7 @@ import {
     type IobTheme,
     type ThemeName,
     type ThemeType,
-    TabHeader,
+    TabHeader, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '@/AdminUtils';
@@ -84,7 +84,7 @@ const styles: Record<string, any> = {
 };
 
 interface InstancesProps {
-    t: (word: string, ...args: any[]) => string;
+    t: Translate;
     lang: ioBroker.Languages;
     themeType: ThemeType;
     themeName: ThemeName;
@@ -161,7 +161,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     private readonly wordCache: Record<string, string>;
 
-    private readonly t: (word: string, arg1?: any, arg2?: any) => string;
+    private readonly t: Translate;
 
     private readonly inputRef: React.RefObject<HTMLInputElement>;
 
@@ -388,7 +388,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 links: [],
             };
 
-            const rawLinks: Record<string, string> | string = common.localLinks || common.localLink || '';
+            const rawLinks: Record<string, string | ioBroker.LocalLink> | string = common.localLinks || common.localLink || '';
             let links: Record<string, string | InstanceLink> | null = null;
             if (rawLinks && typeof rawLinks === 'string') {
                 links = { _default: rawLinks as string };

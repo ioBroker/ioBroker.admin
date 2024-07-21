@@ -13,6 +13,7 @@ import {
 import {
     Close as IconClose,
     Check as IconCheck,
+    ArrowDownward as IconArrowDownward,
 } from '@mui/icons-material';
 
 import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
@@ -43,13 +44,17 @@ const styles: Record<string, any> = {
 interface LicenseDialogProps {
     /** URL to show license text from */
     url: string;
+    /** License type: MIT, Apache, ... */
+    licenseType: string;
     /** function called when dialog is closed */
     onClose: (accepted?: boolean) => void;
 }
 
-const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
+const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(true);
+    const [scrolled, setScrolled] = useState(false);
+    const preRef = React.useRef<HTMLPreElement>(null);
 
     useEffect(() => {
         setLoading(true);
@@ -74,13 +79,28 @@ const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
         fullWidth
         sx={{ '& .MuiDialog-paper': styles.paper }}
     >
-        <DialogTitle>{I18n.t('License agreement')}</DialogTitle>
+        <DialogTitle>
+            {I18n.t('License agreement')}
+            :
+            <span style={{ marginLeft: 16, fontWeight: 'bold' }}>{licenseType}</span>
+        </DialogTitle>
         <DialogContent style={styles.overflowHidden} dividers>
             <Box component="div" sx={styles.root}>
                 {loading ?
                     <LinearProgress />
                     :
-                    <pre style={styles.pre}>
+                    <pre
+                        style={styles.pre}
+                        ref={preRef}
+                        onScroll={() => {
+                            if (preRef.current) {
+                                const _scrolled = preRef.current.scrollTop + preRef.current.clientHeight >= preRef.current.scrollHeight;
+                                if (!scrolled && _scrolled) {
+                                    setScrolled(_scrolled);
+                                }
+                            }
+                        }}
+                    >
                         {text}
                     </pre>}
             </Box>
@@ -88,13 +108,13 @@ const LicenseDialog = ({ url, onClose }: LicenseDialogProps) => {
         <DialogActions>
             <Button
                 variant="contained"
-                disabled={loading}
+                disabled={loading || !scrolled}
                 autoFocus
                 onClick={() => onClose(true)}
-                startIcon={<IconCheck />}
+                startIcon={scrolled ? <IconCheck /> : <IconArrowDownward />}
                 color="primary"
             >
-                {I18n.t('Accept')}
+                {!scrolled ? I18n.t('Read to the end for accept') : I18n.t('Accept')}
             </Button>
             <Button
                 variant="contained"

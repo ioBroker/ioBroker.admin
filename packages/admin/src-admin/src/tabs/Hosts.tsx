@@ -23,14 +23,14 @@ import {
     TabContainer,
     type AdminConnection,
     type IobTheme,
-    type ThemeType,
+    type ThemeType, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import type HostsWorker from '@/Workers/HostsWorker';
 import type { NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
-import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
-import { blinkClasses } from '../components/Hosts/HostGeneric';
+import type { RepoAdapterObject } from '@/components/Adapters/Utils';
+import { blinkClasses } from '@/components/Hosts/HostGeneric';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 
@@ -135,7 +135,7 @@ function preprocessHostData(hostData: Record<string, any>): void {
 }
 
 interface HostsProps {
-    t: (word: string, ...args: any) => string;
+    t: Translate;
     expertMode: boolean;
     socket: AdminConnection;
     systemConfig: ioBroker.SystemConfigObject;

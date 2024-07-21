@@ -28,6 +28,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
+import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
 import State from '../components/State';
 
@@ -145,18 +146,6 @@ export interface Message {
 interface News {
     version: string;
     news: string;
-}
-
-export interface RepoAdapterObject extends ioBroker.AdapterCommon {
-    versionDate: string;
-    controller?: boolean;
-    stat?: number;
-    node?: string;
-    allowAdapterInstall?: boolean;
-    allowAdapterUpdate?: boolean;
-    allowAdapterDelete?: boolean;
-    allowAdapterReadme?: boolean;
-    allowAdapterRating?: boolean;
 }
 
 export interface CompactInstanceInfo {

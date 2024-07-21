@@ -37,11 +37,12 @@ import {
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type NotificationAnswer } from '@/Workers/HostsWorker';
-import AdapterUpdateDialog, { type RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
+import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
 import { CONTROLLER_CHANGELOG_URL } from '@/helpers/utils';
+import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import AdminUtils from '../../AdminUtils';
 import HostEdit from './HostEdit';
 import CustomModal from '../CustomModal';
