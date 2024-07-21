@@ -49,7 +49,8 @@
     "@iobroker/dm-gui-components": "file:../dm-gui-components",
     "@iobroker/json-config": "file:../jsonConfig",
     "@iobroker/types": "^6.0.9",
-    "@types/ace": "^0.0.52"
+    "@types/ace": "^0.0.52",
+    "mocha": "^10.7.0"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
