@@ -1612,5 +1612,6 @@
   "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "发送的数据仅由 ioBroker GmbH 用于统计目的处理，不会与任何第三方共享。",
   "Next": "下一个",
   "Install selected adapters": "安装选定的适配器",
-  "More info": "更多信息"
+  "More info": "更多信息",
+  "Read to the end for accept": "阅读完后接受"
 }
