@@ -41,12 +41,18 @@ import {
 
 import {
     I18n, Utils,
-    SelectWithIcon,
+    SelectWithIcon, type IobTheme,
+    type AdminConnection, type ThemeType, type ThemeName,
 } from '@iobroker/adapter-react-v5';
+import type { CompactHost } from '@/types';
 
 import Command from '../components/Command';
 import LicenseDialog from './LicenseDialog';
-import GenerateInputsModal from './GenerateInputsModal';
+import GenerateInputsModal, {
+    type DiscoveryInstance,
+    type DiscoveryInstanceComment,
+    type DiscoveryObject,
+} from './GenerateInputsModal';
 import useStateLocal from '../helpers/hooks/useStateLocal';
 
 const styles: Record<string, any> = {
@@ -165,6 +171,11 @@ const styles: Record<string, any> = {
     },
 };
 
+type CompactRepository = Record<string, {
+    icon: ioBroker.AdapterCommon['icon'];
+    version: string;
+}>;
+
 interface TabPanelProps {
     children: React.JSX.Element | React.JSX.Element[];
     value: number;
@@ -228,7 +239,7 @@ const headCells = [
 
 interface EnhancedTableHeadProps {
     numSelected: number;
-    onSelectAllClick: (event: any) => void;
+    onSelectAllClick: (event: React.ChangeEvent) => void;
     rowCount: number;
 }
 
@@ -241,7 +252,7 @@ function EnhancedTableHead(props: EnhancedTableHeadProps): React.JSX.Element {
                 <Checkbox
                     indeterminate={numSelected > 0 && numSelected < rowCount}
                     checked={rowCount > 0 && numSelected === rowCount}
-                    onChange={onSelectAllClick}
+                    onChange={(event: React.ChangeEvent) => onSelectAllClick(event)}
                     inputProps={{ 'aria-label': 'select all desserts' }}
                 />
             </TableCell>
@@ -256,7 +267,7 @@ function EnhancedTableHead(props: EnhancedTableHeadProps): React.JSX.Element {
     </TableHead>;
 }
 
-const buildComment = (comment: any) => {
+function buildComment(comment: DiscoveryInstanceComment) {
     if (!comment) {
         return 'new';
     }
@@ -282,7 +293,7 @@ const buildComment = (comment: any) => {
 
     if (comment.changed) {
         text += (text ? ', ' : '') + I18n.t('changed');
-        if (Array.isArray(comment.changed === 'object') && comment.changed.length) {
+        if (Array.isArray(comment.changed) && comment.changed.length) {
             text += ': ';
             if (comment.changed.length <= 5) {
                 text += comment.changed.join(', ');
@@ -314,7 +325,20 @@ const buildComment = (comment: any) => {
         text += (text ? ', ' : '') + comment.text;
     }
     return text;
-};
+}
+
+interface DiscoveryDialogProps {
+    themeType: ThemeType;
+    themeName: ThemeName;
+    socket: AdminConnection;
+    dateFormat: string;
+    currentHost: string;
+    defaultLogLevel: ioBroker.LogLevel;
+    repository: CompactRepository;
+    hosts: CompactHost[];
+    onClose: () => void;
+    theme: IobTheme;
+}
 
 function DiscoveryDialog({
     themeType,
@@ -327,21 +351,22 @@ function DiscoveryDialog({
     hosts,
     onClose,
     theme,
-}: Record<string, any>) {
+}: DiscoveryDialogProps) {
     const [step, setStep] = useState<number>(0);
-    const [listMethods, setListMethods] = useState<Record<string, any>>({});
-    const [checkboxChecked, setCheckboxChecked] = useState<Record<string, any>>({});
-    const [disableScanner, setDisableScanner] = useState<any>(false);
-    const [discoveryData, setDiscoveryData] = useState<Record<string, any>>({});
+    const [listMethods, setListMethods] = useState<Record<string, { type: string; source: string; timeout?: number }>>({});
+    const [checkboxChecked, setCheckboxChecked] = useState<Record<string, boolean>>({});
+    const [disableScanner, setDisableScanner] = useState<boolean>(false);
+    const [discoveryData, setDiscoveryData] = useState<DiscoveryObject | null>(null);
 
     useEffect(() => {
         async function fetchData() {
-            const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
-            const listChecked: Record<string, any> = {};
-            let lastSelection = ((window as any)._localStorage || window.localStorage).getItem('App.discoveryLastSelection') || null;
-            if (lastSelection) {
+            const resultList: Record<string, { type: string; source: string; timeout?: number }> = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
+            const listChecked: Record<string, boolean> = {};
+            const lastSelectionStr = ((window as any)._localStorage as Storage || window.localStorage).getItem('App.discoveryLastSelection') || null;
+            let lastSelection: null | Record<string, boolean>;
+            if (lastSelectionStr) {
                 try {
-                    lastSelection = JSON.parse(lastSelection);
+                    lastSelection = JSON.parse(lastSelectionStr) as Record<string, boolean>;
                 } catch (e) {
                     lastSelection = null;
                 }
@@ -365,19 +390,21 @@ function DiscoveryDialog({
     useEffect(() => {
         async function readOldData() {
             const dataDiscovery = await socket.getObject('system.discovery');
-            dataDiscovery !== undefined && setDiscoveryData(dataDiscovery);
+            dataDiscovery !== undefined && setDiscoveryData(dataDiscovery as unknown as DiscoveryObject);
         }
 
-        readOldData();
+        readOldData()
+            .catch(e => console.warn(`Cannot read system.discovery: ${e}`));
     }, [socket]);
 
-    const [aliveHosts, setAliveHosts] = useState<Record<string, any>>({});
+    const [aliveHosts, setAliveHosts] = useState<Record<string, boolean>>({});
     const [checkSelectHosts, setCheckSelectHosts] = useState(false);
-    const [hostInstances, setHostInstances] = useState<Record<string, any>>({});
+    const [hostInstances, setHostInstances] = useState<Record<string, string>>({});
 
     useEffect(() => {
         hosts.forEach(async ({ _id }: {_id: string}) => {
             const aliveValue = await socket.getState(`${_id}.alive`);
+
             setAliveHosts(prev => ({
                 ...prev,
                 [_id]: !aliveValue || aliveValue.val === null ? false : !!aliveValue.val,
@@ -397,50 +424,55 @@ function DiscoveryDialog({
     const [selected, setSelected] = useState<string[]>([]);
     const [installProgress, setInstallProgress] = useState(false);
     const [currentInstall, setCurrentInstall] = useState(1);
-    const [installStatus, setInstallStatus] = useState<Record<string, any>>({});
+    const [installStatus, setInstallStatus] = useState<Record<string, 'error' | 'success'>>({});
     const [cmdName, setCmdName] = useState('install');
     const [suggested, setSuggested] = useStateLocal(true, 'discovery.suggested');
     const [showAll, setShowAll] = useStateLocal(true, 'discovery.showAll');
-    const [showLicenseDialog, setShowLicenseDialog] = useState<any>(false);
-    const [showInputsDialog, setShowInputsDialog] = useState<any>(false);
+    const [showLicenseDialog, setShowLicenseDialog] = useState<{ obj: DiscoveryInstance; cb:(() => void) } | null>(null);
+    const [showInputsDialog, setShowInputsDialog] = useState<{ obj: DiscoveryInstance; cb:(() => void) } | null>(null);
 
     const black = themeType === 'dark';
 
-    const [instancesInputsParams, setInstancesInputsParams] = useState<Record<string, any>>({});
+    const [instancesInputsParams, setInstancesInputsParams] = useState<{ native: Record<string, any> }>({ native: { } });
     const steps = ['Select methods', 'Create instances', 'Installation process'];
     const [logs, setLogs] = useState<Record<string, any>>({});
     const [finishInstall, setFinishInstall] = useState(false);
     const [selectLogsIndex, setSelectLogsIndex] = useState(1);
 
-    const handlerInstall = (name: string, value: any) => {
+    const handlerInstall = (name: string, value: ioBroker.State | null | undefined) => {
         if (!value) {
             return;
         }
         switch (name) {
             case 'discovery.0.devicesFound':
-                setDevicesFound(value.val);
+                setDevicesFound(value.val as number);
                 break;
             case 'discovery.0.devicesProgress':
-                setDevicesProgress(value.val);
+                setDevicesProgress(value.val as number);
                 break;
             case 'discovery.0.instancesFound':
-                setInstancesFound(value.val);
+                setInstancesFound(value.val as number);
                 break;
             case 'discovery.0.scanRunning':
-                setScanRunning(value.val);
+                setScanRunning(value.val as boolean);
                 break;
             case 'discovery.0.servicesProgress':
-                setServicesProgress(value.val);
-                break;
-            case 'system.discovery':
-                setDiscoveryData(value);
+                setServicesProgress(value.val as number);
                 break;
             default:
+                break;
         }
     };
-
+    const onSystemDiscoveryChanged = (id: string, obj: ioBroker.Object | null | undefined) => {
+        if (!obj) {
+            return;
+        }
+        if (id === 'system.discovery') {
+            setDiscoveryData(obj as unknown as DiscoveryObject);
+        }
+    };
     useEffect(() => {
-        socket.subscribeObject('system.discovery', handlerInstall);
+        socket.subscribeObject('system.discovery', onSystemDiscoveryChanged);
         socket.subscribeState('discovery.0.devicesFound', handlerInstall);
         socket.subscribeState('discovery.0.devicesProgress', handlerInstall);
         socket.subscribeState('discovery.0.instancesFound', handlerInstall);
@@ -448,7 +480,7 @@ function DiscoveryDialog({
         socket.subscribeState('discovery.0.servicesProgress', handlerInstall);
 
         return () => {
-            socket.unsubscribeObject('system.discovery', handlerInstall);
+            socket.unsubscribeObject('system.discovery', onSystemDiscoveryChanged);
             socket.unsubscribeState('discovery.0.devicesFound', handlerInstall);
             socket.unsubscribeState('discovery.0.devicesProgress', handlerInstall);
             socket.unsubscribeState('discovery.0.instancesFound', handlerInstall);
@@ -477,7 +509,7 @@ function DiscoveryDialog({
 
     const handleSelectAllClick = (event: any) => {
         if (event.target.checked) {
-            const newSelected = discoveryData?.native?.newInstances?.map((n: ioBroker.InstanceObject) => n._id);
+            const newSelected = discoveryData?.native?.newInstances?.map(n => n._id);
             setSelected(newSelected);
             return;
         }
@@ -504,18 +536,19 @@ function DiscoveryDialog({
     };
 
     const checkLicenseAndInputs = (objName: string, cb: () => void) => {
-        const obj = JSON.parse(JSON.stringify(discoveryData?.native?.newInstances.find((ob: ioBroker.InstanceObject) => ob._id === objName)));
+        const instanceObj: DiscoveryInstance | null = discoveryData?.native?.newInstances.find(ob => ob._id === objName);
+        const obj: DiscoveryInstance | null = instanceObj ? JSON.parse(JSON.stringify(instanceObj)) : null;
         let license = true;
         if (obj?.comment?.license && obj.comment.license !== 'MIT') {
             license = false;
             if (!obj.common.licenseUrl) {
                 obj.common.licenseUrl = `https://raw.githubusercontent.com/ioBroker/ioBroker.${obj.common.name}/master/LICENSE`;
             }
-            if (typeof obj.common.licenseUrl === 'object') {
+            if (obj.common.licenseUrl && typeof obj.common.licenseUrl === 'object') {
                 obj.common.licenseUrl = obj.common.licenseUrl[I18n.getLanguage()] || obj.common.licenseUrl.en;
             }
-            if (obj.common.licenseUrl.includes('github.com')) {
-                obj.common.licenseUrl = obj.common.licenseUrl
+            if ((obj.common.licenseUrl as string).includes('github.com')) {
+                obj.common.licenseUrl = (obj.common.licenseUrl as string)
                     .replace('github.com', 'raw.githubusercontent.com')
                     .replace('/blob/', '/');
             }
@@ -554,16 +587,17 @@ function DiscoveryDialog({
         }
     };
 
-    const inputsDialog = showInputsDialog ? (
+    const inputsDialog = showInputsDialog ?
         <GenerateInputsModal
             socket={socket}
+            theme={theme}
             themeType={themeType}
             themeName={themeName}
-            newInstances={showInputsDialog.obj}
+            newInstance={showInputsDialog.obj}
             onClose={params => {
                 const { cb } = showInputsDialog;
                 const { obj } = showInputsDialog;
-                setShowInputsDialog(false);
+                setShowInputsDialog(null);
 
                 if (params) {
                     setInstancesInputsParams(params);
@@ -572,8 +606,7 @@ function DiscoveryDialog({
                     goToNextInstance(obj._id, 'Error: configuration dialog canceled');
                 }
             }}
-        />
-    ) : null;
+        /> : null;
 
     const resetStateBack = () => {
         setSelected([]);
@@ -593,11 +626,11 @@ function DiscoveryDialog({
 
     const licenseDialog = showLicenseDialog ? (
         <LicenseDialog
-            url={showLicenseDialog.obj.common.licenseUrl}
+            licenseType={showLicenseDialog.obj.comment.license}
+            url={showLicenseDialog.obj.common.licenseUrl as string}
             onClose={result => {
-                const { cb } = showLicenseDialog;
-                const { obj } = showLicenseDialog;
-                setShowLicenseDialog(false);
+                const { cb, obj } = showLicenseDialog;
+                setShowLicenseDialog(null);
                 if (!result) {
                     // license isn't accepted, go to the next instance
                     goToNextInstance(obj._id, 'Error: license not accepted');
@@ -661,26 +694,24 @@ function DiscoveryDialog({
                             >
                                 {I18n.t('Use following methods:')}
                             </div>
-                            {Object.keys(listMethods).map(key => (
-                                <div key={key}>
-                                    <Checkbox
-                                        checked={checkboxChecked[key]}
-                                        disabled={disableScanner}
-                                        onChange={(_, value) => {
-                                            const newCheckboxChecked = JSON.parse(
-                                                JSON.stringify(checkboxChecked),
-                                            );
-                                            newCheckboxChecked[key] = value;
-                                            ((window as any)._localStorage || window.localStorage).setItem(
-                                                'App.discoveryLastSelection',
-                                                JSON.stringify(newCheckboxChecked),
-                                            );
-                                            setCheckboxChecked(newCheckboxChecked);
-                                        }}
-                                    />
-                                    {key}
-                                </div>
-                            ))}
+                            {Object.keys(listMethods).map(key => <div key={key}>
+                                <Checkbox
+                                    checked={checkboxChecked[key]}
+                                    disabled={disableScanner}
+                                    onChange={(_, value) => {
+                                        const newCheckboxChecked = JSON.parse(
+                                            JSON.stringify(checkboxChecked),
+                                        );
+                                        newCheckboxChecked[key] = value;
+                                        ((window as any)._localStorage || window.localStorage).setItem(
+                                            'App.discoveryLastSelection',
+                                            JSON.stringify(newCheckboxChecked),
+                                        );
+                                        setCheckboxChecked(newCheckboxChecked);
+                                    }}
+                                />
+                                {key}
+                            </div>)}
                         </> : (scanRunning && <div>
                             {devicesProgress >= 99
                                 ? `Lookup services - ${servicesProgress}%`
@@ -779,22 +810,18 @@ function DiscoveryDialog({
                                                         </div>
                                                     </TableCell>
                                                     <TableCell align="left">
-                                                        {checkSelectHosts ? (
-                                                            <SelectWithIcon
-                                                                fullWidth
-                                                                lang={I18n.getLanguage()}
-                                                                list={hosts}
-                                                                t={I18n.t}
-                                                                value={hostInstances[obj._id] || currentHost}
-                                                                themeType={themeType}
-                                                                onChange={val => setHostInstances({
-                                                                    ...hostInstances,
-                                                                    [obj._id]: val,
-                                                                })}
-                                                            />
-                                                        ) : (
-                                                            '_'
-                                                        )}
+                                                        {checkSelectHosts ? <SelectWithIcon
+                                                            fullWidth
+                                                            lang={I18n.getLanguage()}
+                                                            list={hosts as ioBroker.Object[]}
+                                                            t={I18n.t}
+                                                            value={hostInstances[obj._id] || currentHost}
+                                                            themeType={themeType}
+                                                            onChange={val => setHostInstances({
+                                                                ...hostInstances,
+                                                                [obj._id]: val,
+                                                            })}
+                                                        /> : '_'}
                                                     </TableCell>
                                                     <TableCell align="left">
                                                         {buildComment(obj.comment)}
@@ -808,10 +835,12 @@ function DiscoveryDialog({
                                                                         discoveryData?.native.newInstances,
                                                                     ),
                                                                 );
+
                                                                 newInstances[idx].comment = {
                                                                     ...newInstances[idx].comment,
                                                                     ack: !newInstances[idx].comment.ack,
                                                                 };
+
                                                                 extendObject('system.discovery', {
                                                                     native: { newInstances },
                                                                 });
@@ -862,18 +891,13 @@ function DiscoveryDialog({
                                                 </div>
                                             </div>
                                         </div>
-                                        {currentInstall === idx + 1 && !installStatus[idx + 1] && (
-                                            <CircularProgress size={20} />
-                                        )}
-                                        {installStatus[idx + 1] === 'error' ? (
-                                            <ReportProblemIcon style={styles.installError} />
-                                        ) : installStatus[idx + 1] === 'success' ? (
-                                            <AssignmentTurnedInIcon style={styles.installSuccess} />
-                                        ) : null}
+                                        {currentInstall === idx + 1 && !installStatus[idx + 1] && <CircularProgress size={20} />}
+                                        {installStatus[idx + 1] === 'error' ? <ReportProblemIcon style={styles.installError} /> :
+                                            installStatus[idx + 1] === 'success' ? <AssignmentTurnedInIcon style={styles.installSuccess} /> : null}
                                     </Box>
                                 ))}
                             </div>
-                            {currentInstall && (installProgress || finishInstall) && (
+                            {currentInstall && (installProgress || finishInstall) &&
                                 <div style={{ overflow: 'hidden', width: 'calc(100% - 260px)' }}>
                                     <Command
                                         noSpacing
@@ -925,7 +949,7 @@ function DiscoveryDialog({
                                                         && Object.keys(instancesInputsParams.native).length
                                                 ) {
                                                     Object.assign(data.native, instancesInputsParams.native);
-                                                    setInstancesInputsParams({});
+                                                    setInstancesInputsParams({ native: { } });
                                                 }
                                                 if (checkSelectHosts && hostInstances[data._id]) {
                                                     data.common.host = hostInstances[data._id];
@@ -969,11 +993,7 @@ function DiscoveryDialog({
                                                                     if (!find) {
                                                                         return true;
                                                                     }
-                                                                    return (
-                                                                        installStatus[
-                                                                            selected.indexOf(find) + 1
-                                                                        ] !== 'success'
-                                                                    );
+                                                                    return installStatus[selected.indexOf(find) + 1] !== 'success';
                                                                 },
                                                             );
                                                             socket.setObject('system.discovery', dataDiscovery);
@@ -1016,10 +1036,7 @@ function DiscoveryDialog({
                                                             if (!find) {
                                                                 return true;
                                                             }
-                                                            return (
-                                                                installStatus[selected.indexOf(find) + 1]
-                                                                        !== 'success'
-                                                            );
+                                                            return installStatus[selected.indexOf(find) + 1] !== 'success';
                                                         });
                                                         socket.setObject('system.discovery', dataDiscovery);
                                                     }
@@ -1028,74 +1045,67 @@ function DiscoveryDialog({
                                             }
                                         }}
                                     />
-                                </div>
-                            )}
+                                </div>}
                         </div>
                     </TabPanel>
                 </div>
             </DialogContent>
             <DialogActions>
-                {step > 0 && step !== 4 && (
-                    <Button
-                        variant="contained"
-                        disabled={step === 0}
-                        onClick={() => {
-                            if (step === 2) {
-                                resetStateBack();
-                            }
-                            stepDown();
-                        }}
-                        color="grey"
-                        startIcon={<NavigateBeforeIcon />}
-                    >
-                        {I18n.t('Back')}
-                    </Button>
-                )}
-                {step === 0 && (
-                    <Button
-                        variant="contained"
-                        autoFocus
-                        disabled={disableScanner}
-                        onClick={discoverScanner}
-                        color="primary"
-                        startIcon={<SearchIcon />}
-                    >
-                        {I18n.t('Discover')}
-                    </Button>
-                )}
-                {step !== 2 && step !== 4 && (
-                    <Tooltip
-                        componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-                        title={
-                            step === 0
-                                ? I18n.t('Skip discovery process and go to install with last scan results')
-                                : ''
+                {step > 0 && step !== 4 && <Button
+                    variant="contained"
+                    disabled={step === 0}
+                    onClick={() => {
+                        if (step === 2) {
+                            resetStateBack();
                         }
-                    >
-                        <span style={{ marginLeft: 8 }}>
-                            <Button
-                                variant="contained"
-                                disabled={
-                                    !discoveryData
-                                        || !discoveryData?.native?.lastScan
-                                        || step === 2
-                                        || disableScanner
-                                        || (step === 1 && !selected.length)
+                        stepDown();
+                    }}
+                    color="grey"
+                    startIcon={<NavigateBeforeIcon />}
+                >
+                    {I18n.t('Back')}
+                </Button>}
+                {step === 0 && <Button
+                    variant="contained"
+                    autoFocus
+                    disabled={disableScanner}
+                    onClick={discoverScanner}
+                    color="primary"
+                    startIcon={<SearchIcon />}
+                >
+                    {I18n.t('Discover')}
+                </Button>}
+                {step !== 2 && step !== 4 && <Tooltip
+                    componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    title={
+                        step === 0
+                            ? I18n.t('Skip discovery process and go to install with last scan results')
+                            : ''
+                    }
+                >
+                    <span style={{ marginLeft: 8 }}>
+                        <Button
+                            variant="contained"
+                            disabled={
+                                !discoveryData
+                                    || !discoveryData?.native?.lastScan
+                                    || step === 2
+                                    || disableScanner
+                                    || (step === 1 && !selected.length)
+                            }
+                            onClick={() => {
+                                stepUp();
+                                if (step === 1) {
+                                    checkInstall();
                                 }
-                                onClick={() => {
-                                    stepUp();
-                                    if (step === 1) {
-                                        checkInstall();
-                                    }
-                                }}
-                                color={step === 1 ? 'primary' : 'grey'}
-                                startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
-                            >
-                                {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
-                            </Button>
-                        </span>
-                    </Tooltip>
-                )}
+                            }}
+                            color={step === 1 ? 'primary' : 'grey'}
+                            startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
+                        >
+                            {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
+                        </Button>
+                    </span>
+                </Tooltip>}
                 <Button
                     variant="contained"
                     disabled={disableScanner}

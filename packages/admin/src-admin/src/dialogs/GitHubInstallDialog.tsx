@@ -28,7 +28,7 @@ import {
 
 import { I18n, Icon, type IobTheme } from '@iobroker/adapter-react-v5';
 
-import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
+import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 
 import npmIcon from '../assets/npm.png';

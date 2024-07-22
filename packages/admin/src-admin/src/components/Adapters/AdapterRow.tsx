@@ -93,7 +93,7 @@ class AdapterRow extends AdapterGeneric<AdapterGenericProps, AdapterGenericState
                     {this.renderVersion()}
                 </Grid>
             </TableCell>
-            <TableCell>{adapter?.licenseInformation?.license || adapter?.license}</TableCell>
+            <TableCell style={{ fontSize: 'smaller' }}>{adapter?.licenseInformation?.license || adapter?.license}</TableCell>
             <TableCell>
                 {this.renderAddInstanceButton()}
                 {this.renderAutoUpgradeButton()}

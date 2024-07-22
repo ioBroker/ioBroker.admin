@@ -45,8 +45,10 @@ import AdapterInstallDialog, {
     type AdaptersContext,
 } from '@/components/Adapters/AdapterInstallDialog';
 import AutoUpgradeConfigDialog from '@/dialogs/AutoUpgradeConfigDialog';
-import sentryIcon from '../../assets/sentry.svg';
+
 import IsVisible from '../IsVisible';
+import { extractUrlLink } from './Utils';
+import sentryIcon from '../../assets/sentry.svg';
 
 export const genericStyles: Record<string, any> = {
     hidden: {
@@ -344,9 +346,10 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderLicenseInfo() {
         const adapter = this.props.context.repository[this.props.adapterName];
+        const link = extractUrlLink(adapter);
 
         return <Link
-            href={adapter.licenseInformation?.link}
+            href={link}
             target="_blank"
             rel="noopener"
             sx={{ color: 'black', '&:hover': { color: 'black' } }}
@@ -770,18 +773,19 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
 
     onUpload() {
         const adapter = this.props.context.repository[this.props.adapterName];
-        // @ts-expect-error licenseUrl is deprecated
-        let url = adapter.licenseUrl || adapter.licenseInformation?.link || adapter.extIcon || '';
-        if (url.includes('/main')) {
-            url = `${url.split('/main')[0]}/main/LICENSE`;
-        } else {
-            url = `${url.split('/master')[0]}/master/LICENSE`;
-        }
+        const url = extractUrlLink(adapter);
+        const licenseType = adapter.licenseInformation?.license || adapter.license;
 
-        const license = adapter.licenseInformation?.license || adapter.license;
-
-        if (license !== 'MIT') {
-            this.setState({ showLicenseDialog: { url, upload: true, adapterName: this.props.adapterName }, showDialog: true });
+        if (licenseType !== 'MIT') {
+            this.setState({
+                showLicenseDialog: {
+                    url,
+                    upload: true,
+                    adapterName: this.props.adapterName,
+                    licenseType,
+                },
+                showDialog: true,
+            });
         } else {
             this.upload(this.props.adapterName, this.props.context);
         }

@@ -9,14 +9,15 @@ import {
 import {
     checkCondition,
     type CompactInstanceInfo,
-    type RepoAdapterObject,
 } from '@/dialogs/AdapterUpdateDialog';
+
 import AddInstanceDialog, { type AdapterDependencies } from '@/dialogs/AddInstanceDialog';
 import LicenseDialog from '@/dialogs/LicenseDialog';
 import type { AdapterInformation } from '@iobroker/js-controller-common-db/build/esm/lib/common/tools';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
+import { extractUrlLink, type RepoAdapterObject } from './Utils';
 
 export type AdapterRating = {
     rating?:           { r: number; c: number };
@@ -83,6 +84,7 @@ export interface AdapterInstallDialogProps {
 export interface AdapterInstallDialogState {
     showLicenseDialog: {
         url: string;
+        licenseType: string;
         upload?: boolean;
         adapterName: string;
     } | null;
@@ -111,6 +113,7 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
         }
 
         return <LicenseDialog
+            licenseType={this.state.showLicenseDialog.licenseType}
             url={this.state.showLicenseDialog.url}
             onClose={result => {
                 if (result) {
@@ -321,22 +324,14 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
     // eslint-disable-next-line react/no-unused-class-component-methods
     onAddInstance(adapterName: string, context: AdaptersContext) {
         const adapter = context.repository[adapterName];
-        // @ts-expect-error licenseUrl is deprecated
-        let url = adapter.licenseUrl ||
-            adapter.licenseInformation?.link || adapter.extIcon || '';
-        if (url.includes('/main')) {
-            url = `${url.split('/main')[0]}/main/LICENSE`;
-        } else {
-            url = `${url.split('/master')[0]}/master/LICENSE`;
-        }
+        const url = extractUrlLink(adapter);
+        const licenseType = adapter.licenseInformation?.license || adapter.license;
 
-        const license = adapter.licenseInformation?.license || adapter.license;
-
-        if (license === 'MIT') {
+        if (licenseType === 'MIT') {
             this.addInstance({ adapterName, context })
                 .catch(e => window.alert(`Cannot add instance: ${e}`));
         } else {
-            this.setState({ showLicenseDialog: { url, adapterName }, showDialog: true });
+            this.setState({ showLicenseDialog: { url, adapterName, licenseType }, showDialog: true });
         }
     }
 

@@ -38,7 +38,7 @@ import {
 
 import {
     Utils, withWidth, TableResize, type AdminConnection,
-    type IobTheme,
+    type IobTheme, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import { localeMap } from './utils';
@@ -209,7 +209,7 @@ const styles: Record<string, any> = {
 type SupportedFeatures = ('insert' | 'update' | 'delete')[];
 
 interface ObjectHistoryDataProps {
-    t: (...text: string[]) => string;
+    t: Translate;
     lang: ioBroker.Languages;
     expertMode: boolean;
     socket: AdminConnection;

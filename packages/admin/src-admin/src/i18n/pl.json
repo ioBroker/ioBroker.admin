@@ -1612,5 +1612,6 @@
   "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "Przesłane dane będą przetwarzane przez ioBroker GmbH wyłącznie w celach statystycznych i nie będą udostępniane podmiotom trzecim.",
   "Next": "Następny",
   "Install selected adapters": "Zainstaluj wybrane adaptery",
-  "More info": "Więcej informacji"
+  "More info": "Więcej informacji",
+  "Read to the end for accept": "Przeczytaj do końca, aby zaakceptować"
 }

@@ -44,7 +44,8 @@ import type AdaptersWorker from '@/Workers/AdaptersWorker';
 import { type AdapterEvent } from '@/Workers/AdaptersWorker';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type { InstanceEvent } from '@/Workers/InstancesWorker';
-import type { CompactInstanceInfo, RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
+import type { CompactInstanceInfo } from '@/dialogs/AdapterUpdateDialog';
+import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 
 import type {
     Ratings,

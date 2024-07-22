@@ -19,7 +19,7 @@ import {
     type AdminConnection,
     type IobTheme,
     type ThemeType,
-    type ThemeName,
+    type ThemeName, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 // Icons
@@ -58,7 +58,7 @@ const styles: Record<string, any> = {
 };
 
 interface ObjectCustomDialogProps {
-    t: (word: string, ...args: any[]) => string;
+    t: Translate;
     lang: ioBroker.Languages;
     expertMode?: boolean;
     objects: Record<string, ioBroker.Object>;
