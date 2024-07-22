@@ -147,7 +147,7 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
                         {h1Props.children}
                     </Box>,
                     // eslint-disable-next-line react/no-unstable-nested-components
-                    h2: h1Props => <Box
+                    h2: h2Props => <Box
                         component="h2"
                         sx={(theme: IobTheme) => ({
                             backgroundColor: theme.palette.secondary.main,
@@ -158,7 +158,7 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
                             pb: '4px',
                         })}
                     >
-                        {h1Props.children}
+                        {h2Props.children}
                     </Box>,
                 }}
             >
