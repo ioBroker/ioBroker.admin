@@ -184,7 +184,7 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
     }
 
     return <Dialog
-        onClose={onClose}
+        onClose={() => onClose()}
         open={!0}
         maxWidth="lg"
         fullWidth

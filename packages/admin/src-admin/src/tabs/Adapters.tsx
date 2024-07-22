@@ -1822,6 +1822,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             {this.renderSlowConnectionWarning()}
             {this.renderGitHubInstallDialog(context)}
             {this.renderWebserverUpgrade()}
+            {this.renderDialogs(context)}
         </TabContainer>;
     }
 }

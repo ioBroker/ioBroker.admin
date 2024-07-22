@@ -115,8 +115,7 @@ interface AddInstanceDialogProps {
     currentHost: string;
     currentInstance: string;
     t: Translate;
-    onClick: () => void;
-    onClose: () => void;
+    onClose: (result: boolean) => void;
     onHostChange: (host: string) => void;
     onInstanceChange: (event: SelectChangeEvent<string>) => void;
     instances: Record<string, CompactInstanceInfo>;
@@ -248,7 +247,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
         const checkDeps = this.checkDependencies();
 
         return <Dialog
-            onClose={this.props.onClose}
+            onClose={() => {}}
             open={!0}
             sx={{ '& .MuiDialog-paper': styles.paper }}
         >
@@ -257,7 +256,11 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                     {this.t('You are going to add new instance:')}
                     {' '}
                     {this.props.adapter}
-                    <IconButton size="large" sx={styles.closeButton} onClick={this.props.onClose}>
+                    <IconButton
+                        size="large"
+                        sx={styles.closeButton}
+                        onClick={() => this.props.onClose(false)}
+                    >
                         <CloseIcon />
                     </IconButton>
                     {this.messages && this.lang !== 'en' && this.props.toggleTranslation ? <IconButton
@@ -306,10 +309,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                     variant="contained"
                     autoFocus
                     disabled={!!checkDeps}
-                    onClick={() => {
-                        this.props.onClick();
-                        this.props.onClose();
-                    }}
+                    onClick={() => this.props.onClose(true)}
                     color="primary"
                     startIcon={<AddIcon />}
                 >
@@ -317,7 +317,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={() => this.props.onClose()}
+                    onClick={() => this.props.onClose(false)}
                     color="grey"
                     startIcon={<CloseIcon />}
                 >

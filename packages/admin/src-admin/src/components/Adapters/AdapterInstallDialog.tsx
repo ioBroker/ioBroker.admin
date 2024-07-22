@@ -116,15 +116,17 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
             licenseType={this.state.showLicenseDialog.licenseType}
             url={this.state.showLicenseDialog.url}
             onClose={result => {
-                if (result) {
-                    if (this.state.showLicenseDialog.upload) {
-                        this.upload(this.state.showLicenseDialog.adapterName, context);
-                    } else {
-                        this.addInstance({ adapterName: this.state.showLicenseDialog.adapterName, context })
-                            .catch(e => window.alert(`Cannot add instance: ${e}`));
+                const showLicenseDialog = result ? this.state.showLicenseDialog : null;
+                this.setState({ showLicenseDialog: null, showDialog: false }, () => {
+                    if (showLicenseDialog) {
+                        if (showLicenseDialog.upload) {
+                            this.upload(showLicenseDialog.adapterName, context);
+                        } else {
+                            this.addInstance({ adapterName: showLicenseDialog.adapterName, context })
+                                .catch(e => window.alert(`Cannot add instance: ${e}`));
+                        }
                     }
-                }
-                this.setState({ showLicenseDialog: null, showDialog: false });
+                });
             }}
         />;
     }
@@ -300,12 +302,23 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
             currentHost={`system.host.${this.state.addInstanceHostName}`}
             currentInstance={this.state.addInstanceId}
             t={context.t}
-            onClick={() => this.addInstance({ adapterName: this.state.addInstanceDialog, instance: this.state.addInstanceId, context })}
-            onClose={() => this.setState({
-                addInstanceDialog: '',
-                addInstanceId: 'auto',
-                showDialog: false,
-            })}
+            onClose={(result: boolean) => {
+                const addInstanceDialog = result ? this.state.addInstanceDialog : '';
+                const addInstanceId = result ? this.state.addInstanceId : '';
+                this.setState({
+                    addInstanceDialog: '',
+                    addInstanceId: 'auto',
+                    showDialog: false,
+                }, () => {
+                    if (addInstanceDialog) {
+                        this.addInstance({
+                            adapterName: addInstanceDialog,
+                            instance: addInstanceId,
+                            context,
+                        });
+                    }
+                });
+            }}
             onHostChange={hostName => this.setState({ addInstanceHostName: hostName.replace(/^system\.host\./, '') })}
             onInstanceChange={event => this.setState({ addInstanceId: event.target.value })}
             adapterObject={context.repository[this.state.addInstanceDialog]}

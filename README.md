@@ -86,6 +86,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected installation of adapter with the license unequal to MIT
+
 ### 7.0.18 (2024-07-22)
 * (bluefox) Corrected export from JSON table
 * (foxriver76) added `qrCode` component to JSON config
