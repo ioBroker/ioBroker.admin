@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.17",
+    "version": "7.0.18",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.18": {
+        "en": "Corrected export from JSON table\nadded `qrCode` component to JSON config\nCorrected adding of adapters with licenses (other than MIT)\nImproved license dialog",
+        "de": "Berichtigte Ausfuhr aus JSON-Tabelle\n`qrCode`-Komponente zu JSON config hinzugefügt\nKorrigiertes Hinzufügen von Adaptern mit Lizenzen (außer MIT)\nVerbesserter Lizenzdialog",
+        "ru": "Исправленный экспорт из таблицы JSON\nдобавлен компонент \"qrCode\" в конфигурацию JSON\nИсправленное добавление адаптеров с лицензиями (кроме MIT)\nУлучшенный диалог лицензии",
+        "pt": "Exportação correta da tabela JSON\nadicionado componente `qrCode` para JSON config\nAdição correta de adaptadores com licenças (excepto MIT)\nMelhor diálogo de licença",
+        "nl": "Gecorrigeerde uitvoer uit JSON tabel\ntoegevoegd aan JSON config\nGecorrigeerde toevoeging van adapters met licenties (andere dan MIT)\nVerbeterde licentiedialoog",
+        "fr": "Exportation corrigée à partir du tableau JSON\najouté un composant `qrCode` à la configuration JSON\nAjout corrigé d'adaptateurs avec licences (autres que MIT)\nBoîte de dialogue de licence améliorée",
+        "it": "Esportazione corretta dalla tabella JSON\naggiunto componente `qrCode` a JSON config\nCorretto l'aggiunta di adattatori con licenze (diverse da MIT)\nDialogo di licenza migliorata",
+        "es": "Exportación corregida del cuadro JSON\nagregado `qrCode` componente a JSON config\nAgregado corregido de adaptadores con licencias (excepto MIT)\nDiálogo de licencia mejorado",
+        "pl": "Skorygowany wywóz z tabeli JSON\ndodany komponent 'qrCode' do konfiguracji JSON\nPoprawione dodawanie adapterów z licencjami (innych niż MIT)\nUlepszone okno licencji",
+        "uk": "Корисний експорт з таблиці JSON\nдодано компонент `qrCode` до JSON config\nВиправлено додавання адаптерів з ліцензіями (понад MIT)\nПокращено діалогове вікно ліцензії",
+        "zh-cn": "从 JSON 表校正的导出\n在JSON配置中添加“qrCode”组件\n修正了增加持有许可证的适配器(除麻省理工学院外)\n改进许可证对话框"
+      },
       "7.0.17": {
         "en": "Corrected the CRON description\nCorrected the Device Manager Component",
         "de": "Korrektur der CRON-Beschreibung\nDie Gerätemanager-Komponente wurde korrigiert",
@@ -84,19 +97,6 @@
         "zh-cn": "主机标签细节现在用经典的 chevron 来表示,而不是闪烁指示器\n显示更突出的 js 控制器更改日志\n更正更新按钮"
       },
       "7.0.9": {
-        "en": "Improved the mobile object browser",
-        "de": "Verbessert den mobilen Objekt-Browser",
-        "ru": "Улучшен браузер мобильных объектов",
-        "pt": "Melhoria do navegador de objetos móveis",
-        "nl": "Verbeterde mobiele objectbrowser",
-        "fr": "Amélioration du navigateur des objets mobiles",
-        "it": "Migliorato il browser degli oggetti mobili",
-        "es": "Mejorar el navegador de objeto móvil",
-        "pl": "Ulepszenie mobilnej przeglądarki obiektów",
-        "uk": "Покращення веб-браузера",
-        "zh-cn": "改进移动对象浏览器"
-      },
-      "7.0.8": {
         "en": "Improved the mobile object browser",
         "de": "Verbessert den mobilen Objekt-Browser",
         "ru": "Улучшен браузер мобильных объектов",

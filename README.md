@@ -86,7 +86,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### **WORK IN PROGRESS**
+### 7.0.18 (2024-07-22)
 * (bluefox) Corrected export from JSON table
 * (foxriver76) added `qrCode` component to JSON config
 * (bluefox) Corrected adding of adapters with licenses (other than MIT)
@@ -105,11 +105,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.0.12 (2024-07-10)
 * (bluefox) Changed a recommended node.js version from 18 to 20
-
-### 7.0.11 (2024-07-03)
-* (foxriver76) host tab details are now indicated by a classic chevron instead of blink indicator
-* (foxriver76) show js-controller changelog more prominent
-* (bluefox) correcting the update button
 
 ## License
 The MIT License (MIT)
