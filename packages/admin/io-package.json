@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.18",
+    "version": "7.0.19",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.19": {
+        "en": "Corrected installation of adapter with the license unequal to MIT",
+        "de": "Korrigierte Installation des Adapters mit der Lizenz ungleich MIT",
+        "ru": "Корректированная установка адаптера с лицензией, не равной MIT",
+        "pt": "Instalação correta do adaptador com a licença desigual ao MIT",
+        "nl": "Gecorrigeerde installatie van adapter met de licentie ongelijk aan MIT",
+        "fr": "Installation corrigée de l'adaptateur avec la licence inégale à MIT",
+        "it": "Installazione corretta dell'adattatore con la licenza non uguale a MIT",
+        "es": "Instalación corregida del adaptador con la licencia desigual al MIT",
+        "pl": "Poprawiona instalacja adaptera z licencją nierówną MIT",
+        "uk": "Виправлена установка адаптера з ліцензійним нерівномірним для MIT",
+        "zh-cn": "修正了适配器的安装,其许可与麻省理工学院不平等"
+      },
       "7.0.18": {
         "en": "Corrected export from JSON table\nadded `qrCode` component to JSON config\nCorrected adding of adapters with licenses (other than MIT)\nImproved license dialog",
         "de": "Berichtigte Ausfuhr aus JSON-Tabelle\n`qrCode`-Komponente zu JSON config hinzugefügt\nKorrigiertes Hinzufügen von Adaptern mit Lizenzen (außer MIT)\nVerbesserter Lizenzdialog",
@@ -95,19 +108,6 @@
         "pl": "szczegóły karty hosta są teraz wskazywane przez klasyczny chevron zamiast wskaźnika mrugnięcia\nshow js- controller changelog bardziej widoczne\npoprawianie przycisku aktualizacji",
         "uk": "деталі вкладок ведучих тепер вказують класичний шеврон замість індикатора blink\nпоказати js-controller зміниlog докладніше\nвиправлення кнопки оновлення",
         "zh-cn": "主机标签细节现在用经典的 chevron 来表示,而不是闪烁指示器\n显示更突出的 js 控制器更改日志\n更正更新按钮"
-      },
-      "7.0.9": {
-        "en": "Improved the mobile object browser",
-        "de": "Verbessert den mobilen Objekt-Browser",
-        "ru": "Улучшен браузер мобильных объектов",
-        "pt": "Melhoria do navegador de objetos móveis",
-        "nl": "Verbeterde mobiele objectbrowser",
-        "fr": "Amélioration du navigateur des objets mobiles",
-        "it": "Migliorato il browser degli oggetti mobili",
-        "es": "Mejorar el navegador de objeto móvil",
-        "pl": "Ulepszenie mobilnej przeglądarki obiektów",
-        "uk": "Покращення веб-браузера",
-        "zh-cn": "改进移动对象浏览器"
       }
     },
     "desc": {

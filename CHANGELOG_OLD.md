@@ -1,6 +1,13 @@
 ## 6.12.1 (2023-10-29)
 * (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
 * (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+## 7.0.12 (2024-07-10)
+* (bluefox) Changed a recommended node.js version from 18 to 20
+
+## 6.12.1 (2023-10-29)
+* (foxriver76) optimzied the notificaiton popup (auto-extend first entry per category, respect line breaks, respect severity for icons)
+* (theimo1221) #2178 Stabilize onObjectChange handling during creation of new objects in WebUi, to directly show new element.
+
 ## 7.0.11 (2024-07-03)
 * (foxriver76) host tab details are now indicated by a classic chevron instead of blink indicator
 * (foxriver76) show js-controller changelog more prominent
