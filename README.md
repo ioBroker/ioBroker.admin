@@ -82,9 +82,6 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
-## Todo
-- Add to wizard (very first page): how your statistics will be processed.
-- Add colors to menu item with the possibility to change turn it off or only icon
 <!--
 	### **WORK IN PROGRESS**
 -->
