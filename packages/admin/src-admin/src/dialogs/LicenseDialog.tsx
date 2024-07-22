@@ -17,7 +17,7 @@ import {
     ArrowDownward as IconArrowDownward,
 } from '@mui/icons-material';
 
-import {I18n, IconCopy, type IobTheme} from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({
@@ -132,6 +132,7 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
             content = <Markdown
                 className="markdown"
                 components={{
+                    // eslint-disable-next-line react/no-unstable-nested-components
                     h1: h1Props => <Box
                         component="h1"
                         sx={(theme: IobTheme) => ({
@@ -145,6 +146,7 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
                     >
                         {h1Props.children}
                     </Box>,
+                    // eslint-disable-next-line react/no-unstable-nested-components
                     h2: h1Props => <Box
                         component="h2"
                         sx={(theme: IobTheme) => ({
