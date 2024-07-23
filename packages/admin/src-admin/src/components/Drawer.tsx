@@ -751,7 +751,9 @@ v
                 this.props.theme,
                 styles.root,
                 this.props.state !== STATES.opened ? styles.rootCompactWidth : (this.props.editMenuList ? styles.rootEditWidth : styles.rootFullWidth),
-                { '&.MuiDrawer-paper': styles.paper },
+                {
+                    '& .MuiDrawer-paper': styles.paper,
+                },
             )}
             variant="persistent"
             anchor="left"
@@ -778,6 +780,7 @@ v
                 ref={this.refEditButton}
             >
                 <CustomPopper
+                    size="small"
                     editMenuList={this.props.editMenuList}
                     onClick={() => this.props.setEditMenuList(!this.props.editMenuList)}
                 />

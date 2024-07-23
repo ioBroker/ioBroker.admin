@@ -17,16 +17,17 @@ let timer: ReturnType<typeof setTimeout>;
 interface CustomPopperProps {
     editMenuList: boolean;
     onClick: () => void;
+    size?: 'small' | 'medium' | 'large';
 }
 
-const CustomPopper = ({ editMenuList, onClick }: CustomPopperProps) => {
+const CustomPopper = ({ editMenuList, onClick, size }: CustomPopperProps) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const [placement, setPlacement] = React.useState<'right' | null>(null);
 
     return <>
         <IconButton
-            size="large"
+            size={size || 'large'}
             style={editMenuList ? { color: 'red' } : null}
             onClick={el => {
                 onClick();
