@@ -648,9 +648,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     }
                 });
 
-            if (this.state.error) {
-                newState.error = false;
-            }
+            newState.error = false;
             newState.readError = this.checkFunction(json.common?.alias?.read, false);
             newState.writeError = this.checkFunction(json.common?.alias?.write, true);
         } else {
