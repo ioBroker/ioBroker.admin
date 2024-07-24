@@ -209,6 +209,7 @@ jobs:
           body: ${{ steps.extract_release.outputs.BODY }}
 
       - name: Notify Sentry.io about the release
+        if: steps.automerge.outputs.mergeResult == 'merged'
         run: |
           cd packages/admin
           npm i -g @sentry/cli
