@@ -82,43 +82,56 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
             .catch(() => setLoading(false));
     }, [url]);
 
-    useEffect(() => {
-        if (!loading && text && text.startsWith('#')) {
-            if (divRef.current) {
-                const divMarkdown: HTMLDivElement | null = divRef.current.querySelector('.markdown');
-                if (divMarkdown) {
-                    installTimer.current && clearInterval(installTimer.current);
-                    installTimer.current = null;
-                    divMarkdown.onscroll = (event: Event) => {
-                        const div: HTMLDivElement = event.target as HTMLDivElement;
-                        const _scrolled = div.scrollTop + div.clientHeight >= div.scrollHeight;
-                        if (!scrolled && _scrolled) {
-                            setScrolled(_scrolled);
-                        }
-                    };
-                } else if (!installTimer.current) {
-                    installTimer.current = setInterval(() => {
-                        const _divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown');
-                        if (_divMarkdown) {
-                            installTimer.current && clearInterval(installTimer.current);
-                            installTimer.current = null;
-                        } else {
-                            _divMarkdown.onscroll = (event: Event) => {
-                                const div: HTMLDivElement = event.target as HTMLDivElement;
-                                const _scrolled = div.scrollTop + div.clientHeight >= div.scrollHeight;
-                                if (!scrolled && _scrolled) {
-                                    setScrolled(_scrolled);
-                                }
-                            };
-                        }
-                    }, 100);
+    const installOnscroll = (): boolean => {
+        const divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown');
+        if (divMarkdown) {
+            // install on scroll only if the scrollbar is visible
+            if (divMarkdown.scrollHeight <= divMarkdown.clientHeight) {
+                return true;
+            }
+
+            installTimer.current && clearInterval(installTimer.current);
+            installTimer.current = null;
+            divMarkdown.onscroll = (event: Event) => {
+                const div: HTMLDivElement = event.target as HTMLDivElement;
+                const _scrolled = div.scrollTop + div.clientHeight >= div.scrollHeight;
+                if (!scrolled && _scrolled) {
+                    setScrolled(_scrolled);
                 }
+            };
+            return true;
+        }
+        return false;
+    };
+
+    useEffect(() => {
+        if (!loading && text) {
+            if (text.startsWith('#')) {
+                if (!installOnscroll()) {
+                    installTimer.current = installTimer.current || setInterval(() => installOnscroll(), 100);
+                }
+            } else if (preRef.current) {
+                if (preRef.current.scrollHeight <= preRef.current.clientHeight) {
+                    setScrolled(true);
+                }
+            } else {
+                // check in 100 ms the existence of the preRef
+                setTimeout(() => {
+                    if (preRef.current) {
+                        if (preRef.current.scrollHeight <= preRef.current.clientHeight) {
+                            setScrolled(true);
+                        }
+                    } else {
+                        setScrolled(true);
+                    }
+                }, 100);
             }
         }
 
         return () => {
             installTimer.current && clearInterval(installTimer.current);
             installTimer.current = null;
+
             const _divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown');
             if (_divMarkdown) {
                 _divMarkdown.onscroll = null;
