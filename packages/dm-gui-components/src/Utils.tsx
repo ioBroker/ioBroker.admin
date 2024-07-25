@@ -137,7 +137,7 @@ function getIconByName(name: string, color: string): React.JSX.Element | null {
     if (name === 'forward' || name === 'next') {
         return <FastForward style={{ color }} />;
     }
-        if (name === 'rewind' || name === 'previous') {
+    if (name === 'rewind' || name === 'previous') {
         return <FastRewind style={{ color }} />;
     }
     if (name === 'lamp' || name === 'light') {
