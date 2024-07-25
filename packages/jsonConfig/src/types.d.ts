@@ -143,6 +143,7 @@ export interface ConfigItemTabs extends ConfigItem {
 
 export interface ConfigItemText extends ConfigItem {
     type: 'text';
+    /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: number;
@@ -240,6 +241,7 @@ export interface ConfigItemSlider extends ConfigItem {
 
 export interface ConfigItemTopic extends ConfigItem {
     type: 'topic';
+    /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: number;
@@ -353,6 +355,7 @@ export interface ConfigItemAutocompleteSendTo extends Omit<ConfigItem, 'data'> {
     options?: (string | ConfigItemSelectOption)[];
     data?: Record<string, any>;
     freeSolo?: boolean;
+    /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: string;
@@ -385,12 +388,19 @@ export interface ConfigItemHeader extends ConfigItem {
 
 export interface ConfigItemCoordinates extends ConfigItem {
     type: 'coordinates';
+    /** divider between latitude and longitude. Default "," (Used if longitudeName and latitudeName are not defined) */
     divider?: string;
+    /** init field with current coordinates if empty */
     autoInit?: boolean;
+    /** if defined, the longitude will be stored in this attribute, divider will be ignored */
     longitudeName?: string;
+    /** if defined, the latitude will be stored in this attribute, divider will be ignored */
     latitudeName?: string;
+    /** if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from system.config, a boolean will be saved to the given name */
     useSystemName?: string;
+    /** max length of the text in field */
     maxLength?: number;
+    /** @deprecated use maxLength */
     max?: number;
 }
 
@@ -408,6 +418,7 @@ export interface ConfigItemCustom extends ConfigItem {
 
 export interface ConfigItemDatePicker extends ConfigItem {
     type: 'datePicker';
+    /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: number;
