@@ -86,8 +86,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
-### 7.0.19 (2024-07-22)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected installation of adapter with the license unequal to MIT
+* (bluefox) Corrected width of a side menu
+* (bluefox) Allowed the pasting into object JSON editor
 
 ### 7.0.18 (2024-07-22)
 * (bluefox) Corrected export from JSON table
