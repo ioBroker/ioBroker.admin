@@ -13,6 +13,14 @@ import {
     MenuBook as IconMenuBook,
     Help as IconHelp,
     UploadFile as IconUploadFile,
+    Edit as IconEdit,
+    Person as IconPerson,
+    Group as IconGroup,
+    Delete as IconDelete,
+    Refresh as IconRefresh,
+    Add as IconAdd,
+    LinkOff as IconLinkOff,
+    Link as LinkIcon,
 } from '@mui/icons-material';
 
 import {
@@ -413,6 +421,22 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             icon = <IconHelp />;
         } else if (iconSettings === 'upload') {
             icon = <IconUploadFile />;
+        } else if (iconSettings === 'edit') {
+            icon = <IconEdit />;
+        } else if (iconSettings === 'user') {
+            icon = <IconPerson />;
+        } else if (iconSettings === 'group') {
+            icon = <IconGroup />;
+        } else if (iconSettings === 'delete') {
+            icon = <IconDelete />;
+        } else if (iconSettings === 'refresh') {
+            icon = <IconRefresh />;
+        } else if (iconSettings === 'add') {
+            icon = <IconAdd />;
+        } else if (iconSettings === 'unpair') {
+            icon = <IconLinkOff />;
+        } else if (iconSettings === 'pair') {
+            icon = <LinkIcon />;
         } else if (iconSettings) {
             if (iconSettings.endsWith('.png') || iconSettings.endsWith('.svg') || iconSettings.endsWith('.jpg')) {
                 // this path is relative to ./adapter/NAME

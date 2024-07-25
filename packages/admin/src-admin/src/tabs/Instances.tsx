@@ -36,7 +36,7 @@ import {
     type IobTheme,
     type ThemeName,
     type ThemeType,
-    TabHeader,
+    TabHeader, type Translate,
 } from '@iobroker/adapter-react-v5';
 
 import AdminUtils from '@/AdminUtils';
@@ -84,7 +84,7 @@ const styles: Record<string, any> = {
 };
 
 interface InstancesProps {
-    t: (word: string, ...args: any[]) => string;
+    t: Translate;
     lang: ioBroker.Languages;
     themeType: ThemeType;
     themeName: ThemeName;
@@ -96,8 +96,6 @@ interface InstancesProps {
     currentHost: string;
     currentHostName: string;
     hostname: string;
-    protocol: string;
-    port: number;
     adminInstance: string;
     expertMode: boolean;
     repository: Record<string, any>;
@@ -163,7 +161,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     private readonly wordCache: Record<string, string>;
 
-    private readonly t: (word: string, arg1?: any, arg2?: any) => string;
+    private readonly t: Translate;
 
     private readonly inputRef: React.RefObject<HTMLInputElement>;
 
@@ -322,6 +320,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
         const host = this.states[memRssId];
         let processes = 1;
         let mem: number = host ? parseFloat(host.val as string) || 0 : 0;
+        const hosts: Record<string, ioBroker.HostObject> = {};
+        this.props.hosts.forEach(_host => hosts[_host._id] = _host);
+
         for (let i = 0; i < instances.length; i++) {
             const inst = instances[i];
             if (!inst || !inst.common || inst.common.host !== this.props.currentHostName) {
@@ -358,9 +359,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
         // Do not make here Object.keys, as we have got an invalid order in this case
         for (let i = 0; i < instances.length; i++) {
             const obj = instances[i];
-            const common = obj ? obj.common : null;
-            const objId = obj._id.split('.');
-            const instanceId = objId[objId.length - 1];
+            const common = obj.common || null;
+            const instanceId = parseInt(obj._id.split('.').pop(), 10);
 
             if (common.compactGroup && typeof common.compactGroup === 'number' && maxCompactGroupNumber < common.compactGroup) {
                 maxCompactGroupNumber = common.compactGroup;
@@ -388,7 +388,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 links: [],
             };
 
-            const rawLinks: Record<string, string> | string = common.localLinks || common.localLink || '';
+            const rawLinks: Record<string, string | ioBroker.LocalLink> | string = common.localLinks || common.localLink || '';
             let links: Record<string, string | InstanceLink> | null = null;
             if (rawLinks && typeof rawLinks === 'string') {
                 links = { _default: rawLinks as string };
@@ -407,14 +407,17 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     link = links[linkName] as InstanceLink;
                 }
 
-                const urls = AdminUtils.replaceLink(link.link, common.name, instanceId, {
-                    objects: instancesFromWorker,
-                    hostname: this.props.hostname,
-                    protocol: this.props.protocol,
-                    port: this.props.port,
-                    hosts: this.props.hosts,
-                    adminInstance: this.props.adminInstance,
-                }) || [];
+                const urls = AdminUtils.replaceLink(
+                    link.link,
+                    common.name,
+                    instanceId,
+                    {
+                        instances: instancesFromWorker,
+                        hostname: this.props.hostname,
+                        hosts,
+                        adminInstance: this.props.adminInstance,
+                    },
+                ) || [];
 
                 if (urls.length === 1) {
                     instance.links.push({

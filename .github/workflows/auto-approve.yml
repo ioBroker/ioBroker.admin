@@ -1,0 +1,16 @@
+name: Auto approve
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  auto-approve:
+    if: |
+      github.actor == 'foxriver76' &&
+      github.event.label.name == 'automated pr 🔧'
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/auto-approve-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

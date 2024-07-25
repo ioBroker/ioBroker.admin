@@ -82,15 +82,20 @@ This project uses icons from [Flaticon](https://www.flaticon.com/).
 ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
-## Todo
-- Add to wizard (very first page): how your statistics will be processed.
-- Add colors to menu item with the possibility to change turn it off or only icon
 <!--
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
+* (bluefox) Corrected installation of adapter with the license unequal to MIT
+* (bluefox) Corrected width of a side menu
+* (bluefox) Allowed the pasting into object JSON editor
+
+### 7.0.18 (2024-07-22)
 * (bluefox) Corrected export from JSON table
+* (foxriver76) added `qrCode` component to JSON config
+* (bluefox) Corrected adding of adapters with licenses (other than MIT)
+* (bluefox) Improved license dialog
 
 ### 7.0.17 (2024-07-15)
 * (bluefox) Corrected the CRON description
@@ -102,14 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.0.13 (2024-07-12)
 * (bluefox) Do not send `sendto` requests if control is hidden
 * (bluefox) Read recommended versions from `iobroker/iobroker`
-
-### 7.0.12 (2024-07-10)
-* (bluefox) Changed a recommended node.js version from 18 to 20
-
-### 7.0.11 (2024-07-03)
-* (foxriver76) host tab details are now indicated by a classic chevron instead of blink indicator
-* (foxriver76) show js-controller changelog more prominent
-* (bluefox) correcting the update button
 
 ## License
 The MIT License (MIT)

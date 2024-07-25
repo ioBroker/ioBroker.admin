@@ -29,8 +29,8 @@ import {
     type Translate,
 } from '@iobroker/adapter-react-v5';
 
-import type { RepoAdapterObject } from '@/dialogs/AdapterUpdateDialog';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
+import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
 

@@ -116,33 +116,62 @@ interface ReverseProxyItem {
     paths: { path: string; instance: string }[];
 }
 
+interface LinkItem {
+    id: string;
+    link: string;
+    name: string;
+    description: string;
+    order: number;
+
+    color?: string;
+    icon: string;
+    cloud?: string;
+    pro?: string;
+    intro?: boolean;
+    /** Is this link should be first */
+    default?: boolean;
+}
+
 interface IntroInstanceItem {
     id: string;
     name?: string;
     color?: string;
     description?: string;
     image?: string;
-    port?: number;
     link?: string;
     linkName?: string;
     order?: number;
     info: string;
+    port?: number;
 }
 
 interface HostData {
     alive: boolean;
     time?: number;
+    _nodeNewest?: string;
+    _nodeNewestNext?: string;
+    'Node.js'?: string;
+    _npmNewest?: string;
+    NPM?: string;
+    Platform?: 'win32' | 'linux' | 'darwin' | 'freebsd' | 'sunos' | string;
+    RAM?: number;
+    _npmNewestNext?: string;
     _versions?: Record<string, string>;
-    [key: string]: any;
+    dockerInformation?: {
+        isDocker: boolean;
+        isOfficial: boolean;
+        officialVersion: string;
+    };
+    [key: string]: string | boolean | number | Record<string, string | boolean>;
 }
 
-const formatInfo: Record<string, (seconds: number, t?: Translate) => string>  = {
-    Uptime:        AdminUtils.formatSeconds,
+const formatInfo: Record<string, (seconds: number, t?: Translate) => string> = {
+    Uptime: AdminUtils.formatSeconds,
     'System uptime': AdminUtils.formatSeconds,
-    RAM:           AdminUtils.formatRam,
-    Speed:         AdminUtils.formatSpeed,
-    'Disk size':     AdminUtils.formatBytes,
-    'Disk free':     AdminUtils.formatBytes,
+    RAM: AdminUtils.formatRam,
+    Speed: AdminUtils.formatSpeed,
+    'Disk size': AdminUtils.formatBytes,
+    'Disk free': AdminUtils.formatBytes,
 };
 
 interface IntroProps {
@@ -153,8 +182,6 @@ interface IntroProps {
     instancesWorker: InstancesWorker;
     hostsWorker: HostsWorker;
     hostname: string;
-    protocol: string;
-    port: number;
     adminInstance: string;
     theme: IobTheme;
 }
@@ -203,19 +230,19 @@ type ItemElement = ItemCamera | ItemLink;
 interface IntroState {
     /** Difference between client and host time in ms */
     hostTimeDiffMap: Map<string, number>;
-    hostsData: Record<string, any>;
+    hostsData: Record<string, HostData>;
     alive: Record<string, boolean>;
     reverseProxy: null | ReverseProxyItem[];
     hasUnsavedChanges: boolean;
     openSnackBar: boolean;
     editLinkIndex: number;
     editLink: boolean;
-    link: null | Record<string, any>;
+    link: null | ItemElement;
     introLinks: ItemElement[] | null;
     edit: boolean;
     deactivated: string[] | null;
-    instances: null | any[];
-    hosts: any;
+    instances: null | IntroInstanceItem[];
+    hosts: CompactHost[] | null;
     /** If controller supports upgrade of nodejs */
     nodeUpdateSupported: boolean;
     /** If node update dialog should be shown */
@@ -325,7 +352,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         });
 
         if (hostsId.length) {
-            const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
+            const hostsData: Record<string, HostData> = JSON.parse(JSON.stringify(this.state.hostsData));
 
             const results = await Promise.all(hostsId.map(id => this.getHostData(id, alive[id])));
             results.forEach(res => hostsData[res.id] = this.preprocessHostData(res.data));
@@ -344,7 +371,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         hostsId = events.map(event => event.id);
 
         if (hostsId.length) {
-            const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
+            const hostsData: Record<string, HostData> = JSON.parse(JSON.stringify(this.state.hostsData));
 
             Promise.all(hostsId.map(id => this.getHostData(id)))
                 .then(results => {
@@ -356,7 +383,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     async activateEditMode() {
         const systemConfig: ioBroker.SystemConfigObject = await this.props.socket.getSystemConfig(true);
-        const data: Record<string, any> = await this.getInstances(true, null, systemConfig);
+        const data: { instances: IntroInstanceItem[]; deactivated: string[] } = await this.getInstances(true, null, systemConfig);
         const introLinks = systemConfig?.native?.introLinks ? systemConfig.native.introLinks as ItemElement[] : [];
 
         this.introLinksOriginal = JSON.stringify(introLinks);
@@ -420,8 +447,15 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     linkText = linkText.substring(0, pos);
                 }
 
+                // ignore own admin instance
+                if (instance.id === this.props.adminInstance) {
+                    return null;
+                }
+
                 // eslint-disable-next-line no-restricted-properties
-                let isShowInstance = window.isFinite(instance.id.split('.').pop());
+                let isShowInstance = window.isFinite(
+                    instance.id.split('.').pop() as any,
+                );
                 if (isShowInstance) {
                     // try to find second instance of a same type
                     isShowInstance = !!this.state.instances?.find(inst =>
@@ -586,12 +620,13 @@ class Intro extends React.Component<IntroProps, IntroState> {
             buttons.push(<Fab
                 key="add"
                 color="primary"
+                size="small"
                 sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.addButton)}
                 onClick={() =>
                     this.setState({
                         editLink: true,
                         editLinkIndex: -1,
-                        link: {},
+                        link: {} as ItemCamera | ItemLink,
                     })}
             >
                 <AddIcon />
@@ -599,6 +634,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
             buttons.push(<Fab
                 key="save"
+                size="small"
                 color="primary"
                 disabled={!this.state.hasUnsavedChanges}
                 sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.saveButton)}
@@ -609,6 +645,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
             buttons.push(<Fab
                 key="close"
+                size="small"
                 color="primary"
                 sx={UtilsCommon.getStyle(this.props.theme, styles.button, styles.closeButton)}
                 onClick={() => this.deactivateEditMode()}
@@ -618,6 +655,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         } else {
             buttons.push(<Fab
                 color="primary"
+                size="small"
                 key="edit"
                 style={styles.button}
                 onClick={() => this.activateEditMode()}
@@ -693,7 +731,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         const promises = hosts.map(obj => this.getHostData(obj._id));
 
         const results = await Promise.all(promises);
-        const hostsData: Record<string, any> = {};
+        const hostsData: Record<string, HostData> = {};
         const alive: Record<string, boolean> = {};
         results.forEach(res => {
             hostsData[res.id] = this.preprocessHostData(res.data);
@@ -704,47 +742,59 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     static applyReverseProxy(
         webReverseProxyPath: ReverseProxyItem,
-        instances: any[],
-        instance: Record<string, any>,
+        instances: Record<string, ioBroker.InstanceObject>,
+        instance: IntroInstanceItem,
     ) {
         webReverseProxyPath?.paths.forEach(item => {
             if (item.instance === instance.id) {
                 instance.link = item.path;
             } else if (item.instance.startsWith('web.')) {
                 // if this is a web instance, check if it is the same as the current instance
-                const _obj = instances.find(o => o._id === `system.adapter.${item.instance}`);
-                if (_obj?.native?.port && (instance.link || instance.url).includes(`:${_obj.native.port}`)) {
+                const _obj = instances[`system.adapter.${item.instance}`];
+                if (_obj?.native?.port && (instance.link).includes(`:${_obj.native.port}`)) {
                     // replace
                     const regExp = new RegExp(`^.*:${_obj.native.port}/`);
                     if (instance.link) {
                         instance.link = instance.link.replace(regExp, item.path);
-                    } else if (instance.url) {
-                        instance.url = instance.url.replace(regExp, item.path);
                     }
-                    console.log(instance.link || instance.url);
+                    console.log(instance.link);
                 }
             }
         });
     }
 
     addLinks(
-        link: string,
+        linkItem: LinkItem,
         common: ioBroker.InstanceCommon,
-        instanceId: string,
-        instance: IntroInstanceItem,
-        objects: ioBroker.Object[],
-        hosts: ioBroker.HostObject[],
-        instances: ioBroker.InstanceObject[],
+        instanceId: number,
+        instances: Record<string, ioBroker.InstanceObject>,
+        hosts: Record<string, ioBroker.HostObject>,
         introInstances: IntroInstanceItem[],
     ) {
-        const _urls = AdminUtils.replaceLink(link, common.name, instanceId, {
-            objects,
-            hostname:      this.props.hostname,
-            protocol:      this.props.protocol,
-            port:          this.props.port,
-            adminInstance: this.props.adminInstance,
-            hosts,
-        }) || [];
+        const instance: IntroInstanceItem = {
+            id: linkItem.id,
+            name: linkItem.name,
+            description: linkItem.description,
+            color: linkItem.color,
+            image: linkItem.icon,
+            info: '',
+        };
+
+        const _urls: {
+            url: string;
+            port: number;
+            instance?: string;
+        }[] = AdminUtils.replaceLink(
+            linkItem.link,
+            common.name,
+            instanceId,
+            {
+                instances,
+                hostname:      this.props.hostname,
+                adminInstance: this.props.adminInstance,
+                hosts,
+            },
+        );
 
         let webReverseProxyPath: ReverseProxyItem | null = null;
         if (this.state.reverseProxy?.length) {
@@ -764,12 +814,13 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 console.log(`Double links: "${instance.id}" and "${lll.id}"`);
             }
         } else if (_urls.length > 1) {
-            _urls.forEach((url: Record<string, any>) => {
+            _urls.forEach(url => {
                 const lll = introInstances.find(item => item.link === url.url);
-                Intro.applyReverseProxy(webReverseProxyPath, instances, url);
 
                 if (!lll) {
-                    introInstances.push({ ...instance, link: url.url, port: url.port });
+                    const item = { ...instance, link: url.url, port: url.port };
+                    Intro.applyReverseProxy(webReverseProxyPath, instances, item);
+                    introInstances.push(item);
                 } else {
                     console.log(`Double links: "${instance.id}" and "${lll.id}"`);
                 }
@@ -777,25 +828,315 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
     }
 
+    static getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
+        if (!text) {
+            return '';
+        }
+        if (typeof text === 'object') {
+            return text[lang] || text.en || '';
+        }
+        return text || '';
+    }
+
+    static normalizeLinks(
+        instance: ioBroker.InstanceObject,
+        language: ioBroker.Languages,
+        filterDuplicates?: boolean,
+    ): LinkItem[] | null {
+        if (!instance.common.localLinks &&
+            !instance.common.localLink &&
+            !instance.common.welcomeScreen &&
+            !instance.common.welcomeScreenPro
+        ) {
+            return null;
+        }
+        const defaultLink: LinkItem = {
+            id: instance._id.replace('system.adapter.', ''),
+            link: '',
+            name: Intro.getText(instance.common.titleLang || instance.common.title || instance.common.name, language),
+            order: 1000,
+            intro: true,
+            description: Intro.getText(instance.common.desc, language),
+            icon: instance.common.icon ? `adapter/${instance.common.name}/${instance.common.icon}` : 'img/no-image.png',
+        };
+        let result: LinkItem[] = [];
+        if (instance.common.localLink) {
+            if (typeof instance.common.localLink === 'string') {
+                result.push({
+                    ...defaultLink,
+                    link: instance.common.localLink,
+                });
+            } else {
+                const compatibilityStructure: Record<string, any> =
+                    instance.common.localLink as unknown as Record<string, any>;
+                if (compatibilityStructure.link) {
+                    const item: LinkItem = {
+                        ...defaultLink,
+                        link: compatibilityStructure.link,
+                    };
+                    if (compatibilityStructure.color) {
+                        item.color = compatibilityStructure.color;
+                    }
+                    if (compatibilityStructure.order !== undefined && typeof compatibilityStructure.order === 'number') {
+                        item.order = compatibilityStructure.order;
+                    }
+                    if (compatibilityStructure.icon && compatibilityStructure.img) {
+                        item.icon = compatibilityStructure.icon || compatibilityStructure.img;
+                    }
+
+                    result.push(item);
+                } else {
+                    console.warn(`Unknown localLink structure: ${JSON.stringify(instance.common.localLink)}`);
+                }
+            }
+        }
+
+        if (instance.common.localLinks && typeof instance.common.localLinks === 'object') {
+            Object.keys(instance.common.localLinks).forEach((linkName: string) => {
+                const linkItem: unknown = instance.common.localLinks[linkName];
+                if (typeof linkItem === 'string') {
+                    result.push({
+                        ...defaultLink,
+                        link: linkItem,
+                    });
+                } else {
+                    const compatibilityStructure: Record<string, any> =
+                        linkItem as Record<string, any>;
+
+                    if (compatibilityStructure.link) {
+                        const item: LinkItem = {
+                            ...defaultLink,
+                            id: instance._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`),
+                            link: compatibilityStructure.link,
+                            name: defaultLink.name + (linkName === '_default' ? '' : ` ${linkName}`),
+                        };
+                        if (compatibilityStructure.color) {
+                            item.color = compatibilityStructure.color as string;
+                        }
+                        if (compatibilityStructure.order !== undefined) {
+                            item.order = parseInt(compatibilityStructure.order as string, 10) || 1000;
+                        }
+                        if (compatibilityStructure.icon && compatibilityStructure.img) {
+                            item.icon = (compatibilityStructure.icon || compatibilityStructure.img) as string;
+                        }
+                        if (compatibilityStructure.description) {
+                            item.description = Intro.getText(compatibilityStructure.description as ioBroker.StringOrTranslated, language);
+                        }
+                        if (compatibilityStructure.pro !== undefined) {
+                            if (typeof compatibilityStructure.pro === 'string') {
+                                item.pro = compatibilityStructure.pro as string;
+                            } else {
+                                item.pro = `${instance.common.name}/index.html`;
+                            }
+                        }
+                        if (compatibilityStructure.cloud !== undefined) {
+                            item.cloud = compatibilityStructure.cloud as string;
+                        }
+                        if (compatibilityStructure.intro !== undefined) {
+                            item.intro = compatibilityStructure.intro === true;
+                        }
+
+                        if (compatibilityStructure.name) {
+                            item.name = Intro.getText(compatibilityStructure.name as ioBroker.StringOrTranslated, language);
+                        }
+                        if (linkName === '_default') {
+                            item.default = true;
+                        }
+
+                        result.push(item);
+                    } else {
+                        console.warn(`Unknown localLinks structure: ${JSON.stringify(linkItem)}`);
+                    }
+                }
+            });
+        }
+
+        if (instance.common.welcomeScreen && typeof instance.common.welcomeScreen === 'object') {
+            const compatibilityStructureArr: Record<string, any>[] =
+                Array.isArray(instance.common.welcomeScreen) ? instance.common.welcomeScreen as Record<string, any>[] : [instance.common.welcomeScreen as Record<string, any>];
+            compatibilityStructureArr.forEach(compatibilityStructure => {
+                if (compatibilityStructure.link) {
+                    const item: LinkItem = {
+                        ...defaultLink,
+                        id: `${instance._id.replace('system.adapter.', '')} cloud`,
+                        link: `%web_protocol%://%web_bind%:%web_port%/${compatibilityStructure.link}`,
+                        cloud: compatibilityStructure.link,
+                    };
+                    if (compatibilityStructure.color) {
+                        item.color = compatibilityStructure.color;
+                    }
+                    if (compatibilityStructure.order !== undefined && typeof compatibilityStructure.order === 'number') {
+                        item.order = compatibilityStructure.order;
+                    }
+                    if (compatibilityStructure.icon && compatibilityStructure.img) {
+                        item.icon = compatibilityStructure.icon || compatibilityStructure.img;
+                    }
+
+                    if (compatibilityStructure.localLinks) {
+                        const link: unknown = instance.common.localLinks[compatibilityStructure.localLinks];
+                        if (link && typeof link === 'string') {
+                            item.link = link;
+                        } else if (link && typeof link === 'object' && (link as any).link) {
+                            item.link = (link as any).link;
+                        }
+                    }
+
+                    if (compatibilityStructure.name) {
+                        item.name = Intro.getText(compatibilityStructure.name as ioBroker.StringOrTranslated, language);
+                    }
+
+                    result.push(item);
+                }
+            });
+
+            if (instance.common.welcomeScreenPro && typeof instance.common.welcomeScreenPro === 'object') {
+                const _compatibilityStructureArr: Record<string, any>[] =
+                    Array.isArray(instance.common.welcomeScreenPro) ? instance.common.welcomeScreenPro as Record<string, any>[] : [instance.common.welcomeScreenPro as Record<string, any>];
+
+                _compatibilityStructureArr.forEach(compatibilityStructure => {
+                    if (compatibilityStructure.link) {
+                        const item: LinkItem = {
+                            ...defaultLink,
+                            id: `${instance._id.replace('system.adapter.', '')} pro`,
+                            link: `%web_protocol%://%web_bind%:%web_port%/${compatibilityStructure.link}`,
+                            pro: compatibilityStructure.link,
+                        };
+                        if (compatibilityStructure.color) {
+                            item.color = compatibilityStructure.color;
+                        }
+                        if (compatibilityStructure.order !== undefined && typeof compatibilityStructure.order === 'number') {
+                            item.order = compatibilityStructure.order;
+                        }
+                        if (compatibilityStructure.icon && compatibilityStructure.img) {
+                            item.icon = compatibilityStructure.icon || compatibilityStructure.img;
+                        }
+
+                        if (compatibilityStructure.localLinks) {
+                            const link: unknown = instance.common.localLinks[compatibilityStructure.localLinks];
+                            if (link && typeof link === 'string') {
+                                item.link = link;
+                            } else if (link && typeof link === 'object' && (link as any).link) {
+                                item.link = (link as any).link;
+                            }
+                        }
+
+                        if (compatibilityStructure.name) {
+                            item.name = Intro.getText(compatibilityStructure.name as ioBroker.StringOrTranslated, language);
+                        }
+
+                        result.push(item);
+                    }
+                });
+            }
+        }
+
+        result.forEach(item => {
+            if (!item.icon.startsWith('adapter/') &&
+                !item.icon.startsWith('data:image/') &&
+                !item.icon.startsWith('http://') &&
+                !item.icon.startsWith('https://') &&
+                item.icon !== 'img/no-image.png'
+            ) {
+                // normalize icon
+                item.icon = `adapter/${instance.common.name}/${item.icon}`;
+            }
+            item.link = item.link.replace(/%ip%/g, '%web_bind%');
+        });
+
+        if (filterDuplicates) {
+            // filter all links with the same "link"
+            const links: Record<string, LinkItem> = {};
+            result.forEach(item => {
+                if (!links[item.link]) {
+                    links[item.link] = item;
+                } else {
+                    // merge
+                    if (item.color) {
+                        links[item.link].color = item.color;
+                    }
+                    if (item.icon) {
+                        links[item.link].icon = item.icon;
+                    }
+                    if (item.cloud) {
+                        links[item.link].cloud = item.cloud;
+                    }
+                    if (item.pro) {
+                        links[item.link].pro = item.pro;
+                    }
+                    if (item.intro !== undefined) {
+                        links[item.link].intro = item.intro;
+                    }
+                    if (item.name && typeof item.name === 'object') {
+                        links[item.link].name = item.name;
+                    }
+                    if (item.order !== undefined) {
+                        links[item.link].order = item.order;
+                    }
+                    if (item.default) {
+                        links[item.link].default = item.default;
+                    }
+                }
+            });
+            result = Object.values(links);
+        }
+
+        result.sort((a: LinkItem, b: LinkItem) => {
+            if (a.default === undefined && b.default === undefined) {
+                if (a.order === undefined && b.order === undefined) {
+                    return 0;
+                }
+                if (a.order === undefined) {
+                    return -1;
+                }
+                if (b.order === undefined) {
+                    return 1;
+                }
+                return a.order - b.order;
+            }
+            if (a.default === undefined) {
+                return -1;
+            }
+            if (b.default === undefined) {
+                return 1;
+            }
+
+            if (a.order === undefined && b.order === undefined) {
+                return 0;
+            }
+            if (a.order === undefined) {
+                return -1;
+            }
+            if (b.order === undefined) {
+                return 1;
+            }
+            return a.order - b.order;
+        });
+
+        return result;
+    }
+
     async getInstances(
         update: boolean | undefined,
         hosts: CompactHost[] | null,
         systemConfig: ioBroker.SystemConfigObject,
-    ) {
+    ): Promise<{ instances: IntroInstanceItem[]; deactivated: string[] }> {
         hosts = hosts || this.state.hosts;
 
+        const oHosts: Record<string, ioBroker.HostObject> = {};
+        hosts.forEach(obj => oHosts[obj._id] = obj as ioBroker.HostObject);
+
         try {
-            const instances = await this.props.socket.getAdapterInstances('', update);
+            const objects = await this.props.socket.getAdapterInstances('', update);
             let deactivated: string[] = systemConfig.common.intro || [];
             if (!Array.isArray(deactivated)) {
                 deactivated = Object.keys(deactivated);
                 deactivated.sort();
             }
             const introInstances: IntroInstanceItem[] = [];
-            const objects: Record<string, ioBroker.InstanceObject> = {};
-            instances.forEach(obj => objects[obj._id] = obj);
+            const instances: Record<string, ioBroker.InstanceObject> = {};
+            objects.forEach(obj => instances[obj._id] = obj);
 
-            instances.sort((_a, _b) => {
+            objects.sort((_a, _b) => {
                 const a: Partial<ioBroker.InstanceCommon> = _a?.common ?? {};
                 const b: Partial<ioBroker.InstanceCommon> = _b?.common ?? {};
 
@@ -863,13 +1204,13 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 return 0;
             });
 
-            instances.forEach(obj => {
+            objects.forEach(obj => {
                 if (!obj) {
                     return;
                 }
                 const common = obj.common || null;
                 const objId = obj._id.split('.');
-                const instanceId = objId.pop() as string;
+                const instanceId: number = parseInt(objId.pop(), 10);
                 let name: string;
                 if (common?.name && typeof common.name === 'object') {
                     const commonName: ioBroker.Translated = common?.name;
@@ -885,81 +1226,34 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     return;
                 }
 
-                if (name && name !== 'vis-web-admin' && name.match(/^vis-/)) {
+                if (name && name !== 'vis-web-admin' && name.match(/^vis-/) && name !== 'vis-2') {
                     return;
                 }
                 if (name && name.match(/^icons-/)) {
                     return;
                 }
-                if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-                    const links = common.localLinks || { _default: common.localLink ?? '' };
+                if (common && (common.enabled || common.onlyWWW)) {
+                    const links = Intro.normalizeLinks(obj, this.props.lang, true);
 
-                    Object.keys(links).forEach(linkName => {
-                        let link: { link: string; color?: string };
-                        if (typeof links[linkName] === 'string') {
-                            link = { link: links[linkName] as string };
-                        } else {
-                            link = links[linkName] as any as { link: string; color?: string };
-                        }
-
-                        const instance: {
-                            id: string;
-                            name: string;
-                            color: string;
-                            description: string;
-                            image: string;
-                            port?: number;
-                            link?: string;
-                        } = {
-                            id: obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ` ${linkName}`),
-                            name: (common.titleLang ?
-                                ((common.titleLang as ioBroker.Translated)[this.props.lang] || (common.titleLang as ioBroker.Translated).en) : common.title) + (linkName === '_default' ? '' : ` ${linkName}`),
-                            color: link.color || '',
-                            description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc as string || '',
-                            image: common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png',
-                        };
-
-                        // @ts-expect-error fix all the constructs here later on
-                        this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
-                    });
-                }
-                if (common && (common.enabled || common.onlyWWW) && name !== 'admin' && (common.welcomeScreen || common.welcomeScreenPro)) {
-                    const links = [];
-                    common.welcomeScreen && links.push(common.welcomeScreen);
-                    common.welcomeScreenPro && links.push(common.welcomeScreenPro);
-
-                    links.forEach(link => {
-                        const instance: {
-                            id: string;
-                            name?: string;
-                            color?: string;
-                            description?: string;
-                            image?: string;
-                            port?: number;
-                            link?: string;
-                            order?: number;
-                        } = {
-                            // @ts-expect-error fix all the constructs here later on
-                            id: `${obj._id.replace('system.adapter.', '')}/${link.link}`,
-                            // @ts-expect-error fix all the constructs here later on
-                            name: link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '',
-                            // @ts-expect-error fix all the constructs here later on
-                            color: link.color || '',
-                            description: common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc as string || '',
-                            image: common.icon ? `adapter/${name}/${common.icon}` : 'img/no-image.png',
-                            // @ts-expect-error fix all the constructs here later on
-                            order: link.order,
-                        };
-
-                        // @ts-expect-error fix all the constructs here later on
-                        this.addLinks(`%web_protocol%://%web_bind%:%web_port%/${link.link}`, common, instanceId, instance, objects, hosts, instances, introInstances);
-                    });
+                    if (links) {
+                        links.forEach(link => this.addLinks(
+                            link,
+                            common,
+                            instanceId,
+                            instances,
+                            oHosts,
+                            introInstances,
+                        ));
+                    }
                 }
             });
 
             introInstances.forEach(instance => {
                 if (instance.link) {
-                    instance.linkName = instance.link.replace('https://', '').replace('http://', '').replace(/^[^_]+:/, '');
+                    instance.linkName = instance.link
+                        .replace('https://', '')
+                        .replace('http://', '')
+                        .replace(/^[^_]+:/, '');
                 }
             });
 
@@ -1014,7 +1308,11 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 }
             });
             deactivated = _deactivated;
-            return { instances: introInstances, deactivated };
+
+            return {
+                instances: introInstances,
+                deactivated,
+            };
         } catch (error) {
             console.log(error);
             return { instances: [], deactivated: [] };
@@ -1157,7 +1455,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return {
             el: <ul style={{ textTransform: 'none' }}>
                 {hostData && typeof hostData === 'object' && Object.keys(hostData)
-                    .filter(_id => !_id.startsWith('_'))
+                    .filter(_id => !_id.startsWith('_') && hostData[_id] !== null && hostData[_id] !== undefined)
                     .map(value => <li key={value}>
                         {hostData && typeof hostData === 'object' ?
                             <span>
@@ -1166,7 +1464,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                                     :
                                     {' '}
                                 </span>
-                                {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
+                                {(formatInfo[value] ? formatInfo[value](hostData[value] as number, this.t) : (typeof hostData[value] === 'object' ? JSON.stringify(hostData[value]) : hostData[value].toString()) || '--')}
                             </span>
                             :
                             <Skeleton />}
@@ -1174,7 +1472,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
             </ul>,
 
             text: hostData && typeof hostData === 'object' ? Object.keys(hostData)
-                .reduce((acom, item) => `${acom}${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`) : '',
+                .reduce((acom, item) => `${acom}${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item] as number, this.t) : hostData[item] || '--')}\n`) : '',
         };
     }
 
@@ -1191,7 +1489,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         try {
             const systemConfig: ioBroker.SystemConfigObject = await this.props.socket.getSystemConfig(update);
             const hosts: CompactHost[] = await this.props.socket.getCompactHosts(update);
-            const data = await this.getInstances(update, hosts, systemConfig);
+            const data: { instances: IntroInstanceItem[]; deactivated: string[] } = await this.getInstances(update, hosts, systemConfig);
             this.setState({
                 instances: data.instances,
                 hosts,
@@ -1260,7 +1558,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 dockerString +=  ` - ${hostData.dockerInformation.officialVersion}`;
             }
 
-            hostData.Platform = `${hostData.Platform} (${dockerString})`;
+            hostData.Platform = `${hostData.Platform} (${dockerString})` as string;
         }
 
         delete hostData.dockerInformation;

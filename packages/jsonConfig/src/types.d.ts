@@ -7,14 +7,16 @@ declare module '@mui/material/Button' {
     }
 }
 
+type CustomCSSProperties = React.CSSProperties;
+
 export type ConfigItemType = 'tabs' | 'panel' | 'text' | 'number' | 'color' | 'checkbox' | 'slider' | 'ip' | 'user' | 'room' | 'func' | 'select' |
     'autocomplete' | 'image' | 'objectId' | 'password' | 'instance' | 'chips' | 'alive' | 'pattern' | 'sendto' | 'setState' |
     'staticText' | 'staticLink' | 'staticImage' | 'table' | 'accordion' | 'jsonEditor' | 'language' | 'certificate' |
     'certificates' | 'certCollection' | 'custom' | 'datePicker' | 'timePicker' | 'divider' | 'header' | 'cron' |
     'fileSelector' | 'file' | 'imageSendTo' | 'selectSendTo' | 'autocompleteSendTo' | 'textSendTo' | 'coordinates' | 'interface' | 'license' |
-    'checkLicense' | 'uuid' | 'port' | 'deviceManager' | 'topic';
+    'checkLicense' | 'uuid' | 'port' | 'deviceManager' | 'topic' | 'qrCode';
 
-type ConfigIconType = 'auth' | 'send' | 'web' | 'warning' | 'error' | 'info' | 'search' | 'book' | 'help' | 'upload' | string;
+type ConfigIconType = 'edit' | 'auth' | 'send' | 'web' | 'warning' | 'error' | 'info' | 'search' | 'book' | 'help' | 'upload' | 'user' | 'group' | 'delete' | 'refresh' | 'add' | 'unpair' | 'pair' | string;
 
 export interface ConfigItemConfirmData {
     condition: string;
@@ -41,8 +43,8 @@ export interface ConfigItem {
     disabled?: string | boolean;
     help?: ioBroker.StringOrTranslated;
     helpLink?: string;
-    style?: React.CSSProperties;
-    darkStyle?: React.CSSProperties;
+    style?: CustomCSSProperties;
+    darkStyle?: CustomCSSProperties;
     validator?: string;
     validatorErrorText?: string;
     validatorNoSaveOnError?: boolean;
@@ -111,10 +113,11 @@ export interface ConfigItemSelectOption {
 export interface ConfigItemPanel extends ConfigItem {
     type: 'panel' | never;
     label?: ioBroker.StringOrTranslated;
-    items: Record<string, ConfigItem>;
+    // eslint-disable-next-line no-use-before-define
+    items: Record<string, ConfigItemAny>;
     collapsable?: boolean;
     color?: 'primary' | 'secondary';
-    innerStyle?: React.CSSProperties;
+    innerStyle?: CustomCSSProperties;
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
@@ -134,12 +137,13 @@ export interface ConfigItemTabs extends ConfigItem {
     type: 'tabs';
     items: Record<string, ConfigItemPanel>;
     iconPosition?: 'bottom' | 'end' | 'start' | 'top';
-    tabsStyle?: React.CSSProperties;
+    tabsStyle?: CustomCSSProperties;
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
 export interface ConfigItemText extends ConfigItem {
     type: 'text';
+    /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: number;
@@ -165,6 +169,20 @@ export interface ConfigItemNumber extends ConfigItem {
     max?: number;
     step?: number;
     readOnly?: boolean;
+}
+
+export interface ConfigItemQrCode extends ConfigItem {
+    type: 'qrCode';
+    /** Data to show in the QR code */
+    data: string;
+    /** Size of the QR code */
+    size?: number;
+    /** Foreground color */
+    fgColor?: string;
+    /** Background color */
+    bgColor?: string;
+    /** QR code level */
+    level?: 'L' | 'M' | 'Q' | 'H';
 }
 
 export interface ConfigItemPassword extends ConfigItem {
@@ -223,6 +241,7 @@ export interface ConfigItemSlider extends ConfigItem {
 
 export interface ConfigItemTopic extends ConfigItem {
     type: 'topic';
+    /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: number;
@@ -263,7 +282,7 @@ export interface ConfigItemStaticImage extends ConfigItem {
     href?: string;
 }
 
-export interface ConfigItemStaticText extends ConfigItem {
+export interface ConfigItemStaticText extends Omit<ConfigItem, 'button'> {
     type: 'staticText';
     /** multi-language text */
     text: string;
@@ -329,13 +348,14 @@ export interface ConfigItemSetState extends ConfigItem {
     error?: { [error: string]: ioBroker.StringOrTranslated };
 }
 
-export interface ConfigItemAutocompleteSendTo extends ConfigItem {
+export interface ConfigItemAutocompleteSendTo extends Omit<ConfigItem, 'data'> {
     type: 'autocompleteSendTo';
     command?: string;
     jsonData?: string;
     options?: (string | ConfigItemSelectOption)[];
     data?: Record<string, any>;
     freeSolo?: boolean;
+    /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: string;
@@ -344,9 +364,13 @@ export interface ConfigItemAutocompleteSendTo extends ConfigItem {
 
 export interface ConfigItemAccordion extends ConfigItem {
     type: 'accordion';
+    /** Title shown on the accordion */
     titleAttr?: string;
+    /** If delete or add disabled, If noDelete is false, add, delete and move up/down should work */
     noDelete?: boolean;
+    /** If clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique. */
     clone?: boolean | string;
+    /** Items of accordion */
     items: ConfigItemIndexed[];
 }
 
@@ -355,6 +379,7 @@ export interface ConfigItemDivider extends ConfigItem {
     color?: 'primary' | 'secondary' | string;
     height?: string | number;
 }
+
 export interface ConfigItemHeader extends ConfigItem {
     type: 'header';
     text?: ioBroker.StringOrTranslated;
@@ -363,12 +388,19 @@ export interface ConfigItemHeader extends ConfigItem {
 
 export interface ConfigItemCoordinates extends ConfigItem {
     type: 'coordinates';
+    /** divider between latitude and longitude. Default "," (Used if longitudeName and latitudeName are not defined) */
     divider?: string;
+    /** init field with current coordinates if empty */
     autoInit?: boolean;
+    /** if defined, the longitude will be stored in this attribute, divider will be ignored */
     longitudeName?: string;
+    /** if defined, the latitude will be stored in this attribute, divider will be ignored */
     latitudeName?: string;
+    /** if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from system.config, a boolean will be saved to the given name */
     useSystemName?: string;
+    /** max length of the text in field */
     maxLength?: number;
+    /** @deprecated use maxLength */
     max?: number;
 }
 
@@ -386,6 +418,7 @@ export interface ConfigItemCustom extends ConfigItem {
 
 export interface ConfigItemDatePicker extends ConfigItem {
     type: 'datePicker';
+    /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: number;
@@ -408,7 +441,7 @@ export interface ConfigItemPort extends ConfigItem {
     readOnly?: boolean;
 }
 
-export interface ConfigItemImageSendTo extends ConfigItem {
+export interface ConfigItemImageSendTo extends Omit<ConfigItem, 'data'> {
     type: 'imageSendTo';
     command?: string;
     alsoDependsOn?: string[];
@@ -416,7 +449,7 @@ export interface ConfigItemImageSendTo extends ConfigItem {
     data?: Record<string, any>;
 }
 
-export interface ConfigItemSendTo extends ConfigItem {
+export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
     type: 'sendto';
     command?: string;
     jsonData?: string;
@@ -440,7 +473,7 @@ export interface ConfigItemSendTo extends ConfigItem {
     copyToClipboard?: boolean;
 }
 
-export interface ConfigItemTextSendTo extends ConfigItem {
+export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
     type: 'textSendTo';
     container?: 'text' | 'div';
     copyToClipboard?: boolean;
@@ -450,7 +483,7 @@ export interface ConfigItemTextSendTo extends ConfigItem {
     data?: Record<string, any>;
 }
 
-export interface ConfigItemSelectSendTo extends ConfigItem {
+export interface ConfigItemSelectSendTo extends Omit<ConfigItem, 'data'> {
     type: 'selectSendTo';
     manual?: boolean;
     multiple?: boolean;
@@ -465,18 +498,29 @@ export interface ConfigItemSelectSendTo extends ConfigItem {
 export interface ConfigItemTable extends ConfigItem {
     type: 'table';
     items?: ConfigItemTableIndexed[];
+    /** If delete or add disabled, If noDelete is false, add, delete and move up/down should work */
     noDelete?: boolean;
     /** @deprecated don't use */
     objKeyName?: string;
     /** @deprecated don't use */
     objValueName?: string;
+    /** If add allowed even if filter is set */
     allowAddByFilter?: boolean;
+    /** The number of lines from which the second add button at the bottom of the table will be shown. Default 5 */
     showSecondAddAt?: number;
+    /** Show first plus button on top of the first column and not on the left. */
     showFirstAddOnTop?: boolean;
+    /** If clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique. */
     clone?: boolean | string;
+    /** If export button should be shown. Export as csv file. */
     export?: boolean;
+    /** If import button should be shown. Import from csv file. */
     import?: boolean;
+    /** Show table in compact mode */
+    compact?: boolean;
+    /** Specify the 'attr' name of columns which need to be unique */
     uniqueColumns?: string[];
+    /** These items will be encrypted before saving with simple (not SHA) encryption method */
     encryptedAttributes?: string[];
 }
 
@@ -531,6 +575,7 @@ export interface ConfigItemCertificates extends ConfigItem {
     certPrivateName?: string;
     certChainedName?: string;
 }
+
 export interface ConfigItemCheckLicense extends ConfigItem {
     type: 'checkLicense';
     /** Check UUID */
@@ -641,7 +686,8 @@ export interface ConfigItemFileSelector extends ConfigItem {
     noSize?: boolean;
 }
 
-export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigItemAutocompleteSendTo | ConfigItemPanel |
+export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete |
+    ConfigItemAutocompleteSendTo | ConfigItemPanel |
     ConfigItemTabs | ConfigItemText |
     ConfigItemNumber | ConfigItemColor | ConfigItemCheckbox |
     ConfigItemSlider | ConfigItemIP | ConfigItemUser | ConfigItemRoom | ConfigItemFunc |
@@ -655,4 +701,4 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete  | ConfigIt
     ConfigItemInterface | ConfigItemJsonEditor | ConfigItemLicense | ConfigItemPassword |
     ConfigItemSetState | ConfigItemStaticDivider | ConfigItemStaticHeader |
     ConfigItemStaticImage | ConfigItemStaticText | ConfigItemTopic |
-    ConfigItemObjectId;
+    ConfigItemObjectId | ConfigItemQrCode;

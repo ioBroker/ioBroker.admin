@@ -82,6 +82,13 @@ Possible types:
   - `step` - (default `(max - min) / 100`)
   - `unit` - Unit of slider
 
+- `qrCode` - show data in a QR Code (up from Admin 7)
+  - `data` - the data to be encoded in the QR Code
+  - `size` - size of the QR code
+  - `fgColor` - Foreground color
+  - `bgColor` - Background color
+  - `level` - QR code level (`L` `M` `Q` `H`)
+
 - `ip` - bind address
   - `listenOnAllPorts` - add 0.0.0.0 to option
   - `onlyIp4` - show only IP4 addresses
@@ -238,6 +245,7 @@ Possible types:
     - `import` - [optional] - if import button should be shown. Import from csv file.
     - `uniqueColumns` - [optional] - specify an array of columns, which need to have unique entries
     - `encryptedAttributes` - [optional] - specify an array of columns, which should be encrypted
+    - `compact` - [optional] - if true, the table will be shown in a compact mode
 
 - `accordion` - accordion with items that could be deleted, added, moved up, moved down (Admin 6.6.0 and newer)
     - `items` - `[{"type": see above, "attr": "name", "default": ""}]` - items can be placed like on a `panel` (xs, sm, md, lg and newLine)
@@ -427,7 +435,7 @@ adapter.on('message', obj => {
   - `autoInit` - init field with current coordinates if empty
   - `longitudeName` - if defined, the longitude will be stored in this attribute, divider will be ignored
   - `latitudeName` - if defined, the latitude will be stored in this attribute, divider will be ignored
-  - `useSystemName` - if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from system.config, a boolean will be saved to the given name
+  - `useSystemName` - if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from `system.config`, a boolean will be saved to the given name
 
 - `interface`
   Selects the interface from of the host, where the instance runs

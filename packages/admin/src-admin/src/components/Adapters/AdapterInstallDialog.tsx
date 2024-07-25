@@ -9,14 +9,15 @@ import {
 import {
     checkCondition,
     type CompactInstanceInfo,
-    type RepoAdapterObject,
 } from '@/dialogs/AdapterUpdateDialog';
+
 import AddInstanceDialog, { type AdapterDependencies } from '@/dialogs/AddInstanceDialog';
 import LicenseDialog from '@/dialogs/LicenseDialog';
 import type { AdapterInformation } from '@iobroker/js-controller-common-db/build/esm/lib/common/tools';
 import type InstancesWorker from '@/Workers/InstancesWorker';
 import type HostsWorker from '@/Workers/HostsWorker';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
+import { extractUrlLink, type RepoAdapterObject } from './Utils';
 
 export type AdapterRating = {
     rating?:           { r: number; c: number };
@@ -83,6 +84,7 @@ export interface AdapterInstallDialogProps {
 export interface AdapterInstallDialogState {
     showLicenseDialog: {
         url: string;
+        licenseType: string;
         upload?: boolean;
         adapterName: string;
     } | null;
@@ -111,17 +113,20 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
         }
 
         return <LicenseDialog
+            licenseType={this.state.showLicenseDialog.licenseType}
             url={this.state.showLicenseDialog.url}
             onClose={result => {
-                if (result) {
-                    if (this.state.showLicenseDialog.upload) {
-                        this.upload(this.state.showLicenseDialog.adapterName, context);
-                    } else {
-                        this.addInstance({ adapterName: this.state.showLicenseDialog.adapterName, context })
-                            .catch(e => window.alert(`Cannot add instance: ${e}`));
+                const showLicenseDialog = result ? this.state.showLicenseDialog : null;
+                this.setState({ showLicenseDialog: null, showDialog: false }, () => {
+                    if (showLicenseDialog) {
+                        if (showLicenseDialog.upload) {
+                            this.upload(showLicenseDialog.adapterName, context);
+                        } else {
+                            this.addInstance({ adapterName: showLicenseDialog.adapterName, context })
+                                .catch(e => window.alert(`Cannot add instance: ${e}`));
+                        }
                     }
-                }
-                this.setState({ showLicenseDialog: null, showDialog: false });
+                });
             }}
         />;
     }
@@ -297,12 +302,23 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
             currentHost={`system.host.${this.state.addInstanceHostName}`}
             currentInstance={this.state.addInstanceId}
             t={context.t}
-            onClick={() => this.addInstance({ adapterName: this.state.addInstanceDialog, instance: this.state.addInstanceId, context })}
-            onClose={() => this.setState({
-                addInstanceDialog: '',
-                addInstanceId: 'auto',
-                showDialog: false,
-            })}
+            onClose={(result: boolean) => {
+                const addInstanceDialog = result ? this.state.addInstanceDialog : '';
+                const addInstanceId = result ? this.state.addInstanceId : '';
+                this.setState({
+                    addInstanceDialog: '',
+                    addInstanceId: 'auto',
+                    showDialog: false,
+                }, () => {
+                    if (addInstanceDialog) {
+                        this.addInstance({
+                            adapterName: addInstanceDialog,
+                            instance: addInstanceId,
+                            context,
+                        });
+                    }
+                });
+            }}
             onHostChange={hostName => this.setState({ addInstanceHostName: hostName.replace(/^system\.host\./, '') })}
             onInstanceChange={event => this.setState({ addInstanceId: event.target.value })}
             adapterObject={context.repository[this.state.addInstanceDialog]}
@@ -321,22 +337,14 @@ export default abstract class AdapterInstallDialog<TProps extends AdapterInstall
     // eslint-disable-next-line react/no-unused-class-component-methods
     onAddInstance(adapterName: string, context: AdaptersContext) {
         const adapter = context.repository[adapterName];
-        // @ts-expect-error licenseUrl is deprecated
-        let url = adapter.licenseUrl ||
-            adapter.licenseInformation?.link || adapter.extIcon || '';
-        if (url.includes('/main')) {
-            url = `${url.split('/main')[0]}/main/LICENSE`;
-        } else {
-            url = `${url.split('/master')[0]}/master/LICENSE`;
-        }
+        const url = extractUrlLink(adapter);
+        const licenseType = adapter.licenseInformation?.license || adapter.license;
 
-        const license = adapter.licenseInformation?.license || adapter.license;
-
-        if (license === 'MIT') {
+        if (licenseType === 'MIT') {
             this.addInstance({ adapterName, context })
                 .catch(e => window.alert(`Cannot add instance: ${e}`));
         } else {
-            this.setState({ showLicenseDialog: { url, adapterName }, showDialog: true });
+            this.setState({ showLicenseDialog: { url, adapterName, licenseType }, showDialog: true });
         }
     }
 

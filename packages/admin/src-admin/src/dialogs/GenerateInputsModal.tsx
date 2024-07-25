@@ -20,7 +20,7 @@ import {
 import {
     I18n,
     type AdminConnection,
-    type ThemeName, type ThemeType,
+    type ThemeName, type ThemeType, type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import { ConfigPanel } from '@iobroker/json-config';
@@ -96,8 +96,10 @@ const TabPanel: React.FC<TabPanelProps> = ({
         </>}
     </div>;
 };
+type InputType = 'password' | 'checkbox' | 'select' | 'link' | 'comment' | 'text' | 'name' | 'title';
+type InputControlType = 'password' | 'checkbox' | 'select' | 'staticLink' | 'text' | 'staticText' | 'header';
 
-const types = {
+const types: Record<InputType, InputControlType> = {
     password: 'password',
     checkbox: 'checkbox',
     select: 'select',
@@ -108,25 +110,87 @@ const types = {
     title: 'staticText',
 };
 
-const generateObj = <T, >(obj: Record<string, Record<string, T>>, path: string, value: T) => {
+interface DiscoveryInstanceCommentInput {
+    /** Link to attribute, like: 'native.user' */
+    name: string;
+    def: string | boolean | number;
+    type: InputType;
+    title: string;
+    options: Record<string, string | boolean | number>;
+}
+
+export interface DiscoveryInstanceComment {
+    add?: boolean | string | number | string[];
+    changed?: boolean | string | number | string[];
+    extended?: boolean | string | number | string[];
+    text?: string;
+    ack?: boolean;
+    inputs?: DiscoveryInstanceCommentInput[];
+    license?: string;
+}
+
+export interface DiscoveryInstance {
+    /** Adapter instance ID, like system.adapter.tr-064.0 */
+    _id: `system.adapter.${string}.${number}`;
+    common: {
+        name: string;
+        title?: string;
+        licenseUrl?: ioBroker.StringOrTranslated;
+    };
+    comment: DiscoveryInstanceComment;
+    native: Record<string, any>;
+}
+
+interface DiscoveryDevice {
+    _addr: string;
+    _name: string;
+    _ping: {
+        alive: boolean;
+        ms: number;
+    };
+    _source: 'ping';
+    _type: 'ip' | 'once';
+    _dns?: {
+        /** "fritz.box", "www.fritz.box" */
+        hostnames: string[];
+    };
+}
+
+export interface DiscoveryObject {
+    _id: 'system.discovery';
+    common: {
+        name: ioBroker.StringOrTranslated;
+    };
+    type: 'config';
+    native: {
+        lastScan: string;
+        newInstances: DiscoveryInstance[];
+        devices: DiscoveryDevice[];
+    };
+}
+
+function _setValueInObj(obj: Record<string, any>, path: string[], value: string | number | boolean) {
+    const attr = path.unshift();
+    if (!path.length) {
+        obj[attr] = value;
+    } else {
+        obj[attr] = obj[attr] || {};
+        _setValueInObj(obj[attr], path, value);
+    }
+}
+
+function setValueInObj(obj: Record<string, any>, path: string, value: string | number | boolean): void {
     const pathArray = path.split('.');
-    pathArray.forEach((element, idx) => {
-        if (idx === path.length - 1) {
-            if (!obj[path[idx - 1]]) {
-                obj[path[idx - 1]] = {};
-            }
-            obj[path[idx - 1]][element] = value;
-        }
-    });
-    return obj;
-};
+
+    _setValueInObj(obj, pathArray, value);
+}
 
 interface SchemaItem {
-    type: string;
+    type: InputControlType;
     label: string;
     text: string;
     href: string;
-    sm: number;
+    sm: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
     newLine: boolean;
     button: boolean;
     variant: 'contained';
@@ -139,70 +203,57 @@ interface SchemaItem {
 interface GenerateInputsModalProps {
     themeType: ThemeType;
     themeName: ThemeName;
+    theme: IobTheme;
     socket: AdminConnection;
-    newInstances: {
-        _id: string;
-        comment: {
-            add: string[];
-            inputs: {
-                type: keyof typeof types;
-                title: string;
-                def: string;
-            }[];
-        };
-    };
-    onClose: (obj?: Record<string, Record<string, string | boolean | SchemaItem>>) => void;
+    newInstance: DiscoveryInstance;
+    /** The result looks like { native: { attr1: value }} */
+    onClose: (obj?: { native: Record<string, any> }) => void;
 }
 
 const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
-    themeType, themeName, socket, newInstances, onClose,
+    theme, themeType, themeName, socket, newInstance, onClose,
 }) => {
     const [error, setError] = useState<Record<string, string>>({});
 
-    const [schema, setSchema] = useState<{items:
-        Record<string, Partial<SchemaItem>>;
-}>({
-    items: {},
-});
+    const [schema, setSchema] = useState<{ type: 'panel'; items: Record<string, Partial<SchemaItem>> }>({
+        type: 'panel',
+        items: {},
+    });
 
-    const [schemaData, setSchemaData] = useState<Record<string, SchemaItem | string | boolean>>({});
+    const [schemaData, setSchemaData] = useState<Record<string, string | boolean | number>>({});
 
     useEffect(() => {
-        const obj: {
-            [key: number]: Partial<SchemaItem>;
+        const objSchema: {
+            [key: string]: Partial<SchemaItem>;
         } = {};
         const objValue: {
-            [key: string]: SchemaItem | string | boolean;
+            [key: string]: string | boolean | number;
         } = {};
-        if (newInstances) {
-            newInstances.comment.add.forEach((text: string, idx: number) =>
-                obj[idx] = { type: 'header', text });
+        if (newInstance?.comment?.add && Array.isArray(newInstance?.comment?.add)) {
+            newInstance.comment.add.forEach((text: string, idx: number) =>
+                objSchema[idx] = { type: 'header', text });
 
-            newInstances.comment.inputs.forEach((el: {
-                type: keyof typeof types;
-                title: string;
-                def: string;
-            }, idx: number) => {
-                obj[idx + 1] = {
+            newInstance.comment.inputs.forEach((el, idx) => {
+                objSchema[idx + 1] = {
                     ...el,
                     type: types[el.type],
                     label: el.title,
-                    text: el.def,
-                    href: el.def,
+                    text: el.def ? el.def.toString() : '',
+                    href: el.def ? el.def.toString() : '',
                     sm: 6,
                     newLine: true,
                 };
 
                 if (el.type === 'link') {
-                    obj[idx + 1].button = true;
-                    obj[idx + 1].variant = 'contained';
-                    obj[idx + 1].href = el.def;
-                    obj[idx + 1].text = el.title;
-                    obj[idx + 1].icon = 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTExLjk5IDJDNi40NyAyIDIgNi40OCAyIDEyczQuNDcgMTAgOS45OSAxMEMxNy41MiAyMiAyMiAxNy41MiAyMiAxMlMxNy41MiAyIDExLjk5IDJ6bTYuOTMgNmgtMi45NWMtLjMyLTEuMjUtLjc4LTIuNDUtMS4zOC0zLjU2IDEuODQuNjMgMy4zNyAxLjkxIDQuMzMgMy41NnpNMTIgNC4wNGMuODMgMS4yIDEuNDggMi41MyAxLjkxIDMuOTZoLTMuODJjLjQzLTEuNDMgMS4wOC0yLjc2IDEuOTEtMy45NnpNNC4yNiAxNEM0LjEgMTMuMzYgNCAxMi42OSA0IDEycy4xLTEuMzYuMjYtMmgzLjM4Yy0uMDguNjYtLjE0IDEuMzItLjE0IDIgMCAuNjguMDYgMS4zNC4xNCAySDQuMjZ6bS44MiAyaDIuOTVjLjMyIDEuMjUuNzggMi40NSAxLjM4IDMuNTYtMS44NC0uNjMtMy4zNy0xLjktNC4zMy0zLjU2em0yLjk1LThINS4wOGMuOTYtMS42NiAyLjQ5LTIuOTMgNC4zMy0zLjU2QzguODEgNS41NSA4LjM1IDYuNzUgOC4wMyA4ek0xMiAxOS45NmMtLjgzLTEuMi0xLjQ4LTIuNTMtMS45MS0zLjk2aDMuODJjLS40MyAxLjQzLTEuMDggMi43Ni0xLjkxIDMuOTZ6TTE0LjM0IDE0SDkuNjZjLS4wOS0uNjYtLjE2LTEuMzItLjE2LTIgMC0uNjguMDctMS4zNS4xNi0yaDQuNjhjLjA5LjY1LjE2IDEuMzIuMTYgMiAwIC42OC0uMDcgMS4zNC0uMTYgMnptLjI1IDUuNTZjLjYtMS4xMSAxLjA2LTIuMzEgMS4zOC0zLjU2aDIuOTVjLS45NiAxLjY1LTIuNDkgMi45My00LjMzIDMuNTZ6TTE2LjM2IDE0Yy4wOC0uNjYuMTQtMS4zMi4xNC0yIDAtLjY4LS4wNi0xLjM0LS4xNC0yaDMuMzhjLjE2LjY0LjI2IDEuMzEuMjYgMnMtLjEgMS4zNi0uMjYgMmgtMy4zOHoiPjwvcGF0aD48L3N2Zz4=';
+                    objSchema[idx + 1].button = true;
+                    objSchema[idx + 1].variant = 'contained';
+                    objSchema[idx + 1].href = el.def ? el.def.toString() : '';
+                    objSchema[idx + 1].text = el.title;
+                    objSchema[idx + 1].icon = 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTExLjk5IDJDNi40NyAyIDIgNi40OCAyIDEyczQuNDcgMTAgOS45OSAxMEMxNy41MiAyMiAyMiAxNy41MiAyMiAxMlMxNy41MiAyIDExLjk5IDJ6bTYuOTMgNmgtMi45NWMtLjMyLTEuMjUtLjc4LTIuNDUtMS4zOC0zLjU2IDEuODQuNjMgMy4zNyAxLjkxIDQuMzMgMy41NnpNMTIgNC4wNGMuODMgMS4yIDEuNDggMi41MyAxLjkxIDMuOTZoLTMuODJjLjQzLTEuNDMgMS4wOC0yLjc2IDEuOTEtMy45NnpNNC4yNiAxNEM0LjEgMTMuMzYgNCAxMi42OSA0IDEycy4xLTEuMzYuMjYtMmgzLjM4Yy0uMDguNjYtLjE0IDEuMzItLjE0IDIgMCAuNjguMDYgMS4zNC4xNCAySDQuMjZ6bS44MiAyaDIuOTVjLjMyIDEuMjUuNzggMi40NSAxLjM4IDMuNTYtMS44NC0uNjMtMy4zNy0xLjktNC4zMy0zLjU2em0yLjk1LThINS4wOGMuOTYtMS42NiAyLjQ5LTIuOTMgNC4zMy0zLjU2QzguODEgNS41NSA4LjM1IDYuNzUgOC4wMyA4ek0xMiAxOS45NmMtLjgzLTEuMi0xLjQ4LTIuNTMtMS45MS0zLjk2aDMuODJjLS40MyAxLjQzLTEuMDggMi43Ni0xLjkxIDMuOTZ6TTE0LjM0IDE0SDkuNjZjLS4wOS0uNjYtLjE2LTEuMzItLjE2LTIgMC0uNjguMDctMS4zNS4xNi0yaDQuNjhjLjA5LjY1LjE2IDEuMzIuMTYgMiAwIC42OC0uMDcgMS4zNC0uMTYgMnptLjI1IDUuNTZjLjYtMS4xMSAxLjA2LTIuMzEgMS4zOC0zLjU2aDIuOTVjLS45NiAxLjY1LTIuNDkgMi45My00LjMzIDMuNTZ6TTE2LjM2IDE0Yy4wOC0uNjYuMTQtMS4zMi4xNC0yIDAtLjY4LS4wNi0xLjM0LS4xNC0yaDMuMzhjLjE2LjY0LjI2IDEuMzEuMjYgMnMtLjEgMS4zNi0uMjYgMmgtMy4zOHoiPjwvcGF0aD48L3N2Zz4=';
                 }
 
                 if (el.type === 'password') {
-                    obj[idx + 1].repeat = true;
+                    objSchema[idx + 1].repeat = true;
                 }
 
                 if (el.def !== undefined) {
@@ -214,9 +265,9 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                 }
             });
             setSchemaData(objValue);
-            setSchema({ items: obj });
+            setSchema({ type: 'panel', items: objSchema });
         }
-    }, [newInstances]);
+    }, [newInstance]);
 
     return <Dialog
         onClose={onClose}
@@ -224,14 +275,15 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
         sx={{ '& .MuiDialog-paper': styles.paper }}
     >
         <h2 style={styles.heading}>
-            <SettingsIcon style={{
-                color: 'rgb(77 171 245)',
-                fontSize: 36,
-                marginLeft: 25,
-                marginRight: 10,
-            }}
+            <SettingsIcon
+                style={{
+                    color: 'rgb(77 171 245)',
+                    fontSize: 36,
+                    marginLeft: 25,
+                    marginRight: 10,
+                }}
             />
-            {I18n.t('Instance parameters for %s', newInstances._id.replace('system.adapter.', ''))}
+            {I18n.t('Instance parameters for %s', newInstance._id.replace('system.adapter.', ''))}
         </h2>
         <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
             <div style={styles.root}>
@@ -242,15 +294,26 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                     title={I18n.t('Test')}
                 >
                     <Paper style={styles.paperTable}>
-                        {/* @ts-expect-error missing param */}
                         <ConfigPanel
                             data={schemaData}
                             socket={socket}
                             themeType={themeType}
                             themeName={themeName}
+                            theme={theme}
                             onChange={setSchemaData}
                             schema={schema}
                             onError={(attr, _error) => setError({ ...error, [attr]: _error })}
+                            // all unused properties
+                            isFloatComma
+                            instance={0}
+                            alive
+                            dateFormat="YYYY.MM.DD"
+                            forceUpdate={() => {}}
+                            onCommandRunning={() => {}}
+                            changed={false}
+                            adapterName="dummy"
+                            originalData={schemaData}
+                            common={{ }}
                         />
                     </Paper>
                 </TabPanel>
@@ -262,7 +325,7 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                 autoFocus
                 disabled={!!Object.keys(error).find(attr => error[attr])}
                 onClick={() => {
-                    let obj: Record<string, Record<string, string | boolean | SchemaItem>> = {};
+                    const obj: { native: Record<string, any> } = { native: {} };
                     let err = false;
                     Object.keys(schema.items).forEach((key: string) => {
                         if (schema.items[key].required) {
@@ -270,11 +333,11 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                                 err = true;
                                 alert(`no data ${schema.items[key].label}`);
                             } else {
-                                obj = generateObj(obj, schema.items[key].name, schemaData[key]);
+                                setValueInObj(obj, schema.items[key].name, schemaData[key]);
                             }
                         } else if (schema.items[key].name) {
                             err = false;
-                            obj = generateObj(obj, schema.items[key].name, schemaData[key]);
+                            setValueInObj(obj, schema.items[key].name, schemaData[key]);
                         }
                     });
                     if (!err) {

@@ -954,6 +954,11 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
 
         const doAnyFilterSet = this.isAnyFilterSet();
 
+        let tdStyle: React.CSSProperties | undefined;
+        if (this.props.schema.compact) {
+            tdStyle = { paddingTop: 1, paddingBottom: 1 };
+        }
+
         return <Paper style={styles.paper}>
             {this.showImportDialog()}
             {this.showTypeOfImportDialog()}
@@ -977,10 +982,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                 key={`${idx}_${i}`}
                             >
                                 {schema.items && schema.items.map((headCell: ConfigItemTableIndexed) =>
-                                    <TableCell key={`${headCell.attr}_${idx}`} align="left">
+                                    <TableCell key={`${headCell.attr}_${idx}`} align="left" style={tdStyle}>
                                         {this.itemTable(headCell.attr, this.state.value[idx], idx)}
                                     </TableCell>)}
-                                {!schema.noDelete && <TableCell align="left" style={styles.buttonCell}>
+                                {!schema.noDelete && <TableCell align="left" style={{ ...tdStyle, ...styles.buttonCell }}>
                                     {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
                                             <UpIcon />
@@ -1005,7 +1010,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                             </TableRow>)}
                         {!schema.noDelete && visibleValue.length >= (schema.showSecondAddAt || 5) ?
                             <TableRow>
-                                <TableCell colSpan={schema.items.length + 1}>
+                                <TableCell colSpan={schema.items.length + 1} style={{ ...tdStyle }}>
                                     <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                                         <span>
                                             <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>

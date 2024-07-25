@@ -107,6 +107,7 @@ class CommandDialog extends Component<CommandDialogProps, CommandDialogState> {
             </DialogContent>
             <DialogActions style={{ justifyContent: 'space-between' }}>
                 <FormControlLabel
+                    style={{ marginLeft: 16 }}
                     control={
                         <Checkbox
                             disabled={this.props.inBackground}
