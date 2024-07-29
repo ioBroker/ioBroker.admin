@@ -167,7 +167,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            return require('./package.json').version;
+            return require('./lerna.json').version;
 
       - name: Extract the commit body
         if: steps.automerge.outputs.mergeResult == 'merged'
