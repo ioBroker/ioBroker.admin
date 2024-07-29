@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "7.0.21": {
-        "en": "Corrected installation of adapter with the license unequal to MIT\nCorrected width of a side menu\nAllowed the pasting into object JSON editor",
-        "de": "Korrigierte Installation des Adapters mit der Lizenz ungleich MIT\nKorrigierte Breite eines Seitenmenüs\nErlaubt das Einfügen in Objekt JSON Editor",
-        "ru": "Корректированная установка адаптера с лицензией, не равной MIT\nИсправленная ширина бокового меню\nПозволил вставить в объектный редактор JSON",
-        "pt": "Instalação correta do adaptador com a licença desigual ao MIT\nLargura correta de um menu lateral\nPermitido o colar em objeto JSON editor",
-        "nl": "Gecorrigeerde installatie van adapter met de licentie ongelijk aan MIT\nGecorrigeerde breedte van een zijmenu\nPlakken in object JSON-editor toegestaan",
-        "fr": "Installation corrigée de l'adaptateur avec la licence inégale à MIT\nLargeur corrigée d'un menu latéral\nAutorisé le collage dans l'éditeur d'objet JSON",
-        "it": "Installazione corretta dell'adattatore con la licenza non uguale a MIT\nLarghezza corretta di un menu laterale\nConsentito il incollaggio in oggetto editor JSON",
-        "es": "Instalación corregida del adaptador con la licencia desigual al MIT\nAncho corregido de un menú lateral\nPermitió el pegado en el objeto JSON editor",
-        "pl": "Poprawiona instalacja adaptera z licencją nierówną MIT\nSkorygowana szerokość menu bocznego\nDozwolone wklejanie do edytora JSON obiektu",
-        "uk": "Виправлена установка адаптера з ліцензійним нерівномірним для MIT\nВиправлена ширина бічного меню\nДозволено перезапис у редактор JSON",
-        "zh-cn": "修正了适配器的安装,其许可与麻省理工学院不平等\n修正侧菜单的宽度\n允许粘贴到对象 JSON 编辑器"
-      },
       "7.0.18": {
         "en": "Corrected export from JSON table\nadded `qrCode` component to JSON config\nCorrected adding of adapters with licenses (other than MIT)\nImproved license dialog",
         "de": "Berichtigte Ausfuhr aus JSON-Tabelle\n`qrCode`-Komponente zu JSON config hinzugefügt\nKorrigiertes Hinzufügen von Adaptern mit Lizenzen (außer MIT)\nVerbesserter Lizenzdialog",
