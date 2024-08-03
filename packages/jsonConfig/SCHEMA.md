@@ -65,6 +65,8 @@ Possible types:
   - `minRows` - default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row.  
   - `maxRows` - max rows of textarea. Used only if `minRows` > 1.  
   - `noClearButton` - if true, the clear button will not be shown (admin >= 6.17.13)
+  - `validateJson` - if true, the text will be validated as JSON
+  - `allowEmpty` - if true, the JSON will be validated only if the value is not empty
 
 - `number`
   - `min` - minimal value
@@ -254,6 +256,8 @@ Possible types:
     - `clone` - [optional] - if clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.
 
 - `jsonEditor` - json editor
+    - `validateJson` - if false, the text will be not validated as JSON
+    - `allowEmpty` - if true, the JSON will be validated only if the value is not empty
 
 - `language` - select language
     - `system` - allow the usage of the system language from `system.config` as default (will have an empty string value if selected)

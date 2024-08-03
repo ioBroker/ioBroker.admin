@@ -50,6 +50,10 @@
     "@iobroker/json-config": "file:../jsonConfig",
     "@iobroker/types": "^6.0.9",
     "@types/ace": "^0.0.52",
+    "@types/body-parser": "^1.19.5",
+    "@types/connect-flash": "^0.0.40",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/express-session": "^1.18.0",
     "mocha": "^10.7.0"
   },
   "bugs": {
