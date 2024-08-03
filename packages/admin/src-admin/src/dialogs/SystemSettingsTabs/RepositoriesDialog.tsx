@@ -33,6 +33,7 @@ import {
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
+import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
 import AdminUtils from '../../AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
@@ -146,8 +147,6 @@ interface RepositoriesDialogState {
 
 const SortableList = SortableContainer<{ value: any }>(({ value }: { value: any }) => value);
 const SortableItem = SortableElement<{ value: any }>(({ value }: { value: any }) => value);
-/** All possible auto upgrade settings */
-const AUTO_UPGRADE_SETTINGS: ioBroker.AutoUpgradePolicy[] = ['none', 'patch', 'minor', 'major'];
 
 class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProps, RepositoriesDialogState> {
     constructor(props: RepositoriesDialogProps) {
@@ -553,7 +552,7 @@ class RepositoriesDialog extends BaseSystemSettingsDialog<RepositoriesDialogProp
                     }}
                 >
                     {AUTO_UPGRADE_SETTINGS.map(
-                        option => <MenuItem value={option}>{option}</MenuItem>,
+                        option => <MenuItem value={option}>{AUTO_UPGRADE_OPTIONS_MAPPING[option]}</MenuItem>,
                     )}
                 </Select>
             </div>

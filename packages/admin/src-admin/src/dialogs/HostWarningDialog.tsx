@@ -128,6 +128,7 @@ const styles: Record<string, any> = {
         alignItems: 'center',
     },
     classNameBox: {
+        margin: 8,
         p: '24px',
         '@media screen and (max-width: 550px)': {
             p: '10px',
@@ -179,12 +180,11 @@ const Status = ({ name, severity, ...props }: StatusOptions) => {
         case 'remoteHostErrors':
             return <SettingsRemoteIcon style={{ color: '#ffca00' }} {...props} />;
         case 'heading':
-            return <WarningIcon
-                style={{
-                    color: '#ffca00',
+            return <BellIcon
+                sx={{
                     fontSize: 36,
-                    marginLeft: 25,
-                    marginRight: 10,
+                    marginLeft: 4,
+                    marginRight: 2,
                 }}
                 {...props}
             />;
@@ -280,7 +280,7 @@ const HostWarningDialog = ({
     >
         <h2 style={styles.headingTop}>
             <Status name="heading" />
-            {I18n.t('Adapter warnings')}
+            {I18n.t('Host-specific notifications')}
         </h2>
         <DialogContent style={{ ...styles.flex, ...styles.overflowHidden }} dividers>
             <Box component="div" sx={styles.root}>

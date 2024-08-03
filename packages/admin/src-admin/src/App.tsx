@@ -1178,10 +1178,29 @@ class App extends Router<AppProps, AppState> {
                         setTimeout(
                             async () => {
                                 const notifications = await this.hostsWorker.getNotifications(newState.currentHost);
-                                this.showAdaptersWarning(
-                                    notifications,
-                                    newState.currentHost,
-                                );
+
+                                let isWarningAvailable = false;
+
+                                for (const hostNotifications of Object.values(notifications)) {
+                                    if (!('system' in hostNotifications.result)) {
+                                        continue;
+                                    }
+
+                                    for (const category of Object.values(hostNotifications.result.system.categories)) {
+                                        if (category.severity === 'alert') {
+                                            isWarningAvailable = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                // on mount, we only show the dialog if there are warnings available
+                                if (isWarningAvailable) {
+                                    this.showAdaptersWarning(
+                                        notifications,
+                                        newState.currentHost,
+                                    );
+                                }
 
                                 this.handleNewNotifications(notifications);
                             },

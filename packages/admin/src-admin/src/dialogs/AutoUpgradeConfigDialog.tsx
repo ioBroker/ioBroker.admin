@@ -11,6 +11,7 @@ import {
     type AdminConnection, I18n, IconCopy as SaveIcon,
 } from '@iobroker/adapter-react-v5';
 import IsVisible from '@/components/IsVisible';
+import { AUTO_UPGRADE_OPTIONS_MAPPING, AUTO_UPGRADE_SETTINGS } from '@/helpers/utils';
 
 interface AutoUpgradeConfigDialogProps {
     /** Called when user closes dialog */
@@ -22,9 +23,6 @@ interface AutoUpgradeConfigDialogProps {
     /** Name of the adapter */
     adapter: string;
 }
-
-/** All possible auto upgrade settings */
-const AUTO_UPGRADE_SETTINGS: ioBroker.AutoUpgradePolicy[] = ['none', 'patch', 'minor', 'major'];
 
 interface AutoUpgradeConfigDialogState {
     /** Auto upgrade policy which is currently saved */
@@ -113,7 +111,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
      * Render the element
      */
     render(): React.JSX.Element {
-        return <Dialog open={!0} maxWidth="md">
+        return <Dialog open={!0} maxWidth="md" fullWidth>
             <DialogTitle>{I18n.t('Auto upgrade policy for %s', this.props.adapter)}</DialogTitle>
             <DialogContent style={{ padding: '0 20px', overflow: 'hidden' }}>
                 <IsVisible value={!this.state.supported}>
@@ -131,7 +129,7 @@ export default class AutoUpgradeConfigDialog extends React.Component<AutoUpgrade
                         onChange={e => this.setState({ policy: e.target.value as ioBroker.AutoUpgradePolicy })}
                     >
                         {AUTO_UPGRADE_SETTINGS.map(
-                            option => <MenuItem value={option}>{option}</MenuItem>,
+                            option => <MenuItem value={option}>{AUTO_UPGRADE_OPTIONS_MAPPING[option]}</MenuItem>,
                         )}
                     </Select>
                     <IsVisible value={this.state.repositories.includes('beta') && this.state.policy !== 'none'}>
