@@ -51,7 +51,7 @@
     "tooltip_certPublic": "Öffentliches Zertifikat. Verfügbare Zertifikate können über die ioBroker Systemkonfiguration verwaltet werden.",
     "tooltip_defaultUser": "Diesen Benutzer automatisch einloggen",
     "tooltip_leEnabled": "Let's Encrypt Zertifikate benutzen",
-    "tooltip_lePort": "Port für Challenge-Server. Let's Encrypt benötigt, das Port 80 von außen erreichbar ist. Die nötige Port-Weiterleitungsregel auf den hier angegeben Port muss im Router eingerichtet sein.",
+    "tooltip_lePort": "Port für Challenge-Server. Let's Encrypt erfordert, dass Port 80 von außen erreichbar ist. Die dafür notwendige Port-Weiterleitungsregel auf den hier angegeben Port muss im Router eingerichtet sein.",
     "tooltip_leUpdate": "Diese Instanz nutzen, um die Let's Encrypt Zertifikate alle 3 Monate zu aktualisieren",
     "tooltip_port": "Port für die Admin-Oberfläche. Der Port darf nicht von einem anderen Prozess belegt sein. Unter Linux dürfen nicht Root-Accounts nur die Ports über 1000 benutzen.",
     "tooltip_secure": "SSL Verschlüsselung aktivieren. Die Admin-Oberfläche ist unter https:// und nicht mehr unter http:// erreichbar",
