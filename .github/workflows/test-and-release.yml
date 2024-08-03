@@ -152,7 +152,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch the history, or this action won't work
-          ref: 'main'
+          ref: 'master'
 
       - name: Use Node.js 20
         if: steps.automerge.outputs.mergeResult == 'merged'
@@ -167,7 +167,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            return require('./package.json').version;
+            return require('./lerna.json').version;
 
       - name: Extract the commit body
         if: steps.automerge.outputs.mergeResult == 'merged'
@@ -217,8 +217,8 @@ jobs:
           export SENTRY_URL=https://sentry.iobroker.net
           export SENTRY_ORG=iobroker
           export SENTRY_PROJECT=iobroker-admin
-          export SENTRY_VERSION=iobroker.admin@${{ steps.extract_release.outputs.VERSION }}
-          export SENTRY_RELEASE=${{ steps.extract_release.outputs.VERSION }}
+          export SENTRY_VERSION=iobroker.admin@${{ steps.version.outputs.result }}
+          export SENTRY_RELEASE=${{ steps.version.outputs.result }}
           sentry-cli releases new $SENTRY_VERSION
           sentry-cli releases finalize $SENTRY_VERSION
           sentry-cli sourcemaps inject ./adminWww

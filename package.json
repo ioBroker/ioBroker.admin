@@ -10,7 +10,7 @@
     "iobroker.admin": "file:packages/admin"
   },
   "devDependencies": {
-    "@alcalzone/release-script": "^3.7.3",
+    "@alcalzone/release-script": "^3.8.0",
     "@alcalzone/release-script-plugin-iobroker": "^3.7.2",
     "@alcalzone/release-script-plugin-lerna": "^3.7.0",
     "@alcalzone/release-script-plugin-license": "^3.7.0",
@@ -165,7 +165,7 @@
     "install-monorepo": "npm i -f && npm i -w packages/dm-gui-components -f && npm i -f -w packages/jsonConfig && npm i -w packages/admin -f",
     "npm": "npm run install-monorepo",
     "start": "npm run start -w packages/admin",
-    "release": "release-script",
+    "release": "release-script -y --noPush --no-update-lockfile",
     "release-patch": "release-script patch --yes --no-update-lockfile --publishAll",
     "release-minor": "release-script minor --yes --no-update-lockfile --publishAll",
     "release-major": "release-script major --yes --no-update-lockfile --publishAll",

@@ -35,8 +35,11 @@ jobs:
       - name: Install dependencies
         run: npm ci -f
 
+      - name: 'Build backend'
+        run: npm run build:ts -w packages/admin
+
       - name: Test
-        run: npm test
+        run: npm test -w packages/admin/
 
       - name: Prepare release
         env:
@@ -53,7 +56,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const package = require('./package.json');
+            const package = require('./lerna.json');
             return package.version
 
       - name: Extract the commit body
