@@ -1022,8 +1022,7 @@ class Web {
                 let url;
                 try {
                     url = decodeURIComponent(req.url);
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                } catch (e: unknown) {
+                } catch {
                     // ignore
                     url = req.url;
                 }
@@ -1100,8 +1099,7 @@ class Web {
                                 // @ts-expect-error types might be wrong
                                 const _mimeType = mime.getType(url);
                                 res.contentType(_mimeType || 'text/javascript');
-                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                            } catch (error: unknown) {
+                            } catch {
                                 res.contentType('text/javascript');
                             }
                         }
@@ -1116,8 +1114,7 @@ class Web {
                 let url;
                 try {
                     url = decodeURIComponent(req.url);
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                } catch (e: unknown) {
+                } catch {
                     // ignore
                     url = req.url;
                 }

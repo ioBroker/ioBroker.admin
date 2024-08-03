@@ -308,8 +308,7 @@ class Admin extends utils.Adapter {
             socket?.close();
             webServer.close();
             callback();
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (e: unknown) {
+        } catch {
             callback();
         }
     }
@@ -1004,16 +1003,14 @@ class Admin extends utils.Adapter {
             const vers = condition.substring(7, condition.length - 1).trim();
             try {
                 return semver.gt(vers, installedVersion);
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (e: unknown) {
+            } catch {
                 return false;
             }
         } else if (condition.startsWith('smaller')) {
             const vers = condition.substring(8, condition.length - 1).trim();
             try {
                 return semver.lt(installedVersion, vers);
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (e: unknown) {
+            } catch {
                 return false;
             }
         } else if (condition.startsWith('between')) {
@@ -1021,8 +1018,7 @@ class Admin extends utils.Adapter {
             const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
             try {
                 return semver.gte(installedVersion, vers1) && semver.lte(installedVersion, vers2);
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (e: unknown) {
+            } catch {
                 return false;
             }
         } else {
@@ -1294,8 +1290,7 @@ class Admin extends utils.Adapter {
             for (const [key, value] of Object.entries(result)) {
                 await this.setForeignStateAsync(`${prefix}.${key}`, value.replace(/^v/, ''), true);
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error: unknown) {
+        } catch {
             this.log.warn('Cannot check node.js/npm version');
         }
     }
@@ -1378,8 +1373,7 @@ class Admin extends utils.Adapter {
                                             }
                                         }
                                     }
-                                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                } catch (e: unknown) {
+                                } catch {
                                     this.log.error(
                                         `Cannot check revoked versions: ${repository[_adapter].blockedVersions[i]}`
                                     );
