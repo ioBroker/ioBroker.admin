@@ -20,6 +20,9 @@ import {
     Fluorescent,
     WbIncandescent,
     Settings,
+    QuestionMark,
+    Group,
+    Person,
     QrCode,
 } from '@mui/icons-material';
 
@@ -88,7 +91,13 @@ function getFaIcon(icon: string, color: string): React.JSX.Element | null {
     if (iconStyle.includes('rewind')) {
         return <FastRewind style={{ color }} />;
     }
-    return null;
+    if (iconStyle.includes('users') || iconStyle.includes('group')) {
+        return <Group style={{ color }} />;
+    }
+     if (iconStyle.includes('user')) {
+        return <Person style={{ color }} />;
+    }
+    return <QuestionMark style={{ color }} />;
 }
 
 function getIconByName(name: string, color: string): React.JSX.Element | null {
@@ -146,7 +155,13 @@ function getIconByName(name: string, color: string): React.JSX.Element | null {
     if (name === 'settings') {
         return <Settings style={{ color }} />;
     }
-    return null;
+    if (name === 'users' || name === 'group') {
+        return <Group style={{ color }} />;
+    }
+    if (name === 'user') {
+        return <Person style={{ color }} />;
+    }
+    return <QuestionMark style={{ color }} />;
 }
 
 export function renderControlIcon(
