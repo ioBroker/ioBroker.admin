@@ -27,7 +27,7 @@ import {
 import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
 
 import {
-    amber, blue, grey, red,
+    amber, blue, green, grey, red,
 } from '@mui/material/colors';
 
 import {
@@ -190,8 +190,8 @@ export const genericStyles: Record<string, any> = {
         alignItems: 'center',
     },
     buttonUpdate: {
-        border: '1px solid',
-        padding: '0px 7px',
+        border: `1px solid ${green[700]}`,
+        padding: '2px 7px',
         borderRadius: '5px',
         display: 'flex',
         alignItems: 'center',
@@ -573,7 +573,10 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties) {
-        return upgradeAvailable ? <Tooltip title={this.props.t('Update')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
+        return upgradeAvailable ? <Tooltip
+            title={this.props.t('Update')}
+            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
+        >
             <Box
                 component="div"
                 onClick={event => {
@@ -585,7 +588,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                 <IconButton style={genericStyles.buttonUpdateIcon} size="small">
                     <RefreshIcon />
                 </IconButton>
-                {this.props.available}
+                <span style={{ color: green[700] }}>{this.props.available}</span>
             </Box>
         </Tooltip>
             :
@@ -594,7 +597,10 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderHostBaseEdit() {
-        return this.props.expertMode ? <Tooltip title={this.props.t('Host Base Settings')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
+        return this.props.expertMode ? <Tooltip
+            title={this.props.t('Host Base Settings')}
+            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
+        >
             <div>
                 <IconButton
                     size="large"
@@ -613,11 +619,12 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     /**
      * Render a button to extend the component in general the component can be extended by clicking anywhere on it
      * However, it is used as an additional indicator that it is expandable
-     *
-     * @param open if host is expanded
      */
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderExtendButton(open: boolean) {
+    renderExtendButton(
+        /** if host is expanded */
+        open: boolean,
+    ) {
         return <Tooltip title={this.props.t(open ? 'collapse' : 'Expand')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
             <div>
                 <IconButton

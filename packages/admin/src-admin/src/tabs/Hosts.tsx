@@ -62,7 +62,6 @@ const styles: Record<string, any> = {
         alignSelf: 'center',
     },
     tabHeaderItemButton: {
-        width: 192,
         fontSize: 14,
         fontWeight: 600,
         alignSelf: 'center',
@@ -322,7 +321,7 @@ class Hosts extends Component<HostsProps, HostsState> {
         }
     };
 
-    getPanels() {
+    getPanelsOrRows() {
         const items = this.renderHosts()
             .filter(host => host);
 
@@ -380,25 +379,73 @@ class Hosts extends Component<HostsProps, HostsState> {
         });
     }
 
-    render() {
-        const {
-            expertMode,
-        } = this.props;
+    renderTableHeader() {
+        return <div style={styles.tabHeaderWrapper}>
+            <div style={styles.tabHeaderFirstItem}>
+                {this.t('Name:')}
+            </div>
+            <div style={styles.tabFlex}>
+                {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
+                <Box
+                    component="div"
+                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                >
+                    CPU
+                </Box>
+                <Box
+                    component="div"
+                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                >
+                    RAM
+                </Box>
+                <Box
+                    component="div"
+                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}
+                >
+                    {this.t('Uptime')}
+                </Box>
+                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
+                    {this.t('Installed')}
+                    <div style={styles.jsController}>js-controller</div>
+                </Box>
+                <Box
+                    component="div"
+                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}
+                >
+                    {this.t('Available')}
+                    <div style={styles.jsController}>js-controller</div>
+                </Box>
+                <Box
+                    component="div"
+                    sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}
+                >
+                    {this.t('Events')}
+                </Box>
+                <div
+                    style={{
+                        ...styles.tabHeaderItemButton,
+                        width: this.props.expertMode ? 292 : 244,
+                    }}
+                />
+            </div>
+        </div>;
+    }
 
+    render() {
         if (!this.state.hosts.length) {
-            return <LinearProgress />;
+            return <LinearProgress/>;
         }
 
         return <TabContainer>
             <style>{blinkClasses}</style>
             {this.renderSlowConnectionWarning()}
             <TabHeader>
-                <Tooltip title={this.t('Show / hide List')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                <Tooltip title={this.t('Show / hide List')} componentsProps={{popper: {sx: styles.tooltip}}}>
                     <IconButton
                         size="large"
                         onClick={() => {
                             ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', this.state.viewMode ? 'false' : 'true');
-                            this.setState({ viewMode: !this.state.viewMode });
+                            this.setState({viewMode: !this.state.viewMode});
                         }}
                     >
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
@@ -413,7 +460,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                 {this.state.hosts.length > 2 ? <TextField
                     variant="standard"
                     label={this.t('Filter')}
-                    style={{ margin: '5px 0' }}
+                    style={{margin: '5px 0'}}
                     value={this.state.filterText}
                     onChange={event => {
                         ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', event.target.value);
@@ -439,29 +486,8 @@ class Hosts extends Component<HostsProps, HostsState> {
                 {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ?
                     <Box component="div" sx={styles.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</Box> : null}
                 <div style={this.state.viewMode ? styles.cards : undefined}>
-                    {!this.state.viewMode &&
-                        <div style={styles.tabHeaderWrapper}>
-                            <div style={styles.tabHeaderFirstItem}>
-                                {this.t('Name:')}
-                            </div>
-                            <div style={styles.tabFlex}>
-                                {/* <div className={UtilsCommon.clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div> */}
-                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>CPU</Box>
-                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>RAM</Box>
-                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden800)}>{this.t('Uptime')}</Box>
-                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
-                                    {this.t('Available')}
-                                    <div style={styles.jsController}>js-controller</div>
-                                </Box>
-                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden1100)}>
-                                    {this.t('Installed')}
-                                    <div style={styles.jsController}>js-controller</div>
-                                </Box>
-                                <Box component="div" sx={Utils.getStyle(this.props.theme, styles.tabHeaderItem, styles.hidden600)}>{this.t('Events')}</Box>
-                                <div style={{ ...styles.tabHeaderItemButton, ...(expertMode ? styles.widthButtons : undefined) }} />
-                            </div>
-                        </div>}
-                    {this.getPanels()}
+                    {!this.state.viewMode && this.renderTableHeader()}
+                    {this.getPanelsOrRows()}
                 </div>
             </TabContent>
         </TabContainer>;
