@@ -123,7 +123,9 @@ export default class ObjectsWorker {
 
     unregisterHandler(cb: (events: ObjectEvent[]) => void, doNotUnsubscribe?: boolean): void {
         const pos = this.handlers.indexOf(cb);
-        pos !== -1 && this.handlers.splice(pos, 1);
+        if (pos !== -1) {
+            this.handlers.splice(pos, 1);
+        }
 
         if (!this.handlers.length && this.connected && !doNotUnsubscribe) {
             this.socket.unsubscribeObject('*', this.objectChangeHandler)

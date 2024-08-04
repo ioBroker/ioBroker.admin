@@ -326,7 +326,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
     }
 
     componentWillUnmount() {
-        this.getDataTimeout && clearTimeout(this.getDataTimeout);
+        if (this.getDataTimeout) {
+            clearTimeout(this.getDataTimeout);
+            this.getDataTimeout = undefined;
+        }
 
         this.props.instancesWorker.unregisterHandler(this.getDataDelayed);
         this.props.hostsWorker.unregisterHandler(this.updateHosts);
@@ -1333,7 +1336,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 if (hostData._nodeNewest && hostData['Node.js'] && semver.gt(hostData._nodeNewest, hostData['Node.js'].replace(/^v/, ''))) {
                     nodeUpdate = hostData._nodeNewest;
                 }
-            } catch (e) {
+            } catch {
                 // ignore
             }
             try {
@@ -1346,7 +1349,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 ) {
                     nodeUpdate += (nodeUpdate ? ' / ' : '') + hostData._nodeNewestNext;
                 }
-            } catch (e) {
+            } catch {
                 // ignore
             }
 
@@ -1368,7 +1371,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 if (hostData._npmNewest && hostData.NPM && semver.gt(hostData._npmNewest, hostData.NPM)) {
                     npmUpdate = hostData._npmNewest;
                 }
-            } catch (e) {
+            } catch {
                 // ignore
             }
             try {
@@ -1381,7 +1384,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 ) {
                     npmUpdate += (npmUpdate ? ' / ' : '') + hostData._npmNewestNext;
                 }
-            } catch (e) {
+            } catch {
                 // ignore
             }
             if (npmUpdate) {
@@ -1478,7 +1481,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getDataDelayed = (_events?: InstanceEvent[]) => {
-        this.getDataTimeout && clearTimeout(this.getDataTimeout);
+        if (this.getDataTimeout) {
+            clearTimeout(this.getDataTimeout);
+        }
         this.getDataTimeout = setTimeout(() => {
             this.getDataTimeout = undefined;
             this.getData(true);

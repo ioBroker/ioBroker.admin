@@ -146,7 +146,10 @@ class CustomTab extends Component<CustomTabProps, CustomTabState> {
     }
 
     componentWillUnmount() {
-        this.registered && this.props.onUnregisterIframeRef(this.refIframe);
+        if (this.registered) {
+            this.props.onUnregisterIframeRef(this.refIframe);
+            this.registered = false;
+        }
     }
 
     componentDidMount() {

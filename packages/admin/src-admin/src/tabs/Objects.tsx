@@ -99,7 +99,7 @@ class Objects extends Component<ObjectsProps, ObjectsState> {
 
         try {
             this.filters = JSON.parse(filtersStr);
-        } catch (e) {
+        } catch {
             this.filters = {};
         }
 

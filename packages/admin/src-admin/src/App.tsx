@@ -62,6 +62,19 @@ import {
     type AdminConnection, type ThemeType,
     Utils,
 } from '@iobroker/adapter-react-v5';
+
+import enAR from '@iobroker/adapter-react-v5/i18n/en.json';
+import deAR from '@iobroker/adapter-react-v5/i18n/de.json';
+import ruAR from '@iobroker/adapter-react-v5/i18n/ru.json';
+import ptAR from '@iobroker/adapter-react-v5/i18n/pt.json';
+import nlAR from '@iobroker/adapter-react-v5/i18n/nl.json';
+import frAR from '@iobroker/adapter-react-v5/i18n/fr.json';
+import itAR from '@iobroker/adapter-react-v5/i18n/it.json';
+import esAR from '@iobroker/adapter-react-v5/i18n/es.json';
+import plAR from '@iobroker/adapter-react-v5/i18n/pl.json';
+import ukAR from '@iobroker/adapter-react-v5/i18n/uk.json';
+import zhCNAR from '@iobroker/adapter-react-v5/i18n/zh-cn.json';
+
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
 import type { AdminGuiConfig, CompactAdapterInfo, CompactHost } from '@/types';
 import type { InstanceConfig } from '@/tabs/EasyMode';
@@ -91,6 +104,18 @@ import ObjectsWorker from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from './dialogs/SlowConnectionWarningDialog';
 import IsVisible from './components/IsVisible';
+
+import enLocal from './i18n/en.json';
+import deLocal from './i18n/de.json';
+import ruLocal from './i18n/ru.json';
+import ptLocal from './i18n/pt.json';
+import nlLocal from './i18n/nl.json';
+import frLocal from './i18n/fr.json';
+import itLocal from './i18n/it.json';
+import esLocal from './i18n/es.json';
+import plLocal from './i18n/pl.json';
+import ukLocal from './i18n/uk.json';
+import zhCNLocal from './i18n/zh-cn.json';
 
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
@@ -505,37 +530,37 @@ class App extends Router<AppProps, AppState> {
                     this.showAlert(message.toString(), 'info');
                 }
             };
-        } catch (e) {
+        } catch {
             // ignore. FF could not redefine alert
         }
 
         // init translations
         this.translations = {
-            en: require('@iobroker/adapter-react-v5/i18n/en'),
-            de: require('@iobroker/adapter-react-v5/i18n/de'),
-            ru: require('@iobroker/adapter-react-v5/i18n/ru'),
-            pt: require('@iobroker/adapter-react-v5/i18n/pt'),
-            nl: require('@iobroker/adapter-react-v5/i18n/nl'),
-            fr: require('@iobroker/adapter-react-v5/i18n/fr'),
-            it: require('@iobroker/adapter-react-v5/i18n/it'),
-            es: require('@iobroker/adapter-react-v5/i18n/es'),
-            pl: require('@iobroker/adapter-react-v5/i18n/pl'),
-            uk: require('@iobroker/adapter-react-v5/i18n/uk'),
-            'zh-cn': require('@iobroker/adapter-react-v5/i18n/zh-cn'),
+            en: enAR,
+            de: deAR,
+            ru: ruAR,
+            pt: ptAR,
+            nl: nlAR,
+            fr: frAR,
+            it: itAR,
+            es: esAR,
+            pl: plAR,
+            uk: ukAR,
+            'zh-cn': zhCNAR,
         };
 
         const translations: Record<ioBroker.Languages, Record<string, string>> = {
-            en: require('./i18n/en'),
-            de: require('./i18n/de'),
-            ru: require('./i18n/ru'),
-            pt: require('./i18n/pt'),
-            nl: require('./i18n/nl'),
-            fr: require('./i18n/fr'),
-            it: require('./i18n/it'),
-            es: require('./i18n/es'),
-            pl: require('./i18n/pl'),
-            uk: require('./i18n/uk'),
-            'zh-cn': require('./i18n/zh-cn'),
+            en: enLocal,
+            de: deLocal,
+            ru: ruLocal,
+            pt: ptLocal,
+            nl: nlLocal,
+            fr: frLocal,
+            it: itLocal,
+            es: esLocal,
+            pl: plLocal,
+            uk: ukLocal,
+            'zh-cn': zhCNLocal,
         };
 
         // merge together
@@ -758,7 +783,9 @@ class App extends Router<AppProps, AppState> {
     };
 
     localStorageSave() {
-        this.localStorageTimer && clearTimeout(this.localStorageTimer);
+        if (this.localStorageTimer) {
+            clearTimeout(this.localStorageTimer);
+        }
         this.localStorageTimer = setTimeout(async () => {
             this.localStorageTimer = null;
             await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
@@ -1240,16 +1267,20 @@ class App extends Router<AppProps, AppState> {
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.onHashChanged, false);
-        this.socket && this.socket.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+        this.socket?.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
 
-        this.adaptersWorker && this.adaptersWorker.unregisterRepositoryHandler(this.repoChangeHandler);
-        this.adaptersWorker && this.adaptersWorker.unregisterHandler(this.adaptersChangeHandler);
-        this.hostsWorker && this.hostsWorker.unregisterHandler(this.updateHosts);
+        this.adaptersWorker?.unregisterRepositoryHandler(this.repoChangeHandler);
+        this.adaptersWorker?.unregisterHandler(this.adaptersChangeHandler);
+        this.hostsWorker?.unregisterHandler(this.updateHosts);
 
-        this.pingAuth && clearTimeout(this.pingAuth);
-        this.pingAuth = null;
-        this.expireInSecInterval && clearInterval(this.expireInSecInterval);
-        this.expireInSecInterval = null;
+        if (this.pingAuth) {
+            clearTimeout(this.pingAuth);
+            this.pingAuth = null;
+        }
+        if (this.expireInSecInterval) {
+            clearInterval(this.expireInSecInterval);
+            this.expireInSecInterval = null;
+        }
 
         if (window._localStorage) {
             window._localStorage = null;

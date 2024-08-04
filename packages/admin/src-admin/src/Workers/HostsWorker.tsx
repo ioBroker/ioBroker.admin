@@ -219,7 +219,9 @@ export default class HostsWorker {
 
         // ignore subscribe events
         if (!this.subscribeTs || Date.now() - this.subscribeTs > 500) {
-            this.notificationTimer && clearTimeout(this.notificationTimer);
+            if (this.notificationTimer) {
+                clearTimeout(this.notificationTimer);
+            }
 
             this.notificationTimer = setTimeout(host_ => {
                 this.notificationTimer = null;

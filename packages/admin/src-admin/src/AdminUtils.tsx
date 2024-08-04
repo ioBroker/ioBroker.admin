@@ -614,10 +614,11 @@ class AdminUtils {
                     obj.common.adminUI.tab = 'html';
                 }
 
-                obj.common.adminUI &&
+                if (obj.common.adminUI) {
                     console.warn(
                         `Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`,
                     );
+                }
             } else {
                 let changed = false;
                 if (obj.common.materializeTab && obj.common.adminTab) {
@@ -661,10 +662,11 @@ class AdminUtils {
                     obj.common.adminUI.config = 'html';
                     changed = true;
                 }
-                changed &&
+                if (changed) {
                     console.warn(
                         `Please modify "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`,
                     );
+                }
             }
         }
     }
@@ -780,7 +782,7 @@ class AdminUtils {
     static updateAvailable(oldVersion: string, newVersion: string) {
         try {
             return semver.gt(newVersion, oldVersion) === true;
-        } catch (e) {
+        } catch {
             console.warn(`[ADAPTERS] Cannot compare "${newVersion}" and "${oldVersion}"`);
             return false;
         }

@@ -257,7 +257,9 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                     {expanded &&
                         category.adapters.map(adapterName => {
                             const item = this.getRow(adapterName, context);
-                            item && count++;
+                            if (item) {
+                                count++;
+                            }
                             return item;
                         })}
                 </Fragment>;

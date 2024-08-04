@@ -78,9 +78,6 @@ export type AdaptersContext = {
     setAdminUpgradeTo: (version: string) => void;
 };
 
-export interface AdapterInstallDialogProps {
-}
-
 export interface AdapterInstallDialogState {
     showLicenseDialog: {
         url: string;
@@ -94,7 +91,7 @@ export interface AdapterInstallDialogState {
     showDialog: boolean;
 }
 
-export default abstract class AdapterInstallDialog<TProps extends AdapterInstallDialogProps, TState extends AdapterInstallDialogState> extends Component<TProps, TState> {
+export default abstract class AdapterInstallDialog<TProps, TState extends AdapterInstallDialogState> extends Component<TProps, TState> {
     protected constructor(props: TProps) {
         super(props);
 

@@ -306,7 +306,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         let selected: number[];
         try {
             selected = JSON.parse(selectedStr);
-        } catch (e) {
+        } catch {
             selected = [];
         }
 
@@ -361,7 +361,9 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
         }
 
         this.supportedFeaturesPromises[historyInstance] = new Promise(resolve => {
-            this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
+            if (this.readSupportedFeaturesTimeout) {
+                clearTimeout(this.readSupportedFeaturesTimeout);
+            }
             this.readSupportedFeaturesTimeout = setTimeout(() => {
                 this.readSupportedFeaturesTimeout = undefined;
                 resolve([]);
@@ -370,7 +372,7 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             this.props.socket.sendTo(historyInstance, 'features', null)
                 .then((result: { supportedFeatures: SupportedFeatures}) => {
                     if (this.readSupportedFeaturesTimeout) {
-                        this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
+                        clearTimeout(this.readSupportedFeaturesTimeout);
                         this.readSupportedFeaturesTimeout = undefined;
                         resolve(result ? result.supportedFeatures || [] : []);
                     } else {
@@ -386,8 +388,10 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
     }
 
     componentWillUnmount() {
-        this.timeTimer && clearTimeout(this.timeTimer);
-        this.timeTimer = undefined;
+        if (this.timeTimer) {
+            clearTimeout(this.timeTimer);
+            this.timeTimer = undefined;
+        }
 
         for (let i = 0; i < this.subscribes.length; i++) {
             this.props.socket.unsubscribeState(this.subscribes[i], this.onChange);
@@ -649,14 +653,18 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             for (let i = 0; i < this.state.values.length; i++) {
                 if (this.state.values[i].ts === ts) {
                     pps = i;
-                    ppls !== pps && selected.push(this.state.values[i].ts);
+                    if (ppls !== pps) {
+                        selected.push(this.state.values[i].ts);
+                    }
                     if (pps !== -1 && ppls !== -1) {
                         break;
                     }
                 }
                 if (this.state.values[i].ts === this.state.lastSelected) {
                     ppls = i;
-                    ppls !== pps && selected.push(this.state.values[i].ts);
+                    if (ppls !== pps) {
+                        selected.push(this.state.values[i].ts);
+                    }
                     if (pps !== -1 && ppls !== -1) {
                         break;
                     }
@@ -843,8 +851,10 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
             this.setState({ relativeRange: mins });
         }
         if (mins === 'absolute') {
-            this.timeTimer && clearTimeout(this.timeTimer);
-            this.timeTimer = undefined;
+            if (this.timeTimer) {
+                clearTimeout(this.timeTimer);
+                this.timeTimer = undefined;
+            }
             return;
         }
         this.localStorage.removeItem('App.absoluteStart');
