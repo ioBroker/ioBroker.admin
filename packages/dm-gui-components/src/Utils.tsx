@@ -31,7 +31,7 @@ import {
     Icon,
 } from '@iobroker/adapter-react-v5';
 
-function getFaIcon(icon: string, color: string): React.JSX.Element | null {
+function getFaIcon(icon: string, color?: string): React.JSX.Element | null {
     const iconStyle = icon.split(' ').map(s => s.trim()).filter(s => s !== 'fa-solid');
 
     if (iconStyle.includes('fa-trash-can') || iconStyle.includes('fa-trash')) {
@@ -94,13 +94,13 @@ function getFaIcon(icon: string, color: string): React.JSX.Element | null {
     if (iconStyle.includes('users') || iconStyle.includes('group')) {
         return <Group style={{ color }} />;
     }
-     if (iconStyle.includes('user')) {
+    if (iconStyle.includes('user')) {
         return <Person style={{ color }} />;
     }
     return <QuestionMark style={{ color }} />;
 }
 
-function getIconByName(name: string, color: string): React.JSX.Element | null {
+function getIconByName(name: string, color?: string): React.JSX.Element | null {
     if (name === 'edit' || name === 'rename') {
         return <Edit style={{ color }} />;
     }
@@ -166,7 +166,7 @@ function getIconByName(name: string, color: string): React.JSX.Element | null {
 
 export function renderControlIcon(
     action: ControlBase,
-    colors?: { primary: string, secondary: string },
+    colors?: { primary: string; secondary: string },
     value?: string | number | boolean | null,
 ): React.JSX.Element | null {
     if (!action) {
@@ -223,8 +223,7 @@ export function getTranslation(
     language = language || I18n.getLanguage();
 
     if (typeof text === 'object') {
-        const words = text as ioBroker.StringOrTranslated;
-        // @ts-ignore
+        const words = text;
         return words[language] || text.en;
     }
 

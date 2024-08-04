@@ -2,6 +2,7 @@
   "extends": "../admin/src-admin/tsconfig.json",
   "include": ["./src"],
   "compilerOptions": {
+    "strictNullChecks": true,
     "baseUrl": "./",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,

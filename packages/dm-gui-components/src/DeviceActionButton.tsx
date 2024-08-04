@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { ActionBase, DeviceAction } from '@iobroker/dm-utils/build/types/api';
+import type { ActionBase, DeviceAction } from '@iobroker/dm-utils';
 import TooltipButton from './TooltipButton';
 import { renderActionIcon, getTranslation } from './Utils';
 
@@ -23,11 +23,10 @@ export default function DeviceActionButton(props: DeviceActionButtonProps): Reac
 
     const icon = renderActionIcon(action);
 
-    const tooltip = getTranslation(action.description) || (icon ? null : action.id);
+    const tooltip = getTranslation(action.description ?? '') || (icon ? null : action.id);
 
     return <TooltipButton
-        // label={action.description ? getTranslation(action.description) : (icon ? null : action.id)}
-        tooltip={tooltip}
+        tooltip={tooltip || undefined}
         disabled={disabled || action.disabled}
         Icon={icon}
         onClick={deviceHandler(deviceId, action, refresh)}

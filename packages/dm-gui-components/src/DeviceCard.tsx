@@ -19,9 +19,9 @@ import {
     type ThemeName, type ThemeType,
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import type { DeviceDetails } from '@iobroker/dm-utils';
-import type { DeviceInfo, ActionBase } from '@iobroker/dm-utils/build/types/api';
-import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
+import type {
+    DeviceDetails, DeviceInfo, ActionBase, ControlBase, ControlState,
+} from '@iobroker/dm-utils';
 
 import DeviceActionButton from './DeviceActionButton';
 import DeviceControlComponent from './DeviceControl';
@@ -30,7 +30,7 @@ import JsonConfig from './JsonConfig';
 import DeviceImageUpload from './DeviceImageUpload';
 import { getTranslation } from './Utils';
 
-const NoImageIcon = (props: { style?: React.CSSProperties, className?: string }) => <svg
+const NoImageIcon = (props: { style?: React.CSSProperties; className?: string }) => <svg
     viewBox="0 0 24 24"
     width="24"
     height="24"
@@ -136,7 +136,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         const details: DeviceDetails | null = await this.props.socket.sendTo(this.props.instanceId, 'dm:deviceDetails', this.props.device.id);
         console.log(`Got device details for ${this.props.device.id}:`, details);
         this.setState({ details, data: details?.data || {} });
-    };
+    }
 
     /**
      * Refresh the device details
@@ -452,7 +452,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                     /> : null}
                     <Icon src={this.state.icon} style={imgStyle} />
                 </div>
-                <div style={titleStyle}>{this.state.details?.data.name || this.props.title}</div>
+                <div style={titleStyle}>{this.state.details?.data?.name || this.props.title}</div>
                 {this.props.device.hasDetails ? <Fab
                     disabled={!this.props.alive}
                     size="small"

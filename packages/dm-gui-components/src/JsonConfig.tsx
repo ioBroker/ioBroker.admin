@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import {
-    type AdminConnection,
+import type {
     Connection,
-    type ThemeName,
-    type ThemeType,
-    type IobTheme,
+    AdminConnection,
+    ThemeName,
+    ThemeType,
+    IobTheme,
 } from '@iobroker/adapter-react-v5';
 import {
     JsonConfigComponent,
@@ -50,8 +50,8 @@ export default function JsonConfig(props: JsonConfigProps): React.JSX.Element | 
             themeName={props.themeName}
             themeType={props.themeType}
             theme={props.theme}
-            isFloatComma={props.isFloatComma === undefined ? props.socket.systemConfig.common.isFloatComma : props.isFloatComma}
-            dateFormat={props.dateFormat === undefined ? props.socket.systemConfig.common.dateFormat : props.dateFormat}
+            isFloatComma={props.isFloatComma === undefined ? !!props.socket.systemConfig?.common.isFloatComma : props.isFloatComma}
+            dateFormat={props.dateFormat === undefined ? props.socket.systemConfig?.common.dateFormat as string : props.dateFormat}
         />
     </>;
 

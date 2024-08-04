@@ -4,9 +4,8 @@ import {
     Switch,
 } from '@mui/material';
 
-import { Connection } from '@iobroker/adapter-react-v5';
-import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
-import type { DeviceControl } from '@iobroker/dm-utils/build/types/api';
+import type { Connection } from '@iobroker/adapter-react-v5';
+import type { ControlBase, ControlState, DeviceControl } from '@iobroker/dm-utils';
 
 import { renderControlIcon, getTranslation } from './Utils';
 
@@ -24,8 +23,8 @@ interface DeviceControlProps {
 }
 
 interface DeviceControlState {
-    value: ControlState;
-    ts: number;
+    value?: ControlState;
+    ts?: number;
 }
 
 /**
@@ -87,7 +86,7 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
     }
 
     renderButton() {
-        const tooltip = getTranslation(this.props.control.description);
+        const tooltip = getTranslation(this.props.control.description ?? '');
         const icon = renderControlIcon(this.props.control, this.props.colors, this.state.value);
 
         if (!this.props.control.label) {
@@ -111,7 +110,7 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
     }
 
     renderSwitch() {
-        const tooltip = getTranslation(this.props.control.description);
+        const tooltip = getTranslation(this.props.control.description ?? '');
         // const icon = renderIcon(this.props.control, this.props.colors, this.state.value);
 
         return <Switch
@@ -151,7 +150,7 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
     }
 
     renderIcon() {
-        const tooltip = getTranslation(this.props.control.description);
+        const tooltip = getTranslation(this.props.control.description ?? '');
         const icon = renderControlIcon(this.props.control, this.props.colors, this.state.value);
         const color = this.getColor();
         const style: React.CSSProperties | undefined = color === this.props.colors.primary || color === this.props.colors.secondary ? {} : { color };

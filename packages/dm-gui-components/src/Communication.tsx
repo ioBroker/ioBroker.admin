@@ -21,12 +21,12 @@ import { Close, Check } from '@mui/icons-material';
 
 import type {
     Connection, AdminConnection,
-    ThemeName, ThemeType, IobTheme
+    ThemeName, ThemeType, IobTheme,
 } from '@iobroker/adapter-react-v5';
 import { type ConfigItemPanel } from '@iobroker/json-config';
-import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
-import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
-import type { DeviceRefresh } from '@iobroker/dm-utils/build/types';
+import type {
+    ActionBase, ControlBase, ControlState, DeviceRefresh,
+} from '@iobroker/dm-utils';
 
 import { getTranslation } from './Utils';
 import JsonConfig from './JsonConfig';
@@ -172,12 +172,12 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             }
 
             return this.sendActionToInstance('dm:instanceAction', { actionId: action.id });
-        }
+        };
 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.deviceHandler = (deviceId, action, refresh) => () => {
             if (action.confirmation) {
-                this.setState({ showConfirmation: { ...action, deviceId, refresh }});
+                this.setState({ showConfirmation: { ...action, deviceId, refresh } });
                 return;
             }
             if (action.inputBefore) {
@@ -186,7 +186,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
             }
 
             return this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
-        }
+        };
 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.controlHandler = (deviceId, control, state) => () => this.sendControlToInstance('dm:deviceControl', { deviceId, controlId: control.id, state });
@@ -496,6 +496,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     variant="contained"
                     color="primary"
                     onClick={() => {
+                        if (!this.state.showConfirmation) {
+                            return;
+                        }
+
                         const showConfirmation = this.state.showConfirmation;
                         this.setState({ showConfirmation: null }, () => {
                             if (showConfirmation.deviceId) {
@@ -579,7 +583,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                         value={this.state.inputValue}
                         onChange={e => this.setState({ inputValue: e.target.value })}
                     >
-                        {this.state.showInput.inputBefore.options.map(item =>
+                        {this.state.showInput.inputBefore.options?.map(item =>
                             <MenuItem value={item.value}>{getTranslation(item.label)}</MenuItem>)}
                     </Select>
                 </FormControl> : null}
@@ -600,8 +604,12 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                                 size="small"
                                 onChange={e => this.setState({ inputValue: e.target.value === '' ? 0 : Number(e.target.value) })}
                                 onBlur={() => {
-                                    const min = this.state.showInput.inputBefore.min === undefined ? 0 : this.state.showInput.inputBefore.min;
-                                    const max = this.state.showInput.inputBefore.max === undefined ? 100 : this.state.showInput.inputBefore.max;
+                                    if (!this.state.showInput) {
+                                        return;
+                                    }
+
+                                    const min = this.state.showInput.inputBefore?.min === undefined ? 0 : this.state.showInput.inputBefore.min;
+                                    const max = this.state.showInput.inputBefore?.max === undefined ? 100 : this.state.showInput.inputBefore.max;
 
                                     if ((this.state.inputValue as number) < min) {
                                         this.setState({ inputValue: min });
@@ -626,21 +634,25 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     disabled={okDisabled}
                     color="primary"
                     onClick={() => {
+                        if (!this.state.showInput) {
+                            return;
+                        }
+
                         const showInput = this.state.showInput;
                         this.setState({ showInput: null }, () => {
                             if (showInput.deviceId) {
                                 this.sendActionToInstance('dm:deviceAction', {
                                     actionId: showInput.id,
                                     deviceId: showInput.deviceId,
-                                    value: showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
-                                }, showInput.refresh)
+                                    value: showInput.inputBefore?.type === 'checkbox' ? !!this.state.inputValue : (showInput.inputBefore?.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
+                                }, showInput.refresh);
                             } else {
                                 this.sendActionToInstance('dm:instanceAction', {
                                     actionId: showInput.id,
-                                    value: showInput.inputBefore.type === 'checkbox' ? !!this.state.inputValue : (showInput.inputBefore.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
-                                })
+                                    value: showInput.inputBefore?.type === 'checkbox' ? !!this.state.inputValue : (showInput.inputBefore?.type === 'number' ? parseFloat(this.state.inputValue as string) || 0 : this.state.inputValue),
+                                });
                             }
-                        })
+                        });
                     }}
                     startIcon={<Check />}
                 >
@@ -655,7 +667,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     {getTranslation('cancelButtonText')}
                 </Button>
             </DialogActions>
-        </Dialog>
+        </Dialog>;
     }
 
     render() {
