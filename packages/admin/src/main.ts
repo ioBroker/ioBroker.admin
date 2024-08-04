@@ -491,10 +491,11 @@ class Admin extends utils.Adapter {
 
     /**
      * Write the update information to the states
-     *
-     * @param sources current sources if given
      */
-    writeUpdateInfo(sources?: Record<string, ioBroker.RepositoryJsonAdapterContent>): void {
+    writeUpdateInfo(
+        /** current sources, if given */
+        sources?: Record<string, ioBroker.RepositoryJsonAdapterContent>
+    ): void {
         if (!objects['system.config'] || !objects['system.config'].common) {
             return this.log.warn('Repository cannot be read. Invalid "system.config" object.');
         }

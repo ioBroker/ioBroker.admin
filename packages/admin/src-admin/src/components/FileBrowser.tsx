@@ -433,7 +433,9 @@ const USER_DATA = '0_userdata.0';
 
 function getParentDir(dir: string | null): string {
     const parts = (dir || '').split('/');
-    parts.length && parts.pop();
+    if (parts.length) {
+        parts.pop();
+    }
     return parts.join('/');
 }
 
@@ -637,7 +639,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                 expanded = expanded.filter(id => id.startsWith(`${this.limitToPath}/`) ||
                     id === this.limitToPath || this.limitToPath?.startsWith(`${id}/`));
             }
-        } catch (e) {
+        } catch {
             expanded = [];
         }
 
@@ -770,7 +772,7 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
     scrollToSelected() {
         if (this.mounted) {
             const el = document.getElementById(this.state.selected);
-            el && el.scrollIntoView();
+            el?.scrollIntoView();
         }
     }
 
@@ -780,7 +782,9 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
             .catch(error => console.error(`Cannot load folders: ${error}`));
 
         this.supportSubscribes = await this.props.socket.checkFeatureSupported('BINARY_STATE_EVENT');
-        this.supportSubscribes && (await this.props.socket.subscribeFiles('*', '*', this.onFileChange));
+        if (this.supportSubscribes) {
+            await this.props.socket.subscribeFiles('*', '*', this.onFileChange);
+        }
     }
 
     componentWillUnmount() {
@@ -844,7 +848,9 @@ export class FileBrowserClass extends Component<FileBrowserProps, FileBrowserSta
                     adapter,
                     relPath,
                 });
-                !this.browseListRunning && this.processBrowseList();
+                if (!this.browseListRunning) {
+                    this.processBrowseList();
+                }
             }
         });
     }

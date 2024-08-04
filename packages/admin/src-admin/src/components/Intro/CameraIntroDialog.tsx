@@ -70,8 +70,10 @@ class CameraIntroLinkDialog extends Component<CameraIntroLinkDialogProps> {
     }
 
     componentWillUnmount() {
-        this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
-        this.cameraUpdateTimer = null;
+        if (this.cameraUpdateTimer) {
+            clearInterval(this.cameraUpdateTimer);
+            this.cameraUpdateTimer = null;
+        }
     }
 
     updateCamera() {

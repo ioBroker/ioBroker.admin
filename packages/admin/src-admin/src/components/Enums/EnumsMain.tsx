@@ -249,13 +249,13 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         let enumsClosed = {};
         try {
             enumsClosed = localStorage.getItem('enumsClosed') ? JSON.parse(localStorage.getItem('enumsClosed')) : {};
-        } catch (e) {
+        } catch {
             // ignore
         }
         let enumsCollapsed = [];
         try {
             enumsCollapsed = localStorage.getItem('enumsCollapsed') ? JSON.parse(localStorage.getItem('enumsCollapsed')) : [];
-        } catch (e) {
+        } catch {
             // ignore
         }
         const splitSizesStr = localStorage.getItem('enumsSplitSizes');
@@ -263,7 +263,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         if (splitSizesStr) {
             try {
                 splitSizes = JSON.parse(splitSizesStr) as [number, number];
-            } catch (e) {
+            } catch {
                 // ignore
             }
             if (!Array.isArray(splitSizes) || splitSizes.length !== 2) {
@@ -325,13 +325,13 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             this.setState({ enumsClosed }, () => {
                 setTimeout(() => {
                     const el = document.getElementById(enumId);
-                    el && el.scrollIntoView(true);
+                    el?.scrollIntoView(true);
                 }, 400);
             });
         } else {
             setTimeout(() => {
                 const el = document.getElementById(enumId);
-                el && el.scrollIntoView(true);
+                el?.scrollIntoView(true);
             }, 400);
         }
     }
@@ -366,8 +366,10 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
     componentWillUnmount() {
         this.props.socket.unsubscribeObject('enum.*', this.onObjectChange);
-        this.updateTimeout && clearTimeout(this.updateTimeout);
-        this.updateTimeout = null;
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+            this.updateTimeout = null;
+        }
     }
 
     onObjectChange = (id: string, obj: ioBroker.EnumObject) => {
@@ -389,7 +391,9 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
         }
 
         if (changed) {
-            this.updateTimeout && clearTimeout(this.updateTimeout);
+            if (this.updateTimeout) {
+                clearTimeout(this.updateTimeout);
+            }
 
             // collect events
             this.updateTimeout = setTimeout(() => {
@@ -425,7 +429,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                     if (!members[member]) {
                         try {
                             members[member] = await this.props.socket.getObject(member);
-                        } catch (e) {
+                        } catch {
                             window.alert(`Cannot read member "${member}"`);
                         }
                     }
@@ -480,10 +484,14 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
     setCurrentCategory = (currentCategory: string, cb?: () => void) => {
         if (currentCategory !== this.state.currentCategory) {
-            this.setState({ currentCategory }, () => cb && cb());
+            this.setState({ currentCategory }, () => {
+                if (cb) {
+                    cb();
+                }
+            });
             ((window as any)._localStorage || window.localStorage).setItem('enumCurrentCategory', currentCategory);
-        } else {
-            cb && cb();
+        } else if (cb) {
+            cb();
         }
     };
 
@@ -540,7 +548,9 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                     const newId = ids[i].replace(fromPrefix, toPrefix);
                     const newEnum = JSON.parse(JSON.stringify(enumItem));
                     newEnum._id = newId;
-                    !updating.includes(ids[i]) && updating.push(ids[i]);
+                    if (!updating.includes(ids[i])) {
+                        updating.push(ids[i]);
+                    }
                     await this.props.socket.setObject(newId, enumItem);
                     await this.props.socket.delObject(ids[i]);
                 }
@@ -661,7 +671,9 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
 
         const updating = [...this.state.updating];
 
-        !updating.includes(originalId) && updating.push(originalId);
+        if (!updating.includes(originalId)) {
+            updating.push(originalId);
+        }
 
         await this.props.socket.setObject(newItem._id, newItem);
 
@@ -676,7 +688,9 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                         const newEnumChild = JSON.parse(JSON.stringify(this.state.enums[id]));
                         newEnumChild._id = newEnumChild._id.replace(`${originalId}.`, `${newItem._id}.`);
 
-                        !updating.includes(id) && updating.push(id);
+                        if (!updating.includes(id)) {
+                            updating.push(id);
+                        }
                         await this.props.socket.setObject(newEnumChild._id, newEnumChild);
                         await this.props.socket.delObject(id);
                     }
@@ -692,15 +706,23 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
     deleteEnum = async (enumId: string) => {
         const updating = [...this.state.updating];
         try {
-            !updating.includes(enumId) && updating.push(enumId);
+            if (!updating.includes(enumId)) {
+                updating.push(enumId);
+            }
 
-            this.state.enums[enumId] && (await this.props.socket.delObject(enumId));
+            if (this.state.enums[enumId]) {
+                await this.props.socket.delObject(enumId);
+            }
             const ids = Object.keys(this.state.enums);
             for (let i = 0; i < ids.length; i++) {
                 const id = ids[i];
                 if (id.startsWith(`${enumId}.`)) {
-                    !updating.includes(id) && updating.push(id);
-                    this.state.enums[enumId] && (await this.props.socket.delObject(id));
+                    if (!updating.includes(id)) {
+                        updating.push(id);
+                    }
+                    if (this.state.enums[enumId]) {
+                        await this.props.socket.delObject(id);
+                    }
                 }
             }
         } catch (e) {
@@ -767,7 +789,9 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
             this.refFilter.current.value = '';
         }
 
-        this.searchTimer && clearTimeout(this.searchTimer);
+        if (this.searchTimer) {
+            clearTimeout(this.searchTimer);
+        }
         this.searchTimer = setTimeout(_text => {
             this.searchTimer = null;
             this.setState({ search: _text.toLowerCase() });

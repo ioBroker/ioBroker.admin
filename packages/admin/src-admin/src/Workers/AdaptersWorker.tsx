@@ -141,7 +141,9 @@ export default class AdaptersWorker {
 
     unregisterHandler(cb: (events: AdapterEvent[]) => void) {
         const pos = this.handlers.indexOf(cb);
-        pos !== -1 && this.handlers.splice(pos, 1);
+        if (pos !== -1) {
+            this.handlers.splice(pos, 1);
+        }
 
         if (!this.handlers.length && this.connected) {
             this.socket.unsubscribeObject('system.adapter.*', this.objectChangeHandler)
@@ -150,7 +152,9 @@ export default class AdaptersWorker {
     }
 
     repoChangeHandler = (/* id, obj */) => {
-        this.repoTimer && clearTimeout(this.repoTimer);
+        if (this.repoTimer) {
+            clearTimeout(this.repoTimer);
+        }
         this.repoTimer = setTimeout(() => {
             this.repoTimer = null;
             this.repositoryHandlers.forEach(cb => cb());
@@ -170,7 +174,9 @@ export default class AdaptersWorker {
 
     unregisterRepositoryHandler(cb: () => void) {
         const pos = this.repositoryHandlers.indexOf(cb);
-        pos !== -1 && this.repositoryHandlers.splice(pos, 1);
+        if (pos !== -1) {
+            this.repositoryHandlers.splice(pos, 1);
+        }
 
         if (!this.repositoryHandlers.length && this.connected) {
             this.socket.unsubscribeObject('system.repositories', this.repoChangeHandler)

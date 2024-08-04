@@ -122,14 +122,14 @@ function checkConditions(condition: string, installedVersion: string): boolean {
         const vers = condition.substring(7, condition.length - 1).trim();
         try {
             return semver.gt(vers, installedVersion);
-        } catch (e) {
+        } catch {
             return false;
         }
     } else if (condition.startsWith('smaller')) {
         const vers = condition.substring(8, condition.length - 1).trim();
         try {
             return semver.lt(installedVersion, vers);
-        } catch (e) {
+        } catch {
             return false;
         }
     } else if (condition.startsWith('between')) {
@@ -137,7 +137,7 @@ function checkConditions(condition: string, installedVersion: string): boolean {
         const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
         try {
             return semver.gte(installedVersion, vers1) && semver.lte(installedVersion, vers2);
-        } catch (e) {
+        } catch {
             return false;
         }
     } else {
@@ -294,7 +294,7 @@ export const checkMessages = (messages: Message[], lastMessageId: string, contex
                 });
             }
         }
-    } catch (err) {
+    } catch {
         //  ignore
     }
 
@@ -377,7 +377,7 @@ const NewsAdminDialog = ({
                 variant="contained"
                 onClick={() => {
                     const frame = window.open(link, '_blank');
-                    frame && frame.focus();
+                    frame?.focus();
                 }}
                 color="secondary"
                 startIcon={<WorldIcon />}

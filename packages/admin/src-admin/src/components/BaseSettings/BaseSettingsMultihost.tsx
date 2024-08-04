@@ -63,15 +63,17 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
             password: '',
         };
 
-        settings.password && this.props.socket.decrypt(settings.password)
-            .then((plainPass: string) =>
-                this.setState({ password: plainPass }));
+        if (settings.password) {
+            this.props.socket.decrypt(settings.password)
+                .then((plainPass: string) =>
+                    this.setState({ password: plainPass }));
+        }
 
         this.focusRef = createRef();
     }
 
     componentDidMount() {
-        this.focusRef.current && this.focusRef.current.focus();
+        this.focusRef.current?.focus();
     }
 
     onChange() {

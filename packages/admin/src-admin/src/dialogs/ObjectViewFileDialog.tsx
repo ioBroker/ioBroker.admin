@@ -123,7 +123,7 @@ class ObjectViewFileDialog extends Component<ObjectViewFileDialogProps, ObjectVi
                     try {
                         const text = btoa(data);
                         this.setState({ text, binary: data, mime: 'text/plain' });
-                    } catch (error) {
+                    } catch {
                         // ignore
                     }
                 }

@@ -170,7 +170,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
     }
 
     componentDidMount() {
-        this.focusRef.current && this.focusRef.current.focus();
+        this.focusRef.current?.focus();
     }
 
     onChange() {
@@ -192,11 +192,21 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                 }
                 settings.transport[id].maxFiles = parseInt(settings.transport[id].maxFiles as string, 10) || null;
             } else if (this.state.transport[id].type === 'syslog') {
-                !settings.transport[id].port && delete settings.transport[id].port;
-                !settings.transport[id].path && delete settings.transport[id].path;
-                !settings.transport[id].sysLogType && delete settings.transport[id].sysLogType;
-                !settings.transport[id].app_name && delete settings.transport[id].app_name;
-                !settings.transport[id].eol && delete settings.transport[id].eol;
+                if (!settings.transport[id].port) {
+                    delete settings.transport[id].port;
+                }
+                if (!settings.transport[id].path) {
+                    delete settings.transport[id].path;
+                }
+                if (!settings.transport[id].sysLogType) {
+                    delete settings.transport[id].sysLogType;
+                }
+                if (!settings.transport[id].app_name) {
+                    delete settings.transport[id].app_name;
+                }
+                if (!settings.transport[id].eol) {
+                    delete settings.transport[id].eol;
+                }
             } else if (this.state.transport[id].type === 'http') {
                 settings.transport[id].host = settings.transport[id].host || '';
                 settings.transport[id].port = parseInt(settings.transport[id].port as string, 10) || 80;

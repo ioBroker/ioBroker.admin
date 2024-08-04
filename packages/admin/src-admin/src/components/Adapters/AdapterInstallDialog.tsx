@@ -219,7 +219,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                                     ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
                                     : true
                                 : false;
-                        } catch (e) {
+                        } catch {
                             entry.rightVersion = true;
                         }
                     }
@@ -254,7 +254,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
                                     ? semver.satisfies(installed.version, entry.version, { includePrerelease: true })
                                     : true
                                 : false;
-                        } catch (e) {
+                        } catch {
                             entry.rightVersion = true;
                         }
                     }
@@ -274,7 +274,7 @@ export default abstract class AdapterInstallDialog<TProps, TState extends Adapte
 
                 try {
                     entry.rightVersion = semver.satisfies(context.nodeJsVersion, nodeVersion);
-                } catch (e) {
+                } catch {
                     entry.rightVersion = true;
                 }
 

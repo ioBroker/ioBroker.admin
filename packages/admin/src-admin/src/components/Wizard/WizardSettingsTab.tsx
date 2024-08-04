@@ -224,7 +224,9 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                     longitude = parseFloat(data[0].lon);
                     changed = true;
                 }
-                changed && this.setState({ longitude, latitude }, () => this.updateMap());
+                if (changed) {
+                    this.setState({ longitude, latitude }, () => this.updateMap());
+                }
             })
             .catch(e => window.alert(this.props.t('Cannot fetch address %s', e)));
     }

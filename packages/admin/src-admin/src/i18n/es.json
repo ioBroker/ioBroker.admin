@@ -1613,5 +1613,7 @@
   "write": "escribir",
   "write operation": "escribir",
   "wrongPassword": "usuario o contraseña invalido",
-  "yesterday": "ayer"
+  "yesterday": "ayer",
+  "Adapter warnings": "Advertencias del adaptador",
+  "Links": "Enlaces"
 }
