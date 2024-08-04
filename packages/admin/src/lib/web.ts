@@ -243,71 +243,9 @@ class Web {
     }
 
     decorateLogFile(filename: string, text?: string): string {
-        const prefix = `<html>
-<head>
-<style>
-   table {       font-family: monospace;
-       font-size: 14px;
-   }
-   .info {
-       background: white;   }
-   .type {
-       font-weight: bold;   }
-   .silly {
-       background: #b3b3b3;   }
-   .debug {
-       background: lightgray;   }
-   .warn {
-       background: #ffdb75;       color: black;   }
-   .error {
-       background: #ff6a5b;   }
-</style>
-<script>
-    function decorate (line) {
-       var className = "info";
-       line = line.replace(/\x1B\\[39m/g, "</span>");
-       if (line.includes("[32m")) {
-           className = "info";
-           line = line.replace(/\x1B\\[32m/g, "<span class=\\"type\\">");
-       } else 
-       if (line.includes("[34m")) {
-           className = "debug";
-           line = line.replace(/\x1B\\[34m/g, "<span class=\\"type\\">");
-       } else 
-       if (line.includes("[33m")) {
-           className = "warn";
-           line = line.replace(/\x1B\\[33m/g, "<span class=\\"type\\">");
-       } else 
-       if (line.includes("[31m")) {
-           className = "error";
-           line = line.replace(/\x1B\\[31m/g, "<span class=\\"type\\">");
-       } else 
-       if (line.includes("[35m")) {
-           className = "silly";
-           line = line.replace(/\x1B\\[35m/g, "<span class=\\"type\\">");
-       } else {
-       }
-       return "<tr class=\\"" + className + "\\"><td>" + line + "</td></tr>";
-    }
-    document.addEventListener("DOMContentLoaded", function () { 
-      var text = document.body.innerHTML;
-      var lines = text.split("\\n");
-      text = "<table>";
-      for (var i = 0; i < lines.length; i++) {
-           if (lines[i]) text += decorate(lines[i]);
-      }
-      text += "</table>";
-      document.body.innerHTML = text;
-      window.scrollTo(0,document.body.scrollHeight);
-    });
-</script> 
-</head>
-<body>
-`;
-
-        const suffix = '</body></html>';
+        const template = fs.readFileSync(`${__dirname}/logTemplate.html`).toString('utf8');
         const log = text || fs.readFileSync(filename).toString();
-        return prefix + log + suffix;
+        return template.replace('@@title@@', path.parse(filename).name).replace('@@body@@', log);
     }
 
     setLanguage(lang: ioBroker.Languages): void {
