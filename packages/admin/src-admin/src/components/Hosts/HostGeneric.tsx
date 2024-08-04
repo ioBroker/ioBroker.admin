@@ -37,7 +37,7 @@ import {
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type NotificationAnswer } from '@/Workers/HostsWorker';
-import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
+import AdapterUpdateDialog, { type News } from '@/dialogs/AdapterUpdateDialog';
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
@@ -293,12 +293,12 @@ export interface HostGenericState {
     errorHost: { notifications: NotificationAnswer | null; count: number };
     openDialogLogLevel: boolean;
     hostUpdateDialog: boolean;
-    hostUpdate: string | null;
     updateAvailable: boolean;
     instructionDialog: boolean;
     updateDialog: boolean;
     baseSettingsDialog: boolean;
     editDialog: boolean;
+    changeLog: string | null;
 }
 
 export default abstract class HostGeneric<TProps extends HostGenericProps, TState extends HostGenericState> extends Component<TProps, TState> {
@@ -345,12 +345,12 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             errorHost: { notifications: null, count: 0 },
             openDialogLogLevel: false,
             hostUpdateDialog: false,
-            hostUpdate: null,
             updateAvailable: false,
             instructionDialog: false,
             updateDialog: false,
             baseSettingsDialog: false,
             editDialog: false,
+            changeLog: null,
         } as TState;
     }
 
@@ -372,6 +372,15 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         notifications &&
         notifications[this.props.hostId] &&
         this.setState({ errorHost: { notifications: notifications[this.props.hostId], count: this.calculateWarning(notifications[this.props.hostId]) } });
+
+    readChangeLog() {
+        if (!this.state.changeLog) {
+            fetch(CONTROLLER_CHANGELOG_URL.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/'))
+                .then(response => response.text())
+                .then(data => this.setState({ changeLog: data }))
+                .catch(e => console.error(`Cannot read changelog: ${e}`));
+        }
+    }
 
     componentDidMount() {
         this.props.hostsWorker.registerNotificationHandler(this.notificationHandler);
@@ -749,6 +758,8 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             hostUpdateDialog: true,
             updateAvailable,
         });
+
+        this.readChangeLog();
     }
 
     renderHostUpdateDialog() {
@@ -757,7 +768,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
 
         return <AdapterUpdateDialog
-            adapter={this.state.hostUpdate}
+            adapter={this.props.host.common.name}
             adapterObject={this.props.jsControllerInfo}
             t={this.props.t}
             textUpdate={this.state.updateAvailable ? this.props.t('Start update') : this.props.t('Show instructions')}
@@ -768,9 +779,9 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             noTranslation={this.props.noTranslation}
             onUpdate={async () => {
                 if (this.state.updateAvailable) {
-                    this.setState({ hostUpdateDialog: false, hostUpdate: null, updateDialog: true });
+                    this.setState({ hostUpdateDialog: false, updateDialog: true });
                 } else {
-                    this.setState({ hostUpdateDialog: false, hostUpdate: null, instructionDialog: true });
+                    this.setState({ hostUpdateDialog: false, instructionDialog: true });
                 }
             }}
             theme={this.props.theme}
@@ -778,7 +789,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             onInstruction={() => {
                 window.open(CONTROLLER_CHANGELOG_URL, '_blank');
             }}
-            onClose={() => this.setState({ hostUpdateDialog: false, hostUpdate: null })}
+            onClose={() => this.setState({ hostUpdateDialog: false })}
         />;
     }
 
@@ -807,24 +818,54 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         return null;
     }
 
-    getNews(all?: boolean): { version: string; news: string }[] {
+    static extractNews(changelog: string, version: string): string {
+        const lines = changelog.split('\n');
+        let news = '';
+        let started = false;
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith('## ')) {
+                if (started) {
+                    break;
+                }
+                if (lines[i].startsWith(`## ${version}`)) {
+                    started = true;
+                }
+            } else if (started) {
+                news += `${lines[i].replace(/^\*\s*/, '').replace(/^\(\w+\)\s*/, '')}\n`;
+            }
+        }
+        return news;
+    }
+
+    getNews(all?: boolean): News[] {
         const adapter = this.props.jsControllerInfo;
         const installed = this.props.host.common.installedVersion;
-        const news: { version: string; news: string }[] = [];
+        const news: News[] = [];
 
-        if (installed && adapter && adapter.news) {
+        if (installed && adapter?.news) {
             Object.keys(adapter.news).forEach(version => {
                 try {
                     if (semver.gt(version, installed) || all) {
-                        const newsText: string = this.props.noTranslation ?
+                        let downloaded = false;
+                        let newsText: string = this.props.noTranslation ?
                             adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en) as string;
+
+                        if (adapter.news[version].en === 'see CHANGELOG.md' && this.state.changeLog) {
+                            // try to find news in CHANGELOG
+                            const found = HostGeneric.extractNews(this.state.changeLog, version);
+                            if (found) {
+                                newsText = found;
+                                downloaded = true;
+                            }
+                        }
 
                         news.push({
                             version,
                             news: newsText,
+                            downloaded,
                         });
                     }
-                } catch (e) {
+                } catch {
                     // ignore it
                     console.warn(`Cannot compare "${version}" and "${installed}"`);
                 }

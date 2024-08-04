@@ -143,9 +143,10 @@ export interface Message {
     level?: 'warn' | 'error' | 'info';
 }
 
-interface News {
+export interface News {
     version: string;
     news: string;
+    downloaded?: boolean;
 }
 
 export interface CompactInstanceInfo {
@@ -463,7 +464,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             const news: string[] = (entry.news ? entry.news.split('\n') : [])
                 .map((line: string) => line
                     .trim()
-                    .replace(/^\*\s?/, '')
+                    .replace(/^\*\s*/, '')
                     .replace(/<!--[^>]*->/, '')
                     .replace(/<! -[^>]*->/, '')
                     .replace(/<!--|--!?>/g, '')
@@ -616,6 +617,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
     render() {
         const version = this.props.adapterObject?.version;
 
+        const allDownloaded = this.props.news?.every(entry => entry.downloaded);
         const news = this.getNews();
 
         return <Dialog
@@ -630,7 +632,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     <IconButton size="large" sx={styles.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
-                    {this.lang !== 'en' && this.props.toggleTranslation ? <IconButton
+                    {this.lang !== 'en' && this.props.toggleTranslation && !allDownloaded ? <IconButton
                         size="large"
                         style={Utils.getStyle(this.props.theme, styles.languageButton, this.props.noTranslation && styles.languageButtonActive)}
                         onClick={this.props.toggleTranslation}
