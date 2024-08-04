@@ -56,7 +56,9 @@ const styles: Record<string, React.CSSProperties> = {
 
 const MyMapComponent: React.FC<{ addMap: (map: any) => any }> = props => {
     const map = useMap();
-    props.addMap && props.addMap(map);
+    if (props.addMap) {
+        props.addMap(map);
+    }
     return null;
 };
 
@@ -462,7 +464,9 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
         this.onChangeInput(value, id);
 
         if (id === 'longitude' || id === 'latitude') {
-            this.latLongTimer && clearTimeout(this.latLongTimer);
+            if (this.latLongTimer) {
+                clearTimeout(this.latLongTimer);
+            }
             this.latLongTimer = setTimeout(() => {
                 this.latLongTimer = null;
                 this.map.flyTo([parseFloat(this.props.data.common.latitude as any as string), parseFloat(this.props.data.common.longitude as any as string)]);
@@ -477,7 +481,9 @@ class MainSettingsDialog extends BaseSystemSettingsDialog<Props, State> {
     onChangeCity = (evt: {target: { value: string } }) => {
         this.onChangeText(evt, 'city');
 
-        this.cityTimer && clearTimeout(this.cityTimer);
+        if (this.cityTimer) {
+            clearTimeout(this.cityTimer);
+        }
 
         this.cityTimer = setTimeout(() => {
             this.cityTimer = null;

@@ -27,7 +27,7 @@ import {
 import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
 
 import {
-    amber, blue, grey, red,
+    amber, blue, green, grey, red,
 } from '@mui/material/colors';
 
 import {
@@ -37,7 +37,7 @@ import {
 
 import type HostsWorker from '@/Workers/HostsWorker';
 import { type NotificationAnswer } from '@/Workers/HostsWorker';
-import AdapterUpdateDialog from '@/dialogs/AdapterUpdateDialog';
+import AdapterUpdateDialog, { type News } from '@/dialogs/AdapterUpdateDialog';
 import JsControllerUpdater from '@/dialogs/JsControllerUpdater';
 import JsControllerDialog from '@/dialogs/JsControllerDialog';
 import BaseSettingsDialog from '@/dialogs/BaseSettingsDialog';
@@ -190,8 +190,8 @@ export const genericStyles: Record<string, any> = {
         alignItems: 'center',
     },
     buttonUpdate: {
-        border: '1px solid',
-        padding: '0px 7px',
+        border: `1px solid ${green[700]}`,
+        padding: '2px 7px',
         borderRadius: '5px',
         display: 'flex',
         alignItems: 'center',
@@ -293,12 +293,12 @@ export interface HostGenericState {
     errorHost: { notifications: NotificationAnswer | null; count: number };
     openDialogLogLevel: boolean;
     hostUpdateDialog: boolean;
-    hostUpdate: string | null;
     updateAvailable: boolean;
     instructionDialog: boolean;
     updateDialog: boolean;
     baseSettingsDialog: boolean;
     editDialog: boolean;
+    changeLog: string | null;
 }
 
 export default abstract class HostGeneric<TProps extends HostGenericProps, TState extends HostGenericState> extends Component<TProps, TState> {
@@ -345,12 +345,12 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             errorHost: { notifications: null, count: 0 },
             openDialogLogLevel: false,
             hostUpdateDialog: false,
-            hostUpdate: null,
             updateAvailable: false,
             instructionDialog: false,
             updateDialog: false,
             baseSettingsDialog: false,
             editDialog: false,
+            changeLog: null,
         } as TState;
     }
 
@@ -372,6 +372,15 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         notifications &&
         notifications[this.props.hostId] &&
         this.setState({ errorHost: { notifications: notifications[this.props.hostId], count: this.calculateWarning(notifications[this.props.hostId]) } });
+
+    readChangeLog() {
+        if (!this.state.changeLog) {
+            fetch(CONTROLLER_CHANGELOG_URL.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/'))
+                .then(response => response.text())
+                .then(data => this.setState({ changeLog: data }))
+                .catch(e => console.error(`Cannot read changelog: ${e}`));
+        }
+    }
 
     componentDidMount() {
         this.props.hostsWorker.registerNotificationHandler(this.notificationHandler);
@@ -552,12 +561,20 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     onCopy() {
         const text = [];
-        this.refCpu.current && text.push(`CPU: ${this.refCpu.current.innerHTML}`);
-        this.refMem.current && text.push(`RAM: ${this.refMem.current.innerHTML}`);
-        this.refUptime.current && text.push(`${this.props.t('Uptime')}: ${this.refUptime.current.innerHTML}`);
+        if (this.refCpu.current) {
+            text.push(`CPU: ${this.refCpu.current.innerHTML}`);
+        }
+        if (this.refMem.current) {
+            text.push(`RAM: ${this.refMem.current.innerHTML}`);
+        }
+        if (this.refUptime.current) {
+            text.push(`${this.props.t('Uptime')}: ${this.refUptime.current.innerHTML}`);
+        }
         text.push(`${this.props.t('Available')}: ${this.props.available}`);
         text.push(`${this.props.t('Installed')}: ${this.props.host.common.installedVersion}`);
-        this.refEvents.current && text.push(`${this.props.t('Events')}: ${this.refEvents.current.innerHTML}`);
+        if (this.refEvents.current) {
+            text.push(`${this.props.t('Events')}: ${this.refEvents.current.innerHTML}`);
+        }
 
         if (this.props.hostData && typeof this.props.hostData === 'object') {
             const data: Record<string, any> = this.props.hostData;
@@ -573,7 +590,10 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderUpdateButton(upgradeAvailable: boolean, style?: React.CSSProperties) {
-        return upgradeAvailable ? <Tooltip title={this.props.t('Update')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
+        return upgradeAvailable ? <Tooltip
+            title={this.props.t('Update')}
+            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
+        >
             <Box
                 component="div"
                 onClick={event => {
@@ -585,7 +605,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
                 <IconButton style={genericStyles.buttonUpdateIcon} size="small">
                     <RefreshIcon />
                 </IconButton>
-                {this.props.available}
+                <span style={{ color: green[700] }}>{this.props.available}</span>
             </Box>
         </Tooltip>
             :
@@ -594,7 +614,10 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderHostBaseEdit() {
-        return this.props.expertMode ? <Tooltip title={this.props.t('Host Base Settings')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
+        return this.props.expertMode ? <Tooltip
+            title={this.props.t('Host Base Settings')}
+            componentsProps={{ popper: { sx: genericStyles.tooltip } }}
+        >
             <div>
                 <IconButton
                     size="large"
@@ -613,11 +636,12 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
     /**
      * Render a button to extend the component in general the component can be extended by clicking anywhere on it
      * However, it is used as an additional indicator that it is expandable
-     *
-     * @param open if host is expanded
      */
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderExtendButton(open: boolean) {
+    renderExtendButton(
+        /** if host is expanded */
+        open: boolean,
+    ) {
         return <Tooltip title={this.props.t(open ? 'collapse' : 'Expand')} componentsProps={{ popper: { sx: genericStyles.tooltip } }}>
             <div>
                 <IconButton
@@ -742,6 +766,8 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             hostUpdateDialog: true,
             updateAvailable,
         });
+
+        this.readChangeLog();
     }
 
     renderHostUpdateDialog() {
@@ -750,7 +776,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         }
 
         return <AdapterUpdateDialog
-            adapter={this.state.hostUpdate}
+            adapter={this.props.host.common.name}
             adapterObject={this.props.jsControllerInfo}
             t={this.props.t}
             textUpdate={this.state.updateAvailable ? this.props.t('Start update') : this.props.t('Show instructions')}
@@ -761,9 +787,9 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             noTranslation={this.props.noTranslation}
             onUpdate={async () => {
                 if (this.state.updateAvailable) {
-                    this.setState({ hostUpdateDialog: false, hostUpdate: null, updateDialog: true });
+                    this.setState({ hostUpdateDialog: false, updateDialog: true });
                 } else {
-                    this.setState({ hostUpdateDialog: false, hostUpdate: null, instructionDialog: true });
+                    this.setState({ hostUpdateDialog: false, instructionDialog: true });
                 }
             }}
             theme={this.props.theme}
@@ -771,7 +797,7 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
             onInstruction={() => {
                 window.open(CONTROLLER_CHANGELOG_URL, '_blank');
             }}
-            onClose={() => this.setState({ hostUpdateDialog: false, hostUpdate: null })}
+            onClose={() => this.setState({ hostUpdateDialog: false })}
         />;
     }
 
@@ -800,24 +826,54 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
         return null;
     }
 
-    getNews(all?: boolean): { version: string; news: string }[] {
+    static extractNews(changelog: string, version: string): string {
+        const lines = changelog.split('\n');
+        let news = '';
+        let started = false;
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith('## ')) {
+                if (started) {
+                    break;
+                }
+                if (lines[i].startsWith(`## ${version}`)) {
+                    started = true;
+                }
+            } else if (started) {
+                news += `${lines[i].replace(/^\*\s*/, '').replace(/^\(\w+\)\s*/, '')}\n`;
+            }
+        }
+        return news;
+    }
+
+    getNews(all?: boolean): News[] {
         const adapter = this.props.jsControllerInfo;
         const installed = this.props.host.common.installedVersion;
-        const news: { version: string; news: string }[] = [];
+        const news: News[] = [];
 
-        if (installed && adapter && adapter.news) {
+        if (installed && adapter?.news) {
             Object.keys(adapter.news).forEach(version => {
                 try {
                     if (semver.gt(version, installed) || all) {
-                        const newsText: string = this.props.noTranslation ?
+                        let downloaded = false;
+                        let newsText: string = this.props.noTranslation ?
                             adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en) as string;
+
+                        if (adapter.news[version].en === 'see CHANGELOG.md' && this.state.changeLog) {
+                            // try to find news in CHANGELOG
+                            const found = HostGeneric.extractNews(this.state.changeLog, version);
+                            if (found) {
+                                newsText = found;
+                                downloaded = true;
+                            }
+                        }
 
                         news.push({
                             version,
                             news: newsText,
+                            downloaded,
                         });
                     }
-                } catch (e) {
+                } catch {
                     // ignore it
                     console.warn(`Cannot compare "${version}" and "${installed}"`);
                 }

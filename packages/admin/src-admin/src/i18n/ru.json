@@ -1613,5 +1613,7 @@
   "write": "писать",
   "write operation": "Писать",
   "wrongPassword": "Неверные имя пользователя или пароль",
-  "yesterday": "вчера"
+  "yesterday": "вчера",
+  "Adapter warnings": "Предупреждения адаптера",
+  "Links": "Ссылки"
 }

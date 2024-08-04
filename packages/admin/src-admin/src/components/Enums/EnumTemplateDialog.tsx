@@ -113,7 +113,7 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                     const im = await image;
                     const icon = await Utils.getSvg(im.default);
                     return (icons[i] = icon);
-                } catch (e) {
+                } catch {
                     return null;
                 }
             });

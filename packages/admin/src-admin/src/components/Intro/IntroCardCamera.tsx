@@ -105,8 +105,10 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
     }
 
     componentWillUnmount() {
-        this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
-        this.cameraUpdateTimer = null;
+        if (this.cameraUpdateTimer) {
+            clearInterval(this.cameraUpdateTimer);
+            this.cameraUpdateTimer = null;
+        }
     }
 
     renderDialogs() {
@@ -120,7 +122,9 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
             t={this.props.t}
             onClose={() => {
                 if (this.props.camera && this.props.camera !== 'text') {
-                    this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+                    if (this.cameraUpdateTimer) {
+                        clearInterval(this.cameraUpdateTimer);
+                    }
                     this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval as any as string, 10), 500));
                     this.updateCamera();
                 }
@@ -199,7 +203,9 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
         if (this.props.camera && this.props.camera !== 'text') {
             if (this.interval !== this.props.interval) {
                 this.interval = this.props.interval;
-                this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+                if (this.cameraUpdateTimer) {
+                    clearInterval(this.cameraUpdateTimer);
+                }
                 this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval as any as string, 10), 500));
             }
         } else if (this.cameraUpdateTimer) {

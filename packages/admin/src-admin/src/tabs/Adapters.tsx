@@ -944,7 +944,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 }
                 const hostData: HostInfo & { 'Active instances': number; location: string; Uptime: number } = await this.props.socket.getHostInfo(currentHost, update, this.state.readTimeoutMs).catch(e => {
                     window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
-                    e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+                    if (e.toString().includes('timeout')) {
+                        this.setState({ showSlowConnectionWarning: true });
+                    }
                 });
 
                 if (this.props.adminGuiConfig.admin.adapters?.allowAdapterRating !== false) {
@@ -1204,8 +1206,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                     } else if (desc && typeof desc === 'string' && desc.toLowerCase().includes(search)) {
                         filteredList.push(name);
                     } else {
-                        adapter.keywords &&
-                            adapter.keywords.forEach(value => value.includes(search) && filteredList.push(name));
+                        adapter.keywords?.forEach(value => value.includes(search) && filteredList.push(name));
                     }
                 }));
         } else {

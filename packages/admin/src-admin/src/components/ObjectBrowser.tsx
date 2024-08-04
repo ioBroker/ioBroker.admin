@@ -1399,7 +1399,9 @@ function getVisibleItems(
     _result = _result || [];
     const data = item.data;
     if (data.sumVisibility) {
-        data.id && objects[data.id] && (!type || objects[data.id].type === type) && _result.push(data.id);
+        if (data.id && objects[data.id] && (!type || objects[data.id].type === type)) {
+            _result.push(data.id);
+        }
         item.children?.forEach(_item =>
             getVisibleItems(_item, type, objects, _result));
     }
@@ -2601,7 +2603,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             try {
                 const lastSelectedItems = JSON.parse(lastSelectedItemStr) as string[];
                 this.selectFirst = lastSelectedItems[0] || '';
-            } catch (e) {
+            } catch {
                 // ignore
             }
         } else {
@@ -2612,7 +2614,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         const expandedStr = this.localStorage.getItem(`${props.dialogName || 'App'}.objectExpanded`) || '[]';
         try {
             expanded = JSON.parse(expandedStr);
-        } catch (e) {
+        } catch {
             expanded = [];
         }
 
@@ -2623,7 +2625,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (filterStr) {
             try {
                 filter = JSON.parse(filterStr);
-            } catch (e) {
+            } catch {
                 filter = { ...DEFAULT_FILTER };
             }
         } else if (props.defaultFilters && typeof props.defaultFilters === 'object') {
@@ -2645,7 +2647,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         // remove type column if only one type must be selected
         if (props.types && props.types.length === 1) {
             const pos = this.visibleCols.indexOf('type');
-            pos !== -1 && this.visibleCols.splice(pos, 1);
+            if (pos !== -1) {
+                this.visibleCols.splice(pos, 1);
+            }
         }
 
         this.possibleCols = SCREEN_WIDTHS.xl.fields;
@@ -2674,14 +2678,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         let columns: string[] | null;
         try {
             columns = columnsStr ? JSON.parse(columnsStr) : null;
-        } catch (e) {
+        } catch {
             columns = null;
         }
 
         let columnsWidths = null; // this.localStorage.getItem(`${props.dialogName || 'App'}.columnsWidths`);
         try {
             columnsWidths = columnsWidths ? JSON.parse(columnsWidths) : {};
-        } catch (e) {
+        } catch {
             columnsWidths = {};
         }
 
@@ -2702,7 +2706,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             statesView = this.props.objectStatesView
                 ? JSON.parse(this.localStorage.getItem(`${props.dialogName || 'App'}.objectStatesView`) || '') || false
                 : false;
-        } catch (error) {
+        } catch {
             // ignore
         }
 
@@ -2826,7 +2830,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 });
 
                 this.customWidth = true;
-            } catch (e) {
+            } catch {
                 // ignore
             }
         }
@@ -2937,7 +2941,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.objects = objects;
             }
 
-            props.setObjectsReference && props.setObjectsReference(this.objects);
+            if (props.setObjectsReference) {
+                props.setObjectsReference(this.objects);
+            }
 
             // read default history
             this.defaultHistory = this.systemConfig.common.defaultHistory;
@@ -3026,8 +3032,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             expanded.sort();
             this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectExpanded`, JSON.stringify(expanded));
             this.setState({ expanded }, cb);
-        } else {
-            cb && cb();
+        } else if (cb) {
+            cb();
         }
     }
 
@@ -5236,7 +5242,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
             return null;
         }
-        !this.recordStates.includes(id) && this.recordStates.push(id);
+        if (!this.recordStates.includes(id)) {
+            this.recordStates.push(id);
+        }
 
         const state = this.states[id];
 

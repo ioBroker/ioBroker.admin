@@ -50,7 +50,7 @@ class LinksDialog extends Component<LinksDialogProps> {
         const showPort = this.props.links.find(item => item.port !== firstPort);
 
         return <Dialog onClose={() => this.props.onClose()} open={!0}>
-            <DialogTitle>{this.props.t('Links')}</DialogTitle>
+            <DialogTitle style={{ padding: '8px 0 0 0', textAlign: 'center' }}>{this.props.t('Links')}</DialogTitle>
             <List>
                 {this.props.links.map(link => <ListItemButton
                     style={link.color ? {
@@ -69,7 +69,11 @@ class LinksDialog extends Component<LinksDialogProps> {
                 >
                     <ListItemAvatar>
                         <Avatar variant="rounded">
-                            <img style={styles.img} src={this.props.image} alt={this.props.instanceId} />
+                            <img
+                                style={styles.img}
+                                src={this.props.image}
+                                alt={this.props.instanceId}
+                            />
                         </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={AdminUtils.getText(link.name, I18n.getLanguage()) + (showPort ? ` [:${link.port}]` : '')} />

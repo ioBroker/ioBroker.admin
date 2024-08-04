@@ -161,7 +161,7 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
         let expanded: string[];
         try {
             expanded = JSON.parse(((window as any)._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]');
-        } catch (e) {
+        } catch {
             expanded = [];
         }
 
@@ -200,11 +200,15 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             this.setState({ systemConfig: await this.props.socket.getCompactSystemConfig() });
         }
 
-        this.props.registerSaveFunc && this.props.registerSaveFunc(this.onSave);
+        if (this.props.registerSaveFunc) {
+            this.props.registerSaveFunc(this.onSave);
+        }
     }
 
     componentWillUnmount(): void {
-        this.props.registerSaveFunc && this.props.registerSaveFunc();
+        if (this.props.registerSaveFunc) {
+            this.props.registerSaveFunc();
+        }
     }
 
     async loadAllCustoms(): Promise<void> {
@@ -345,13 +349,15 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
     }
 
     static flattenItems(items: Record<string, any>, _result: Record<string, any> = {}): Record<string, any> {
-        items && Object.keys(items).forEach(attr => {
-            if (items[attr].items) {
-                ObjectCustomEditor.flattenItems(items[attr].items, _result);
-            } else {
-                _result[attr] = items[attr];
-            }
-        });
+        if (items) {
+            Object.keys(items).forEach(attr => {
+                if (items[attr].items) {
+                    ObjectCustomEditor.flattenItems(items[attr].items, _result);
+                } else {
+                    _result[attr] = items[attr];
+                }
+            });
+        }
 
         return _result;
     }
@@ -416,7 +422,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                                 commons[inst][_attr] = [commons[inst][_attr]];
                             }
 
-                            !commons[inst][_attr].includes(custom[_attr]) && commons[inst][_attr].push(custom[_attr]);
+                            if (!commons[inst][_attr].includes(custom[_attr])) {
+                                commons[inst][_attr].push(custom[_attr]);
+                            }
                         }
                     });
                 } else {
@@ -437,7 +445,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                                 commons[inst][_attr] = [commons[inst][_attr]];
                             }
 
-                            !commons[inst][_attr].includes(_default[_attr]) && commons[inst][_attr].push(_default[_attr]);
+                            if (!commons[inst][_attr].includes(_default[_attr])) {
+                                commons[inst][_attr].push(_default[_attr]);
+                            }
                         }
                     });
                 }
@@ -526,7 +536,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                     expanded.splice(pos, 1);
                 }
                 ((window as any)._localStorage || window.localStorage).setItem('App.customsExpanded', JSON.stringify(expanded));
-                pos === -1 && ((window as any)._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
+                if (pos === -1) {
+                    ((window as any)._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
+                }
                 this.setState({ expanded });
             }}
         >
@@ -577,7 +589,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                                 this.cachedNewValues = newValues;
                                 this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
                                     this.cachedNewValues = undefined;
-                                    this.props.onChange && this.props.onChange(!!this.state.hasChanges);
+                                    if (this.props.onChange) {
+                                        this.props.onChange(!!this.state.hasChanges);
+                                    }
                                 });
                             }}
                         />}
@@ -619,7 +633,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                                 this.cachedNewValues = newValues;
                                 this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
                                     this.cachedNewValues = undefined;
-                                    this.props.onChange && this.props.onChange(!!this.state.hasChanges);
+                                    if (this.props.onChange) {
+                                        this.props.onChange(!!this.state.hasChanges);
+                                    }
                                 });
                             }}
                         /> : null}
@@ -660,7 +676,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
             if (!keys.length) {
                 this.setState({ maxOids: 0 }, () =>
                     this.props.onProgress(false));
-                cb && cb();
+                if (cb) {
+                    cb();
+                }
             } else {
                 this.setState({ progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50 });
                 const id = keys.shift() as string;
@@ -803,7 +821,9 @@ class ObjectCustomEditor extends Component<ObjectCustomEditorProps, ObjectCustom
                 this.setState({ confirmed: false, hasChanges: undefined, newValues: {} }, () => {
                     this.props.reportChangedIds(this.changedIds);
                     this.props.onChange(false, true);
-                    cb && setTimeout(() => cb(), 100);
+                    if (cb) {
+                        setTimeout(() => cb(), 100);
+                    }
                 });
             });
         }

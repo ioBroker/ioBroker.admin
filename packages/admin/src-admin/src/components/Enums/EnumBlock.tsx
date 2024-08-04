@@ -329,7 +329,9 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
             }
         }
 
-        changed && this.setState({ icons });
+        if (changed) {
+            this.setState({ icons });
+        }
     }
 
     render() {

@@ -337,7 +337,7 @@ export interface InstanceItem {
     name: string;
     stoppedWhenWebExtension: boolean | undefined;
     running: boolean;
-    connected: boolean;
+    connected: boolean | string;
     connectedToHost: boolean;
     alive: boolean;
     inputOutput: {
@@ -861,7 +861,9 @@ export default abstract class InstanceGeneric<
             text={this.props.context.t('stop_admin', this.props.context.adminInstance)}
             ok={this.props.context.t('Stop admin')}
             onClose={result => {
-                result && this.setCommonValue(this.state.showStopAdminDialog as string, { enabled: false });
+                if (result) {
+                    this.setCommonValue(this.state.showStopAdminDialog as string, { enabled: false });
+                }
                 this.setState({ showStopAdminDialog: false });
             }}
         />;
@@ -875,7 +877,7 @@ export default abstract class InstanceGeneric<
             image={this.props.instance.image}
             instanceId={this.props.instance.id}
             links={this.props.instance.links}
-            onClose={() => this.setState({ showLinks: false })}
+            onClose={() => this.setState({ showLinks: false, openDialog: false })}
             t={this.props.context.t}
             themeType={this.props.context.themeType}
         />;
@@ -1002,7 +1004,7 @@ export default abstract class InstanceGeneric<
         if (instance.mode === 'schedule' && instance.schedule) {
             try {
                 cronText = cronstrue.toString(instance.schedule, { locale: this.props.context.lang });
-            } catch (e) {
+            } catch {
                 cronText = instance.schedule;
             }
 
@@ -1011,7 +1013,7 @@ export default abstract class InstanceGeneric<
                     const expr = parser.parseExpression(instance.schedule);
                     next = expr.next().toDate();
                     prev = expr.prev().toDate();
-                } catch (e) {
+                } catch {
                     next = null;
                     prev = null;
                 }
@@ -1176,7 +1178,7 @@ export default abstract class InstanceGeneric<
                             );
                             window.open(url, this.props.instance.id);
                         } else {
-                            this.setState({ showLinks: true });
+                            this.setState({ showLinks: true, openDialog: true });
                         }
                     }}
                     onFocus={event => event.stopPropagation()}
