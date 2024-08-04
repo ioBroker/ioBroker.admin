@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { ActionBase, InstanceAction } from '@iobroker/dm-utils/build/types/api';
+import type { ActionBase, InstanceAction } from '@iobroker/dm-utils';
 
 import TooltipButton from './TooltipButton';
 import { getTranslation, renderActionIcon } from './Utils';

@@ -24,9 +24,9 @@ import type {
     ThemeName, ThemeType, IobTheme,
 } from '@iobroker/adapter-react-v5';
 import { type ConfigItemPanel } from '@iobroker/json-config';
-import type { ActionBase } from '@iobroker/dm-utils/build/types/api';
-import type { ControlBase, ControlState } from '@iobroker/dm-utils/build/types/base';
-import type { DeviceRefresh } from '@iobroker/dm-utils/build/types';
+import type {
+    ActionBase, ControlBase, ControlState, DeviceRefresh,
+} from '@iobroker/dm-utils';
 
 import { getTranslation } from './Utils';
 import JsonConfig from './JsonConfig';

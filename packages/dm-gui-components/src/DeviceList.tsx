@@ -7,7 +7,7 @@ import {
 import { Clear, Refresh } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
-import type { DeviceInfo, InstanceDetails } from '@iobroker/dm-utils/build/types/api';
+import type { DeviceInfo, InstanceDetails } from '@iobroker/dm-utils';
 
 import DeviceCard from './DeviceCard';
 import { getTranslation } from './Utils';
