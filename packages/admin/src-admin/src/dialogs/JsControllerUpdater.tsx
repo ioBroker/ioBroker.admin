@@ -135,7 +135,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                             addr.family === 'IPv6' ? `[${addr.address}]` : addr.address
                         }:${window.location.port}`;
                     }
-                } catch (e) {
+                } catch {
                     // ignore
                 }
                 return false;
@@ -182,11 +182,15 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
      * Clearing intervals and timers here
      */
     componentWillUnmount() {
-        this.interval && clearInterval(this.interval);
-        this.interval = null;
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
 
-        this.startTimeout && clearTimeout(this.startTimeout);
-        this.startTimeout = null;
+        if (this.startTimeout) {
+            clearTimeout(this.startTimeout);
+            this.startTimeout = null;
+        }
     }
 
     /**
@@ -219,8 +223,10 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             this.setState({ response, error: null }, () => {
                 if (response && !response.running) {
                     this.setUpdating(false);
-                    this.interval && clearInterval(this.interval);
-                    this.interval = null;
+                    if (this.interval) {
+                        clearInterval(this.interval);
+                        this.interval = null;
+                    }
                 } else if (response?.running) {
                     this.setUpdating(true);
                 }

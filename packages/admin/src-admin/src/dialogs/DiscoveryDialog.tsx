@@ -367,7 +367,7 @@ function DiscoveryDialog({
             if (lastSelectionStr) {
                 try {
                     lastSelection = JSON.parse(lastSelectionStr) as Record<string, boolean>;
-                } catch (e) {
+                } catch {
                     lastSelection = null;
                 }
             }
@@ -390,7 +390,9 @@ function DiscoveryDialog({
     useEffect(() => {
         async function readOldData() {
             const dataDiscovery = await socket.getObject('system.discovery');
-            dataDiscovery !== undefined && setDiscoveryData(dataDiscovery as unknown as DiscoveryObject);
+            if (dataDiscovery !== undefined) {
+                setDiscoveryData(dataDiscovery as unknown as DiscoveryObject);
+            }
         }
 
         readOldData()

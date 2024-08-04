@@ -166,66 +166,73 @@ const JsControllerDialog = ({
             console.error(`Invalid hostId: "${hostId}" with type ${typeof hostId}`);
         }
 
-        (!location || !os) && hostId && typeof hostId === 'string' && socket.getHostInfoShort(hostId)
-            .then((data: HostInfoShort) => {
-                data.location && data.location !== location && setLocation(data.location);
-                data.os && data.os !== os && setOS(data.os); // win32, linux, darwin, freebsd, android
+        if ((!location || !os) && hostId && typeof hostId === 'string') {
+            socket.getHostInfoShort(hostId)
+                .then((data: HostInfoShort) => {
+                    if (data.location && data.location !== location) {
+                        setLocation(data.location);
+                    }
+                    // win32, linux, darwin, freebsd, android
+                    if (data.os && data.os !== os) {
+                        setOS(data.os);
+                    }
 
-                fetch(`https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/${I18n.getLanguage()}/controller-upgrade.md`)
-                    .then(response => response.text())
-                    .then(_readme => {
-                        const _os = data.os || os;
-                        const _location = (data.location || location).replace(/\\/g, '/');
-                        if (_os === 'win32') {
-                            _readme = removeChapter(_readme, 'linux', 'windows');
-                        } else {
-                            _readme = removeChapter(_readme, 'windows', 'linux');
-                        }
-                        _readme = _readme.replace(/cd \/opt\/iobroker/g, `cd ${_location}`);
-                        _readme = _readme.replace(/cd C:\\iobroker/g, `cd ${_location}`);
-                        _readme = _readme.replace(/x\.y\.z/g, version);
-                        const readmeLines = _readme.split('<!-- copy');
-
-                        const parts: (string | React.JSX.Element)[] = [];
-                        readmeLines.forEach(chapter => {
-                            if (chapter.includes('-->')) {
-                                const parts_ = chapter.split('-->');
-                                let button = parts_[0];
-                                const text = parts_[1];
-                                let small = false;
-                                if (button.startsWith(' small')) {
-                                    button = button.replace(/^ {2}small /, '');
-                                    small = true;
-                                }
-                                button = button.replace(/^\n\r/, '').replace(/^\n/, '');
-                                if (small) {
-                                    parts.push(<IconButton
-                                        key={`b${parts.length}`}
-                                        onClick={() => copyTextToClipboard(button)}
-                                    >
-                                        <IconCopy />
-                                    </IconButton>);
-                                } else {
-                                    parts.push(<Button
-                                        key={`b${parts.length}`}
-                                        variant="contained"
-                                        onClick={() => copyTextToClipboard(button)}
-                                        startIcon={<IconCopy />}
-                                    >
-                                        {I18n.t('Copy to clipboard')}
-                                    </Button>);
-                                }
-                                parts.push(text);
+                    fetch(`https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/${I18n.getLanguage()}/controller-upgrade.md`)
+                        .then(response => response.text())
+                        .then(_readme => {
+                            const _os = data.os || os;
+                            const _location = (data.location || location).replace(/\\/g, '/');
+                            if (_os === 'win32') {
+                                _readme = removeChapter(_readme, 'linux', 'windows');
                             } else {
-                                parts.push(chapter);
+                                _readme = removeChapter(_readme, 'windows', 'linux');
                             }
-                        });
+                            _readme = _readme.replace(/cd \/opt\/iobroker/g, `cd ${_location}`);
+                            _readme = _readme.replace(/cd C:\\iobroker/g, `cd ${_location}`);
+                            _readme = _readme.replace(/x\.y\.z/g, version);
+                            const readmeLines = _readme.split('<!-- copy');
 
-                        setReadme(parts);
-                    });
-            })
-            .catch((e: string) =>
-                window.alert(`Cannot get information about host "${hostId}": ${e}`));
+                            const parts: (string | React.JSX.Element)[] = [];
+                            readmeLines.forEach(chapter => {
+                                if (chapter.includes('-->')) {
+                                    const parts_ = chapter.split('-->');
+                                    let button = parts_[0];
+                                    const text = parts_[1];
+                                    let small = false;
+                                    if (button.startsWith(' small')) {
+                                        button = button.replace(/^ {2}small /, '');
+                                        small = true;
+                                    }
+                                    button = button.replace(/^\n\r/, '').replace(/^\n/, '');
+                                    if (small) {
+                                        parts.push(<IconButton
+                                            key={`b${parts.length}`}
+                                            onClick={() => copyTextToClipboard(button)}
+                                        >
+                                            <IconCopy />
+                                        </IconButton>);
+                                    } else {
+                                        parts.push(<Button
+                                            key={`b${parts.length}`}
+                                            variant="contained"
+                                            onClick={() => copyTextToClipboard(button)}
+                                            startIcon={<IconCopy />}
+                                        >
+                                            {I18n.t('Copy to clipboard')}
+                                        </Button>);
+                                    }
+                                    parts.push(text);
+                                } else {
+                                    parts.push(chapter);
+                                }
+                            });
+
+                            setReadme(parts);
+                        });
+                })
+                .catch((e: string) =>
+                    window.alert(`Cannot get information about host "${hostId}": ${e}`));
+        }
     }, [location, os, socket, version, hostId]);
 
     const renderReadme = () => <>

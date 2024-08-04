@@ -14,6 +14,7 @@ module.exports = {
         'plugin:eqeqeq-fix/recommended',
         'plugin:@typescript-eslint/recommended',
     ],
+    parser: '@typescript-eslint/parser',
     parserOptions: {
         ecmaFeatures: {
             jsx: true,

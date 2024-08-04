@@ -129,11 +129,15 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
     }
 
     componentWillUnmount() {
-        this.interval && clearInterval(this.interval);
-        this.interval = null;
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
 
-        this.startTimeout && clearTimeout(this.startTimeout);
-        this.startTimeout = null;
+        if (this.startTimeout) {
+            clearTimeout(this.startTimeout);
+            this.startTimeout = null;
+        }
     }
 
     async checkStatus() {
@@ -163,8 +167,10 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
                     }
                     this.setState({ response, error: null }, async () => {
                         if (response && !response.running) {
-                            this.interval && clearInterval(this.interval);
-                            this.interval = null;
+                            if (this.interval) {
+                                clearInterval(this.interval);
+                                this.interval = null;
+                            }
                             this.waitForAdapterStart();
                         } else if (response?.running) {
                             this.setUpdating(true);

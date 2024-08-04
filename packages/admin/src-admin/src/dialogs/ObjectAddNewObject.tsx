@@ -252,7 +252,9 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                     onKeyDown={e => {
                         if (e.key === 'Enter') {
                             e.preventDefault();
-                            name && onLocalApply();
+                            if (name) {
+                                onLocalApply();
+                            }
                         }
                     }}
                     InputProps={{

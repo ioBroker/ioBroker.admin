@@ -8,7 +8,7 @@ export default function useStateLocal(
     if (data) {
         try {
             defaultValue = JSON.parse(data);
-        } catch (error) {
+        } catch {
             // ignore
         }
     }

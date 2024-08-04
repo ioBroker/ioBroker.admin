@@ -444,7 +444,9 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                 setUsers(_users);
                 setGroups(_groups);
 
-                object?.folder && setApplyToChildren(true);
+                if (object?.folder) {
+                    setApplyToChildren(true);
+                }
                 setChildrenCount(count);
 
                 setDifferentObject(_differentObject);
@@ -455,12 +457,12 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
 
     useEffect(() => {
         if (applyToChildren) {
-            if (differentOwner) {
-                stateOwnerUser !== DIFFERENT && setStateOwnerUser(DIFFERENT);
+            if (differentOwner && stateOwnerUser !== DIFFERENT) {
+                setStateOwnerUser(DIFFERENT);
             }
 
-            if (differentGroup) {
-                stateOwnerGroup !== DIFFERENT && setStateOwnerGroup(DIFFERENT);
+            if (differentGroup && stateOwnerGroup !== DIFFERENT) {
+                setStateOwnerGroup(DIFFERENT);
             }
         } else {
             if (stateOwnerUser && stateOwnerUser === DIFFERENT) {
@@ -507,7 +509,9 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                             newAcl.ownerGroup = stateOwnerGroup;
                             changed = true;
                         }
-                        changed && (await applyChangesToFile(adapter, path, newAcl));
+                        if (changed) {
+                            await applyChangesToFile(adapter, path, newAcl);
+                        }
                     } else if (!parts.length && objects[object.id]) {
                         // setObject(acl)
                         const obj = objects[object.id] as MetaObject;
@@ -526,7 +530,9 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                             obj.acl.ownerGroup = stateOwnerGroup;
                             changed = true;
                         }
-                        changed && (await applyChangesToObject(obj));
+                        if (changed) {
+                            await applyChangesToObject(obj);
+                        }
                     }
                 } else {
                     // eslint-disable-next-line no-bitwise
@@ -557,7 +563,9 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                             }
 
                             try {
-                                changed && (await applyChangesToObject(itemAsObject));
+                                if (changed) {
+                                    await applyChangesToObject(itemAsObject);
+                                }
                             } catch (error) {
                                 console.error(error);
                             }
@@ -581,7 +589,7 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                                 const adapter = parts.shift();
                                 const path = parts.join('/');
                                 try {
-                                    changed && (await applyChangesToFile(adapter, path, newAcl));
+                                    await applyChangesToFile(adapter, path, newAcl);
                                 } catch (error) {
                                     console.error(error);
                                 }
