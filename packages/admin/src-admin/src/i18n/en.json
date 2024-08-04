@@ -1613,5 +1613,7 @@
   "write": "write",
   "write operation": "write",
   "wrongPassword": "Invalid username or password",
-  "yesterday": "yesterday"
+  "yesterday": "yesterday",
+  "Adapter warnings": "Adapter warnings",
+  "Links": "Links"
 }

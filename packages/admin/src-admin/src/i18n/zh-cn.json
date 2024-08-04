@@ -1613,5 +1613,7 @@
   "write": "写",
   "write operation": "写",
   "wrongPassword": "用户名或密码无效",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "Adapter warnings": "适配器警告",
+  "Links": "链接"
 }

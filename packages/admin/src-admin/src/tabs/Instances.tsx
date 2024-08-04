@@ -421,9 +421,18 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     },
                 ) || [];
 
+                let name: ioBroker.StringOrTranslated = link.name || linkName;
+                if (name === '_default') {
+                    name = names.length === 1 ? '' : this.t('default');
+                } else if (typeof name === 'object') {
+                    name = AdminUtils.getText(name, this.props.lang);
+                } else {
+                    name = this.t(name as string);
+                }
+
                 if (urls.length === 1) {
                     instance.links.push({
-                        name: linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
+                        name,
                         link: urls[0].url,
                         port: urls[0].port,
                         color: link.color,
@@ -431,7 +440,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 } else if (urls.length > 1) {
                     urls.forEach(item => {
                         instance.links.push({
-                            name: linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
+                            name,
                             link: item.url,
                             port: item.port,
                             color: link.color,

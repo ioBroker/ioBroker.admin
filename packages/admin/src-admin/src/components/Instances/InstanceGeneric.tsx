@@ -877,7 +877,7 @@ export default abstract class InstanceGeneric<
             image={this.props.instance.image}
             instanceId={this.props.instance.id}
             links={this.props.instance.links}
-            onClose={() => this.setState({ showLinks: false })}
+            onClose={() => this.setState({ showLinks: false, openDialog: false })}
             t={this.props.context.t}
             themeType={this.props.context.themeType}
         />;
@@ -1178,7 +1178,7 @@ export default abstract class InstanceGeneric<
                             );
                             window.open(url, this.props.instance.id);
                         } else {
-                            this.setState({ showLinks: true });
+                            this.setState({ showLinks: true, openDialog: true });
                         }
                     }}
                     onFocus={event => event.stopPropagation()}
