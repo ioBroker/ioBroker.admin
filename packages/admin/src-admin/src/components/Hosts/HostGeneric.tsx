@@ -561,12 +561,20 @@ export default abstract class HostGeneric<TProps extends HostGenericProps, TStat
 
     onCopy() {
         const text = [];
-        this.refCpu.current && text.push(`CPU: ${this.refCpu.current.innerHTML}`);
-        this.refMem.current && text.push(`RAM: ${this.refMem.current.innerHTML}`);
-        this.refUptime.current && text.push(`${this.props.t('Uptime')}: ${this.refUptime.current.innerHTML}`);
+        if (this.refCpu.current) {
+            text.push(`CPU: ${this.refCpu.current.innerHTML}`);
+        }
+        if (this.refMem.current) {
+            text.push(`RAM: ${this.refMem.current.innerHTML}`);
+        }
+        if (this.refUptime.current) {
+            text.push(`${this.props.t('Uptime')}: ${this.refUptime.current.innerHTML}`);
+        }
         text.push(`${this.props.t('Available')}: ${this.props.available}`);
         text.push(`${this.props.t('Installed')}: ${this.props.host.common.installedVersion}`);
-        this.refEvents.current && text.push(`${this.props.t('Events')}: ${this.refEvents.current.innerHTML}`);
+        if (this.refEvents.current) {
+            text.push(`${this.props.t('Events')}: ${this.refEvents.current.innerHTML}`);
+        }
 
         if (this.props.hostData && typeof this.props.hostData === 'object') {
             const data: Record<string, any> = this.props.hostData;

@@ -254,7 +254,7 @@ export function checkCondition(
                                         }
                                         console.warn(`Unknown rule ${version}${rule}`);
                                         return false;
-                                    } catch (e) {
+                                    } catch {
                                         console.warn(`Cannot compare ${version}${rule}`);
                                         return false;
                                     }
@@ -305,7 +305,7 @@ export function checkCondition(
                             return semver.neq(version, ver);
                         }
                         console.warn(`Unknown rule ${version}${rule}`);
-                    } catch (e) {
+                    } catch {
                         console.warn(`Cannot compare ${version}${rule}`);
                     }
                     return false;

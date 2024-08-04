@@ -433,19 +433,19 @@ class Hosts extends Component<HostsProps, HostsState> {
 
     render() {
         if (!this.state.hosts.length) {
-            return <LinearProgress/>;
+            return <LinearProgress />;
         }
 
         return <TabContainer>
             <style>{blinkClasses}</style>
             {this.renderSlowConnectionWarning()}
             <TabHeader>
-                <Tooltip title={this.t('Show / hide List')} componentsProps={{popper: {sx: styles.tooltip}}}>
+                <Tooltip title={this.t('Show / hide List')} componentsProps={{ popper: { sx: styles.tooltip } }}>
                     <IconButton
                         size="large"
                         onClick={() => {
                             ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', this.state.viewMode ? 'false' : 'true');
-                            this.setState({viewMode: !this.state.viewMode});
+                            this.setState({ viewMode: !this.state.viewMode });
                         }}
                     >
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
@@ -460,7 +460,7 @@ class Hosts extends Component<HostsProps, HostsState> {
                 {this.state.hosts.length > 2 ? <TextField
                     variant="standard"
                     label={this.t('Filter')}
-                    style={{margin: '5px 0'}}
+                    style={{ margin: '5px 0' }}
                     value={this.state.filterText}
                     onChange={event => {
                         ((window as any)._localStorage as Storage || window.localStorage).setItem('Hosts.viewMode', event.target.value);
