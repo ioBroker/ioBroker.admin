@@ -421,9 +421,18 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     },
                 ) || [];
 
+                let name: ioBroker.StringOrTranslated = link.name || linkName;
+                if (name === '_default') {
+                    name = names.length === 1 ? '' : this.t('default');
+                } else if (typeof name === 'object') {
+                    name = AdminUtils.getText(name, this.props.lang);
+                } else {
+                    name = this.t(name as string);
+                }
+
                 if (urls.length === 1) {
                     instance.links.push({
-                        name: linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
+                        name,
                         link: urls[0].url,
                         port: urls[0].port,
                         color: link.color,
@@ -431,7 +440,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 } else if (urls.length > 1) {
                     urls.forEach(item => {
                         instance.links.push({
-                            name: linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
+                            name,
                             link: item.url,
                             port: item.port,
                             color: link.color,
@@ -585,7 +594,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         const mode = common?.mode || '';
         let status: InstanceStatusType = mode === 'daemon' ? 'green' : 'blue';
 
-        if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
+        if (common?.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
             const alive = this.states[`${obj._id}.alive`];
             const connected = this.states[`${obj._id}.connected`];
             const connection = this.states[`${(obj._id).replace('system.adapter.', '')}.info.connection`];
@@ -644,9 +653,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return !!state?.val;
     }
 
-    isConnected(id: string): boolean | null {
+    isConnected(id: string): boolean | string | null {
         const instance = this.state.instances[id];
-        return this.states[`${instance.id}.info.connection`] ? !!this.states[`${instance.id}.info.connection`].val : null;
+        return this.states[`${instance.id}.info.connection`] ? this.states[`${instance.id}.info.connection`].val as string | boolean : null;
     }
 
     static getStatusFilter(value: string): InstanceStatusType {

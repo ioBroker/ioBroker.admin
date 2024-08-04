@@ -153,7 +153,9 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
 
     updateAdapters(cb: () => void) {
         if (!this.processList || !this.processList.length || this.state.stopped) {
-            cb && cb();
+            if (cb) {
+                cb();
+            }
         } else {
             const { adapter, version } = this.processList.shift();
 

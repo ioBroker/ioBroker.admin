@@ -6,7 +6,6 @@ import {
     CardContent,
     CardMedia,
     Fab,
-    Hidden,
     Typography,
 } from '@mui/material';
 

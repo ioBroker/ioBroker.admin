@@ -193,16 +193,12 @@ const styles: Record<string, any> = {
     },
 };
 
-interface InstanceRowProps extends InstanceGenericProps {
-
-}
-
-class InstanceRow extends InstanceGeneric<InstanceRowProps, InstanceGenericState> {
+class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericState> {
     private desktop: boolean = window.innerWidth > 1000;
 
     protected styles: Record<string, any> = styles;
 
-    constructor(props: InstanceRowProps) {
+    constructor(props: InstanceGenericProps) {
         super(props);
 
         this.state = this.getDefaultState(props);

@@ -326,6 +326,14 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         <div ref={this.refUptime}>-/-</div>
                     </Typography>
                     <Typography
+                        sx={{ ...styles.flex, ...styles.hidden1100 }}
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                    >
+                        {this.props.host.common.installedVersion}
+                    </Typography>
+                    <Typography
                         sx={{ ...styles.flex, ...styles.hidden1100, ...styles.cell }}
                         variant="body2"
                         color="textSecondary"
@@ -337,14 +345,6 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         >
                             {this.renderUpdateButton(upgradeAvailable)}
                         </Box>
-                    </Typography>
-                    <Typography
-                        sx={{ ...styles.flex, ...styles.hidden1100 }}
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                    >
-                        {this.props.host.common.installedVersion}
                     </Typography>
                     <Typography
                         sx={{ ...styles.flex, ...styles.hidden600, ...styles.cell }}

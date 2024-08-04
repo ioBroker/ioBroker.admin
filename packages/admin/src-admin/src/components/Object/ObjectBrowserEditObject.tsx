@@ -542,7 +542,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         let json;
         try {
             json = JSON.parse(this.state.text);
-        } catch (e) {
+        } catch {
             // ignore
         }
 
@@ -550,7 +550,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         try {
             // eslint-disable-next-line no-new-func
             jsFunc = new Function('val', func.includes('return') ? func : `return ${func}`);
-        } catch (e) {
+        } catch {
             return this.props.t('Cannot parse code!');
         }
 
@@ -627,7 +627,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             }
 
             return obj;
-        } catch (e) {
+        } catch {
             return null;
         }
     }
@@ -641,12 +641,13 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             // check if some common attributes are deleted
             newState.showCommonDeleteMessage = false;
             const originalObj = JSON.parse(this.originalObj);
-            json.common &&
+            if (json.common) {
                 Object.keys(originalObj.common || {}).forEach(attr => {
                     if (json.common[attr] === undefined) {
                         newState.showCommonDeleteMessage = true;
                     }
                 });
+            }
 
             newState.error = false;
             newState.readError = this.checkFunction(json.common?.alias?.read, false);
@@ -728,8 +729,10 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             obj.common.step = parseFloat(obj.common.step);
                             changed = true;
                         }
-                        changed && this.setState({ text: JSON.stringify(obj, null, 2) });
-                    } catch (err) {
+                        if (changed) {
+                            this.setState({ text: JSON.stringify(obj, null, 2) });
+                        }
+                    } catch {
                         // ignore
                     }
                 }
@@ -764,7 +767,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
             } else if (this.state.selectWrite) {
                 id = aliasWrite ?? '';
             }
-        } catch (error) {
+        } catch {
             console.error(`Cannot parse ${this.state.text}`);
         }
 
@@ -1081,7 +1084,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
                     </Box>}
             </Box>;
-        } catch (e) {
+        } catch {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
     }
@@ -1269,14 +1272,13 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     />
                 </Grid> : null}
             </Grid>;
-        } catch (e) {
+        } catch {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
     }
 
     onCopy(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        // @ts-expect-error types in adapter-react-v5 not optimal
-        Utils.copyToClipboard(this.state.text, e);
+        Utils.copyToClipboard(this.state.text, e as unknown as Event);
         window.alert(this.props.t('ra_Copied'));
     }
 
@@ -1286,7 +1288,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         delete newObj.ts;
         delete newObj.user;
         newObj._id = newId;
-        this.props.objects[newObj._id] = newObj; // bad practise, but no time to wait till this object will be created
+        this.props.objects[newObj._id] = newObj; // bad practice, but no time to wait till this object will be created
         this.props.onNewObject(newObj);
     }
 

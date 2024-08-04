@@ -236,7 +236,7 @@
   "Compact mode": "Kompakter Modus",
   "Configuration not saved.": "Die Konfiguration ist nicht gespeichert.",
   "Congo": "Kongo",
-  "Connect timeout": "Verbindungs Timeout",
+  "Connect timeout": "Verbindungs-Timeout",
   "Connected to device or service": "Verbunden mit Gerät oder Dienst",
   "Connected to host": "Verbunden mit Host",
   "Connected:": "Verbindung:",
@@ -1506,7 +1506,6 @@
   "reload": "Neu laden",
   "reload instance": "Instanz neu starten",
   "repeat": "wiederholen",
-  "repo_update_hint": "Sie haben die Ausführung automatischer Upgrades für das „Beta“-Repository konfiguriert.\nBeachten Sie, dass dieser Adapter, wenn das Beta-Repository aktiv ist, Beta-Updates entsprechend dieser Konfiguration automatisch einbindet!",
   "rest": "Weitere (nur lesend)",
   "restart": "Automatisch neu starten",
   "restart script": "Skript neu starten",
@@ -1616,15 +1615,5 @@
   "write operation": "schreiben",
   "wrongPassword": "Benutzername oder Passwort sind falsch",
   "yesterday": "gestern",
-  "Filter adapters to see others. There is %s more": "Filtern Sie Adapter, um andere anzuzeigen. Es gibt %s mehr",
-  "Enter version manually": "Version manuell eingeben",
-  "Or select from the list": "Oder aus der Liste wählen",
-  "Source (show all)": "Quelle (alle anzeigen)",
-  "Requesting data...": "Daten anfordern...",
-  "Show sent statistics data": "Gesendete Statistikdaten anzeigen",
-  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "Die übermittelten Daten werden von der ioBroker GmbH ausschließlich zu statistischen Zwecken ausgewertet und nicht an Dritte weitergegeben.",
-  "Next": "Weiter",
-  "Install selected adapters": "Ausgewählte Adapter installieren",
-  "More info": "Mehr Info",
-  "Read to the end for accept": "Zum Akzeptieren bis zum Ende lesen"
+  "Links": "Links"
 }

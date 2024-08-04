@@ -155,16 +155,16 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
 
         try {
             return semver.gt(newVersion, oldVersion);
-        } catch (e) {
+        } catch {
             console.warn(`Cannot compare "${newVersion}" and "${oldVersion}" of adapter ${name}`);
             return false;
         }
     }
 
     /**
-     * Get list of available adapter updates
-     * Admin and controller is filtered out
-     * and all adapters which have messages for this update are filtered out too
+     * Get a list of available adapter updates
+     * Admin and controller are filtered out,
+     * and all adapters that have messages for this update are filtered out too
      */
     detectUpdates(): string[] {
         const updateAvailable: string[] = [];
@@ -208,7 +208,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                             news: this.props.noTranslation ? adapterObj.news[version].en : (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en),
                         });
                     }
-                } catch (e) {
+                } catch {
                     // ignore it
                     console.warn(`Cannot compare "${version}" and "${installed.version}"`);
                 }
@@ -329,7 +329,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                             </Typography>)}
                         </Grid>);
                     }
-                } catch (e) {
+                } catch {
                     // ignore it
                     console.warn(`Cannot compare "${version}" and "${fromVersion}"`);
                 }

@@ -74,7 +74,7 @@ class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPassword
     }
 
     componentDidMount() {
-        this.focusRef.current && this.focusRef.current.focus();
+        this.focusRef.current?.focus();
     }
 
     render() {

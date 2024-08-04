@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 
 export const MOBILE_WIDTH = 800;
 
-interface MobileDialogProps {
-}
-
 interface MobileDialogState {
     mobile: boolean;
 }
 
-class MobileDialog<TProps extends MobileDialogProps = MobileDialogProps, TState extends MobileDialogState = MobileDialogState> extends Component<TProps, TState> {
+class MobileDialog<TProps, TState extends MobileDialogState = MobileDialogState> extends Component<TProps, TState> {
     private _resizeHandlerInstalled: boolean;
 
     private _timerOnResize: ReturnType<typeof setTimeout> = null;
@@ -29,15 +26,19 @@ class MobileDialog<TProps extends MobileDialogProps = MobileDialogProps, TState 
     }
 
     componentWillUnmount() {
-        this._timerOnResize && clearTimeout(this._timerOnResize);
-        this._timerOnResize = null;
+        if (this._timerOnResize) {
+            clearTimeout(this._timerOnResize);
+            this._timerOnResize = null;
+        }
         if (this._resizeHandlerInstalled) {
             window.removeEventListener('resize', this.__onResize, false);
         }
     }
 
     __onResize = () => {
-        this._timerOnResize && clearTimeout(this._timerOnResize);
+        if (this._timerOnResize) {
+            clearTimeout(this._timerOnResize);
+        }
         this._timerOnResize = setTimeout(() => {
             this._timerOnResize = null;
             if (this.state.mobile !== MobileDialog.isMobile()) {

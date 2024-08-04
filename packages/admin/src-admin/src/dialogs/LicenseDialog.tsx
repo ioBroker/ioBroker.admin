@@ -90,8 +90,10 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
                 return true;
             }
 
-            installTimer.current && clearInterval(installTimer.current);
-            installTimer.current = null;
+            if (installTimer.current) {
+                clearInterval(installTimer.current);
+                installTimer.current = null;
+            }
             divMarkdown.onscroll = (event: Event) => {
                 const div: HTMLDivElement = event.target as HTMLDivElement;
                 // give 10 pixels tolerance for MS-edge
@@ -132,8 +134,10 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
         }
 
         return () => {
-            installTimer.current && clearInterval(installTimer.current);
-            installTimer.current = null;
+            if (installTimer.current) {
+                clearInterval(installTimer.current);
+                installTimer.current = null;
+            }
 
             const _divMarkdown: HTMLDivElement | null = divRef.current?.querySelector('.markdown');
             if (_divMarkdown) {

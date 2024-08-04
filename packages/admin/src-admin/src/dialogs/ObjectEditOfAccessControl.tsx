@@ -341,8 +341,12 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
         setOwnerUsers(users);
         setOwnerGroups(groups);
 
-        _checkState && setCheckState(true);
-        modalEmptyId && setApplyToChildren(true);
+        if (_checkState) {
+            setCheckState(true);
+        }
+        if (modalEmptyId) {
+            setApplyToChildren(true);
+        }
         setChildrenCount(count);
 
         setDifferentState(_differentState);
@@ -354,7 +358,9 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
     useEffect(() => {
         if (applyToChildren) {
             if (differentGroup) {
-                stateOwnerGroup.value !== 'different' && setStateOwnerGroup({ name: different, value: 'different' });
+                if (stateOwnerGroup.value !== 'different') {
+                    setStateOwnerGroup({ name: different, value: 'different' });
+                }
                 if (!ownerGroups.find(item => item.value === 'different')) {
                     setOwnerGroups(el => ([{
                         name: different,
@@ -364,7 +370,9 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
             }
 
             if (differentOwner) {
-                (!stateOwnerUser || stateOwnerUser.value !== 'different') && setStateOwnerUser({ name: different, value: 'different' });
+                if (!stateOwnerUser || stateOwnerUser.value !== 'different') {
+                    setStateOwnerUser({ name: different, value: 'different' });
+                }
                 if (!ownerUsers.find(item => item.value === 'different')) {
                     setOwnerUsers(el => ([{
                         name: different,

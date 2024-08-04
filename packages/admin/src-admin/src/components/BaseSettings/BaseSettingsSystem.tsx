@@ -88,7 +88,7 @@ class BaseSettingsSystem extends Component<BaseSettingsSystemProps, BaseSettings
     }
 
     componentDidMount() {
-        this.focusRef.current && this.focusRef.current.focus();
+        this.focusRef.current?.focus();
     }
 
     onChange() {
