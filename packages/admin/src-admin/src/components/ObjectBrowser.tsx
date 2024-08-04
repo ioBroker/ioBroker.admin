@@ -619,7 +619,7 @@ const styles: Record<string, any> = {
         width: '100%',
         height: ROW_HEIGHT,
         fontSize: 16,
-        display: 'inline-block',
+        display: 'flex',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         position: 'relative',
@@ -666,6 +666,7 @@ const styles: Record<string, any> = {
     cellValueTextUnit: {
         marginLeft: 4,
         opacity: 0.8,
+        display: 'inline-block',
     },
     cellValueTextState: {
         opacity: 0.7,
@@ -740,7 +741,7 @@ const styles: Record<string, any> = {
     cellDetailsName: {
         fontWeight: 'bold',
         marginRight: 8,
-        minWidth: 100,
+        minWidth: 80,
     },
 
     filteredOut: {
@@ -5252,7 +5253,16 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             item.data.state = { valTextRx };
 
             const copyText = valText.v || '';
-            valTextRx.push(<span className={`newValueBrowser-${this.props.themeType || 'light'}`} key={`${valText.v.toString()}valText`}>
+            valTextRx.push(<span
+                className={`newValueBrowser-${this.props.themeType || 'light'}`}
+                key={`${valText.v.toString()}valText`}
+                style={{
+                    whiteSpace: 'nowrap',
+                    display: 'inline-block',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                }}
+            >
                 {valText.v.toString()}
             </span>);
             valText.u && valTextRx.push(<span
@@ -6366,7 +6376,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         let colValue = (narrowStyleWithDetails && columnValue) || this.columnsVisibility.val ? <div
             style={{
                 ...styles.cellValue,
-                width: this.props.width !== 'xs' ? this.columnsVisibility.val : undefined,
+                width: this.props.width !== 'xs' ? this.columnsVisibility.val : 'calc(100% - 100px)',
                 cursor: valueEditable ? (common?.type === 'file' ? 'zoom-in' : (item.data.button ? 'grab' : 'text')) : 'default',
             }}
             onClick={valueEditable ? () => {
