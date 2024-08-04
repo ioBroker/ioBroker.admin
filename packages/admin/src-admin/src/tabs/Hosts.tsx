@@ -214,7 +214,9 @@ class Hosts extends Component<HostsProps, HostsState> {
                 const promise = this.props.socket.getHostInfo(hosts[h]._id, null, this.state.readTimeoutMs)
                     .catch((error: string) => {
                         console.error(`Cannot get getHostInfo: ${error}`);
-                        error.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+                        if (error.toString().includes('timeout')) {
+                            this.setState({ showSlowConnectionWarning: true });
+                        }
                         return { id: hosts[h]._id as `system.host.${string}`, data: error.toString() };
                     })
                     .then((data: Record<string, any>) => {
@@ -260,7 +262,9 @@ class Hosts extends Component<HostsProps, HostsState> {
                 })
                 .catch(e => {
                     window.alert(`Cannot getRepository: ${e}`);
-                    e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+                    if (e.toString().includes('timeout')) {
+                        this.setState({ showSlowConnectionWarning: true });
+                    }
                 }));
     }
 
@@ -313,7 +317,9 @@ class Hosts extends Component<HostsProps, HostsState> {
             }
         });
 
-        changed && this.setState({ alive });
+        if (changed) {
+            this.setState({ alive });
+        }
     };
 
     getPanels() {

@@ -147,15 +147,25 @@ export interface ConfigItemText extends ConfigItem {
     maxLength?: number;
     /** @deprecated use maxLength */
     max?: number;
+    /** read-only field */
     readOnly?: boolean;
+    /** default is true. Set this attribute to `false` if trim is not desired. */
     trim?: boolean;
+    /** default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. */
     minRows?: number;
-    maxRows?: number;
+    /** max rows of textarea. Used only if `minRows` > 1. */
+     maxRows?: number;
+    /** if true, the clear button will not be shown */
     noClearButton?: boolean;
+    /** if true, the text will be validated as JSON */
+    validateJson?: boolean;
+    /** if true, the JSON will be validated only if the value is not empty */
+    allowEmpty?: boolean;
 }
 
 export interface ConfigItemColor extends ConfigItem {
     type: 'color';
+    /** if true, the clear button will not be shown */
     noClearButton?: boolean;
 }
 
@@ -476,22 +486,35 @@ export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
     type: 'textSendTo';
     container?: 'text' | 'div';
+    /** if true - show copy to clipboard button */
     copyToClipboard?: boolean;
+    /** by change of which attributes, the command must be resent */
     alsoDependsOn?: string[];
+    /** sendTo command */
     command?: string;
+    /** string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend */
     jsonData?: string;
+    /** object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined. */
     data?: Record<string, any>;
 }
 
 export interface ConfigItemSelectSendTo extends Omit<ConfigItem, 'data'> {
     type: 'selectSendTo';
+    /** allow manual editing. Without drop-down menu (if instance is offline). Default `true`. */
     manual?: boolean;
+    /** Multiple choice select */
     multiple?: boolean;
+    /** show item even if no label was found for it (by multiple), default=`true` */
     showAllValues?: boolean;
+    /** if true, the clear button will not be shown */
     noClearButton?: boolean;
+    /** sendTo command */
     command?: string;
+    /** string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend */
     jsonData?: string;
+    /** object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined. */
     data?: Record<string, any>;
+    /** by change of which attributes, the command must be resent */
     alsoDependsOn?: string[];
 }
 
@@ -592,6 +615,10 @@ export interface ConfigItemUUID extends ConfigItem {
 
 export interface ConfigItemJsonEditor extends ConfigItem {
     type: 'jsonEditor';
+    /** if false, the text will be not validated as JSON */
+    validateJson?: boolean;
+    /** if true, the JSON will be validated only if the value is not empty */
+    allowEmpty?: boolean;
 }
 
 export interface ConfigItemInterface extends ConfigItem {

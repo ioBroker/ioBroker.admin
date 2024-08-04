@@ -16,6 +16,16 @@ import * as passport from 'passport';
 import * as fileUpload from 'express-fileupload';
 import { Strategy } from 'passport-local';
 
+import type { Store } from 'express-session';
+import * as session from 'express-session';
+import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
+import { RequestHandler } from 'express';
+
+interface IConnectFlashOptions {
+    unsafe?: boolean | undefined;
+}
+
 export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     accessAllowedConfigs: string[];
     accessAllowedTabs: string[];
@@ -51,12 +61,9 @@ export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     }[];
 }
 
-let session;
-let bodyParser;
 let AdapterStore;
-let flash;
-let cookieParser;
-/** Content of socket io file */
+let flash: ((options?: IConnectFlashOptions) => RequestHandler) | undefined;
+/** Content of a socket-io file */
 let socketIoFile: false | string;
 /** UUID of the installation */
 let uuid: string;
@@ -127,7 +134,7 @@ function get404Page(customText?: string): string {
  * @param url url of the specific file or directory
  */
 async function readFolderRecursive(
-    adapter: ioBroker.Adapter,
+    adapter: AdminAdapter,
     adapterName: string,
     url: string
 ): Promise<{ name: string; file: Buffer }[]> {
@@ -172,6 +179,11 @@ interface WebOptions {
     systemLanguage: ioBroker.Languages;
 }
 
+interface AdminAdapter extends ioBroker.Adapter {
+    secret: string;
+    config: AdminAdapterConfig;
+}
+
 /**
  * Webserver class
  */
@@ -199,10 +211,10 @@ class Web {
     // todo delete after React will be main
     wwwDir = path.join(this.baseDir, 'adminWww');
 
-    private settings: ioBroker.AdapterConfig;
-    private readonly adapter: ioBroker.Adapter;
+    private settings: AdminAdapterConfig;
+    private readonly adapter: AdminAdapter;
     private options: WebOptions;
-    private readonly onReady: (server: unknown, store: unknown, adapter: ioBroker.Adapter) => void;
+    private readonly onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void;
     private systemLanguage: ioBroker.Languages;
     private checkTimeout: ioBroker.Timeout;
 
@@ -215,9 +227,9 @@ class Web {
      * @param options
      */
     constructor(
-        settings: ioBroker.AdapterConfig,
-        adapter: ioBroker.Adapter,
-        onReady: (server: unknown, store: unknown, adapter: ioBroker.Adapter) => void,
+        settings: AdminAdapterConfig,
+        adapter: AdminAdapter,
+        onReady: (server: unknown, store: unknown, adapter: AdminAdapter) => void,
         options: WebOptions
     ) {
         this.settings = settings;
@@ -303,8 +315,10 @@ class Web {
     }
 
     close(): void {
-        this.checkTimeout && this.adapter.clearTimeout(this.checkTimeout);
-        this.checkTimeout = null;
+        if (this.checkTimeout) {
+            this.adapter.clearTimeout(this.checkTimeout);
+            this.checkTimeout = null;
+        }
 
         this.adapter.setState('info.connection', false, true);
         this.server.server?.close();
@@ -550,12 +564,8 @@ class Web {
             });
 
             if (this.settings.auth) {
-                session = require('express-session');
-                cookieParser = require('cookie-parser');
-                bodyParser = require('body-parser');
                 AdapterStore = utils.commonTools.session(session, this.settings.ttl);
-                flash = require('connect-flash'); // TODO report error to user
-
+                flash = await import('connect-flash');
                 this.store = new AdapterStore({ adapter: this.adapter });
 
                 passport.use(
@@ -623,13 +633,12 @@ class Web {
                 this.server.app.use(bodyParser.json());
                 this.server.app.use(
                     session({
-                        // @ts-expect-error check later
                         secret: this.adapter.secret,
                         saveUninitialized: true,
                         resave: true,
                         cookie: { maxAge: this.settings.ttl * 1000 },
                         // rolling: true, // The expiration is reset to the original maxAge, resetting the expiration countdown.
-                        store: this.store,
+                        store: this.store as Store,
                     })
                 );
                 this.server.app.use(passport.initialize());
@@ -677,19 +686,15 @@ class Web {
                             }
 
                             if (req.body.stayLoggedIn) {
-                                // @ts-expect-error check later
                                 req.session.cookie.httpOnly = true;
                                 // https://www.npmjs.com/package/express-session#cookiemaxage-1
                                 // Interval in ms
-                                // @ts-expect-error check later
                                 req.session.cookie.maxAge =
                                     (this.settings.ttl > ONE_MONTH_SEC ? this.settings.ttl : ONE_MONTH_SEC) * 1000;
                             } else {
-                                // @ts-expect-error check later
                                 req.session.cookie.httpOnly = true;
                                 // https://www.npmjs.com/package/express-session#cookiemaxage-1
                                 // Interval in ms
-                                // @ts-expect-error check later
                                 req.session.cookie.maxAge = this.settings.ttl * 1000;
                             }
 
@@ -703,7 +708,6 @@ class Web {
                 });
 
                 this.server.app.get('/session', (req, res) =>
-                    // @ts-expect-error check later
                     res.json({ expireInSec: Math.round(req.session.cookie.maxAge / 1_000) })
                 );
 
@@ -794,29 +798,35 @@ class Web {
                 const parts = req.url.split('/');
                 const filename = parts.pop();
                 let hostname = parts.pop();
-                // backwards compatibility with javascript < 3.5.5
+                // backwards compatibility with JavaScript < 3.5.5
                 if (hostname === 'zip') {
                     hostname = `system.host.${this.adapter.host}`;
                 }
 
                 // @ts-expect-error TODO: binary states have been removed
-                this.adapter.getBinaryState(`${hostname}.zip.${filename}`, (err, buff) => {
-                    if (err) {
-                        res.status(500).send(escapeHtml(typeof err === 'string' ? err : JSON.stringify(err)));
-                    } else {
-                        if (!buff) {
-                            res.status(404).send(get404Page(escapeHtml(`File ${filename}.zip not found`)));
+                if (this.adapter.getBinaryState) {
+                    // @ts-expect-error TODO: binary states have been removed
+                    this.adapter.getBinaryState(`${hostname}.zip.${filename}`, (err, buff) => {
+                        if (err) {
+                            res.status(500).send(escapeHtml(typeof err === 'string' ? err : JSON.stringify(err)));
                         } else {
-                            // remove file
-                            // @ts-expect-error TODO: binary states have been removed
-                            this.adapter.delBinaryState &&
+                            if (!buff) {
+                                res.status(404).send(get404Page(escapeHtml(`File ${filename}.zip not found`)));
+                            } else {
+                                // remove file
                                 // @ts-expect-error TODO: binary states have been removed
-                                this.adapter.delBinaryState(`system.host.${this.adapter.host}.zip.${filename}`);
-                            res.set('Content-Type', 'application/zip');
-                            res.send(buff);
+                                if (this.adapter.delBinaryState) {
+                                    // @ts-expect-error TODO: binary states have been removed
+                                    this.adapter.delBinaryState(`system.host.${this.adapter.host}.zip.${filename}`);
+                                }
+                                res.set('Content-Type', 'application/zip');
+                                res.send(buff);
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    res.status(501).send('Cannot get binary states');
+                }
             });
 
             // send log files
@@ -959,7 +969,7 @@ class Web {
 
                     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
                     let myFile: fileUpload.UploadedFile;
-                    // take first non-empty file
+                    // take the first non-empty file
                     for (const file of Object.values(req.files)) {
                         myFile = file as fileUpload.UploadedFile;
                         break;
@@ -1012,7 +1022,7 @@ class Web {
                 let url;
                 try {
                     url = decodeURIComponent(req.url);
-                } catch (e) {
+                } catch {
                     // ignore
                     url = req.url;
                 }
@@ -1089,7 +1099,7 @@ class Web {
                                 // @ts-expect-error types might be wrong
                                 const _mimeType = mime.getType(url);
                                 res.contentType(_mimeType || 'text/javascript');
-                            } catch (error) {
+                            } catch {
                                 res.contentType('text/javascript');
                             }
                         }
@@ -1104,7 +1114,7 @@ class Web {
                 let url;
                 try {
                     url = decodeURIComponent(req.url);
-                } catch (e) {
+                } catch {
                     // ignore
                     url = req.url;
                 }
@@ -1262,16 +1272,20 @@ class Web {
                 this.server.server = await webserver.init();
             } catch (err) {
                 this.adapter.log.error(`Cannot create web-server: ${err}`);
-                this.adapter.terminate
-                    ? this.adapter.terminate(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION)
-                    : process.exit(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                if (this.adapter.terminate) {
+                    this.adapter.terminate(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                } else {
+                    process.exit(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                }
                 return;
             }
             if (!this.server.server) {
                 this.adapter.log.error(`Cannot create web-server`);
-                this.adapter.terminate
-                    ? this.adapter.terminate(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION)
-                    : process.exit(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                if (this.adapter.terminate) {
+                    this.adapter.terminate(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                } else {
+                    process.exit(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                }
                 return;
             }
 
@@ -1279,9 +1293,11 @@ class Web {
             this.server.server.__server = this.server;
         } else {
             this.adapter.log.error('port missing');
-            this.adapter.terminate
-                ? this.adapter.terminate('port missing', utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION)
-                : process.exit(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+            if (this.adapter.terminate) {
+                this.adapter.terminate('port missing', utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+            } else {
+                process.exit(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+            }
         }
 
         this.adapter
@@ -1317,14 +1333,15 @@ class Web {
                         }
 
                         if (!serverListening) {
-                            this.adapter.terminate
-                                ? this.adapter.terminate(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION)
-                                : process.exit(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                            if (this.adapter.terminate) {
+                                this.adapter.terminate(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                            } else {
+                                process.exit(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
+                            }
                         }
                     });
 
-                    // @ts-expect-error fix later
-                    this.settings.port = parseInt(this.settings.port, 10) || 8081;
+                    this.settings.port = parseInt(this.settings.port as unknown as string, 10) || 8081;
                     serverPort = this.settings.port;
 
                     this.adapter.getPort(

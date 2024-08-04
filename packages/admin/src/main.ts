@@ -81,7 +81,7 @@ class Admin extends utils.Adapter {
     public declare config: AdminAdapterConfig;
 
     /** secret used for the socket connection */
-    private secret: string;
+    public secret: string;
 
     /** Timer to update repository */
     private timerRepo: NodeJS.Timeout;
@@ -128,12 +128,16 @@ class Admin extends utils.Adapter {
             if (id === 'system.config' && !this.config.language) {
                 if (obj.common?.language) {
                     systemLanguage = obj.common.language;
-                    webServer && webServer.setLanguage(systemLanguage);
+                    if (webServer) {
+                        webServer.setLanguage(systemLanguage);
+                    }
                 }
             }
 
             if (id === 'system.repositories' || id.match(/^system\.adapter\.[^.]+$/)) {
-                this.updaterTimeout && clearTimeout(this.updaterTimeout);
+                if (this.updaterTimeout) {
+                    clearTimeout(this.updaterTimeout);
+                }
                 this.updaterTimeout = setTimeout(() => {
                     this.updaterTimeout = null;
                     this.writeUpdateInfo();
@@ -147,11 +151,11 @@ class Admin extends utils.Adapter {
         }
 
         // TODO Build in some threshold of messages
-        socket && socket.objectChange(id, obj);
+        socket?.objectChange(id, obj);
     }
 
     /**
-     * Is called if a subscribed state changes
+     * Is called if a subscribed state was changed
      * @param id
      * @param state
      */
@@ -269,7 +273,9 @@ class Admin extends utils.Adapter {
             );
         }
 
-        socket && socket.sendCommand(obj);
+        if (socket) {
+            socket.sendCommand(obj);
+        }
     }
 
     /**
@@ -277,24 +283,32 @@ class Admin extends utils.Adapter {
      * @param callback
      */
     onUnload(callback: () => void): void {
-        this.timerRepo && clearTimeout(this.timerRepo);
-        this.timerRepo = null;
+        if (this.timerRepo) {
+            clearTimeout(this.timerRepo);
+            this.timerRepo = null;
+        }
 
-        this.timerNews && clearTimeout(this.timerNews);
-        this.timerNews = null;
+        if (this.timerNews) {
+            clearTimeout(this.timerNews);
+            this.timerNews = null;
+        }
 
-        this.ratingTimeout && clearTimeout(this.ratingTimeout);
-        this.ratingTimeout = null;
+        if (this.ratingTimeout) {
+            clearTimeout(this.ratingTimeout);
+            this.ratingTimeout = null;
+        }
 
-        this.updaterTimeout && clearTimeout(this.updaterTimeout);
-        this.updaterTimeout = null;
+        if (this.updaterTimeout) {
+            clearTimeout(this.updaterTimeout);
+            this.updaterTimeout = null;
+        }
 
         try {
             this.log.info(`terminating http${this.config.secure ? 's' : ''} server on port ${this.config.port}`);
-            socket && socket.close();
+            socket?.close();
             webServer.close();
             callback();
-        } catch (e) {
+        } catch {
             callback();
         }
     }
@@ -531,7 +545,7 @@ class Admin extends utils.Adapter {
                         }
                     });
                 }
-                !found &&
+                if (!found) {
                     this.log.warn(
                         `No repository source configured. Possible values: ${
                             systemRepos?.native?.repositories
@@ -539,6 +553,7 @@ class Admin extends utils.Adapter {
                                 : 'none'
                         }. Active repo(s): "${activeRepo.join('", "')}"`
                     );
+                }
             } else if (systemRepos?.native?.repositories?.[activeRepo]) {
                 this.log.warn(`Repository cannot be read. Active repo: ${activeRepo}`);
             } else {
@@ -734,7 +749,9 @@ class Admin extends utils.Adapter {
 
         Promise.all(promises).then(results => {
             const len = results.filter(r => !!r).length;
-            len && this.log.info(`Updated ${len} objects`);
+            if (len) {
+                this.log.info(`Updated ${len} objects`);
+            }
         });
     }
 
@@ -742,7 +759,9 @@ class Admin extends utils.Adapter {
      * Read news from server and register them as notifications
      */
     async updateNews(): Promise<void> {
-        this.timerNews && clearTimeout(this.timerNews);
+        if (this.timerNews) {
+            clearTimeout(this.timerNews);
+        }
         this.timerNews = null;
 
         this.checkNodeJsVersion().catch(e => this.log.warn(`Cannot check node.js versions: ${e}`));
@@ -984,14 +1003,14 @@ class Admin extends utils.Adapter {
             const vers = condition.substring(7, condition.length - 1).trim();
             try {
                 return semver.gt(vers, installedVersion);
-            } catch (e) {
+            } catch {
                 return false;
             }
         } else if (condition.startsWith('smaller')) {
             const vers = condition.substring(8, condition.length - 1).trim();
             try {
                 return semver.lt(installedVersion, vers);
-            } catch (e) {
+            } catch {
                 return false;
             }
         } else if (condition.startsWith('between')) {
@@ -999,7 +1018,7 @@ class Admin extends utils.Adapter {
             const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
             try {
                 return semver.gte(installedVersion, vers1) && semver.lte(installedVersion, vers2);
-            } catch (e) {
+            } catch {
                 return false;
             }
         } else {
@@ -1271,7 +1290,7 @@ class Admin extends utils.Adapter {
             for (const [key, value] of Object.entries(result)) {
                 await this.setForeignStateAsync(`${prefix}.${key}`, value.replace(/^v/, ''), true);
             }
-        } catch (error) {
+        } catch {
             this.log.warn('Cannot check node.js/npm version');
         }
     }
@@ -1287,7 +1306,9 @@ class Admin extends utils.Adapter {
                 for (const row of res.rows) {
                     objects[row.doc._id] = row.doc as ioBroker.StateObject;
                     if (row.doc.type === 'instance' && row.doc.common?.tmpPath) {
-                        tmpPath && this.log.warn('tmpPath has multiple definitions!!');
+                        if (tmpPath) {
+                            this.log.warn('tmpPath has multiple definitions!!');
+                        }
                         tmpPath = row.doc.common.tmpPath;
                     }
                 }
@@ -1301,7 +1322,9 @@ class Admin extends utils.Adapter {
                 this.createUpdateInfo().then(() => this.writeUpdateInfo());
             }
 
-            callback && callback(this);
+            if (callback) {
+                callback(this);
+            }
         });
     }
 
@@ -1350,7 +1373,7 @@ class Admin extends utils.Adapter {
                                             }
                                         }
                                     }
-                                } catch (e) {
+                                } catch {
                                     this.log.error(
                                         `Cannot check revoked versions: ${repository[_adapter].blockedVersions[i]}`
                                     );
@@ -1397,7 +1420,10 @@ class Admin extends utils.Adapter {
     restartRepoUpdate(): void {
         // start the next cycle
         if (this.config.autoUpdate) {
-            this.timerRepo && clearTimeout(this.timerRepo);
+            if (this.timerRepo) {
+                clearTimeout(this.timerRepo);
+                this.timerRepo = null;
+            }
             this.log.debug(
                 `Next repo update on ${new Date(
                     Date.now() + this.config.autoUpdate * ONE_HOUR_MS + 1
@@ -1453,7 +1479,9 @@ class Admin extends utils.Adapter {
         lastRepoUpdate = Date.now();
 
         this.getForeignObject('system.config', async (err, systemConfig) => {
-            err && this.log.error('May not read "system.config"');
+            if (err) {
+                this.log.error('May not read "system.config"');
+            }
 
             if (systemConfig?.common) {
                 try {
@@ -1510,7 +1538,7 @@ class Admin extends utils.Adapter {
                                 } else {
                                     this.log.info('Repository received successfully.');
 
-                                    socket && socket.repoUpdated();
+                                    socket?.repoUpdated();
                                     this.checkRevokedVersions(
                                         _repository as unknown as Record<string, ioBroker.RepositoryJsonAdapterContent>
                                     ).catch(e => this.log.error(`Cannot check revoked versions: ${e}`));
@@ -1526,14 +1554,16 @@ class Admin extends utils.Adapter {
                             interval = 0x7fffffff;
                         }
                         this.log.debug(`Next repo update on ${new Date(Date.now() + interval).toLocaleString()}`);
-                        this.timerRepo && clearTimeout(this.timerRepo);
+                        if (this.timerRepo) {
+                            clearTimeout(this.timerRepo);
+                        }
                         this.timerRepo = setTimeout(() => {
                             this.timerRepo = null;
                             this.updateRegister();
                         }, interval);
                     }
                 } catch (err) {
-                    err && this.log.error(`May not read "system.repositories": ${err}`);
+                    this.log.error(`May not read "system.repositories": ${err}`);
                 }
             }
         });

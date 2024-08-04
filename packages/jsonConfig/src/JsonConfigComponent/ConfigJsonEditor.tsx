@@ -37,6 +37,7 @@ interface ConfigJsonEditorProps extends ConfigGenericProps {
 interface ConfigJsonEditorState extends ConfigGenericState {
     initialized?: boolean;
     showSelectId?: boolean;
+    jsonError?: boolean;
 }
 
 class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEditorState> {
@@ -44,7 +45,23 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
         super.componentDidMount();
         const { data, attr } = this.props;
         const value = ConfigGeneric.getValue(data, attr) || {};
-        this.setState({ value, initialized: true });
+        this.setState({ value, initialized: true, jsonError: this.validateJson(value) });
+    }
+
+    validateJson(value: string | null | undefined) {
+        let jsonError = false;
+        if (this.props.schema.validateJson !== false) {
+            if (value || !this.props.schema.allowEmpty) {
+                try {
+                    JSON.parse(value);
+                } catch (err: unknown) {
+                    console.log('Error in JSON', err);
+                    jsonError = true;
+                }
+            }
+        }
+
+        return jsonError;
     }
 
     renderItem(/* _error: string, _disabled: boolean, defaultValue */) {
@@ -76,17 +93,17 @@ class ConfigJsonEditor extends ConfigGeneric<ConfigJsonEditorProps, ConfigJsonEd
                     this.setState({ showSelectId: false, value: ConfigGeneric.getValue(data, attr) || {} })}
                 onApply={() => this.setState({ showSelectId: false }, () => this.onChange(attr, value))}
             >
-                <div style={styles.wrapper}>
+                <div style={{ ...styles.wrapper, ...(this.state.jsonError ? {} : undefined) }}>
                     <Editor
                         value={typeof value === 'object' ? JSON.stringify(value) : value}
-                        onChange={newValue => this.setState({ value: newValue })}
+                        onChange={newValue => this.setState({ value: newValue, jsonError: this.validateJson(newValue) })}
                         name="ConfigJsonEditor"
                         themeType={this.props.themeType}
                     />
                 </div>
             </CustomModal> : null}
-            {schema.help ? <FormHelperText>
-                {this.renderHelp(
+            {schema.help || this.state.jsonError ? <FormHelperText>
+                {this.state.jsonError ? I18n.t('ra_Invalid JSON') : this.renderHelp(
                     this.props.schema.help,
                     this.props.schema.helpLink,
                     this.props.schema.noTranslation,

@@ -184,7 +184,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         if (this.localStorage.getItem('Instances.expandedFolder')) {
             try {
                 expandedFolder = JSON.parse(this.localStorage.getItem('Instances.expandedFolder'));
-            } catch (e) {
+            } catch {
                 // ignore
             }
         }
@@ -263,7 +263,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
         this.props.instancesWorker.registerHandler(this.getInstances);
         await this.updateData();
         const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
-        deleteCustomSupported && this.setState({ deleteCustomSupported });
+        if (deleteCustomSupported) {
+            this.setState({ deleteCustomSupported });
+        }
     }
 
     async updateData() {
@@ -482,7 +484,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 playArrow = 0;
             }
             filterCompactGroup = JSON.parse(this.localStorage.getItem('Instances.filterCompactGroup'));
-        } catch (error) {
+        } catch {
             // ignore
         }
 
@@ -537,8 +539,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
         this.states[id] = state;
         if ((!oldState && state) || (oldState && !state) || (oldState && state && oldState.val !== state.val)) {
             if (this.state.dialog === 'config' && this.state.dialogProp) {
-                this.statesUpdateTimer && clearTimeout(this.statesUpdateTimer);
-                this.statesUpdateTimer = null;
+                if (this.statesUpdateTimer) {
+                    clearTimeout(this.statesUpdateTimer);
+                    this.statesUpdateTimer = null;
+                }
                 this.shouldUpdateAfterDialogClosed = true;
             } else if (!this.statesUpdateTimer) {
                 this.statesUpdateTimer = setTimeout(() => {
@@ -982,7 +986,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
     }
 
     handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
-        this.typingTimer && clearTimeout(this.typingTimer);
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+        }
 
         this.typingTimer = setTimeout(value => {
             this.typingTimer = null;

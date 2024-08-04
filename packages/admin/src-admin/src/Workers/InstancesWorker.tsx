@@ -136,7 +136,9 @@ export default class InstancesWorker {
 
     unregisterHandler(cb: (events: InstanceEvent[]) => void) {
         const pos = this.handlers.indexOf(cb);
-        pos !== -1 && this.handlers.splice(pos, 1);
+        if (pos !== -1) {
+            this.handlers.splice(pos, 1);
+        }
 
         if (!this.handlers.length && this.connected) {
             this.socket.unsubscribeObject('system.adapter.*', this.objectChangeHandler)

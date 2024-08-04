@@ -22,6 +22,7 @@ module.exports = {
         sourceType: 'module',
     },
     plugins: [
+        '@typescript-eslint',
         'react',
         'only-warn',
         'react-hooks',

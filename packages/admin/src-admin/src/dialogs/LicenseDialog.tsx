@@ -94,7 +94,8 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
             installTimer.current = null;
             divMarkdown.onscroll = (event: Event) => {
                 const div: HTMLDivElement = event.target as HTMLDivElement;
-                const _scrolled = div.scrollTop + div.clientHeight >= div.scrollHeight;
+                // give 10 pixels tolerance for MS-edge
+                const _scrolled = div.scrollTop + div.clientHeight >= div.scrollHeight - 10;
                 if (!scrolled && _scrolled) {
                     setScrolled(_scrolled);
                 }
@@ -111,14 +112,16 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
                     installTimer.current = installTimer.current || setInterval(() => installOnscroll(), 100);
                 }
             } else if (preRef.current) {
-                if (preRef.current.scrollHeight <= preRef.current.clientHeight) {
+                // give 10 pixels tolerance for MS-edge
+                if (preRef.current.scrollHeight - 10 <= preRef.current.clientHeight) {
                     setScrolled(true);
                 }
             } else {
                 // check in 100 ms the existence of the preRef
                 setTimeout(() => {
                     if (preRef.current) {
-                        if (preRef.current.scrollHeight <= preRef.current.clientHeight) {
+                        // give 10 pixels tolerance for MS-edge
+                        if (preRef.current.scrollHeight - 10 <= preRef.current.clientHeight) {
                             setScrolled(true);
                         }
                     } else {
@@ -183,8 +186,9 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
                 ref={preRef}
                 onScroll={() => {
                     if (preRef.current) {
+                        // give 10 pixels tolerance for MS-edge
                         const _scrolled =
-                            preRef.current.scrollTop + preRef.current.clientHeight >= preRef.current.scrollHeight;
+                            preRef.current.scrollTop + preRef.current.clientHeight >= preRef.current.scrollHeight - 10;
                         if (!scrolled && _scrolled) {
                             setScrolled(_scrolled);
                         }

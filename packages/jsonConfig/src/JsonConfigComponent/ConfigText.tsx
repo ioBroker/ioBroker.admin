@@ -40,6 +40,7 @@ interface ConfigTextProps extends ConfigGenericProps {
 
 interface ConfigTextState extends ConfigGenericState {
     oldValue?: string;
+    jsonError?: boolean;
 }
 
 class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
@@ -51,11 +52,27 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
 
         if (Array.isArray(value) && this.props.multiEdit) {
             value = ConfigGeneric.DIFFERENT_VALUE;
-            this.setState({ value, oldValue: value });
+            this.setState({ value, oldValue: value, jsonError: false });
             return;
         }
 
-        this.setState({ value, oldValue: value });
+        this.setState({ value, oldValue: value, jsonError: this.validateJson(value) });
+    }
+
+    validateJson(value: string | null | undefined) {
+        let jsonError = false;
+        if (this.props.schema.validateJson) {
+            if (value || !this.props.schema.allowEmpty) {
+                try {
+                    JSON.parse(value);
+                } catch (err: unknown) {
+                    console.log('Error in JSON', err);
+                    jsonError = true;
+                }
+            }
+        }
+
+        return jsonError;
     }
 
     static getDerivedStateFromProps(props: ConfigTextProps, state: ConfigTextState) {
@@ -104,7 +121,7 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                 onChange={(_, value) =>  {
                     const val = value ? value.value : '';
                     this.onChange(this.props.attr, val, () => {
-                        this.setState({ value: val, oldValue: val });
+                        this.setState({ value: val, oldValue: val, jsonError: this.validateJson(value) });
                     });
                 }}
                 options={arr}
@@ -144,19 +161,19 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
                     readOnly={this.props.schema.readOnly || false}
                     onChange={e => {
                         const value = e.target.value;
-                        this.setState({ value, oldValue: this.state.value }, () =>
+                        this.setState({ value, oldValue: this.state.value, jsonError: this.validateJson(value) }, () =>
                             this.onChange(this.props.attr, value || ''));
                     }}
                     placeholder={this.getText(this.props.schema.placeholder)}
                 />
-                {helper || error ? <div style={error ? styles.error : styles.helper}>{error || helper}</div> : null}
+                {helper || error || this.state.jsonError ? <div style={error ? styles.error : styles.helper}>{error || (this.state.jsonError ? I18n.t('ra_Invalid JSON') : helper)}</div> : null}
             </div>;
         }
         return <TextField
             variant="standard"
             fullWidth
             value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
-            error={!!error}
+            error={!!error || !!this.state.jsonError}
             disabled={!!disabled}
             inputProps={{
                 maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
@@ -176,12 +193,14 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
             }}
             onChange={e => {
                 const value = e.target.value;
-                this.setState({ value, oldValue: this.state.value }, () =>
+
+                this.setState({ value, oldValue: this.state.value, jsonError: this.validateJson(value) }, () =>
                     this.onChange(this.props.attr, value));
             }}
             placeholder={this.getText(this.props.schema.placeholder)}
             label={this.getText(this.props.schema.label)}
-            helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+            helperText={this.state.jsonError ? I18n.t('ra_Invalid JSON') :
+                this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
         />;
     }
 }

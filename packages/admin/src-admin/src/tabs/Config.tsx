@@ -256,7 +256,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                     try {
                         connected = await this.props.socket.getState(`${this.props.adapter}.${this.props.instance}.info.connection`);
                         this.props.socket.subscribeState(`${this.props.adapter}.${this.props.instance}.info.connection`, this.onStateChange);
-                    } catch (error) {
+                    } catch {
                         // ignore
                         connected = null;
                     }
@@ -265,7 +265,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                     try {
                         extension = await this.props.socket.getState(`${this.props.adapter}.${this.props.instance}.info.extension`);
                         this.props.socket.subscribeState(`${this.props.adapter}.${this.props.instance}.info.extension`, this.onStateChange);
-                    } catch (error) {
+                    } catch {
                         // ignore
                         extension = null;
                     }
@@ -361,7 +361,9 @@ class Config extends Component<ConfigProps, ConfigState> {
 
         (window.removeEventListener || window.detachEvent)(window.addEventListener ? 'message' : 'onmessage', (event: MessageEvent & { message: string }) => this.closeConfig(event), false);
 
-        this.registered && this.refIframe && this.props.onUnregisterIframeRef(this.refIframe);
+        if (this.registered && this.refIframe) {
+            this.props.onUnregisterIframeRef(this.refIframe);
+        }
         this.refIframe = null;
     }
 
@@ -444,11 +446,13 @@ class Config extends Component<ConfigProps, ConfigState> {
             text={this.props.t('stop_admin', this.props.instance)}
             ok={this.props.t('Stop admin')}
             onClose={result => {
-                result && this.props.socket.extendObject(
-                    `system.adapter.${this.props.adapter}.${this.props.instance}`,
-                    { common: { enabled: false } },
-                )
-                    .catch(error => window.alert(error));
+                if (result) {
+                    this.props.socket.extendObject(
+                        `system.adapter.${this.props.adapter}.${this.props.instance}`,
+                        { common: { enabled: false } },
+                    )
+                        .catch(error => window.alert(error));
+                }
                 this.setState({ showStopAdminDialog: false });
             }}
         /> : null;

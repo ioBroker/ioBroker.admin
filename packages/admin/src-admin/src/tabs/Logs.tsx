@@ -615,7 +615,7 @@ class Logs extends Component<LogsProps, LogsState> {
     };
 
     clearLog() {
-        this.props.logsWorker && this.props.logsWorker.clearLines();
+        this.props.logsWorker?.clearLines();
         this.props.clearErrors();
         this.setState({
             logs: [], logSize: null, logErrors: 0, logWarnings: 0,
@@ -825,7 +825,7 @@ class Logs extends Component<LogsProps, LogsState> {
         if (options.length > 0 && this.scrollToEnd) {
             setTimeout(() => {
                 const el = document.getElementById('endOfLog');
-                el && el.scrollIntoView();
+                el?.scrollIntoView();
             }, 200);
             this.scrollToEnd = false;
         }
@@ -962,7 +962,7 @@ class Logs extends Component<LogsProps, LogsState> {
                         setTimeout(() => {
                             // scroll to endOfLog
                             const element = document.getElementById('endOfLog');
-                            element && element.scrollIntoView();
+                            element?.scrollIntoView();
                         }, 500);
                     }}
                     color={!this.state.reverse ? 'default' : 'primary'}

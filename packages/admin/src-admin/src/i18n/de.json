@@ -41,6 +41,7 @@
   "Adapter does not use the cloud for these devices/service": "Der Adapter verwendet die Cloud nicht für diese Geräte / Dienste",
   "Adapter requires the specific cloud access for these devices/service": "Der Adapter erfordert den spezifischen Cloud-Zugriff für diese Geräte / Dienste",
   "Adapter settings for %s states": "Adaptereinstellungen für %s Zustände",
+  "Adapter warnings": "Adapterwarnungen",
   "Adapters": "Adapter",
   "Adapters from this Group installed": "Adapter aus dieser Gruppe installiert",
   "Add": "Hinzufügen",
@@ -1203,6 +1204,7 @@
   "You can set the log level permanently in the base host settings": "Sie können die Protokollstufe dauerhaft in den Host-Basiseinstellungen festlegen",
   "You can't see events via cloud": "Sie können keine Ereignisse über die Cloud sehen",
   "You cannot delete host, when it is alive": "Sie können den Host nicht löschen, wenn er aktiv ist",
+  "repo_update_hint": "Sie haben die Ausführung automatischer Upgrades für das „Beta“-Repository konfiguriert.\nBeachten Sie, dass dieser Adapter, wenn das Beta-Repository aktiv ist, Beta-Updates entsprechend dieser Konfiguration automatisch einbindet!",
   "You have unread news!": "Es gibt ungelesene Benachrichtigungen!",
   "You have unsaved changes": "Du hast nicht gespeicherte Änderungen",
   "You must set the administrator password": "Sie müssen das Administratorpasswort festlegen",
@@ -1613,5 +1615,16 @@
   "write": "schreiben",
   "write operation": "schreiben",
   "wrongPassword": "Benutzername oder Passwort sind falsch",
-  "yesterday": "gestern"
+  "yesterday": "gestern",
+  "Filter adapters to see others. There is %s more": "Filtern Sie Adapter, um andere anzuzeigen. Es gibt %s mehr",
+  "Enter version manually": "Version manuell eingeben",
+  "Or select from the list": "Oder aus der Liste wählen",
+  "Source (show all)": "Quelle (alle anzeigen)",
+  "Requesting data...": "Daten anfordern...",
+  "Show sent statistics data": "Gesendete Statistikdaten anzeigen",
+  "The sent data will only be processed by ioBroker GmbH for statistical purposes and will not be shared with any third parties.": "Die übermittelten Daten werden von der ioBroker GmbH ausschließlich zu statistischen Zwecken ausgewertet und nicht an Dritte weitergegeben.",
+  "Next": "Weiter",
+  "Install selected adapters": "Ausgewählte Adapter installieren",
+  "More info": "Mehr Info",
+  "Read to the end for accept": "Zum Akzeptieren bis zum Ende lesen"
 }

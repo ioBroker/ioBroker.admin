@@ -83,7 +83,9 @@ export default class LogsWorker {
             if (!this.countErrors) {
                 const errors = this.errors;
                 this.errors = 0;
-                errors && this.errorCountHandlers.forEach(handler => handler && handler(errors));
+                if (errors) {
+                    this.errorCountHandlers.forEach(handler => handler && handler(errors));
+                }
             }
         }
     }
@@ -364,8 +366,12 @@ export default class LogsWorker {
                 // inform subscribes about each line
                 this.handlers.forEach(cb => cb && cb(this.logs, logSize));
 
-                oldErrors !== this.errors && this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
-                oldWarnings !== this.warnings && this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+                if (oldErrors !== this.errors) {
+                    this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
+                }
+                if (oldWarnings !== this.warnings) {
+                    this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+                }
 
                 return { logs: this.logs, logSize };
             })

@@ -8,7 +8,8 @@ import {
     IconButton, Tooltip,
     Typography, Rating, Grid,
     Link, TextField,
-    InputAdornment, Button, Card, CardContent, Box,
+    InputAdornment, Button,
+    Card, CardContent, Box,
 } from '@mui/material';
 
 import {
@@ -38,7 +39,6 @@ import RatingDialog, { type RatingDialogRepository } from '@/dialogs/RatingDialo
 import AdapterDeletionDialog from '@/dialogs/AdapterDeletionDialog';
 import AdminUtils from '@/AdminUtils';
 import AdapterInstallDialog, {
-    type AdapterInstallDialogProps,
     type AdapterInstallDialogState,
     type AdapterRating,
     type AdapterRatingInfo,
@@ -153,7 +153,7 @@ export type AdapterCacheEntry = {
     daysAgoText: string;
 };
 
-export interface AdapterGenericProps extends AdapterInstallDialogProps {
+export interface AdapterGenericProps {
     /** adapter name id without 'system.adapter.' */
     adapterName: string;
     /** Same information for every adapter */
@@ -761,7 +761,7 @@ export default abstract class AdapterGeneric<TProps extends AdapterGenericProps,
                             news: text,
                         });
                     }
-                } catch (e) {
+                } catch {
                     // ignore it
                     console.warn(`[ADAPTERS] Cannot compare "${version}" and "${installed.version}" (${this.props.adapterName})`);
                 }

@@ -58,7 +58,6 @@ import AdapterInstallDialog, {
     type InstalledInfo,
     type AdaptersContext,
     type AdapterInstallDialogState,
-    type AdapterInstallDialogProps,
 } from '@/components/Adapters/AdapterInstallDialog';
 import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
 import type { AdminGuiConfig } from '@/types';
@@ -174,7 +173,7 @@ const FILTERS: { name: string; notByList?: boolean }[] = [
     { name: 'Recently updated', notByList: true },
 ];
 
-interface AdaptersProps extends AdapterInstallDialogProps {
+interface AdaptersProps {
     t: Translate;
     /** The host ID of the admin adapter, like system.host.test */
     adminHost: string;
@@ -369,7 +368,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     async componentDidMount() {
         if (this.props.ready) {
             await this.updateAll();
-            this.state.search && this.filterAdapters();
+            if (this.state.search) {
+                this.filterAdapters();
+            }
             this.props.adaptersWorker.registerHandler(this.onAdaptersChanged);
             this.props.instancesWorker.registerHandler(this.onAdaptersChanged);
         }
@@ -391,17 +392,25 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     }
 
     componentWillUnmount() {
-        this.updateTimeout && clearTimeout(this.updateTimeout);
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
         this.updateTimeout = null;
 
-        this.buildCacheTimer && clearTimeout(this.buildCacheTimer);
-        this.buildCacheTimer = null;
+        if (this.buildCacheTimer) {
+            clearTimeout(this.buildCacheTimer);
+            this.buildCacheTimer = null;
+        }
 
-        this.typingTimer && clearTimeout(this.typingTimer);
-        this.typingTimer = null;
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+            this.typingTimer = null;
+        }
 
-        this.hostsTimer && clearTimeout(this.hostsTimer);
-        this.hostsTimer = null;
+        if (this.hostsTimer) {
+            clearTimeout(this.hostsTimer);
+            this.hostsTimer = null;
+        }
 
         this.props.adaptersWorker.unregisterHandler(this.onAdaptersChanged);
         this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
@@ -451,7 +460,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             }
         });
 
-        this.updateTimeout && clearTimeout(this.updateTimeout);
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
         this.updateTimeout = setTimeout(() => {
             const adapters = this.tempAdapters;
             this.tempAdapters = null;
@@ -548,7 +559,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 window.alert(
                     `Cannot getInstalled from "${host._id}" (timeout ${this.state.readTimeoutMs}ms): ${e}`,
                 );
-                e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+                if (e.toString().includes('timeout')) {
+                    this.setState({ showSlowConnectionWarning: true });
+                }
             }
         }
 
@@ -590,7 +603,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                 );
         } catch (e)  {
             window.alert(`Cannot getRepository: ${e}`);
-            e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+            if (e.toString().includes('timeout')) {
+                this.setState({ showSlowConnectionWarning: true });
+            }
         }
 
         return this.analyseInstalled({
@@ -740,7 +755,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
         try {
             categoriesExpanded =
                 JSON.parse(((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.expandedCategories')) || {};
-        } catch (error) {
+        } catch {
             // ignore
         }
 
@@ -865,7 +880,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             if (installedList === false) {
                 installedList = 0;
             }
-        } catch (error) {
+        } catch {
             // ignore
         }
         const oneListView = ((window as any)._localStorage as Storage || window.localStorage).getItem('Adapters.list') === 'true';
@@ -999,7 +1014,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                                         })
                                         : true
                                     : false;
-                            } catch (e) {
+                            } catch {
                                 result = true;
                             }
                         }
@@ -1019,7 +1034,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
                                         })
                                         : true
                                     : false;
-                            } catch (e) {
+                            } catch {
                                 result = true;
                             }
                         }
@@ -1032,7 +1047,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             if (result && nodeVersion) {
                 try {
                     result = semver.satisfies(this.state.nodeJsVersion, nodeVersion);
-                } catch (e) {
+                } catch {
                     result = true;
                 }
             }
@@ -1055,7 +1070,9 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
     }
 
     handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
-        this.typingTimer && clearTimeout(this.typingTimer);
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+        }
 
         this.typingTimer = setTimeout(
             value => {

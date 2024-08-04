@@ -72,12 +72,14 @@ const UserEditDialog: React.FC<UserEditDialogProps> = props => {
         if (props.isNew) {
             const icon = USER_ICONS[Math.round(Math.random() * (USER_ICONS.length - 1))];
 
-            icon && Utils.getSvg(icon)
-                .then((fileBlob: string) => {
-                    const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
-                    newData.common.icon = fileBlob;
-                    props.onChange(newData);
-                });
+            if (icon) {
+                Utils.getSvg(icon)
+                    .then((fileBlob: string) => {
+                        const newData: ioBroker.UserObject = Utils.clone(props.user) as ioBroker.UserObject;
+                        newData.common.icon = fileBlob;
+                        props.onChange(newData);
+                    });
+            }
         }
     }, []);
 
