@@ -208,8 +208,12 @@ class BaseSettingsStates extends Component<BaseSettingsStatesProps, BaseSettings
         this.props.socket.getIpAddresses(this.props.currentHost)
             .then(_IPs => {
                 const IPs = [..._IPs];
-                !IPs.includes('0.0.0.0') && IPs.push('0.0.0.0');
-                !IPs.includes('127.0.0.1') && IPs.push('127.0.0.1');
+                if (!IPs.includes('0.0.0.0')) {
+                    IPs.push('0.0.0.0');
+                }
+                if (!IPs.includes('127.0.0.1')) {
+                    IPs.push('127.0.0.1');
+                }
                 let textIP: boolean = !!this.state.host.match(/[^.\d]/) || (this.state.host || '').includes(',');
                 if (!textIP && !IPs.includes(this.state.host)) {
                     textIP = true;

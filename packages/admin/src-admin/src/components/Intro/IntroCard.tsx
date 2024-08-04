@@ -360,8 +360,12 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                     <IconButton
                                         size="small"
                                         onClick={() => {
-                                            this.props.getHostDescriptionAll && Utils.copyToClipboard(this.props.getHostDescriptionAll().text);
-                                            this.props.openSnackBarFunc && this.props.openSnackBarFunc();
+                                            if (this.props.getHostDescriptionAll) {
+                                                Utils.copyToClipboard(this.props.getHostDescriptionAll().text);
+                                            }
+                                            if (this.props.openSnackBarFunc) {
+                                                this.props.openSnackBarFunc();
+                                            }
                                         }}
                                     >
                                         <SaveIcon />

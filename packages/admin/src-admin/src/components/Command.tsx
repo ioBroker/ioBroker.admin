@@ -195,7 +195,9 @@ class Command extends Component<CommandProps, CommandState> {
                         this.props.socket.getObject(_adapter)
                             .then(obj => {
                                 AdminUtils.fixAdminUI(obj);
-                                obj && obj.common?.adminUI?.config !== 'none' && Router.doNavigate('tab-instances', 'config', _adapter);
+                                if (obj && obj.common?.adminUI?.config !== 'none') {
+                                    Router.doNavigate('tab-instances', 'config', _adapter);
+                                }
                             });
                     }, 1000, adapter);
                 }
@@ -203,11 +205,17 @@ class Command extends Component<CommandProps, CommandState> {
             log.push(`${exitCode !== 0 ? 'ERROR: ' : ''}Process exited with code ${exitCode}`);
 
             this.setState({ log, stopped: true }, () => {
-                this.props.onSetCommandRunning && this.props.onSetCommandRunning(false);
+                if (this.props.onSetCommandRunning) {
+                    this.props.onSetCommandRunning(false);
+                }
                 if (exitCode !== 0 || this.state.log[this.state.log.length - 1].toLowerCase().includes('error')) {
-                    this.props.errorFunc && this.props.errorFunc(exitCode, this.state.log);
+                    if (this.props.errorFunc) {
+                        this.props.errorFunc(exitCode, this.state.log);
+                    }
                 } else {
-                    this.props.performed && this.props.performed();
+                    if (this.props.performed) {
+                        this.props.performed();
+                    }
                     this.props.onFinished(exitCode, this.state.log);
                 }
                 console.log('cmdExit');

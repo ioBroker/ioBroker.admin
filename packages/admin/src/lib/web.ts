@@ -68,6 +68,7 @@ let socketIoFile: false | string;
 /** UUID of the installation */
 let uuid: string;
 const page404 = fs.readFileSync(`${__dirname}/../../public/404.html`).toString('utf8');
+const logTemplate = fs.readFileSync(`${__dirname}/../../public/logTemplate.html`).toString('utf8');
 // const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g; // with space
 const ONE_MONTH_SEC = 30 * 24 * 3_600;
 
@@ -243,9 +244,8 @@ class Web {
     }
 
     decorateLogFile(filename: string, text?: string): string {
-        const template = fs.readFileSync(`${__dirname}/logTemplate.html`).toString('utf8');
         const log = text || fs.readFileSync(filename).toString();
-        return template.replace('@@title@@', path.parse(filename).name).replace('@@body@@', log);
+        return logTemplate.replace('@@title@@', path.parse(filename).name).replace('@@body@@', log);
     }
 
     setLanguage(lang: ioBroker.Languages): void {
@@ -425,7 +425,7 @@ class Web {
                 res.send(text);
             } else {
                 res.header('Content-Type', 'text/html');
-                res.send(this.decorateLogFile(null, text));
+                res.send(this.decorateLogFile(filename, text));
             }
         } catch (e) {
             res.header('Content-Type', 'application/gzip');
@@ -810,7 +810,7 @@ class Web {
                             } else {
                                 res.header('Content-Type', 'text/html');
                                 // @ts-expect-error fix later
-                                res.send(this.decorateLogFile(null, result.data));
+                                res.send(this.decorateLogFile(filename, result.data));
                             }
                         }
                     });

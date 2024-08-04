@@ -825,7 +825,7 @@ class App extends Router<AppProps, AppState> {
         let state;
         try {
             state = await this.socket.getState(`system.adapter.${this.adminInstance}.guiSettings`);
-        } catch (e) {
+        } catch {
             state = { val: false };
         }
         if (state?.val) {
@@ -1342,7 +1342,9 @@ class App extends Router<AppProps, AppState> {
             }
         });
 
-        changed && this.setState({ installed });
+        if (changed) {
+            this.setState({ installed });
+        }
     };
 
     async findCurrentHost(newState: Partial<AppState>) {
@@ -1418,8 +1420,10 @@ class App extends Router<AppProps, AppState> {
      * Start interval to handle logout after the session expires, this also refreshes the session
      */
     async makePingAuth() {
-        this.pingAuth && clearTimeout(this.pingAuth);
-        this.pingAuth = null;
+        if (this.pingAuth) {
+            clearTimeout(this.pingAuth);
+            this.pingAuth = null;
+        }
 
         try {
             const data = await this.socket.getCurrentSession();
@@ -1568,7 +1572,7 @@ class App extends Router<AppProps, AppState> {
                 let news = null;
                 try {
                     news = JSON.parse(newsFeed.val as string);
-                } catch (error) {
+                } catch {
                     console.error(`Cannot parse news: ${newsFeed.val}`);
                 }
 
@@ -1624,7 +1628,9 @@ class App extends Router<AppProps, AppState> {
             newsArr={this.state.showNews.checkNews}
             current={this.state.showNews.lastNewsId}
             onSetLastNewsId={async id => {
-                id && (await this.socket.setState(`admin.${this.newsInstance}.info.newsLastId`, { val: id, ack: true }));
+                if (id) {
+                    await this.socket.setState(`admin.${this.newsInstance}.info.newsLastId`, { val: id, ack: true });
+                }
                 this.setState({ showNews: null });
             }}
         />;
@@ -1660,14 +1666,18 @@ class App extends Router<AppProps, AppState> {
             .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
             .catch(e => {
                 window.alert(`Cannot getRepositoryCompact: ${e}`);
-                e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+                if (e.toString().includes('timeout')) {
+                    this.setState({ showSlowConnectionWarning: true });
+                }
                 return {};
             });
 
         const installed: CompactInstalledInfo = await this.socket.getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
             .catch(e => {
                 window.alert(`Cannot getInstalled: ${e}`);
-                e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
+                if (e.toString().includes('timeout')) {
+                    this.setState({ showSlowConnectionWarning: true });
+                }
                 return {};
             });
 
@@ -1677,11 +1687,13 @@ class App extends Router<AppProps, AppState> {
                 return {} as Record<string, CompactAdapterInfo>;
             });
 
-        installed && adapters && Object.keys(adapters).forEach(id => {
-            if (installed[id] && adapters[id].iv) {
-                installed[id].ignoreVersion = adapters[id].iv;
-            }
-        });
+        if (installed && adapters) {
+            Object.keys(adapters).forEach(id => {
+                if (installed[id] && adapters[id].iv) {
+                    installed[id].ignoreVersion = adapters[id].iv;
+                }
+            });
+        }
 
         this.setState({
             repository,
@@ -1692,7 +1704,7 @@ class App extends Router<AppProps, AppState> {
     }
 
     logsWorkerChanged = (currentHost: string) => {
-        this.logsWorker && this.logsWorker.setCurrentHost(currentHost);
+        this.logsWorker?.setCurrentHost(currentHost);
     };
 
     /**

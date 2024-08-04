@@ -67,7 +67,7 @@ class BaseSettingsPlugins extends Component<BaseSettingsPluginsProps, BaseSettin
             }
 
             this.setState(newState, () => this.props.onChange(settings));
-        } catch (e) {
+        } catch {
             newState.error = true;
             this.setState(newState);
         }

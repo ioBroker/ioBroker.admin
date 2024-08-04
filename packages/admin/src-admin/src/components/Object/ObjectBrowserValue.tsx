@@ -237,8 +237,10 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
     }
 
     onUpdate(e: React.KeyboardEvent | React.MouseEvent) {
-        e && e.stopPropagation();
-        e && e.preventDefault();
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
 
         let value = this.state.targetValue;
         if (this.state.type === 'states') {
@@ -355,7 +357,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         try {
             JSON.parse(value);
             return false;
-        } catch (e) {
+        } catch {
             return true;
         }
     }

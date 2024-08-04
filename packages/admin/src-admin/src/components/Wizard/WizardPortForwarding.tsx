@@ -86,7 +86,7 @@ class WizardPortForwarding extends Component<WizardPortForwardingProps, WizardPo
     }
 
     componentDidMount() {
-        this.focusRef.current && this.focusRef.current.focus();
+        this.focusRef.current?.focus();
     }
 
     render() {

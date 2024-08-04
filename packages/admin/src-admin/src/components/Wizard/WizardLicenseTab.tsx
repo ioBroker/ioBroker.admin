@@ -126,7 +126,7 @@ class WizardLicenseTab extends Component<WizardLicenseTabProps, WizardLicenseTab
     }
 
     componentDidMount() {
-        this.focusRef.current && this.focusRef.current.focus();
+        this.focusRef.current?.focus();
     }
 
     async readStatistics() {

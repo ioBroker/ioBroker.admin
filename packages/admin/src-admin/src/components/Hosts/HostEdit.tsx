@@ -150,7 +150,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
             const obj: ioBroker.HostObject = JSON.parse(value) as ioBroker.HostObject;
             obj._id = this.props.obj._id; // do not allow change of id
             return obj;
-        } catch (e) {
+        } catch {
             return null;
         }
     }
@@ -174,7 +174,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
             const obj = JSON.parse(this.state.text) as ioBroker.HostObject;
             obj._id = this.props.obj._id; // do not allow change of id
             this.props.onClose(obj);
-        } catch (error) {
+        } catch {
             // ignore
         }
     }
@@ -282,7 +282,7 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                         {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
                     </div>}
             </div>;
-        } catch (e) {
+        } catch {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
     }
