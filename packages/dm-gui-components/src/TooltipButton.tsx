@@ -11,7 +11,7 @@ interface TooltipButtonProps {
 
 export default function TooltipButton(props: TooltipButtonProps): React.JSX.Element {
     const {
-        tooltip, label, disabled, Icon, onClick
+        tooltip, label, disabled, Icon, onClick,
     } = props;
 
     const text = !!label && <Typography variant="button" style={{ marginLeft: 4 }}>{label}</Typography>;
