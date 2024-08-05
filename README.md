@@ -85,8 +85,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 7.0.23 (2024-08-05)
 * (foxriver76) only automatically open the host notification dialog if warnings are available
 * (foxriver76) improved style of host notification dialog
 * (foxriver76) clarified auto upgrade options selection
@@ -110,10 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 7.0.16 (2024-07-15)
 * (bluefox) Allowed playing mp3 and video files in the file browser
-
-### 7.0.13 (2024-07-12)
-* (bluefox) Do not send `sendto` requests if control is hidden
-* (bluefox) Read recommended versions from `iobroker/iobroker`
 
 ## License
 The MIT License (MIT)
