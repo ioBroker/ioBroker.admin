@@ -1,4 +1,8 @@
 # Older changes
+## 7.0.13 (2024-07-12)
+* (bluefox) Do not send `sendto` requests if control is hidden
+* (bluefox) Read recommended versions from `iobroker/iobroker`
+
 ## 7.0.12 (2024-07-10)
 * (bluefox) Changed a recommended node.js version from 18 to 20
 
