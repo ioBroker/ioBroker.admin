@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.22",
+    "version": "7.0.23",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.23": {
+        "en": "only automatically open the host notification dialog if warnings are available\nimproved style of host notification dialog\nclarified auto upgrade options selection\nCorrected the link in instances, e.g., for vis-2\nCorrected the connection information in the instance tab",
+        "de": "nur automatisch den host-benachrichtigungsdialog öffnen, wenn warnungen verfügbar sind\nverbesserte art der host-benachrichtigung dialog\nclarified auto upgrade optionen auswahl\nKorrigierte den Link in Fällen, z.B. für vis-2\nKorrektur der Verbindungsinformationen in der Registerkarte",
+        "ru": "только автоматически открыть диалог уведомления хоста, если предупреждения доступны\nулучшенный стиль диалога уведомления хоста\nуточненный выбор вариантов автомодернизации\nИсправлена ссылка в случаях, например, для vis-2\nИсправлена информация о подключении на вкладке",
+        "pt": "somente abra automaticamente a caixa de diálogo de notificação do host se os avisos estiverem disponíveis\nmelhorado estilo de caixa de diálogo de notificação do host\nseleção de opções de atualização automática clarificada\nCorrigido o link em instâncias, por exemplo, para vis-2\nCorrigido as informações de conexão na aba da instância",
+        "nl": "alleen automatisch het dialoogvenster host notificatie openen als er waarschuwingen beschikbaar zijn\nverbeterde stijl van host notificatie dialoog\nverduidelijkte selectie van auto-upgradeopties\nCorrectie van de koppeling in gevallen, bijvoorbeeld voor vis-2\nDe verbindingsinformatie in het instantietabblad gecorrigeerd",
+        "fr": "ouvrir automatiquement la boîte de dialogue de notification de l'hôte seulement si des avertissements sont disponibles\namélioration du style de la boîte de dialogue de notification de l'hôte\nsélection d'options de mise à jour automatique clarifiée\nCorrigé le lien dans les cas, p.ex. pour vis-2\nCorrection des informations de connexion dans l'onglet instance",
+        "it": "solo aprire automaticamente la finestra di dialogo di notifica dell'host se sono disponibili avvisi\nstile migliorato della finestra di dialogo di notifica host\nselezione delle opzioni di aggiornamento automatico\nCorretto il collegamento in casi, ad esempio, per vis-2\nCorretto le informazioni di connessione nella scheda di istanza",
+        "es": "sólo abrir automáticamente el diálogo de notificación del host si las advertencias están disponibles\nmejor estilo de diálogo de notificación de host\nopciones de actualización automática aclaradas\nCorregido el enlace en casos, por ejemplo, en relación con-2\nCorregido la información de conexión en la pestaña de instancia",
+        "pl": "jeśli dostępne są ostrzeżenia, otwieraj automatycznie okno powiadomienia hosta\npoprawiony styl okna powiadomień hosta\nwyjaśnienie wyboru opcji auto upgrade\nPoprawiono link w przypadkach, np. dla vis-2\nPoprawiono informacje o połączeniach w zakładce instance",
+        "uk": "тільки автоматично відкрийте діалогове вікно повідомлення про хост, якщо повідомлення доступні\nпокращений стиль діалогу повідомлення про хост\nвизначення параметрів автоматичного оновлення\nВиправлено посилання в екземплярах, наприклад, для vis-2\nВиправлено інформацію про підключення в вкладці екземпляра",
+        "zh-cn": "只当警告可用时自动打开主机通知对话框\n改进主机通知对话框的样式\n澄清自动升级选项\n纠正了例如相对于2的链接\n更正实例标签中的连接信息"
+      },
       "7.0.22": {
         "en": "Corrected installation of adapter with the license unequal to MIT\nCorrected width of a side menu\nAllowed the pasting into object JSON editor",
         "de": "Korrigierte Installation des Adapters mit der Lizenz ungleich MIT\nKorrigierte Breite eines Seitenmenüs\nErlaubt das Einfügen in Objekt JSON Editor",
@@ -95,19 +108,6 @@
         "pl": "Zmieniono zalecaną wersję node.js z 18 na 20",
         "uk": "Змінено рекомендовану версію node.js від 18 до 20",
         "zh-cn": "将推荐的节点.js版本从18个改为20个"
-      },
-      "7.0.11": {
-        "en": "host tab details are now indicated by a classic chevron instead of blink indicator\nshow js-controller changelog more prominent\ncorrecting the update button",
-        "de": "host-tab-details werden nun durch einen klassischen chevron angezeigt statt blink-indikator\nshow js-controller changelog mehr prominent\nkorrektur der update-taste",
-        "ru": "детали вкладки хоста теперь указаны классическим шевроном вместо индикатора мигания\nпоказать js-controller сменлог более заметно\nисправление кнопки обновления",
-        "pt": "detalhes da aba do host agora são indicados por um chevron clássico em vez de indicador de piscar\nmostrar js-controller changelog mais proeminente\ncorrigindo o botão de atualização",
-        "nl": "host tab details worden nu aangegeven door een klassieke chevron in plaats van knipper indicator\ntoon js-controller changelog prominenter\ncorrectie van de updateknop",
-        "fr": "les détails de l'onglet hôte sont maintenant indiqués par un chevron classique au lieu de clignotant\nmontrer js-controller changelog plus proéminent\ncorriger le bouton de mise à jour",
-        "it": "i dettagli della scheda host sono ora indicati da un classico chevron invece di indicatore di blink\nmostra js-controller changelog più prominente\ncorreggere il pulsante di aggiornamento",
-        "es": "los detalles de la pestaña host son ahora indicados por un clásico chevron en lugar de indicador de parpadeo\nshow js-controller changelog más prominente\ncorregir el botón de actualización",
-        "pl": "szczegóły karty hosta są teraz wskazywane przez klasyczny chevron zamiast wskaźnika mrugnięcia\nshow js- controller changelog bardziej widoczne\npoprawianie przycisku aktualizacji",
-        "uk": "деталі вкладок ведучих тепер вказують класичний шеврон замість індикатора blink\nпоказати js-controller зміниlog докладніше\nвиправлення кнопки оновлення",
-        "zh-cn": "主机标签细节现在用经典的 chevron 来表示,而不是闪烁指示器\n显示更突出的 js 控制器更改日志\n更正更新按钮"
       }
     },
     "desc": {
