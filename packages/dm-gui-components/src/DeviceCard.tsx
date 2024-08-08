@@ -4,7 +4,7 @@ import {
     Button, Typography,
     Dialog, DialogActions, DialogContent, IconButton,
     Fab, DialogTitle, Card, CardActions, CardHeader,
-    CardContent, Paper,
+    CardContent, Paper, Box,
 } from '@mui/material';
 
 import {
@@ -338,12 +338,12 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 >
                     {status.map((s, i) => <DeviceStatusComponent key={i} status={s} />)}
                 </div> : null}
-                <div>
+                <Box>
                     <Typography variant="body1">
-                        <div onClick={this.copyToClipboard}>
+                        <Box onClick={this.copyToClipboard} sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
                             <b>ID:</b>
                             <span style={{ marginLeft: 4 }}>{this.props.device.id.replace(/.*\.\d\./, '')}</span>
-                        </div>
+                        </Box>
                         {this.props.device.manufacturer ? <div>
                             <b style={{ marginRight: 4 }}>
                                 {getTranslation('manufacturer')}
@@ -359,7 +359,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                             {getText(this.props.device.model)}
                         </div> : null}
                     </Typography>
-                </div>
+                </Box>
             </CardContent>
             <CardActions disableSpacing>
                 {this.renderActions()}
@@ -373,7 +373,6 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
 
     renderBig() {
         const cardStyle: React.CSSProperties = {
-            // backgroundColor: '#fafafa',
             width: 300,
             minHeight: 280,
             margin: 10,
@@ -388,7 +387,6 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
             minHeight: 60,
             color: '#000',
             padding: '0 10px 0 10px',
-            backgroundColor: '#77c7ff8c',
             borderRadius: '4px 4px 0 0',
         };
         /** @type {CSSProperties} */
@@ -440,7 +438,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         const status = !this.props.device.status ? [] : Array.isArray(this.props.device.status) ? this.props.device.status : [this.props.device.status];
 
         return <Paper style={cardStyle} key={this.props.id}>
-            <div style={headerStyle}>
+            <Box sx={{ backgroundColor: theme => theme.palette.secondary.main, ...headerStyle }}>
                 <div style={imgAreaStyle}>
                     {this.props.uploadImagesToInstance ? <DeviceImageUpload
                         uploadImagesToInstance={this.props.uploadImagesToInstance}
@@ -467,7 +465,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 >
                     <MoreVertIcon />
                 </Fab> : null}
-            </div>
+            </Box>
             <div style={statusStyle}>
                 {status.map((s, i) => <DeviceStatusComponent key={i} status={s} />)}
             </div>
