@@ -338,12 +338,12 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 >
                     {status.map((s, i) => <DeviceStatusComponent key={i} status={s} />)}
                 </div> : null}
-                <Box>
+                <div>
                     <Typography variant="body1">
-                        <Box onClick={this.copyToClipboard} sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                        <div onClick={this.copyToClipboard} style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
                             <b>ID:</b>
                             <span style={{ marginLeft: 4 }}>{this.props.device.id.replace(/.*\.\d\./, '')}</span>
-                        </Box>
+                        </div>
                         {this.props.device.manufacturer ? <div>
                             <b style={{ marginRight: 4 }}>
                                 {getTranslation('manufacturer')}
@@ -359,7 +359,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                             {getText(this.props.device.model)}
                         </div> : null}
                     </Typography>
-                </Box>
+                </div>
             </CardContent>
             <CardActions disableSpacing>
                 {this.renderActions()}
