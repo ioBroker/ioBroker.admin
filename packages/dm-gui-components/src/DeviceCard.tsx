@@ -438,7 +438,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         const status = !this.props.device.status ? [] : Array.isArray(this.props.device.status) ? this.props.device.status : [this.props.device.status];
 
         return <Paper style={cardStyle} key={this.props.id}>
-            <Box sx={{ backgroundColor: theme => theme.palette.secondary.main, ...headerStyle }}>
+            <Box sx={theme => ({ backgroundColor: theme.palette.secondary.main}) } style={headerStyle}>
                 <div style={imgAreaStyle}>
                     {this.props.uploadImagesToInstance ? <DeviceImageUpload
                         uploadImagesToInstance={this.props.uploadImagesToInstance}
