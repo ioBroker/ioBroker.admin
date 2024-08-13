@@ -9,11 +9,6 @@ import type { ConfigItemChip } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 import ChipInput from './ChipInput';
 
-const styles: Record<string, React.CSSProperties> = {
-    fullWidth: {
-        width: '100%',
-    },
-};
 interface ConfigChipProps extends ConfigGenericProps {
     schema: ConfigItemChip;
 }
