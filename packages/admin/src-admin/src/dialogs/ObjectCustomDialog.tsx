@@ -276,21 +276,21 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                             label={this.props.t('Custom settings')}
                             id="custom-settings-tab"
                             aria-controls="simple-tabpanel-0"
-                            sx={{ '&.MuiTab-selected': styles.tabSelected }}
+                            sx={{ '&.Mui-selected': styles.tabSelected }}
                         />
                         {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('History data')}
                             id="history-data-tab"
                             aria-controls="simple-tabpanel-1"
-                            sx={{ '&.MuiTab-selected': styles.tabSelected }}
+                            sx={{ '&.Mui-selected': styles.tabSelected }}
                         /> : null}
                         {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('Chart')}
                             id="chart-tab"
                             aria-controls="simple-tabpanel-2"
-                            sx={{ '&.MuiTab-selected': styles.tabSelected }}
+                            sx={{ '&.Mui-selected': styles.tabSelected }}
                         /> : null}
                     </Tabs>
                 </AppBar>
