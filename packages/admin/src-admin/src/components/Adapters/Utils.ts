@@ -21,7 +21,6 @@ export function extractUrlLink(adapterRepo: RepoAdapterObject): string {
     if (!url || !url.includes('/LICENSE') || !url.includes('raw.githubusercontent.com')) {
         url = adapterRepo.extIcon;
         if (!url) {
-            // @ts-expect-error fixed in types of js-controller
             url = adapterRepo.readme;
             if (!url) {
                 console.error(`No extIcon for ${adapterRepo.name}`);
