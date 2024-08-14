@@ -42,6 +42,7 @@ interface AdminUpdaterProps {
     adminInstance: string;
     onUpdating: (updating: boolean) => void;
     themeType: ThemeType;
+    currentAdminVersion: string;
 }
 
 interface AdminUpdaterState {
@@ -61,6 +62,8 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
     private readonly textareaRef: React.RefObject<HTMLTextAreaElement>;
 
     private readonly link: string;
+
+    private oldVersion?: string;
 
     constructor(props: AdminUpdaterProps) {
         super(props);
@@ -107,6 +110,9 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
             certPrivateName, certPublicName, port, useHttps,
         } = await this.getWebserverParams();
 
+        // remember the current version
+        this.oldVersion = this.props.currentAdminVersion;
+
         await this.props.socket.upgradeAdapterWithWebserver(
             this.props.host,
             {
@@ -137,6 +143,41 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         if (this.startTimeout) {
             clearTimeout(this.startTimeout);
             this.startTimeout = null;
+        }
+    }
+
+    async checkVersion(): Promise<boolean> {
+        // Maybe the update already happened. Check the version of the admin
+        try {
+            const res = await fetch('./version');
+            const version = await res.text();
+            // if it looks like version "x.xx.xxx-beta1" and not equal to the old version
+            if (version && version.length < 20 && version !== this.oldVersion) {
+                // admin updated
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = null;
+                }
+                this.setState(
+                    {
+                        response: {
+                            running: false,
+                            success: true,
+                            stderr: [],
+                            stdout: [I18n.t('Version updated to %s', version)],
+                        },
+                        upAgain: true,
+                        error: null,
+                    },
+                    () => this.setUpdating(false),
+                );
+                return true;
+            }
+
+            // if web server is up, and it sends us the old version number => no error
+            return version === this.oldVersion;
+        } catch {
+            return false;
         }
     }
 
@@ -185,11 +226,13 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
                     console.error(`Cannot parse response: ${e}`);
                     this.setState({ error: plainBody }, () => this.setUpdating(false));
                 }
-            } else {
+            } else if (!(await this.checkVersion())) {
+                // Maybe the update already happened. Check the version of the admin
                 console.error(`Response is not JSON: ${plainBody}`);
             }
         } catch (e) {
             if (!this.state.starting) {
+                // after 10 seconds, show error
                 this.setState({ error: e.toString() }, () => this.setUpdating(false));
             }
         }
@@ -203,6 +246,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
             try {
                 await fetch(this.link);
                 clearInterval(this.interval);
+                this.interval = null;
                 this.setState({ upAgain: true });
             } catch  {
                 // ignore, it will throw until admin is reachable

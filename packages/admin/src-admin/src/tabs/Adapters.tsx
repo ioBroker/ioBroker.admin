@@ -203,6 +203,7 @@ interface AdaptersProps {
     noTranslation: boolean;
     menuOpened: boolean;
     menuClosed: boolean;
+    currentAdminVersion: string;
 }
 
 interface AdaptersState extends AdapterInstallDialogState {
@@ -1707,6 +1708,7 @@ class Adapters extends AdapterInstallDialog<AdaptersProps, AdaptersState> {
             onUpdating={isUpdating => {
                 this.props.onUpdating(isUpdating);
             }}
+            currentAdminVersion={this.props.currentAdminVersion}
         />;
     }
 
