@@ -1830,6 +1830,7 @@ class App extends Router<AppProps, AppState> {
                         toggleTranslation={this.toggleTranslation}
                         noTranslation={this.state.noTranslation}
                         adminInstance={this.adminInstance}
+                        currentAdminVersion={this.state.versionAdmin}
                         onUpdating={updating => this.setState({ updating })}
                     />
                 </Suspense>;
