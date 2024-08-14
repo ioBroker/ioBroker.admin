@@ -489,7 +489,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 key={tab.title}
                 label={this.props.t(tab.title)}
                 value={tab.name}
-                sx={{ '&.MuiTab-selected': styles.selected }}
+                sx={{ '&.Mui-selected': styles.selected }}
             />);
 
         return <Dialog

@@ -436,7 +436,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             <Tab
                                 label={this.props.t('From npm')}
                                 wrapped
-                                sx={{ '&.MuiTab-selected': styles.tabSelected }}
+                                sx={{ '&.Mui-selected': styles.tabSelected }}
                                 icon={<img src={npmIcon} alt="npm" width={24} height={24} />}
                                 {...a11yProps(0)}
                                 value="npm"
@@ -444,7 +444,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             <Tab
                                 label={this.props.t('From github')}
                                 wrapped
-                                sx={{ '&.MuiTab-selected': styles.tabSelected }}
+                                sx={{ '&.Mui-selected': styles.tabSelected }}
                                 icon={<GithubIcon style={{ width: 24, height: 24 }} width={24} height={24} />}
                                 {...a11yProps(0)}
                                 value="GitHub"
@@ -452,7 +452,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             <Tab
                                 label={this.props.t('Custom')}
                                 wrapped
-                                sx={{ '&.MuiTab-selected': styles.tabSelected }}
+                                sx={{ '&.Mui-selected': styles.tabSelected }}
                                 icon={<UrlIcon width={24} height={24} />}
                                 {...a11yProps(1)}
                                 value="URL"
