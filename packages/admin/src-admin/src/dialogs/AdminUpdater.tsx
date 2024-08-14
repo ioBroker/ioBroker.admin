@@ -146,6 +146,41 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
         }
     }
 
+    async checkVersion(): Promise<boolean> {
+        // Maybe the update already happened. Check the version of the admin
+        try {
+            const res = await fetch('./version');
+            const version = await res.text();
+            // if it looks like version "x.xx.xxx-beta1" and not equal to the old version
+            if (version && version.length < 20 && version !== this.oldVersion) {
+                // admin updated
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = null;
+                }
+                this.setState(
+                    {
+                        response: {
+                            running: false,
+                            success: true,
+                            stderr: [],
+                            stdout: [I18n.t('Version updated to %s', version)],
+                        },
+                        upAgain: true,
+                        error: null,
+                    },
+                    () => this.setUpdating(false),
+                );
+                return true;
+            }
+
+            // if web server is up, and it sends us the old version number => no error
+            return version === this.oldVersion;
+        } catch {
+            return false;
+        }
+    }
+
     async checkStatus() {
         console.log(`Request update status from: ${this.link}`);
         try {
@@ -191,38 +226,13 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
                     console.error(`Cannot parse response: ${e}`);
                     this.setState({ error: plainBody }, () => this.setUpdating(false));
                 }
-            } else {
+            } else if (!(await this.checkVersion())) {
                 // Maybe the update already happened. Check the version of the admin
-                try {
-                    const _res = await fetch('./version');
-                    const version = await _res.text();
-                    if (version && version.length < 20 && version !== this.oldVersion) {
-                        if (this.interval) {
-                            clearInterval(this.interval);
-                            this.interval = null;
-                        }
-                        this.setState(
-                            {
-                                response: {
-                                    running: false,
-                                    success: true,
-                                    stderr: [],
-                                    stdout: [I18n.t('Version updated to %s', version)],
-                                },
-                                upAgain: true,
-                                error: null,
-                            },
-                            () => this.setUpdating(false),
-                        );
-                    } else {
-                        console.error(`Response is not JSON: ${plainBody}`);
-                    }
-                } catch {
-                    console.error(`Response is not JSON: ${plainBody}`);
-                }
+                console.error(`Response is not JSON: ${plainBody}`);
             }
         } catch (e) {
             if (!this.state.starting) {
+                // after 10 seconds, show error
                 this.setState({ error: e.toString() }, () => this.setUpdating(false));
             }
         }
