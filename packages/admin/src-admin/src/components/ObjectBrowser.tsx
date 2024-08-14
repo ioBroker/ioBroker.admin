@@ -3055,15 +3055,17 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (this.state.selected.length === 1 && this.objects[this.state.selected[0]]) {
                 const name =
                     Utils.getObjectName(this.objects, this.state.selected[0], null, { language: this.props.lang });
-                this.props.onSelect && this.props.onSelect(this.state.selected, name, isDouble);
+                if (this.props.onSelect) {
+                    this.props.onSelect(this.state.selected, name, isDouble);
+                }
             }
         } else {
             this.localStorage.removeItem(`${this.props.dialogName || 'App'}.objectSelected`);
 
             if (this.state.selected.length) {
                 this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
-            } else {
-                this.props.onSelect && this.props.onSelect([], '');
+            } else if (this.props.onSelect) {
+                this.props.onSelect([], '');
             }
         }
     }
@@ -3099,8 +3101,10 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      * Called when component is unmounted.
      */
     componentWillUnmount() {
-        this.filterTimer && clearTimeout(this.filterTimer);
-        this.filterTimer = null;
+        if (this.filterTimer) {
+            clearTimeout(this.filterTimer);
+            this.filterTimer = null;
+        }
         window.removeEventListener('contextmenu', this.onContextMenu, true);
 
         if (this.props.objectsWorker) {
@@ -3138,7 +3142,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             }
         }
 
-        this.props.onObjectDelete && this.props.onObjectDelete(id, !!item.children?.length, !obj.common?.dontDelete, count + 1);
+        if (this.props.onObjectDelete) {
+            this.props.onObjectDelete(id, !!item.children?.length, !obj.common?.dontDelete, count + 1);
+        }
     }
 
     /**
@@ -3230,7 +3236,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 if (this.state.selected[0] !== toggleItem) {
                     this.setState({ selected: [toggleItem], selectedNonObject: '', focused: toggleItem }, () => {
                         this.onAfterSelect(isDouble);
-                        cb && cb();
+                        if (cb) {
+                            cb();
+                        }
                     });
                 } else if (isDouble && this.props.onSelect) {
                     this.onAfterSelect(isDouble);
@@ -3239,7 +3247,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 this.localStorage.setItem(`${this.props.dialogName || 'App'}.selectedNonObject`, toggleItem);
                 this.setState({ selected: [], selectedNonObject: toggleItem, focused: toggleItem }, () => {
                     this.onAfterSelect();
-                    cb && cb();
+                    if (cb) {
+                        cb();
+                    }
                 });
             }
         } else if (
@@ -3259,7 +3269,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
             this.setState({ selected, selectedNonObject: '', focused: toggleItem }, () => {
                 this.onAfterSelect(isDouble);
-                cb && cb();
+                if (cb) {
+                    cb();
+                }
             });
         }
     }
@@ -3520,7 +3532,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
     private checkUnsubscribes() {
         // Remove unused subscriptions
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
-            !this.recordStates.includes(this.subscribes[i]) && this.unsubscribe(this.subscribes[i]);
+            if (!this.recordStates.includes(this.subscribes[i])) {
+                this.unsubscribe(this.subscribes[i]);
+            }
         }
         this.recordStates = [];
     }
@@ -3667,7 +3681,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 }
             });
 
-            newState && this.setState(newState);
+            if (newState) {
+                this.setState(newState);
+            }
             this.afterObjectUpdated();
         }
     };
@@ -3678,7 +3694,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             return;
         }
 
-        newInnerState && this.setState(newInnerState);
+        if (newInnerState) {
+            this.setState(newInnerState);
+        }
         this.afterObjectUpdated();
     };
 
@@ -3756,7 +3774,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (!this.subscribes.includes(id)) {
             this.subscribes.push(id);
             console.log(`+ subscribe ${id}`);
-            !this.pausedSubscribes && this.props.socket.subscribeState(id, this.onStateChange);
+            if (!this.pausedSubscribes) {
+                this.props.socket.subscribeState(id, this.onStateChange);
+            }
         }
     }
 
@@ -3864,7 +3884,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 placeholder={this.texts[`filter_${filterName}`]}
                 defaultValue={(this.state.filter as Record<string, string>)[filterName] || ''}
                 onChange={() => {
-                    this.filterTimer && clearTimeout(this.filterTimer);
+                    if (this.filterTimer) {
+                        clearTimeout(this.filterTimer);
+                    }
                     this.filterTimer = setTimeout(() => this.onFilter(), 400);
                 }}
                 autoComplete="off"
@@ -3903,7 +3925,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 sx={styles.headerCellInput}
                 className="no-underline"
                 onChange={() => {
-                    this.filterTimer && clearTimeout(this.filterTimer);
+                    if (this.filterTimer) {
+                        clearTimeout(this.filterTimer);
+                    }
                     this.filterTimer = setTimeout(() => this.onFilter(), 400);
                 }}
                 defaultValue={(this.state.filter as Record<string, string>)[name] || ''}
@@ -4060,7 +4084,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (this.state.depth < 9) {
             const depth = this.state.depth + 1;
             const expanded = [...this.state.expanded];
-            this.root && this.expandDepth(this.root, depth, expanded);
+            if (this.root) {
+                this.expandDepth(this.root, depth, expanded);
+            }
             this.localStorage.setItem(`${this.props.dialogName || 'App'}.objectExpanded`, JSON.stringify(expanded));
             this.setState({ depth, expanded });
         }
@@ -4176,7 +4202,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 }
                 try {
                     await this.props.socket.setObject(id, obj);
-                    enums && (await this._createAllEnums(enums, obj._id));
+                    if (enums) {
+                        await this._createAllEnums(enums, obj._id);
+                    }
                     if (obj.type === 'state') {
                         if (val !== undefined && val !== null) {
                             try {
@@ -4980,7 +5008,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             }
                         }
 
-                        this.props.onObjectDelete && this.props.onObjectDelete(id, !!item.children?.length, false, count + 1);
+                        if (this.props.onObjectDelete) {
+                            this.props.onObjectDelete(id, !!item.children?.length, false, count + 1);
+                        }
                     }}
                 >
                     <IconDelete style={styles.cellButtonsButtonIcon} />
@@ -5062,12 +5092,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             break;
                         }
                     }
-                    this.props.onObjectDelete && this.props.onObjectDelete(
-                        id,
-                        !!item.children?.length,
-                        !item.data.obj?.common?.dontDelete,
-                        count,
-                    );
+                    if (this.props.onObjectDelete) {
+                        this.props.onObjectDelete(
+                            id,
+                            !!item.children?.length,
+                            !item.data.obj?.common?.dontDelete,
+                            count,
+                        );
+                    }
                 }}
                 title={this.texts.deleteObject}
             >
@@ -5236,7 +5268,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         if (!this.states[id]) {
             if (obj.type === 'state') {
                 // we are waiting for state
-                !this.recordStates.includes(id) && this.recordStates.push(id);
+                if (!this.recordStates.includes(id)) {
+                    this.recordStates.push(id);
+                }
                 this.states[id] = { val: null } as ioBroker.State;
                 this.subscribe(id);
             }
@@ -5273,28 +5307,34 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             >
                 {valText.v.toString()}
             </span>);
-            valText.u && valTextRx.push(<span
-                className={`newValueBrowser-${this.props.themeType || 'light'}`}
-                style={styles.cellValueTextUnit}
-                key={`${valText.v.toString()}unit`}
-            >
-                {valText.u}
-            </span>);
-            valText.s !== undefined && valTextRx.push(<span
-                style={styles.cellValueTextState}
-                className={`newValueBrowser-${this.props.themeType || 'light'}`}
-                key={`${valText.v.toString()}states`}
-            >
-                (
-                {valText.s}
-                )
-            </span>);
-            !narrowStyleWithDetails && valTextRx.push(<IconCopy
-                className="copyButton"
-                style={this.styles.iconCopy}
-                onClick={e => this.onCopy(e, copyText)}
-                key="cc"
-            />);
+            if (valText.u) {
+                valTextRx.push(<span
+                    className={`newValueBrowser-${this.props.themeType || 'light'}`}
+                    style={styles.cellValueTextUnit}
+                    key={`${valText.v.toString()}unit`}
+                >
+                    {valText.u}
+                </span>);
+            }
+            if (valText.s !== undefined) {
+                valTextRx.push(<span
+                    style={styles.cellValueTextState}
+                    className={`newValueBrowser-${this.props.themeType || 'light'}`}
+                    key={`${valText.v.toString()}states`}
+                >
+                    (
+                    {valText.s}
+                    )
+                </span>);
+            }
+            if (!narrowStyleWithDetails) {
+                valTextRx.push(<IconCopy
+                    className="copyButton"
+                    style={this.styles.iconCopy}
+                    onClick={e => this.onCopy(e, copyText)}
+                    key="cc"
+                />);
+            }
             // <IconEdit className="copyButton" style={{{ ...styles.cellButtonsValueButton, styles.cellButtonsValueButtonEdit)} key="ce" />
 
             info = item.data.state;
@@ -5905,15 +5945,19 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         }
 
         if (obj) {
-            obj.from &&
+            if (obj.from) {
                 newValueTitle.push(
                     `${this.texts.objectChangedFrom} ${obj.from.replace(/^system\.adapter\.|^system\./, '')}`,
                 );
-            obj.user && newValueTitle.push(`${this.texts.objectChangedBy} ${obj.user.replace(/^system\.user\./, '')}`);
-            obj.ts &&
+            }
+            if (obj.user) {
+                newValueTitle.push(`${this.texts.objectChangedBy} ${obj.user.replace(/^system\.user\./, '')}`);
+            }
+            if (obj.ts) {
                 newValueTitle.push(
                     `${this.texts.objectChangedByUser} ${Utils.formatDate(new Date(obj.ts), this.props.dateFormat || this.systemConfig.common.dateFormat)}`,
                 );
+            }
         }
 
         const readWriteAlias = typeof common?.alias?.id === 'object';
@@ -6617,32 +6661,34 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     return null;
                 }) as any as React.JSX.Element);
             } else {
-                // first only folder
-                root.children && items.push(root.children.map(item => {
-                    if (item.children) {
-                        // do not render too many items in column editor mode
-                        if (!this.state.columnsSelectorShow || counter.count < 15) {
-                            if (item.data.sumVisibility) {
-                                return this.renderItem(item, undefined, counter);
+                if (root.children) {
+                    // first only folder
+                    items.push(root.children.map(item => {
+                        if (item.children) {
+                            // do not render too many items in column editor mode
+                            if (!this.state.columnsSelectorShow || counter.count < 15) {
+                                if (item.data.sumVisibility) {
+                                    return this.renderItem(item, undefined, counter);
+                                }
                             }
                         }
-                    }
 
-                    return null;
-                }) as any as React.JSX.Element);
+                        return null;
+                    }) as any as React.JSX.Element);
 
-                // then items
-                root.children && items.push(root.children.map(item => {
-                    if (!item.children) {
-                        // do not render too many items in column editor mode
-                        if (!this.state.columnsSelectorShow || counter.count < 15) {
-                            if (item.data.sumVisibility) {
-                                return this.renderItem(item, undefined, counter);
+                    // then items
+                    items.push(root.children.map(item => {
+                        if (!item.children) {
+                            // do not render too many items in column editor mode
+                            if (!this.state.columnsSelectorShow || counter.count < 15) {
+                                if (item.data.sumVisibility) {
+                                    return this.renderItem(item, undefined, counter);
+                                }
                             }
                         }
-                    }
-                    return null;
-                }) as any as React.JSX.Element);
+                        return null;
+                    }) as any as React.JSX.Element);
+                }
             }
         }
 
@@ -6858,7 +6904,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     this.resizerCurrentWidths.name = width - this.state.scrollBarWidth;
                 }
                 this.customWidth = true;
-                this.resizeTimeout && clearTimeout(this.resizeTimeout);
+                if (this.resizeTimeout) {
+                    clearTimeout(this.resizeTimeout);
+                }
                 this.resizeTimeout = setTimeout(() => {
                     this.resizeTimeout = null;
                     this.forceUpdate();
@@ -7208,12 +7256,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         this.selectFirst = '';
 
         const node = window.document.getElementById(id);
-        node &&
-            node.scrollIntoView({
-                behavior: 'auto',
-                block: 'center',
-                inline: 'center',
-            });
+        node?.scrollIntoView({
+            behavior: 'auto',
+            block: 'center',
+            inline: 'center',
+        });
     }
 
     private renderCustomDialog(): React.JSX.Element | null {
