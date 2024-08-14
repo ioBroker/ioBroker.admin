@@ -1615,5 +1615,7 @@
   "wrongPassword": "用户名或密码无效",
   "yesterday": "昨天",
   "Adapter warnings": "适配器警告",
-  "Links": "链接"
+  "Links": "链接",
+  "min:": "从：",
+  "max:": "到："
 }

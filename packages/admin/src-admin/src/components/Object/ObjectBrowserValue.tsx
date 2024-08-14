@@ -402,7 +402,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 noOptionsText=""
                 freeSolo
                 getOptionLabel={option =>
-                    option.label || (option !== undefined && option !== null ? option.toString() : '')}
+                    option?.label || (option !== undefined && option !== null ? option.toString() : '')}
                 onChange={(e, value) => this.setState({ targetValue: value })}
                 onInputChange={(e, value) => this.setState({ targetValue: value })}
                 onKeyUp={e => e.key === 'Enter' && this.onUpdate(e)}
@@ -593,7 +593,11 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                             'Press ENTER to write the value, when focused',
                                         )}
                                         value={this.state.targetValue.toString()}
-                                        label={this.props.t('Value')}
+                                        label={
+                                            this.props.t('Value') +
+                                            (this.props.object.common.min !== undefined || this.props.object.common.unit === '%' ? `, ${this.props.t('min:')} ${this.props.object.common.min !== undefined ? this.props.object.common.min : 0}` : '') +
+                                            (this.props.object.common.max !== undefined || this.props.object.common.unit === '%' ? `, ${this.props.t('max:')} ${this.props.object.common.max !== undefined ? this.props.object.common.max : 100}` : '')
+                                        }
                                         onKeyUp={e => e.key === 'Enter' && this.state.valid && this.onUpdate(e)}
                                         onChange={e => {
                                             this.setState({

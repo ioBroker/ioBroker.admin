@@ -1615,5 +1615,7 @@
   "wrongPassword": "Nome utente o password errati",
   "yesterday": "Ieri",
   "Adapter warnings": "Avvertenze sull'adattatore",
-  "Links": "Collegamenti"
+  "Links": "Collegamenti",
+  "min:": "da:",
+  "max:": "A:"
 }
