@@ -1615,5 +1615,7 @@
   "wrongPassword": "nome de usuário ou senha inválidos",
   "yesterday": "ontem",
   "Adapter warnings": "Avisos do adaptador",
-  "Links": "Ligações"
+  "Links": "Ligações",
+  "min:": "de:",
+  "max:": "para:"
 }

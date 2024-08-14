@@ -1615,5 +1615,7 @@
   "write operation": "schreiben",
   "wrongPassword": "Benutzername oder Passwort sind falsch",
   "yesterday": "gestern",
-  "Links": "Links"
+  "Links": "Links",
+  "min:": "von:",
+  "max:": "bis:"
 }

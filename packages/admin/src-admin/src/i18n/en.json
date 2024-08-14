@@ -1615,5 +1615,7 @@
   "wrongPassword": "Invalid username or password",
   "yesterday": "yesterday",
   "Adapter warnings": "Adapter warnings",
-  "Links": "Links"
+  "Links": "Links",
+  "min:": "from:",
+  "max:": "to:"
 }

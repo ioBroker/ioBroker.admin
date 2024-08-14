@@ -1615,5 +1615,7 @@
   "wrongPassword": "ongeldige gebruikersnaam of wachtwoord",
   "yesterday": "gisteren",
   "Adapter warnings": "Adapterwaarschuwingen",
-  "Links": "Koppelingen"
+  "Links": "Koppelingen",
+  "min:": "van:",
+  "max:": "naar:"
 }
