@@ -63,7 +63,7 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
 
     private readonly link: string;
 
-    private oldVersion: string | undefined;
+    private oldVersion?: string;
 
     constructor(props: AdminUpdaterProps) {
         super(props);
