@@ -99,45 +99,62 @@ interface ConfigItemTableIndexed extends ConfigItem {
 
 export interface ConfigItemAlive extends ConfigItem {
     type: 'alive';
+    /** check if the instance is alive. If not defined, it will be used current instance. You can use `${data.number}` pattern in the text. */
     instance?: string;
+    /** default text is `Instance %s is alive`, where %s will be replaced by `ADAPTER.0`. The translation must exist in i18n files. */
     textAlive?: string;
+    /** default text is `Instance %s is not alive`, where %s will be replaced by `ADAPTER.0`. The translation must exist in i18n files. */
     textNotAlive?: string;
 }
 
 export interface ConfigItemSelectOption {
+    /** Label of option */
     label: ioBroker.StringOrTranslated;
+    /** Value of option */
     value: number | string;
+    /** Formula or boolean value to show or hide the option */
     hidden?: string | boolean;
 }
 
 export interface ConfigItemPanel extends ConfigItem {
     type: 'panel' | never;
+    /** Label of tab */
     label?: ioBroker.StringOrTranslated;
     // eslint-disable-next-line no-use-before-define
     items: Record<string, ConfigItemAny>;
+    /** only possible as not part of tabs */
     collapsable?: boolean;
+    /** color of collapsable header `primary` or `secondary` or nothing */
     color?: 'primary' | 'secondary';
+    /** CSS Styles in React format (`marginLeft` and not `margin-left`) for the Panel component */
     innerStyle?: CustomCSSProperties;
+    /** i18n definitions: true - load from a file, string - name of subdirectory, object - translations */
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
 export interface ConfigItemPattern extends ConfigItem {
     type: 'pattern';
+    /** if true - show copy button */
     copyToClipboard?: boolean;
+    /** pattern like 'https://${data.ip}:${data.port}' */
     pattern: string;
 }
 
 export interface ConfigItemChip extends ConfigItem {
     type: 'chips';
+    /** if it is defined, so the option will be stored as string with delimiter instead of an array. E.g., by `delimiter=;` you will get `a;b;c` instead of `['a', 'b', 'c']` */
     delimiter?: string;
-    pattern: string;
 }
 
 export interface ConfigItemTabs extends ConfigItem {
     type: 'tabs';
+    /** Object with panels `{"tab1": {}, "tab2": {}...}` */
     items: Record<string, ConfigItemPanel>;
+    /** `bottom`, `end`, `start` or `top`. Only for panels that has `icon` attribute. Default: `start` */
     iconPosition?: 'bottom' | 'end' | 'start' | 'top';
+    /** CSS Styles in React format (`marginLeft` and not `margin-left`) for the Mui-Tabs component */
     tabsStyle?: CustomCSSProperties;
+    /** i18n definitions: true - load from a file, string - name of subdirectory, object - translations */
     i18n?: boolean | string | Record<string, Record<ioBroker.Languages, string>>;
 }
 
