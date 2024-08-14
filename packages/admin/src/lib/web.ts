@@ -461,6 +461,10 @@ class Web {
                 next();
             });*/
 
+            this.server.app.get('/version', (req, res) => {
+                res.status(200).send(this.adapter.version);
+            });
+
             // replace socket.io
             this.server.app.use((req, res, next) => {
                 // return favicon always
@@ -909,8 +913,10 @@ class Web {
                     let myFile: fileUpload.UploadedFile;
                     // take the first non-empty file
                     for (const file of Object.values(req.files)) {
-                        myFile = file as fileUpload.UploadedFile;
-                        break;
+                        if (file) {
+                            myFile = file as fileUpload.UploadedFile;
+                            break;
+                        }
                     }
 
                     if (myFile) {
