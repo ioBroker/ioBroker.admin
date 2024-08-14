@@ -214,6 +214,8 @@ class AdminUpdater extends Component<AdminUpdaterProps, AdminUpdaterState> {
                             },
                             () => this.setUpdating(false),
                         );
+                    } else {
+                        console.error(`Response is not JSON: ${plainBody}`);
                     }
                 } catch {
                     console.error(`Response is not JSON: ${plainBody}`);
