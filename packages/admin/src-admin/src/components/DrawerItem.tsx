@@ -21,9 +21,10 @@ const styles: Record<string, any> = {
         background: theme.palette.primary.main,
         color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
         '&:hover': {
-            color: theme.palette.primary.main,
+            background: theme.palette.primary.main,
+            color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
             '& $selectedIcon': {
-                color: theme.palette.primary.main,
+                color: theme.palette.mode === 'light' ? 'white' : AdminUtils.invertColor(theme.palette.primary.main, true),
             },
         },
     }),
