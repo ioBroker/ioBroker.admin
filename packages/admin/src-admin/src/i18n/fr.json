@@ -1615,5 +1615,7 @@
   "wrongPassword": "Nom d'utilisateur ou mot de passe invalide",
   "yesterday": "hier",
   "Adapter warnings": "Avertissements relatifs à l'adaptateur",
-  "Links": "Liens"
+  "Links": "Liens",
+  "min:": "depuis:",
+  "max:": "à:"
 }

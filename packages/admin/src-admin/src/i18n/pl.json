@@ -1615,5 +1615,7 @@
   "wrongPassword": "Nieprawidłowa nazwa użytkownika lub hasło",
   "yesterday": "wczoraj",
   "Adapter warnings": "Ostrzeżenia adaptera",
-  "Links": "Spinki do mankietów"
+  "Links": "Spinki do mankietów",
+  "min:": "z:",
+  "max:": "Do:"
 }
