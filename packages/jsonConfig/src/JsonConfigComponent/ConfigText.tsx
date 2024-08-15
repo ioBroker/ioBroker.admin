@@ -95,6 +95,36 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
     renderItem(error?: boolean, disabled?: boolean) {
         const isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
+        if (this.props.schema.time) {
+            // show read-only time
+
+            let time = '';
+            if (typeof this.state.value === 'number') {
+                // If the value is a number, it is a timestamp.
+                if (this.state.value && this.state.value < 946659600000) {
+                    // If the value is less than 2000-01-01, it is a timestamp in seconds.
+                    time = new Date(this.state.value * 1000).toLocaleString();
+                } else {
+                    time = new Date(this.state.value).toLocaleString();
+                }
+            } else if (typeof this.state.value === 'string') {
+                // If the value is a string, it is a date string.
+                time = new Date(this.state.value).toLocaleString();
+            }
+
+            return <TextField
+                variant="standard"
+                fullWidth
+                value={time}
+                error={!!error || !!this.state.jsonError}
+                disabled={!!disabled}
+                inputProps={{ readOnly: true }}
+                placeholder={this.getText(this.props.schema.placeholder)}
+                label={this.getText(this.props.schema.label)}
+                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+            />;
+        }
+
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
             this.updateTimeout && clearTimeout(this.updateTimeout);
             this.updateTimeout = setTimeout(() => {
