@@ -192,7 +192,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
 
             try {
                 data = JSON.parse(dataStr);
-            } catch (e) {
+            } catch {
                 console.error(`Cannot parse json data: ${dataStr}`);
             }
         }
