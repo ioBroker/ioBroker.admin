@@ -1,4 +1,7 @@
 # Older changes
+## 7.0.16 (2024-07-15)
+* (bluefox) Allowed playing mp3 and video files in the file browser
+
 ## 7.0.13 (2024-07-12)
 * (bluefox) Do not send `sendto` requests if control is hidden
 * (bluefox) Read recommended versions from `iobroker/iobroker`

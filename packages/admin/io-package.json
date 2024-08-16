@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.23",
+    "version": "7.0.24",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.24": {
+        "en": "Showed min/max limits by controlling the values\nCorrected style for tabs",
+        "de": "Gezeigte Min/Max-Grenzwerte durch Steuerung der Werte\nKorrigierter Stil für Tabs",
+        "ru": "Показано ограничение min/max, контролируя значения\nИсправленный стиль для вкладок",
+        "pt": "Mostrado limites min/max controlando os valores\nEstilo corrigido para abas",
+        "nl": "Min/max limieten getoond door de waarden te controleren\nGecorrigeerde stijl voor tabbladen",
+        "fr": "Limites min/max indiquées en contrôlant les valeurs\nStyle corrigé pour les onglets",
+        "it": "Mostrati limiti min/max controllando i valori\nStile corretto per schede",
+        "es": "Visualizado min/max límites controlando los valores\nEstilo corregido para pestañas",
+        "pl": "Pokazane wartości graniczne min / max poprzez kontrolę wartości\nPoprawiony styl dla zakładek",
+        "uk": "Виявлені ліміти хв/максів, які контролюють значення\nПравильний стиль для вкладок",
+        "zh-cn": "通过控制值来显示分钟/最大限制\n校正标签样式"
+      },
       "7.0.23": {
         "en": "only automatically open the host notification dialog if warnings are available\nimproved style of host notification dialog\nclarified auto upgrade options selection\nCorrected the link in instances, e.g., for vis-2\nCorrected the connection information in the instance tab",
         "de": "nur automatisch den host-benachrichtigungsdialog öffnen, wenn warnungen verfügbar sind\nverbesserte art der host-benachrichtigung dialog\nclarified auto upgrade optionen auswahl\nKorrigierte den Link in Fällen, z.B. für vis-2\nKorrektur der Verbindungsinformationen in der Registerkarte",
@@ -95,19 +108,6 @@
         "pl": "Nie wysyłaj żądań 'sendto', jeśli kontrola jest ukryta\nPrzeczytaj zalecane wersje z 'iobroker / iobroker'",
         "uk": "Не надсилайте запити `sendto`, якщо приховано контроль\nЧитати рекомендовані версії з `iobroker/iobroker й",
         "zh-cn": "隐藏控制时不要发送“ 发送” 请求\n阅读“iobrocco/iobroco”的建议版本 `"
-      },
-      "7.0.12": {
-        "en": "Changed a recommended node.js version from 18 to 20",
-        "de": "Änderung einer empfohlenen node.js-Version von 18 bis 20",
-        "ru": "Изменение рекомендуемой версии node.js с 18 до 20",
-        "pt": "Alterou uma versão node.js recomendada de 18 a 20",
-        "nl": "Een aanbevolen node.js versie van 18 naar 20 gewijzigd",
-        "fr": "Change une version node.js recommandée de 18 à 20",
-        "it": "Modificata una versione node.js consigliata da 18 a 20",
-        "es": "Cambia una versión recomendada node.js de 18 a 20",
-        "pl": "Zmieniono zalecaną wersję node.js z 18 na 20",
-        "uk": "Змінено рекомендовану версію node.js від 18 до 20",
-        "zh-cn": "将推荐的节点.js版本从18个改为20个"
       }
     },
     "desc": {
