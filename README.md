@@ -85,7 +85,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 7.0.24 (2024-08-16)
 * (bluefox) Showed min/max limits by controlling the values
 * (bluefox) Corrected style for tabs
 
@@ -110,9 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 7.0.17 (2024-07-15)
 * (bluefox) Corrected the CRON description
 * (bluefox) Corrected the Device Manager Component
-
-### 7.0.16 (2024-07-15)
-* (bluefox) Allowed playing mp3 and video files in the file browser
 
 ## License
 The MIT License (MIT)
