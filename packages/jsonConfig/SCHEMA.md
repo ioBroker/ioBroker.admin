@@ -66,10 +66,11 @@ Possible types:
   - `readOnly` - read-only field
   - `trim` - default is true. Set this attribute to `false` if trim is not desired.
   - `minRows` - default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row.  
-  - `maxRows` - max rows of textarea. Used only if `minRows` > 1.  
+  - `maxRows` - max rows of textarea. Used only if `minRows` > 1.
   - `noClearButton` - if true, the clear button will not be shown (admin >= 6.17.13)
   - `validateJson` - if true, the text will be validated as JSON
   - `allowEmpty` - if true, the JSON will be validated only if the value is not empty
+  - `time` - the value is time in ms or a string. Used only with readOnly flag
 
 - `number`
   - `min` - minimal value
@@ -172,6 +173,7 @@ Possible types:
   Additionally, you can protect this property from being served to other adapters but `admin` and `cloud` by adding it to `protectedNative` in `io-package.json` file.
     - `repeat` - repeat password must be compared with password
     - `visible` - true if allow viewing the password by toggling the view button (only for a new password while entering)
+    - `readOnly` - the read-only flag. Visible is automatically true if readOnly is true
     - `maxLength` - max length of the text in field
 
 - `instance`

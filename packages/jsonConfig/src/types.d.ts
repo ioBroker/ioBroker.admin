@@ -171,13 +171,15 @@ export interface ConfigItemText extends ConfigItem {
     /** default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row. */
     minRows?: number;
     /** max rows of textarea. Used only if `minRows` > 1. */
-     maxRows?: number;
+    maxRows?: number;
     /** if true, the clear button will not be shown */
     noClearButton?: boolean;
     /** if true, the text will be validated as JSON */
     validateJson?: boolean;
     /** if true, the JSON will be validated only if the value is not empty */
     allowEmpty?: boolean;
+    /** the value is time in ms or a string. Used only with readOnly flag */
+    time?: boolean;
 }
 
 export interface ConfigItemColor extends ConfigItem {
@@ -218,6 +220,8 @@ export interface ConfigItemPassword extends ConfigItem {
     repeat?: boolean;
     /** true if allow viewing the password by toggling the view button (only for a new password while entering) */
     visible?: boolean;
+    /** The read-only flag. Visible is automatically true if readOnly is true */
+    readOnly?: boolean;
     /** max length of the text in field */
     maxLength?: number;
     /** @deprecated use maxLength */

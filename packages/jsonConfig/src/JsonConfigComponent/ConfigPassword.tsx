@@ -89,11 +89,12 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
                 autoComplete: 'new-password',
                 form: { autoComplete: 'off' },
                 maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                readOnly: this.props.schema.readOnly || false,
             }}
             helperText={this.state._notEqual ? I18n.t('ra_Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             // eslint-disable-next-line react/jsx-no-duplicate-props
             InputProps={{
-                endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER && this.props.schema.visible ? <InputAdornment position="end">
+                endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER && (this.props.schema.visible || this.props.schema.readOnly) ? <InputAdornment position="end">
                     <IconButton
                         size="large"
                         tabIndex={-1}
@@ -110,7 +111,7 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
             }}
         />;
 
-        if (this.props.schema.repeat) {
+        if (this.props.schema.repeat && !this.props.schema.readOnly) {
             const passwordRepeat = <TextField
                 variant="standard"
                 fullWidth
