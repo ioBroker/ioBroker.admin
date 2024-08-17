@@ -87,6 +87,7 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
             </DialogContent>
             <DialogActions>
                 <Button
+                    className="slow-connection-minute"
                     style={styles.buttonLabel}
                     variant="contained"
                     onClick={() => {
@@ -99,6 +100,7 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
                     {this.mobile ? this.props.t('1 minute') : this.props.t('Set timeout to 1 minute')}
                 </Button>
                 <Button
+                    className="slow-connection-ok"
                     variant="contained"
                     autoFocus
                     color="primary"
@@ -113,6 +115,7 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
                     {this.mobile ? null : this.props.t('Apply')}
                 </Button>
                 <Button
+                    className="slow-connection-cancel"
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     color="grey"

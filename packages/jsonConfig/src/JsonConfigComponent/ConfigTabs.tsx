@@ -103,6 +103,7 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                     withIcons = withIcons || !!icon;
 
                     return <Tab
+                        id={name}
                         wrapped
                         disabled={disabled}
                         key={name}
