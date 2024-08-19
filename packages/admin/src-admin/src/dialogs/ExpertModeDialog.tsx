@@ -113,6 +113,7 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose
                 <Grid item>
                     <FormControlLabel
                         control={<Checkbox
+                            id="expert-mode-do-not-show"
                             checked={doNotShow}
                             onChange={e => setDoNotShow(e.target.checked)}
                         />}
@@ -123,6 +124,7 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose
         </DialogContent>
         <DialogActions>
             <Button
+                id="expert-mode-dialog-ok"
                 variant="contained"
                 autoFocus
                 onClick={() => {

@@ -401,6 +401,7 @@ const HostWarningDialog = ({
         </DialogContent>
         <DialogActions>
             <Button
+                id="host-warning-dialog-ok"
                 variant="contained"
                 onClick={() => onClose()}
                 startIcon={<CloseIcon />}

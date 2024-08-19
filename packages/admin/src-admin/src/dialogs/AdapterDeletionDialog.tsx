@@ -105,6 +105,7 @@ class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, Adapte
             </DialogContent>
             <DialogActions>
                 <Button
+                    id="adapter-delete-dialog-ok"
                     variant="contained"
                     autoFocus
                     onClick={() => {
@@ -117,6 +118,7 @@ class AdapterDeletionDialog extends Component<AdapterDeletionDialogProps, Adapte
                     {this.t('Ok')}
                 </Button>
                 <Button
+                    id="adapter-delete-dialog-cancel"
                     variant="contained"
                     autoFocus
                     onClick={() => this.props.onClose()}

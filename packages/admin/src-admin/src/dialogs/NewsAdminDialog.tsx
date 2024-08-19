@@ -374,6 +374,7 @@ const NewsAdminDialog = ({
         </DialogContent>
         <DialogActions>
             {link ? <Button
+                id="news-admin-dialog-more-info"
                 variant="contained"
                 onClick={() => {
                     const frame = window.open(link, '_blank');
@@ -385,6 +386,7 @@ const NewsAdminDialog = ({
                 {linkTitle || I18n.t('Show more info')}
             </Button> : null}
             <Button
+                id="news-admin-dialog-acknowledge"
                 variant="contained"
                 autoFocus
                 onClick={onClose}

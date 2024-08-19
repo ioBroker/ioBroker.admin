@@ -466,6 +466,7 @@ cd
         </DialogContent>
         <DialogActions>
             <Button
+                id="js-controller-dialog-changelog"
                 variant="contained"
                 onClick={() => {
                     window.open(CONTROLLER_CHANGELOG_URL, '_blank');
@@ -476,6 +477,7 @@ cd
                 {I18n.t('Show whole changelog')}
             </Button>
             <Button
+                id="js-controller-dialog-ok"
                 variant="contained"
                 onClick={() => onClose()}
                 color="primary"

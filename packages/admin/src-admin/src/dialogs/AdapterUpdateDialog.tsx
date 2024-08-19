@@ -671,6 +671,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             </DialogContent>
             <DialogActions sx={styles.wrapperButton}>
                 {!!this.props.rightDependencies && this.props.onIgnore && version && <Button
+                    id="adapter-update-dialog-ignore"
                     variant="outlined"
                     onClick={() => this.props.onIgnore(version)}
                     color="primary"
@@ -679,6 +680,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 </Button>}
                 <Button
                     variant="contained"
+                    id="adapter-update-dialog-ok"
                     autoFocus
                     disabled={!this.props.rightDependencies || !version || !this.props.adapterObject}
                     onClick={() => {
@@ -694,6 +696,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     {this.mobile ? null : (this.props.textUpdate ? this.props.textUpdate : this.t('Update'))}
                 </Button>
                 {this.props.textInstruction ? <Button
+                    id="adapter-update-dialog-instructions"
                     variant="contained"
                     autoFocus
                     disabled={!this.props.rightDependencies || !version || !this.props.adapterObject}
@@ -710,6 +713,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     {this.mobile ? null : this.props.textInstruction}
                 </Button> : null}
                 <Button
+                    id="adapter-update-dialog-cancel"
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     color="grey"

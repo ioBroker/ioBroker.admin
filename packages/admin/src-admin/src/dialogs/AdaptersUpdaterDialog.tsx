@@ -304,6 +304,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             </DialogContent>
             <DialogActions>
                 <Button
+                    id="adapters-update-dialog-update"
                     variant="contained"
                     disabled={this.state.stopped || this.state.inProcess || this.state.finished || !this.state.selected.length}
                     onClick={() => this.onStartUpdate()}
@@ -314,6 +315,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                     {this.props.t('Update')}
                 </Button>
                 <Button
+                    id="adapters-update-dialog-cancel"
                     variant="contained"
                     disabled={!this.state.inProcess}
                     color="grey"
@@ -326,6 +328,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                     {this.props.t('Cancel')}
                 </Button>
                 <Button
+                    id="adapters-update-dialog-close"
                     variant="contained"
                     onClick={() => this.props.onClose(!!this.state.updated.length)}
                     disabled={this.state.inProcess && !this.state.stopped}

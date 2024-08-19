@@ -33,10 +33,10 @@ import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/Ada
 
 import npmIcon from '../assets/npm.png';
 
-function a11yProps(index: number): { id: string; 'aria-controls': string } {
+function a11yProps(name: string): { id: string; 'aria-controls': string } {
     return {
-        id: `full-width-tab-${index}`,
-        'aria-controls': `full-width-tabpanel-${index}`,
+        id: `github-install-dialog-tab-${name}`,
+        'aria-controls': `github-install-dialog-panel-${name}`,
     };
 }
 
@@ -156,7 +156,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 
     renderNpm() {
-        return this.state.currentTab === 'npm' ? <Paper style={styles.tabPaper}>
+        return this.state.currentTab === 'npm' ? <Paper
+            style={styles.tabPaper}
+            id="github-install-dialog-panel-npm"
+        >
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <FormControlLabel
                     control={
@@ -224,7 +227,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 
     renderGitHub() {
-        return this.state.currentTab === 'GitHub' ? <Paper style={styles.tabPaper}>
+        return this.state.currentTab === 'GitHub' ? <Paper
+            style={styles.tabPaper}
+            id="github-install-dialog-panel-github"
+        >
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <FormControlLabel
                     control={
@@ -301,7 +307,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 
     renderCustom() {
-        return this.state.currentTab === 'URL' ? <Paper style={styles.tabPaper}>
+        return this.state.currentTab === 'URL' ? <Paper
+            style={styles.tabPaper}
+            id="github-install-dialog-panel-custom"
+        >
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <FormControlLabel
                     control={<Checkbox
@@ -438,7 +447,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 wrapped
                                 sx={{ '&.Mui-selected': styles.tabSelected }}
                                 icon={<img src={npmIcon} alt="npm" width={24} height={24} />}
-                                {...a11yProps(0)}
+                                {...a11yProps('npm')}
                                 value="npm"
                             />
                             <Tab
@@ -446,7 +455,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 wrapped
                                 sx={{ '&.Mui-selected': styles.tabSelected }}
                                 icon={<GithubIcon style={{ width: 24, height: 24 }} width={24} height={24} />}
-                                {...a11yProps(0)}
+                                {...a11yProps('github')}
                                 value="GitHub"
                             />
                             <Tab
@@ -454,7 +463,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 wrapped
                                 sx={{ '&.Mui-selected': styles.tabSelected }}
                                 icon={<UrlIcon width={24} height={24} />}
-                                {...a11yProps(1)}
+                                {...a11yProps('custom')}
                                 value="URL"
                             />
                         </Tabs>
@@ -469,6 +478,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             </DialogContent>
             <DialogActions>
                 <Button
+                    id="github-install-dialog-ok"
                     variant="contained"
                     disabled={((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') && !this.state.autoCompleteValue?.value) || (this.state.currentTab === 'URL' && !this.state.url)}
                     autoFocus
@@ -504,6 +514,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     {this.props.t('Install')}
                 </Button>
                 <Button
+                    id="github-install-dialog-close"
                     variant="contained"
                     onClick={() => {
                         this.props.onClose();

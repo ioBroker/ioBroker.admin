@@ -276,6 +276,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
         </DialogContent>
         <DialogActions>
             <Button
+                id="add-new-object-dialog-add"
                 startIcon={<CheckIcon />}
                 disabled={!name || !type || !unique || (type === 'state' && !stateType)}
                 onClick={() => onLocalApply()}
@@ -285,6 +286,7 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                 {I18n.t('add')}
             </Button>
             <Button
+                id="add-new-object-dialog-cancel"
                 color="grey"
                 onClick={onClose}
                 variant="contained"

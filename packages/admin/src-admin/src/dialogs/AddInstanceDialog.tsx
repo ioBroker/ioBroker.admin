@@ -306,6 +306,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
             </DialogContent>
             <DialogActions>
                 <Button
+                    id="instance-add-dialog-ok"
                     variant="contained"
                     autoFocus
                     disabled={!!checkDeps}
@@ -316,6 +317,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
                     {this.t('Add')}
                 </Button>
                 <Button
+                    id="instance-add-dialog-cancel"
                     variant="contained"
                     onClick={() => this.props.onClose(false)}
                     color="grey"
