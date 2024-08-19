@@ -102,6 +102,8 @@ export interface ConfigGenericProps {
     onError: (attr: string, error?: string) => void;
     originalData: Record<string, any>;
     registerOnForceUpdate?: (attr: string, onUpdate?: (data: Record<string, any>) => void) => void;
+    /** This indicates that the component is the very firts one - root */
+    root?: boolean;
     /** Provided props by the specific component */
     schema: ConfigItemAny;
     socket: AdminConnection;

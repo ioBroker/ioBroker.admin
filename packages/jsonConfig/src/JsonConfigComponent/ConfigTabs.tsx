@@ -35,13 +35,62 @@ interface ConfigTabsState extends ConfigGenericState {
 class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
     constructor(props: ConfigTabsProps) {
         super(props);
+        let tab: string | undefined;
 
-        let tab = ((window as any)._localStorage as Storage || window.localStorage).getItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`) || Object.keys(this.props.schema.items)[0];
-        if (!Object.keys(this.props.schema.items).includes(tab)) {
-            tab = Object.keys(this.props.schema.items)[0];
+        if (this.props.root) {
+            // read the path from hash
+            // #tab-instances/config/system.adapter.ping.0/<TAB-NAME-OR-INDEX>
+            const hash = (window.location.hash || '').replace(/^#/, '').split('/');
+            if (hash.length >= 3 && hash[1] === 'config') {
+                const tabS = hash[3];
+                const tabN = parseInt(tabS, 10);
+                if (tabS && tabN.toString() === tabS) {
+                    if (tabN >= 0 && tabN < Object.keys(this.props.schema.items).length) {
+                        tab = Object.keys(this.props.schema.items)[tabN];
+                    }
+                } else if (tabS && Object.keys(this.props.schema.items).includes(tabS)) {
+                    tab = tabS;
+                }
+
+                // install on hash change handler
+                window.addEventListener('hashchange', this.onHashTabsChanged, false);
+            }
         }
+
+        if (tab === undefined) {
+            tab = ((window as any)._localStorage as Storage || window.localStorage).getItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`) || Object.keys(this.props.schema.items)[0];
+            if (!Object.keys(this.props.schema.items).includes(tab)) {
+                tab = Object.keys(this.props.schema.items)[0];
+            }
+        }
+
         Object.assign(this.state, { tab });
     }
+
+    componentWillUnmount() {
+        window.removeEventListener('hashchange', this.onHashTabsChanged, false);
+        super.componentWillUnmount();
+    }
+
+    onHashTabsChanged = () => {
+        const hash = (window.location.hash || '').replace(/^#/, '').split('/');
+        if (hash.length > 3 && hash[1] === 'config') {
+            const tabS = hash[3];
+            const tabN = parseInt(tabS, 10);
+            let tab;
+            if (tabN.toString() === tabS) {
+                if (tabN >= 0 && tabN < Object.keys(this.props.schema.items).length) {
+                    tab = Object.keys(this.props.schema.items)[tabN];
+                }
+            } else if (Object.keys(this.props.schema.items).includes(tabS)) {
+                tab = tabS;
+            }
+            if (tab !== undefined && tab !== this.state.tab) {
+                ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`, tab);
+                this.setState({ tab });
+            }
+        }
+    };
 
     render() {
         const items = this.props.schema.items;
@@ -55,7 +104,15 @@ class ConfigTabs extends ConfigGeneric<ConfigTabsProps, ConfigTabsState> {
                 value={this.state.tab}
                 onChange={(e, tab) => {
                     ((window as any)._localStorage as Storage || window.localStorage).setItem(`${this.props.dialogName || 'App'}.${this.props.adapterName}`, tab);
-                    this.setState({ tab });
+                    this.setState({ tab }, () => {
+                        if (this.props.root) {
+                            const hash = (window.location.hash || '').split('/');
+                            if (hash.length >= 3 && hash[1] === 'config') {
+                                hash[3] = this.state.tab;
+                                window.location.hash = hash.join('/');
+                            }
+                        }
+                    });
                 }}
             >
                 {Object.keys(items).map(name => {
