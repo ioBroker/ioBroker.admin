@@ -223,6 +223,7 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
         </DialogContent>
         <DialogActions>
             <Button
+                id="license-dialog-accept"
                 variant="contained"
                 disabled={loading || !scrolled}
                 autoFocus
@@ -232,7 +233,13 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
             >
                 {!scrolled ? I18n.t('Read to the end for accept') : I18n.t('Accept')}
             </Button>
-            <Button variant="contained" onClick={() => onClose()} startIcon={<IconClose />} color="grey">
+            <Button
+                id="license-dialog-close"
+                variant="contained"
+                onClick={() => onClose()}
+                startIcon={<IconClose />}
+                color="grey"
+            >
                 {I18n.t('Close')}
             </Button>
         </DialogActions>

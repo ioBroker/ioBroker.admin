@@ -136,7 +136,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
 
     renderCharts() {
         return <ObjectChart
-            id="chart-tabpanel"
+            id="custom-tabpanel-chart"
             isFloatComma={this.props.isFloatComma}
             showJumpToEchart
             t={this.props.t}
@@ -153,7 +153,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
 
     renderTable() {
         return <ObjectHistoryData
-            id="table-tabpanel"
+            id="custom-tabpanel-history"
             t={this.props.t}
             isFloatComma={this.props.isFloatComma}
             lang={this.props.lang}
@@ -168,7 +168,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
 
     renderCustomEditor() {
         return <ObjectCustomEditor
-            id="custom-settings-tabpanel"
+            id="custom-tabpanel-settings"
             registerSaveFunc={(func: (cb?: (error?: boolean) => void) => void) => this.saveFunc = func}
             t={this.props.t}
             allVisibleObjects={this.props.allVisibleObjects}
@@ -275,21 +275,21 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                             disabled={this.state.progressRunning}
                             label={this.props.t('Custom settings')}
                             id="custom-settings-tab"
-                            aria-controls="simple-tabpanel-0"
+                            aria-controls="custom-tabpanel-settings"
                             sx={{ '&.Mui-selected': styles.tabSelected }}
                         />
                         {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('History data')}
                             id="history-data-tab"
-                            aria-controls="simple-tabpanel-1"
+                            aria-controls="custom-tabpanel-history"
                             sx={{ '&.Mui-selected': styles.tabSelected }}
                         /> : null}
                         {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
                             disabled={this.state.progressRunning}
                             label={this.props.t('Chart')}
                             id="chart-tab"
-                            aria-controls="simple-tabpanel-2"
+                            aria-controls="custom-tabpanel-chart"
                             sx={{ '&.Mui-selected': styles.tabSelected }}
                         /> : null}
                     </Tabs>
@@ -300,6 +300,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
             </DialogContent>
             <DialogActions>
                 {this.state.currentTab === 0 && <Button
+                    id="object-custom-dialog-save"
                     variant="contained"
                     color="primary"
                     disabled={!this.state.hasChanges || this.state.progressRunning}
@@ -308,6 +309,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                     {this.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
                 </Button>}
                 {this.state.currentTab === 0 && <Button
+                    id="object-custom-dialog-save-close"
                     variant="contained"
                     color="primary"
                     disabled={!this.state.hasChanges || this.state.progressRunning}
@@ -322,6 +324,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                     {this.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
                 </Button>}
                 <Button
+                    id="object-custom-dialog-close"
                     disabled={this.state.progressRunning}
                     variant="contained"
                     onClick={() => this.onClose()}

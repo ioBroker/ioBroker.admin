@@ -321,6 +321,7 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
         </DialogContent>
         <DialogActions>
             <Button
+                id="inputs-modal-dialog-apply"
                 variant="contained"
                 autoFocus
                 disabled={!!Object.keys(error).find(attr => error[attr])}
@@ -350,6 +351,7 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                 {I18n.t('Apply')}
             </Button>
             <Button
+                id="inputs-modal-dialog-close"
                 variant="contained"
                 onClick={() => onClose()}
                 color="grey"

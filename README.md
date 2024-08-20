@@ -85,6 +85,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Improvement for automatic tests
+
 ### 7.0.24 (2024-08-16)
 * (bluefox) Showed min/max limits by controlling the values
 * (bluefox) Corrected style for tabs

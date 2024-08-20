@@ -129,7 +129,7 @@ class ConfigPassword extends ConfigGeneric<ConfigPasswordProps, ConfigPasswordSt
                 helperText={this.state._notEqual ? I18n.t('ra_Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
                 // eslint-disable-next-line react/jsx-no-duplicate-props
                 InputProps={{
-                    endAdornment: this.state._repeat && this.state._repeat !== PASSWORD_PLACEHOLDER ? <InputAdornment position="end">
+                    endAdornment: this.state._repeat && this.state._repeat !== PASSWORD_PLACEHOLDER && this.props.schema.visible ? <InputAdornment position="end">
                         <IconButton
                             size="large"
                             tabIndex={-1}

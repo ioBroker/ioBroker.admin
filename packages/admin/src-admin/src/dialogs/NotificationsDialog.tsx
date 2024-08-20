@@ -438,6 +438,7 @@ const NotificationsDialog = ({
         </DialogContent>
         <DialogActions>
             <Button
+                id="notifications-dialog-close"
                 variant="contained"
                 onClick={() => onClose()}
                 startIcon={<CloseIcon />}

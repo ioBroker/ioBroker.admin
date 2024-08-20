@@ -337,35 +337,36 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
     renderItem(item: ConfigItemTabs | ConfigItemPanel) {
         if (item.type === 'tabs') {
             return <ConfigTabs
-                onCommandRunning={this.onCommandRunning}
-                commandRunning={this.state.commandRunning}
-                socket={this.props.socket}
+                DeviceManager={this.props.DeviceManager}
                 adapterName={this.props.adapterName}
-                instance={this.props.instance}
-                common={this.props.common}
                 alive={this.state.alive}
-                themeType={this.props.themeType}
-                themeName={this.props.themeName}
-                data={this.props.data}
-                originalData={JSON.parse(this.state.originalData)}
-                schema={item as ConfigItemTabs}
-                systemConfig={this.state.systemConfig}
-                customs={this.props.customs}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                multiEdit={this.props.multiEdit}
-                imagePrefix={this.props.imagePrefix}
+                changeLanguage={this.changeLanguage}
+                changed={this.state.changed}
+                commandRunning={this.state.commandRunning}
+                common={this.props.common}
                 custom={this.props.custom}
                 customObj={this.props.customObj}
-                instanceObj={this.props.instanceObj}
-                changeLanguage={this.changeLanguage}
+                customs={this.props.customs}
+                data={this.props.data}
+                dateFormat={this.props.dateFormat}
                 forceUpdate={this.forceAttrUpdate}
-                registerOnForceUpdate={this.registerOnForceUpdate}
+                imagePrefix={this.props.imagePrefix}
+                instance={this.props.instance}
+                instanceObj={this.props.instanceObj}
+                isFloatComma={this.props.isFloatComma}
+                multiEdit={this.props.multiEdit}
                 onChange={this.onChange}
-                changed={this.state.changed}
+                onCommandRunning={this.onCommandRunning}
                 onError={(attr, error) => this.onError(attr, error)}
-                DeviceManager={this.props.DeviceManager}
+                originalData={JSON.parse(this.state.originalData)}
+                registerOnForceUpdate={this.registerOnForceUpdate}
+                root
+                schema={item as ConfigItemTabs}
+                socket={this.props.socket}
+                systemConfig={this.state.systemConfig}
                 theme={this.props.theme}
+                themeName={this.props.themeName}
+                themeType={this.props.themeType}
             />;
         }
         if (item.type === 'panel' ||
@@ -373,37 +374,38 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
             !item.type
         ) {
             return <ConfigPanel
-                index={1000}
-                isParentTab={!this.props.embedded}
-                changed={this.state.changed}
-                onCommandRunning={this.onCommandRunning}
-                commandRunning={this.state.commandRunning}
-                socket={this.props.socket}
+                DeviceManager={this.props.DeviceManager}
                 adapterName={this.props.adapterName}
-                instance={this.props.instance}
-                common={this.props.common}
                 alive={this.state.alive}
-                themeType={this.props.themeType}
-                themeName={this.props.themeName}
-                data={this.props.data}
-                originalData={JSON.parse(this.state.originalData)}
-                schema={item as ConfigItemPanel}
-                systemConfig={this.state.systemConfig}
-                customs={this.props.customs}
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                multiEdit={this.props.multiEdit}
-                imagePrefix={this.props.imagePrefix}
+                changeLanguage={this.changeLanguage}
+                changed={this.state.changed}
+                commandRunning={this.state.commandRunning}
+                common={this.props.common}
                 custom={this.props.custom}
                 customObj={this.props.customObj}
-                instanceObj={this.props.instanceObj}
-                changeLanguage={this.changeLanguage}
+                customs={this.props.customs}
+                data={this.props.data}
+                dateFormat={this.props.dateFormat}
                 forceUpdate={this.forceAttrUpdate}
-                registerOnForceUpdate={this.registerOnForceUpdate}
+                imagePrefix={this.props.imagePrefix}
+                index={1000}
+                instance={this.props.instance}
+                instanceObj={this.props.instanceObj}
+                isFloatComma={this.props.isFloatComma}
+                isParentTab={!this.props.embedded}
+                multiEdit={this.props.multiEdit}
                 onChange={this.onChange}
+                onCommandRunning={this.onCommandRunning}
                 onError={(attr, error) => this.onError(attr, error)}
-                DeviceManager={this.props.DeviceManager}
+                originalData={JSON.parse(this.state.originalData)}
+                registerOnForceUpdate={this.registerOnForceUpdate}
+                root
+                schema={item as ConfigItemPanel}
+                socket={this.props.socket}
+                systemConfig={this.state.systemConfig}
                 theme={this.props.theme}
+                themeName={this.props.themeName}
+                themeType={this.props.themeType}
             />;
         }
 

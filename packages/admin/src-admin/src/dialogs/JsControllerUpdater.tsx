@@ -249,7 +249,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
     render(): React.JSX.Element {
         return (
             <Dialog
-                onClose={(e, reason) => {
+                onClose={(_e, reason) => {
                     if (reason !== 'escapeKeyDown' && reason !== 'backdropClick') {
                         this.props.onClose();
                     }
@@ -260,43 +260,41 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             >
                 <DialogTitle>{I18n.t('Updating %s...', 'js-controller')}</DialogTitle>
                 <DialogContent style={{ height: 400, padding: '0 20px', overflow: 'hidden' }}>
-                    {(!this.state.response || this.state.response.running) && !this.state.error ? (
-                        <LinearProgress />
-                    ) : null}
-                    {this.state.response || this.state.error ? (
-                        <textarea
-                            ref={this.textareaRef}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                resize: 'none',
-                                background: this.props.themeType === 'dark' ? '#000' : '#fff',
-                                color: this.props.themeType === 'dark' ? '#EEE' : '#111',
-                                boxSizing: 'border-box',
-                                fontFamily:
-                                    'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
-                                border: this.state.response?.success
-                                    ? '2px solid green'
-                                    : this.state.error ||
-                                      (this.state.response &&
-                                          !this.state.response.running &&
-                                          !this.state.response.success)
-                                        ? '2px solid red'
-                                        : undefined,
-                            }}
-                            value={
-                                this.state.error
-                                    ? this.state.error
-                                    : this.state.response.stderr && this.state.response.stderr.length
-                                        ? this.state.response.stderr.join('\n')
-                                        : this.state.response.stdout.join('\n')
-                            }
-                            readOnly
-                        />
-                    ) : null}
+                    {(!this.state.response || this.state.response.running) && !this.state.error ?
+                        <LinearProgress /> : null}
+                    {this.state.response || this.state.error ? <textarea
+                        ref={this.textareaRef}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            resize: 'none',
+                            background: this.props.themeType === 'dark' ? '#000' : '#fff',
+                            color: this.props.themeType === 'dark' ? '#EEE' : '#111',
+                            boxSizing: 'border-box',
+                            fontFamily:
+                                'Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace',
+                            border: this.state.response?.success
+                                ? '2px solid green'
+                                : this.state.error ||
+                                  (this.state.response &&
+                                      !this.state.response.running &&
+                                      !this.state.response.success)
+                                    ? '2px solid red'
+                                    : undefined,
+                        }}
+                        value={
+                            this.state.error
+                                ? this.state.error
+                                : this.state.response.stderr && this.state.response.stderr.length
+                                    ? this.state.response.stderr.join('\n')
+                                    : this.state.response.stdout.join('\n')
+                        }
+                        readOnly
+                    /> : null}
                 </DialogContent>
                 <DialogActions>
                     <Button
+                        id="js-controller-updater-close"
                         variant="contained"
                         disabled={this.state.starting || (!this.state.error && this.state.response?.running)}
                         onClick={() => {
