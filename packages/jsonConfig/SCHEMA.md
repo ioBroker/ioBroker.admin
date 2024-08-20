@@ -418,14 +418,25 @@ adapter.on('message', obj => {
 
 - `textSendTo`
   Shows readonly control with the given from the instance values.
-  - `container` - div, text
+  - `container` - div, text, html
   - `copyToClipboard` - if true - show button
   - `alsoDependsOn` - by change of which attributes, the command must be resent
   - `command` - sendTo command
   - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend
   - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.
   To use this option, your adapter must implement a message handler:
-    The result of command must be a string.
+    The result of command must be a string or object with following parameters:
+```
+{
+    text: 'text to show',  // mandatory
+    style: {color: 'red'}, // optional
+    icon: 'search',        // optional. It could be base64 or link to image in the same folder as jsonConfig.json file
+                           // possible predefined names: edit, rename, delete, refresh, add, search, unpair, pair, identify, play, stop, puase, forward, backward, next, previous, lamp, backlight, dimmer, socket, settings, group, user, qrcode, connection, no-connection, visible
+    iconStyle: {width: 30} // optional
+}
+```
+
+Example:
 ```
 adapter.on('message', obj => {
     if (obj) {
@@ -433,7 +444,9 @@ adapter.on('message', obj => {
         case 'command':
           obj.callback && adapter.sendTo(obj.from, obj.command, 'Received ' + JSON.stringify(obj.message), obj.callback);
           // or with style
-          obj.callback && adapter.sendTo(obj.from, obj.command, { text: 'Received ' + JSON.stringify(obj.message), style: { color: 'red' } }, obj.callback);
+          obj.callback && adapter.sendTo(obj.from, obj.command, { text: 'Received ' + JSON.stringify(obj.message), style: { color: 'red' }, icon: 'search', iconStyle: { width: 30 }}, obj.callback);
+          // or as html
+          obj.callback && adapter.sendTo(obj.from, obj.command, `<div style="color: green">${JSON.stringify(obj.message)}</div>`, obj.callback);
           break;
       }
     }

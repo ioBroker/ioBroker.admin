@@ -500,7 +500,7 @@ export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
     /** button tooltip */
     title?: ioBroker.StringOrTranslated;
     alsoDependsOn?: string[];
-    container?: 'text' | 'div';
+    container?: 'text' | 'div' | 'html';
     copyToClipboard?: boolean;
 }
 
