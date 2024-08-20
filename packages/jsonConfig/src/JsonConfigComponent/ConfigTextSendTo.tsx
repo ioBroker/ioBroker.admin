@@ -22,6 +22,7 @@ interface ConfigTextSendToProps extends ConfigGenericProps {
 
 interface ConfigTextSendToState extends ConfigGenericState {
     text?: string;
+    style?: React.CSSProperties;
 }
 
 class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSendToState> {
@@ -36,7 +37,7 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                 const dataStr: string = this.getPattern(this.props.schema.jsonData);
                 try {
                     data = JSON.parse(dataStr);
-                } catch (e) {
+                } catch {
                     console.error(`Cannot parse json data: ${dataStr}`);
                 }
             }
@@ -46,7 +47,14 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
             }
 
             this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
-                .then(text => this.setState({ text: text || '' }));
+                .then(result => {
+                    if (typeof result === 'object') {
+                        const _data: { text: string; style?: React.CSSProperties } = result as any as { text: string; style?: React.CSSProperties };
+                        this.setState({ text: _data.text || '', style: _data.style });
+                    } else if (typeof result === 'string') {
+                        this.setState({ text: result || '' });
+                    }
+                });
         }
     }
 
@@ -93,7 +101,11 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
         }
-        return <div style={styles.fullWidth}>{this.state.text}</div>;
+        return <div
+            style={{ ...styles.fullWidth, ...(this.state.style || undefined) }}
+        >
+            {this.state.text}
+        </div>;
     }
 }
 

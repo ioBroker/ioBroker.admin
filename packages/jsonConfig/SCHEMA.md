@@ -432,6 +432,8 @@ adapter.on('message', obj => {
       switch (obj.command) {
         case 'command':
           obj.callback && adapter.sendTo(obj.from, obj.command, 'Received ' + JSON.stringify(obj.message), obj.callback);
+          // or with style
+          obj.callback && adapter.sendTo(obj.from, obj.command, { text: 'Received ' + JSON.stringify(obj.message), style: { color: 'red' } }, obj.callback);
           break;
       }
     }
