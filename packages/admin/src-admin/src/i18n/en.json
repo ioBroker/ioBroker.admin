@@ -1617,5 +1617,9 @@
     "Adapter warnings": "Adapter warnings",
     "Links": "Links",
     "min:": "from:",
-    "max:": "to:"
+    "max:": "to:",
+    "Edit compact groups for %s": "Edit compact groups for %s",
+    "Add compact group": "Add compact group",
+    "with js-controller": "with js-controller",
+    "default group": "default group"
 }

@@ -1617,5 +1617,9 @@
   "Adapter warnings": "Предупреждения адаптера",
   "Links": "Ссылки",
   "min:": "от:",
-  "max:": "до:"
+  "max:": "до:",
+  "Edit compact groups for %s": "Редактировать компактные группы для %s",
+  "Add compact group": "Добавить компактную группу",
+  "with js-controller": "с js-контроллер",
+  "default group": "по умолчанию"
 }

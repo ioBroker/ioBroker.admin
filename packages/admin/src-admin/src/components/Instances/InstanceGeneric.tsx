@@ -807,7 +807,7 @@ export default abstract class InstanceGeneric<
                             {this.props.context.t('Add compact group')}
                         </Button>
                     </div>
-                    <MenuItem value="controller">{this.props.context.t('with controller')}</MenuItem>
+                    <MenuItem value="controller">{this.props.context.t('with js-controller')}</MenuItem>
                     <MenuItem value="default">{this.props.context.t('default group')}</MenuItem>
                     {Array(this.state.maxCompactGroupNumber - 1)
                         .fill(0)
