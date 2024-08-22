@@ -1057,7 +1057,7 @@ export default abstract class InstanceGeneric<
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderMemoryUsage() {
         return this.props.item.running && <InstanceInfo icon={<MemoryIcon />} tooltip={this.props.context.t('RAM usage')}>
-            {`${this.props.instance.mode === 'daemon' ? this.getMemory() : '-.--'} MB`}
+            {`${this.props.instance.mode === 'daemon' && !InstanceGeneric.isCompact(this.props.instance.obj) ? this.getMemory() : '-.--'} MB`}
         </InstanceInfo>;
     }
 
