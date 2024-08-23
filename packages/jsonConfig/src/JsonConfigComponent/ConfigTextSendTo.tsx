@@ -5,7 +5,7 @@ import {
     IconButton,
 } from '@mui/material';
 
-import {Icon, IconCopy, Utils} from '@iobroker/adapter-react-v5';
+import { Icon, IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemSendTo } from '#JC/types';
 import getIconByName from './Icons';

@@ -425,7 +425,7 @@ adapter.on('message', obj => {
   - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend
   - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.
   To use this option, your adapter must implement a message handler:
-    The result of command must be a string or object with following parameters:
+    The result of command must be a string or object with the following parameters:
 ```
 {
     text: 'text to show',  // mandatory
