@@ -1617,5 +1617,9 @@
   "Adapter warnings": "Попередження про адаптер",
   "Links": "Посилання",
   "min:": "від:",
-  "max:": "до:"
+  "max:": "до:",
+  "Edit compact groups for %s": "Редагувати компактні групи на %s",
+  "Add compact group": "Додати компактну групу",
+  "with js-controller": "з js-controller",
+  "default group": "категорія"
 }

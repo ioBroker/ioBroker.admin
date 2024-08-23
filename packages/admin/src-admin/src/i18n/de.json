@@ -1617,5 +1617,9 @@
   "yesterday": "gestern",
   "Links": "Links",
   "min:": "von:",
-  "max:": "bis:"
+  "max:": "bis:",
+  "Edit compact groups for %s": "Kompakt-Gruppen für %s bearbeiten",
+  "Add compact group": "Kompakt-Gruppe hinzufügen",
+  "with js-controller": "mit js-controller",
+  "default group": "Standardgruppe"
 }

@@ -1617,5 +1617,9 @@
   "Adapter warnings": "Avvertenze sull'adattatore",
   "Links": "Collegamenti",
   "min:": "da:",
-  "max:": "A:"
+  "max:": "A:",
+  "Edit compact groups for %s": "Modificare gruppi compatti per %",
+  "Add compact group": "Aggiungere gruppo compatto",
+  "with js-controller": "con js-controller",
+  "default group": "gruppo predefinito"
 }

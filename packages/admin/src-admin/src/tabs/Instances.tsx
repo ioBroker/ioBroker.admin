@@ -330,7 +330,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             if (!inst || !inst.common || inst.common.host !== this.props.currentHostName) {
                 continue;
             }
-            if (inst.common.enabled && inst.common.mode === 'daemon') {
+            if (inst.common.enabled && inst.common.mode === 'daemon' && !InstanceGeneric.isCompact(inst)) {
                 memRssId = `${inst._id}.memRss`;
                 this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
                 const m = this.states[memRssId];
@@ -459,6 +459,16 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
 
         console.log(`getInstances: ${Date.now() - start}`);
+
+        for (let c = 1; c <= maxCompactGroupNumber; c++) {
+            const compactGroupMemRssId = `${this.state.currentHost}.compactgroup${c}.memRss`;
+            this.states[compactGroupMemRssId] = this.states[compactGroupMemRssId] || (await this.props.socket.getState(compactGroupMemRssId));
+            const m = this.states[compactGroupMemRssId];
+            if (m) {
+                mem += m ? parseFloat(m.val as string) || 0 : 0;
+                processes++;
+            }
+        }
 
         if (this.state.deleting && !formatted[`system.adapter.${this.state.deleting}`]) {
             newState.deleting = null;
