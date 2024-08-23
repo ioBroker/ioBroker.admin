@@ -20,12 +20,13 @@ interface ConfigStateProps extends ConfigGenericProps {
 interface ConfigStateState extends ConfigGenericState {
     stateValue?: string | number | boolean | null;
     controlType?: string;
+    obj?: ioBroker.Object | null;
 }
 
 class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
-    obj: ioBroker.Object | null = null;
-
     controlTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    delayedUpdate: { timer: ReturnType<typeof setTimeout> | null, value: string | boolean | number | null } = { timer: null, value: null };
 
     getObjectID() {
         return `${this.props.schema.system ? 'system.adapter.' : ''}${this.props.adapterName}.${this.props.instance}.${this.props.schema.oid}`;
@@ -33,12 +34,12 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
 
     async componentDidMount() {
         super.componentDidMount();
-        this.obj = await this.props.socket.getObject(this.getObjectID());
-        const controlType = this.props.schema.control || await this.detectType();
+        const obj: ioBroker.StateObject = await this.props.socket.getObject(this.getObjectID()) as ioBroker.StateObject;
+        const controlType = this.props.schema.control || await this.detectType(obj);
 
         const state = await this.props.socket.getState(this.getObjectID());
 
-        this.setState({ stateValue: state ? state.val : null, controlType }, async () => {
+        this.setState({ stateValue: state ? state.val : null, controlType, obj }, async () => {
             await this.props.socket.subscribeState(this.getObjectID(), this.onStateChanged);
         });
     }
@@ -46,6 +47,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     componentWillUnmount() {
         super.componentWillUnmount();
         this.props.socket.unsubscribeState(this.getObjectID(), this.onStateChanged);
+        if (this.delayedUpdate.timer) {
+            clearTimeout(this.delayedUpdate.timer);
+            this.delayedUpdate.timer = null;
+        }
+
         if (this.controlTimeout) {
             clearTimeout(this.controlTimeout);
             this.controlTimeout = null;
@@ -60,29 +66,49 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             this.state.controlType === 'switch'
         ) {
             val = !!val;
+            if (this.state.stateValue !== val) {
+                this.setState({ stateValue: val });
+            }
         } else if (val !== null && (this.state.controlType === 'slider' || this.state.controlType === 'number')) {
             val = parseFloat(val as unknown as string);
+            console.log(`${Date.now()} Received new value: ${val}`);
+            if (val !== this.state.stateValue) {
+                if (this.delayedUpdate.timer) {
+                    clearTimeout(this.delayedUpdate.timer);
+                    this.delayedUpdate.timer = null;
+                }
+                this.delayedUpdate.value = val;
+                this.delayedUpdate.timer = setTimeout(() => {
+                    this.setState({ stateValue: this.delayedUpdate.value });
+                }, 500);
+            } else if (this.delayedUpdate.timer) {
+                clearTimeout(this.delayedUpdate.timer);
+                this.delayedUpdate.timer = null;
+            }
+        } else if (this.state.stateValue.toString() !== val.toString()) {
+            this.setState({ stateValue: val });
         }
-
-        this.setState({ stateValue: val });
     };
 
-    async detectType() {
+    async detectType(obj: ioBroker.StateObject) {
+        obj = obj || {} as ioBroker.StateObject;
+        obj.common = obj.common || {} as ioBroker.StateCommon;
+
         // read object
-        if (this.obj.common.type === 'boolean') {
-            if (this.obj.common.read === false) {
+        if (obj.common.type === 'boolean') {
+            if (obj.common.read === false) {
                 return 'button';
             }
-            if (this.obj.common.write) {
+            if (obj.common.write) {
                 return 'switch';
             }
 
             return 'text';
         }
 
-        if (this.obj.common.type === 'number') {
-            if (this.obj.common.write) {
-                if (this.obj.common.max !== undefined) {
+        if (obj.common.type === 'number') {
+            if (obj.common.write) {
+                if (obj.common.max !== undefined) {
                     return 'slider';
                 }
                 return 'input';
@@ -90,7 +116,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             return 'text';
         }
 
-        if (this.obj.common.write) {
+        if (obj.common.write) {
             return 'input';
         }
 
@@ -98,7 +124,11 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     }
 
     renderItem(/* error, disabled, defaultValue */) {
-        let content: React.JSX.Element | null = null;
+        if (!this.state.obj) {
+            return null;
+        }
+
+        let content: React.JSX.Element;
 
         if (this.state.controlType === 'button') {
             let icon: React.JSX.Element | null = null;
@@ -113,6 +143,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 </IconButton>;
             } else {
                 content = <Button
+                    variant={this.props.schema.variant || 'contained'}
                     startIcon={icon}
                     style={this.props.schema.falseTextStyle}
                 >
@@ -143,7 +174,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 textTrue ||
                 iconTrue
             ) {
-                content = <div style={{ display: 'flex' }}>
+                content = <div style={{ display: 'flex', alignItems: 'center', fontSize: 14 }}>
                     <span style={this.props.schema.falseTextStyle}>
                         {textFalse}
                         {iconFalse}
@@ -158,8 +189,8 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
 
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
             if (label) {
-                content = <div style={{ display: 'flex' }}>
-                    {label}
+                content = <div style={{ display: 'flex', alignItems: 'center', fontSize: '1rem' }}>
+                    <span style={{ marginRight: 8 }}>{label}</span>
                     {content}
                 </div>;
             }
@@ -175,9 +206,9 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 iconTrue = getIconByName(this.props.schema.trueImage, textTrue ? { marginRight: 8 } : undefined);
             }
 
-            const min = this.props.schema.min === undefined ? this.obj.common.min || 0 : this.props.schema.min;
-            const max = this.props.schema.max === undefined ? (this.obj.common.max === undefined ? 100 : this.obj.common.max) : this.props.schema.max;
-            const step = this.props.schema.step === undefined ? this.obj.common.step || 1 : this.props.schema.step;
+            const min = this.props.schema.min === undefined ? this.state.obj.common.min || 0 : this.props.schema.min;
+            const max = this.props.schema.max === undefined ? (this.state.obj.common.max === undefined ? 100 : this.state.obj.common.max) : this.props.schema.max;
+            const step = this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
 
             content = <Slider
                 style={{ width: '100%', flexGrow: 1 }}
@@ -185,14 +216,15 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 max={max}
                 step={step}
                 value={this.state.stateValue as number}
-                onChange={(e: Event, value: number) => {
+                onChange={(_e: Event, value: number) => {
                     this.setState({ stateValue: value }, async () => {
                         if (this.controlTimeout) {
                             clearTimeout(this.controlTimeout);
                         }
                         this.controlTimeout = setTimeout(async () => {
+                            console.log(`${Date.now()} Send new value: ${this.state.stateValue}`);
                             this.controlTimeout = null;
-                            await this.props.socket.setState(this.getObjectID(), value, false);
+                            await this.props.socket.setState(this.getObjectID(), this.state.stateValue, false);
                         }, this.props.schema.controlDelay || 0);
                     });
                 }}
@@ -203,13 +235,20 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 textTrue ||
                 iconTrue
             ) {
-                content = <div style={{ display: 'flex', width: '100%', flexGrow: 1 }}>
-                    <span style={this.props.schema.falseTextStyle}>
+                content = <div
+                    style={{
+                        display: 'flex',
+                        width: '100%',
+                        flexGrow: 1,
+                        alignItems: 'center',
+                    }}
+                >
+                    <span style={{ marginRight: 16, ...this.props.schema.falseTextStyle }}>
                         {textFalse}
                         {iconFalse}
                     </span>
                     {content}
-                    <span style={this.props.schema.trueTextStyle}>
+                    <span style={{ marginLeft: 16, ...this.props.schema.trueTextStyle }}>
                         {iconTrue}
                         {textTrue}
                     </span>
@@ -217,8 +256,8 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             }
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
             if (label) {
-                content = <div style={{ display: 'flex', width: '100%' }}>
-                    {label}
+                content = <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+                    <span style={{ whiteSpace: 'nowrap', marginRight: 8, fontSize: '1rem' }}>{label}</span>
                     {content}
                 </div>;
             }
@@ -226,6 +265,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             content = <TextField
                 style={{ width: '100%' }}
                 value={this.state.stateValue}
+                variant="standard"
                 onChange={e => {
                     this.setState({ stateValue: e.target.value }, async () => {
                         if (this.controlTimeout) {
@@ -240,12 +280,13 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
-        } else if (this.obj.common.type === 'number') {
-            const min = this.props.schema.min === undefined ? this.obj.common.min || 0 : this.props.schema.min;
-            const max = this.props.schema.max === undefined ? (this.obj.common.max === undefined ? 100 : this.obj.common.max) : this.props.schema.max;
-            const step = this.props.schema.step === undefined ? this.obj.common.step || 1 : this.props.schema.step;
+        } else if (this.state.obj.common.type === 'number') {
+            const min = this.props.schema.min === undefined ? this.state.obj.common.min || 0 : this.props.schema.min;
+            const max = this.props.schema.max === undefined ? (this.state.obj.common.max === undefined ? 100 : this.state.obj.common.max) : this.props.schema.max;
+            const step = this.props.schema.step === undefined ? this.state.obj.common.step || 1 : this.props.schema.step;
 
             content = <TextField
+                variant="standard"
                 style={{ width: '100%' }}
                 value={this.state.stateValue}
                 type="number"
@@ -265,7 +306,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
-        } else if (this.obj.common.type === 'boolean') {
+        } else if (this.state.obj.common.type === 'boolean') {
             let icon: React.JSX.Element | null = null;
             let text: string;
             let style: React.CSSProperties | undefined;
@@ -283,7 +324,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 style = this.props.schema.trueTextStyle;
             }
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
-            content = <div style={style}>
+            content = <div style={{ fontSize: '1rem', ...style }}>
                 {label}
                 {label ? <span style={{ marginRight: 8 }}>:</span> : null}
                 {icon}
@@ -291,8 +332,8 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             </div>;
         } else {
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
-            const unit = this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.obj.common.unit;
-            content = <div>
+            const unit = this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit;
+            content = <div style={{ fontSize: '1rem' }}>
                 {label}
                 {label ? <span style={{ marginRight: 8 }}>:</span> : null}
                 {this.state.stateValue}

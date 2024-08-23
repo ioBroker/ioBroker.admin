@@ -536,6 +536,8 @@ export interface ConfigItemState extends ConfigItem {
     step?: number;
     /** delay in ms for slider or number */
     controlDelay?: number;
+    /** Variant of button */
+    variant?: 'contained' | 'outlined' | 'text';
  }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {

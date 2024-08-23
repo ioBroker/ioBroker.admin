@@ -171,7 +171,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                         props.globalData,
                     )
                     : props.schema.default;
-            } else {
+            } else if (props.schema.type !== 'state') {
                 this.defaultValue = props.schema.defaultFunc
                     ? this.execute(
                         props.schema.defaultFunc,
@@ -188,7 +188,9 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
     }
 
     componentDidMount() {
-        this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
+        if (this.props.registerOnForceUpdate) {
+            this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
+        }
         const LIKE_SELECT = ['select', 'autocomplete', 'autocompleteSendTo'];
         // init default value
         if (this.defaultValue !== undefined) {
