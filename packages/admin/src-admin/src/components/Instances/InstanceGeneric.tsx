@@ -807,7 +807,7 @@ export default abstract class InstanceGeneric<
                             {this.props.context.t('Add compact group')}
                         </Button>
                     </div>
-                    <MenuItem value="controller">{this.props.context.t('with controller')}</MenuItem>
+                    <MenuItem value="controller">{this.props.context.t('with js-controller')}</MenuItem>
                     <MenuItem value="default">{this.props.context.t('default group')}</MenuItem>
                     {Array(this.state.maxCompactGroupNumber - 1)
                         .fill(0)
@@ -1057,7 +1057,7 @@ export default abstract class InstanceGeneric<
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderMemoryUsage() {
         return this.props.item.running && <InstanceInfo icon={<MemoryIcon />} tooltip={this.props.context.t('RAM usage')}>
-            {`${this.props.instance.mode === 'daemon' ? this.getMemory() : '-.--'} MB`}
+            {`${this.props.instance.mode === 'daemon' && !InstanceGeneric.isCompact(this.props.instance.obj) ? this.getMemory() : '-.--'} MB`}
         </InstanceInfo>;
     }
 
