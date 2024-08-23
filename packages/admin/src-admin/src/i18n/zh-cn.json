@@ -1621,5 +1621,6 @@
   "Edit compact groups for %s": "编辑 %s 的压缩组",
   "Add compact group": "添加紧凑组",
   "with js-controller": "带有 js 控制器",
-  "default group": "默认组"
+  "default group": "默认组",
+  "Invoice number": "发票号码"
 }

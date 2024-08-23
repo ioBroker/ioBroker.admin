@@ -1621,5 +1621,6 @@
   "Edit compact groups for %s": "Compacte groepen bewerken voor %s",
   "Add compact group": "Compacte groep toevoegen",
   "with js-controller": "met js-controller",
-  "default group": "standaardgroep"
+  "default group": "standaardgroep",
+  "Invoice number": "Factuurnummer"
 }
