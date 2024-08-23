@@ -214,7 +214,7 @@ class LicensesDialog extends BaseSystemSettingsDialog<LicensesDialogProps, Licen
                             <TableCell style={styles.tableValid}>{this.props.t('Valid till')}</TableCell>
                             <TableCell style={styles.tableVersion}>{this.props.t('V')}</TableCell>
                             <TableCell style={styles.tableUsedIn}>{this.props.t('Used by')}</TableCell>
-                            <TableCell style={styles.tableCommercial}>{this.props.t('ra_Commercial')}</TableCell>
+                            <TableCell style={styles.tableCommercial}>{this.props.t('Invoice number')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

@@ -1621,5 +1621,6 @@
   "Edit compact groups for %s": "Редактировать компактные группы для %s",
   "Add compact group": "Добавить компактную группу",
   "with js-controller": "с js-контроллер",
-  "default group": "по умолчанию"
+  "default group": "по умолчанию",
+  "Invoice number": "Номер счета-фактуры"
 }
