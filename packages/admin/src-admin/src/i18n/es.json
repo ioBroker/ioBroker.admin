@@ -1621,5 +1621,6 @@
   "Edit compact groups for %s": "Editar grupos compactos para %s",
   "Add compact group": "Agregar grupo compacto",
   "with js-controller": "con js-controller",
-  "default group": "grupo predeterminado"
+  "default group": "grupo predeterminado",
+  "Invoice number": "Número de factura"
 }
