@@ -123,6 +123,7 @@ export interface ConfigGenericState {
     value?: any;
     confirmDepAttr?: any;
     confirmDepNewValue?: any;
+    confirmCallback: null | ((result: boolean) => void);
 }
 
 export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGenericProps, State extends ConfigGenericState = ConfigGenericState> extends Component<Props, State> {
@@ -155,6 +156,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             confirmNewValue: null,
             confirmAttr: null,
             confirmData: null,
+            confirmCallback: null,
         } satisfies ConfigGenericState;
 
         this.isError = {};
@@ -370,6 +372,12 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             onClose={isOk =>
                 this.setState({ confirmDialog: false }, () => {
                     if (isOk) {
+                        if (this.state.confirmCallback) {
+                            const callback = this.state.confirmCallback;
+                            this.setState({ confirmCallback: null }, () => callback(true));
+                            return;
+                        }
+
                         const data = JSON.parse(JSON.stringify(this.props.data));
                         if (this.state.confirmDepAttr) {
                             ConfigGeneric.setValue(data, this.state.confirmDepAttr, this.state.confirmDepNewValue);
@@ -388,6 +396,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                             () => this.props.onChange(data),
                         );
                     } else {
+                        const callback = this.state.confirmCallback;
                         this.setState({
                             confirmDialog: false,
                             confirmDepAttr: null,
@@ -395,6 +404,11 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                             confirmNewValue: null,
                             confirmAttr: null,
                             confirmData: null,
+                            confirmCallback: null,
+                        }, () => {
+                            if (callback) {
+                                callback(false);
+                            }
                         });
                     }
                 })}

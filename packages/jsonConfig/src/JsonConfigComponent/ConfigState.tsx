@@ -91,8 +91,8 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     };
 
     async detectType(obj: ioBroker.StateObject) {
-        obj = obj || {} as ioBroker.StateObject;
-        obj.common = obj.common || {} as ioBroker.StateCommon;
+        obj = obj || ({} as ioBroker.StateObject);
+        obj.common = obj.common || ({} as ioBroker.StateCommon);
 
         // read object
         if (obj.common.type === 'boolean') {
@@ -140,7 +140,23 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
 
             const text = this.getText(this.props.schema.falseText, this.props.schema.noTranslation) || this.getText(this.props.schema.label, this.props.schema.noTranslation);
             if (!text && icon) {
-                content = <IconButton>
+                content = <IconButton
+                    style={this.props.schema.falseTextStyle}
+                    onClick={async () => {
+                        if (this.props.schema.confirm) {
+                            this.setState({
+                                confirmDialog: true,
+                                confirmCallback: async (result: boolean) => {
+                                    if (result) {
+                                        await this.props.socket.setState(this.getObjectID(), true, false);
+                                    }
+                                },
+                            });
+                        } else {
+                            await this.props.socket.setState(this.getObjectID(), true, false);
+                        }
+                    }}
+                >
                     {icon}
                 </IconButton>;
             } else {
@@ -148,6 +164,20 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                     variant={this.props.schema.variant || 'contained'}
                     startIcon={icon}
                     style={this.props.schema.falseTextStyle}
+                    onClick={async () => {
+                        if (this.props.schema.confirm) {
+                            this.setState({
+                                confirmDialog: true,
+                                confirmCallback: async (result: boolean) => {
+                                    if (result) {
+                                        await this.props.socket.setState(this.getObjectID(), true, false);
+                                    }
+                                },
+                            });
+                        } else {
+                            await this.props.socket.setState(this.getObjectID(), true, false);
+                        }
+                    }}
                 >
                     {text || this.getObjectID().split('.').pop()}
                 </Button>;
@@ -167,7 +197,18 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             content = <Switch
                 checked={!!this.state.stateValue}
                 onChange={async () => {
-                    await this.props.socket.setState(this.getObjectID(), !this.state.stateValue, false);
+                    if (this.props.schema.confirm) {
+                        this.setState({
+                            confirmDialog: true,
+                            confirmCallback: async (result: boolean) => {
+                                if (result) {
+                                    await this.props.socket.setState(this.getObjectID(), !this.state.stateValue, false);
+                                }
+                            },
+                        });
+                    } else {
+                        await this.props.socket.setState(this.getObjectID(), !this.state.stateValue, false);
+                    }
                 }}
             />;
 
