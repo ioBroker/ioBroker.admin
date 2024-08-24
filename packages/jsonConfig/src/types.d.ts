@@ -508,11 +508,11 @@ export interface ConfigItemState extends ConfigItem {
     type: 'state';
     /** Which object ID should be taken for the controlling. The ID is without "adapter.X." prefix */
     oid: string;
-    /** IF true, the state will be taken from system.adapter.XX.I. and not from XX.I */
+    /** If true, the state will be taken from system.adapter.XX.I. and not from XX.I */
     system?: boolean;
     /** How the value of the state should be shown */
-    control?: 'text' | 'image' | 'html' | 'input' | 'slider' | 'select' | 'button' | 'switch' | 'number';
-    /** If true, the state will be shown as switch, select, button, slider or text input */
+    control?: 'text' | 'html' | 'input' | 'slider' | 'select' | 'button' | 'switch' | 'number';
+    /** If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined */
     controlled?: boolean;
     /** Add unit to the value */
     unit?: string;

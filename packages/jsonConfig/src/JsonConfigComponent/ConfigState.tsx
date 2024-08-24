@@ -96,18 +96,20 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
 
         // read object
         if (obj.common.type === 'boolean') {
-            if (obj.common.read === false) {
-                return 'button';
-            }
-            if (obj.common.write) {
-                return 'switch';
+            if (this.props.schema.controlled !== false) {
+                if (obj.common.read === false || this.props.schema.controlled === true) {
+                    return 'button';
+                }
+                if (obj.common.write || this.props.schema.controlled === true) {
+                    return 'switch';
+                }
             }
 
             return 'text';
         }
 
-        if (obj.common.type === 'number') {
-            if (obj.common.write) {
+        if (obj.common.type === 'number' && this.props.schema.controlled !== false) {
+            if (obj.common.write || this.props.schema.controlled === true) {
                 if (obj.common.max !== undefined) {
                     return 'slider';
                 }
@@ -116,7 +118,7 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
             return 'text';
         }
 
-        if (obj.common.write) {
+        if (obj.common.write && this.props.schema.controlled !== false) {
             return 'input';
         }
 
@@ -216,6 +218,8 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 max={max}
                 step={step}
                 value={this.state.stateValue as number}
+                valueLabelDisplay="auto"
+                valueLabelFormat={(value: number) => `${value}${this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || ''}`}
                 onChange={(_e: Event, value: number) => {
                     this.setState({ stateValue: value }, async () => {
                         if (this.controlTimeout) {
@@ -266,6 +270,9 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 style={{ width: '100%' }}
                 value={this.state.stateValue}
                 variant="standard"
+                InputProps={{
+                    endAdornment: this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || undefined,
+                }}
                 onChange={e => {
                     this.setState({ stateValue: e.target.value }, async () => {
                         if (this.controlTimeout) {
@@ -291,6 +298,10 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 value={this.state.stateValue}
                 type="number"
                 inputProps={{ min, max, step }}
+                // eslint-disable-next-line react/jsx-no-duplicate-props
+                InputProps={{
+                    endAdornment: this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit || undefined,
+                }}
                 onChange={e => {
                     this.setState({ stateValue: e.target.value }, async () => {
                         if (this.controlTimeout) {
@@ -331,12 +342,25 @@ class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
                 {text || (this.state.stateValue ? I18n.t('ra_true') : I18n.t('ra_false'))}
             </div>;
         } else {
+            // text or html
             const label = this.getText(this.props.schema.label, this.props.schema.noTranslation);
             const unit = this.getText(this.props.schema.unit, this.props.schema.noTranslation) || this.state.obj.common.unit;
+            let value;
+            if (this.state.controlType === 'html') {
+                // eslint-disable-next-line react/no-danger
+                value = <span dangerouslySetInnerHTML={{ __html: this.state.stateValue as string }} />;
+            } else if (this.state.stateValue === null) {
+                value = 'null';
+            } else if (this.state.stateValue === undefined) {
+                value = 'undefined';
+            } else {
+                value = this.state.stateValue;
+            }
+
             content = <div style={{ fontSize: '1rem' }}>
                 {label}
                 {label ? <span style={{ marginRight: 8 }}>:</span> : null}
-                {this.state.stateValue}
+                {value}
                 {unit ? <span style={{ opacity: 0.7 }}>{unit}</span> : null}
             </div>;
         }
