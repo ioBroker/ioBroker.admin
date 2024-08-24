@@ -202,6 +202,8 @@ export interface TreeItemData {
     title?: string;
     /** if the item has "write" button (value=true, ack=false) */
     button?: boolean;
+    /** If the item has read and write and is boolean */
+    switch?: boolean;
     /** if the item has custom settings in `common.custom` */
     hasCustoms?: boolean;
     /** If this item is visible */
@@ -1622,6 +1624,8 @@ function buildTree(
                                     typeof obj.common.role === 'string' &&
                                     obj.common.role.startsWith('button') &&
                                     obj.common?.write !== false,
+                        switch:     obj.type === 'state' && obj.common?.type === 'boolean' &&
+                                    obj.common?.write !== false && obj.common?.read !== false,
                     },
                 };
 
@@ -5343,8 +5347,20 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         info.style = getValueStyle({ state, isExpertMode: this.state.filter.expertMode, isButton: item.data.button });
 
         let val: React.JSX.Element[] = info.valTextRx as React.JSX.Element[];
-        if (!this.state.filter.expertMode && item.data.button) {
-            val = [<PressButtonIcon style={styles.cellValueButton} />];
+        if (!this.state.filter.expertMode) {
+            if (item.data.button) {
+                val = [<PressButtonIcon key="button" style={styles.cellValueButton} />];
+            } else if (item.data.switch) {
+                val = [<Switch
+                    key="switch"
+                    sx={{
+                        '& .MuiSwitch-thumb': { color: info.style.color },
+                        '& .MuiSwitch-track': !!this.states[id].val && this.state.selected.includes(id) ?
+                             { backgroundColor: this.props.themeType === 'dark' ? '#FFF !important' : '#111 !important' } : undefined,
+                    }}
+                    checked={!!this.states[id].val}
+                />];
+            }
         }
 
         return <Tooltip
@@ -6441,6 +6457,11 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     // in non-expert mode control button directly
                     this.props.socket
                         .setState(id, true)
+                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
+                } else if (!this.state.filter.expertMode && item.data.switch) {
+                    // in non-expert mode control switch directly
+                    this.props.socket
+                        .setState(id, !this.states[id].val)
                         .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
                 } else {
                     this.edit = {

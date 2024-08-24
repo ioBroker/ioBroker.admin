@@ -54,6 +54,7 @@ import ConfigSelectSendTo from './ConfigSelectSendTo';
 import ConfigSendto from './ConfigSendto';
 import ConfigSetState from './ConfigSetState';
 import ConfigSlider from './ConfigSlider';
+import ConfigState from './ConfigState';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticImage from './ConfigStaticImage';
@@ -112,6 +113,7 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     sendTo: ConfigSendto,
     setState: ConfigSetState,
     slider: ConfigSlider,
+    state: ConfigState,
     staticImage: ConfigStaticImage,
     staticLink: ConfigStaticText,
     staticText: ConfigStaticText,

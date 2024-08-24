@@ -248,8 +248,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                                     schema,
                                     data: obj.native,
                                     common: obj.common,
-                                    // @ts-expect-error really no string?
-                                    hash: MD5(JSON.stringify(schema)),
+                                    hash: MD5(JSON.stringify(schema)).toString(),
                                 });
                             } else {
                                 window.alert(`Instance system.adapter.${this.props.adapterName}.${this.props.instance} not found!`);
@@ -345,8 +344,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
             } else if (this.fileSubscribed.includes(fileName)) {
                 try {
                     const schema = await this.getConfigFile(this.fileSubscribed[0]);
-                    // @ts-expect-error really no string?
-                    this.setState({ schema, hash: MD5(JSON.stringify(schema)) });
+                    this.setState({ schema, hash: MD5(JSON.stringify(schema)).toString() });
                 } catch {
                     // ignore errors
                 }
@@ -596,7 +594,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
             for (const attr of Object.keys(this.state.data)) {
                 const item = this.findAttr(attr);
-                if ((!item || !item.doNotSave) && !attr.startsWith('_')) {
+                if ((!item || !item.doNotSave || item.type === 'state') && !attr.startsWith('_')) {
                     ConfigGeneric.setValue(obj.native, attr, this.state.data[attr]);
                 } else {
                     ConfigGeneric.setValue(obj.native, attr, null);

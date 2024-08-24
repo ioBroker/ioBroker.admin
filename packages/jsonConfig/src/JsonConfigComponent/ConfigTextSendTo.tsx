@@ -5,9 +5,10 @@ import {
     IconButton,
 } from '@mui/material';
 
-import { IconCopy, Utils } from '@iobroker/adapter-react-v5';
+import { Icon, IconCopy, Utils } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemSendTo } from '#JC/types';
+import getIconByName from './Icons';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -22,6 +23,16 @@ interface ConfigTextSendToProps extends ConfigGenericProps {
 
 interface ConfigTextSendToState extends ConfigGenericState {
     text?: string;
+    style?: React.CSSProperties;
+    icon?: string;
+    iconStyle?: React.CSSProperties;
+}
+
+interface Response {
+    text: string;
+    style?: React.CSSProperties;
+    icon?: string;
+    iconStyle?: React.CSSProperties;
 }
 
 class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSendToState> {
@@ -36,7 +47,7 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                 const dataStr: string = this.getPattern(this.props.schema.jsonData);
                 try {
                     data = JSON.parse(dataStr);
-                } catch (e) {
+                } catch {
                     console.error(`Cannot parse json data: ${dataStr}`);
                 }
             }
@@ -46,7 +57,19 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
             }
 
             this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
-                .then(text => this.setState({ text: text || '' }));
+                .then(result => {
+                    if (typeof result === 'object') {
+                        const _data: Response = result as any as Response;
+                        this.setState({
+                            text: _data.text || '',
+                            style: _data.style,
+                            icon: _data.icon,
+                            iconStyle: _data.iconStyle,
+                        });
+                    } else if (typeof result === 'string') {
+                        this.setState({ text: result || '' });
+                    }
+                });
         }
     }
 
@@ -73,6 +96,14 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
             return null;
         }
 
+        let icon: React.JSX.Element | null = null;
+        if (this.state.icon) {
+            icon = getIconByName(this.state.icon, { marginRight: this.state.text ? 8 : undefined, ...(this.state.iconStyle || undefined) });
+            if (!icon) {
+                icon = <Icon src={this.state.icon} style={{ marginRight: this.state.text ? 8 : undefined, ...(this.state.iconStyle || undefined) }} />;
+            }
+        }
+
         if (this.props.schema.container === 'text') {
             return <TextField
                 variant="standard"
@@ -93,7 +124,15 @@ class ConfigTextSendTo extends ConfigGeneric<ConfigTextSendToProps, ConfigTextSe
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
         }
-        return <div style={styles.fullWidth}>{this.state.text}</div>;
+        return <div
+            style={{ ...styles.fullWidth, ...(this.state.style || undefined) }}
+        >
+            {icon}
+            {this.props.schema.container === 'html' ? <span
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: this.state.text || '' }}
+            /> : this.state.text}
+        </div>;
     }
 }
 

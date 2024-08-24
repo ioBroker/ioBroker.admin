@@ -14,7 +14,7 @@ export type ConfigItemType = 'tabs' | 'panel' | 'text' | 'number' | 'color' | 'c
     'staticText' | 'staticLink' | 'staticImage' | 'table' | 'accordion' | 'jsonEditor' | 'language' | 'certificate' |
     'certificates' | 'certCollection' | 'custom' | 'datePicker' | 'timePicker' | 'divider' | 'header' | 'cron' |
     'fileSelector' | 'file' | 'imageSendTo' | 'selectSendTo' | 'autocompleteSendTo' | 'textSendTo' | 'coordinates' | 'interface' | 'license' |
-    'checkLicense' | 'uuid' | 'port' | 'deviceManager' | 'topic' | 'qrCode';
+    'checkLicense' | 'uuid' | 'port' | 'deviceManager' | 'topic' | 'qrCode' | 'state';
 
 type ConfigIconType = 'edit' | 'auth' | 'send' | 'web' | 'warning' | 'error' | 'info' | 'search' | 'book' | 'help' | 'upload' | 'user' | 'group' | 'delete' | 'refresh' | 'add' | 'unpair' | 'pair' | string;
 
@@ -500,9 +500,45 @@ export interface ConfigItemSendTo extends Omit<ConfigItem, 'data'> {
     /** button tooltip */
     title?: ioBroker.StringOrTranslated;
     alsoDependsOn?: string[];
-    container?: 'text' | 'div';
+    container?: 'text' | 'div' | 'html';
     copyToClipboard?: boolean;
 }
+
+export interface ConfigItemState extends ConfigItem {
+    type: 'state';
+    /** Which object ID should be taken for the controlling. The ID is without "adapter.X." prefix */
+    oid: string;
+    /** If true, the state will be taken from system.adapter.XX.I. and not from XX.I */
+    system?: boolean;
+    /** How the value of the state should be shown */
+    control?: 'text' | 'html' | 'input' | 'slider' | 'select' | 'button' | 'switch' | 'number';
+    /** If true, the state will be shown as switch, select, button, slider or text input. Used only if no control property is defined */
+    controlled?: boolean;
+    /** Add unit to the value */
+    unit?: string;
+    /** this text will be shown if the value is true */
+    trueText?: string;
+    /** Style of the text if the value is true */
+    trueTextStyle?: React.CSSProperties;
+    /** this text will be shown if the value is false or if the control is a "button" */
+    falseText?: string;
+    /** Style of the text if the value is false or if the control is a "button" */
+    falseTextStyle?: React.CSSProperties;
+    /** This image will be shown if the value is true */
+    trueImage?: string;
+    /** This image will be shown if the value is false or if the control is a "button" */
+    falseImage?: string;
+    /** Minimum value for control type slider or number */
+    min?: number;
+    /** Maximum value for control type slider or number */
+    max?: number;
+   /** Step value for control type slider or number */
+    step?: number;
+    /** delay in ms for slider or number */
+    controlDelay?: number;
+    /** Variant of button */
+    variant?: 'contained' | 'outlined' | 'text';
+ }
 
 export interface ConfigItemTextSendTo extends Omit<ConfigItem, 'data'> {
     type: 'textSendTo';
@@ -741,7 +777,7 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete |
     ConfigItemSlider | ConfigItemIP | ConfigItemUser | ConfigItemRoom | ConfigItemFunc |
     ConfigItemSelect | ConfigItemAccordion | ConfigItemCoordinates |
     ConfigItemDivider | ConfigItemHeader | ConfigItemCustom | ConfigItemDatePicker |
-    ConfigItemDeviceManager | ConfigItemLanguage | ConfigItemPort | ConfigItemSendTo |
+    ConfigItemDeviceManager | ConfigItemLanguage | ConfigItemPort | ConfigItemSendTo | ConfigItemState |
     ConfigItemTable | ConfigItemTimePicker | ConfigItemTextSendTo | ConfigItemSelectSendTo |
     ConfigItemCertCollection | ConfigItemCertificateSelect | ConfigItemCertificates | ConfigItemUUID |
     ConfigItemCheckLicense | ConfigItemPattern | ConfigItemChip | ConfigItemCRON | ConfigItemFile |

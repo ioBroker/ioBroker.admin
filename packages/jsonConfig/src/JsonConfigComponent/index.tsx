@@ -58,7 +58,6 @@ interface JsonConfigComponentState {
     alive: boolean;
     commandRunning: boolean;
     schema: ConfigItemTabs | ConfigItemPanel;
-    data: Record<string, any> | null;
 }
 
 export class JsonConfigComponent extends Component<JsonConfigComponentProps, JsonConfigComponentState> {
@@ -73,7 +72,6 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
 
         this.state = {
             originalData: JSON.stringify(this.props.data),
-            // eslint-disable-next-line react/no-unused-state
             changed: false,
             errors: {},
             updateData: this.props.updateData || 0,
@@ -81,7 +79,6 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
             alive: false,
             commandRunning: false,
             schema: JSON.parse(JSON.stringify(this.props.schema)),
-            data: null,
         };
 
         this.forceUpdateHandlers = {};
@@ -159,18 +156,8 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
 
     onCommandRunning = (commandRunning: boolean) => this.setState({ commandRunning });
 
-    async readSettings() : Promise<void> {
-        if ((this.props.custom || this.props.common) && this.props.data) {
-            return;
-        }
-        const obj = await this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`);
-        // eslint-disable-next-line react/no-unused-state
-        this.setState({ data: this.props.data || obj.native });
-    }
-
     readData() {
-        this.readSettings()
-            .then(() => this.props.socket.getCompactSystemConfig())
+        this.props.socket.getCompactSystemConfig()
             .then(systemConfig =>
                 this.props.socket.getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
                     .then(state => {
@@ -192,15 +179,19 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
     onChange = (attrOrData: string | Record<string, any>, value: any, cb?: () => void, saveConfig?: boolean) => {
         if (this.props.onValueChange) {
             this.props.onValueChange(attrOrData as string, value, saveConfig);
-            cb && cb();
+            if (cb) {
+                cb();
+            }
         } else if (attrOrData && this.props.onChange) {
-            const newState: Partial<JsonConfigComponentState> = { data: attrOrData as Record<string, any> };
-
-            newState.changed = JSON.stringify(attrOrData) !== this.state.originalData;
+            const newState: Partial<JsonConfigComponentState> = {
+                changed: JSON.stringify(attrOrData) !== this.state.originalData,
+            };
 
             this.setState(newState as JsonConfigComponentState, () => {
                 this.props.onChange(attrOrData as Record<string, any>, newState.changed, saveConfig);
-                cb && cb();
+                if (cb) {
+                    cb();
+                }
             });
         } else if (saveConfig) {
             this.props.onChange(null, null, saveConfig);
@@ -216,7 +207,9 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
             delete errors[attr];
         }
 
-        this.errorTimeout && clearTimeout(this.errorTimeout);
+        if (this.errorTimeout) {
+            clearTimeout(this.errorTimeout);
+        }
         if (JSON.stringify(errors) !== JSON.stringify(this.state.errors)) {
             this.errorTimeout = setTimeout(() =>
                 this.setState({ errors: this.errorCached }, () => {
