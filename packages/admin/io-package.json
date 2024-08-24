@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "7.0.24",
+    "version": "7.0.25",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "7.0.25": {
+        "en": "Improvement for automatic tests\nAdded the possibility to style the response text for `textSendTo` in JSON Config",
+        "de": "Verbesserung für automatische Tests\nHinzufügen der Möglichkeit, den Antworttext für `textSendTo` in JSON Config",
+        "ru": "Совершенствование автоматических тестов\nДобавлена возможность отобразить текст ответа для `textSendTo' в JSON Config",
+        "pt": "Melhoria para testes automáticos\nAdicionado a possibilidade de estilo o texto de resposta para `textSendTo` em JSON Config",
+        "nl": "Verbetering van automatische tests\nToegevoegd de mogelijkheid om de response tekst voor te stijlen .textSendTo",
+        "fr": "Amélioration des essais automatiques\nAjout de la possibilité de styler le texte de réponse pour `textSendTo` dans JSON Config",
+        "it": "Miglioramento delle prove automatiche\nAggiunta la possibilità di definire il testo di risposta per `textSendTo` in JSON Config",
+        "es": "Mejora de las pruebas automáticas\nAgregó la posibilidad de estilo del texto de respuesta para 'textSendTo` en JSON Config",
+        "pl": "Poprawa w przypadku badań automatycznych\nDodano możliwość stylizacji tekstu odpowiedzi dla 'textSendTo' w konfiguracji JSON",
+        "uk": "Покращення автоматичних випробувань\nДодано можливість стилю тексту відповіді для `textSendTo`` в JSON Config",
+        "zh-cn": "改进自动测试\n在 JSON 配置中添加了“ textSendTo” 的响应文本样式"
+      },
       "7.0.24": {
         "en": "Showed min/max limits by controlling the values\nCorrected style for tabs",
         "de": "Gezeigte Min/Max-Grenzwerte durch Steuerung der Werte\nKorrigierter Stil für Tabs",
@@ -95,19 +108,6 @@
         "pl": "Dozwolone odtwarzanie plików mp3 i wideo w przeglądarce plików",
         "uk": "Дозволено відтворення mp3 та відео файлів у браузері файлів",
         "zh-cn": "允许在文件浏览器中播放 mp3 和视频文件"
-      },
-      "7.0.13": {
-        "en": "Do not send `sendto` requests if control is hidden\nRead recommended versions from `iobroker/iobroker`",
-        "de": "Senden Sie keine `sendto` Anfragen, wenn die Kontrolle versteckt ist\nEmpfohlene Versionen von `iobroker/iobroker `",
-        "ru": "Не отправляйте запросы \"отправить\", если контроль скрыт\nРекомендуемые версии от `iobroker/iobroker \"",
-        "pt": "Não envie pedidos `sendto` se o controle estiver oculto\nLeia as versões recomendadas de `iobroker/iobroker \"",
-        "nl": "Verstuur geen verzoeken om een Sendto te versturen als de controle verborgen is\nLees aanbevolen versies van Iobroker/Iobroker Wat",
-        "fr": "Ne pas envoyer de requêtes `sendto` si le contrôle est caché\nLire les versions recommandées de `iobroker/iobroker \"",
-        "it": "Non inviare richieste `sendto` se il controllo è nascosto\nLeggi le versioni consigliate da `iobroker/iobroker #",
-        "es": "No envíe solicitudes de 'enviar' si el control está oculto\nLeer las versiones recomendadas de `iobroker/iobroker `",
-        "pl": "Nie wysyłaj żądań 'sendto', jeśli kontrola jest ukryta\nPrzeczytaj zalecane wersje z 'iobroker / iobroker'",
-        "uk": "Не надсилайте запити `sendto`, якщо приховано контроль\nЧитати рекомендовані версії з `iobroker/iobroker й",
-        "zh-cn": "隐藏控制时不要发送“ 发送” 请求\n阅读“iobrocco/iobroco”的建议版本 `"
       }
     },
     "desc": {
