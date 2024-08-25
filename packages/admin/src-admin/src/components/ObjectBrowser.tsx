@@ -69,7 +69,6 @@ import {
     PersonOutlined as IconUser,
     Publish as PublishIcon,
     Refresh as RefreshIcon,
-    RoomService as PressButtonIcon,
     Router as IconHost,
     Settings as IconConfig,
     SettingsApplications as IconSystem,
@@ -460,7 +459,7 @@ const styles: Record<string, any> = {
         // display: 'inline-block',
         // verticalAlign: 'top',
     },
-    // this style is used for simple div. Do not migrate it to "secondary.main"
+    // This style is used for simple div. Do not migrate it to "secondary.main"
     cellIdIconFolder: (theme: IobTheme) => ({
         marginRight: 8,
         width: ROW_HEIGHT - 4,
@@ -603,9 +602,6 @@ const styles: Record<string, any> = {
     },
     cellValueButton: {
         marginTop: 5,
-        '&:active': {
-            transform: 'scale(0.8)',
-        },
     },
     cellValueButtonFalse: {
         opacity: 0.3,
@@ -966,6 +962,15 @@ const styles: Record<string, any> = {
     },
 };
 
+function ButtonIcon(props?: { style?: React.CSSProperties }) {
+    return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 436 436" style={props?.style} width="24" height="24" className="admin-button">
+        <g fill="currentColor">
+            <path d="m195.23077,24.30769c-36,3 -67,12 -96,26c-49,24 -82,61 -93,104l-3,11l-1,50c0,46 0,49 2,59l5,20c21,58 84,103 165,116c16,3 53,4 70,2c60,-6 111,-28 147,-64c21,-21 36,-49 40,-74a866,866 0 0 0 1,-104c-3,-18 -6,-28 -13,-43c-26,-52 -87,-90 -162,-101c-16,-2 -48,-3 -63,-2l1,0zm60,23c36,5 70,18 95,35c31,20 51,47 59,77c2,7 2,11 2,25c1,15 0,18 -2,26c-19,69 -104,117 -200,114c-47,-2 -90,-15 -124,-38c-31,-20 -51,-47 -59,-77c-3,-11 -4,-32 -2,-43c8,-42 41,-78 91,-101a260,260 0 0 1 140,-19l0,1zm-221,222c21,26 57,49 95,62c81,27 174,14 239,-32c14,-10 31,-27 41,-41c2,-2 2,-2 2,7c-1,23 -16,50 -38,72c-78,74 -233,74 -311,-1a121,121 0 0 1 -39,-76l0,-6l3,4l8,11z" />
+            <path d="m201.23077,47.30769c-40,3 -79,19 -104,44c-55,55 -38,133 37,171c52,26 122,24 172,-5c30,-17 51,-42 58,-71c3,-11 3,-34 0,-45c-6,-23 -21,-44 -40,-60l-27,-16a184,184 0 0 0 -96,-18zm30,21c56,5 100,35 112,75c4,11 4,30 0,41c-8,25 -26,45 -54,59a166,166 0 0 1 -160,-8a98,98 0 0 1 -41,-53c-5,-18 -2,-39 8,-57c23,-39 79,-62 135,-57z" />
+        </g>
+    </svg>;
+}
+
 /**
  * Function that walks through all keys of an object or array and applies a function to each key.
  */
@@ -976,10 +981,14 @@ function walkThroughArray(object: any[], iteratee: (result: any[], value: any, k
     }
     return copiedObject;
 }
+
 /**
  * Function that walks through all keys of an object or array and applies a function to each key.
  */
-function walkThroughObject(object: Record<string, any>, iteratee: (result: Record<string, any>, value: any, key: string) => void): Record<string, any> {
+function walkThroughObject(
+    object: Record<string, any>,
+    iteratee: (result: Record<string, any>, value: any, key: string) => void
+): Record<string, any> {
     const copiedObject: Record<string, any> = {};
     for (const key in object) {
         if (Object.prototype.hasOwnProperty.call(object, key)) {
@@ -2005,15 +2014,16 @@ function formatValue(
 }
 
 /**
- * Get css style for given state value
+ * Get CSS style for given state value
  */
 function getValueStyle(options: GetValueStyleOptions): { color: string } {
     const { state, isExpertMode, isButton } = options;
     let color = state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9';
 
-    if (!isExpertMode && isButton) {
-        color = '';
-    }
+    // do not show the color of the button in non-expert mode
+    // if (!isExpertMode && isButton) {
+    //     color = '';
+    // }
 
     return { color };
 }
@@ -5218,7 +5228,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     {_item.v}
                 </div>);
                 // <div style={styles.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
-                !_item.nbr && valFullRx.push(<br key={`${_item.t}_br`} />);
+                if (!_item.nbr) {
+                    valFullRx.push(<br key={`${_item.t}_br`} />);
+                }
             } else {
                 valFullRx.push(<div style={styles.cellValueTooltipTitle} key={_item.t}>
                     {_item.t}
@@ -5227,7 +5239,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 valFullRx.push(<div style={styles.cellValueTooltipValue} key={`${_item.t}_v`}>
                     {_item.v}
                 </div>);
-                !_item.nbr && valFullRx.push(<br key={`${_item.t}_br`} />);
+                if (!_item.nbr) {
+                    valFullRx.push(<br key={`${_item.t}_br`} />);
+                }
             }
         });
 
@@ -5349,14 +5363,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         let val: React.JSX.Element[] = info.valTextRx as React.JSX.Element[];
         if (!this.state.filter.expertMode) {
             if (item.data.button) {
-                val = [<PressButtonIcon key="button" style={styles.cellValueButton} />];
+                val = [<ButtonIcon key="button" style={{ color: info.style.color, ...styles.cellValueButton }} />];
             } else if (item.data.switch) {
                 val = [<Switch
                     key="switch"
                     sx={{
                         '& .MuiSwitch-thumb': { color: info.style.color },
                         '& .MuiSwitch-track': !!this.states[id].val && this.state.selected.includes(id) ?
-                             { backgroundColor: this.props.themeType === 'dark' ? '#FFF !important' : '#111 !important' } : undefined,
+                            { backgroundColor: this.props.themeType === 'dark' ? '#FFF !important' : '#111 !important' } : undefined,
                     }}
                     checked={!!this.states[id].val}
                 />];
@@ -5376,7 +5390,13 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             <Box
                 component="div"
                 style={info.style}
-                sx={{ ...styles.cellValueText, height: narrowStyleWithDetails ? undefined : ROW_HEIGHT }}
+                sx={{
+                    ...styles.cellValueText,
+                    height: narrowStyleWithDetails ? undefined : ROW_HEIGHT,
+                    '& .admin-button:active': {
+                        transform: 'translate(0, 2px)',
+                    },
+                }}
             >
                 {val}
             </Box>
@@ -5390,7 +5410,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         cb: () => void,
     ): void {
         if (!enumIds || !enumIds.length) {
-            cb && cb();
+            if (cb) {
+                cb();
+            }
             return;
         }
         const enumId = enumIds.pop() || '';
@@ -5399,7 +5421,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             if (this.info.objects[enumId].common.members?.length) {
                 const pos = this.info.objects[enumId].common.members.indexOf(id);
                 if (pos !== -1 && !newArray.includes(enumId)) {
-                    // delete from members
+                    // delete it from members
                     const obj = JSON.parse(JSON.stringify(this.info.objects[enumId]));
                     obj.common.members.splice(pos, 1);
                     promises.push(
@@ -6074,12 +6096,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                 if (!this.states[_id]) {
                     if (this.objects[_id]?.type === 'state') {
-                        !this.recordStates.includes(_id) && this.recordStates.push(_id);
+                        if (!this.recordStates.includes(_id)) {
+                            this.recordStates.push(_id);
+                        }
                         this.states[_id] = { val: null } as ioBroker.State;
                         this.subscribe(_id);
                     }
-                } else {
-                    !this.recordStates.includes(_id) && this.recordStates.push(_id);
+                } else if (!this.recordStates.includes(_id)) {
+                    this.recordStates.push(_id);
                 }
             });
             // calculate color
@@ -6663,7 +6687,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         } else {
             leaf = result.row;
         }
-        root.data.id && leaf && items.push(leaf);
+        if (root.data.id && leaf) {
+            items.push(leaf);
+        }
         if (result.details) {
             items.push(result.details);
         }
@@ -6672,44 +6698,44 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         if (!root.data.id || isExpanded) {
             if (!this.state.foldersFirst) {
-                root.children && items.push(root.children.map(item => {
-                    // do not render too many items in column editor mode
-                    if (!this.state.columnsSelectorShow || counter.count < 15) {
-                        if (item.data.sumVisibility) {
-                            return this.renderItem(item, undefined, counter);
-                        }
-                    }
-                    return null;
-                }) as any as React.JSX.Element);
-            } else {
                 if (root.children) {
-                    // first only folder
                     items.push(root.children.map(item => {
-                        if (item.children) {
-                            // do not render too many items in column editor mode
-                            if (!this.state.columnsSelectorShow || counter.count < 15) {
-                                if (item.data.sumVisibility) {
-                                    return this.renderItem(item, undefined, counter);
-                                }
-                            }
-                        }
-
-                        return null;
-                    }) as any as React.JSX.Element);
-
-                    // then items
-                    items.push(root.children.map(item => {
-                        if (!item.children) {
-                            // do not render too many items in column editor mode
-                            if (!this.state.columnsSelectorShow || counter.count < 15) {
-                                if (item.data.sumVisibility) {
-                                    return this.renderItem(item, undefined, counter);
-                                }
+                        // do not render too many items in column editor mode
+                        if (!this.state.columnsSelectorShow || counter.count < 15) {
+                            if (item.data.sumVisibility) {
+                                return this.renderItem(item, undefined, counter);
                             }
                         }
                         return null;
                     }) as any as React.JSX.Element);
                 }
+            } else if (root.children) {
+                // first only folder
+                items.push(root.children.map(item => {
+                    if (item.children) {
+                        // do not render too many items in column editor mode
+                        if (!this.state.columnsSelectorShow || counter.count < 15) {
+                            if (item.data.sumVisibility) {
+                                return this.renderItem(item, undefined, counter);
+                            }
+                        }
+                    }
+
+                    return null;
+                }) as any as React.JSX.Element);
+
+                // then items
+                items.push(root.children.map(item => {
+                    if (!item.children) {
+                        // do not render too many items in column editor mode
+                        if (!this.state.columnsSelectorShow || counter.count < 15) {
+                            if (item.data.sumVisibility) {
+                                return this.renderItem(item, undefined, counter);
+                            }
+                        }
+                    }
+                    return null;
+                }) as any as React.JSX.Element);
             }
         }
 
@@ -7752,7 +7778,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             open={!0}
                             anchorEl={this.state.showContextMenu.subAnchor}
                             onClose={() => {
-                                this.state.showContextMenu && this.setState({ showContextMenu: { item: this.state.showContextMenu.item } });
+                                if (this.state.showContextMenu) {
+                                    this.setState({ showContextMenu: { item: this.state.showContextMenu.item } });
+                                }
                                 this.contextMenu = null;
                             }}
                         >
@@ -7802,8 +7830,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 e.preventDefault();
                 if (e.altKey) {
                     Object.keys(ITEMS).forEach(key => {
-                        if (e.key === ITEMS[key].key) {
-                            ITEMS[key].onClick && ITEMS[key].onClick();
+                        if (e.key === ITEMS[key].key && ITEMS[key].onClick) {
+                            ITEMS[key].onClick();
                         }
                     });
                 }
@@ -7858,7 +7886,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             isFloatComma={this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma}
             onClose={(res?: { val: ioBroker.StateValue; ack: boolean; q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY]; expire: number | undefined }) => {
                 this.setState({ updateOpened: false });
-                res && this.onUpdate(res);
+                if (res) {
+                    this.onUpdate(res);
+                }
             }}
             width={this.props.width}
         />;
@@ -7869,7 +7899,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      */
     render(): React.JSX.Element {
         this.recordStates = [];
-        this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
+        if (this.unsubscribeTimer) {
+            clearTimeout(this.unsubscribeTimer);
+        }
 
         if (this.styleTheme !== this.props.themeType) {
             this.styles = {
