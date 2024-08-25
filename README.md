@@ -85,6 +85,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Added the possibility to show button in notifications
+
 ### 7.0.25 (2024-08-24)
 * (bluefox) Improvement for automatic tests
 * (bluefox) Added the possibility to style the response text for `textSendTo` in JSON Config

@@ -16,13 +16,13 @@ import {
     Info as InfoIcon,
     ExpandMore as ExpandMoreIcon,
     Check as CheckIcon,
-    Close as CloseIcon,
+    Close as CloseIcon, OpenInNew,
 } from '@mui/icons-material';
 
 import {
     I18n, Utils,
     type ThemeType,
-    type IobTheme,
+    type IobTheme, Icon,
 } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
@@ -95,8 +95,8 @@ const styles: Record<string, any> = {
     img2: {
         width: 25,
         height: 25,
-        mr: '10px',
         margin: 'auto 0',
+        mr: '10px',
         position: 'relative',
         '&:after': {
             content: '""',
@@ -205,6 +205,26 @@ interface Message {
     name: Translated;
     severity: Severity;
     description: Translated;
+    /** Show button, that leads to this link */
+    link?: {
+        /**
+         * - empty - URL = http://IP:8081/#tab-instances/config/system.adapter.ADAPTER.N
+         * - `simpleText` - URL = http://IP:8081/#tab-instances/config/system.adapter.ADAPTER.N/<>simpleText>
+         * - `#url` - URL = http://IP:8081/#url
+         * - `http[s]://...` - URL = http[s]://...
+         */
+        url?: string;
+        /** Button text. Default is "open" */
+        text?: ioBroker.Translated;
+        /** Target */
+        target?: '_blank' | '_self' | string;
+        /** base64 icon */
+        icon?: string;
+        /** CSS style of the button */
+        style?: Record<string, string>;
+        /** Button style. Default is `contained` */
+        variant?: 'outlined' | 'text' | 'contained';
+    };
     instances: Record<string, InstanceMessage>;
 }
 
@@ -390,6 +410,57 @@ const NotificationsDialog = ({
                                                             >
                                                                 {Utils.formatDate(new Date(msg.ts), dateFormat)}
                                                             </Box>
+                                                            {entry.link ? <Button
+                                                                variant={entry.link.variant || 'contained'}
+                                                                style={entry.link.style}
+                                                                onClick={() => {
+                                                                    let target = '_self';
+                                                                    let url = '';
+                                                                    if (!entry.link.url) {
+                                                                        url = `#tab-instances/config/${nameInst}`;
+                                                                        target = entry.link.target || '_self';
+                                                                    } else if (entry.link.url.toString().startsWith('#')) {
+                                                                        target = entry.link.target || '_self';
+                                                                        url = entry.link.url;
+                                                                    } else if (entry.link.url.toString().startsWith('/')) {
+                                                                        target = entry.link.target || '_self';
+                                                                        url = entry.link.url;
+                                                                    } else if (entry.link.url.startsWith('http://') || entry.link.url.startsWith('https://')) {
+                                                                        target = entry.link.target || '_blank';
+                                                                        url = entry.link.url;
+                                                                    } else {
+                                                                        url = `#tab-instances/config/${nameInst}/${entry.link.url}`;
+                                                                        target = entry.link.target || '_self';
+                                                                    }
+                                                                    if (target === '_self') {
+                                                                        // close dialog
+                                                                        setTimeout((_url: string) => {
+                                                                            if (_url.startsWith('#')) {
+                                                                                window.location.hash = _url;
+                                                                            } else if (_url.startsWith('/')) {
+                                                                                url = `${window.location.protocol}:${window.location.host}${url}`;
+                                                                            } else if (_url.startsWith('http://') || _url.startsWith('http://')) {
+                                                                                window.location.href = _url;
+                                                                            }
+                                                                        }, 100, url);
+                                                                        onClose();
+                                                                    } else {
+                                                                        if (url.startsWith('#')) {
+                                                                            url = `${window.location.protocol}:${window.location.host}${window.location.pathname}${url}`;
+                                                                        } else if (url.startsWith('/')) {
+                                                                            url = `${window.location.protocol}:${window.location.host}${url}`;
+                                                                        }
+
+                                                                        window.open(url, target);
+                                                                    }
+                                                                }}
+                                                                color="primary"
+                                                                startIcon={entry.link.icon ? <Icon src={entry.link.icon} /> : <OpenInNew />}
+                                                            >
+                                                                {entry.link.text ?
+                                                                    (typeof entry.link.text === 'object' ? entry.link.text[I18n.getLanguage()] || entry.link.text.en :
+                                                                        entry.link.text) :  I18n.t('Open')}
+                                                            </Button> : null}
                                                         </Typography>)}
                                                 </AccordionDetails>
                                             </Accordion>;
