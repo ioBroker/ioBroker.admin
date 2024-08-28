@@ -230,7 +230,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                 const dataStr = this.getPattern(this.props.schema.jsonData);
                 try {
                     data = JSON.parse(dataStr);
-                } catch (e) {
+                } catch {
                     console.error(`Cannot parse json data: ${dataStr}`);
                 }
             } else {
@@ -266,7 +266,9 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
     }
 
     componentWillUnmount() {
-        this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr);
+        if (this.props.registerOnForceUpdate) {
+            this.props.registerOnForceUpdate(this.props.attr);
+        }
         if (this.sendToTimeout) {
             clearTimeout(this.sendToTimeout);
             this.sendToTimeout = null;
@@ -603,21 +605,27 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         if (this.props.schema.hiddenDependsOn) {
             for (let z = 0; z < this.props.schema.hiddenDependsOn.length; z++) {
                 const dep = this.props.schema.hiddenDependsOn[z];
-                dep.hidden && changed.push(dep.attr);
+                if (dep.hidden) {
+                    changed.push(dep.attr);
+                }
             }
         }
 
         if (this.props.schema.labelDependsOn) {
             for (let z = 0; z < this.props.schema.labelDependsOn.length; z++) {
                 const dep = this.props.schema.labelDependsOn[z];
-                dep.hidden && changed.push(dep.attr);
+                if (dep.hidden) {
+                    changed.push(dep.attr);
+                }
             }
         }
 
         if (this.props.schema.helpDependsOn) {
             for (let z = 0; z < this.props.schema.helpDependsOn.length; z++) {
                 const dep = this.props.schema.helpDependsOn[z];
-                dep.hidden && changed.push(dep.attr);
+                if (dep.hidden) {
+                    changed.push(dep.attr);
+                }
             }
         }
 
@@ -648,14 +656,18 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
         if (this.props.custom) {
             this.props.onChange(attr, newValue, () => cb && cb());
 
-            changed &&
-                    changed.length &&
-                    changed.forEach((_attr, i) =>
-                        setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, _attr)), i * 50));
+            if (changed?.length) {
+                changed.forEach((_attr, i) =>
+                    setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, _attr)), i * 50));
+            }
         } else {
             this.props.onChange(data, undefined, () => {
-                changed.length && this.props.forceUpdate(changed, data);
-                cb && cb();
+                if (changed.length) {
+                    this.props.forceUpdate(changed, data);
+                }
+                if (cb) {
+                    cb();
+                }
             });
         }
 
@@ -868,7 +880,9 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             this.isError[attr] = error;
         }
 
-        this.props.onError && this.props.onError(attr, error);
+        if (this.props.onError) {
+            this.props.onError(attr, error);
+        }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
