@@ -20,7 +20,7 @@ import {
     Refresh as IconRefresh,
     Add as IconAdd,
     LinkOff as IconLinkOff,
-    Link as LinkIcon,
+    Link as LinkIcon, Save, OpenInNew,
 } from '@mui/icons-material';
 
 import {
@@ -30,7 +30,10 @@ import {
     type ThemeType, type ThemeName,
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
-import type {ConfigIconType, ConfigItemAny, ConfigItemConfirmData} from '#JC/types';
+import type {
+    BackEndCommand, ConfigIconType,
+    ConfigItemAny, ConfigItemConfirmData,
+} from '#JC/types';
 
 // because this class is used in adapter-react-v5, do not include here any foreign files like from '../../helpers/utils.ts'
 export function isObject(it: any): it is Record<string, any> {
@@ -100,9 +103,11 @@ export interface ConfigGenericProps {
     onChange: (attrOrData: string | Record<string, any>, val?: any, cb?: () => void, saveConfig?: boolean) => void;
     onCommandRunning: (running: boolean) => void;
     onError: (attr: string, error?: string) => void;
+    /** Backend request to refresh data */
+    onBackEndCommand?: (command?: BackEndCommand) => void;
     originalData: Record<string, any>;
     registerOnForceUpdate?: (attr: string, onUpdate?: (data: Record<string, any>) => void) => void;
-    /** This indicates that the component is the very firts one - root */
+    /** This indicates that the component is the very firsts one - root */
     root?: boolean;
     /** Provided props by the specific component */
     schema: ConfigItemAny;
@@ -455,6 +460,10 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             icon = <IconLinkOff />;
         } else if (iconSettings === 'pair') {
             icon = <LinkIcon />;
+        } else if (iconSettings === 'save') {
+            icon = <Save />;
+        } else if (iconSettings === 'open') {
+            icon = <OpenInNew />;
         } else if (iconSettings) {
             if (iconSettings.endsWith('.png') || iconSettings.endsWith('.svg') || iconSettings.endsWith('.jpg')) {
                 // this path is relative to ./adapter/NAME
@@ -780,26 +789,34 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
                     this.props.globalData,
                 ) as boolean
                 : false;
-            disabled = schema.disabled
-                ? this.executeCustom(
-                    schema.disabled,
-                    this.props.data,
-                    this.props.customObj,
-                    this.props.instanceObj,
-                    this.props.arrayIndex,
-                    this.props.globalData,
-                ) as boolean
-                : false;
-            hidden = schema.hidden
-                ? this.executeCustom(
-                    schema.hidden,
-                    this.props.data,
-                    this.props.customObj,
-                    this.props.instanceObj,
-                    this.props.arrayIndex,
-                    this.props.globalData,
-                ) as boolean
-                : false;
+            if (schema.disabled === true) {
+                disabled = true;
+            } else {
+                disabled = schema.disabled
+                    ? this.executeCustom(
+                        schema.disabled,
+                        this.props.data,
+                        this.props.customObj,
+                        this.props.instanceObj,
+                        this.props.arrayIndex,
+                        this.props.globalData,
+                    ) as boolean
+                    : false;
+            }
+            if (schema.hidden === true) {
+                hidden = true;
+            } else {
+                hidden = schema.hidden
+                    ? this.executeCustom(
+                        schema.hidden,
+                        this.props.data,
+                        this.props.customObj,
+                        this.props.instanceObj,
+                        this.props.arrayIndex,
+                        this.props.globalData,
+                    ) as boolean
+                    : false;
+            }
             defaultValue = schema.defaultFunc
                 ? this.executeCustom(
                     schema.defaultFunc,
@@ -814,12 +831,20 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
             error = schema.validator
                 ? !this.execute(schema.validator, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
                 : false;
-            disabled = schema.disabled
-                ? this.execute(schema.disabled, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
-                : false;
-            hidden = schema.hidden
-                ? this.execute(schema.hidden, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
-                : false;
+            if (schema.disabled === true) {
+                disabled = true;
+            } else {
+                disabled = schema.disabled
+                    ? this.execute(schema.disabled, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
+                    : false;
+            }
+            if (schema.hidden === true) {
+                hidden = true;
+            } else {
+                hidden = schema.hidden
+                    ? this.execute(schema.hidden, false, this.props.data, this.props.arrayIndex, this.props.globalData) as boolean
+                    : false;
+            }
             defaultValue = schema.defaultFunc
                 ? this.execute(
                     schema.defaultFunc,

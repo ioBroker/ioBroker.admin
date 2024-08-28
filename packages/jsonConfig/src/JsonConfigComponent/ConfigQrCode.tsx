@@ -1,7 +1,6 @@
 import React from 'react';
 
-import QRCode from 'react-qr-code';
-
+import type QRCode from 'react-qr-code';
 import type { ConfigItemQrCode } from '#JC/types';
 import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
@@ -9,9 +8,30 @@ interface ConfigQrCodeProps extends ConfigGenericProps {
     schema: ConfigItemQrCode;
 }
 
-class ConfigQrCode extends ConfigGeneric<ConfigQrCodeProps, ConfigGenericState> {
+interface ConfigQrCodeState extends ConfigGenericState {
+    QRCode: typeof QRCode | null;
+}
+
+class ConfigQrCode extends ConfigGeneric<ConfigQrCodeProps, ConfigQrCodeState> {
+    async componentDidMount() {
+        super.componentDidMount();
+        // lazy load of qrcode
+        const module = await import('react-qr-code');
+        this.setState({ QRCode: module.default });
+    }
+
     renderItem() {
-        return <QRCode value={this.props.schema.data} size={this.props.schema.size} fgColor={this.props.schema.fgColor} bgColor={this.props.schema.bgColor} level={this.props.schema.level} />;
+        const QRCodeComponent = this.state.QRCode;
+        if (!QRCodeComponent) {
+            return null;
+        }
+        return <QRCodeComponent
+            value={this.props.schema.data}
+            size={this.props.schema.size}
+            fgColor={this.props.schema.fgColor}
+            bgColor={this.props.schema.bgColor}
+            level={this.props.schema.level}
+        />;
     }
 }
 

@@ -367,6 +367,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 });
             }}
             onError={(error: string, attr?: string) => this.onError(error, attr)}
+            onBackEndCommand={this.props.onBackEndCommand}
         />;
     }
 

@@ -5218,7 +5218,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     {_item.v}
                 </div>);
                 // <div style={styles.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
-                !_item.nbr && valFullRx.push(<br key={`${_item.t}_br`} />);
+                if (!_item.nbr) {
+                    valFullRx.push(<br key={`${_item.t}_br`} />);
+                }
             } else {
                 valFullRx.push(<div style={styles.cellValueTooltipTitle} key={_item.t}>
                     {_item.t}
@@ -5227,7 +5229,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 valFullRx.push(<div style={styles.cellValueTooltipValue} key={`${_item.t}_v`}>
                     {_item.v}
                 </div>);
-                !_item.nbr && valFullRx.push(<br key={`${_item.t}_br`} />);
+                if (!_item.nbr) {
+                    valFullRx.push(<br key={`${_item.t}_br`} />);
+                }
             }
         });
 
@@ -5356,7 +5360,7 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                     sx={{
                         '& .MuiSwitch-thumb': { color: info.style.color },
                         '& .MuiSwitch-track': !!this.states[id].val && this.state.selected.includes(id) ?
-                             { backgroundColor: this.props.themeType === 'dark' ? '#FFF !important' : '#111 !important' } : undefined,
+                            { backgroundColor: this.props.themeType === 'dark' ? '#FFF !important' : '#111 !important' } : undefined,
                     }}
                     checked={!!this.states[id].val}
                 />];

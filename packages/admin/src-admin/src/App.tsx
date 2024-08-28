@@ -1492,7 +1492,11 @@ class App extends Router<AppProps, AppState> {
             onClose={() => this.setState({ notificationsDialog: false })}
             ackCallback={(host, name) => this.socket.clearNotifications(host, name)}
             dateFormat={this.state.systemConfig.common.dateFormat}
+            isFloatComma={this.state.systemConfig.common.isFloatComma}
             themeType={this.state.themeType}
+            themeName={this.state.themeName}
+            theme={this.state.theme}
+            socket={this.socket}
         />;
     }
 
@@ -1511,7 +1515,7 @@ class App extends Router<AppProps, AppState> {
         />;
     }
 
-    /** Called when notifications detected, updates the notifications indicator */
+    /** Called when notifications detected, updates the notification indicator */
     handleNewNotifications = async (notifications: Record<string, NotificationAnswer>): Promise<void> => {
         // console.log(`new notifications: ${JSON.stringify(notifications)}`);
         let noNotifications = 0;

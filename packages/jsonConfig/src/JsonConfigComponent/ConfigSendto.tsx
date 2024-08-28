@@ -234,6 +234,13 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
                         this.setState({ _error: response.error ? I18n.t(response.error) : I18n.t('ra_Error') });
                     }
                 } else {
+                    if (response?.command) {
+                        // If backend requested to refresh the config
+                        if (this.props.onBackEndCommand) {
+                            this.props.onBackEndCommand(response.command);
+                        }
+                        return;
+                    }
                     if (response?.reloadBrowser && this.props.schema.reloadBrowser) {
                         window.location.reload();
                     } else if (response?.openUrl && this.props.schema.openUrl) {
@@ -309,7 +316,7 @@ class ConfigSendto extends ConfigGeneric<ConfigSendToProps, ConfigSendToState> {
             <Button
                 variant={this.props.schema.variant || undefined}
                 color={this.props.schema.color || 'grey'}
-                style={styles.fullWidth}
+                style={{ ...styles.fullWidth, ...(this.props.schema.controlStyle || undefined) }}
                 disabled={disabled || !this.props.alive}
                 startIcon={icon}
                 title={this.props.alive ? this.getText(this.props.schema.title) || '' : I18n.t('ra_Instance is not alive')}

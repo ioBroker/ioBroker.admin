@@ -16,14 +16,21 @@ import {
     Info as InfoIcon,
     ExpandMore as ExpandMoreIcon,
     Check as CheckIcon,
-    Close as CloseIcon, OpenInNew,
+    Close as CloseIcon,
 } from '@mui/icons-material';
 
 import {
-    I18n, Utils,
+    I18n,
     type ThemeType,
-    type IobTheme, Icon,
+    type IobTheme, type AdminConnection,
+    type ThemeName,
 } from '@iobroker/adapter-react-v5';
+
+import type { BackEndCommandOpenLink } from '@iobroker/json-config/src';
+
+import NotificationMessage, {
+    type Message, type Severity,
+} from '../components/NotificationMessage';
 
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({
@@ -47,15 +54,6 @@ const styles: Record<string, any> = {
     overflowAuto: {
         overflowY: 'auto',
     },
-    message: {
-        justifyContent: 'space-between',
-        display: 'flex',
-        width: '100%',
-        alignItems: 'center',
-        '@media screen and (max-width: 550px)': {
-            flexWrap: 'wrap',
-        },
-    },
     column: {
         flexDirection: 'column',
     },
@@ -68,12 +66,6 @@ const styles: Record<string, any> = {
         margin: '18px 0',
         color: theme.palette.mode === 'dark' ? '#CCC' : '#222',
     }),
-    silver: {
-        color: 'silver',
-        '@media screen and (max-width: 550px)': {
-            fontSize: '2.9vw',
-        },
-    },
     button: {
         paddingTop: 5,
         paddingBottom: 5,
@@ -81,16 +73,6 @@ const styles: Record<string, any> = {
         bottom: 0,
         // background: 'white',
         zIndex: 3,
-    },
-    terminal: {
-        fontFamily: 'monospace',
-        fontSize: 14,
-        ml: '20px',
-        whiteSpace: 'pre-wrap',
-        '@media screen and (max-width: 550px)': {
-            fontSize: '2.9vw',
-            ml: 0,
-        },
     },
     img2: {
         width: 25,
@@ -115,6 +97,7 @@ const styles: Record<string, any> = {
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
+        width: '100%',
     },
     headingTop: {
         display: 'flex',
@@ -144,9 +127,6 @@ const styles: Record<string, any> = {
         },
     },
 };
-
-/** Possible message severities */
-type Severity = 'notify' | 'info' | 'alert';
 
 interface StatusOptions {
     /** Severity of the message */
@@ -192,42 +172,6 @@ const TabPanel = ({
     </Box>
 </div>;
 
-type Translated = Record<ioBroker.Languages, string>;
-
-interface InstanceMessage {
-    messages: {
-        message: string;
-        ts: number;
-    }[];
-}
-
-interface Message {
-    name: Translated;
-    severity: Severity;
-    description: Translated;
-    /** Show button, that leads to this link */
-    link?: {
-        /**
-         * - empty - URL = http://IP:8081/#tab-instances/config/system.adapter.ADAPTER.N
-         * - `simpleText` - URL = http://IP:8081/#tab-instances/config/system.adapter.ADAPTER.N/<>simpleText>
-         * - `#url` - URL = http://IP:8081/#url
-         * - `http[s]://...` - URL = http[s]://...
-         */
-        url?: string;
-        /** Button text. Default is "open" */
-        text?: ioBroker.Translated;
-        /** Target */
-        target?: '_blank' | '_self' | string;
-        /** base64 icon */
-        icon?: string;
-        /** CSS style of the button */
-        style?: Record<string, string>;
-        /** Button style. Default is `contained` */
-        variant?: 'outlined' | 'text' | 'contained';
-    };
-    instances: Record<string, InstanceMessage>;
-}
-
 interface NotificationDialogOptions {
     notifications: {
         [host: string]: {
@@ -244,18 +188,73 @@ interface NotificationDialogOptions {
     onClose: () => void;
     ackCallback: (host: string, name: string) => void;
     dateFormat: string;
+    isFloatComma: boolean;
     themeType: ThemeType;
-    instances: Record<string, any>;
+    themeName: ThemeName;
+    theme: IobTheme;
+    instances: Record<string, ioBroker.InstanceObject>;
+    socket: AdminConnection;
 }
 
 interface MessagesPerScope {
     [scope: string]: Record<string, Message & { host: string }>;
 }
 
+function onLink(linkCommand: BackEndCommandOpenLink, instanceId: string, onClose: () => void) {
+    let target = '_self';
+    let url = '';
+    if (!linkCommand.url) {
+        url = `#tab-instances/config/${instanceId}`;
+        target = linkCommand.target || '_self';
+    } else if (linkCommand.url.toString().startsWith('#')) {
+        target = linkCommand.target || '_self';
+        url = linkCommand.url;
+    } else if (linkCommand.url.toString().startsWith('/')) {
+        target = linkCommand.target || '_self';
+        url = linkCommand.url;
+    } else if (linkCommand.url.startsWith('http://') || linkCommand.url.startsWith('https://')) {
+        target = linkCommand.target || '_blank';
+        url = linkCommand.url;
+    } else {
+        url = `#tab-instances/config/${instanceId}/${linkCommand.url}`;
+        target = linkCommand.target || '_self';
+    }
+    if (target === '_self') {
+        // close dialog
+        setTimeout(
+            (_url: string) => {
+                if (_url.startsWith('#')) {
+                    window.location.hash = _url;
+                } else if (_url.startsWith('/')) {
+                    url = `${window.location.protocol}:${window.location.host}${url}`;
+                } else if (_url.startsWith('http://') || _url.startsWith('http://')) {
+                    window.location.href = _url;
+                }
+            },
+            100,
+            url,
+        );
+
+        if (linkCommand.close && typeof onClose === 'function') {
+            onClose();
+        }
+    } else {
+        if (url.startsWith('#')) {
+            url = `${window.location.protocol}:${window.location.host}${window.location.pathname}${url}`;
+        } else if (url.startsWith('/')) {
+            url = `${window.location.protocol}:${window.location.host}${url}`;
+        }
+
+        window.open(url, target);
+    }
+}
+
 const NotificationsDialog = ({
-    notifications, onClose, ackCallback, dateFormat, themeType, instances,
+    notifications, onClose, ackCallback, dateFormat,
+    themeType, instances, themeName, theme, isFloatComma, socket,
 }: NotificationDialogOptions) => {
-    const notificationManagerInstalled = !!Object.values(instances).find(instance => instance.common.name === 'notification-manager');
+    const notificationManagerInstalled = !!Object.values(instances)
+        .find(instance => instance.common.name === 'notification-manager');
 
     const messages: MessagesPerScope = {};
 
@@ -397,71 +396,20 @@ const NotificationsDialog = ({
                                                 </AccordionSummary>
                                                 <AccordionDetails style={styles.column}>
                                                     {entry.instances[nameInst].messages.map((msg, i) =>
-                                                        <Typography key={i} component="div" sx={styles.message}>
-                                                            <Box
-                                                                component="div"
-                                                                sx={styles.terminal}
-                                                            >
-                                                                {Utils.renderTextWithA(msg.message)}
-                                                            </Box>
-                                                            <Box
-                                                                component="div"
-                                                                sx={styles.silver}
-                                                            >
-                                                                {Utils.formatDate(new Date(msg.ts), dateFormat)}
-                                                            </Box>
-                                                            {entry.link ? <Button
-                                                                variant={entry.link.variant || 'contained'}
-                                                                style={entry.link.style}
-                                                                onClick={() => {
-                                                                    let target = '_self';
-                                                                    let url = '';
-                                                                    if (!entry.link.url) {
-                                                                        url = `#tab-instances/config/${nameInst}`;
-                                                                        target = entry.link.target || '_self';
-                                                                    } else if (entry.link.url.toString().startsWith('#')) {
-                                                                        target = entry.link.target || '_self';
-                                                                        url = entry.link.url;
-                                                                    } else if (entry.link.url.toString().startsWith('/')) {
-                                                                        target = entry.link.target || '_self';
-                                                                        url = entry.link.url;
-                                                                    } else if (entry.link.url.startsWith('http://') || entry.link.url.startsWith('https://')) {
-                                                                        target = entry.link.target || '_blank';
-                                                                        url = entry.link.url;
-                                                                    } else {
-                                                                        url = `#tab-instances/config/${nameInst}/${entry.link.url}`;
-                                                                        target = entry.link.target || '_self';
-                                                                    }
-                                                                    if (target === '_self') {
-                                                                        // close dialog
-                                                                        setTimeout((_url: string) => {
-                                                                            if (_url.startsWith('#')) {
-                                                                                window.location.hash = _url;
-                                                                            } else if (_url.startsWith('/')) {
-                                                                                url = `${window.location.protocol}:${window.location.host}${url}`;
-                                                                            } else if (_url.startsWith('http://') || _url.startsWith('http://')) {
-                                                                                window.location.href = _url;
-                                                                            }
-                                                                        }, 100, url);
-                                                                        onClose();
-                                                                    } else {
-                                                                        if (url.startsWith('#')) {
-                                                                            url = `${window.location.protocol}:${window.location.host}${window.location.pathname}${url}`;
-                                                                        } else if (url.startsWith('/')) {
-                                                                            url = `${window.location.protocol}:${window.location.host}${url}`;
-                                                                        }
-
-                                                                        window.open(url, target);
-                                                                    }
-                                                                }}
-                                                                color="primary"
-                                                                startIcon={entry.link.icon ? <Icon src={entry.link.icon} /> : <OpenInNew />}
-                                                            >
-                                                                {entry.link.text ?
-                                                                    (typeof entry.link.text === 'object' ? entry.link.text[I18n.getLanguage()] || entry.link.text.en :
-                                                                        entry.link.text) :  I18n.t('Open')}
-                                                            </Button> : null}
-                                                        </Typography>)}
+                                                        <NotificationMessage
+                                                            key={i}
+                                                            message={msg}
+                                                            dateFormat={dateFormat}
+                                                            entry={entry}
+                                                            instanceId={nameInst}
+                                                            socket={socket}
+                                                            themeType={themeType}
+                                                            themeName={themeName}
+                                                            theme={theme}
+                                                            isFloatComma={isFloatComma}
+                                                            onClose={onClose}
+                                                            onLink={(linkCommand: BackEndCommandOpenLink) => onLink(linkCommand, nameInst, onClose)}
+                                                        />)}
                                                 </AccordionDetails>
                                             </Accordion>;
                                         }) : null}

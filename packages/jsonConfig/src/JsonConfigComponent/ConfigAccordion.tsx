@@ -131,6 +131,7 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
                     this.onChangeWrapper(newObj));
             }}
             onError={(error, attr) => this.onError(error, attr)}
+            onBackEndCommand={this.props.onBackEndCommand}
             table={this.props.table}
             DeviceManager={this.props.DeviceManager}
             theme={this.props.theme}
