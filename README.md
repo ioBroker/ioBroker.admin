@@ -87,6 +87,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 * (bluefox) Added the possibility to show button in notifications
+* (bluefox) Removed gulp from the build process
 
 ### 7.0.25 (2024-08-24)
 * (bluefox) Improvement for automatic tests

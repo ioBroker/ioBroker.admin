@@ -27,6 +27,17 @@ const styles: Record<string, any> = {
             flexWrap: 'wrap',
         },
     },
+    offline: {
+        position: 'relative',
+        justifyContent: 'space-between',
+        display: 'flex',
+        width: '100%',
+        alignItems: 'center',
+        opacity: 0.7,
+        '@media screen and (max-width: 550px)': {
+            flexWrap: 'wrap',
+        },
+    },
     timestamp: {
         color: 'text.secondary',
         position: 'absolute',
@@ -84,10 +95,19 @@ export interface Message {
     instances: Record<string, InstanceMessage>;
 }
 
+/* TODO: Replace it later with ioBroker.NotificationAction */
+/** Structure for notification actions */
+interface NotificationAction {
+    /** This message will be shown if instance is offline */
+    offlineMessage?: ioBroker.StringOrTranslated;
+    /** any other data required for instance to show the dynamic GUI in the notification */
+    [other: string]: any;
+}
+
 interface NotificationMessageProps {
     entry: Message;
     instanceId: string;
-    message: { message: string; ts: number; actionData?: object | null };
+    message: { message: string; ts: number; actionData?: NotificationAction };
     onClose: () => void;
     onLink: (linkCommand: BackEndCommandOpenLink) => void;
     dateFormat: string;
@@ -134,12 +154,17 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
     }
 
     getGui() {
-        if (this.state.alive) {
+        if (this.state.alive && this.props.message.actionData) {
+            const actionData = JSON.parse(JSON.stringify(this.props.message.actionData));
+            /** remove offline message from actionData */
+            if (actionData.offlineMessage) {
+                delete actionData.offlineMessage;
+            }
             // request GUI for this notification
             this.props.socket.sendTo(
                 this.props.instanceId.replace('system.adapter.', ''),
                 'getNotificationSchema',
-                this.props.message,
+                actionData,
             )
                 .then((result: { data: Record<string, any> | null; schema: Record<string, any> | null }) => {
                     if (result) {
@@ -174,14 +199,22 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
         if (!this.state.schema || !this.state.data || !this.state.alive) {
             if (this.props.message.actionData) {
                 if (!this.state.alive) {
-                    if (this.props.message.message) {
-                        return this.renderSimpleMessage();
+                    if (this.props.message.actionData.offlineMessage) {
+                        const text = typeof this.props.message.actionData.offlineMessage === 'string' ?
+                            this.props.message.actionData.offlineMessage :
+                            this.props.message.actionData.offlineMessage[this.props.socket.systemLang] ||
+                            this.props.message.actionData.offlineMessage.en;
+
+                        return <Box sx={styles.offline}>
+                            {Utils.renderTextWithA(text)}
+                        </Box>;
                     }
                     return <Typography>{I18n.t('Instance is not alive')}</Typography>;
                 }
                 return <LinearProgress />;
             }
-            return this.renderSimpleMessage();
+
+            return null;
         }
 
         const [, , adapterName, instance] = this.props.instanceId.split('.');
@@ -223,11 +256,11 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
     }
 
     renderSimpleMessage() {
-        return <Box
+        return this.props.message.message ? <Box
             sx={styles.terminal}
         >
             {Utils.renderTextWithA(this.props.message.message)}
-        </Box>;
+        </Box> : null;
     }
 
     render() {
@@ -235,6 +268,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
             <Box sx={styles.timestamp}>
                 {new Date(this.props.message.ts).toLocaleString()}
             </Box>
+            {this.renderSimpleMessage()}
             {this.renderCustomGui()}
         </Typography>;
     }
