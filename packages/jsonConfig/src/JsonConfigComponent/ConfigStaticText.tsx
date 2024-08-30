@@ -19,24 +19,84 @@ const styles: Record<string, any> = {
     }),
 };
 
+function onLink(
+    href: string,
+    target: '_blank' | '_self' | string,
+    instanceId: string,
+) {
+    let _target = '_self';
+    let url = '';
+    if (!href) {
+        url = `#tab-instances/config/${instanceId}`;
+        _target = target || '_self';
+    } else if (href.toString().startsWith('#')) {
+        _target = target || '_self';
+        url = href;
+    } else if (href.toString().startsWith('/')) {
+        _target = target || '_self';
+        url = href;
+    } else if (href.startsWith('http://') || href.startsWith('https://')) {
+        _target = target || '_blank';
+        url = href;
+    } else {
+        url = `#tab-instances/config/${instanceId}/${href}`;
+        _target = target || '_self';
+    }
+    if (_target === '_self') {
+        // close dialog
+        setTimeout(
+            (_url: string) => {
+                if (_url.startsWith('#')) {
+                    window.location.hash = _url;
+                } else if (_url.startsWith('/')) {
+                    url = `${window.location.protocol}:${window.location.host}${url}`;
+                } else if (_url.startsWith('http://') || _url.startsWith('http://')) {
+                    window.location.href = _url;
+                }
+            },
+            100,
+            url,
+        );
+    } else {
+        if (url.startsWith('#')) {
+            url = `${window.location.protocol}:${window.location.host}${window.location.pathname}${url}`;
+        } else if (url.startsWith('/')) {
+            url = `${window.location.protocol}:${window.location.host}${url}`;
+        }
+
+        window.open(url, _target);
+    }
+}
+
 interface ConfigInstanceSelectProps extends ConfigGenericProps {
     schema: ConfigItemStaticText;
 }
 
 class ConfigStaticText extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGenericState> {
-    renderItem(error: string, disabled: boolean /* , defaultValue */) {
+    renderItem(_error: string, disabled: boolean /* , defaultValue */) {
         if (this.props.schema.button) {
             const icon = this.getIcon();
             return <Button
                 variant={this.props.schema.variant || undefined}
                 color={this.props.schema.color || 'grey'}
-                style={styles.fullWidth}
+                style={{ ...styles.fullWidth, ...(this.props.schema.controlStyle || undefined) }}
                 disabled={disabled}
                 startIcon={icon}
                 onClick={this.props.schema.href ? () => {
                     // calculate one more time just before call
                     const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
-                    href && window.open(href, '_blank');
+                    if (href) {
+                        if (this.props.onBackEndCommand) {
+                            this.props.onBackEndCommand({
+                                command: 'link',
+                                url: href,
+                                target: this.props.schema.target,
+                                close: this.props.schema.close,
+                            });
+                        } else {
+                            onLink(href, this.props.schema.target, `${this.props.adapterName}.${this.props.instance}`);
+                        }
+                    }
                 } : null}
             >
                 {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}
@@ -49,11 +109,23 @@ class ConfigStaticText extends ConfigGeneric<ConfigInstanceSelectProps, ConfigGe
 
         return <Box
             component="span"
+            style={{ ...(this.props.schema.controlStyle || undefined) }}
             sx={this.props.schema.href ? styles.link : undefined}
             onClick={this.props.schema.href ? () => {
                 // calculate one more time just before call
                 const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
-                href && window.open(href, '_blank');
+                if (href) {
+                    if (this.props.onBackEndCommand) {
+                        this.props.onBackEndCommand({
+                            command: 'link',
+                            url: href,
+                            target: this.props.schema.target || '_blank',
+                            close: this.props.schema.close,
+                        });
+                    } else {
+                        onLink(href, this.props.schema.target || '_blank', `${this.props.adapterName}.${this.props.instance}`);
+                    }
+                }
             } : null}
         >
             {text}

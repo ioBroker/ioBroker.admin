@@ -200,7 +200,11 @@ interface MessagesPerScope {
     [scope: string]: Record<string, Message & { host: string }>;
 }
 
-function onLink(linkCommand: BackEndCommandOpenLink, instanceId: string, onClose: () => void) {
+function onLink(
+    linkCommand: BackEndCommandOpenLink,
+    instanceId: string,
+    onClose: () => void,
+) {
     let target = '_self';
     let url = '';
     if (!linkCommand.url) {

@@ -19,13 +19,13 @@ import {
 const styles: Record<string, any> = {
     message: {
         position: 'relative',
-        justifyContent: 'space-between',
-        display: 'flex',
+        // justifyContent: 'space-between',
+        display: 'block',
         width: '100%',
-        alignItems: 'center',
-        '@media screen and (max-width: 550px)': {
-            flexWrap: 'wrap',
-        },
+        // alignItems: 'center',
+        // '@media screen and (max-width: 550px)': {
+        //     flexWrap: 'wrap',
+        // },
     },
     offline: {
         position: 'relative',
@@ -47,10 +47,13 @@ const styles: Record<string, any> = {
             fontSize: '2.9vw',
         },
     },
-    terminal: {
+    simpleMessage: {
         fontFamily: 'monospace',
         fontSize: 14,
         ml: '20px',
+        mb: '10px',
+        width: '100%',
+        display: 'block',
         whiteSpace: 'pre-wrap',
         '@media screen and (max-width: 550px)': {
             fontSize: '2.9vw',
@@ -129,8 +132,6 @@ interface NotificationMessageState {
 class NotificationMessage extends Component<NotificationMessageProps, NotificationMessageState> {
     private lastAlive: number = 0;
 
-    private lastSchema: string;
-
     constructor(props: NotificationMessageProps) {
         super(props);
 
@@ -140,7 +141,6 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
             schema: null,
             updateData: 0,
         };
-        this.lastSchema = JSON.stringify(this.state.schema);
     }
 
     async componentDidMount() {
@@ -149,7 +149,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
             const alive = await this.props.socket.getState(`${this.props.instanceId}.alive`);
             this.lastAlive = alive?.val ? Date.now() : 0;
             this.setState({ alive: !!alive?.val }, () => this.getGui());
-            this.props.socket.subscribeState(`${this.props.instanceId}.alive`, this.onAliveChanged);
+            await this.props.socket.subscribeState(`${this.props.instanceId}.alive`, this.onAliveChanged);
         }
     }
 
@@ -168,15 +168,11 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
             )
                 .then((result: { data: Record<string, any> | null; schema: Record<string, any> | null }) => {
                     if (result) {
-                        if (JSON.stringify(result.schema) !== this.lastSchema) {
-                            this.setState({
-                                schema: result.schema,
-                                data: result.data || this.state.data,
-                                updateData: this.state.updateData + 1,
-                            });
-                        } else {
-                            this.setState({ data: result.data || this.state.data });
-                        }
+                        this.setState({
+                            schema: result.schema,
+                            data: result.data || this.state.data,
+                            updateData: this.state.updateData + 1,
+                        });
                     }
                 });
         }
@@ -257,7 +253,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
 
     renderSimpleMessage() {
         return this.props.message.message ? <Box
-            sx={styles.terminal}
+            sx={styles.simpleMessage}
         >
             {Utils.renderTextWithA(this.props.message.message)}
         </Box> : null;
