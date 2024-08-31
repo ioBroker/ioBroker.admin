@@ -7,49 +7,6 @@ declare module '@mui/material/Button' {
     }
 }
 
-export type BackEndCommandType = 'nop' | 'refresh' | 'link' | 'message';
-
-export interface BackEndCommandGeneric {
-    command: BackEndCommandType;
-    /** New GUI schema */
-    schema?: Record<string, any>;
-    /** New GUI data */
-    data?: Record<string, any>;
-    refresh?: boolean;
-}
-
-export interface BackEndCommandNoOperation extends BackEndCommandGeneric {
-    command: 'nop';
-}
-
-export interface BackEndCommandRefresh extends BackEndCommandGeneric {
-    command: 'refresh';
-    /** If refresh the GUI */
-    fullRefresh?: boolean;
-}
-
-export interface BackEndCommandOpenLink extends BackEndCommandGeneric {
-    command: 'link';
-    /** Link url. Could be relative ('#blabla') or absolute ('https://blabla') */
-    url: string;
-    /** Target of the link. Default is `_self` for relative and '_blank' for absolute links */
-    target?: '_self' | '_blank' | string;
-    /** If GUI should be closed after the link was opened (Only for target='_self') */
-    close?: boolean;
-}
-
-export interface BackEndCommandMessage extends BackEndCommandGeneric {
-    command: 'message';
-    /** Message text */
-    message: ioBroker.StringOrTranslated;
-    /** If GUI should be closed after the message shown */
-    close?: boolean;
-    /** Type of message. Default is 'popup' */
-    variant: 'popup' | 'dialog';
-}
-
-export type BackEndCommand = BackEndCommandMessage | BackEndCommandOpenLink | BackEndCommandRefresh;
-
 type CustomCSSProperties = React.CSSProperties;
 
 export type ConfigItemType = 'tabs' | 'panel' | 'text' | 'number' | 'color' | 'checkbox' | 'slider' | 'ip' | 'user' | 'room' | 'func' | 'select' |
@@ -837,3 +794,48 @@ export type ConfigItemAny = ConfigItemAlive | ConfigItemAutocomplete |
     ConfigItemSetState | ConfigItemStaticDivider | ConfigItemStaticHeader |
     ConfigItemStaticImage | ConfigItemStaticText | ConfigItemTopic |
     ConfigItemObjectId | ConfigItemQrCode;
+
+// Notification GUI
+
+export type BackEndCommandType = 'nop' | 'refresh' | 'link' | 'message';
+
+export interface BackEndCommandGeneric {
+    command: BackEndCommandType;
+    /** New GUI schema */
+    schema?: ConfigItemPanel;
+    /** New GUI data */
+    data?: Record<string, any>;
+    refresh?: boolean;
+}
+
+export interface BackEndCommandNoOperation extends BackEndCommandGeneric {
+    command: 'nop';
+}
+
+export interface BackEndCommandRefresh extends BackEndCommandGeneric {
+    command: 'refresh';
+    /** If refresh the GUI */
+    fullRefresh?: boolean;
+}
+
+export interface BackEndCommandOpenLink extends BackEndCommandGeneric {
+    command: 'link';
+    /** Link url. Could be relative ('#blabla') or absolute ('https://blabla') */
+    url: string;
+    /** Target of the link. Default is `_self` for relative and '_blank' for absolute links */
+    target?: '_self' | '_blank' | string;
+    /** If GUI should be closed after the link was opened (Only for target='_self') */
+    close?: boolean;
+}
+
+export interface BackEndCommandMessage extends BackEndCommandGeneric {
+    command: 'message';
+    /** Message text */
+    message: ioBroker.StringOrTranslated;
+    /** If GUI should be closed after the message shown */
+    close?: boolean;
+    /** Type of message. Default is 'popup' */
+    variant: 'popup' | 'dialog';
+}
+
+export type BackEndCommand = BackEndCommandMessage | BackEndCommandOpenLink | BackEndCommandRefresh;

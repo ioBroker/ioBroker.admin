@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    Grid,
+    Grid2 as Grid,
     IconButton,
     TableCell,
     TableRow,
@@ -77,7 +77,7 @@ function AdapterCategoryRow(props: AdapterCategoryRowProps) {
     >
         <TableCell>
             <Grid container spacing={1} alignItems="center" style={styles.name}>
-                <Grid item>
+                <Grid component="div">
                     <IconButton
                         size="small"
                         onClick={props.onToggle}

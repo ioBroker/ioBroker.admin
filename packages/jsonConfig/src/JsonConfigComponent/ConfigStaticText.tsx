@@ -24,7 +24,7 @@ function onLink(
     target: '_blank' | '_self' | string,
     instanceId: string,
 ) {
-    let _target = '_self';
+    let _target;
     let url = '';
     if (!href) {
         url = `#tab-instances/config/${instanceId}`;
@@ -50,7 +50,7 @@ function onLink(
                     window.location.hash = _url;
                 } else if (_url.startsWith('/')) {
                     url = `${window.location.protocol}:${window.location.host}${url}`;
-                } else if (_url.startsWith('http://') || _url.startsWith('http://')) {
+                } else if (_url.startsWith('http://') || _url.startsWith('https://')) {
                     window.location.href = _url;
                 }
             },

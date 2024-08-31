@@ -231,7 +231,7 @@ function onLink(
                     window.location.hash = _url;
                 } else if (_url.startsWith('/')) {
                     url = `${window.location.protocol}:${window.location.host}${url}`;
-                } else if (_url.startsWith('http://') || _url.startsWith('http://')) {
+                } else if (_url.startsWith('http://') || _url.startsWith('https://')) {
                     window.location.href = _url;
                 }
             },

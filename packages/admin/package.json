@@ -30,7 +30,7 @@
     "@types/leaflet": "^1.9.12",
     "ajv": "^8.17.1",
     "archiver": "^7.0.1",
-    "axios": "^1.7.5",
+    "axios": "^1.7.6",
     "body-parser": "^1.20.2",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
@@ -78,9 +78,9 @@
     "test:integration": "mocha test/integration --exit",
     "test:rule": "mocha test/rule --exit",
     "test:gui": "mocha test/*.gui.js --exit",
-    "prepublishOnly": "npm run build && npm run build:ts",
-    "build": "node tasks && npm run build:ts",
-    "build:ts": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:backend": "tsc -p tsconfig.build.json",
     "clean": "rimraf src-admin/build",
     "lint-backend": "eslint src",
     "react-0-configCSS": "node tasks --react-0-configCSS",
@@ -91,7 +91,7 @@
     "react-3-build": "node tasks --react-3-build",
     "react-5-copy": "node tasks --react-5-copy",
     "react-6-patch": "node tasks --react-6-patch",
-    "react-build": "node tasks"
+    "build:frontend": "node tasks"
   },
   "author": "bluefox <dogafox@gmail.com>"
 }

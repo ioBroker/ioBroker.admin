@@ -8,7 +8,7 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import {
     AppBar,
     Avatar,
-    Grid,
+    Grid2 as Grid,
     IconButton,
     Paper,
     Snackbar,
@@ -2662,7 +2662,7 @@ class App extends Router<AppProps, AppState> {
                                 </Typography>
                             )}
                         </Box>}
-                    <Grid item>
+                    <Grid>
                         <a
                             href="/#easy"
                             onClick={event => event.preventDefault()}

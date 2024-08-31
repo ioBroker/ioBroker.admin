@@ -12,7 +12,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 import {
     type BackEndCommandGeneric,
-    type BackEndCommandOpenLink,
+    type BackEndCommandOpenLink, type ConfigItemPanel,
     JsonConfigComponent,
 } from '@iobroker/json-config';
 
@@ -124,7 +124,7 @@ interface NotificationMessageProps {
 interface NotificationMessageState {
     alive: boolean;
     data: Record<string, any> | null;
-    schema: Record<string, any> | null;
+    schema: ConfigItemPanel | null;
     error?: boolean;
     updateData: number;
 }
@@ -166,7 +166,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                 'getNotificationSchema',
                 actionData,
             )
-                .then((result: { data: Record<string, any> | null; schema: Record<string, any> | null }) => {
+                .then((result: { data: Record<string, any> | null; schema: ConfigItemPanel | null }) => {
                     if (result) {
                         this.setState({
                             schema: result.schema,
@@ -226,6 +226,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                 schema={this.state.schema}
                 data={this.state.data}
                 onError={(error?: boolean) => this.setState({ error })}
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 onChange={(_data: Record<string, any>) => {
                     // ignore for now
                 }}

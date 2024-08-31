@@ -26,6 +26,7 @@ module.exports = {
         'react',
         'only-warn',
         'react-hooks',
+        '@stylistic',
     ],
     settings: {
         'import/resolver': {
@@ -89,7 +90,7 @@ module.exports = {
         'no-alert': 'off',
         'class-methods-use-this': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
-        '@typescript-eslint/member-delimiter-style': ['error', {
+        '@stylistic/member-delimiter-style': ['error', {
             multiline: {
                 delimiter: 'semi',
                 requireLast: true,
@@ -99,7 +100,7 @@ module.exports = {
                 requireLast: false,
             },
         }],
-        '@typescript-eslint/type-annotation-spacing': 'error',
+        '@stylistic/type-annotation-spacing': 'error',
         '@typescript-eslint/consistent-type-imports': 'error',
     },
 };
