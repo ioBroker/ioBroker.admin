@@ -30,7 +30,7 @@ class ConfigImageSendTo extends ConfigGeneric<ConfigImageSendToProps, ConfigImag
                 if (dataStr) {
                     try {
                         data = JSON.parse(dataStr);
-                    } catch (e) {
+                    } catch {
                         console.error(`Cannot parse json data: ${data}`);
                     }
                 }

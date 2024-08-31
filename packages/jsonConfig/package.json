@@ -8,7 +8,8 @@
     "build": "tsc && tsc-alias && node after_build",
     "clean": "rimraf build",
     "prepublishOnly": "npm run build",
-    "build:ts": "tsc -p tsconfig.json"
+    "build:ts": "tsc -p tsconfig.json",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
   },
   "publishConfig": {
     "access": "public"

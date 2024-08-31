@@ -486,6 +486,7 @@ export default class ConfigGeneric<Props extends ConfigGenericProps = ConfigGene
      * @param attr the changed attribute
      * @param newValue new value of the attribute
      */
+    // eslint-disable-next-line react/no-unused-class-component-methods
     onChangeAsync(attr: string, newValue: unknown): Promise<void> {
         return new Promise(resolve => {
             this.onChange(attr, newValue, resolve);

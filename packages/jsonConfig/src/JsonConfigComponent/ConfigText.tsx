@@ -126,7 +126,9 @@ class ConfigText extends ConfigGeneric<ConfigTextProps, ConfigTextState> {
         }
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
-            this.updateTimeout && clearTimeout(this.updateTimeout);
+            if (this.updateTimeout) {
+                clearTimeout(this.updateTimeout);
+            }
             this.updateTimeout = setTimeout(() => {
                 this.updateTimeout = null;
                 this.setState({ oldValue: null });

@@ -117,8 +117,10 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
                 // } else {
                 //     throw new Error('Response not ok');
                 // }
-            } catch (error) {
-                this.state.icon && this.setState({ icon: '' });
+            } catch {
+                if (this.state.icon) {
+                    this.setState({ icon: '' });
+                }
             }
         }
     }
@@ -438,7 +440,7 @@ class DeviceCard extends Component<DeviceCardProps, DeviceCardState> {
         const status = !this.props.device.status ? [] : Array.isArray(this.props.device.status) ? this.props.device.status : [this.props.device.status];
 
         return <Paper style={cardStyle} key={this.props.id}>
-            <Box sx={theme => ({ backgroundColor: theme.palette.secondary.main}) } style={headerStyle}>
+            <Box sx={theme => ({ backgroundColor: theme.palette.secondary.main })} style={headerStyle}>
                 <div style={imgAreaStyle}>
                     {this.props.uploadImagesToInstance ? <DeviceImageUpload
                         uploadImagesToInstance={this.props.uploadImagesToInstance}

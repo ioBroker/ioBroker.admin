@@ -86,7 +86,7 @@ class ConfigSelectSendTo extends ConfigGeneric<ConfigSelectSendToProps, ConfigSe
                 const dataStr: string = this.getPattern(this.props.schema.jsonData);
                 try {
                     data = JSON.parse(dataStr);
-                } catch (e) {
+                } catch {
                     console.error(`Cannot parse json data: ${dataStr}`);
                 }
             }

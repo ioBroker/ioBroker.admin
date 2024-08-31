@@ -60,7 +60,9 @@ class ConfigCoordinates extends ConfigGeneric<ConfigCoordinatesProps, ConfigCoor
                 setTimeout(() => this.getCoordinates(), 300);
             }
         }
-        Object.keys(newState).length && setTimeout(() => this.setState(newState as ConfigCoordinatesState), 50);
+        if (Object.keys(newState).length) {
+            setTimeout(() => this.setState(newState as ConfigCoordinatesState), 50);
+        }
     }
 
     async getSystemCoordinates() {

@@ -26,7 +26,7 @@ interface ConfigStateState extends ConfigGenericState {
 class ConfigState extends ConfigGeneric<ConfigStateProps, ConfigStateState> {
     controlTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    delayedUpdate: { timer: ReturnType<typeof setTimeout> | null, value: string | boolean | number | null } = { timer: null, value: null };
+    delayedUpdate: { timer: ReturnType<typeof setTimeout> | null; value: string | boolean | number | null } = { timer: null, value: null };
 
     getObjectID() {
         return `${this.props.schema.system ? 'system.adapter.' : ''}${this.props.adapterName}.${this.props.instance}.${this.props.schema.oid}`;

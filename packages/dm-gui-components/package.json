@@ -19,7 +19,8 @@
     "prepublishOnly": "npm run build",
     "clean": "rimraf build",
     "build": "tsc && tsc-alias",
-    "check-ts": "tsc --noEmit --checkJS false"
+    "check-ts": "tsc --noEmit --checkJS false",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
   },
   "repository": {
     "type": "git",

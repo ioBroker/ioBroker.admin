@@ -240,6 +240,7 @@ interface ConfigTableState extends ConfigGenericState {
 function encrypt(secret: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
+        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -247,6 +248,7 @@ function encrypt(secret: string, value: string): string {
 function decrypt(secret: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
+        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -313,8 +315,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     }
 
     componentWillUnmount() {
-        this.typingTimer && clearTimeout(this.typingTimer);
-        this.typingTimer = null;
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+            this.typingTimer = null;
+        }
         super.componentWillUnmount();
     }
 
@@ -680,7 +684,9 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     };
 
     onChangeWrapper = (newValue: Record<string, any>[], updateVisible?: boolean) => {
-        this.typingTimer && clearTimeout(this.typingTimer);
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+        }
 
         this.typingTimer = setTimeout((value, _updateVisible) => {
             this.typingTimer = null;
@@ -770,14 +776,16 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         }
 
         if (visibleValue === null && this.state.visibleValue === null) {
-            cb && cb();
+            if (cb) {
+                cb();
+            }
             return;
         }
 
         if (JSON.stringify(visibleValue) !== JSON.stringify(this.state.visibleValue)) {
             this.setState({ visibleValue }, () => cb && cb());
-        } else {
-            cb && cb();
+        } else if (cb) {
+            cb();
         }
     };
 

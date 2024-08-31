@@ -200,7 +200,9 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
 
     handleFilterChange(filter: string) {
         this.setState({ filter }, () => {
-            this.filterTimeout && clearTimeout(this.filterTimeout);
+            if (this.filterTimeout) {
+                clearTimeout(this.filterTimeout);
+            }
             this.filterTimeout = setTimeout(() => {
                 this.filterTimeout = null;
                 this.applyFilter();

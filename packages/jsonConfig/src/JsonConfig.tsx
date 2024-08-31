@@ -285,7 +285,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 try {
                     const data = JSON.parse(contents);
                     this.setState({ data, changed: JSON.stringify(data) !== JSON.stringify(this.state.originalData) });
-                } catch (err) {
+                } catch {
                     window.alert(I18n.t('[JsonConfig] Failed to parse JSON file'));
                 }
             };
@@ -468,7 +468,9 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 console.log(e);
             }
         } catch (e1) {
-            !this.state.schema && window.alert(`[JsonConfig] Cannot read file "${fileName}: ${e1}`);
+            if (!this.state.schema) {
+                window.alert(`[JsonConfig] Cannot read file "${fileName}: ${e1}`);
+            }
         }
         return null;
     }

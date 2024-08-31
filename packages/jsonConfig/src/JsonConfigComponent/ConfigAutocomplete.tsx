@@ -50,7 +50,7 @@ class ConfigAutocomplete extends ConfigGeneric<ConfigAutocompleteProps, ConfigAu
         } else {
             item = this.state.value !== null &&
                 this.state.value !== undefined &&
-                // eslint-disable-next-line eqeqeq
+                // eslint-disable-next-line eqeqeq-fix/eqeqeq
                 options.find(_item => (typeof _item === 'object' ? _item.value == this.state.value : _item == this.state.value)); // let "==" be and not ===
 
             if (this.state.value !== null && this.state.value !== undefined && !item && this.props.schema.freeSolo) {

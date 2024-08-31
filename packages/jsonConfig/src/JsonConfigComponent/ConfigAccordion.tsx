@@ -83,8 +83,10 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
     }
 
     componentWillUnmount() {
-        this.typingTimer && clearTimeout(this.typingTimer);
-        this.typingTimer = null;
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+            this.typingTimer = null;
+        }
         super.componentWillUnmount();
     }
 
@@ -175,7 +177,9 @@ class ConfigAccordion extends ConfigGeneric<ConfigAccordionProps, ConfigAccordio
     };
 
     onChangeWrapper = (newValue: any) => {
-        this.typingTimer && clearTimeout(this.typingTimer);
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+        }
 
         this.typingTimer = setTimeout(value => {
             this.typingTimer = null;
