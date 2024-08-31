@@ -5394,7 +5394,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         cb: () => void,
     ): void {
         if (!enumIds || !enumIds.length) {
-            cb && cb();
+            if (cb) {
+                cb();
+            }
             return;
         }
         const enumId = enumIds.pop() || '';
@@ -6078,12 +6080,14 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
                 if (!this.states[_id]) {
                     if (this.objects[_id]?.type === 'state') {
-                        !this.recordStates.includes(_id) && this.recordStates.push(_id);
+                        if (!this.recordStates.includes(_id)) {
+                            this.recordStates.push(_id);
+                        }
                         this.states[_id] = { val: null } as ioBroker.State;
                         this.subscribe(_id);
                     }
-                } else {
-                    !this.recordStates.includes(_id) && this.recordStates.push(_id);
+                } else if (!this.recordStates.includes(_id)) {
+                    this.recordStates.push(_id);
                 }
             });
             // calculate color
@@ -6667,7 +6671,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
         } else {
             leaf = result.row;
         }
-        root.data.id && leaf && items.push(leaf);
+        if (root.data.id && leaf) {
+            items.push(leaf);
+        }
         if (result.details) {
             items.push(result.details);
         }
@@ -6676,44 +6682,44 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
 
         if (!root.data.id || isExpanded) {
             if (!this.state.foldersFirst) {
-                root.children && items.push(root.children.map(item => {
-                    // do not render too many items in column editor mode
-                    if (!this.state.columnsSelectorShow || counter.count < 15) {
-                        if (item.data.sumVisibility) {
-                            return this.renderItem(item, undefined, counter);
-                        }
-                    }
-                    return null;
-                }) as any as React.JSX.Element);
-            } else {
                 if (root.children) {
-                    // first only folder
                     items.push(root.children.map(item => {
-                        if (item.children) {
-                            // do not render too many items in column editor mode
-                            if (!this.state.columnsSelectorShow || counter.count < 15) {
-                                if (item.data.sumVisibility) {
-                                    return this.renderItem(item, undefined, counter);
-                                }
-                            }
-                        }
-
-                        return null;
-                    }) as any as React.JSX.Element);
-
-                    // then items
-                    items.push(root.children.map(item => {
-                        if (!item.children) {
-                            // do not render too many items in column editor mode
-                            if (!this.state.columnsSelectorShow || counter.count < 15) {
-                                if (item.data.sumVisibility) {
-                                    return this.renderItem(item, undefined, counter);
-                                }
+                        // do not render too many items in column editor mode
+                        if (!this.state.columnsSelectorShow || counter.count < 15) {
+                            if (item.data.sumVisibility) {
+                                return this.renderItem(item, undefined, counter);
                             }
                         }
                         return null;
                     }) as any as React.JSX.Element);
                 }
+            } else if (root.children) {
+                // first only folder
+                items.push(root.children.map(item => {
+                    if (item.children) {
+                        // do not render too many items in column editor mode
+                        if (!this.state.columnsSelectorShow || counter.count < 15) {
+                            if (item.data.sumVisibility) {
+                                return this.renderItem(item, undefined, counter);
+                            }
+                        }
+                    }
+
+                    return null;
+                }) as any as React.JSX.Element);
+
+                // then items
+                items.push(root.children.map(item => {
+                    if (!item.children) {
+                        // do not render too many items in column editor mode
+                        if (!this.state.columnsSelectorShow || counter.count < 15) {
+                            if (item.data.sumVisibility) {
+                                return this.renderItem(item, undefined, counter);
+                            }
+                        }
+                    }
+                    return null;
+                }) as any as React.JSX.Element);
             }
         }
 
@@ -7756,7 +7762,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                             open={!0}
                             anchorEl={this.state.showContextMenu.subAnchor}
                             onClose={() => {
-                                this.state.showContextMenu && this.setState({ showContextMenu: { item: this.state.showContextMenu.item } });
+                                if (this.state.showContextMenu) {
+                                    this.setState({ showContextMenu: { item: this.state.showContextMenu.item } });
+                                }
                                 this.contextMenu = null;
                             }}
                         >
@@ -7806,8 +7814,8 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
                 e.preventDefault();
                 if (e.altKey) {
                     Object.keys(ITEMS).forEach(key => {
-                        if (e.key === ITEMS[key].key) {
-                            ITEMS[key].onClick && ITEMS[key].onClick();
+                        if (e.key === ITEMS[key].key && ITEMS[key].onClick) {
+                            ITEMS[key].onClick();
                         }
                     });
                 }
@@ -7862,7 +7870,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
             isFloatComma={this.props.isFloatComma === undefined ? this.systemConfig.common.isFloatComma : this.props.isFloatComma}
             onClose={(res?: { val: ioBroker.StateValue; ack: boolean; q: ioBroker.STATE_QUALITY[keyof ioBroker.STATE_QUALITY]; expire: number | undefined }) => {
                 this.setState({ updateOpened: false });
-                res && this.onUpdate(res);
+                if (res) {
+                    this.onUpdate(res);
+                }
             }}
             width={this.props.width}
         />;
@@ -7873,7 +7883,9 @@ export class ObjectBrowserClass extends Component<ObjectBrowserProps, ObjectBrow
      */
     render(): React.JSX.Element {
         this.recordStates = [];
-        this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
+        if (this.unsubscribeTimer) {
+            clearTimeout(this.unsubscribeTimer);
+        }
 
         if (this.styleTheme !== this.props.themeType) {
             this.styles = {

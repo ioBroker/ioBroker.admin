@@ -28,5 +28,5 @@
       "#JC/*": ["../../jsonConfig/src/*"]
     },
   },
-  "include": ["./**/*"]
+  "include": ["./src/**/*", "./src/types.d.ts"]
 }

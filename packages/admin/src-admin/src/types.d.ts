@@ -3,6 +3,11 @@ import type {
     ThemeType, ThemeName,
 } from '@iobroker/adapter-react-v5';
 
+declare module '*.png';
+declare module '*.svg';
+declare module '*.jpeg';
+declare module '*.jpg';
+
 export interface BasicComponentProps {
     t: typeof I18n.t;
     lang:  ioBroker.Languages;

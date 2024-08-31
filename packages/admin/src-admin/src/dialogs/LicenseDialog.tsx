@@ -17,7 +17,7 @@ import {
     ArrowDownward as IconArrowDownward,
 } from '@mui/icons-material';
 
-import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
     root: {
