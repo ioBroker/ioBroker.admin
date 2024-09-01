@@ -736,7 +736,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                                     <CloseIcon />
                                                 </IconButton>
                                             </InputAdornment> : null,
-                                        }
+                                        },
                                     }}
                                 />
                                 <Fab size="small" onClick={() => this.getPositionForAddress()}>
@@ -761,7 +761,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                                     <CloseIcon />
                                                 </IconButton>
                                             </InputAdornment> : null,
-                                        }
+                                        },
                                     }}
                                 />
                             </Grid2>
@@ -783,7 +783,7 @@ class WizardSettingsTab extends Component<WizardSettingsTabProps, WizardSettings
                                                     <CloseIcon />
                                                 </IconButton>
                                             </InputAdornment> : null,
-                                        }
+                                        },
                                     }}
                                 />
                             </Grid2>
