@@ -1065,7 +1065,7 @@ export default abstract class InstanceGeneric<
     renderPlayPause() {
         return <Tooltip
             title={this.props.context.t('Start/stop')}
-            componentsProps={{ popper: { sx: this.styles.tooltip } }}
+            slotProps={{ popper: { sx: this.styles.tooltip } }}
         >
             <div>
                 <IconButton
@@ -1104,7 +1104,7 @@ export default abstract class InstanceGeneric<
     renderSettingsButton() {
         return <Tooltip
             title={this.props.instance.config ? this.props.context.t('Settings') : ''}
-            componentsProps={{ popper: { sx: this.styles.tooltip } }}
+            slotProps={{ popper: { sx: this.styles.tooltip } }}
         >
             <div>
                 <IconButton
@@ -1128,7 +1128,7 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderRestartButton() {
-        return <Tooltip title={this.props.context.t('Restart')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+        return <Tooltip title={this.props.context.t('Restart')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
             <div>
                 <IconButton
                     size="small"
@@ -1154,7 +1154,7 @@ export default abstract class InstanceGeneric<
     renderLink() {
         return <Tooltip
             title={this.props.context.t('Instance link %s', this.props.instance.id)}
-            componentsProps={{ popper: { sx: this.styles.tooltip } }}
+            slotProps={{ popper: { sx: this.styles.tooltip } }}
         >
             <div>
                 <IconButton
@@ -1191,7 +1191,7 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderEditNameButton() {
-        return <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+        return <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
                 style={{
@@ -1215,7 +1215,7 @@ export default abstract class InstanceGeneric<
             <div style={this.styles.displayFlex}>
                 <Tooltip
                     title={this.props.context.t('input events')}
-                    componentsProps={{ popper: { sx: this.styles.tooltip } }}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
                 >
                     <div style={this.styles.marginRight5}>
                         ⇥
@@ -1225,7 +1225,7 @@ export default abstract class InstanceGeneric<
                 /
                 <Tooltip
                     title={this.props.context.t('output events')}
-                    componentsProps={{ popper: { sx: this.styles.tooltip } }}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
                 >
                     <div style={this.styles.marginLeft5}>
                         ↦
@@ -1247,7 +1247,7 @@ export default abstract class InstanceGeneric<
     }
 
     renderEditHostButton() {
-        return <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+        return <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
                 style={this.styles.button}
@@ -1264,7 +1264,7 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderSentry() {
-        return <Tooltip title="sentry" componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+        return <Tooltip title="sentry" slotProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
                 style={this.styles.button}
@@ -1290,7 +1290,7 @@ export default abstract class InstanceGeneric<
     renderCompactGroupEnabled() {
         return <Tooltip
             title={this.props.context.t('compact groups')}
-            componentsProps={{ popper: { sx: this.styles.tooltip } }}
+            slotProps={{ popper: { sx: this.styles.tooltip } }}
         >
             <IconButton
                 size="small"
@@ -1364,7 +1364,7 @@ export default abstract class InstanceGeneric<
                     ? this.props.item.logLevel
                     : `${this.props.item.logLevelObject} / ${this.props.item.logLevel}`}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
                     style={this.styles.button}
@@ -1386,7 +1386,7 @@ export default abstract class InstanceGeneric<
             <InstanceInfo icon={<ScheduleIcon />} tooltip={this.props.context.t('schedule_group')}>
                 {InstanceGeneric.getSchedule(this.props.instance.obj) || '-'}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
                     style={this.styles.button}
@@ -1411,7 +1411,7 @@ export default abstract class InstanceGeneric<
             >
                 {InstanceGeneric.getRestartSchedule(this.props.instance.obj) || '-'}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
                     style={this.styles.button}
@@ -1436,7 +1436,7 @@ export default abstract class InstanceGeneric<
             >
                 {`${this.props.item.memoryLimitMB ? this.props.item.memoryLimitMB : '-.--'} MB`}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
                     style={this.styles.button}
@@ -1468,7 +1468,7 @@ export default abstract class InstanceGeneric<
                             : this.props.item.compactGroup
                 ).toString() || 'default'}
             </InstanceInfo>
-            <Tooltip title={this.props.context.t('Edit')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+            <Tooltip title={this.props.context.t('Edit')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
                 <IconButton
                     size="small"
                     style={this.styles.button}
@@ -1499,7 +1499,7 @@ export default abstract class InstanceGeneric<
             </InstanceInfo>
             {this.props.instance.adapter !== 'admin' ? <Tooltip
                 title={this.props.context.t('Edit start order (tier)')}
-                componentsProps={{ popper: { sx: this.styles.tooltip } }}
+                slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <IconButton
                     size="small"
@@ -1531,7 +1531,7 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderDeleteButton() {
-        return <Tooltip title={this.props.context.t('Delete')} componentsProps={{ popper: { sx: this.styles.tooltip } }}>
+        return <Tooltip title={this.props.context.t('Delete')} slotProps={{ popper: { sx: this.styles.tooltip } }}>
             <IconButton
                 size="small"
                 style={this.styles.button}

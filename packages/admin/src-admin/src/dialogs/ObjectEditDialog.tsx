@@ -34,12 +34,6 @@ const styles: Record<string, React.CSSProperties> = {
     },
 };
 
-export const EXTENSIONS = {
-    images: ['png', 'jpg', 'svg', 'jpeg'],
-    code: ['js', 'json'],
-    txt: ['log', 'txt', 'html', 'css', 'xml'],
-};
-
 interface ObjectEditDialogProps {
     t: Translate;
     themeName: ThemeName;

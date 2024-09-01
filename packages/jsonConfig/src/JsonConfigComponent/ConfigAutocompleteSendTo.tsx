@@ -32,7 +32,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric<ConfigAutocompleteSendToPro
                     if (typeof data === 'string') {
                         data = JSON.parse(data);
                     }
-                } catch (e) {
+                } catch {
                     console.error(`Cannot parse json data: ${data}`);
                 }
             }

@@ -285,7 +285,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
         );
         try {
             return JSON.parse(jsonPayload);
-        } catch (e) {
+        } catch {
             return null;
         }
     }
@@ -403,7 +403,9 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                 },
                 signal: controller.signal,
             });
-            timeout && clearTimeout(timeout);
+            if (timeout) {
+                clearTimeout(timeout);
+            }
             const dataStr = await response.text();
             let data: {
                 error?: string;
@@ -417,7 +419,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
             };
             try {
                 data = JSON.parse(dataStr);
-            } catch (e) {
+            } catch {
                 // ignore
             }
 
@@ -433,7 +435,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                         result: false,
                         running: false,
                     });
-                } catch (e) {
+                } catch {
                     console.log('Cannot parse license');
                     return this.setState({ _error: data.error, result: false, running: false });
                 }
@@ -441,7 +443,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                 let showLicenseData = null;
                 try {
                     showLicenseData = ConfigCheckLicense.parseJwt(license);
-                } catch (e) {
+                } catch {
                     // ignore
                 }
                 if (data) {
@@ -582,7 +584,7 @@ class ConfigCheckLicense extends ConfigGeneric<ConfigCheckLicenseProps, ConfigCh
                     result: false,
                     running: false,
                 });
-            } catch (e) {
+            } catch {
                 return this.setState({
                     _error: I18n.t('ra_Cannot decode license'),
                     result: false,

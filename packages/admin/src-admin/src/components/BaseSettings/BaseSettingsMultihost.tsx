@@ -1,7 +1,7 @@
 import React, { createRef, Component } from 'react';
 
 import {
-    Grid,
+    Grid2,
     FormControlLabel,
     Checkbox,
     TextField,
@@ -96,9 +96,9 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
     render() {
         return <Paper style={styles.paper}>
             <form style={styles.form} noValidate autoComplete="off">
-                <Grid item style={styles.gridSettings}>
-                    <Grid container direction="column">
-                        <Grid item style={styles.controlItem}>
+                <Grid2 style={styles.gridSettings}>
+                    <Grid2 container direction="column">
+                        <Grid2 style={styles.controlItem}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -109,8 +109,8 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
                                 label={this.props.t('Allow slave connections')}
                             />
                             <div>{ this.props.t('When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.')}</div>
-                        </Grid>
-                        <Grid item style={styles.controlItem}>
+                        </Grid2>
+                        <Grid2 style={styles.controlItem}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -121,26 +121,28 @@ class BaseSettingsMultihost extends Component<BaseSettingsMultihostProps, BaseSe
                                 label={this.props.t('With password')}
                             />
                             <div>{ this.props.t('Ask password by connection establishment') }</div>
-                        </Grid>
-                        { this.state.secure ? <Grid item>
+                        </Grid2>
+                        { this.state.secure ? <Grid2>
                             <TextField
                                 variant="standard"
                                 label={this.props.t('Multi-host password')}
                                 style={styles.controlItem}
                                 value={this.state.password}
                                 type="password"
-                                inputProps={{
-                                    autoComplete: 'new-password',
-                                    form: {
+                                slotProps={{
+                                    input: {
+                                        autoComplete: 'new-password',
+                                    },
+                                    htmlInput: {
                                         autoComplete: 'off',
                                     },
                                 }}
                                 autoComplete="off"
                                 onChange={e => this.setState({ password: e.target.value }, () => this.onChange())}
                             />
-                        </Grid> : null }
-                    </Grid>
-                </Grid>
+                        </Grid2> : null }
+                    </Grid2>
+                </Grid2>
             </form>
         </Paper>;
     }

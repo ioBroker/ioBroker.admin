@@ -674,7 +674,9 @@ class Utils {
             do {
                 const start = text.substring(0, m.index);
                 text = text.substring(m.index + m[0].length);
-                start && result.push(<span key={`a${key++}`}>{start}</span>);
+                if (start) {
+                    result.push(<span key={`a${key++}`}>{start}</span>);
+                }
 
                 if (m[0].startsWith('<b>')) {
                     result.push(<b key={`a${key++}`}>{m[0].substring(3, m[0].length - 4)}</b>);
@@ -701,8 +703,8 @@ class Utils {
                 }
 
                 m = text && text.match(/<a [^<]+<\/a>|<br\/?>|<b>[^<]+<\/b>|<i>[^<]+<\/i>/);
-                if (!m) {
-                    text && result.push(<span key={`a${key++}`}>{text}</span>);
+                if (!m && text) {
+                    result.push(<span key={`a${key++}`}>{text}</span>);
                 }
             } while (m);
 
@@ -950,8 +952,10 @@ class Utils {
      * @param {Event} [e]
      */
     static copyToClipboard(text, e) {
-        e && e.stopPropagation();
-        e && e.preventDefault();
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
         return _Utils.copyToClipboard(text);
     }
 
@@ -1186,16 +1190,14 @@ class Utils {
                     if (mix[k]) {
                         y = Utils._toVal(mix[k]);
                         if (y) {
-                            str && (str += ' ');
-                            str += y;
+                            str += (str ? ' ' : '') + y;
                         }
                     }
                 }
             } else {
                 for (const k in mix) {
                     if (mix[k]) {
-                        str && (str += ' ');
-                        str += k;
+                        str += (str ? ' ' : '') + k;
                     }
                 }
             }
@@ -1222,8 +1224,7 @@ class Utils {
             if (tmp) {
                 x = Utils._toVal(tmp);
                 if (x) {
-                    str && (str += ' ');
-                    str += x;
+                    str += (str ? ' ' : '') + x;
                 }
             }
         }
@@ -1582,7 +1583,7 @@ class Utils {
             if (typeof states === 'string' && states[0] === '{') {
                 try {
                     states = JSON.parse(states);
-                } catch (ex) {
+                } catch {
                     console.error(`Cannot parse states: ${states}`);
                     states = null;
                 }
@@ -1648,9 +1649,9 @@ class Utils {
      */
     static isStableRepository(activeRepo) {
         return !!((
-                typeof activeRepo === 'string' &&
+            typeof activeRepo === 'string' &&
                 activeRepo.toLowerCase().startsWith('stable')
-            )
+        )
             ||
             (
                 activeRepo &&
@@ -1676,6 +1677,7 @@ class Utils {
      * @return {boolean}
      */
     static isValidDate(date) {
+        // eslint-disable-next-line no-restricted-globals
         return date instanceof Date && !isNaN(date);
     }
 

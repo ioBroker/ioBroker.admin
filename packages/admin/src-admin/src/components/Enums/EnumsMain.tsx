@@ -638,9 +638,8 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                 theme={this.props.theme}
                 toggleEnum={this.toggleEnum}
                 updating={this.state.updating.includes(container.id)}
-            >
-                {container.children ? Object.keys(container.children).length : 0}
-            </EnumBlock>
+                childrenCount={container.children ? Object.keys(container.children).length : 0}
+            />
             {ids ?
                 ids.map((id, index) => <React.Fragment key={index}>{this.renderTree(container.children[id], index, level + 1)}</React.Fragment>)
                 : null}
@@ -861,7 +860,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                 >
                     <div style={{ ...styles.childGridCont, ...(this.state.innerWidth > 600 ? styles.childGridContWide : undefined) }}>
                         <div style={styles.topPanel}>
-                            <Tooltip title={this.props.t('Add enum')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                            <Tooltip title={this.props.t('Add enum')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                                 <IconButton
                                     id="categoryPopoverButton"
                                     size="small"
@@ -929,22 +928,26 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                 variant="standard"
                                 inputRef={this.refFilter}
                                 placeholder={this.props.t('Filter')}
-                                InputLabelProps={{ shrink: true }}
                                 style={styles.filter}
-                                InputProps={{
-                                    endAdornment: <IconButton
-                                        ref={this.refClearButton}
-                                        style={{ display: 'none' }}
-                                        size="small"
-                                        onClick={() => this.onFilterChanged('', true)}
-                                    >
-                                        <ClearIcon />
-                                    </IconButton>,
+                                slotProps={{
+                                    inputLabel: {
+                                        shrink: true,
+                                    },
+                                    input: {
+                                        endAdornment: <IconButton
+                                            ref={this.refClearButton}
+                                            style={{ display: 'none' }}
+                                            size="small"
+                                            onClick={() => this.onFilterChanged('', true)}
+                                        >
+                                            <ClearIcon />
+                                        </IconButton>,
+                                    },
                                 }}
                                 onChange={e => this.onFilterChanged(e.target.value)}
 
                             />
-                            <Tooltip title={this.props.t('Narrow all')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                            <Tooltip title={this.props.t('Narrow all')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                                 <IconButton
                                     size="large"
                                     // size="small"
@@ -958,7 +961,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                     <UpIcon />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={this.props.t('Wide all')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                            <Tooltip title={this.props.t('Wide all')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                                 <IconButton
                                     size="large"
                                     // size="small"
@@ -971,7 +974,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                     <DownIcon />
                                 </IconButton>
                             </Tooltip>
-                            {showFolderIcons && <Tooltip title={this.props.t('Collapse all')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                            {showFolderIcons && <Tooltip title={this.props.t('Collapse all')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                                 <IconButton
                                     size="large"
                                     // size="small"
@@ -986,7 +989,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                     <IconCollapsed />
                                 </IconButton>
                             </Tooltip>}
-                            {showFolderIcons && <Tooltip title={this.props.t('Expand all')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                            {showFolderIcons && <Tooltip title={this.props.t('Expand all')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                                 <IconButton
                                     size="large"
                                     // size="small"
@@ -1000,7 +1003,7 @@ class EnumsList extends Component<EnumsListProps, EnumsListState> {
                                     <IconExpanded />
                                 </IconButton>
                             </Tooltip>}
-                            <Tooltip title={this.props.t('Add group')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                            <Tooltip title={this.props.t('Add group')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                                 <IconButton
                                     size="large"
                                     // size="small"

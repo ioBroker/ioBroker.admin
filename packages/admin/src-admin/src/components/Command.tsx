@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { amber, blue, red } from '@mui/material/colors';
 
 import {
-    Grid, LinearProgress, Paper, Switch, Typography,
+    Grid2, LinearProgress, Paper, Switch, Typography,
 } from '@mui/material';
 
 import {
@@ -281,19 +281,19 @@ class Command extends Component<CommandProps, CommandState> {
     }
 
     render() {
-        return <Grid
+        return <Grid2
             style={this.props.noSpacing ? { height: '100%', width: '100%' } : {}}
             container
             direction="column"
             spacing={this.props.noSpacing ? 0 : 2}
         >
-            {this.props.showElement === undefined || this.props.showElement === true ? <Grid item>
+            {this.props.showElement === undefined || this.props.showElement === true ? <Grid2>
                 {!this.state.stopped && <LinearProgress
                     style={this.props.commandError ? { backgroundColor: '#f44336' } : null}
                     variant={this.props.inBackground ? 'determinate' : 'indeterminate'}
                     value={this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : this.props.commandError ? 0 : 100}
                 />}
-            </Grid> : null}
+            </Grid2> : null}
             <div style={{
                 width: '100%',
                 display: 'flex',
@@ -313,25 +313,25 @@ class Command extends Component<CommandProps, CommandState> {
                     {this.colorize(this.state.log[this.state.log.length - 1])}
                 </Typography>
                 {this.props.showElement === undefined || this.props.showElement === true ? <Typography component="div" style={{ width: 250 }}>
-                    <Grid component="label" container alignItems="center" spacing={1}>
-                        <Grid item>{this.props.t('less')}</Grid>
-                        <Grid item>
+                    <Grid2 component="label" container alignItems="center" spacing={1}>
+                        <Grid2>{this.props.t('less')}</Grid2>
+                        <Grid2>
                             <Switch
                                 checked={this.state.moreChecked}
                                 onChange={event => this.setState({ moreChecked: event.target.checked })}
                                 color="primary"
                             />
-                        </Grid>
-                        <Grid item>{this.props.t('more')}</Grid>
-                    </Grid>
+                        </Grid2>
+                        <Grid2>{this.props.t('more')}</Grid2>
+                    </Grid2>
                 </Typography> : null}
             </div>
-            <Grid item style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
+            <Grid2 style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
                 {this.state.moreChecked && <Paper style={this.props.noSpacing ? styles.logNoSpacing : styles.log}>
                     {this.getLog()}
                 </Paper>}
-            </Grid>
-        </Grid>;
+            </Grid2>
+        </Grid2>;
     }
 }
 

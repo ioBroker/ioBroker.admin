@@ -148,15 +148,17 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasId}
-                    InputProps={{
-                        endAdornment: this.state.newAliasId ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ newAliasId: '' })}
-                            >
-                                <IconClose />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.newAliasId ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ newAliasId: '' })}
+                                >
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                     onChange={e => this.setState({ newAliasId: e.target.value })}
                     label={I18n.t('Alias ID')}
@@ -167,15 +169,17 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasName}
-                    InputProps={{
-                        endAdornment: this.state.newAliasName ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ newAliasName: '' })}
-                            >
-                                <IconClose />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.newAliasName ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ newAliasName: '' })}
+                                >
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                     onChange={e => this.setState({ newAliasName: e.target.value })}
                     label={I18n.t('Alias name')}
@@ -185,15 +189,17 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasDesc}
-                    InputProps={{
-                        endAdornment: this.state.newAliasDesc ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ newAliasDesc: '' })}
-                            >
-                                <IconClose />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.newAliasDesc ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ newAliasDesc: '' })}
+                                >
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                     onChange={e => this.setState({ newAliasDesc: e.target.value })}
                     label={I18n.t('Alias description')}
@@ -222,15 +228,17 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     style={styles.formControlLabel}
                     variant="standard"
                     value={this.state.newAliasUnit}
-                    InputProps={{
-                        endAdornment: this.state.newAliasUnit ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ newAliasUnit: '' })}
-                            >
-                                <IconClose />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.newAliasUnit ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ newAliasUnit: '' })}
+                                >
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                     onChange={e => this.setState({ newAliasUnit: e.target.value })}
                     label={I18n.t('Alias units')}
@@ -291,18 +299,21 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     onChange={e => this.setState({ newAliasReadFormula: e.target.value })}
                     label={I18n.t('Read formula')}
                     helperText={`${I18n.t('JS function like')} "val / 5 + 21"`}
-                    InputProps={{
-                        endAdornment: this.state.newAliasReadFormula && this.state.newAliasReadFormula !== 'val' ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ newAliasReadFormula: 'val' })}
-                            >
-                                <IconClose />
-                            </IconButton>
-                        </InputAdornment> : null,
-                        startAdornment: <InputAdornment position="start">
-                            <IconFx style={styles.funcIcon} />
-                        </InputAdornment>,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.newAliasReadFormula && this.state.newAliasReadFormula !== 'val' ?
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.setState({ newAliasReadFormula: 'val' })}
+                                    >
+                                        <IconClose />
+                                    </IconButton>
+                                </InputAdornment> : null,
+                            startAdornment: <InputAdornment position="start">
+                                <IconFx style={styles.funcIcon} />
+                            </InputAdornment>,
+                        },
                     }}
                     fullWidth
                 /> : null}
@@ -312,18 +323,20 @@ class ObjectAliasEditor extends Component<ObjectAliasEditorProps, ObjectAliasEdi
                     value={this.state.newAliasWriteFormula}
                     onChange={e => this.setState({ newAliasWriteFormula: e.target.value })}
                     label={I18n.t('Write formula')}
-                    InputProps={{
-                        endAdornment: this.state.newAliasWriteFormula && this.state.newAliasWriteFormula !== 'val' ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ newAliasWriteFormula: 'val' })}
-                            >
-                                <IconClose />
-                            </IconButton>
-                        </InputAdornment> : null,
-                        startAdornment: <InputAdornment position="start">
-                            <IconFx style={styles.funcIcon} />
-                        </InputAdornment>,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.newAliasWriteFormula && this.state.newAliasWriteFormula !== 'val' ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ newAliasWriteFormula: 'val' })}
+                                >
+                                    <IconClose />
+                                </IconButton>
+                            </InputAdornment> : null,
+                            startAdornment: <InputAdornment position="start">
+                                <IconFx style={styles.funcIcon} />
+                            </InputAdornment>,
+                        },
                     }}
                     helperText={`${I18n.t('JS function like')} "val / 5 + 21"`}
                     fullWidth

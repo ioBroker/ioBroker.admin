@@ -164,14 +164,15 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.instanceHandler = action => () => {
             if (action.confirmation) {
-                return this.setState({ showConfirmation: action });
+                this.setState({ showConfirmation: action });
+                return;
             }
             if (action.inputBefore) {
                 this.setState({ showInput: action });
                 return;
             }
 
-            return this.sendActionToInstance('dm:instanceAction', { actionId: action.id });
+            this.sendActionToInstance('dm:instanceAction', { actionId: action.id });
         };
 
         // eslint-disable-next-line react/no-unused-class-component-methods
@@ -185,7 +186,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                 return;
             }
 
-            return this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
+            this.sendActionToInstance('dm:deviceAction', { deviceId, actionId: action.id }, refresh);
         };
 
         // eslint-disable-next-line react/no-unused-class-component-methods
@@ -194,7 +195,9 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         // eslint-disable-next-line react/no-unused-class-component-methods
         this.controlStateHandler = (deviceId, control) => () => this.sendControlToInstance('dm:deviceControlState', { deviceId, controlId: control.id });
 
-        this.props.registerHandler && this.props.registerHandler(() => this.loadData());
+        if (this.props.registerHandler) {
+            this.props.registerHandler(() => this.loadData());
+        }
     }
 
     // eslint-disable-next-line class-methods-use-this
@@ -533,7 +536,10 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
         let okDisabled = false;
         if (!this.state.showInput.inputBefore.allowEmptyValue && this.state.showInput.inputBefore.type !== 'checkbox') {
             if (this.state.showInput.inputBefore.type === 'number' || this.state.showInput.inputBefore.type === 'slider') {
-                okDisabled = this.state.inputValue === '' || this.state.inputValue === null || !window.isFinite(this.state.inputValue as number);
+                okDisabled = this.state.inputValue === '' ||
+                    this.state.inputValue === null ||
+                    // eslint-disable-next-line no-restricted-properties
+                    !window.isFinite(this.state.inputValue as number);
             } else {
                 okDisabled = !this.state.inputValue;
             }
@@ -558,6 +564,7 @@ class Communication<P extends CommunicationProps, S extends CommunicationState> 
                     fullWidth
                     value={this.state.inputValue}
                     onChange={e => this.setState({ inputValue: e.target.value })}
+                    // eslint-disable-next-line react/jsx-no-duplicate-props
                     InputProps={{
                         endAdornment: this.state.inputValue ? <InputAdornment position="end">
                             <IconButton

@@ -137,14 +137,18 @@ export default class DeviceControlComponent extends Component<DeviceControlProps
         return color;
     }
 
+    // TODO: implement the following render methods
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderSelect() {
 
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderSlider() {
 
     }
 
+    // eslint-disable-next-line react/no-unused-class-component-methods
     renderColor() {
 
     }

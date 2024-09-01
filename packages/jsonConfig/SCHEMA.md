@@ -230,6 +230,8 @@ Possible types:
 - `staticLink` - static link
     - `label` - multi-language text
     - `href` - link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`
+    - `target` - `_blank` or `_self` or window name
+    - `close` - if true, the GUI will be closed (used not for JsonConfig in admin, but for dynamic GUI)
     - `button` - show a link as button
     - `variant` - type of button (`outlined`, `contained`, `text`)
     - `color` - color of button (e.g. `primary`)

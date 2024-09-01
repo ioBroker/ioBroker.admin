@@ -262,7 +262,7 @@ interface ChipInputProps {
     onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
     onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-    onKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+    // onKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     /** Callback function that is called when the chips change (in uncontrolled mode). */
     onChange?: (chips: string[]) => void;
     /** Callback function that is called when a new chip was removed (in controlled mode). */
@@ -346,7 +346,9 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
     }
 
     componentWillUnmount() {
-        this.inputBlurTimeout && clearTimeout(this.inputBlurTimeout);
+        if (this.inputBlurTimeout) {
+            clearTimeout(this.inputBlurTimeout);
+        }
     }
 
     static getDerivedStateFromProps(props: ChipInputProps, state: ChipInputState) {
@@ -359,7 +361,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
             }
         }
 
-        // if change detection is only needed for clearInputValueOnChange
+        // if change detection is only necessary for clearInputValueOnChange
         if (props.clearInputValueOnChange && props.value && props.value.length !== state.prevPropsValue.length) {
             newState = { prevPropsValue: props.value, inputValue: '' };
         }
@@ -520,12 +522,12 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
         }
     };
 
-    handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        this._keyPressed = true;
-        if (this.props.onKeyPress) {
-            this.props.onKeyPress(event);
-        }
-    };
+    // handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    //     this._keyPressed = true;
+    //     if (this.props.onKeyPress) {
+    //         this.props.onKeyPress(event);
+    //     }
+    // };
 
     handleUpdateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (this.props.inputValue === null || this.props.inputValue === undefined) {
@@ -612,7 +614,9 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
      */
     setActualInputRef = (ref: HTMLInputElement) => {
         this.actualInput = ref;
-        this.props.inputRef && this.props.inputRef(ref);
+        if (this.props.inputRef) {
+            this.props.inputRef(ref);
+        }
     };
 
     render() {
@@ -740,7 +744,7 @@ class ChipInput extends React.Component<ChipInputProps, ChipInputState> {
                     value={actualInputValue}
                     onChange={this.handleUpdateInput}
                     onKeyDown={this.handleKeyDown}
-                    onKeyPress={this.handleKeyPress}
+                    // onKeyPress={this.handleKeyPress}
                     onKeyUp={this.handleKeyUp}
                     onFocus={this.handleInputFocus}
                     onBlur={this.handleInputBlur}

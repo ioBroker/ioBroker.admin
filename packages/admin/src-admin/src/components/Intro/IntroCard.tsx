@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import {
     Button, Card, CardActions, CardContent,
     CardMedia, Collapse, Divider,
-    Grid, IconButton, Link, Typography,
+    Grid2, IconButton, Link, Typography,
     Tooltip, Box,
 } from '@mui/material';
 
@@ -262,12 +262,13 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
             buttonTitle = (buttonTitle as ioBroker.Translated)[this.props.lang] || (buttonTitle as ioBroker.Translated).en;
         }
 
-        return <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            lg={3}
+        return <Grid2
+            size={{
+                xs: 12,
+                sm: 6,
+                md: 4,
+                lg: 3,
+            }}
             sx={Utils.getStyle(this.props.theme, styles.root, this.props.style)}
         >
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -315,7 +316,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                             flex: 1, display: 'flex', paddingBottom: '5px', paddingLeft: '5px',
                         }}
                         >
-                            {this.props.warning ? <Tooltip title={this.props.warning} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                            {this.props.warning ? <Tooltip title={this.props.warning} slotProps={{ popper: { sx: styles.tooltip } }}>
                                 <WarningIcon style={{
                                     alignSelf: 'end',
                                     fontSize: 36,
@@ -326,7 +327,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                     </Box>
                     <div style={{ ...styles.contentContainer, ...editClass }}>
                         <CardContent style={styles.content}>
-                            <Grid
+                            <Grid2
                                 container
                                 direction="column"
                                 wrap="nowrap"
@@ -336,7 +337,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                     {this.props.title}
                                 </Typography>
                                 {this.renderContent()}
-                            </Grid>
+                            </Grid2>
                         </CardContent>
                         {this.props.action && this.props.action.link && <Divider />}
                         {this.props.action && this.props.action.link && <CardActions style={styles.action}>
@@ -404,7 +405,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                     {this.renderDialogs()}
                 </Card>
             </Link>
-        </Grid>;
+        </Grid2>;
     }
 }
 

@@ -17,11 +17,11 @@ import {
     ArrowDownward as IconArrowDownward,
 } from '@mui/icons-material';
 
-import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, any> = {
-    root: (theme: IobTheme) => ({
-        backgroundColor: theme.palette.background.paper,
+    root: {
+        backgroundColor: 'background.paper',
         width: '100%',
         height: 'auto',
         display: 'flex',
@@ -32,7 +32,7 @@ const styles: Record<string, any> = {
             height: '100%',
             overflow: 'auto',
         },
-    }),
+    },
     paper: {
         maxWidth: 800,
     },
@@ -46,6 +46,22 @@ const styles: Record<string, any> = {
         margin: 0,
         padding: 10,
         width: '100%',
+    },
+    header1: {
+        backgroundColor: 'primary.main',
+        color: 'primary.contrastText',
+        borderRadius: '2px',
+        pl: 1,
+        pr: 1,
+        pb: '4px',
+    },
+    header2: {
+        backgroundColor: 'secondary.main',
+        color: 'secondary.contrastText',
+        borderRadius: '2px',
+        pl: 1,
+        pr: 1,
+        pb: '4px',
     },
 };
 
@@ -155,28 +171,14 @@ const LicenseDialog = ({ url, onClose, licenseType }: LicenseDialogProps) => {
                     // eslint-disable-next-line react/no-unstable-nested-components
                     h1: h1Props => <Box
                         component="h1"
-                        sx={(theme: IobTheme) => ({
-                            backgroundColor: theme.palette.primary.main,
-                            color: theme.palette.primary.contrastText,
-                            borderRadius: '2px',
-                            pl: 1,
-                            pr: 1,
-                            pb: '4px',
-                        })}
+                        sx={styles.header1}
                     >
                         {h1Props.children}
                     </Box>,
                     // eslint-disable-next-line react/no-unstable-nested-components
                     h2: h2Props => <Box
                         component="h2"
-                        sx={(theme: IobTheme) => ({
-                            backgroundColor: theme.palette.secondary.main,
-                            color: theme.palette.secondary.contrastText,
-                            borderRadius: '2px',
-                            pl: 1,
-                            pr: 1,
-                            pb: '4px',
-                        })}
+                        sx={styles.header2}
                     >
                         {h2Props.children}
                     </Box>,

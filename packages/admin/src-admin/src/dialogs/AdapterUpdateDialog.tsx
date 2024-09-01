@@ -5,7 +5,7 @@ import moment from 'moment';
 import {
     Button, Dialog, DialogActions,
     DialogContent,
-    DialogTitle, Grid, IconButton,
+    DialogTitle, Grid2, IconButton,
     Typography,
 } from '@mui/material';
 
@@ -476,7 +476,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 return;
             }
 
-            result.push(<Grid item key={entry.version}>
+            result.push(<Grid2 key={entry.version}>
                 <Typography sx={styles.version}>
                     {entry.version}
                     {this.props.adapterObject?.version === entry.version ? <span style={styles.versionTime}>
@@ -488,7 +488,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 {news.map((value, index) => <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
                     {`• ${value}`}
                 </Typography>)}
-            </Grid>);
+            </Grid2>);
         });
 
         return result;
@@ -505,7 +505,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
     }
 
     renderOneMessage(message: Message, index: number) {
-        return <Grid item key={index}>
+        return <Grid2 key={index}>
             <Typography sx={styles[`messageTitle_${message.level || 'warn'}`]}>
                 {this.getText(message.title, this.props.noTranslation) || ''}
             </Typography>
@@ -523,12 +523,12 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             >
                 {this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}
             </Button> : null}
-        </Grid>;
+        </Grid2>;
     }
 
     renderMessages() {
         if (this.messages) {
-            return <Grid
+            return <Grid2
                 container
                 spacing={2}
                 direction="column"
@@ -536,7 +536,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 sx={{ marginBottom: 1 }}
             >
                 {this.messages.map((message, i) => this.renderOneMessage(message, i))}
-            </Grid>;
+            </Grid2>;
         }
         return null;
     }
@@ -644,7 +644,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
             </DialogTitle>
             <DialogContent dividers>
                 {this.renderMessages()}
-                <Grid
+                <Grid2
                     container
                     direction="column"
                     spacing={2}
@@ -652,22 +652,22 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                 >
                     {this.props.dependencies && this.props.dependencies.length > 0 &&
                         this.props.dependencies.find(dependency => !dependency.rightVersion) &&
-                        <Grid item>
+                        <Grid2>
                             <Typography variant="h6" gutterBottom>{this.t('Dependencies')}</Typography>
                             {this.getDependencies()}
-                        </Grid>}
-                    {news.length ? <Grid item>
+                        </Grid2>}
+                    {news.length ? <Grid2>
                         <Typography variant="h6" gutterBottom>{this.t('Change log')}</Typography>
-                        <Grid
+                        <Grid2
                             container
                             spacing={2}
                             direction="column"
                             wrap="nowrap"
                         >
                             {news}
-                        </Grid>
-                    </Grid> : this.t('No change log available')}
-                </Grid>
+                        </Grid2>
+                    </Grid2> : this.t('No change log available')}
+                </Grid2>
             </DialogContent>
             <DialogActions sx={styles.wrapperButton}>
                 {!!this.props.rightDependencies && this.props.onIgnore && version && <Button

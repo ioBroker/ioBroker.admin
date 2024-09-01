@@ -51,7 +51,7 @@ import ConfigPort from './ConfigPort';
 import ConfigRoom from './ConfigRoom';
 import ConfigSelect from './ConfigSelect';
 import ConfigSelectSendTo from './ConfigSelectSendTo';
-import ConfigSendto from './ConfigSendto';
+import ConfigSendTo from './ConfigSendto';
 import ConfigSetState from './ConfigSetState';
 import ConfigSlider from './ConfigSlider';
 import ConfigState from './ConfigState';
@@ -109,8 +109,8 @@ const components: Record<string, typeof ConfigGeneric<any, any>> = {
     room: ConfigRoom,
     select: ConfigSelect,
     selectSendTo: ConfigSelectSendTo,
-    sendto: ConfigSendto,
-    sendTo: ConfigSendto,
+    sendto: ConfigSendTo,
+    sendTo: ConfigSendTo,
     setState: ConfigSetState,
     slider: ConfigSlider,
     state: ConfigState,
@@ -223,6 +223,7 @@ class ConfigPanel extends ConfigGeneric<ConfigPanelProps, ConfigPanelState> {
                 systemConfig={this.props.systemConfig}
                 onError={this.props.onError}
                 onChange={this.props.onChange}
+                onBackEndCommand={this.props.onBackEndCommand}
                 multiEdit={this.props.multiEdit}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}

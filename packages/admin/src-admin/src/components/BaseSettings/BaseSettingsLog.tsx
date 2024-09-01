@@ -1,7 +1,7 @@
 import React, { createRef, Component } from 'react';
 
 import {
-    Grid,
+    Grid2,
     InputLabel,
     FormControlLabel,
     Checkbox,
@@ -231,7 +231,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
     }
 
     renderEnabled(name: string) {
-        return <Grid item>
+        return <Grid2>
             <FormControlLabel
                 style={styles.controlItem}
                 control={
@@ -246,11 +246,11 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                 }
                 label={this.props.t('Enabled')}
             />
-        </Grid>;
+        </Grid2>;
     }
 
     renderLogLevel(name: string) {
-        return this.state.transport[name].enabled ? <Grid item>
+        return this.state.transport[name].enabled ? <Grid2>
             <FormControl style={styles.controlItem} variant="standard">
                 <InputLabel>{this.props.t('Level')}</InputLabel>
                 <Select
@@ -272,7 +272,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                 </Select>
                 <FormHelperText>{this.props.t('Level of messages that this transport should log (default: level set on parent logger)')}</FormHelperText>
             </FormControl>
-        </Grid> : null;
+        </Grid2> : null;
     }
 
     renderSyslog(name: string) {
@@ -297,10 +297,10 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                 <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
-                <Grid container direction="column">
+                <Grid2 container direction="column">
                     {this.renderEnabled(name)}
                     {this.renderLogLevel(name)}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -313,8 +313,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('File name')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -328,8 +328,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Port')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <FormControl style={styles.controlItem} variant="standard">
                             <InputLabel>{this.props.t('Protocol')}</InputLabel>
                             <Select
@@ -347,8 +347,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                                 <MenuItem value="unix-connect">unix-connect</MenuItem>
                             </Select>
                         </FormControl>
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -361,8 +361,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Path')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -375,8 +375,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Facility')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -389,8 +389,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Log name')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -403,8 +403,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('SysLog Type')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -417,8 +417,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Application name')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -431,8 +431,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('End of line char')}
                         />
-                    </Grid> : null}
-                </Grid>
+                    </Grid2> : null}
+                </Grid2>
             </AccordionDetails>
         </Accordion>;
     }
@@ -459,10 +459,10 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                 <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
-                <Grid container direction="column">
+                <Grid2 container direction="column">
                     {this.renderEnabled(name)}
                     {this.renderLogLevel(name)}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -474,9 +474,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('File name')}
                         />
-                    </Grid> : null}
+                    </Grid2> : null}
 
-                    {this.state.transport[name].enabled ? <Grid item>
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -488,9 +488,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('File extension')}
                         />
-                    </Grid> : null}
+                    </Grid2> : null}
 
-                    {this.state.transport[name].enabled ? <Grid item>
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -504,9 +504,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Maximal size of one file')}
                         />
-                    </Grid> : null}
+                    </Grid2> : null}
 
-                    {this.state.transport[name].enabled ? <Grid item>
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -519,8 +519,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Maximal number of files')}
                         />
-                    </Grid> : null}
-                </Grid>
+                    </Grid2> : null}
+                </Grid2>
             </AccordionDetails>
         </Accordion>;
     }
@@ -547,10 +547,10 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                 <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
-                <Grid container direction="column">
+                <Grid2 container direction="column">
                     {this.renderEnabled(name)}
                     {this.renderLogLevel(name)}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -563,8 +563,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Host')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -578,8 +578,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Port')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -592,8 +592,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Path')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -606,8 +606,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Auth')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <FormControlLabel
                             style={styles.controlItem}
                             control={
@@ -622,8 +622,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }
                             label={this.props.t('SSL')}
                         />
-                    </Grid> : null}
-                </Grid>
+                    </Grid2> : null}
+                </Grid2>
             </AccordionDetails>
         </Accordion>;
     }
@@ -650,9 +650,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                 <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
-                <Grid container direction="column">
+                <Grid2 container direction="column">
                     {this.renderEnabled(name)}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -665,8 +665,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('File name')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <FormControlLabel
                             style={styles.controlItem}
                             control={
@@ -681,8 +681,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }
                             label={this.props.t('Silent')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -695,8 +695,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('EOL')}
                         />
-                    </Grid> : null}
-                </Grid>
+                    </Grid2> : null}
+                </Grid2>
             </AccordionDetails>
         </Accordion>;
     }
@@ -723,10 +723,10 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                 <Fab size="small" style={styles.delButton} onClick={() => this.onDelete(name)}><IconDelete /></Fab>
             </AccordionSummary>
             <AccordionDetails>
-                <Grid container direction="column">
+                <Grid2 container direction="column">
                     {this.renderEnabled(name)}
                     {this.renderLogLevel(name)}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -739,8 +739,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('Server URL')}
                         />
-                    </Grid> : null}
-                    {this.state.transport[name].enabled ? <Grid item>
+                    </Grid2> : null}
+                    {this.state.transport[name].enabled ? <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -753,8 +753,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }}
                             label={this.props.t('API key')}
                         />
-                    </Grid> : null}
-                </Grid>
+                    </Grid2> : null}
+                </Grid2>
             </AccordionDetails>
         </Accordion>;
     }
@@ -860,9 +860,9 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
 
     render() {
         return <Paper style={styles.paper}>
-            <Grid item sx={styles.gridSettings}>
-                <Grid container direction="column">
-                    <Grid item>
+            <Grid2 sx={styles.gridSettings}>
+                <Grid2 container direction="column">
+                    <Grid2>
                         <FormControl style={styles.controlItem} variant="standard">
                             <InputLabel>{this.props.t('Level')}</InputLabel>
                             <Select
@@ -877,8 +877,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                                 <MenuItem value="error">error</MenuItem>
                             </Select>
                         </FormControl>
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <TextField
                             variant="standard"
                             style={styles.controlItem}
@@ -888,8 +888,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             onChange={e => this.setState({ maxDays: e.target.value }, () => this.onChange())}
                             label={this.props.t('Maximum number of days')}
                         />
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <FormControlLabel
                             style={styles.controlItem}
                             control={
@@ -900,7 +900,7 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                             }
                             label={this.props.t('No stdout outputs')}
                         />
-                    </Grid>
+                    </Grid2>
                     {Object.keys(this.state.transport).map(id => {
                         switch (this.state.transport[id].type) {
                             case 'syslog':
@@ -922,8 +922,8 @@ class BaseSettingsLog extends Component<BaseSettingsLogProps, BaseSettingsLogSta
                                 return null;
                         }
                     })}
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
             <Toolbar>
                 <Button
                     color="grey"

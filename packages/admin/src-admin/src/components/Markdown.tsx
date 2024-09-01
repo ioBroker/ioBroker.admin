@@ -550,29 +550,37 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
     componentDidMount() {
         this.mounted = true;
-        this.state.text && this.parseText(this.state.text);
+        if (this.state.text) {
+            this.parseText(this.state.text);
+        }
         this.props.socket?.getRepository(this.props.currentHost, { })
             .then(repo => this.setState({ adapterNews: repo[this.props.adapter]?.news }));
     }
 
     UNSAFE_componentWillReceiveProps(nextProps: MarkdownProps/* , nextContext */) {
         if (this.props.path !== nextProps.path) {
-            this.mounted && this.setState({ notFound: false, parts: [] });
+            if (this.mounted) {
+                this.setState({ notFound: false, parts: [] });
+            }
             this.load(nextProps.path);
         } else if (this.props.text !== nextProps.text) {
             this.setState({ text: nextProps.text });
             if (!nextProps.text) {
                 if (this.props.path !== nextProps.path) {
-                    this.mounted && this.setState({ notFound: false, parts: [] });
+                    if (this.mounted) {
+                        this.setState({ notFound: false, parts: [] });
+                    }
                     this.load(nextProps.path);
                 }
-            } else {
-                this.mounted && this.setState({ text: nextProps.text }, () =>
+            } else if (this.mounted) {
+                this.setState({ text: nextProps.text }, () =>
                     this.parseText());
             }
         } else
             if (this.props.language !== nextProps.language) {
-                this.mounted && this.setState({ notFound: false, parts: [] });
+                if (this.mounted) {
+                    this.setState({ notFound: false, parts: [] });
+                }
                 this.load(null, nextProps.language);
             }
     }
@@ -700,7 +708,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         if (header.affiliate) {
             try {
                 affiliate = JSON.parse(header.affiliate);
-            } catch (e) {
+            } catch {
                 console.error(`Cannot parse affiliate: ${header.affiliate}`);
             }
         }
@@ -725,17 +733,19 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
             }
         }
 
-        this.mounted && this.setState({
-            affiliate,
-            notFound: false,
-            parts,
-            header,
-            loadTimeout: false,
-            content,
-            license,
-            changeLog: _changeLog || changeLog,
-            title: _title,
-        });
+        if (this.mounted) {
+            this.setState({
+                affiliate,
+                notFound: false,
+                parts,
+                header,
+                loadTimeout: false,
+                content,
+                license,
+                changeLog: _changeLog || changeLog,
+                title: _title,
+            });
+        }
 
         // this.onHashChange && setTimeout(() => this.onHashChange(), 200);
     }
@@ -838,7 +848,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
                 sx={styles.headerTranslated}
                 onClick={() => {
                     if (this.props.onNavigate) {
-                        this.props.onNavigate && this.props.onNavigate(this.state.header.translatedFrom);
+                        this.props.onNavigate(this.state.header.translatedFrom);
                     } else {
                         // read this.props.link
                         fetch(this.props.link)
@@ -958,7 +968,7 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
 
     onToggleContentButton() {
         this.setState({ hideContent: !this.state.hideContent });
-        window.localStorage && ((window as any)._localStorage as Storage || window.localStorage).setItem('Docs.hideContent', this.state.hideContent ? 'false' : 'true');
+        ((window as any)._localStorage as Storage || window.localStorage).setItem('Docs.hideContent', this.state.hideContent ? 'false' : 'true');
     }
 
     renderContentCloseButton() {

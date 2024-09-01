@@ -2,7 +2,7 @@ import React, { createRef, Component } from 'react';
 
 import {
     TextField,
-    Grid,
+    Grid2,
     Toolbar,
     Button,
     Paper, Box,
@@ -80,27 +80,31 @@ class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPassword
     render() {
         return <Paper style={styles.paper}>
             <form style={styles.form} noValidate autoComplete="off">
-                <Grid container direction="column">
-                    <Grid item>
+                <Grid2 container direction="column">
+                    <Grid2>
                         <Box component="h2" sx={styles.title}>{ this.props.t('You must set the administrator password') }</Box>
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <TextField
                             variant="standard"
                             disabled
                             style={styles.input}
                             label={this.props.t('Administrator name')}
                             value="admin"
-                            InputProps={{ readOnly: true }}
+                            slotProps={{
+                                input: { readOnly: true },
+                            }}
                             helperText={this.props.t('Administrator name cannot be changed')}
                         />
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <TextField
                             variant="standard"
-                            inputProps={{
-                                autoComplete: 'new-password',
-                                form: {
+                            slotProps={{
+                                input: {
+                                    autoComplete: 'new-password',
+                                },
+                                htmlInput: {
                                     autoComplete: 'off',
                                 },
                             }}
@@ -130,14 +134,18 @@ class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPassword
                             }}
                             helperText={this.props.t('Password must be at least 8 characters long and have numbers, upper and lower case letters')}
                         />
-                    </Grid>
-                    <Grid item>
+                    </Grid2>
+                    <Grid2>
                         <TextField
                             variant="standard"
-                            inputProps={{
-                                autoComplete: 'new-password',
-                                form: { autoComplete: 'off' },
-                                id: 'admin_password',
+                            slotProps={{
+                                input: {
+                                    autoComplete: 'new-password',
+                                },
+                                htmlInput: {
+                                    autoComplete: 'off',
+                                    id: 'admin_password',
+                                },
                             }}
                             onKeyDown={e => {
                                 if (e.key === 'Enter' && this.state.password && !this.state.errorPassword && !this.state.errorPasswordRepeat) {
@@ -159,8 +167,8 @@ class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPassword
                             }}
                             helperText={this.state.errorPasswordRepeat || ''}
                         />
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             </form>
             <Toolbar style={styles.toolbar}>
                 <div style={styles.grow} />

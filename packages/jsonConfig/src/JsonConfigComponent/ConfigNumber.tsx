@@ -106,7 +106,9 @@ class ConfigNumber extends ConfigGeneric<ConfigNumberProps, ConfigNumberState> {
         const isIndeterminate = Array.isArray(this.state._value) || this.state._value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
-            this.updateTimeout && clearTimeout(this.updateTimeout);
+            if (this.updateTimeout) {
+                clearTimeout(this.updateTimeout);
+            }
             this.updateTimeout = setTimeout(() => {
                 this.updateTimeout = undefined;
                 this.setState({ oldValue: null });

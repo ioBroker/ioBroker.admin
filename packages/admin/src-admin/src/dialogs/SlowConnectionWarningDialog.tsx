@@ -19,7 +19,7 @@ import {
 import { AdminConnection, type Translate } from '@iobroker/adapter-react-v5';
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 
-const styles: Record<string, any> = {
+const styles: Record<string, React.CSSProperties> = {
     buttonLabel: {
         whiteSpace: 'nowrap',
     },
@@ -81,7 +81,7 @@ export class SlowConnectionWarningDialogClass extends Component<SlowConnectionWa
                     value={this.state.readTimeoutSec}
                     onChange={e => this.setState({ readTimeoutSec: e.target.value })}
                     type="number"
-                    inputProps={{ min: 5, max: 600 }}
+                    slotProps={{ htmlInput: { min: 5, max: 600 } }}
                     helperText={this.props.t('in seconds')}
                 />
             </DialogContent>

@@ -10,7 +10,7 @@ import { ContentCopy as IconCopy } from '@mui/icons-material';
 import { Utils, I18n } from '@iobroker/adapter-react-v5';
 
 import type { ConfigItemUUID } from '#JC/types';
-import ConfigGeneric, {type ConfigGenericProps, type ConfigGenericState} from './ConfigGeneric';
+import ConfigGeneric, { type ConfigGenericProps, type ConfigGenericState } from './ConfigGeneric';
 
 interface ConfigUUIDProps extends ConfigGenericProps {
     schema: ConfigItemUUID;

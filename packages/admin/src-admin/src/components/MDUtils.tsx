@@ -247,11 +247,15 @@ class MDUtils {
         const newLines: string[] = [];
         lines.forEach(line => {
             if (line.match(/#+\sChangelog/i)) {
-                !ignoreHeaders && changelog.push('## Changelog');
+                if (!ignoreHeaders) {
+                    changelog.push('## Changelog');
+                }
                 changelogA = true;
                 licenseA = false;
             } else if (line.match(/#+\sLicense/i)) {
-                !ignoreHeaders && license.push('## License');
+                if (!ignoreHeaders) {
+                    license.push('## License');
+                }
                 changelogA = false;
                 licenseA = true;
             } else if (line.match(/^# |^## /)) {

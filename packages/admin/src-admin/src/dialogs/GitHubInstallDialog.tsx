@@ -343,15 +343,17 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             }
                         }
                     }}
-                    InputProps={{
-                        endAdornment: this.state.url ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => this.setState({ url: '' })}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: this.state.url ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => this.setState({ url: '' })}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                 />
             </div>

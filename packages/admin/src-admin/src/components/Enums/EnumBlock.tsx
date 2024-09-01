@@ -126,7 +126,7 @@ const styles: Record<string, any> = {
         p: '4px',
         backgroundColor: '#00000010',
         border: '1px solid #FFF',
-        borderColor: theme.palette.text.primary, // it was hint...
+        borderColor: theme.palette.text.primary, // it was a hint...
         color: theme.palette.text.primary,
         alignItems: 'center',
         position: 'relative',
@@ -211,7 +211,7 @@ interface EnumBlockProps {
     socket: AdminConnection;
     updating: boolean;
     id: string;
-    children: number;
+    childrenCount: number;
     themeType: ThemeType;
     cachedIcons: Record<string, string>;
     iconDragRef?: ConnectDragSource;
@@ -349,20 +349,20 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
             <Icon
                 style={{
                     ...styles.icon,
-                    ...(props.children ? styles.folderIcon : undefined),
-                    ...(props.children && !props.closed ? styles.folderIconExpanded : undefined),
+                    ...(props.childrenCount ? styles.folderIcon : undefined),
+                    ...(props.childrenCount && !props.closed ? styles.folderIconExpanded : undefined),
                 }}
                 src={props.enum.common.icon}
             /> :
             <ListIcon
                 style={{
                     ...styles.icon,
-                    ...(props.children ? styles.folderIcon : undefined),
-                    ...(props.children && !props.closed ? styles.folderIconExpanded : undefined),
+                    ...(props.childrenCount ? styles.folderIcon : undefined),
+                    ...(props.childrenCount && !props.closed ? styles.folderIconExpanded : undefined),
                 }}
             />;
 
-        icon = props.children ? <div style={styles.folderDiv} onClick={() => props.toggleEnum(props.id)}>
+        icon = props.childrenCount ? <div style={styles.folderDiv} onClick={() => props.toggleEnum(props.id)}>
             {props.closed ? [<IconCollapsed style={styles.folder} key={1} />, <div key={2}>{icon}</div>] : [<IconExpanded style={styles.folder} key={1} />, <div key={2}>{icon}</div>]}
         </div> : icon;
 
@@ -386,7 +386,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         size="small"
                         onClick={() => props.showEnumEditDialog(props.enum, false)}
                     >
-                        <Tooltip title={props.t('Edit')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                        <Tooltip title={props.t('Edit')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                             <EditIcon style={{ color: textColor }} />
                         </Tooltip>
                     </IconButton> : null}
@@ -394,7 +394,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         size="small"
                         onClick={() => props.copyEnum(props.id)}
                     >
-                        <Tooltip title={props.t('Clone')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                        <Tooltip title={props.t('Clone')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                             <FileCopyIcon style={{ color: textColor }} />
                         </Tooltip>
                     </IconButton> : null}
@@ -403,7 +403,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         onClick={() => props.showEnumDeleteDialog(props.enum)}
                         disabled={common?.dontDelete}
                     >
-                        <Tooltip title={props.t('Delete')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                        <Tooltip title={props.t('Delete')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                             <DeleteIcon style={common?.dontDelete ? null : { color: textColor }} />
                         </Tooltip>
                     </IconButton>
@@ -466,12 +466,12 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                                     size="small"
                                     onClick={() => props.removeMemberFromEnum(member._id, props.id)}
                                 >
-                                    <Tooltip title={props.t('Remove')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                                    <Tooltip title={props.t('Remove')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                                         <ClearIcon style={{ color: textColor }} />
                                     </Tooltip>
                                 </IconButton>
                             </Card>;
-                        }) : (common?.members?.length ? <div style={{ ...styles.membersNumber, ...(props.children ? styles.memberNumberFolder : undefined) }}>{common?.members?.length}</div> : '')}
+                        }) : (common?.members?.length ? <div style={{ ...styles.membersNumber, ...(props.childrenCount ? styles.memberNumberFolder : undefined) }}>{common?.members?.length}</div> : '')}
                     </div>
                 </CardContent>
             </div>
@@ -486,7 +486,7 @@ class EnumBlock extends Component<EnumBlockProps, EnumBlockState> {
                         }
                     }}
                 >
-                    <Tooltip title={props.t('Add child')} placement="top" componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                    <Tooltip title={props.t('Add child')} placement="top" slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                         <AddIcon style={{ color: textColor }} />
                     </Tooltip>
                 </IconButton>
@@ -526,7 +526,7 @@ interface EnumBlockDragProps {
     theme: IobTheme;
     toggleEnum: (enumId: string) => void;
     updating: boolean;
-    children: number;
+    childrenCount: number;
 }
 
 function canMeDrop(monitor: DropTargetMonitor<DragItem, { enumId: string }>, enumItem: ioBroker.EnumObject) {
@@ -565,14 +565,14 @@ const EnumBlockDrag = (props: EnumBlockDragProps) => {
             </div>,
         }),
 
-        end: (draggeditem: { enumId: string; preview: React.JSX.Element }, monitor: DragSourceMonitor<DragItem, { enumId: string }>) => {
+        end: (draggedItem: { enumId: string; preview: React.JSX.Element }, monitor: DragSourceMonitor<DragItem, { enumId: string }>) => {
             const dropResult = monitor.getDropResult();
             if (!dropResult) {
                 // root
-                const parts = draggeditem.enumId.split('.');
-                props.moveEnum(draggeditem.enumId, `${parts[0]}.${parts[1]}`);
+                const parts = draggedItem.enumId.split('.');
+                props.moveEnum(draggedItem.enumId, `${parts[0]}.${parts[1]}`);
             } else {
-                props.moveEnum(draggeditem.enumId, dropResult.enumId);
+                props.moveEnum(draggedItem.enumId, dropResult.enumId);
             }
         },
 

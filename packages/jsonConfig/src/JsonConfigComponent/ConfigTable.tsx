@@ -240,6 +240,7 @@ interface ConfigTableState extends ConfigGenericState {
 function encrypt(secret: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
+        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -247,6 +248,7 @@ function encrypt(secret: string, value: string): string {
 function decrypt(secret: string, value: string): string {
     let result = '';
     for (let i = 0; i < value.length; i++) {
+        // eslint-disable-next-line no-bitwise
         result += String.fromCharCode(secret[i % secret.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -313,8 +315,10 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     }
 
     componentWillUnmount() {
-        this.typingTimer && clearTimeout(this.typingTimer);
-        this.typingTimer = null;
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+            this.typingTimer = null;
+        }
         super.componentWillUnmount();
     }
 
@@ -367,6 +371,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                 });
             }}
             onError={(error: string, attr?: string) => this.onError(error, attr)}
+            onBackEndCommand={this.props.onBackEndCommand}
         />;
     }
 
@@ -463,7 +468,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         sortDirection={orderBy === headCell.attr ? order : false}
                     >
                         <div style={{ ...styles.flex, ...(schema.showFirstAddOnTop ? { flexDirection: 'column' } : undefined) }}>
-                            {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                            {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                 <span>
                                     <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
                                         <AddIcon />
@@ -679,7 +684,9 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
     };
 
     onChangeWrapper = (newValue: Record<string, any>[], updateVisible?: boolean) => {
-        this.typingTimer && clearTimeout(this.typingTimer);
+        if (this.typingTimer) {
+            clearTimeout(this.typingTimer);
+        }
 
         this.typingTimer = setTimeout((value, _updateVisible) => {
             this.typingTimer = null;
@@ -769,14 +776,16 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
         }
 
         if (visibleValue === null && this.state.visibleValue === null) {
-            cb && cb();
+            if (cb) {
+                cb();
+            }
             return;
         }
 
         if (JSON.stringify(visibleValue) !== JSON.stringify(this.state.visibleValue)) {
             this.setState({ visibleValue }, () => cb && cb());
-        } else {
-            cb && cb();
+        } else if (cb) {
+            cb();
         }
     };
 
@@ -986,22 +995,22 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                                         {this.itemTable(headCell.attr, this.state.value[idx], idx)}
                                     </TableCell>)}
                                 {!schema.noDelete && <TableCell align="left" style={{ ...tdStyle, ...styles.buttonCell }}>
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
                                             <UpIcon />
                                         </IconButton>
                                     </Tooltip> : <div style={styles.buttonEmpty} />) : null}
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={() => this.onMoveDown(idx)}>
                                             <DownIcon />
                                         </IconButton>
                                     </Tooltip> : <div style={styles.buttonEmpty} />) : null}
-                                    <Tooltip title={I18n.t('ra_Delete current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                                    <Tooltip title={I18n.t('ra_Delete current row')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={this.onDelete(idx)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </Tooltip>
-                                    {this.props.schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                                    {this.props.schema.clone ? <Tooltip title={I18n.t('ra_Clone current row')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                         <IconButton size="small" onClick={this.onClone(idx)}>
                                             <CopyContentIcon />
                                         </IconButton>
@@ -1011,7 +1020,7 @@ class ConfigTable extends ConfigGeneric<ConfigTableProps, ConfigTableState> {
                         {!schema.noDelete && visibleValue.length >= (schema.showSecondAddAt || 5) ?
                             <TableRow>
                                 <TableCell colSpan={schema.items.length + 1} style={{ ...tdStyle }}>
-                                    <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                                    <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')} slotProps={{ popper: { sx: styles.tooltip } }}>
                                         <span>
                                             <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
                                                 <AddIcon />

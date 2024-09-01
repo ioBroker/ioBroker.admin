@@ -191,7 +191,9 @@ class ConfigFileSelector extends ConfigGeneric<ConfigFileSelectorProps, ConfigFi
                         ok = regExp.test(file.file);
                     }
 
-                    ok && files.push({ name: folderName + file.file, size: file.stats ? Utils.formatBytes(file.stats.size) : '--' });
+                    if (ok) {
+                        files.push({ name: folderName + file.file, size: file.stats ? Utils.formatBytes(file.stats.size) : '--' });
+                    }
                 }
             }
         } catch (e) {

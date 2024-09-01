@@ -285,7 +285,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 try {
                     const data = JSON.parse(contents);
                     this.setState({ data, changed: JSON.stringify(data) !== JSON.stringify(this.state.originalData) });
-                } catch (err) {
+                } catch {
                     window.alert(I18n.t('[JsonConfig] Failed to parse JSON file'));
                 }
             };
@@ -297,7 +297,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
 
     getExportImportButtons(): React.JSX.Element {
         return <div style={styles.exportImportButtons}>
-            <Tooltip title={this.props.t('Import settings from JSON file')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Import settings from JSON file')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <Fab
                     size="small"
                     sx={{ '&.MuiFab-root': styles.button }}
@@ -314,7 +314,7 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                     <PublishIcon />
                 </Fab>
             </Tooltip>
-            <Tooltip title={this.props.t('Export setting to JSON file')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={this.props.t('Export setting to JSON file')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <Fab
                     size="small"
                     sx={{ '&.MuiFab-root': styles.button }}
@@ -468,7 +468,9 @@ class JsonConfig extends Router<JsonConfigProps, JsonConfigState> {
                 console.log(e);
             }
         } catch (e1) {
-            !this.state.schema && window.alert(`[JsonConfig] Cannot read file "${fileName}: ${e1}`);
+            if (!this.state.schema) {
+                window.alert(`[JsonConfig] Cannot read file "${fileName}: ${e1}`);
+            }
         }
         return null;
     }

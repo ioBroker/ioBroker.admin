@@ -87,7 +87,7 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
         {status.connection === 'connected' && <div style={{ display: 'flex', alignItems: 'center' }}>
             <Tooltip
                 title={getTranslation('connectedIconTooltip')}
-                componentsProps={{ popper: { sx: styles.tooltip } }}
+                slotProps={{ popper: { sx: styles.tooltip } }}
             >
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <LinkIcon style={iconStyleOK} />
@@ -96,7 +96,7 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
         </div>}
 
         {status.connection === 'disconnected' && <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Tooltip title={getTranslation('disconnectedIconTooltip')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={getTranslation('disconnectedIconTooltip')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <LinkOffIcon style={iconStyleNotOK} />
                 </div>
@@ -104,7 +104,7 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
         </div>}
 
         {status.rssi && <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Tooltip title="RSSI" componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title="RSSI" slotProps={{ popper: { sx: styles.tooltip } }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <NetworkCheckIcon />
                     <p style={{ fontSize: 'small', margin: 0 }}>{status.rssi}</p>
@@ -113,7 +113,7 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
         </div>}
 
         {typeof status.battery === 'number' && <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Tooltip title={getTranslation('batteryTooltip')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={getTranslation('batteryTooltip')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     {batteryIconTooltip}
                     <p style={{ fontSize: 'small', margin: 0 }}>
@@ -125,7 +125,7 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
         </div>}
 
         {typeof status.battery === 'string' && <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Tooltip title={getTranslation('batteryTooltip')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={getTranslation('batteryTooltip')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     {status.battery === 'charging' ? <BatteryCharging50Icon /> : <BatteryFullIcon />}
                     {status.battery !== 'charging' ? (status.battery.includes('V') || status.battery.includes('mV') ?
@@ -139,7 +139,7 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
         </div>}
 
         {typeof status.battery === 'boolean' && <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Tooltip title={getTranslation('batteryTooltip')} componentsProps={{ popper: { sx: styles.tooltip } }}>
+            <Tooltip title={getTranslation('batteryTooltip')} slotProps={{ popper: { sx: styles.tooltip } }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     {status.battery ? <BatteryFullIcon style={iconStyleOK} /> :
                         <BatteryAlertIcon style={iconStyleNotOK} />}
@@ -149,7 +149,7 @@ export default function DeviceStatus(params: DeviceStatusProps): React.JSX.Eleme
 
         {status.warning && <div style={{ display: 'flex', alignItems: 'center' }}>
             {typeof status.warning === 'string' || typeof status.warning === 'object' ?
-                <Tooltip title={getTranslation(status.warning)} componentsProps={{ popper: { sx: styles.tooltip } }}>
+                <Tooltip title={getTranslation(status.warning)} slotProps={{ popper: { sx: styles.tooltip } }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <WarningIcon style={iconStyleWarning} />
                     </div>

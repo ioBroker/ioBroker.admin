@@ -2,7 +2,7 @@ import React from 'react';
 
 import {
     Accordion, AccordionDetails, AccordionSummary, Avatar,
-    Grid,
+    Grid2,
     Tooltip, Typography,
     Box,
 } from '@mui/material';
@@ -208,15 +208,15 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
         const { instance, item } = this.props;
 
         return <AccordionDetails>
-            <Grid container direction="row">
-                <Grid item container direction="row" xs={10}>
-                    <Grid item container direction="column" xs={12} sm={6} md={4}>
+            <Grid2 container direction="row">
+                <Grid2 container direction="row" size={{ xs: 10 }}>
+                    <Grid2 container direction="column" size={{ xs: 12, sm: 6, md: 4 }}>
                         {this.renderInfo(true)}
-                    </Grid>
-                    <Grid container item direction="column" xs={12} sm={6} md={4}>
+                    </Grid2>
+                    <Grid2 container direction="column" size={{ xs: 12, sm: 6, md: 4 }}>
                         {this.renderVersion()}
-                    </Grid>
-                    <Grid container item direction="column" xs={12} sm={6} md={4} style={styles.paddingRight200}>
+                    </Grid2>
+                    <Grid2 container direction="column" size={{ xs: 12, sm: 6, md: 4 }} style={styles.paddingRight200}>
                         {this.props.context.expertMode && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
                             {this.renderLogLevel()}
                         </Box>}
@@ -224,9 +224,9 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             <Box component="div" sx={styles.visible1250}>
                                 {this.renderInputOutput()}
                             </Box>}
-                        <Grid item sx={styles.visible1050}>
+                        <Grid2 sx={styles.visible1050}>
                             {this.renderMemoryUsage()}
-                        </Grid>
+                        </Grid2>
                         {item.modeSchedule && <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
                             {this.renderSchedule()}
                         </Box>}
@@ -254,10 +254,9 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                         {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ? <Box component="div" sx={{ ...styles.displayFlex, ...styles.maxWidth300 }}>
                             {this.renderHostWithButton()}
                         </Box> : null}
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
                 <div style={styles.displayFlex}>
-
                     <IsVisible config={item} name="allowInstanceDelete">
                         <Box component="div" sx={{ display: { xs: 'inline-block', md: 'none' } }}>
                             {this.renderSettingsButton()}
@@ -281,7 +280,7 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                         {this.renderCompactGroupEnabled()}
                     </Box>
                 </div>
-            </Grid>
+            </Grid2>
         </AccordionDetails>;
     }
 
@@ -326,11 +325,11 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                 expandIcon={<ExpandMoreIcon style={this.desktop ? styles.desktopButton : undefined} />}
             >
                 {this.renderDialogs()}
-                <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap" style={styles.rowGridLine}>
+                <Grid2 container spacing={1} alignItems="center" direction="row" wrap="nowrap" style={styles.rowGridLine}>
                     <Box component="div" style={styles.gridStyle}>
                         {stateTooltip.length ?
                             <Tooltip
-                                componentsProps={{ popper: { sx: styles.tooltip } }}
+                                slotProps={{ popper: { sx: styles.tooltip } }}
                                 title={<span style={{ display: 'flex', flexDirection: 'column' }}>
                                     {stateTooltip}
                                 </span>}
@@ -383,22 +382,21 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                     {this.props.context.expertMode &&
                         <Tooltip
                             title={item.logLevelObject === item.logLevel ? `${this.props.context.t('loglevel')} ${item.logLevel}` : `${this.props.context.t('saved:')} ${item.logLevelObject} / ${this.props.context.t('actual:')} ${item.logLevel}`}
-                            componentsProps={{ popper: { sx: styles.tooltip } }}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
                         >
                             <Avatar sx={{ ...styles.smallAvatar, ...styles.hidden380, ...styles[item.logLevel] }}>
                                 {item.loglevelIcon}
                             </Avatar>
                         </Tooltip>}
-                    <Grid item sx={{ ...styles.hidden1050, ...styles.width150, ...((instance.mode !== 'daemon' || !item.running) ? styles.invisible : undefined) }}>
+                    <Grid2 sx={{ ...styles.hidden1050, ...styles.width150, ...((instance.mode !== 'daemon' || !item.running) ? styles.invisible : undefined) }}>
                         {this.renderMemoryUsage()}
-                    </Grid>
-                    {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ? <Grid
-                        item
+                    </Grid2>
+                    {this.props.context.hosts.length > 1 || (this.props.context.hosts.length && this.props.context.hosts[0].common?.name !== instance.host) ? <Grid2
                         sx={styles.hidden1230}
                     >
                         {this.renderHost()}
-                    </Grid> : null}
-                </Grid>
+                    </Grid2> : null}
+                </Grid2>
                 <Box component="div" sx={styles.hidden570}>
                     {this.renderSentry()}
                 </Box>

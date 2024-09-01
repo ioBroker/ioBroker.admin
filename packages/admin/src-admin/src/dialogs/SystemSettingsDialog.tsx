@@ -498,7 +498,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 '& .MuiDialog-paper': { height: 'calc(100% - 64px)', width: 'calc(100% - 64px)', maxWidth: 'calc(100% - 64px)' },
             }}
             open={!0}
-            onClose={(e, reason) => {
+            onClose={(_e, reason) => {
                 if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
                     if (changed) {
                         this.setState({ confirmExit: true });
@@ -521,7 +521,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                             style={styles.tab}
                             indicatorColor="secondary"
                             value={this.props.currentTab.id || 'tabConfig'}
-                            onChange={(event, newTab: string) => SystemSettingsDialog.onTabChanged(newTab)}
+                            onChange={(_event, newTab: string) => SystemSettingsDialog.onTabChanged(newTab)}
                             variant="scrollable"
                             scrollButtons="auto"
                         >

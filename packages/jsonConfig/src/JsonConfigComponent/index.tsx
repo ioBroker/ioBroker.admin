@@ -10,7 +10,7 @@ import {
     type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
-import type { ConfigItemPanel, ConfigItemTabs } from '#JC/types';
+import type { BackEndCommand, ConfigItemPanel, ConfigItemTabs } from '#JC/types';
 import ConfigGeneric, { type DeviceManagerPropsProps } from '#JC/JsonConfigComponent/ConfigGeneric';
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
@@ -37,6 +37,8 @@ interface JsonConfigComponentProps {
     updateData?: number;
     onError: (error: boolean) => void;
     onChange?: (data: Record<string, any>, changed: boolean, saveConfig: boolean) => void;
+    /** Backend request to refresh data */
+    onBackEndCommand?: (command?: BackEndCommand) => void;
     custom?: boolean;
     onValueChange?: (attr: string, value: any, saveConfig: boolean) => void;
     embedded?: boolean;
@@ -351,6 +353,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                 onChange={this.onChange}
                 onCommandRunning={this.onCommandRunning}
                 onError={(attr, error) => this.onError(attr, error)}
+                onBackEndCommand={this.props.onBackEndCommand}
                 originalData={JSON.parse(this.state.originalData)}
                 registerOnForceUpdate={this.registerOnForceUpdate}
                 root
@@ -390,6 +393,7 @@ export class JsonConfigComponent extends Component<JsonConfigComponentProps, Jso
                 onChange={this.onChange}
                 onCommandRunning={this.onCommandRunning}
                 onError={(attr, error) => this.onError(attr, error)}
+                onBackEndCommand={this.props.onBackEndCommand}
                 originalData={JSON.parse(this.state.originalData)}
                 registerOnForceUpdate={this.registerOnForceUpdate}
                 root

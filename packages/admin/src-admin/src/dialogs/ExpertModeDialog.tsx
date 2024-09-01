@@ -7,7 +7,7 @@ import {
     DialogContent,
     FormControlLabel,
     Checkbox,
-    Grid,
+    Grid2,
     DialogTitle, IconButton, Typography, Box,
 } from '@mui/material';
 import {
@@ -67,8 +67,8 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose
             {I18n.t('Expert mode')}
         </DialogTitle>
         <DialogContent style={styles.overflowHidden} dividers>
-            <Grid container>
-                <Grid item style={styles.width100}>
+            <Grid2 container>
+                <Grid2 style={styles.width100}>
                     <Box component="div" sx={styles.root}>
                         <div style={styles.pre}>
                             <Typography
@@ -109,8 +109,8 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose
                             </IconButton>
                         </div>
                     </Box>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                     <FormControlLabel
                         control={<Checkbox
                             id="expert-mode-do-not-show"
@@ -119,8 +119,8 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({ expertMode, onClose
                         />}
                         label={I18n.t('Do not show this dialog in this browser session any more')}
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </DialogContent>
         <DialogActions>
             <Button

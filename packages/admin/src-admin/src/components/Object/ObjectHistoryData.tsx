@@ -1177,7 +1177,12 @@ class ObjectHistoryData extends Component<ObjectHistoryDataProps, ObjectHistoryD
                                     sx={styles.msInput}
                                     helperText={this.props.t('ms')}
                                     type="number"
-                                    inputProps={{ max: 999, min: 0 }}
+                                    slotProps={{
+                                        htmlInput: {
+                                            max: 999,
+                                            min: 0,
+                                        },
+                                    }}
                                     value={this.state.edit.ms}
                                     onChange={e => this.updateEdit('ms', e.target.value)}
                                 />

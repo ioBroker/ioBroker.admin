@@ -200,7 +200,9 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
 
     handleFilterChange(filter: string) {
         this.setState({ filter }, () => {
-            this.filterTimeout && clearTimeout(this.filterTimeout);
+            if (this.filterTimeout) {
+                clearTimeout(this.filterTimeout);
+            }
             this.filterTimeout = setTimeout(() => {
                 this.filterTimeout = null;
                 this.applyFilter();
@@ -267,7 +269,7 @@ export default class DeviceList extends Communication<DeviceListProps, DeviceLis
         return <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
             <Toolbar variant="dense" style={{ backgroundColor: '#777', display: 'flex' }}>
                 {this.props.title}
-                {this.props.selectedInstance ? <Tooltip title={getTranslation('refreshTooltip')} componentsProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+                {this.props.selectedInstance ? <Tooltip title={getTranslation('refreshTooltip')} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
                     <span>
                         <IconButton
                             onClick={() => this.loadData()}

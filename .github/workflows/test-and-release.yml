@@ -46,7 +46,7 @@ jobs:
         run: npm run lint-backend -w packages/admin
 
       - name: 'Build backend'
-        run: npm run build:ts -w packages/admin
+        run: npm run build:backend -w packages/admin
 
       - name: 'Build JsonConfig'
         run: npm run build -w packages/jsonConfig
@@ -87,7 +87,7 @@ jobs:
         run: npm i -f
 
       - name: 'Build backend'
-        run: npm run build:ts -w packages/admin
+        run: npm run build:backend -w packages/admin
 
       - name: Run local tests
         run: npm test -w packages/admin/
@@ -110,7 +110,7 @@ jobs:
         run: npm run install-monorepo
 
       - name: 'Build backend'
-        run: npm run build:ts -w packages/admin
+        run: npm run build:backend -w packages/admin
 
       - name: Build
         run: NODE_OPTIONS=--max_old_space_size=8192 npm run build
@@ -186,7 +186,7 @@ jobs:
 
       - name: 'Build backend'
         if: steps.automerge.outputs.mergeResult == 'merged'
-        run: npm run build:ts -w packages/admin
+        run: npm run build:backend -w packages/admin
 
       - name: Publish package to npm
         if: steps.automerge.outputs.mergeResult == 'merged'

@@ -257,15 +257,17 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                             }
                         }
                     }}
-                    InputProps={{
-                        endAdornment: name ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => setName('')}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null,
+                    slotProps={{
+                        input: {
+                            endAdornment: name ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => setName('')}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null,
+                        },
                     }}
                     onChange={el => {
                         setUnique(!objects[buildId(el.target.value)]);

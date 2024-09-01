@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Grid,
+    Grid2,
     Tooltip,
     Typography,
 } from '@mui/material';
@@ -26,8 +26,7 @@ interface InstanceInfoProps {
     style?: React.CSSProperties;
 }
 
-const InstanceInfo = (props: InstanceInfoProps) => <Grid
-    item
+const InstanceInfo = (props: InstanceInfoProps) => <Grid2
     container
     title={props.icon ? '' : props.tooltip || ''}
     alignItems="center"
@@ -35,21 +34,18 @@ const InstanceInfo = (props: InstanceInfoProps) => <Grid
     spacing={1}
     style={styles.nowrap}
 >
-    {props.icon && <Grid item>
-        <Tooltip title={props.tooltip || ''} componentsProps={{ popper: { sx: styles.tooltip } }}>
+    {props.icon && <Grid2>
+        <Tooltip title={props.tooltip || ''} slotProps={{ popper: { sx: styles.tooltip } }}>
             {props.icon}
         </Tooltip>
-    </Grid>}
-    <Grid
-        style={styles.width}
-        item
-    >
-        <Tooltip title={props.tooltip || ''} componentsProps={{ popper: { sx: styles.tooltip } }}>
+    </Grid2>}
+    <Grid2 style={styles.width}>
+        <Tooltip title={props.tooltip || ''} slotProps={{ popper: { sx: styles.tooltip } }}>
             <Typography component="div" style={props.style}>
                 {props.children}
             </Typography>
         </Tooltip>
-    </Grid>
-</Grid>;
+    </Grid2>
+</Grid2>;
 
 export default InstanceInfo;

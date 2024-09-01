@@ -23,7 +23,7 @@ import {
     type ThemeName, type ThemeType, type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
-import { ConfigPanel } from '@iobroker/json-config';
+import { type ConfigItemPanel, ConfigPanel } from '@iobroker/json-config';
 
 const styles: Record<string, React.CSSProperties> = {
     root: {
@@ -97,13 +97,13 @@ const TabPanel: React.FC<TabPanelProps> = ({
     </div>;
 };
 type InputType = 'password' | 'checkbox' | 'select' | 'link' | 'comment' | 'text' | 'name' | 'title';
-type InputControlType = 'password' | 'checkbox' | 'select' | 'staticLink' | 'text' | 'staticText' | 'header';
+type InputControlType = 'password' | 'checkbox' | 'select' | 'text' | 'staticText' | 'header';
 
 const types: Record<InputType, InputControlType> = {
     password: 'password',
     checkbox: 'checkbox',
     select: 'select',
-    link: 'staticLink',
+    link: 'staticText',
     comment: 'staticText',
     text: 'text',
     name: 'staticText',
@@ -301,7 +301,7 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                             themeName={themeName}
                             theme={theme}
                             onChange={setSchemaData}
-                            schema={schema}
+                            schema={schema as unknown as ConfigItemPanel}
                             onError={(attr, _error) => setError({ ...error, [attr]: _error })}
                             // all unused properties
                             isFloatComma

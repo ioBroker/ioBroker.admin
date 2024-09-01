@@ -39,18 +39,22 @@ export function IOTextField(props: IOTextFieldProps) {
                 value={props.value}
                 onChange={e => props.onChange(e.target.value)}
                 disabled={props.disabled}
-                InputLabelProps={{ shrink: true }}
                 type={props.type}
-                InputProps={{
-                    readOnly: false,
-                    endAdornment: props.value ? <InputAdornment position="end">
-                        <IconButton
-                            size="small"
-                            onClick={() => props.onChange('')}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </InputAdornment> : null,
+                slotProps={{
+                    inputLabel: {
+                        shrink: true,
+                    },
+                    input: {
+                        readOnly: false,
+                        endAdornment: props.value ? <InputAdornment position="end">
+                            <IconButton
+                                size="small"
+                                onClick={() => props.onChange('')}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </InputAdornment> : null,
+                    },
                 }}
             />
         </FormControl>
